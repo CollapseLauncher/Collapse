@@ -1,20 +1,29 @@
-using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections;
 using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Globalization.NumberFormatting;
+using Windows.Storage.Streams;
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Pages
 {
@@ -532,23 +541,105 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public partial class GetCachedUrlDataConverter : IValueConverter
+#nullable enable
+    public partial class UrlToCachedImageSourceConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        internal static         CDNCache   CacheManager;
+        private static readonly HttpClient Client;
+
+        static UrlToCachedImageSourceConverter()
         {
-            if (value is string stringUrl &&
-                stringUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            Client = new HttpClientBuilder()
+                    .UseLauncherConfig()
+                    .Create();
+            CacheManager = new CDNCache
             {
-                return ImageLoaderHelper.GetCachedSprites(stringUrl);
+                IsUseAggressiveMode        = true,
+                CurrentCacheDir            = LauncherConfig.AppGameImgCachedFolder,
+                Logger                     = ILoggerHelper.GetILogger("UrlToCachedImageSourceConverter"),
+                MaxAcceptedCacheExpireTime = TimeSpan.FromDays(7)
+            };
+            LauncherConfig.AppGameFolderChanged += AppGameFolderChanged;
+        }
+
+        private static void AppGameFolderChanged(string path)
+        {
+            string changedCacheFolder = LauncherConfig.AppGameImgCachedFolder;
+            CacheManager.CurrentCacheDir = changedCacheFolder;
+
+            CacheManager.Logger?.LogDebug("App game folder has been changed to: {path}", path);
+            CacheManager.Logger?.LogDebug("Sprite cache folder has been changed to: {path}", changedCacheFolder);
+        }
+
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is Uri { IsFile: true } asUrl)
+            {
+                return asUrl;
             }
 
-            if (value is Uri uri &&
-                uri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            // Return if it's already a local path
+            string? stringUrl = value as string ?? (value as Uri)?.AbsolutePath;
+            if (string.IsNullOrEmpty(stringUrl) || stringUrl.Length < 3)
             {
-                return ImageLoaderHelper.GetCachedSprites(uri.AbsolutePath);
+                return stringUrl;
             }
 
-            return value;
+            char firstLetter = (char)(stringUrl[0] | 0x20);
+            if (firstLetter is >= 'a' and <= 'z' &&
+                stringUrl[1] == ':' &&
+                stringUrl[2] is '\\' or '/')
+            {
+                return stringUrl;
+            }
+
+            // Create BitmapImage instance, then lazy-load the resource in the background.
+            BitmapImage image = new();
+            _ = LoadLazy(image, stringUrl);
+
+            return image;
+        }
+
+        private static async Task LoadLazy(BitmapImage image, string url)
+        {
+            Stream? resultStream;
+
+            // ReSharper disable once AsyncVoidMethod
+            async void ImageOnImageOpened(object sender, RoutedEventArgs e)
+            {
+                if (resultStream != null)
+                {
+                    await resultStream.DisposeAsync();
+#if DEBUG
+                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
+#endif
+                }
+
+                image.ImageOpened -= ImageOnImageOpened;
+            }
+
+            try
+            {
+                CDNCacheResult result =
+                    await CacheManager
+                       .TryGetCachedStreamFrom(Client,
+                                               url,
+                                               null,
+                                               CancellationToken.None);
+
+                resultStream = result.Stream;
+                IRandomAccessStream stream = resultStream.AsRandomAccessStream();
+                image.ImageOpened += ImageOnImageOpened;
+
+                await image.SetSourceAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
+                                               LogType.Error,
+                                               true);
+                SentryHelper.ExceptionHandler(ex);
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

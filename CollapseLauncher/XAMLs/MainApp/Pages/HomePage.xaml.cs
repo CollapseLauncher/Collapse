@@ -438,25 +438,24 @@ namespace CollapseLauncher.Pages
                 // Using the original icon file and cached icon file streams
                 if (!isCacheIconExist)
                 {
-                    await using FileStream cachedIconFileStream = new FileStream(cachedIconFileInfo.FullName,
+                    await using FileStream cachedIconFileStream = new(cachedIconFileInfo.FullName,
                              FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-                    await using MemoryStream copyIconFileStream = new MemoryStream();
                     await using Stream iconFileStream =
                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
                                                                         PageToken.Token);
-                    var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                    // Copy remote stream to memory stream
-                    await iconFileStream.CopyToAsync(copyIconFileStream);
-                    copyIconFileStream.Position = 0;
-                    // Get the icon image information and set the resized frame size
-                    var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                    var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                    var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                    copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                              (uint)width, (uint)height); // Start resizing
-                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    double screenDpi = 96 * WindowUtility.CurrentWindowMonitorScaleFactor;
+                    using (MemoryStream outStream = new())
+                    {
+                        await iconFileStream.CopyToAsync(outStream);
+                        outStream.Position = 0;
+                        // Start resizing
+                        await ImageLoaderHelper.GetConvertedImageAsPng(outStream,
+                                                                       cachedIconFileStream,
+                                                                       screenDpi,
+                                                                       screenDpi);
+                        cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    }
 
                     // Set the source from cached icon stream
                     source.SetSource(cachedIconFileStream.AsRandomAccessStream());

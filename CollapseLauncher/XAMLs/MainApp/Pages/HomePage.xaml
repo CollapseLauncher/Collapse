@@ -34,7 +34,7 @@
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter"/>
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
-        <pages:GetCachedUrlDataConverter x:Key="GetCachedUrlDataConverter"/>
+        <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter"/>
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter"/>
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
         <pages:FloorFloatingValueConverter x:Key="FloorFloatingValueConverter"/>
@@ -496,10 +496,12 @@
                                                             <RowDefinition />
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
-                                                        <imageex:ImageEx Width="160"
+                                                        <imageex:ImageEx EnableLazyLoading="True"
+                                                                         IsCacheEnabled="True"
+                                                                         Width="160"
                                                                          Margin="4"
                                                                          HorizontalAlignment="Center"
-                                                                         Source="{Binding QrImage.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource GetCachedUrlDataConverter}}" />
+                                                                         Source="{Binding QrImage.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                                         <TextBlock Grid.Row="1"
                                                                    Margin="0,0,0,8"
                                                                    HorizontalAlignment="Center"
@@ -583,10 +585,14 @@
                                     </Button.Flyout>
                                     <Grid>
                                         <imageex:ImageEx x:Name="Icon"
-                                                         Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource GetCachedUrlDataConverter}}" />
+                                                         EnableLazyLoading="True"
+                                                         IsCacheEnabled="True"
+                                                         Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                         <imageex:ImageEx x:Name="IconHover"
                                                          Opacity="0"
-                                                         Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource GetCachedUrlDataConverter}}" />
+                                                         EnableLazyLoading="True"
+                                                         IsCacheEnabled="True"
+                                                         Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -636,7 +642,7 @@
                                                  VerticalAlignment="Center"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource GetCachedUrlDataConverter}}"
+                                                 Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
                                                  Stretch="UniformToFill"
                                                  Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
                                                  ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
@@ -1465,8 +1471,10 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0">
-                                    <imageex:ImageEx Source="{Binding WpfPackageIconUrl, Converter={StaticResource GetCachedUrlDataConverter}, Mode=OneWay}"
-                                                     MaxWidth="72"/>
+                                    <imageex:ImageEx Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}"
+                                                     MaxWidth="72"
+                                                     EnableLazyLoading="True"
+                                                     IsCacheEnabled="True"/>
                                     <TextBlock Text="{Binding WpfPackageNameLocalized}"
                                                TextWrapping="Wrap"
                                                TextAlignment="Center"
@@ -1685,7 +1693,9 @@
                           Margin="-1"
                           Background="{ThemeResource GameSettingsBtnBrush}">
                         <imageex:ImageEx Grid.Column="0"
-                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource GetCachedUrlDataConverter}}"/>
+                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}"
+                                         EnableLazyLoading="True"
+                                         IsCacheEnabled="True"/>
                         <Grid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
                             <Grid.OpacityTransition>
                                 <ScalarTransition Duration="0:0:.5"/>
