@@ -348,33 +348,94 @@ namespace CollapseLauncher.Helper.Image
             return new FileInfo(cachedFilePath);
         }
 
-        public static async Task ResizeImageStream(Stream input, Stream output, uint toWidth, uint toHeight)
+        public static Task ResizeImageStream(Stream input, Stream output, uint toWidth, uint toHeight)
         {
-            await Task.Run(() =>
+            TaskCompletionSource tcs = new();
+            Task.Factory.StartNew(Impl);
+
+            return tcs.Task;
+
+            void Impl()
             {
-                ProcessImageSettings settings = new()
+                try
                 {
-                    Width = (int)toWidth,
-                    Height = (int)toHeight,
-                    HybridMode = HybridScaleMode.Off,
-                    Interpolation = InterpolationSettings.CubicSmoother,
-                    Anchor = CropAnchor.Bottom | CropAnchor.Center
-                };
-                settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+                    ProcessImageSettings settings = new()
+                    {
+                        Width         = (int)toWidth,
+                        Height        = (int)toHeight,
+                        HybridMode    = HybridScaleMode.Off,
+                        Interpolation = InterpolationSettings.CubicSmoother,
+                        Anchor        = CropAnchor.Bottom | CropAnchor.Center
+                    };
+                    settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
-                var imageFileInfo = ImageFileInfo.Load(input!);
-                var frame = imageFileInfo.Frames[0];
-                input.Position = 0;
+                    ImageFileInfo           imageFileInfo = ImageFileInfo.Load(input!);
+                    ImageFileInfo.FrameInfo frame         = imageFileInfo.Frames[0];
+                    input.Position = 0;
 
-                bool isUseWaifu2X = IsWaifu2XEnabled && (frame.Width < toWidth || frame.Height < toHeight);
-                using var pipeline = MagicImageProcessor.BuildPipeline(input, isUseWaifu2X ? ProcessImageSettings.Default : settings);
+                    bool isUseWaifu2X = IsWaifu2XEnabled && (frame.Width < toWidth || frame.Height < toHeight);
+                    using ProcessingPipeline pipeline =
+                        MagicImageProcessor
+                           .BuildPipeline(input,
+                                          isUseWaifu2X
+                                              ? ProcessImageSettings.Default
+                                              : settings);
 
-                if (isUseWaifu2X)
-                    pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
+                    if (isUseWaifu2X)
+                        pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
 
-                pipeline.WriteOutput(output);
-            });
+                    pipeline.WriteOutput(output);
+
+                    tcs.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            }
         }
+
+#nullable enable
+        private static volatile ProcessImageSettings? _pngImageSettings;
+
+        public static Task GetConvertedImageAsPng(Stream input,
+                                                  Stream output,
+                                                  double dpiX = 96,
+                                                  double dpiY = 96)
+        {
+            TaskCompletionSource tcs = new();
+            Task.Factory.StartNew(Impl);
+
+            return tcs.Task;
+
+            void Impl()
+            {
+                try
+                {
+                    if (_pngImageSettings == null)
+                    {
+                        ProcessImageSettings settings = new()
+                        {
+                            DpiX = dpiX,
+                            DpiY = dpiY
+                        };
+                        settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+                        _pngImageSettings = settings;
+                    }
+
+                    using ProcessingPipeline pipeline =
+                        MagicImageProcessor.BuildPipeline(input, _pngImageSettings);
+
+                    pipeline.WriteOutput(output);
+                    tcs.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            }
+        }
+#nullable restore
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
         {
