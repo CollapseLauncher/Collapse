@@ -785,42 +785,44 @@ namespace CollapseLauncher.Helper.Metadata
         // This feature is only available for Genshin.
         public int GetRegServerNameID()
         {
-            if (!IsGenshin ?? true)
+            return (SubChannelID ?? 0, ChannelID ?? 1) switch
             {
-                return 0;
-            }
+                (1, 1)  => 4,                 // CN Main
+                (0, 14) => 5,                 // CN Bilibili
+                (6, 1)  => GetFromRegistry(), // OS Google Play
+                _       => GetFromRegistry()  // Get from registry, defaulted from Registry: OS USA
+            };
 
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            object? objectResult = keys?.GetValue("GENERAL_DATA_h2389025596", null, RegistryValueOptions.None);
-
-            if (objectResult is not byte[] value)
+            int GetFromRegistry()
             {
-                int regionDefault = (SubChannelID ?? 0, ChannelID ?? 1) switch
-                       {
-                           (6, 1)  => 0, // OS Google Play
-                           (1, 1)  => 4, // CN Main
-                           (1, 14) => 5, // CN Bilibili
-                           _ => 0        // OS USA
-                       };
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                if (keys?.GetValue("GENERAL_DATA_h2389025596") is not byte[] value)
+                {
+                    goto ReturnDefault;
+                }
 
-                LogWriteLine($"Server name ID registry on \e[32;1m{Path.GetFileName(ConfigRegistryLocation)}\e[0m doesn't exist. Fallback value will be used: {regionDefault}",
-                             LogType.Warning, true);
-                return regionDefault;
-            }
+                try
+                {
+                    if (value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) is not { } generalData)
+                    {
+                        goto ReturnDefault;
+                    }
 
-            try
-            {
-                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
-            }
-            catch (Exception ex)
-            {
-                SentryHelper.ExceptionHandler(ex);
-                LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
-                             $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.AsSpan().Trim((byte)0))}\r\n{ex}",
-                             LogType.Warning, true);
-                return 0;
+                    return (int)generalData.selectedServerName;
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex);
+                    LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
+                                 $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.AsSpan().Trim((byte)0))}\r\n{ex}",
+                                 LogType.Warning, true);
+                }
+
+                ReturnDefault:
+                return 0; //Default to OS USA
             }
         }
+            
 
         #endregion
 
