@@ -366,5 +366,16 @@ namespace CollapseLauncher.Helper.StreamUtility
                 BufferSize = bufferSize
             });
         }
+
+        public static bool IsPathLocal(this string? path) => path.AsSpan().IsPathLocal();
+
+        public static bool IsPathLocal(this ReadOnlySpan<char> path)
+        {
+            char firstLetter = (char)(path[0] | 0x20);
+
+            return firstLetter is >= 'a' and <= 'z' &&
+                   path[1] == ':' &&
+                   path[2] is '\\' or '/';
+        }
     }
 }

@@ -57,8 +57,8 @@ public sealed partial class HomePage
             return;
         }
 
-        bool isOutFlyoutArea = IsOutsideWpfArea(fe,            e, new Thickness(0, 0,  0, 16));
-        bool isOutButtonArea = IsOutsideWpfArea(WpfPackageBtn, e, new Thickness(0, 16, 0, 0));
+        bool isOutFlyoutArea = IsOutsideButtonFlyoutArea(fe,            e, new Thickness(32));
+        bool isOutButtonArea = IsOutsideButtonFlyoutArea(WpfPackageBtn, e, new Thickness(32));
 
         if ((!isOutFlyoutArea &&
              !isOutButtonArea) ||
@@ -78,8 +78,10 @@ public sealed partial class HomePage
             return;
         }
 
-        bool isOutButtonArea = IsOutsideWpfArea(btn,           e, new Thickness(0, 16, 0, 0));
-        bool isOutFlyoutArea = IsOutsideWpfArea(WpfPackageBtn, e, new Thickness(0, 0,  0, 16));
+        ElementScaleInHoveredPointerExitedInner(btn, yElevation: -3);
+
+        bool isOutButtonArea = IsOutsideButtonFlyoutArea(btn,           e, new Thickness(32));
+        bool isOutFlyoutArea = IsOutsideButtonFlyoutArea(WpfPackageBtn, e, new Thickness(32));
 
         if ((!isOutFlyoutArea &&
             !isOutButtonArea) ||
@@ -91,7 +93,17 @@ public sealed partial class HomePage
         WpfFlyoutBase?.Hide();
     }
 
-    private static bool IsOutsideWpfArea(FrameworkElement element, PointerRoutedEventArgs e, Thickness margin = default)
+    private void WpfPackageBtn_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement uiElement)
+        {
+            return;
+        }
+
+        ElementScaleOutHoveredPointerEnteredInner(uiElement, yElevation: -3);
+    }
+
+    private static bool IsOutsideButtonFlyoutArea(FrameworkElement element, PointerRoutedEventArgs e, Thickness margin = default)
     {
         Point pos = e.GetCurrentPoint(element).Position;
         bool isOutsideButtonArea = pos.Y < -margin.Top ||

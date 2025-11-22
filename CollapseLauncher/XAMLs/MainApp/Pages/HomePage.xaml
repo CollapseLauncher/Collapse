@@ -1,28 +1,31 @@
 ﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
-<Page
-    x:Class="CollapseLauncher.Pages.HomePage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-    xmlns:customcontrol="using:CollapseLauncher.CustomControls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:extension="using:CollapseLauncher.Extension"
-    xmlns:helper="using:Hi3Helper"
-    xmlns:imageex="using:ImageEx"
-    xmlns:local="using:CollapseLauncher"
-    xmlns:localStatic="using:CollapseLauncher.Statics"
-    xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
-    xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pages="using:CollapseLauncher.Pages"
-    xmlns:s="using:CommunityToolkit.WinUI"
-    xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
-    CacheMode="BitmapCache"
-    NavigationCacheMode="Enabled"
-    Unloaded="Page_Unloaded"
-    mc:Ignorable="d">
+<Page x:Class="CollapseLauncher.Pages.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+      xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+      xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
+      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
+      xmlns:imageex="using:ImageEx"
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:local="using:CollapseLauncher"
+      xmlns:localStatic="using:CollapseLauncher.Statics"
+      xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:media="using:CommunityToolkit.WinUI.Media"
+      xmlns:pages="using:CollapseLauncher.Pages"
+      xmlns:s="using:CommunityToolkit.WinUI"
+      CacheMode="BitmapCache"
+      NavigationCacheMode="Enabled"
+      Unloaded="Page_Unloaded"
+      mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow" />
         <s:AttachedDropShadow x:Key="SharedDropShadow"
@@ -30,14 +33,14 @@
                               CastTo="{x:Bind ImageEventImgShadow}"
                               Opacity="0.3"
                               Offset="0,4,0" />
-        <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
-        <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
-        <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter"/>
-        <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
-        <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter"/>
-        <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter"/>
-        <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
-        <pages:FloorFloatingValueConverter x:Key="FloorFloatingValueConverter"/>
+        <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
+        <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+        <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
+        <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
+        <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
+        <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
+        <pages:FloorFloatingValueConverter x:Key="FloorFloatingValueConverter" />
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -427,47 +430,54 @@
                 </Button>
             </InfoBar.ActionButton>
         </InfoBar>
-        <StackPanel x:Name="SocMedPanel"
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Grid.Column="1"
-                    Margin="0,18,-32,0"
-                    Padding="0,4"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Background="{ThemeResource SocMedPanelAcrylicBrush}"
-                    CornerRadius="12,0,0,12"
-                    Orientation="Vertical"
-                    Shadow="{ThemeResource SharedShadow}">
-            <StackPanel.Transitions>
-                <PopupThemeTransition />
-            </StackPanel.Transitions>
-            <ScrollViewer x:Name="SocMedPanelScrollView"
-                          MaxHeight="336"
-                          VerticalScrollBarVisibility="Auto">
-                <ItemsControl IsTabStop="False"
-                              ItemsSource="{x:Bind pages:HomePage.GameSocialMediaData}"
-                              TabFocusNavigation="Once"
-                              XYFocusKeyboardNavigation="Enabled">
-                    <ItemsControl.Transitions>
-                        <PopupThemeTransition />
-                    </ItemsControl.Transitions>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
-                            <Grid Loaded="SetHandCursor">
+        <Grid x:Name="SocMedPanelAndWpfButtonGrid"
+              Grid.Row="0"
+              Grid.RowSpan="2"
+              Grid.Column="1"
+              Margin="0,0,-24,16"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Center"
+              RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ChildrenTransitions>
+                <ContentThemeTransition />
+            </Grid.ChildrenTransitions>
+            <Grid x:Name="SocMedPanel"
+                  Grid.Row="0"
+                  Padding="4,4"
+                  Background="{ThemeResource SocMedPanelAcrylicBrush}"
+                  CornerRadius="16"
+                  Shadow="{ThemeResource SharedShadow}"
+                  Translation="0,0,32">
+                <ScrollViewer x:Name="SocMedPanelScrollView"
+                              CanContentRenderOutsideBounds="True"
+                              VerticalScrollBarVisibility="Hidden">
+                    <ItemsControl IsTabStop="False"
+                                  ItemsSource="{x:Bind pages:HomePage.GameSocialMediaData}"
+                                  TabFocusNavigation="Once"
+                                  UseSystemFocusVisuals="True"
+                                  XYFocusKeyboardNavigation="Enabled">
+                        <ItemsControl.ItemContainerTransitions>
+                            <ContentThemeTransition />
+                        </ItemsControl.ItemContainerTransitions>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
                                         Width="48px"
                                         Height="48px"
-                                        Margin="8,4"
+                                        Margin="4,4"
                                         Padding="8"
+                                        BorderThickness="0"
                                         Click="OpenSocMedLink"
-                                        CornerRadius="8"
+                                        Content="{Binding}"
+                                        CornerRadius="12"
                                         FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
-                                        Loaded="ApplyShadowToImageElement"
-                                        PointerEntered="FadeInSocMedButton"
+                                        Loaded="SetHandCursor"
                                         PointerExited="FadeOutSocMedButton"
-                                        Shadow="{ThemeResource SharedShadow}"
-                                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                        Style="{ThemeResource SocialMediaButtonStyle}"
                                         Tag="{Binding Icon.ClickLink, FallbackValue={x:Null}}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
@@ -476,14 +486,13 @@
                                     </ToolTipService.ToolTip>
                                     <Button.Flyout>
                                         <Flyout x:Name="SocMedFlyout"
-                                                OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}"
+                                                OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelAndWpfButtonGrid}"
                                                 Placement="Left">
                                             <StackPanel x:Name="DummySocMedStackPanel"
                                                         Padding="10,6"
                                                         Background="Transparent"
-                                                        Loaded="OnLoadedSocMedFlyout"
                                                         PointerExited="HideSocMedFlyout"
-                                                        Tag="{Binding ChildrenLinks}">
+                                                        Tag="{Binding ElementName=SocMedFlyout}">
                                                 <!--  START: SocialMediaParentPanel_QR  -->
                                                 <StackPanel Margin="4,8,4,0"
                                                             Visibility="{Binding QrImage.ImageUrl, Converter={StaticResource NullableVisibilityConverter}}">
@@ -496,21 +505,22 @@
                                                             <RowDefinition />
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
-                                                        <imageex:ImageEx EnableLazyLoading="True"
-                                                                         IsCacheEnabled="True"
+                                                        <imageex:ImageEx Grid.Row="0"
                                                                          Width="160"
                                                                          Margin="4"
                                                                          HorizontalAlignment="Center"
+                                                                         EnableLazyLoading="True"
+                                                                         IsCacheEnabled="True"
                                                                          Source="{Binding QrImage.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                                         <TextBlock Grid.Row="1"
                                                                    Margin="0,0,0,8"
                                                                    HorizontalAlignment="Center"
                                                                    FontWeight="Bold"
                                                                    Foreground="Black"
+                                                                   Text="{Binding QrDescription}"
                                                                    TextAlignment="Center"
                                                                    TextWrapping="Wrap"
-                                                                   Visibility="{Binding QrDescription, Converter={StaticResource NullableVisibilityConverter}}"
-                                                                   Text="{Binding QrDescription}"/>
+                                                                   Visibility="{Binding QrDescription, Converter={StaticResource NullableVisibilityConverter}}" />
                                                     </Grid>
                                                 </StackPanel>
 
@@ -539,13 +549,12 @@
                                                                             <ColumnDefinition />
                                                                             <ColumnDefinition Width="Auto" />
                                                                         </Grid.ColumnDefinitions>
-                                                                        <Grid HorizontalAlignment="Left">
-                                                                            <TextBlock HorizontalAlignment="Left"
-                                                                                       VerticalAlignment="Center"
-                                                                                       FontWeight="Medium"
-                                                                                       HorizontalTextAlignment="Left"
-                                                                                       Text="{Binding Title}" />
-                                                                        </Grid>
+                                                                        <TextBlock Grid.Column="0"
+                                                                                   HorizontalAlignment="Left"
+                                                                                   VerticalAlignment="Center"
+                                                                                   FontWeight="Medium"
+                                                                                   HorizontalTextAlignment="Left"
+                                                                                   Text="{Binding Title}" />
                                                                         <Grid Grid.Column="1"
                                                                               Margin="4,0,0,0"
                                                                               HorizontalAlignment="Center"
@@ -583,24 +592,373 @@
                                             </Flyout.FlyoutPresenterStyle>
                                         </Flyout>
                                     </Button.Flyout>
-                                    <Grid>
-                                        <imageex:ImageEx x:Name="Icon"
-                                                         EnableLazyLoading="True"
-                                                         IsCacheEnabled="True"
-                                                         Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
-                                        <imageex:ImageEx x:Name="IconHover"
-                                                         Opacity="0"
-                                                         EnableLazyLoading="True"
-                                                         IsCacheEnabled="True"
-                                                         Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
-                                    </Grid>
+
+                                    <s:Effects.Shadow>
+                                        <media:AttachedCardShadow BlurRadius="0"
+                                                                  CornerRadius="13"
+                                                                  Opacity="0"
+                                                                  Offset="0, 0, 0" />
+                                    </s:Effects.Shadow>
+
+                                    <animations:Explicit.Animations>
+                                        <animations:AnimationSet x:Name="SocMedIconPointerEntered">
+                                            <animations:OffsetDropShadowAnimation To="0, 2, 0"
+                                                                                  Duration="0:0:.25" />
+                                            <animations:OpacityDropShadowAnimation To=".5"
+                                                                                   Duration="0:0:.25" />
+                                            <animations:BlurRadiusDropShadowAnimation To="10"
+                                                                                      Duration="0:0:.25" />
+                                        </animations:AnimationSet>
+                                        <animations:AnimationSet x:Name="SocMedIconPointerExited">
+                                            <animations:OffsetDropShadowAnimation To="0, 0, 0"
+                                                                                  Duration="0:0:.25" />
+                                            <animations:OpacityDropShadowAnimation To="0"
+                                                                                   Duration="0:0:.25" />
+                                            <animations:BlurRadiusDropShadowAnimation To="0"
+                                                                                      Duration="0:0:.25" />
+                                        </animations:AnimationSet>
+                                    </animations:Explicit.Animations>
+
+                                    <interactivity:Interaction.Behaviors>
+                                        <interactivity:EventTriggerBehavior EventName="PointerExited">
+                                            <behaviors:StartAnimationAction Animation="{Binding ElementName=SocMedIconPointerExited}" />
+                                        </interactivity:EventTriggerBehavior>
+                                        <interactivity:EventTriggerBehavior EventName="PointerEntered">
+                                            <behaviors:StartAnimationAction Animation="{Binding ElementName=SocMedIconPointerEntered}" />
+                                        </interactivity:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
                                 </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+            <Grid x:Name="WpfPackageParentGrid"
+                  Grid.Row="1"
+                  Width="48"
+                  DataContext="{x:Bind WpfContext}"
+                  Visibility="{Binding IsWpfPackageEnabled, Converter={StaticResource BooleanVisibilityConverter}}">
+                <Button x:Name="WpfPackageBtn"
+                        MinWidth="48"
+                        MinHeight="48"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        BorderThickness="0"
+                        Click="WpfPackageBtn_OnClick"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
+                        FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
+                        Loaded="WpfPackageBtn_OnLoaded"
+                        PointerEntered="WpfPackageBtn_OnPointerEntered"
+                        PointerExited="WpfPackageBtn_OnPointerExited"
+                        Shadow="{ThemeResource SharedShadow}"
+                        Translation="0,0,16">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Name="WpfPackageBtnToolTip"
+                                 Opened="WpfPackageBtnToolTip_OnOpened"
+                                 Tag="{x:Bind WpfPackageBtn}"
+                                 Visibility="Collapsed" />
+                    </ToolTipService.ToolTip>
+                    <Button.Resources>
+                        <Flyout x:Name="WpfPackageBtnFlyout"
+                                OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelAndWpfButtonGrid}"
+                                Placement="LeftEdgeAlignedBottom">
+                            <Grid x:Name="WpfPackageBtnFlyoutGrid"
+                                  MaxWidth="300"
+                                  Margin="-16"
+                                  Padding="16"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Background="Transparent"
+                                  PointerExited="WpfPackageBtnFlyoutGrid_OnPointerExited">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <imageex:ImageEx MaxWidth="72"
+                                                     EnableLazyLoading="True"
+                                                     IsCacheEnabled="True"
+                                                     Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                    <TextBlock MaxWidth="110"
+                                               Margin="0,8,0,0"
+                                               FontSize="14"
+                                               Text="{Binding WpfPackageNameLocalized}"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock MaxWidth="110"
+                                               Margin="0,0,0,0"
+                                               extension:TextBlockExtension.PreserveSpace="False"
+                                               extension:TextBlockExtension.RemoveEmptyRuns="True"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Opacity=".5"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap">
+                                        <Run Text="v" />
+                                        <Run Text="{Binding CurrentInstalledVersion, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                                <MenuFlyoutSeparator Grid.Row="1"
+                                                     Width="64"
+                                                     Margin="8,12" />
+                                <Grid Grid.Row="2"
+                                      Margin="0,0,0,8"
+                                      Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                    <Button x:Name="WpfPackageStartUpdateBtn"
+                                            HorizontalAlignment="Center"
+                                            Background="{ThemeResource SystemFillColorCautionBrush}"
+                                            Click="WpfPackageStartUpdateBtn_OnClick"
+                                            CornerRadius="12"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                            Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                        <Grid Margin="4,0"
+                                              ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Grid.Column="1"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Center"
+                                                      FontSize="14"
+                                                      Glyph="&#xF0C5;" />
+                                            <TextBlock Grid.Column="0"
+                                                       Margin="0,-1,0,0"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateBtn, Mode=OneWay}" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                                <Grid Grid.Row="2"
+                                      MinWidth="240"
+                                      Margin="0,0,0,8"
+                                      Padding="8"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Bottom"
+                                      Background="{ThemeResource GameSettingsBtnBrush}"
+                                      CornerRadius="4"
+                                      RowSpacing="8"
+                                      Visibility="{Binding ChangesInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="0"
+                                               Margin="2,0"
+                                               extension:TextBlockExtension.PreserveSpace="False"
+                                               extension:TextBlockExtension.RemoveEmptyRuns="True"
+                                               FontSize="12">
+                                        <Run Text="{Binding Progress.ProgressAllSizeCurrent, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}" />
+                                        <Run FontSize="9"
+                                             Text=" / " />
+                                        <Run FontSize="9"
+                                             FontWeight="Bold"
+                                             Text="{Binding Progress.ProgressAllSizeTotal, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}" />
+                                        <Run FontSize="9"
+                                             FontWeight="Bold"
+                                             Text=" (" />
+                                        <Run FontSize="9"
+                                             FontWeight="Bold"
+                                             Text="{Binding Progress.ProgressAllSpeed, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}" />
+                                        <Run FontSize="9"
+                                             FontWeight="Bold"
+                                             Text="/s" />
+                                        <Run FontSize="9"
+                                             FontWeight="Bold"
+                                             Text=")" />
+                                    </TextBlock>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="1"
+                                               Margin="2,0"
+                                               HorizontalAlignment="Right"
+                                               extension:TextBlockExtension.PreserveSpace="False"
+                                               extension:TextBlockExtension.RemoveEmptyRuns="True"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               HorizontalTextAlignment="Right"
+                                               TextAlignment="Right">
+                                        <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                                        <Run Text="%" />
+                                    </TextBlock>
+                                    <ProgressBar Grid.Row="1"
+                                                 Grid.Column="0"
+                                                 Grid.ColumnSpan="2"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalAlignment="Bottom"
+                                                 IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                                 Maximum="100"
+                                                 Minimum="0"
+                                                 Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                                    <Button x:Name="WpfPackageCancelUpdateBtn"
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Stretch"
+                                            Click="WpfPackageCancelUpdateBtn_OnClick"
+                                            CornerRadius="4"
+                                            Style="{ThemeResource AccentButtonStyle}">
+                                        <Grid Margin="4,0"
+                                              ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Grid.Column="1"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Center"
+                                                      FontSize="14"
+                                                      Glyph="&#xE711;" />
+                                            <TextBlock Grid.Column="0"
+                                                       Margin="0,-1,0,0"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.CancelUpdateBtn, Mode=OneWay}" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                                <ItemsControl Grid.Row="3"
+                                              Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                    <Button x:Name="WpfPackageReinstallBtn"
+                                            Margin="0,-2,0,4"
+                                            Padding="4,4"
+                                            HorizontalAlignment="Center"
+                                            Background="{ThemeResource SystemFillColorCautionBrush}"
+                                            Click="WpfPackageReinstallBtn_OnClick"
+                                            CornerRadius="12"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                            Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                        <Grid Margin="4,0"
+                                              ColumnSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Grid.Column="1"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Center"
+                                                      FontSize="12"
+                                                      Glyph="&#xEC7A;" />
+                                            <TextBlock Grid.Column="0"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="10"
+                                                       FontWeight="SemiBold"
+                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.ReinstallToolBtn, Mode=OneWay}" />
+                                        </Grid>
+                                    </Button>
+                                </ItemsControl>
+                                <Grid x:Name="WpfPackageAutoUpdateGrid"
+                                      Grid.Row="4"
+                                      Margin="0,0,0,-4"
+                                      HorizontalAlignment="Center"
+                                      ColumnSpacing="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <ItemsControl Grid.Column="0"
+                                                  Width="22"
+                                                  Height="22">
+                                        <CheckBox x:Name="WpfPackageAutoCheckBox"
+                                                  Padding="0"
+                                                  IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
+                                            <CheckBox.RenderTransform>
+                                                <CompositeTransform ScaleX=".75"
+                                                                    ScaleY=".75" />
+                                            </CheckBox.RenderTransform>
+                                        </CheckBox>
+                                    </ItemsControl>
+                                    <TextBlock Grid.Column="1"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               PointerPressed="WpfPackageCheckBoxText_OnPressed"
+                                               Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateAutomatically, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                                </Grid>
                             </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </StackPanel>
+                        </Flyout>
+                    </Button.Resources>
+                    <Grid MinWidth="48"
+                          MinHeight="48"
+                          Margin="-1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{ThemeResource GameSettingsBtnBrush}"
+                          DataContext="{x:Bind WpfContext}">
+                        <imageex:ImageEx Grid.Column="0"
+                                         EnableLazyLoading="True"
+                                         IsCacheEnabled="True"
+                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                        <Grid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
+                            <Grid.OpacityTransition>
+                                <ScalarTransition Duration="0:0:.5" />
+                            </Grid.OpacityTransition>
+                            <Border Background="{ThemeResource SmokeFillColorCollapseBrush}" />
+                            <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"
+                                    Opacity=".5" />
+                            <ProgressRing Width="50"
+                                          Height="50"
+                                          MinWidth="48"
+                                          MinHeight="48"
+                                          Foreground="{ThemeResource AccentColorBrush}"
+                                          IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                          Maximum="100"
+                                          Minimum="0"
+                                          Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                            <TextBlock MinWidth="48"
+                                       MinHeight="8"
+                                       Margin="0,0,0,2"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       extension:TextBlockExtension.PreserveSpace="False"
+                                       extension:TextBlockExtension.RemoveEmptyRuns="True"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       TextAlignment="Center">
+                                <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource FloorFloatingValueConverter}, FallbackValue='-'}" />
+                                <Run Text="%" />
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                </Button>
+                <Grid x:Name="WpfPackageStatusGrid"
+                      Margin="0,-2,-2,-12"
+                      Padding="6,4"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Top"
+                      Background="Orange"
+                      CornerRadius="10"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <AnimatedVisualPlayer Grid.Column="0"
+                                          Height="14"
+                                          Margin="-5,-3"
+                                          HorizontalAlignment="Center">
+                        <lottie:DownloadIcon />
+                    </AnimatedVisualPlayer>
+                </Grid>
+            </Grid>
+        </Grid>
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
@@ -610,9 +968,9 @@
               CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
-              Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
               Shadow="{ThemeResource SharedShadow}"
-              Translation="0,0,32">
+              Translation="0,0,32"
+              Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
             <Grid.RenderTransform>
                 <CompositeTransform />
             </Grid.RenderTransform>
@@ -636,10 +994,10 @@
                               Translation="0,0,12">
                         <FlipView.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
-                                <imageex:ImageEx EnableLazyLoading="True"
+                                <imageex:ImageEx VerticalAlignment="Center"
+                                                 EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
                                                  Loaded="SetHandCursor"
-                                                 VerticalAlignment="Center"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
                                                  Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
@@ -1435,315 +1793,6 @@
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="8">
-            <Grid DataContext="{x:Bind WpfContext}"
-                  Visibility="{Binding IsWpfPackageEnabled, Converter={StaticResource BooleanVisibilityConverter}}">
-                <Button x:Name="WpfPackageBtn"
-                        Padding="0"
-                        Click="WpfPackageBtn_OnClick"
-                        FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
-                        Shadow="{ThemeResource SharedShadow}"
-                        PointerExited="WpfPackageBtn_OnPointerExited"
-                        Loaded="WpfPackageBtn_OnLoaded"
-                        HorizontalAlignment="Right">
-                    <ToolTipService.ToolTip>
-                        <ToolTip x:Name="WpfPackageBtnToolTip"
-                                 Opened="WpfPackageBtnToolTip_OnOpened"
-                                 Tag="{x:Bind WpfPackageBtn}"
-                                 Visibility="Collapsed" />
-                    </ToolTipService.ToolTip>
-                    <Button.Resources>
-                        <Flyout x:Name="WpfPackageBtnFlyout"
-                                Placement="Top">
-                            <Grid x:Name="WpfPackageBtnFlyoutGrid"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"
-                                  Margin="-16"
-                                  Padding="16"
-                                  PointerExited="WpfPackageBtnFlyoutGrid_OnPointerExited"
-                                  Background="Transparent"
-                                  MaxWidth="300">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <StackPanel Grid.Row="0">
-                                    <imageex:ImageEx Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}"
-                                                     MaxWidth="72"
-                                                     EnableLazyLoading="True"
-                                                     IsCacheEnabled="True"/>
-                                    <TextBlock Text="{Binding WpfPackageNameLocalized}"
-                                               TextWrapping="Wrap"
-                                               TextAlignment="Center"
-                                               FontSize="14"
-                                               MaxWidth="110"
-                                               Margin="0,8,0,0"/>
-                                    <TextBlock extension:TextBlockExtension.PreserveSpace="False"
-                                               extension:TextBlockExtension.RemoveEmptyRuns="True"
-                                               TextWrapping="Wrap"
-                                               TextAlignment="Center"
-                                               FontSize="12"
-                                               FontWeight="Bold"
-                                               MaxWidth="110"
-                                               Opacity=".5"
-                                               Margin="0,0,0,0">
-                                        <Run Text="v"/>
-                                        <Run Text="{Binding CurrentInstalledVersion, Mode=OneWay}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                                <MenuFlyoutSeparator Grid.Row="1"
-                                                     Width="64"
-                                                     Margin="8, 12"/>
-                                <Grid Grid.Row="2"
-                                      Margin="0, 0, 0, 8"
-                                      Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                                    <Button x:Name="WpfPackageStartUpdateBtn"
-                                            Click="WpfPackageStartUpdateBtn_OnClick"
-                                            HorizontalAlignment="Center"
-                                            Background="{ThemeResource SystemFillColorCautionBrush}"
-                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                            Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
-                                            CornerRadius="12">
-                                        <Grid ColumnSpacing="8"
-                                              Margin="4,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <FontIcon Grid.Column="1"
-                                                      HorizontalAlignment="Stretch"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="14"
-                                                      Glyph="&#xF0C5;" />
-                                            <TextBlock Grid.Column="0"
-                                                       HorizontalAlignment="Stretch"
-                                                       VerticalAlignment="Center"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="12"
-                                                       Margin="0,-1,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateBtn, Mode=OneWay}" />
-                                        </Grid>
-                                    </Button>
-                                </Grid>
-                                <Grid Grid.Row="2"
-                                      MinWidth="240"
-                                      Margin="0,0,0,8"
-                                      Padding="8"
-                                      CornerRadius="4"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Bottom"
-                                      RowSpacing="8"
-                                      Background="{ThemeResource GameSettingsBtnBrush}"
-                                      Visibility="{Binding ChangesInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0"
-                                               Grid.Row="0"
-                                               FontSize="12"
-                                               Margin="2,0"
-                                               extension:TextBlockExtension.PreserveSpace="False"
-                                               extension:TextBlockExtension.RemoveEmptyRuns="True">
-                                        <Run Text="{Binding Progress.ProgressAllSizeCurrent, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}"/>
-                                        <Run Text=" / "
-                                             FontSize="9"/>
-                                        <Run Text="{Binding Progress.ProgressAllSizeTotal, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}"
-                                             FontSize="9"
-                                             FontWeight="Bold"/>
-                                        <Run Text=" ("
-                                             FontSize="9"
-                                             FontWeight="Bold"/>
-                                        <Run Text="{Binding Progress.ProgressAllSpeed, Converter={StaticResource FileSizeToStringLiteralConverter}, Mode=OneWay}"
-                                             FontSize="9"
-                                             FontWeight="Bold"/>
-                                        <Run Text="/s"
-                                             FontSize="9"
-                                             FontWeight="Bold"/>
-                                        <Run Text=")"
-                                             FontSize="9"
-                                             FontWeight="Bold"/>
-                                    </TextBlock>
-                                    <TextBlock Grid.Row="0"
-                                               Grid.Column="1"
-                                               FontWeight="Bold"
-                                               FontSize="12"
-                                               Margin="2,0"
-                                               TextAlignment="Right"
-                                               HorizontalAlignment="Right"
-                                               HorizontalTextAlignment="Right"
-                                               extension:TextBlockExtension.PreserveSpace="False"
-                                               extension:TextBlockExtension.RemoveEmptyRuns="True">
-                                        <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay}"/>
-                                        <Run Text="%"/>
-                                    </TextBlock>
-                                    <ProgressBar Grid.Row="1"
-                                                 Grid.Column="0"
-                                                 Grid.ColumnSpan="2"
-                                                 HorizontalAlignment="Stretch"
-                                                 VerticalAlignment="Bottom"
-                                                 Minimum="0"
-                                                 Maximum="100"
-                                                 Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}"
-                                                 IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"/>
-                                    <Button x:Name="WpfPackageCancelUpdateBtn"
-                                            Grid.Column="0"
-                                            Grid.ColumnSpan="2"
-                                            Grid.Row="2"
-                                            Click="WpfPackageCancelUpdateBtn_OnClick"
-                                            HorizontalAlignment="Stretch"
-                                            Style="{ThemeResource AccentButtonStyle}"
-                                            CornerRadius="4">
-                                        <Grid ColumnSpacing="8"
-                                              Margin="4,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <FontIcon Grid.Column="1"
-                                                      HorizontalAlignment="Stretch"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="14"
-                                                      Glyph="&#xE711;" />
-                                            <TextBlock Grid.Column="0"
-                                                       HorizontalAlignment="Stretch"
-                                                       VerticalAlignment="Center"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="12"
-                                                       Margin="0,-1,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.CancelUpdateBtn, Mode=OneWay}" />
-                                        </Grid>
-                                    </Button>
-                                </Grid>
-                                <ItemsControl Grid.Row="3"
-                                              Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
-                                    <Button Padding="4, 4"
-                                            Margin="0,-2,0,4"
-                                            x:Name="WpfPackageReinstallBtn"
-                                            Click="WpfPackageReinstallBtn_OnClick"
-                                            HorizontalAlignment="Center"
-                                            Background="{ThemeResource SystemFillColorCautionBrush}"
-                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                            Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
-                                            CornerRadius="12">
-                                        <Grid ColumnSpacing="4"
-                                              Margin="4,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <FontIcon Grid.Column="1"
-                                                      HorizontalAlignment="Stretch"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="12"
-                                                      Glyph="&#xEC7A;" />
-                                            <TextBlock Grid.Column="0"
-                                                       HorizontalAlignment="Stretch"
-                                                       VerticalAlignment="Center"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="10"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.ReinstallToolBtn, Mode=OneWay}" />
-                                        </Grid>
-                                    </Button>
-                                </ItemsControl>
-                                <Grid x:Name="WpfPackageAutoUpdateGrid"
-                                      Grid.Row="4"
-                                      ColumnSpacing="0"
-                                      HorizontalAlignment="Center"
-                                      Margin="0,0,0,-4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <ItemsControl Grid.Column="0"
-                                                  Width="22"
-                                                  Height="22">
-                                        <CheckBox x:Name="WpfPackageAutoCheckBox"
-                                                  Padding="0"
-                                                  IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
-                                            <CheckBox.RenderTransform>
-                                                <CompositeTransform ScaleY=".75"
-                                                                    ScaleX=".75"/>
-                                            </CheckBox.RenderTransform>
-                                        </CheckBox>
-                                    </ItemsControl>
-                                    <TextBlock Grid.Column="1"
-                                               PointerPressed="WpfPackageCheckBoxText_OnPressed"
-                                               Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateAutomatically, Mode=OneWay}"
-                                               TextWrapping="Wrap"
-                                               FontSize="12"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               Tag=""/>
-                                </Grid>
-                            </Grid>
-                        </Flyout>
-                    </Button.Resources>
-                    <Grid DataContext="{x:Bind WpfContext}"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Margin="-1"
-                          Background="{ThemeResource GameSettingsBtnBrush}">
-                        <imageex:ImageEx Grid.Column="0"
-                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}"
-                                         EnableLazyLoading="True"
-                                         IsCacheEnabled="True"/>
-                        <Grid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
-                            <Grid.OpacityTransition>
-                                <ScalarTransition Duration="0:0:.5"/>
-                            </Grid.OpacityTransition>
-                            <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"/>
-                            <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"
-                                    Opacity=".5"/>
-                            <ProgressRing Foreground="{ThemeResource AccentColorBrush}"
-                                          Width="41"
-                                          Height="41"
-                                          Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}"
-                                          IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
-                                          Minimum="0"
-                                          Maximum="100"/>
-                            <TextBlock FontSize="11"
-                                       FontWeight="Bold"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Margin="0,0,0,2"
-                                       extension:TextBlockExtension.PreserveSpace="False"
-                                       extension:TextBlockExtension.RemoveEmptyRuns="True">
-                                <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource FloorFloatingValueConverter}}"/>
-                                <Run Text="%"/>
-                            </TextBlock>
-                        </Grid>
-                    </Grid>
-                </Button>
-                <Grid x:Name="WpfPackageStatusGrid"
-                      Background="Orange"
-                      VerticalAlignment="Top"
-                      HorizontalAlignment="Right"
-                      Margin="0,-2,-2,-12"
-                      Padding="6, 4"
-                      Shadow="{ThemeResource SharedShadow}"
-                      CornerRadius="10"
-                      Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <AnimatedVisualPlayer Grid.Column="0"
-                                          Height="14"
-                                          Margin="-5, -3"
-                                          HorizontalAlignment="Center">
-                        <lottie:DownloadIcon />
-                    </AnimatedVisualPlayer>
-                </Grid>
-            </Grid>
             <Button x:Name="CommunityToolsBtn"
                     Padding="0"
                     HorizontalAlignment="Stretch"

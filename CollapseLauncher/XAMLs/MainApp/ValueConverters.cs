@@ -1,4 +1,5 @@
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -437,8 +438,18 @@ namespace CollapseLauncher.Pages
 
     public partial class FloorFloatingValueConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language) =>
-            Math.Floor((double)value);
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valEvaluated = Math.Floor((double)value);
+            if (!double.IsFinite(valEvaluated) ||
+                double.IsNaN(valEvaluated) ||
+                double.IsInfinity(valEvaluated))
+            {
+                return null;
+            }
+
+            return valEvaluated;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
@@ -585,22 +596,91 @@ namespace CollapseLauncher.Pages
                 return stringUrl;
             }
 
-            char firstLetter = (char)(stringUrl[0] | 0x20);
-            if (firstLetter is >= 'a' and <= 'z' &&
-                stringUrl[1] == ':' &&
-                stringUrl[2] is '\\' or '/')
+            ReadOnlySpan<char> stringUrlSpan = stringUrl;
+
+            // If the image is .svg formatted, redirect to svg load routine.
+            if (stringUrlSpan.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            {
+                return ConvertToSvgImageSource(stringUrl);
+            }
+
+            if (stringUrl.IsPathLocal())
             {
                 return stringUrl;
             }
 
             // Create BitmapImage instance, then lazy-load the resource in the background.
             BitmapImage image = new();
-            _ = LoadLazy(image, stringUrl);
+            _ = LoadLazyBitmap(image, stringUrl);
 
             return image;
         }
 
-        private static async Task LoadLazy(BitmapImage image, string url)
+        private static SvgImageSource ConvertToSvgImageSource(string url)
+        {
+            SvgImageSource image = new();
+            _ = LoadLazySvg(image, url);
+
+            return image;
+        }
+
+        private static async Task LoadLazySvg(SvgImageSource image, string url)
+        {
+            Stream? resultStream;
+
+            // ReSharper disable once AsyncVoidMethod
+            async void ImageOnImageOpened(SvgImageSource sender, SvgImageSourceOpenedEventArgs e)
+            {
+                if (resultStream != null)
+                {
+                    await resultStream.DisposeAsync();
+#if DEBUG
+                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
+#endif
+                }
+
+                sender.Opened -= ImageOnImageOpened;
+            }
+
+            try
+            {
+                if (url.IsPathLocal() &&
+                    File.Exists(url))
+                {
+                    resultStream = File.Open(url,
+                                             FileMode.Open,
+                                             FileAccess.Read,
+                                             FileShare.ReadWrite);
+                    IRandomAccessStream localStream = resultStream.AsRandomAccessStream();
+                    image.Opened += ImageOnImageOpened;
+
+                    await image.SetSourceAsync(localStream);
+                    return;
+                }
+
+                CDNCacheResult result =
+                    await CacheManager
+                       .TryGetCachedStreamFrom(Client,
+                                               url,
+                                               null,
+                                               CancellationToken.None);
+
+                resultStream = result.Stream;
+                IRandomAccessStream stream = resultStream.AsRandomAccessStream();
+                image.Opened += ImageOnImageOpened;
+
+                await image.SetSourceAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
+                                               LogType.Error,
+                                               true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+
+        private static async Task LoadLazyBitmap(BitmapImage image, string url)
         {
             Stream? resultStream;
 

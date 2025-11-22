@@ -185,7 +185,7 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                SocMedPanel.Translation        += Shadow48;
+                WpfPackageParentGrid.EnableImplicitAnimation();
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation  += Shadow32;
 
@@ -347,51 +347,6 @@ namespace CollapseLauncher.Pages
 
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
             if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
-        }
-
-        private void ApplyShadowToImageElement(object sender, RoutedEventArgs e)
-        {
-            if (sender is not ButtonBase { Content: Panel panel })
-            {
-                return;
-            }
-
-            bool isStart = true;
-            foreach (Image imageElement in panel.Children.OfType<Image>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
-
-            foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
         }
         #endregion
 
@@ -581,48 +536,6 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region SocMed Buttons
-        private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
-        {
-            Button btn = (Button)sender;
-            btn.Translation = Shadow16;
-
-            Grid             iconGrid   = btn.FindDescendant<Grid>();
-            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
-            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
-
-            ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
-
-            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
-            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
-            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-        }
-
-        private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
-        {
-            Button btn = (Button)sender;
-            btn.Translation = new Vector3(0);
-
-            FlyoutBase flyout = btn.Flyout;
-            Point pos = e.GetCurrentPoint(btn).Position;
-            if (pos.Y <= 0 ||
-                pos.Y >= btn.Height ||
-                pos.X <= -8 ||
-                pos.X >= btn.Width)
-            {
-                flyout?.Hide();
-            }
-
-            Grid             iconGrid   = btn.FindDescendant<Grid>();
-            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
-            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
-
-            ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
-
-            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
-            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
-        }
-
         private async void HideSocialMediaPanel(bool hide)
         {
             if (!hide)
@@ -700,38 +613,57 @@ namespace CollapseLauncher.Pages
 
             FlyoutBase.ShowAttachedFlyout(button);
         }
-
-        private void HideSocMedFlyout(object sender, RoutedEventArgs e)
+        
+        private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
         {
-            Grid dummyGrid = (sender as Panel ?? throw new InvalidOperationException()).FindChild<Grid>();
+            Button btn = (Button)sender;
+
+            Flyout flyout = btn.Flyout as Flyout;
+            if (btn.Flyout is not Flyout { Content: Panel parentPanel })
+            {
+                return;
+            }
+
+            var isOutsideFlyout = IsOutsideButtonFlyoutArea(parentPanel, e, new Thickness(32));
+            var isOutsideButton = IsOutsideButtonFlyoutArea(btn,         e, new Thickness(32));
+
+            if ((!isOutsideFlyout &&
+                 !isOutsideButton) ||
+                btn.IsPointerOver)
+            {
+                return;
+            }
+
+            flyout?.Hide();
+        }
+
+        private void HideSocMedFlyout(object sender, PointerRoutedEventArgs e)
+        {
+            Panel dummyGrid = sender as Panel ?? throw new InvalidOperationException();
             if (dummyGrid == null)
             {
                 return;
             }
 
             Flyout flyout = dummyGrid.Tag as Flyout;
-            flyout?.Hide();
-        }
+            Button button = flyout?.Target as Button;
 
-        private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
-        {
-            // Prevent the flyout showing when there is no content visible
-            if (sender is not StackPanel stackPanel)
+            if (flyout == null || button == null)
             {
                 return;
             }
 
-            bool visible = false;
-            foreach (UIElement child in stackPanel.Children)
+            bool isOutsideFlyout = IsOutsideButtonFlyoutArea(dummyGrid, e, new Thickness(32));
+            bool isOutsideButton = IsOutsideButtonFlyoutArea(button,    e, new Thickness(32));
+
+            if ((!isOutsideFlyout &&
+                !isOutsideButton) ||
+                button.IsPointerOver)
             {
-                if (child.Visibility == Visibility.Visible)
-                    visible = true;
+                return;
             }
 
-            if (!visible)
-            {
-                HideSocMedFlyout(sender, e);
-            }
+            flyout.Hide();
         }
         #endregion
 
@@ -1252,8 +1184,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ElementScaleOutHoveredPointerEnteredInner(FrameworkElement element,
-            float xElevation = 0, float yElevation = -4)
+        private async void ElementScaleOutHoveredPointerEnteredInner(
+            FrameworkElement element,
+            float            xElevation = 0,
+            float            yElevation = -4)
         {
             Compositor compositor = this.GetElementCompositor();
 
@@ -1281,8 +1215,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ElementScaleInHoveredPointerExitedInner(FrameworkElement element,
-            float xElevation = 0, float yElevation = -4)
+        private async void ElementScaleInHoveredPointerExitedInner(
+            FrameworkElement element,
+            float            xElevation = 0,
+            float            yElevation = -4)
         {
             Compositor compositor = this.GetElementCompositor();
 
@@ -1295,11 +1231,10 @@ namespace CollapseLauncher.Pages
                                               element.Translation.Z);
             // ReSharper restore ConstantConditionalAccessQualifier
             // ReSharper restore ConstantNullCoalescingCondition
-            await element.StartAnimation(
-                TimeSpan.FromSeconds(0.25),
-                compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
-                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
-                );
+            await element.StartAnimation(TimeSpan.FromSeconds(0.25),
+                                         compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
+                                         compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
+                                        );
         }
         
         #endregion

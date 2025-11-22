@@ -95,9 +95,9 @@
                         Margin="32,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
-                <!--<StackPanel.Transitions>
-                    <EntranceThemeTransition/>
-                </StackPanel.Transitions>-->
+                <StackPanel.Transitions>
+                    <EntranceThemeTransition />
+                </StackPanel.Transitions>
                 <TextBlock Margin="0,0,0,32"
                            Foreground="{ThemeResource SystemAccentColor}"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
