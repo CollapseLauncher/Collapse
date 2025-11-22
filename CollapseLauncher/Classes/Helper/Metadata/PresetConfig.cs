@@ -789,7 +789,7 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 (1, 1)  => 4,                 // CN Main
                 (0, 14) => 5,                 // CN Bilibili
-                (6, 1)  => GetFromRegistry(), // OS Google Play
+                (6, 1)  => GetFromRegistry(), // Get from registry, defaulted from Registry: OS USA
                 _       => GetFromRegistry()  // Get from registry, defaulted from Registry: OS USA
             };
 
