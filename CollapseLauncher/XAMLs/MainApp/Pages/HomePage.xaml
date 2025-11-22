@@ -466,8 +466,10 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
-                                        Width="48px"
-                                        Height="48px"
+                                        MaxWidth="48"
+                                        MaxHeight="48"
+                                        MinWidth="48"
+                                        MinHeight="48"
                                         Margin="4,4"
                                         Padding="8"
                                         BorderThickness="0"
