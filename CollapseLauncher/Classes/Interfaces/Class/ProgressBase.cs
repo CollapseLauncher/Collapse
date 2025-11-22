@@ -6,8 +6,8 @@ using CollapseLauncher.InstallManager;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
@@ -31,6 +31,7 @@ using System.IO.Hashing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
@@ -1040,53 +1041,61 @@ internal abstract class ProgressBase : GamePropertyBase
         Status.ActivityStatus = Locale.Lang._GameRepairPage.Status2;
         UpdateStatus();
 
-        // Get the URL and get the remote stream of the zip file
-        // Also buffer the stream to memory
-        string url = sdkData.SdkPackageDetail?.Url ?? throw new NullReferenceException();
+        string gamePath = GamePath;
+        string url      = sdkData.SdkPackageDetail?.Url ?? throw new NullReferenceException();
 
-        await using Stream httpStream = (await FallbackCDNUtil.GetGlobalHttpClient(false)
-                                                              .TryGetCachedStreamFrom(url, token: token)).Stream;
-        await using MemoryStream bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
-        await using ZipArchive   zip            = new(bufferedStream, ZipArchiveMode.Read, true);
+        // Create ZipArchiveReader and get the remote stream of the zip file
+        ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(url, token);
+        HttpClient       client = FallbackCDNUtil.GetGlobalHttpClient(true);
 
-        // Iterate the Zip Entry
-        foreach (ZipArchiveEntry entry in zip.Entries)
+        await Parallel.ForEachAsync(reader.Entries.Where(x => !x.IsDirectory),
+                                    token,
+                                    Impl);
+
+        return;
+
+        async ValueTask Impl(SimpleZipArchiveEntry entry, CancellationToken innerToken)
         {
-            // Get the filename of the entry without ext.
-            string fileName = Path.GetFileNameWithoutExtension(entry.FullName);
-
             // If the entry is the "sdk_pkg_version", then override the info to sdk_pkg_version
-            string sdkDllPath;
-            switch (fileName)
-            {
-                case "PCGameSDK":
-                    // Set the SDK DLL path
-                    sdkDllPath = Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
-                    break;
-                case "sdk_pkg_version":
-                    // Set the SDK DLL path to be used for sdk_pkg_version
-                    sdkDllPath = Path.Combine(GamePath, "sdk_pkg_version");
-                    break;
-                default:
-                    continue;
-            }
+            string sdkDllPath = Path.Combine(gamePath, entry.Filename)
+                                    .NormalizePath();
 
             // Assign FileInfo to sdkDllPath
-            FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
+            FileInfo sdkDllFile = new FileInfo(sdkDllPath)
+                                 .EnsureCreationOfDirectory()
+                                 .StripAlternateDataStream()
+                                 .EnsureNoReadOnly();
 
             // Do check if sdkDllFile is not null
             // Try to create the file if not exist or open an existing one
-            await using Stream sdkDllStream = sdkDllFile.Open(!sdkDllFile.Exists || entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate);
+            await using Stream sdkDllStream = sdkDllFile.Open(FileMode.OpenOrCreate);
             // Get the hash from the stream
-            byte[] hashByte = await HashUtility<Crc32>.ThreadSafe.GetHashFromStreamAsync(sdkDllStream, token: token);
+            byte[] hashByte = await HashUtility<Crc32>.ThreadSafe.GetHashFromStreamAsync(sdkDllStream, token: innerToken);
             uint   hashInt  = BitConverter.ToUInt32(hashByte);
 
             // If the hash is the same, then skip
-            if (hashInt == entry.Crc32) continue;
-            await using Stream entryStream = await entry.OpenAsync(token);
+            if (hashInt == entry.Crc32)
+            {
+                return;
+            }
+
+            await using Stream entryStream = await entry.OpenStreamFromFactoryAsync(CreateStreamFromPosUrl, innerToken);
             // Reset the SDK DLL stream pos and write the data
             sdkDllStream.Position = 0;
-            await entryStream.CopyToAsync(sdkDllStream, token);
+            await entryStream.CopyToAsync(sdkDllStream, innerToken);
+        }
+
+        async Task<Stream> CreateStreamFromPosUrl(long? offset, long? length, CancellationToken innerToken)
+        {
+            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+            requestMessage.Headers.Range = new RangeHeaderValue(offset, length);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage,
+                                                                  HttpCompletionOption.ResponseHeadersRead,
+                                                                  innerToken);
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync(innerToken);
         }
     }
 

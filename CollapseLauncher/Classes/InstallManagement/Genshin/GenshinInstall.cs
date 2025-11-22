@@ -1,6 +1,9 @@
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using System;
@@ -58,11 +61,20 @@ namespace CollapseLauncher.InstallManager.Genshin
         private string _gameAudioOldPath =>
             Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows");
 
+        private GenshinRepair Repair { get; set; }
+
         #endregion
 
-        public GenshinInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
-            : base(parentUI, gameVersionManager, gameSettings)
+        public GenshinInstall(
+            UIElement parentUI,
+            IGameVersion gameVersionManager,
+            IGameSettings gameSettings,
+            IRepair gameRepair)
+            : base(parentUI,
+                  gameVersionManager,
+                  gameSettings)
         {
+            Repair = gameRepair as GenshinRepair ?? throw new InvalidOperationException("The type of game repair must be GenshinRepair!");
         }
 
         #region Override Methods - StartPackageInstallationInner
@@ -156,16 +168,74 @@ namespace CollapseLauncher.InstallManager.Genshin
         #region Override Methods - GetUnusedFileInfoList
         protected override async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
-            // Get the result from base method
-            (List<LocalFileInfo>, long) resultBase = await base.GetUnusedFileInfoList(includeZipCheck);
+            string gamePath = GamePath;
+            string gameBiz  = GameVersionManager.GameBiz;
+            string gameId   = GameVersionManager.GameId;
 
-            // Once we get the result, take the "StreamingAssets\\ctable.dat" and "svc_catalog" file out of the list
-            List<LocalFileInfo> unusedFilesFiltered = resultBase
-                                                     .Item1
-                                                     .Where(x => !x.FullPath.EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase) &&
-                                                                             !x.FullPath.EndsWith("svc_catalog", StringComparison.OrdinalIgnoreCase))
-                                                     .ToList();
-            return (unusedFilesFiltered, unusedFilesFiltered.Select(x => x.FileSize).ToArray().Sum());
+            // Preallocate list and start fetch from Repair
+            List<LocalFileInfo> localFileInfos = new(16 << 10);
+            List<PkgVersionProperties> assets = await Repair.ResetAndFetchAssets();
+
+            // Convert
+            localFileInfos.AddRange(assets.Select(ConvertPkgVersion));
+
+            // Add assets from Plugin
+            if (GameVersionManager.LauncherApi?.LauncherGameResourcePlugin is {} pluginApi &&
+                (pluginApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypResourcePluginData pluginData) ?? false) &&
+                pluginData.Plugins.Count > 0)
+            {
+                localFileInfos.AddRange(pluginData
+                                       .Plugins
+                                       .SelectMany(x => x.PluginPackage?.PackageAssetValidationList ?? [])
+                                       .Select(ConvertHypData));
+            }
+
+            // Add assets from SDK
+            if (GameVersionManager.LauncherApi?.LauncherGameResourceSdk is { } sdkApi &&
+                (sdkApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypChannelSdkData sdkData) ?? false) &&
+                sdkData.SdkPackageDetail?.Url is { } sdkZipUrl)
+            {
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(sdkZipUrl);
+                localFileInfos.AddRange(reader
+                                       .Entries
+                                       .Where(x => !x.IsDirectory)
+                                       .Select(ConvertZipEntry));
+            }
+
+            // Add assets from WPF
+            if (GameVersionManager.LauncherApi?.LauncherGameResourceWpf is { } wpfApi &&
+                (wpfApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypWpfPackageData wpfData) ?? false) &&
+                wpfData.PackageInfo?.Url is { } wpfZipUrl)
+            {
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(wpfZipUrl);
+                localFileInfos.AddRange(reader
+                                       .Entries
+                                       .Where(x => !x.IsDirectory)
+                                       .Select(ConvertZipEntry));
+            }
+
+            // Convert to Hash Set and clear the list for unused files later
+            Dictionary<string, LocalFileInfo> hashSet = localFileInfos.ToDictionary(x => x.FullPath);
+            localFileInfos.Clear();
+
+            // Compares with existing file
+            foreach (FileInfo fileInfo in new DirectoryInfo(gamePath)
+                        .EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                if (hashSet.ContainsKey(fileInfo.FullName))
+                {
+                    continue;
+                }
+
+                localFileInfos.Add(new LocalFileInfo(fileInfo, gamePath));
+            }
+
+            long localFileSizes = localFileInfos.Sum(x => x.FileSize);
+            return (localFileInfos, localFileSizes);
+
+            LocalFileInfo ConvertZipEntry(SimpleZipArchiveEntry  asset) => new LocalFileInfo(asset, gamePath);
+            LocalFileInfo ConvertPkgVersion(PkgVersionProperties asset) => new LocalFileInfo(asset, gamePath);
+            LocalFileInfo ConvertHypData(HypPackageData          asset) => new LocalFileInfo(asset, gamePath);
         }
         #endregion
     }

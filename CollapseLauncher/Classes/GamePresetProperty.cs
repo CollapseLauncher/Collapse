@@ -69,7 +69,7 @@ namespace CollapseLauncher
                     property.GameSettings = new GenshinSettings(property.GameVersion);
                     property.GameCache = null;
                     property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion, property.GameSettings, property.GameRepair);
                     break;
                 case GameNameType.Zenless:
                     property.GameVersion = new GameTypeZenlessVersion(launcherApis, gamePreset);

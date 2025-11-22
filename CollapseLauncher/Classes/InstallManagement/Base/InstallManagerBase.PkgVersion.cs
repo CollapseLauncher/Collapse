@@ -2,11 +2,15 @@
 using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.Http;
+using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -65,6 +69,39 @@ namespace CollapseLauncher.InstallManager.Base
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public LocalFileInfo()
         {
+        }
+
+        public LocalFileInfo(SimpleZipArchiveEntry zipEntry, string basePath)
+        {
+            string fullPath = Path.Combine(basePath, zipEntry.Filename);
+            fullPath.NormalizePathInplace();
+
+            FullPath     = fullPath;
+            FileName     = Path.GetFileName(FullPath);
+            RelativePath = GetRelativePath(FullPath, basePath);
+            Update();
+        }
+
+        public LocalFileInfo(PkgVersionProperties packageVersion, string basePath)
+        {
+            string fullPath = Path.Combine(basePath, packageVersion.localName ?? packageVersion.remoteName);
+            fullPath.NormalizePathInplace();
+
+            FullPath     = fullPath;
+            FileName     = Path.GetFileName(FullPath);
+            RelativePath = GetRelativePath(FullPath, basePath);
+            Update();
+        }
+
+        public LocalFileInfo(HypPackageData packageData, string basePath)
+        {
+            string fullPath = Path.Combine(basePath, packageData.FilePath ?? "");
+            fullPath.NormalizePathInplace();
+
+            FullPath     = fullPath;
+            FileName     = Path.GetFileName(FullPath);
+            RelativePath = GetRelativePath(FullPath, basePath);
+            Update();
         }
 
         public LocalFileInfo(FileSystemInfo fileInfo, string basePath)
@@ -201,7 +238,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
-            LoadingMessageHelper.ShowLoadingFrame();
             try
             {
                 // Reset token
@@ -225,10 +261,6 @@ namespace CollapseLauncher.InstallManager.Base
                                                  .UseLauncherConfig(DownloadThreadWithReservedCount)
                                                  .SetAllowedDecompression(DecompressionMethods.None)
                                                  .Create();
-
-                    // Initialize and get game state, then get the latest package info
-                    LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                    Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
                     DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
                     GamePackageResult packageResult = GameVersionManager.GetGameLatestZip(gameStateEnum);

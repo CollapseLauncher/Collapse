@@ -85,35 +85,40 @@ namespace CollapseLauncher
 
         private async Task<bool> CheckRoutine()
         {
-            // Reset status and progress
-            ResetStatusAndProgress();
-            AssetIndex.Clear();
-            SophonAssetDictRef.Clear();
+            AssetIndex = await ResetAndFetchAssets();
 
-            // Step 1: Ensure that every file are not read-only
-            TryUnassignReadOnlyFiles(GamePath);
-
-            // Step 2: Fetch asset index
-            AssetIndex = await Fetch(AssetIndex, Token.Token);
-
-            // Step 3: Calculate all the size and count in total
+            // Calculate all the size and count in total
             CountAssetIndex(AssetIndex);
 
-            // Step 4: Check for the asset indexes integrity
-            await Check(AssetIndex, Token.Token);
+            // Check for the asset indexes integrity
+            await Check(AssetIndex, Token!.Token);
 
-            // Step 5: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
-            //         either way, returns false.
+            // Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
+            // either way, returns false.
             return SummarizeStatusAndProgress(
                 AssetIndex,
                 string.Format(Lang._GameRepairPage.Status3, ProgressAllCountFound, SummarizeSizeSimple(ProgressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
         }
 
+        internal async Task<List<PkgVersionProperties>> ResetAndFetchAssets()
+        {
+            // Reset status and progress
+            ResetStatusAndProgress();
+            AssetIndex.Clear();
+            SophonAssetDictRef.Clear();
+
+            // Ensure that every file are not read-only
+            TryUnassignReadOnlyFiles(GamePath);
+
+            // Fetch asset index
+            return await Fetch(AssetIndex, Token!.Token);
+        }
+
         private async Task<bool> RepairRoutine()
         {
             // Assign repair task
-            Task<bool> repairTask = Repair(AssetIndex, Token.Token);
+            Task<bool> repairTask = Repair(AssetIndex, Token!.Token);
 
             // Run repair process
             bool repairTaskSuccess = await TryRunExamineThrow(repairTask);

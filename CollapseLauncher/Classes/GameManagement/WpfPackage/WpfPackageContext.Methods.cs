@@ -219,7 +219,7 @@ internal partial class WpfPackageContext
         {
             UrlStatus packageUrlStatus = await client.GetURLStatusCode(packageUrl,
                                                                        _localCts.Token);
-            packageUrlStatus.EnsureSuccessStatus();
+            packageUrlStatus.EnsureSuccessStatusCode();
 
             totalSize = packageUrlStatus.FileSize;
         }

@@ -48,6 +48,7 @@ using Point = Windows.Foundation.Point;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using WinRT;
+using CollapseLauncher.Helper.Loading;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -1012,6 +1013,12 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                LoadingMessageHelper.ShowLoadingFrame();
+
+                // Initialize and get game state, then get the latest package info
+                LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
+                                                Lang._FileCleanupPage.LoadingSubtitle2);
+
                 GameStartupSetting.Flyout.Hide();
                 if (CurrentGameProperty?.GameInstall != null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
