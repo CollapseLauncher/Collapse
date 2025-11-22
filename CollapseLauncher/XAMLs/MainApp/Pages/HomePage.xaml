@@ -28,6 +28,11 @@
       mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow" />
+        <media:AttachedCardShadow x:Key="SocMedButtonAttachedShadow"
+                                  BlurRadius="0"
+                                  CornerRadius="13"
+                                  Opacity="0"
+                                  Offset="0, 0, 0" />
         <s:AttachedDropShadow x:Key="SharedDropShadow"
                               BlurRadius="16"
                               CastTo="{x:Bind ImageEventImgShadow}"
@@ -480,6 +485,7 @@
                                         Loaded="SetHandCursor"
                                         PointerExited="FadeOutSocMedButton"
                                         Style="{ThemeResource SocialMediaButtonStyle}"
+                                        s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
                                         Tag="{Binding Icon.ClickLink, FallbackValue={x:Null}}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
@@ -594,13 +600,6 @@
                                             </Flyout.FlyoutPresenterStyle>
                                         </Flyout>
                                     </Button.Flyout>
-
-                                    <s:Effects.Shadow>
-                                        <media:AttachedCardShadow BlurRadius="0"
-                                                                  CornerRadius="13"
-                                                                  Opacity="0"
-                                                                  Offset="0, 0, 0" />
-                                    </s:Effects.Shadow>
 
                                     <animations:Explicit.Animations>
                                         <animations:AnimationSet x:Name="SocMedIconPointerEntered">
