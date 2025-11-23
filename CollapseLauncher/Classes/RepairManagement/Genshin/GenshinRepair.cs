@@ -101,18 +101,24 @@ namespace CollapseLauncher
                 Lang._GameRepairPage.Status4);
         }
 
-        internal async Task<List<PkgVersionProperties>> ResetAndFetchAssets()
+        internal Task<List<PkgVersionProperties>> ResetAndFetchAssets()
         {
-            // Reset status and progress
-            ResetStatusAndProgress();
-            AssetIndex.Clear();
-            SophonAssetDictRef.Clear();
+            Task<List<PkgVersionProperties>> task = Impl();
+            return TryRunExamineThrow(task);
 
-            // Ensure that every file are not read-only
-            TryUnassignReadOnlyFiles(GamePath);
+            async Task<List<PkgVersionProperties>> Impl()
+            {
+                // Reset status and progress
+                ResetStatusAndProgress();
+                AssetIndex.Clear();
+                SophonAssetDictRef.Clear();
 
-            // Fetch asset index
-            return await Fetch(AssetIndex, Token!.Token);
+                // Ensure that every file are not read-only
+                TryUnassignReadOnlyFiles(GamePath);
+
+                // Fetch asset index
+                return await Fetch(AssetIndex, Token!.Token);
+            }
         }
 
         private async Task<bool> RepairRoutine()
