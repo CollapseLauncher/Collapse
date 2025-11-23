@@ -23,7 +23,7 @@ namespace CollapseLauncher.Helper.StreamUtility
         {
             Mode = FileMode.Open,
             Access = FileAccess.Read,
-            Share = FileShare.Read
+            Share = FileShare.ReadWrite
         };
 
         internal static readonly FileStreamOptions FileStreamCreateReadWriteOpt = new()

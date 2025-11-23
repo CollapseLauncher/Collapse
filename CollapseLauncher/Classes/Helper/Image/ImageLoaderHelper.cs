@@ -312,11 +312,9 @@ namespace CollapseLauncher.Helper.Image
                 {
                     inputFileInfo.MoveTo(inputFileInfo.FullName + "_old", true);
                     FileInfo newCachedFileInfo = new FileInfo(inputFileName);
-                    await using FileStream newCachedFileStream =
-                        newCachedFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    await using FileStream oldInputFileStream =
-                        inputFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    await ResizeImageStream(oldInputFileStream, newCachedFileStream, toWidth, toHeight);
+                    await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
+                        await using (FileStream oldInputFileStream = inputFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                            await ResizeImageStream(oldInputFileStream, newCachedFileStream, toWidth, toHeight);
 
                     inputFileInfo.Delete();
 
@@ -334,9 +332,9 @@ namespace CollapseLauncher.Helper.Image
             bool isCachedFileExist = cachedFileInfo!.Exists && cachedFileInfo.Length > 1 << 15;
             if (isCachedFileExist) return cachedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
 
-            await using FileStream cachedFileStream = cachedFileInfo.Create();
-            await using FileStream inputFileStream  = inputFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
-            await ResizeImageStream(inputFileStream, cachedFileStream, toWidth, toHeight);
+            await using (FileStream cachedFileStream = cachedFileInfo.Create())
+                await using (FileStream inputFileStream = inputFileInfo.Open(StreamExtension.FileStreamOpenReadOpt))
+                    await ResizeImageStream(inputFileStream, cachedFileStream, toWidth, toHeight);
 
             return cachedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
         }
