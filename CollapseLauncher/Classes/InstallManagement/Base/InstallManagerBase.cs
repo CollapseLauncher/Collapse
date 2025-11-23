@@ -91,17 +91,6 @@ namespace CollapseLauncher.InstallManager.Base
     // ReSharper disable once UnusedTypeParameter
     internal partial class InstallManagerBase : ProgressBase<GameInstallPackage>, IGameInstallManager
     {
-        #region Internal Struct
-
-        protected struct UninstallGameProperty
-        {
-            public string   gameDataFolderName;
-            public string[] filesToDelete;
-            public string[] foldersToDelete;
-            public string[] foldersToKeepInData;
-        }
-
-        #endregion
 
         #region Properties
 
@@ -139,7 +128,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected List<GameInstallPackage> _gameDeltaPatchPreReqList { get; } = [];
         protected bool                     _forceIgnoreDeltaPatch;
-        protected UninstallGameProperty? _uninstallGameProperty { get; set; }
+        protected GameInstallFileInfo? _gameInstallFileInfo { get; set; }
         #endregion
 
         #region Public Properties
@@ -1077,21 +1066,25 @@ namespace CollapseLauncher.InstallManager.Base
             {
             #nullable enable
                 // Assign UninstallProperty from each overrides
-                _uninstallGameProperty ??= AssignUninstallFolders();
+                _gameInstallFileInfo ??= GetGameInstallFileInfo();
+
+                if (_gameInstallFileInfo == null)
+                {
+                    throw new InvalidOperationException("This game doesn't support In-Launcher Uninstallation. Please delete the game files manually.");
+                }
 
                 //Preparing paths
-                string _DataFolderFullPath = Path.Combine(GameFolder, _uninstallGameProperty?.gameDataFolderName ?? "");
+                string _DataFolderFullPath = Path.Combine(GameFolder, _gameInstallFileInfo.GameDataFolderName);
 
                 string[]? foldersToKeepInDataFullPath;
-                if (_uninstallGameProperty?.foldersToKeepInData != null &&
-                    _uninstallGameProperty?.foldersToKeepInData.Length != 0)
+                if (_gameInstallFileInfo.FoldersToKeepInData.Length != 0)
                 {
-                    foldersToKeepInDataFullPath = new string[_uninstallGameProperty?.foldersToKeepInData?.Length ?? 0];
-                    for (int i = 0; i < (_uninstallGameProperty?.foldersToKeepInData?.Length ?? 0); i++)
+                    foldersToKeepInDataFullPath = new string[_gameInstallFileInfo.FoldersToKeepInData.Length];
+                    for (int i = 0; i < _gameInstallFileInfo.FoldersToKeepInData.Length; i++)
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
                         foldersToKeepInDataFullPath[i] =
-                            Path.Combine(_DataFolderFullPath, _uninstallGameProperty?.foldersToKeepInData?[i] ?? "");
+                            Path.Combine(_DataFolderFullPath, _gameInstallFileInfo.FoldersToKeepInData[i]);
                     }
                 }
                 else
@@ -1102,37 +1095,36 @@ namespace CollapseLauncher.InstallManager.Base
             #pragma warning disable CS8604 // Possible null reference argument.
                 LogWriteLine($"Uninstalling game: {GameVersionManager.GameType} - region: {GameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
                              $"  GameFolder          : {GameFolder}\r\n" +
-                             $"  gameDataFolderName  : {_uninstallGameProperty?.gameDataFolderName}\r\n" +
-                             $"  foldersToDelete     : {string.Join(", ", _uninstallGameProperty?.foldersToDelete)}\r\n" +
-                             $"  filesToDelete       : {string.Join(", ", _uninstallGameProperty?.filesToDelete)}\r\n" +
-                             $"  foldersToKeepInData : {string.Join(", ", _uninstallGameProperty?.foldersToKeepInData)}\r\n" +
+                             $"  GameDataFolderName  : {_gameInstallFileInfo.GameDataFolderName}\r\n" +
+                             $"  FoldersToDelete     : {string.Join(", ", _gameInstallFileInfo.FoldersToDelete)}\r\n" +
+                             $"  FilesToDelete       : {string.Join(", ", _gameInstallFileInfo.FilesToDelete)}\r\n" +
+                             $"  FoldersToKeepInData : {string.Join(", ", _gameInstallFileInfo.FoldersToKeepInData)}\r\n" +
                              $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
                              $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}",
                              LogType.Warning, true);
             #pragma warning restore CS8604 // Possible null reference argument.
 
-                // Cleanup Game_Data folder while keeping whatever specified in foldersToKeepInData
+                // Cleanup Game_Data folder while keeping whatever specified in FoldersToKeepInData
                 foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
                 {
                     try
                     {
                         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                        if (_uninstallGameProperty?.foldersToKeepInData == null ||
-                            _uninstallGameProperty?.foldersToKeepInData.Length == 0 ||
+                        if (_gameInstallFileInfo.FoldersToKeepInData.Length == 0 ||
                             foldersToKeepInDataFullPath
-                               .Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
+                               .Contains(folderGameData)) // Skip this entire process if FoldersToKeepInData is null
                         {
                             continue;
                         }
 
-                        // Delete directories inside gameDataFolderName that is not included in foldersToKeepInData
+                        // Delete directories inside GameDataFolderName that is not included in FoldersToKeepInData
                         if (File.GetAttributes(folderGameData).HasFlag(FileAttributes.Directory))
                         {
                             TryUnassignReadOnlyFiles(folderGameData);
                             Directory.Delete(folderGameData, true);
                             LogWriteLine($"Deleted folder: {folderGameData}", LogType.Default, true);
                         }
-                        // Delete files inside gameDataFolderName that is not included in foldersToKeepInData
+                        // Delete files inside GameDataFolderName that is not included in FoldersToKeepInData
                         else
                         {
                             TryDeleteReadOnlyFile(folderGameData);
@@ -1157,11 +1149,11 @@ namespace CollapseLauncher.InstallManager.Base
                     LogWriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
                 }
 
-                // Cleanup any folders in foldersToDelete
+                // Cleanup any folders in FoldersToDelete
                 foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
                 {
-                    if (_uninstallGameProperty?.foldersToDelete.Length == 0 ||
-                        !(_uninstallGameProperty?.foldersToDelete.Contains(Path.GetFileName(folderNames)) ?? false))
+                    if (_gameInstallFileInfo.FoldersToDelete.Length == 0 ||
+                        !_gameInstallFileInfo.FoldersToDelete.Contains(Path.GetFileName(folderNames)))
                     {
                         continue;
                     }
@@ -1179,18 +1171,18 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                 }
 
-                // Cleanup any files in filesToDelete
+                // Cleanup any files in FilesToDelete
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
-                    if ((_uninstallGameProperty?.filesToDelete.Length == 0 ||
-                         !(_uninstallGameProperty?.filesToDelete.Contains(Path.GetFileName(fileNames)) ?? false)) &&
-                        (_uninstallGameProperty?.filesToDelete.Length == 0 ||
-                         !(_uninstallGameProperty?.filesToDelete.Any(pattern =>
+                    if ((_gameInstallFileInfo.FilesToDelete.Length == 0 ||
+                         !_gameInstallFileInfo.FilesToDelete.Contains(Path.GetFileName(fileNames))) &&
+                        (_gameInstallFileInfo.FilesToDelete.Length == 0 ||
+                         !_gameInstallFileInfo.FilesToDelete.Any(pattern =>
                                                                           Regex.IsMatch(Path.GetFileName(fileNames),
                                                                                    pattern,
                                                                                    RegexOptions.Compiled |
                                                                                    RegexOptions.NonBacktracking
-                                                                              )) ?? false)))
+                                                                              ))))
                     {
                         continue;
                     }
@@ -3322,8 +3314,13 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Virtual Methods - UninstallGame
 
-        protected virtual UninstallGameProperty AssignUninstallFolders()
+        protected virtual GameInstallFileInfo GetGameInstallFileInfo()
         {
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
+            {
+                return gameInstallFileInfo;
+            }
+
             throw new
                 NotSupportedException($"Cannot uninstall game: {GameVersionManager.GamePreset.GameType}. Uninstall method is not yet implemented!");
         }

@@ -1,5 +1,6 @@
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameSettings.Zenless.Enums;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
@@ -206,18 +207,23 @@ namespace CollapseLauncher.InstallManager.Zenless
         #endregion
 
         #region Override Methods - UninstallGame
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
-            return new UninstallGameProperty
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
             {
-                gameDataFolderName = "ZenlessZoneZero_Data",
-                foldersToDelete    = ["APMCrashReporter"],
-                filesToDelete =
+                return gameInstallFileInfo;
+            }
+
+            return new GameInstallFileInfo
+            {
+                GameDataFolderName = "ZenlessZoneZero_Data",
+                FoldersToDelete    = ["APMCrashReporter"],
+                FilesToDelete =
                 [
                     "mhypbase.dll", "HoYoKProtect.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^ZZZ.*",
                     "^Unity.*"
                 ],
-                foldersToKeepInData = ["ScreenShots"]
+                FoldersToKeepInData = ["ScreenShots"]
             };
         }
         #endregion

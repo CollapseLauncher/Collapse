@@ -244,8 +244,8 @@ namespace CollapseLauncher.InstallManager.Base
                 ResetStatusAndProgress();
 
                 // Initialize uninstall game property
-                _uninstallGameProperty ??= AssignUninstallFolders();
-                if (!_uninstallGameProperty.HasValue)
+                _gameInstallFileInfo ??= GetGameInstallFileInfo();
+                if (_gameInstallFileInfo == null)
                 {
                     throw new NotSupportedException("Clean-up feature for this game is not yet supported!");
                 }
@@ -262,8 +262,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                  .SetAllowedDecompression(DecompressionMethods.None)
                                                  .Create();
 
-                    DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
-                    GamePackageResult packageResult = GameVersionManager.GetGameLatestZip(gameStateEnum);
+                    DownloadClient    downloadClient = DownloadClient.CreateInstance(httpClient);
+                    GamePackageResult packageResult  = GameVersionManager.GetGameLatestZip(gameStateEnum);
 
                     // Download pkg_version file (with additional audio ones)
                     string pkgVersionPath = await DownloadPkgVersion(downloadClient, packageResult);
@@ -324,7 +324,7 @@ namespace CollapseLauncher.InstallManager.Base
                         preDownloadZips.AddRange(packagePreloadResult.AudioPackage
                                                                      .Select(audioRes =>
                                                                                  new GameInstallPackage(audioRes,
-                                                                                     GamePath)
+                                                                                          GamePath)
                                                                                  {
                                                                                      PackageType =
                                                                                          GameInstallPackageType.Audio
@@ -350,7 +350,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get and filter the unused file from the pkg_versions and ignoredFiles
                 List<LocalFileInfo> unusedFileInfo = [];
-                long unusedFileSize = 0;
+                long                unusedFileSize = 0;
                 await Task.Run(() =>
                                    Parallel.ForEach(localFileInfo,
                                                     new ParallelOptions { CancellationToken = Token.Token },
@@ -359,7 +359,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                         if (pkgFileInfoHashSet.Contains(asset.RelativePath) ||
                                                             PatternMatcher
                                                                .MatchesAnyPattern(asset.ToFileInfo().Name,
-                                                                    ignoredFiles.ToList()))
+                                                                         ignoredFiles.ToList()))
                                                             return;
 
                                                         lock (unusedFileInfo)
@@ -375,6 +375,10 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 ErrorSender.SendException(ex);
                 return ([], 0);
+            }
+            finally
+            {
+                LoadingMessageHelper.HideLoadingFrame();
             }
         }
 
@@ -458,7 +462,7 @@ namespace CollapseLauncher.InstallManager.Base
             string             relativePath     = localFileInfo.RelativePath;
             ReadOnlySpan<char> relativePathSpan = relativePath;
             string             fileName         = localFileInfo.FileName;
-            string             gameFolder       = _uninstallGameProperty?.gameDataFolderName ?? string.Empty;
+            string             gameFolder       = _gameInstallFileInfo?.GameDataFolderName ?? string.Empty;
             string             persistentPath   = Path.Combine(gameFolder, "Persistent");
 
             // 1st check: Ensure that the file is not a persistent file
@@ -482,7 +486,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // 4th check: Ensure that the file isn't in excluded list
-            if (_uninstallGameProperty?.foldersToKeepInData
+            if (_gameInstallFileInfo?.FoldersToKeepInData
                                        .Any(x => relativePath
                                                 .AsSpan() // As Span<T> since StartsWith() in it is typically faster
                                                  // than the one from String primitive
@@ -507,7 +511,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // 7th check: Ensure that the file is one of the files included
             //            in the Regex pattern list
-            if (_uninstallGameProperty?.filesToDelete
+            if (_gameInstallFileInfo?.FilesToDelete
                                        .Any(pattern => Regex.IsMatch(fileName,
                                                                      pattern,
                                                                      RegexOptions.Compiled |

@@ -1,4 +1,6 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
@@ -139,8 +142,13 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #region Override Methods - UninstallGame
 
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
+            {
+                return gameInstallFileInfo;
+            }
+
             string execName = GameVersionManager.GamePreset.ZoneName switch
             {
                 "Global" => "GenshinImpact",
@@ -150,16 +158,16 @@ namespace CollapseLauncher.InstallManager.Genshin
                 _ => throw new NotSupportedException($"Unknown GI Game Region!: {GameVersionManager.GamePreset.ZoneName}")
             };
 
-            return new UninstallGameProperty
+            return new GameInstallFileInfo
             {
-                gameDataFolderName = $"{execName}_Data",
-                foldersToDelete    = [$"{execName}_Data"],
-                filesToDelete =
+                GameDataFolderName = $"{execName}_Data",
+                FoldersToDelete    = [$"{execName}_Data"],
+                FilesToDelete =
                 [
                     "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*",
                     "^Audio.*"
                 ],
-                foldersToKeepInData = ["ScreenShot"]
+                FoldersToKeepInData = ["ScreenShot"]
             };
         }
 
@@ -218,16 +226,34 @@ namespace CollapseLauncher.InstallManager.Genshin
             Dictionary<string, LocalFileInfo> hashSet = localFileInfos.ToDictionary(x => x.FullPath);
             localFileInfos.Clear();
 
-            // Compares with existing file
-            foreach (FileInfo fileInfo in new DirectoryInfo(gamePath)
-                        .EnumerateFiles("*", SearchOption.AllDirectories))
+            // Get ignore list
+            GameInstallFileInfo gameInstallFileInfo = GetGameInstallFileInfo();
+            List<string>        regexMatchList      = gameInstallFileInfo.FilesCleanupIgnoreList.ToList();
+
+            // Add ignore list for pkg_version files
+            string audioInstalledList = _gameAudioLangListPathStatic;
+            if (File.Exists(audioInstalledList))
             {
-                if (hashSet.ContainsKey(fileInfo.FullName))
+                using StreamReader audioInstalledListReader = File.OpenText(audioInstalledList);
+                while (await audioInstalledListReader.ReadLineAsync() is { } audioInstalledEntry)
+                {
+                    string match = $"Audio_{audioInstalledEntry}_pkg_version";
+                    regexMatchList.Add($"^{Regex.Escape(match)}$");
+                }
+            }
+
+            // Compares with existing file
+            foreach (LocalFileInfo fileInfo in new DirectoryInfo(gamePath)
+                                              .EnumerateFiles("*", SearchOption.AllDirectories)
+                                              .Select(x => new LocalFileInfo(x, gamePath))
+                                              .WhereMatchPattern(x => x.RelativePath, true, regexMatchList))
+            {
+                if (hashSet.ContainsKey(fileInfo.FullPath))
                 {
                     continue;
                 }
 
-                localFileInfos.Add(new LocalFileInfo(fileInfo, gamePath));
+                localFileInfos.Add(fileInfo);
             }
 
             long localFileSizes = localFileInfos.Sum(x => x.FileSize);

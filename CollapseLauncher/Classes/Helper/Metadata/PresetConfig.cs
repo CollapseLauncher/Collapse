@@ -79,6 +79,15 @@ namespace CollapseLauncher.Helper.Metadata
         Plugin
     }
 
+    public class GameInstallFileInfo
+    {
+        public string   GameDataFolderName     { get; init; } = string.Empty;
+        public string[] FilesToDelete          { get; init; } = [];
+        public string[] FoldersToDelete        { get; init; } = [];
+        public string[] FoldersToKeepInData    { get; init; } = [];
+        public string[] FilesCleanupIgnoreList { get; init; } = [];
+    }
+
     public class SophonChunkUrls
     {
         private       bool   IsReassociated;
@@ -525,6 +534,8 @@ namespace CollapseLauncher.Helper.Metadata
         public Dictionary<string, SteamGameProp>?    ZoneSteamAssets   { get; init; } = new();
 
         public DateTime LastModifiedFile { get; set; }
+
+        public GameInstallFileInfo? GameInstallFileInfo { get; init; }
 
         #endregion
 

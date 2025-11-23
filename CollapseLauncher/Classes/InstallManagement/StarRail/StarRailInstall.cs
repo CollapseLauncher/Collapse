@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
@@ -140,17 +141,22 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #region Override Methods - UninstallGame
 
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
-            return new UninstallGameProperty
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
             {
-                gameDataFolderName = "StarRail_Data",
-                foldersToDelete    = ["AntiCheatExpert"],
-                filesToDelete =
+                return gameInstallFileInfo;
+            }
+
+            return new GameInstallFileInfo
+            {
+                GameDataFolderName = "StarRail_Data",
+                FoldersToDelete    = ["AntiCheatExpert"],
+                FilesToDelete =
                 [
                     "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*"
                 ],
-                foldersToKeepInData = ["ScreenShots"]
+                FoldersToKeepInData = ["ScreenShots"]
             };
         }
 
