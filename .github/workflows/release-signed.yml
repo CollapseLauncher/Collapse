@@ -224,6 +224,7 @@ jobs:
             else {
                 Write-Error "File not found: $exePath"
             }
+
     - name: Attest Build Provenance
       uses: actions/attest-build-provenance@v3
       with:
