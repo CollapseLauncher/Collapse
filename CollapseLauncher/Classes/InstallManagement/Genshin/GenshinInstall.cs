@@ -97,7 +97,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(Token.Token);
+            await ApplyDeleteFileActionAsync(Token!.Token);
         }
 
         private void EnsureMoveOldToNewAudioDirectory()
@@ -205,7 +205,6 @@ namespace CollapseLauncher.InstallManager.Genshin
             {
                 ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(sdkZipUrl);
                 localFileInfos.AddRange(reader
-                                       .Entries
                                        .Where(x => !x.IsDirectory)
                                        .Select(ConvertZipEntry));
             }
@@ -217,7 +216,6 @@ namespace CollapseLauncher.InstallManager.Genshin
             {
                 ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(wpfZipUrl);
                 localFileInfos.AddRange(reader
-                                       .Entries
                                        .Where(x => !x.IsDirectory)
                                        .Select(ConvertZipEntry));
             }

@@ -1048,7 +1048,7 @@ internal abstract class ProgressBase : GamePropertyBase
         ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(url, token);
         HttpClient       client = FallbackCDNUtil.GetGlobalHttpClient(true);
 
-        await Parallel.ForEachAsync(reader.Entries.Where(x => !x.IsDirectory),
+        await Parallel.ForEachAsync(reader.Where(x => !x.IsDirectory),
                                     token,
                                     Impl);
 
