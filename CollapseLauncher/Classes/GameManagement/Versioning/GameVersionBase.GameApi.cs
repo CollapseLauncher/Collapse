@@ -174,8 +174,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             get
             {
-                if (!field.HasValue &&
-                    field != GameVersion.Empty)
+                if (field.HasValue && field != GameVersion.Empty)
                 {
                     return field;
                 }
