@@ -25,6 +25,11 @@ jobs:
         platform: [x64]
         framework: [net9.0-windows10.0.26100.0]
 
+    # Required for build attestation
+    permissions:
+      id-token: write
+      attestations: write
+
     env:
       CONFIGURATION_STRATEGY: ""
       PUBLISH_PROFILE: ""
@@ -219,3 +224,8 @@ jobs:
             else {
                 Write-Error "File not found: $exePath"
             }
+    - name: Attest Build Provenance
+      uses: actions/attest-build-provenance@v3
+      with:
+        subject-path: "${{ runner.temp }}/SignedArtifact/BuildArtifact-${{ env.VERSION }}/**"
+
