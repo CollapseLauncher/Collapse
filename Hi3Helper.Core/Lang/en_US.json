@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2ChangeGameLocation": "Change Game Location",
     "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "Cannot move game to the root of your drive!\r\nPlease make a folder and try again.",
     "GameSettings_Panel2StopGame": "Force Close Game",

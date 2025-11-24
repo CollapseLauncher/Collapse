@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -671,8 +672,29 @@ public sealed partial class HomePage
             ErrorSender.SendException(ex);
         }
     }
+
+    private async void ChangeGameLocationButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+            if (newPath == null || newPath == CurrentGameProperty.GameVersion.GameDirPath)
+            {
+                return;
+            }
+
+            CurrentGameProperty.GameVersion.UpdateGamePath(newPath);
+            CurrentGameProperty.GameInstall.ApplyGameConfig();
+            ReturnToHomePage();
+        }
+        catch (Exception ex)
+        {
+            LogWriteLine($"Error has occurred while changing Game Location!\r\n{ex}", LogType.Error, true);
+            ErrorSender.SendException(ex);
+        }
+    }
     #endregion
-    
+
     #region Game State
     private async ValueTask GetCurrentGameState()
     {
