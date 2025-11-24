@@ -240,18 +240,7 @@ namespace CollapseLauncher
             // Initialize Sentry SDK if enabled
             if (SentryHelper.IsEnabled)
             {
-                try
-                {
-                    // Sentry SDK Entry
-                    LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
-                    SentryHelper.InitializeSentrySdk();
-                    LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
-                    SentryHelper.InitializeExceptionRedirect();
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
-                }
+                _ = Task.Factory.StartNew(InitializeSentrySdk);
             }
 
             /* ---------------------------------------------------------------------------------------------
@@ -300,6 +289,23 @@ namespace CollapseLauncher
 
             // Start Updater Hook
             VelopackLocatorExtension.StartUpdaterHook(AppAumid);
+            return;
+
+            static void InitializeSentrySdk()
+            {
+                try
+                {
+                    // Sentry SDK Entry
+                    LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
+                    SentryHelper.InitializeSentrySdk();
+                    LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
+                    SentryHelper.InitializeExceptionRedirect();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                }
+            }
         }
 
         private static async Task InitDatabaseHandler()
