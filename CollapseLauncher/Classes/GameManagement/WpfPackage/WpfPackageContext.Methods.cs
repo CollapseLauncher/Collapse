@@ -4,16 +4,22 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using System;
+using System.Buffers;
 using System.IO;
+using System.IO.Hashing;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0290
 #pragma warning disable IDE0130
 
@@ -43,67 +49,21 @@ internal partial class WpfPackageContext
             }
 
             // Get client and URL
-            HttpClient client       = FallbackCDNUtil.GetGlobalHttpClient(false);
-            string     url          = await GetPackageStatsAndUrl(client);
-            string     localPath    = Path.Combine(GamePath, Path.GetFileName(url));
-            long       downloadSize = ProgressAllSizeTotal;
-            FileInfo   fileInfo     = new(localPath);
+            HttpClient client = FallbackCDNUtil.GetGlobalHttpClient(false);
+            string?    url    = WpfPackageData.Url;
 
-            while (true)
+            if (string.IsNullOrEmpty(url))
             {
-                ResetProgress();
-
-                // Try to verify the package first.
-                // If fails, (re)download the package.
-                if (IsSkipPackageVerification ||
-                    (fileInfo.Exists &&
-                     fileInfo.Length == downloadSize &&
-                     await IsPackageHashMatch(fileInfo,
-                                              WpfPackageData.PackageMD5Hash,
-                                              _localCts.Token)))
-                {
-                    goto StartExtract;
-                }
-
-                // Download the package
-                await DownloadPackage(client,
-                                      url,
-                                      localPath,
-                                      downloadSize,
-                                      _localCts.Token);
-
-                fileInfo.Refresh();
+                throw new InvalidOperationException("WpfPackageData is available but the URL returns null!");
             }
 
-            StartExtract:
-            long totalToExtractSize = 0;
-            await using (FileStream fileStream = fileInfo.OpenRead())
+            if (url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
-                totalToExtractSize += LauncherConfig.IsEnforceToUse7zipOnExtract
-                ? GetArchiveUncompressedSizeNative7Zip(fileStream)
-                : GetArchiveUncompressedSizeManaged(fileStream);
+                await PerformDownloadFromZipOnTheFly(client, url);
             }
-            ProgressAllSizeTotal     = totalToExtractSize;
-            ProgressPerFileSizeTotal = totalToExtractSize;
-            ResetProgress();
-
-            InstallPackageExtractorDelegate extractDelegate =
-                LauncherConfig.IsEnforceToUse7zipOnExtract
-                    ? ExtractUsingNative7Zip
-                    : ExtractUsingManagedZip;
-
-            await extractDelegate(() => fileInfo.Open(FileMode.Open,
-                                                      FileAccess.Read,
-                                                      FileShare.ReadWrite),
-                                  GamePath,
-                                  _localCts.Token);
-
-            // Set version to save the config
-            CurrentInstalledVersion = CurrentAvailableVersion;
-
-            if (IsDeletePackageAfterInstall)
+            else
             {
-                fileInfo.TryDeleteFile();
+                await PerformDownloadAndExtractRoutine(client, WpfPackageData.PackageMD5Hash ?? []);
             }
 
             SpawnUpdateFinishedNotification();
@@ -123,6 +83,164 @@ internal partial class WpfPackageContext
         }
 
         return true;
+    }
+
+    private async ValueTask PerformDownloadFromZipOnTheFly(
+        HttpClient client,
+        string     url)
+    {
+        ResetProgress();
+
+        string gamePath = GamePath;
+
+        ZipArchiveReader reader =
+            await ZipArchiveReader.CreateFromRemoteAsync(url, _localCts.Token);
+
+        long totalSizeUncompressed = reader.Sum(x => x.Size);
+        ProgressAllSizeTotal     = totalSizeUncompressed;
+        ProgressPerFileSizeTotal = totalSizeUncompressed;
+
+        int downloadThread = ThreadForDownloadNormalized;
+
+        await Parallel.ForEachAsync(reader,
+                                    new ParallelOptions
+                                    {
+                                        MaxDegreeOfParallelism = downloadThread,
+                                        CancellationToken      = _localCts.Token
+                                    },
+                                    Impl);
+
+        return;
+
+        async ValueTask Impl(SimpleZipArchiveEntry entry, CancellationToken token)
+        {
+            string filePath = Path.Combine(gamePath, entry.Filename);
+            if (entry.IsDirectory)
+            {
+                Directory.CreateDirectory(filePath);
+                return;
+            }
+
+            Status.IsProgressAllIndetermined = false;
+            FileInfo fileInfo = new FileInfo(filePath)
+                               .EnsureCreationOfDirectory()
+                               .StripAlternateDataStream()
+                               .EnsureNoReadOnly();
+
+            int bufferSize = entry.Size.GetFileStreamBufferSize();
+
+            await using FileStream stream = fileInfo.Open(FileMode.OpenOrCreate,
+                                                          FileAccess.ReadWrite,
+                                                          FileShare.ReadWrite,
+                                                          bufferSize);
+
+            if (fileInfo.Exists &&
+                await IsPackageHashMatchWithCrc32(stream, entry.Crc32, token))
+            {
+                return;
+            }
+
+            stream.Position = 0;
+            stream.SetLength(0);
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            try
+            {
+                await using Stream deflateStream =
+                    await entry.OpenStreamFromFactoryAsync(CreateStreamFromUrl, token);
+
+                int read;
+                while ((read = await deflateStream.ReadAsync(buffer, token)) > 0)
+                {
+                    stream.Write(buffer.AsSpan(0, read));
+                    Interlocked.Add(ref ProgressAllSizeCurrent, read);
+                    Interlocked.Add(ref ProgressPerFileSizeCurrent, read);
+
+                    UpdateProgressCrc(read);
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        async Task<Stream> CreateStreamFromUrl(long? from, long? to, CancellationToken token)
+        {
+            HttpRequestMessage request = new(HttpMethod.Get, url);
+            request.Headers.Range = new RangeHeaderValue(from, to);
+
+            HttpResponseMessage response =
+                await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStreamAsync(token);
+        }
+    }
+
+    private async ValueTask PerformDownloadAndExtractRoutine(
+        HttpClient client,
+        byte[]     packageMd5Hash)
+    {
+        string   url          = await GetPackageStatsAndUrl(client);
+        string   localPath    = Path.Combine(GamePath, Path.GetFileName(url));
+        long     downloadSize = ProgressAllSizeTotal;
+        FileInfo fileInfo     = new(localPath);
+
+        while (true)
+        {
+            ResetProgress();
+
+            // Try to verify the package first.
+            // If fails, (re)download the package.
+            if (IsSkipPackageVerification ||
+                (fileInfo.Exists &&
+                 fileInfo.Length == downloadSize &&
+                 await IsPackageHashMatch(fileInfo, packageMd5Hash, _localCts.Token)))
+            {
+                goto StartExtract;
+            }
+
+            // Download the package
+            await DownloadPackage(client,
+                                  url,
+                                  localPath,
+                                  downloadSize,
+                                  _localCts.Token);
+
+            fileInfo.Refresh();
+        }
+
+        StartExtract:
+        long totalToExtractSize = 0;
+        await using (FileStream fileStream = fileInfo.OpenRead())
+        {
+            totalToExtractSize += LauncherConfig.IsEnforceToUse7zipOnExtract
+                ? GetArchiveUncompressedSizeNative7Zip(fileStream)
+                : GetArchiveUncompressedSizeManaged(fileStream);
+        }
+        ProgressAllSizeTotal     = totalToExtractSize;
+        ProgressPerFileSizeTotal = totalToExtractSize;
+        ResetProgress();
+
+        InstallPackageExtractorDelegate extractDelegate =
+            LauncherConfig.IsEnforceToUse7zipOnExtract
+                ? ExtractUsingNative7Zip
+                : ExtractUsingManagedZip;
+
+        await extractDelegate(() => fileInfo.Open(FileMode.Open,
+                                                  FileAccess.Read,
+                                                  FileShare.ReadWrite),
+                              GamePath,
+                              _localCts.Token);
+
+        // Set version to save the config
+        CurrentInstalledVersion = CurrentAvailableVersion;
+
+        if (IsDeletePackageAfterInstall)
+        {
+            fileInfo.TryDeleteFile();
+        }
     }
 
     private async void SpawnUpdateFinishedNotification()
@@ -164,6 +282,35 @@ internal partial class WpfPackageContext
         {
             // Ignored
         }
+    }
+
+    private async Task<bool> IsPackageHashMatchWithCrc32(
+        FileStream        fileStream,
+        uint              crc32,
+        CancellationToken token)
+    {
+        byte[] hashLocal =
+            await GetHashAsync<Crc32>(fileStream,
+                                      true,
+                                      true,
+                                      token);
+
+        byte[] crc32AsBytes = BitConverter.GetBytes(crc32);
+        if (hashLocal.SequenceEqual(crc32AsBytes))
+        {
+            return true;
+        }
+
+        // Try reverse the hash result and retry the check
+        Array.Reverse(hashLocal);
+        if (hashLocal.SequenceEqual(crc32AsBytes))
+        {
+            return true;
+        }
+
+        Interlocked.Add(ref ProgressPerFileSizeCurrent, -fileStream.Length);
+        Interlocked.Add(ref ProgressAllSizeCurrent,     -fileStream.Length);
+        return false;
     }
 
     private async Task<bool> IsPackageHashMatch(
