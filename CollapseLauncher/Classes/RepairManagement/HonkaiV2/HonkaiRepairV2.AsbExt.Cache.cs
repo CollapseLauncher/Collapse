@@ -33,8 +33,8 @@ internal class CacheAssetInfo
 {
     public          byte[]     HmacSha1Salt           { get; set; } = [];
     public          int        MhyMersenneTwisterSeed { get; set; }
-    public required string     AssetUrl               { get; set; }
-    public required CacheAsset Asset                  { get; set; }
+    public required string     AssetUrl               { get; init; }
+    public required CacheAsset Asset                  { get; init; }
 }
 
 internal static partial class AssetBundleExtension
@@ -43,11 +43,10 @@ internal static partial class AssetBundleExtension
                                                                  | CacheAssetType.Event
                                                                  | CacheAssetType.AI;
 
-    internal static async Task<List<CacheAssetInfo>>
+    private static async Task<List<CacheAssetInfo>>
         GetCacheAssetBundleListAsync<T>(
             this HttpClient   assetBundleHttpClient,
             PresetConfig      presetConfig,
-            GameVersion       gameVersion,
             KianaDispatch     gameServerInfo,
             CacheAssetType?   cacheAssetType,
             ProgressBase<T>   progressibleInstance,

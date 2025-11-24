@@ -107,7 +107,7 @@ namespace CollapseLauncher
                 });
             }
 
-            async Task AfterLoadRoutine(CancellationToken token)
+            async ValueTask AfterLoadRoutine(CancellationToken token)
             {
                 try
                 {
@@ -143,7 +143,7 @@ namespace CollapseLauncher
                 LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
             }
 
-            async Task BeforeLoadRoutine(CancellationToken token)
+            async ValueTask BeforeLoadRoutine(CancellationToken token)
             {
                 try
                 {
@@ -286,9 +286,9 @@ namespace CollapseLauncher
 
             // Load region property (and potentially, cached one)
             GamePropertyVault.LoadGameProperty(this,
-                                                     preset.GameType == GameNameType.Plugin ? null : preset.GameLauncherApi.LauncherGameResource,
-                                                     gameName,
-                                                     gameRegion);
+                                               preset.GameLauncherApi,
+                                               gameName,
+                                               gameRegion);
 
             // Spawn Region Notification
             _ = SpawnRegionNotification(preset.ProfileName);

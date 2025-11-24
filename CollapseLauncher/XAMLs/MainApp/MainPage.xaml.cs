@@ -65,7 +65,7 @@ namespace CollapseLauncher
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
 
-        internal static List<string> PreviousTagString = [];
+        internal static readonly List<string> PreviousTagString = [];
 
 #nullable enable
         internal static BackgroundMediaUtility? CurrentBackgroundHandler;
@@ -603,7 +603,7 @@ namespace CollapseLauncher
 
             if (isPluginHasUpdate)
             {
-                StartSpawn:
+            StartSpawn:
                 Grid textGridBox = UIElementExtensions.CreateGrid()
                                                       .WithRows(new GridLength(),
                                                                 new GridLength(1, GridUnitType.Auto))

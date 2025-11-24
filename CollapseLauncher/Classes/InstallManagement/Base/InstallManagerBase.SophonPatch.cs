@@ -42,8 +42,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                        int maxHttpHandler)
         {
             // Sanity check
-            ArgumentNullException.ThrowIfNull(GameVersionManager,
-                                              nameof(GameVersionManager));
+            ArgumentNullException.ThrowIfNull(GameVersionManager);
             ArgumentNullException.ThrowIfNull(GameVersionManager.GamePreset.LauncherResourceChunksURL,
                                               nameof(GameVersionManager.GamePreset.LauncherResourceChunksURL));
             ArgumentNullException.ThrowIfNull(GameVersionManager.GamePreset.LauncherResourceChunksURL.BranchUrl,
@@ -79,7 +78,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                      branchUrl,
                                                      bizName,
                                                      isPreloadMode,
-                                                     Token.Token);
+                                                     Token!.Token);
 
             // Fetch manifest info and get patch metadata
             SophonChunkManifestInfoPair patchManifest =
@@ -237,10 +236,10 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected async Task<bool> SpawnAdditionalPackageDownloadDialog(long baseDownloadSize,
-                                                                        long additionalDownloadSize,
-                                                                        bool isUpdate,
-                                                                        Func<string>? getFileDetailPath)
+        private async Task<bool> SpawnAdditionalPackageDownloadDialog(long baseDownloadSize,
+                                                                      long additionalDownloadSize,
+                                                                      bool isUpdate,
+                                                                      Func<string>? getFileDetailPath)
         {
             Grid grid = UIElementExtensions.CreateGrid()
                 .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star));

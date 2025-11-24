@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
-
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
 
@@ -35,8 +34,8 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class FileCleanupPage
     {
-        internal static FileCleanupPage?                    Current { get; set; }
-        internal        ObservableCollection<LocalFileInfo> FileInfoSource;
+        internal static   FileCleanupPage?                    Current { get; private set; }
+        internal readonly ObservableCollection<LocalFileInfo> FileInfoSource;
 
         public FileCleanupPage()
         {

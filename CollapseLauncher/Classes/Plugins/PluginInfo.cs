@@ -32,12 +32,12 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
     internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
 
-    internal unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
-    internal unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
-    internal unsafe delegate GameVersion* DelegateGetPluginVersion();
-    internal unsafe delegate void*        DelegateGetPlugin();
-    internal delegate        void         DelegateFreePlugin();
-    internal delegate        void         DelegateSetCallback(nint callbackP);
+    private unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
+    private unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
+    private unsafe delegate GameVersion* DelegateGetPluginVersion();
+    private unsafe delegate void*        DelegateGetPlugin();
+    private delegate        void         DelegateFreePlugin();
+    private delegate        void         DelegateSetCallback(nint callbackP);
 
     private bool _isDisposed;
 

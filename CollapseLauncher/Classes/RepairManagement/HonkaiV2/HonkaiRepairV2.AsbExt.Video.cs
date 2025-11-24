@@ -37,7 +37,6 @@ internal static partial class AssetBundleExtension
         GetVideoAssetListAsync<T>(
             this HttpClient   assetBundleHttpClient,
             PresetConfig      presetConfig,
-            GameVersion       gameVersion,
             KianaDispatch     gameServerInfo,
             ProgressBase<T>   progressibleInstance,
             int[]?            ignoredCgIds = null,
@@ -52,7 +51,6 @@ internal static partial class AssetBundleExtension
         List<CacheAssetInfo> assetInfoList =
             await GetCacheAssetBundleListAsync(assetBundleHttpClient,
                                                presetConfig,
-                                               gameVersion,
                                                gameServerInfo,
                                                CacheAssetType.Data,
                                                progressibleInstance,

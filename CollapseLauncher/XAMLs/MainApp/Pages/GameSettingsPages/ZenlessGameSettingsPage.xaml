@@ -223,10 +223,10 @@
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}">
                                 <ToggleSwitch.Header>
                                     <TextBlock>
-                                        <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}"/>
-                                        <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Mark_Experimental}"
-                                             FontSize="12"
-                                             FontWeight="Bold"/>
+                                        <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}" />
+                                        <Run FontSize="12"
+                                             FontWeight="Bold"
+                                             Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Mark_Experimental}" />
                                     </TextBlock>
                                 </ToggleSwitch.Header>
                             </ToggleSwitch>
@@ -575,22 +575,22 @@
                                     </CheckBox>
                                 </StackPanel>
                             </Grid>
-                            <MenuFlyoutSeparator Margin="8, 16" />
+                            <MenuFlyoutSeparator Margin="8,16" />
                             <StackPanel Orientation="Horizontal"
                                         Spacing="16">
                                 <TextBlock Margin="0,0,0,16"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           TextWrapping="Wrap" >
-                                    <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_Title}"/>
-                                    <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Mark_Experimental}"
-                                         FontSize="12"
-                                         FontWeight="Bold"/>
+                                           TextWrapping="Wrap">
+                                    <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_Title}" />
+                                    <Run FontSize="12"
+                                         FontWeight="Bold"
+                                         Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Mark_Experimental}" />
                                 </TextBlock>
-                                <Button HorizontalAlignment="Right"
-                                        Margin="0, -12, 0, 0"
-                                        Width="24"
+                                <Button Width="24"
                                         Height="24"
+                                        Margin="0,-12,0,0"
                                         Padding="0"
+                                        HorizontalAlignment="Right"
                                         CornerRadius="4"
                                         Style="{ThemeResource AcrylicButtonStyle}">
                                     <Button.Content>
@@ -618,13 +618,13 @@
                                 </Button>
                             </StackPanel>
                             <ItemsControl IsEnabled="{x:Bind IsDeviceHasRTXGPU, Mode=OneWay}">
-                                <Grid ColumnSpacing="16"
-                                      Margin="0,0,16,0">
+                                <Grid Margin="0,0,16,0"
+                                      ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
@@ -632,11 +632,11 @@
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_RayTracing}"
-                                                       TextWrapping="WrapWholeWords"/>
-                                            <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                       TextWrapping="WrapWholeWords" />
+                                            <ToggleSwitch x:Name="RayTracingToggle"
                                                           IsOn="{x:Bind AdvancedGraphics_UseRayTracing, Mode=TwoWay}"
-                                                          x:Name="RayTracingToggle"/>
+                                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
@@ -645,10 +645,10 @@
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_RayTracingQ}"
-                                                       TextWrapping="WrapWholeWords"/>
-                                            <ComboBox IsEnabled="{x:Bind RayTracingToggle.IsOn, Mode=OneWay}"
-                                                      HorizontalAlignment="Stretch"
+                                                       TextWrapping="WrapWholeWords" />
+                                            <ComboBox HorizontalAlignment="Stretch"
                                                       CornerRadius="14"
+                                                      IsEnabled="{x:Bind RayTracingToggle.IsOn, Mode=OneWay}"
                                                       SelectedIndex="{x:Bind AdvancedGraphics_RayTracingQuality, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
@@ -662,13 +662,13 @@
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScaling}"
-                                                       TextWrapping="WrapWholeWords"/>
+                                                       TextWrapping="WrapWholeWords" />
                                             <ComboBox x:Name="SuperResolutionOptionComboBox"
                                                       HorizontalAlignment="Stretch"
                                                       CornerRadius="14"
                                                       SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionOption, Mode=TwoWay}">
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._Misc.Disabled}"/>
-                                                <ComboBoxItem Content="DLSS"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._Misc.Disabled}" />
+                                                <ComboBoxItem Content="DLSS" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
@@ -678,14 +678,14 @@
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ}"
-                                                       TextWrapping="WrapWholeWords"/>
+                                                       TextWrapping="WrapWholeWords" />
                                             <ComboBox HorizontalAlignment="Stretch"
-                                                      IsEnabled="{x:Bind SuperResolutionOptionComboBox.SelectedIndex, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
                                                       CornerRadius="14"
+                                                      IsEnabled="{x:Bind SuperResolutionOptionComboBox.SelectedIndex, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
                                                       SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionQuality, Mode=TwoWay}">
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Performance}"/>
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Balanced}"/>
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Quality}"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Performance}" />
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Balanced}" />
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Quality}" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>

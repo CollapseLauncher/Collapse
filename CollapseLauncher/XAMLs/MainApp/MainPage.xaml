@@ -474,7 +474,7 @@
                                            FontSize="20"
                                            FontWeight="SemiBold"
                                            Opacity="0.50"
-                                           Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}"
+                                           Text="{x:Bind helper:Locale.Lang._MainPage.NotifNoNewNotifs}"
                                            TextAlignment="Center" />
                             </Grid>
                         </StackPanel>
@@ -510,7 +510,7 @@
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,-1,8,1"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper: Locale.Lang._MainPage.NotifClearAll}" />
+                                   Text="{x:Bind helper:Locale.Lang._MainPage.NotifClearAll}" />
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="16"
                                   Glyph="&#xf2ed;" />

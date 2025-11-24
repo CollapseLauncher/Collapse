@@ -13,8 +13,8 @@ internal class DelimiterInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, D
 {
     protected override void Write(WinUIRenderer renderer, DelimiterInline obj)
     {
-        ArgumentNullException.ThrowIfNull(renderer, nameof(renderer));
-        ArgumentNullException.ThrowIfNull(obj, nameof(obj));
+        ArgumentNullException.ThrowIfNull(renderer);
+        ArgumentNullException.ThrowIfNull(obj);
 
         // delimiters children are emphasized text, we don't need to explicitly render them
         // Just need to render the children of the delimiter, I think..

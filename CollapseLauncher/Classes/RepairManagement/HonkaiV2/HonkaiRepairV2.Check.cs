@@ -30,11 +30,11 @@ internal partial class HonkaiRepairV2
         // Fetch assets
         if (IsCacheMode)
         {
-            await FetchAssetFromGameCacheFiles(checkAssetIndex, Token.Token);
+            await FetchAssetFromGameCacheFiles(checkAssetIndex, Token!.Token);
         }
         else
         {
-            await FetchAssetFromSophon(checkAssetIndex, Token.Token);
+            await FetchAssetFromSophon(checkAssetIndex, Token!.Token);
             if (!IsMainAssetOnlyMode)
             {
                 RemoveBlockAssetFromList(checkAssetIndex);

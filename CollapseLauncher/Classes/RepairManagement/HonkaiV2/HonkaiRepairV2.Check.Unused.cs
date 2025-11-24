@@ -29,7 +29,7 @@ internal partial class HonkaiRepairV2
             "@",
             "d3d",
             "dxgi.dll",
-            GameVersionManager.GamePreset.ProfileName!
+            GameVersionManager!.GamePreset.ProfileName!
         ], StringComparison.OrdinalIgnoreCase);
 
         SearchValues<string> searchValuesContains = SearchValues.Create([

@@ -183,7 +183,7 @@ namespace CollapseLauncher
 
             // Add to asset entry display
             Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
-                    Path.GetFileName(asset.N),
+                    Path.GetFileName(asset.N) ?? "",
                     asset.DataType,
                     Path.GetDirectoryName(asset.N),
                     asset.CS,

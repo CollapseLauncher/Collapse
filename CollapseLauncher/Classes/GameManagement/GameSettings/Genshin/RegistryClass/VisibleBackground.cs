@@ -35,7 +35,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 0 - 1
         /// Default: 0
         /// </summary>
-        public int borderless { get; set; }
+        private int borderless { get; set; }
 
         /// <summary>
         /// Converted value from borderless integer inside UnityVisibleBackground registry to usable boolean.

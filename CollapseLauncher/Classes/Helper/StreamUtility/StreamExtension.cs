@@ -17,13 +17,13 @@ namespace CollapseLauncher.Helper.StreamUtility
 {
     internal static partial class StreamExtension
     {
-        internal const int DefaultBufferSize = 64 << 10;
+        private const int DefaultBufferSize = 64 << 10;
 
         internal static readonly FileStreamOptions FileStreamOpenReadOpt = new()
         {
             Mode = FileMode.Open,
             Access = FileAccess.Read,
-            Share = FileShare.Read
+            Share = FileShare.ReadWrite
         };
 
         internal static readonly FileStreamOptions FileStreamCreateReadWriteOpt = new()
@@ -137,7 +137,7 @@ namespace CollapseLauncher.Helper.StreamUtility
 
         internal static FileInfo EnsureCreationOfDirectory(this FileInfo filePath)
         {
-            ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
+            ArgumentNullException.ThrowIfNull(filePath);
             DirectoryInfo? directoryInfo = filePath.Directory;
 
             try
@@ -365,6 +365,17 @@ namespace CollapseLauncher.Helper.StreamUtility
                 Share      = fileShare,
                 BufferSize = bufferSize
             });
+        }
+
+        public static bool IsPathLocal(this string? path) => path.AsSpan().IsPathLocal();
+
+        public static bool IsPathLocal(this ReadOnlySpan<char> path)
+        {
+            char firstLetter = (char)(path[0] | 0x20);
+
+            return firstLetter is >= 'a' and <= 'z' &&
+                   path[1] == ':' &&
+                   path[2] is '\\' or '/';
         }
     }
 }

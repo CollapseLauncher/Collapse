@@ -275,7 +275,7 @@ namespace CollapseLauncher.Pages
             get => IsCustomResolutionEnabled;
         }
 
-        public string ResolutionSelected
+        internal string ResolutionSelected
         {
             get
             {
@@ -288,7 +288,6 @@ namespace CollapseLauncher.Pages
                 Size size = ScreenProp.CurrentResolution;
                 return $"{size.Width}x{size.Height}";
             }
-            set => Settings.SettingsScreen.sizeResString = value;
         }
 
         private bool _isAllowResolutionIndexChanged;

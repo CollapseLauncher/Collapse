@@ -26,11 +26,11 @@ internal class MyInlineCode : IAddChild
         var border = new Border
         {
             VerticalAlignment = VerticalAlignment.Bottom,
-            Background        = config.Themes.InlineCodeBackground,
+            Background        = MarkdownConfig.Themes.InlineCodeBackground,
             // border.BorderBrush = _config.Themes.InlineCodeBorderBrush;
             // border.BorderThickness = _config.Themes.InlineCodeBorderThickness;
-            CornerRadius      = config.Themes.InlineCodeCornerRadius,
-            Padding           = config.Themes.InlineCodePadding
+            CornerRadius = MarkdownConfig.Themes.InlineCodeCornerRadius,
+            Padding      = MarkdownConfig.Themes.InlineCodePadding
         };
         CompositeTransform3D transform = new CompositeTransform3D
         {
@@ -39,9 +39,9 @@ internal class MyInlineCode : IAddChild
         border.Transform3D = transform;
         var textBlock = new TextBlock
         {
-            FontFamily = config.Themes.InlineCodeFontFamily,
-            FontSize   = config.Themes.InlineCodeFontSize,
-            FontWeight = config.Themes.InlineCodeFontWeight,
+            FontFamily = MarkdownConfig.Themes.InlineCodeFontFamily,
+            FontSize   = MarkdownConfig.Themes.InlineCodeFontSize,
+            FontWeight = MarkdownConfig.Themes.InlineCodeFontWeight,
             Text       = codeInline.Content
         };
         border.Child = textBlock;

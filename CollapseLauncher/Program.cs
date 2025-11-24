@@ -44,9 +44,9 @@ namespace CollapseLauncher
     public static class MainEntryPoint
     {
         // Decide AUMID string
-        public const string AppAumid = "Collapse";
-        public static int  InstanceCount      { get; set; }
-        public static App? CurrentAppInstance { get; set; }
+        public const   string AppAumid = "Collapse";
+        public static  int    InstanceCount      { get; private set; }
+        private static App?   CurrentAppInstance { get; set; }
 
         [STAThread]
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -377,7 +377,7 @@ namespace CollapseLauncher
             int posV = Console.CursorTop;
 
             Updater updater = new Updater(IsPreview ? "preview" : "stable");
-            if (await TryRunUpdateCheck() is not UpdateInfo updateInfo ||
+            if (await TryRunUpdateCheck() is not { } updateInfo ||
                 !IsCurrentUpToDate(updateInfo.TargetFullRelease.Version.ToString()))
             {
                 PrintAndFlush(Console.Out, "Activity: Fallback/Recovery update is currently not available.");
@@ -395,7 +395,7 @@ namespace CollapseLauncher
             while (seconds > 0)
             {
                 PrintAndFlush(Console.Out, $"Launcher will be restarted in {seconds}...");
-                await Task.Delay(1000);
+                await Task.Delay(1000, token);
                 seconds--;
             }
 

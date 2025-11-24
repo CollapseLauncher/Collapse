@@ -30,22 +30,22 @@ internal class MyHeading : IAddChild
         var level = headingBlock.Level;
         _paragraph.FontSize = level switch
         {
-            1 => config.Themes.H1FontSize,
-            2 => config.Themes.H2FontSize,
-            3 => config.Themes.H3FontSize,
-            4 => config.Themes.H4FontSize,
-            5 => config.Themes.H5FontSize,
-            _ => config.Themes.H6FontSize
+            1 => MarkdownConfig.Themes.H1FontSize,
+            2 => MarkdownConfig.Themes.H2FontSize,
+            3 => MarkdownConfig.Themes.H3FontSize,
+            4 => MarkdownConfig.Themes.H4FontSize,
+            5 => MarkdownConfig.Themes.H5FontSize,
+            _ => MarkdownConfig.Themes.H6FontSize
         };
-        _paragraph.Foreground = config.Themes.HeadingForeground;
+        _paragraph.Foreground = MarkdownConfig.Themes.HeadingForeground;
         _paragraph.FontWeight = level switch
         {
-            1 => config.Themes.H1FontWeight,
-            2 => config.Themes.H2FontWeight,
-            3 => config.Themes.H3FontWeight,
-            4 => config.Themes.H4FontWeight,
-            5 => config.Themes.H5FontWeight,
-            _ => config.Themes.H6FontWeight
+            1 => MarkdownConfig.Themes.H1FontWeight,
+            2 => MarkdownConfig.Themes.H2FontWeight,
+            3 => MarkdownConfig.Themes.H3FontWeight,
+            4 => MarkdownConfig.Themes.H4FontWeight,
+            5 => MarkdownConfig.Themes.H5FontWeight,
+            _ => MarkdownConfig.Themes.H6FontWeight
         };
         _paragraph.Margin = new Thickness(0, 8, 0, level switch
         {
@@ -74,22 +74,22 @@ internal class MyHeading : IAddChild
         var level = int.Parse(htmlNode.Name.Substring(1));
         _paragraph.FontSize = level switch
         {
-            1 => config.Themes.H1FontSize,
-            2 => config.Themes.H2FontSize,
-            3 => config.Themes.H3FontSize,
-            4 => config.Themes.H4FontSize,
-            5 => config.Themes.H5FontSize,
-            _ => config.Themes.H6FontSize
+            1 => MarkdownConfig.Themes.H1FontSize,
+            2 => MarkdownConfig.Themes.H2FontSize,
+            3 => MarkdownConfig.Themes.H3FontSize,
+            4 => MarkdownConfig.Themes.H4FontSize,
+            5 => MarkdownConfig.Themes.H5FontSize,
+            _ => MarkdownConfig.Themes.H6FontSize
         };
-        _paragraph.Foreground = config.Themes.HeadingForeground;
+        _paragraph.Foreground = MarkdownConfig.Themes.HeadingForeground;
         _paragraph.FontWeight = level switch
         {
-            1 => config.Themes.H1FontWeight,
-            2 => config.Themes.H2FontWeight,
-            3 => config.Themes.H3FontWeight,
-            4 => config.Themes.H4FontWeight,
-            5 => config.Themes.H5FontWeight,
-            _ => config.Themes.H6FontWeight
+            1 => MarkdownConfig.Themes.H1FontWeight,
+            2 => MarkdownConfig.Themes.H2FontWeight,
+            3 => MarkdownConfig.Themes.H3FontWeight,
+            4 => MarkdownConfig.Themes.H4FontWeight,
+            5 => MarkdownConfig.Themes.H5FontWeight,
+            _ => MarkdownConfig.Themes.H6FontWeight
         };
     }
 

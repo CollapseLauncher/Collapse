@@ -478,9 +478,8 @@ public partial class HomePage
 
             while (true)
             {
-                while (!reader.EndOfStream)
+                while (await reader.ReadLineAsync(WatchOutputLog.Token) is {} line)
                 {
-                    var line = await reader.ReadLineAsync(WatchOutputLog.Token);
                     if (requireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                     {
                         StartExclusiveWindowPayload();
@@ -786,7 +785,6 @@ public partial class HomePage
 
                     RepairGameButton.IsEnabled       = false;
                     UninstallGameButton.IsEnabled    = false;
-                    ConvertVersionButton.IsEnabled   = false;
                     CustomArgsTextBox.IsEnabled      = false;
                     MoveGameLocationButton.IsEnabled = false;
                     StopGameButton.IsEnabled         = true;
@@ -866,7 +864,6 @@ public partial class HomePage
             RepairGameButton.IsEnabled       = true;
             MoveGameLocationButton.IsEnabled = true;
             UninstallGameButton.IsEnabled    = true;
-            ConvertVersionButton.IsEnabled   = true;
             CustomArgsTextBox.IsEnabled      = true;
             StopGameButton.IsEnabled         = false;
 

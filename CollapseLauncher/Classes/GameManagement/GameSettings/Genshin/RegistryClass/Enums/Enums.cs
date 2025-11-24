@@ -10,7 +10,7 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
     internal static class DictionaryCategory
     {
         // HoYoooooooo :wogreeee:
-        internal static Dictionary<double, int> RenderResolutionOption = new()
+        internal static readonly Dictionary<double, int> RenderResolutionOption = new()
         {
             { 0.6d, 0 },
             { 0.8d, 1 },

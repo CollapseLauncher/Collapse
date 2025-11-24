@@ -2530,6 +2530,7 @@ namespace CollapseLauncher.Pages
             {
                 asButton.IsEnabled = false;
                 CDNCacheUtil.PerformCacheGarbageCollection(CDNCacheUtil.CurrentCacheDir, true);
+                UrlToCachedImageSourceConverter.CacheManager.PerformCacheGarbageCollection(true);
             }
             catch (Exception ex)
             {

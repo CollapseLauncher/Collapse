@@ -1661,6 +1661,19 @@
     "Google Play": "Google Play"
   },
 
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Start Update",
+    "CancelUpdateBtn": "Cancel Update",
+    "ReinstallToolBtn": "Re-install",
+    "StartUpdateAutomatically": "Starts Update Automatically",
+    "NotifUpdateCompletedTitle": "{0} has been updated!",
+    "NotifUpdateCompletedSubtitle": "Tool: {0} for your game: {1} - {2} has been updated to v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "Miliastra Sandbox"
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Agreement:"
   },

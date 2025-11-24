@@ -1661,6 +1661,16 @@
     "Google Play": "Google Play"
   },
 
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "アップデート開始",
+    "CancelUpdateBtn": "アップデートをキャンセル",
+    "StartUpdateAutomatically": "自動的にアップデート"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "星々の箱庭"
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "利用規約："
   },

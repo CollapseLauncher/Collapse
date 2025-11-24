@@ -1,0 +1,186 @@
+﻿using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Interfaces.Class;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+using WinRT;
+// ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
+
+#nullable enable
+namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+
+public class HypLauncherBackgroundApi : HypApiResponse<HypLauncherBackgroundList>;
+
+public class HypLauncherBackgroundList
+{
+    [JsonPropertyName("game_info_list")]
+    public List<HypLauncherBackgroundContentList> GameContentList { get; init; } = [];
+
+    [JsonIgnore]
+    public string? BackgroundImageUrl
+    {
+        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.BackgroundImage?.ImageUrl;
+    }
+
+    [JsonIgnore]
+    public string? FeaturedEventIconUrl
+    {
+        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageUrl;
+    }
+
+    [JsonIgnore]
+    public string? FeaturedEventIconHoverUrl
+    {
+        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageHoverUrl;
+    }
+
+    [JsonIgnore]
+    public string? FeaturedEventIconClickLink
+    {
+        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ClickLink;
+    }
+}
+
+public class HypLauncherBackgroundContentList
+{
+    [JsonPropertyName("backgrounds")]
+    public List<HypLauncherBackgroundContentKindData> Backgrounds { get; init; } = [];
+
+    [JsonPropertyName("game")]
+    public HypGameInfoData? GameInfo { get; set; }
+}
+
+public class HypLauncherBackgroundContentKindData
+{
+    [JsonPropertyName("background")]
+    public HypLauncherMediaContentData? BackgroundImage
+    {
+        get => string.IsNullOrEmpty(field?.ImageUrl) && string.IsNullOrEmpty(field?.ImageHoverUrl) &&
+               string.IsNullOrEmpty(field?.Title)
+               && string.IsNullOrEmpty(field?.ClickLink) && string.IsNullOrEmpty(field?.Date) &&
+               field?.ContentType == null
+            ? null
+            : field;
+        set;
+    }
+
+    [JsonPropertyName("icon")]
+    public HypLauncherMediaContentData? FeaturedEventIcon
+    {
+        get => string.IsNullOrEmpty(field?.ImageUrl) && string.IsNullOrEmpty(field?.ImageHoverUrl) &&
+               string.IsNullOrEmpty(field?.Title)
+               && string.IsNullOrEmpty(field?.ClickLink) && string.IsNullOrEmpty(field?.Date) &&
+               field?.ContentType == null
+            ? null
+            : field;
+        set;
+    }
+
+    [JsonPropertyName("video")]
+    public HypLauncherMediaContentData? BackgroundVideo
+    {
+        get;
+        set;
+    }
+
+    [JsonPropertyName("theme")]
+    public HypLauncherMediaContentData? BackgroundOverlay
+    {
+        get;
+        set;
+    }
+
+    [JsonPropertyName("id")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? Id { get; set; }
+}
+
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherMediaContentData : NotifyPropertyChanged
+{
+    [JsonPropertyName("type")]
+    public LauncherGameNewsPostType ContentType
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("date")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? Date
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("title")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? Title
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("description")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? Description
+    {
+        get => field ?? Title;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("link")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? ClickLink
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("url")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? ImageUrl
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("hover_url")]
+    [JsonConverter(typeof(EmptyStringAsNullConverter))]
+    public string? ImageHoverUrl
+    {
+        get => field ?? ImageUrl;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+}

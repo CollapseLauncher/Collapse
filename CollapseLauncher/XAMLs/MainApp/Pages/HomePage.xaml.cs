@@ -2,7 +2,6 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -47,6 +46,10 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Point = Windows.Foundation.Point;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using WinRT;
+using CollapseLauncher.Helper.Loading;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable AsyncVoidMethod
@@ -71,14 +74,13 @@ using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Pages
 {
+    [GeneratedBindableCustomProperty]
     public sealed partial class HomePage
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private CancellationTokenSourceWrapper PageToken { get; set; }
-        private CancellationTokenSourceWrapper CarouselToken { get; set; }
-
-        private Button _lastSocMedButton;
+        private GamePresetProperty             CurrentGameProperty { get; set; }
+        private CancellationTokenSourceWrapper PageToken           { get; set; }
+        private CancellationTokenSourceWrapper CarouselToken       { get; set; }
 
         private int barWidth;
         private int consoleWidth;
@@ -168,9 +170,6 @@ namespace CollapseLauncher.Pages
 
                 await GetCurrentGameState();
 
-                if (!GetAppConfigValue("ShowEventsPanel").ToBool() || (!IsCarouselPanelAvailable && !IsPostPanelAvailable))
-                    SidePanel.Visibility = Visibility.Collapsed;
-
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                     SocMedPanel.Visibility = Visibility.Collapsed;
 
@@ -187,11 +186,11 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                SocMedPanel.Translation += Shadow48;
+                WpfPackageParentGrid.EnableImplicitAnimation();
                 GameStartupSetting.Translation += Shadow32;
-                CommunityToolsBtn.Translation += Shadow32;
+                CommunityToolsBtn.Translation  += Shadow32;
 
-                if (IsCarouselPanelAvailable || IsPostPanelAvailable)
+                if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
@@ -277,6 +276,12 @@ namespace CollapseLauncher.Pages
                 if (!await CurrentGameProperty.GameVersion
                                               .EnsureGameConfigIniCorrectiveness(this))
                 {
+                    // Triggers WPF package reinstallation if available
+                    if (CurrentGameProperty.GameWpfContext?.IsWpfPackageEnabled ?? false)
+                    {
+                        _ = CurrentGameProperty.GameWpfContext.ReinstallToolAsync();
+                    }
+
                     // If the EnsureGameConfigIniCorrectiveness() returns false,
                     // means config.ini has been changed. Then reload and return to the HomePage
                     ReturnToHomePage();
@@ -335,7 +340,7 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            IsPageUnload                                     =  true;
+            IsPageUnload = true;
             if (CurrentGameProperty.GamePlaytime != null)
             {
                 CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
@@ -347,14 +352,13 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region EventPanel
-        private readonly ConcurrentDictionary<string, byte> _eventPanelProcessing = new();
+        private readonly ConcurrentDictionary<string, byte> _eventPanelProcessing =
+            new ConcurrentDictionary<string, byte>();
         private async void TryLoadEventPanelImage()
         {
             // Get the url and article image path
-            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
-            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
+            string featuredEventArticleUrl = GameBackgroundData?.FeaturedEventIconClickLink;
+            string featuredEventIconImg = GameBackgroundData?.FeaturedEventIconUrl;
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)
@@ -390,25 +394,24 @@ namespace CollapseLauncher.Pages
                 // Using the original icon file and cached icon file streams
                 if (!isCacheIconExist)
                 {
-                    await using FileStream cachedIconFileStream = new FileStream(cachedIconFileInfo.FullName,
+                    await using FileStream cachedIconFileStream = new(cachedIconFileInfo.FullName,
                              FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-                    await using MemoryStream copyIconFileStream = new MemoryStream();
                     await using Stream iconFileStream =
                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
                                                                         PageToken.Token);
-                    var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                    // Copy remote stream to memory stream
-                    await iconFileStream.CopyToAsync(copyIconFileStream);
-                    copyIconFileStream.Position = 0;
-                    // Get the icon image information and set the resized frame size
-                    var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                    var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                    var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                    copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                              (uint)width, (uint)height); // Start resizing
-                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    double screenDpi = 96 * WindowUtility.CurrentWindowMonitorScaleFactor;
+                    using (MemoryStream outStream = new())
+                    {
+                        await iconFileStream.CopyToAsync(outStream);
+                        outStream.Position = 0;
+                        // Start resizing
+                        await ImageLoaderHelper.GetConvertedImageAsPng(outStream,
+                                                                       cachedIconFileStream,
+                                                                       screenDpi,
+                                                                       screenDpi);
+                        cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    }
 
                     // Set the source from cached icon stream
                     source.SetSource(cachedIconFileStream.AsRandomAccessStream());
@@ -453,11 +456,11 @@ namespace CollapseLauncher.Pages
 
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameNewsData?.NewsCarousel?.Count - 1 
+                    if (ImageCarousel.SelectedIndex != GameCarouselData?.Count - 1 
                         && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
-                        for (int i = GameNewsData?.NewsCarousel?.Count ?? 0; i > 0; i--)
+                        for (int i = GameCarouselData?.Count ?? 0; i > 0; i--)
                         {
                             if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
                             {
@@ -534,45 +537,6 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region SocMed Buttons
-        private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
-        {
-            Button btn = (Button)sender;
-            btn.Translation = Shadow16;
-
-            Grid             iconGrid   = btn.FindDescendant<Grid>();
-            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
-            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
-
-            ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
-
-            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
-            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
-            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-        }
-
-        private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
-        {
-            Button btn = (Button)sender;
-            btn.Translation = new Vector3(0);
-
-            FlyoutBase flyout = btn.Flyout;
-            Point pos = e.GetCurrentPoint(btn).Position;
-            if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
-            {
-                flyout?.Hide();
-            }
-
-            Grid             iconGrid   = btn.FindDescendant<Grid>();
-            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
-            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
-
-            ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
-
-            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
-            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
-        }
-
         private async void HideSocialMediaPanel(bool hide)
         {
             if (!hide)
@@ -638,66 +602,69 @@ namespace CollapseLauncher.Pages
 
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            if (sender is not ToolTip { Tag: Button button })
+            if (sender is not ToolTip { Tag: Button { IsPointerOver: true } button })
             {
                 return;
             }
 
-            if (!button.IsPointerOver && _lastSocMedButton == button)
-                return;
-            _lastSocMedButton = button;
-
-            Flyout flyout = button.Flyout as Flyout;
-            if (flyout != null)
+            if (button.DataContext is not HypLauncherSocialMediaContentData { CanShowFlyout: true })
             {
-                Panel contextPanel = flyout.Content as Panel;
-                if (contextPanel != null && contextPanel.Tag is LauncherGameNewsSocialMedia socMedData)
-                {
-                    if (!socMedData.IsHasDescription && !socMedData.IsHasLinks && !socMedData.IsHasQr)
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             FlyoutBase.ShowAttachedFlyout(button);
         }
-
-        private void HideSocMedFlyout(object sender, RoutedEventArgs e)
+        
+        private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
         {
-            Grid dummyGrid = (sender as Panel ?? throw new InvalidOperationException()).FindChild<Grid>();
+            Button btn = (Button)sender;
+
+            Flyout flyout = btn.Flyout as Flyout;
+            if (btn.Flyout is not Flyout { Content: Panel parentPanel })
+            {
+                return;
+            }
+
+            var isOutsideFlyout = IsOutsideButtonFlyoutArea(parentPanel, e, new Thickness(32));
+            var isOutsideButton = IsOutsideButtonFlyoutArea(btn,         e, new Thickness(32));
+
+            if ((!isOutsideFlyout &&
+                 !isOutsideButton) ||
+                btn.IsPointerOver)
+            {
+                return;
+            }
+
+            flyout?.Hide();
+        }
+
+        private void HideSocMedFlyout(object sender, PointerRoutedEventArgs e)
+        {
+            Panel dummyGrid = sender as Panel ?? throw new InvalidOperationException();
             if (dummyGrid == null)
             {
                 return;
             }
 
             Flyout flyout = dummyGrid.Tag as Flyout;
-            flyout?.Hide();
-        }
+            Button button = flyout?.Target as Button;
 
-        private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
-        {
-            // Prevent the flyout showing when there is no content visible
-            StackPanel stackPanel = sender as StackPanel;
-
-            if (stackPanel == null)
+            if (flyout == null || button == null)
             {
                 return;
             }
 
-            ApplySocialMediaBinding(stackPanel);
+            bool isOutsideFlyout = IsOutsideButtonFlyoutArea(dummyGrid, e, new Thickness(32));
+            bool isOutsideButton = IsOutsideButtonFlyoutArea(button,    e, new Thickness(32));
 
-            bool visible = false;
-            foreach (var child in stackPanel!.Children)
+            if ((!isOutsideFlyout &&
+                !isOutsideButton) ||
+                button.IsPointerOver)
             {
-                if (child.Visibility == Visibility.Visible)
-                    visible = true;
+                return;
             }
 
-            if (!visible)
-            {
-                HideSocMedFlyout(sender, e);
-            }
+            flyout.Hide();
         }
         #endregion
 
@@ -1046,6 +1013,12 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                LoadingMessageHelper.ShowLoadingFrame();
+
+                // Initialize and get game state, then get the latest package info
+                LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
+                                                Lang._FileCleanupPage.LoadingSubtitle2);
+
                 GameStartupSetting.Flyout.Hide();
                 if (CurrentGameProperty?.GameInstall != null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
@@ -1056,6 +1029,7 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
         #region Set Hand Cursor
         private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
             (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
@@ -1217,8 +1191,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ElementScaleOutHoveredPointerEnteredInner(FrameworkElement element,
-            float xElevation = 0, float yElevation = -4)
+        private async void ElementScaleOutHoveredPointerEnteredInner(
+            FrameworkElement element,
+            float            xElevation = 0,
+            float            yElevation = -4)
         {
             Compositor compositor = this.GetElementCompositor();
 
@@ -1246,8 +1222,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ElementScaleInHoveredPointerExitedInner(FrameworkElement element,
-            float xElevation = 0, float yElevation = -4)
+        private async void ElementScaleInHoveredPointerExitedInner(
+            FrameworkElement element,
+            float            xElevation = 0,
+            float            yElevation = -4)
         {
             Compositor compositor = this.GetElementCompositor();
 
@@ -1260,58 +1238,12 @@ namespace CollapseLauncher.Pages
                                               element.Translation.Z);
             // ReSharper restore ConstantConditionalAccessQualifier
             // ReSharper restore ConstantNullCoalescingCondition
-            await element.StartAnimation(
-                TimeSpan.FromSeconds(0.25),
-                compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
-                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
-                );
+            await element.StartAnimation(TimeSpan.FromSeconds(0.25),
+                                         compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
+                                         compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
+                                        );
         }
         
         #endregion
-
-        private void ApplyShadowToImageElement(object sender, RoutedEventArgs e)
-        {
-            if (sender is not ButtonBase { Content: Panel panel })
-            {
-                return;
-            }
-
-            bool isStart = true;
-            foreach (Image imageElement in panel.Children.OfType<Image>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
-
-            foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
-        }
     }
 }

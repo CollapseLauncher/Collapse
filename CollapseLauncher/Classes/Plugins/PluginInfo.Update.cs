@@ -20,8 +20,8 @@ namespace CollapseLauncher.Plugins;
 
 public partial class PluginInfo
 {
-    public string[]?          UpdateCdnList { get; set; }
-    public IPluginSelfUpdate? Updater       { get; set; }
+    private string[]?          UpdateCdnList { get; set; }
+    private IPluginSelfUpdate? Updater       { get; set; }
 
     public bool IsUpdateSupported
     {
@@ -31,7 +31,7 @@ public partial class PluginInfo
     public bool IsPluginUpToDate
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -41,7 +41,7 @@ public partial class PluginInfo
     public bool IsUpdateAvailable
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -51,7 +51,7 @@ public partial class PluginInfo
     public bool IsUpdateCheckInProgress
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -61,7 +61,7 @@ public partial class PluginInfo
     public bool IsUpdateInProgress
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -71,7 +71,7 @@ public partial class PluginInfo
     public bool IsUpdateCompleted
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -81,7 +81,7 @@ public partial class PluginInfo
     public double UpdateProgress
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -91,7 +91,7 @@ public partial class PluginInfo
     public PluginManifest? NextUpdateManifestInfo
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();

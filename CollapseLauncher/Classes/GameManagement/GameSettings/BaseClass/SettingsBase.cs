@@ -6,10 +6,10 @@ namespace CollapseLauncher.GameSettings.Base
     internal abstract class SettingsBase : ImportExportBase, IGameSettings
     {
         #region Base Properties
-        public virtual CustomArgs            SettingsCustomArgument { get; set; }
-        public virtual BaseScreenSettingData SettingsScreen         { get; set; }
-        public virtual CollapseScreenSetting SettingsCollapseScreen { get; set; }
-        public virtual CollapseMiscSetting   SettingsCollapseMisc   { get; set; }
+        public virtual CustomArgs            SettingsCustomArgument { get; protected set; }
+        public virtual BaseScreenSettingData SettingsScreen         { get; protected set; }
+        public virtual CollapseScreenSetting SettingsCollapseScreen { get; protected set; }
+        public virtual CollapseMiscSetting   SettingsCollapseMisc   { get; protected set; }
         #endregion
 
 #nullable enable
