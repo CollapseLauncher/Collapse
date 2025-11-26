@@ -291,15 +291,18 @@ namespace CollapseLauncher
             VelopackLocatorExtension.StartUpdaterHook(AppAumid);
             return;
 
-            static void InitializeSentrySdk()
+            static async void InitializeSentrySdk()
             {
                 try
                 {
-                    // Sentry SDK Entry
-                    LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
-                    SentryHelper.InitializeSentrySdk();
-                    LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
-                    SentryHelper.InitializeExceptionRedirect();
+                    await Task.Run(() =>
+                    {
+                        // Sentry SDK Entry
+                        LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
+                        SentryHelper.InitializeSentrySdk();
+                        LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
+                        SentryHelper.InitializeExceptionRedirect();
+                    });
                 }
                 catch (Exception ex)
                 {
