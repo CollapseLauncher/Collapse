@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "修復",
     "GameSettings_Panel2UninstallGame": "アンインストール",
     "GameSettings_Panel2ConvertVersion": "リージョンを変更",
+    "GameSettings_Panel2ChangeGameLocation": "ゲームの位置を変更",
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "ゲームをドライブのルートフォルダーに移動させることはできません！\r\nフォルダーを作成してから再度お試しください。",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
@@ -1664,7 +1665,10 @@
   "_WpfPackageContext": {
     "StartUpdateBtn": "アップデート開始",
     "CancelUpdateBtn": "アップデートをキャンセル",
-    "StartUpdateAutomatically": "自動的にアップデート"
+    "ReinstallToolBtn": "再インストール",
+    "StartUpdateAutomatically": "自動的にアップデート",
+    "NotifUpdateCompletedTitle": "{0}が更新されました！",
+    "NotifUpdateCompletedSubtitle": "{1} - {2} 用のツール：{0}がv{3}に更新されました"
   },
 
   "_WpfPackageName": {
