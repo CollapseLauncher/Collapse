@@ -5,8 +5,8 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.SimpleZipArchiveReader;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -257,7 +257,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             long localFileSizes = localFileInfos.Sum(x => x.FileSize);
             return (localFileInfos, localFileSizes);
 
-            LocalFileInfo ConvertZipEntry(SimpleZipArchiveEntry  asset) => new LocalFileInfo(asset, gamePath);
+            LocalFileInfo ConvertZipEntry(ZipArchiveEntry        asset) => new LocalFileInfo(asset, gamePath);
             LocalFileInfo ConvertPkgVersion(PkgVersionProperties asset) => new LocalFileInfo(asset, gamePath);
             LocalFileInfo ConvertHypData(HypPackageData          asset) => new LocalFileInfo(asset, gamePath);
         }

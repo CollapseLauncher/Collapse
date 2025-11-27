@@ -4,9 +4,9 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
-using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.SimpleZipArchiveReader;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using System;
 using System.Buffers;
@@ -112,7 +112,7 @@ internal partial class WpfPackageContext
 
         return;
 
-        async ValueTask Impl(SimpleZipArchiveEntry entry, CancellationToken token)
+        async ValueTask Impl(ZipArchiveEntry entry, CancellationToken token)
         {
             string filePath = Path.Combine(gamePath, entry.Filename);
             if (entry.IsDirectory)

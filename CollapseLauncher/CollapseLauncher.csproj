@@ -305,6 +305,7 @@
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
         <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
+        <ProjectReference Include="..\Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />

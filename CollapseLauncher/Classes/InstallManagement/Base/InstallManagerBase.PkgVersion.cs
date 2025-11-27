@@ -2,17 +2,16 @@
 using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
-using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.EncTool.Parser.SimpleZipArchiveReader;
 using Hi3Helper.Http;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.SimpleZipArchiveReader;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -71,7 +70,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
         }
 
-        public LocalFileInfo(SimpleZipArchiveEntry zipEntry, string basePath)
+        public LocalFileInfo(ZipArchiveEntry zipEntry, string basePath)
         {
             string fullPath = Path.Combine(basePath, zipEntry.Filename);
             fullPath.NormalizePathInplace();
@@ -251,7 +250,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get game state
-                GameInstallStateEnum gameStateEnum = await GameVersionManager!.GetGameState();
+                GameInstallStateEnum gameStateEnum = await GameVersionManager.GetGameState();
 
                 // Do pkg_version check if Zip Check is used
                 if (includeZipCheck)

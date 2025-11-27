@@ -517,6 +517,9 @@
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.0, )"
         }
       },
+      "hi3helper.simpleziparchivereader": {
+        "type": "Project"
+      },
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
