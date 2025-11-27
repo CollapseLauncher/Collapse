@@ -58,8 +58,9 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
-  <Project Path="Hi3Helper.SimpleZipArchiveReader/src/Hi3Helper.SimpleZipArchiveReader/Hi3Helper.SimpleZipArchiveReader.csproj" Id="a217d608-fba3-4589-b675-9129a04e1bd9">
+  <Project Path="Hi3Helper.SimpleZipArchiveReader/src/Hi3Helper.SimpleZipArchiveReader/Hi3Helper.SimpleZipArchiveReader.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Sophon/Hi3Helper.Sophon.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
