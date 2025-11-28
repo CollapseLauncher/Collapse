@@ -5,6 +5,10 @@
     <BuildType Name="Release" />
     <Platform Name="x64" />
   </Configurations>
+  <Project Path="BackgroundTest/BackgroundTest.csproj">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
   <Project Path="CollapseLauncher/CollapseLauncher.csproj">
     <Platform Project="x64" />
     <Deploy Solution="Release|*" />

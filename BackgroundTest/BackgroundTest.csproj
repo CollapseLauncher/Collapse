@@ -1,0 +1,95 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- General Properties -->
+    <OutputType>WinExe</OutputType>
+    <StartupObject>BackgroundTest.MainEntryPoint</StartupObject>
+    <Configurations>Debug;Release</Configurations>
+    <!-- Assembly Info Properties -->
+    <AssemblyName>BackgroundTest</AssemblyName>
+    <ProductName>Collapse</ProductName>
+    <Product>Collapse</Product>
+    <Description>Collapse</Description>
+    <AssemblyTitle>Collapse</AssemblyTitle>
+    <Company>Collapse Launcher Team</Company>
+    <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+    <Copyright>Copyright 2022-2025 $(Company)</Copyright>
+    <!-- Versioning -->
+    <Version>1.83.12</Version>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <!-- Target Settings -->
+    <Platforms>x64</Platforms>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
+    <!-- Debug Settings -->
+    <DebugType>portable</DebugType>
+    <GitVersion>false</GitVersion>
+    <!-- WinUI Properties -->
+    <UseWinUI>true</UseWinUI>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Analyzers Settings -->
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <!-- Other Settings -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <ShouldComputeInputPris>true</ShouldComputeInputPris>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <OutputType>Exe</OutputType>
+    <!-- !! IMPORTANT !!-->
+    <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
+    <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
+    <TrimMode>full</TrimMode>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <!-- !! IMPORTANT !!-->
+    <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
+    <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
+    <Optimize>True</Optimize>
+    <GitSkipCache>true</GitSkipCache>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Publish'">
+    <!-- !! IMPORTANT !!-->
+    <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
+    <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;MHYPLUGINSUPPORT</DefineConstants>
+    <Optimize>true</Optimize>
+    <GitSkipCache>true</GitSkipCache>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Libsql.Client" Version="0.5.1" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
+
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3595.46" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
+    <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
+    <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="1.19.5-preview1" />
+    <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="0.11.1-preview2" />
+    <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
+  </ItemGroup>
+
+</Project>
