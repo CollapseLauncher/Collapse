@@ -78,12 +78,6 @@
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
-      "Libsql.Client": {
-        "type": "Direct",
-        "requested": "[0.5.1, )",
-        "resolved": "0.5.1",
-        "contentHash": "5fJusmhN7snIZzlsZ0xpQOoNvWZkJKS2/hhljLz8qvEPIJZgYxpkWWCROrSDpjMxQpixqI/nUhfhrQR67jVVoA=="
-      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.3.2, )",
@@ -98,12 +92,6 @@
         "requested": "[10.0.0, )",
         "resolved": "10.0.0",
         "contentHash": "kICGrGYEzCNI3wPzfEXcwNHgTvlvVn9yJDhSdRK+oZQy4jvYH529u7O0xf5ocQKzOMjfS07+3z9PKRIjrFMJDA=="
-      },
-      "Microsoft.Web.WebView2": {
-        "type": "Direct",
-        "requested": "[1.0.3595.46, )",
-        "resolved": "1.0.3595.46",
-        "contentHash": "j+yzqAKwC8Zn+3FL5XJxm6N0Rh5iDqTANBfFaYvnjyRpbpqt3qkpFcqMWLjqEBGiWEClh3zLCkJINwRUcr1KxQ=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -184,6 +172,11 @@
           "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
+      },
+      "Microsoft.Web.WebView2": {
+        "type": "Transitive",
+        "resolved": "1.0.3179.45",
+        "contentHash": "3pokSH5CnN0G6rGhGFo1y87inxYhNxBQ2Vdf0wlvBj99KHxQJormjDACmqRnFeUsmuNFIhWwfAL1ztq7wD5qRA=="
       },
       "Microsoft.Windows.SDK.BuildTools.MSIX": {
         "type": "Transitive",
@@ -277,12 +270,6 @@
       }
     },
     "net10.0-windows10.0.26100/win-x64": {
-      "Libsql.Client": {
-        "type": "Direct",
-        "requested": "[0.5.1, )",
-        "resolved": "0.5.1",
-        "contentHash": "5fJusmhN7snIZzlsZ0xpQOoNvWZkJKS2/hhljLz8qvEPIJZgYxpkWWCROrSDpjMxQpixqI/nUhfhrQR67jVVoA=="
-      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.3.2, )",
@@ -291,12 +278,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.6.241114003"
         }
-      },
-      "Microsoft.Web.WebView2": {
-        "type": "Direct",
-        "requested": "[1.0.3595.46, )",
-        "resolved": "1.0.3595.46",
-        "contentHash": "j+yzqAKwC8Zn+3FL5XJxm6N0Rh5iDqTANBfFaYvnjyRpbpqt3qkpFcqMWLjqEBGiWEClh3zLCkJINwRUcr1KxQ=="
       },
       "PhotoSauce.NativeCodecs.Libheif": {
         "type": "Direct",
@@ -324,6 +305,11 @@
         "dependencies": {
           "PhotoSauce.MagicScaler": "[0.15.0]"
         }
+      },
+      "Microsoft.Web.WebView2": {
+        "type": "Transitive",
+        "resolved": "1.0.3179.45",
+        "contentHash": "3pokSH5CnN0G6rGhGFo1y87inxYhNxBQ2Vdf0wlvBj99KHxQJormjDACmqRnFeUsmuNFIhWwfAL1ztq7wD5qRA=="
       },
       "Microsoft.WindowsAppSDK.Foundation": {
         "type": "Transitive",

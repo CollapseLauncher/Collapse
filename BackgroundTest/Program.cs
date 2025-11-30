@@ -38,7 +38,6 @@ public class MainEntryPoint
         DispatcherQueueSynchronizationContext context = new(dispatcherQueue);
         SynchronizationContext.SetSynchronizationContext(context);
 
-        // ReSharper disable once ObjectCreationAsStatement
         _currentApp ??= new App
         {
             HighContrastAdjustment = ApplicationHighContrastAdjustment.None

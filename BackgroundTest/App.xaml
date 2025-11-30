@@ -5,7 +5,25 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager.ThemeResources.xaml" />
+                <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <AcrylicBrush x:Key="ContentBackgroundAcrylicBrush"
+                                  FallbackColor="#F0222222"
+                                  TintColor="#F0222222"
+                                  TintLuminosityOpacity="0.7"
+                                  TintOpacity="0" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <AcrylicBrush x:Key="ContentBackgroundAcrylicBrush"
+                                  FallbackColor="#F0FFFFFF"
+                                  TintColor="#F0000000"
+                                  TintLuminosityOpacity="0.8"
+                                  TintOpacity="0.0" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
