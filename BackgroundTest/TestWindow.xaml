@@ -51,7 +51,7 @@
                 </TextBlock>
                 <newPipsPager:NewPipsPager x:Name="NewPipsPager"
                                            Grid.Column="1"
-                                           ItemsCount="8"
+                                           ItemsCount="128"
                                            ItemIndex="0"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -70,7 +70,7 @@
             <Grid HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <newPipsPager:NewPipsPager x:Name="NewPipsPagerVertical"
-                                           ItemsCount="124"
+                                           ItemsCount="8"
                                            ItemIndex="0"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"

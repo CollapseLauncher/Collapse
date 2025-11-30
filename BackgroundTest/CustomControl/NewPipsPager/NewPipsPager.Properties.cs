@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Xaml.Interactivity;
 using System;
 using System.Linq;
 using System.Threading;
@@ -11,7 +10,9 @@ public partial class NewPipsPager
 {
     #region Properties
 
-    private int[] _itemsDummy = [];
+    private        int[]  _itemsDummy = [];
+    private static Style? _pipButtonStyleNormal;
+    private static Style? _pipButtonStyleSelected;
 
     public Orientation Orientation
     {
@@ -35,8 +36,6 @@ public partial class NewPipsPager
                 int itemsCount = ItemsCount;
                 if (itemsCount == 0)
                 {
-                    value = -1;
-                    SetValue(ItemIndexProperty, value);
                     return;
                 }
 
@@ -133,20 +132,36 @@ public partial class NewPipsPager
         }
         finally
         {
-            // Update index
-            pager.ItemIndex = 0;
-
             // Update ItemsSource if already assigned
             pager._pipsPagerItemsRepeater.ItemsSource = pager._itemsDummy;
+
+            // Update index only if the count is invalid
+            int currentIndex = pager.ItemIndex;
+            if (currentIndex > value ||
+                (value != 0 && currentIndex < 0))
+            {
+                pager.ItemIndex = 0;
+            }
         }
     }
 
     private static void ItemIndex_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
+        // Ignore if the old and new index are equal
+        if (e is not { NewValue: int asNewIndex, OldValue: int asOldIndex } ||
+            asNewIndex == asOldIndex)
+        {
+            return;
+        }
+
         NewPipsPager pager = (NewPipsPager)d;
 
+        // Update navigation buttons state
         UpdatePreviousButtonVisualState(pager);
         UpdateNextButtonVisualState(pager);
+
+        // Update pip buttons state
+        UpdateAndBringSelectedPipToView(pager, asNewIndex, asOldIndex);
     }
 
     private static void UpdatePreviousButtonVisualState(NewPipsPager pager)
@@ -170,11 +185,13 @@ public partial class NewPipsPager
             return;
         }
 
-        if (pager.ItemIndex <= 0)
+        if (pager.ItemIndex > 0)
         {
-            pager._previousPageButton!.IsEnabled = false;
-            VisualStateManager.GoToState(pager, "PreviousPageButtonHidden", true);
+            return;
         }
+
+        pager._previousPageButton!.IsEnabled = false;
+        VisualStateManager.GoToState(pager, "PreviousPageButtonHidden", true);
     }
 
     private static void UpdateNextButtonVisualState(NewPipsPager pager)
@@ -198,11 +215,87 @@ public partial class NewPipsPager
             return;
         }
 
-        if (pager.ItemIndex + 1 >= pager.ItemsCount)
+        if (pager.ItemIndex + 1 < pager.ItemsCount)
         {
-            pager._nextPageButton!.IsEnabled = false;
-            VisualStateManager.GoToState(pager, "NextPageButtonHidden", true);
+            return;
         }
+
+        pager._nextPageButton!.IsEnabled = false;
+        VisualStateManager.GoToState(pager, "NextPageButtonHidden", true);
+    }
+
+    private static void UpdateAndBringSelectedPipToView(NewPipsPager pager, int newIndex, int oldIndex)
+    {
+        if (UpdateSelectedPipStyle(pager, newIndex, oldIndex) is not { } asButton)
+        {
+            return;
+        }
+
+        BringIntoViewOptions options = new()
+        {
+            AnimationDesired = true
+        };
+        if (pager.Orientation == Orientation.Horizontal)
+        {
+            options.HorizontalAlignmentRatio = 0.5d;
+        }
+        else
+        {
+            options.VerticalAlignmentRatio = 0.5d;
+        }
+        asButton.StartBringIntoView(options);
+    }
+
+    private static Button? UpdateSelectedPipStyle(NewPipsPager pager, int newIndex, int oldIndex)
+    {
+        const string normalStyle   = "NewPipsPagerButtonBaseStyle";
+        const string selectedStyle = "NewPipsPagerButtonBaseSelectedStyle";
+
+        ItemsRepeater? repeater = pager._pipsPagerItemsRepeater;
+        if (repeater is null)
+        {
+            return null;
+        }
+
+        if (_pipButtonStyleNormal is null &&
+            Application.Current.Resources.TryGetValue(normalStyle, out object normalStyleObj) &&
+            normalStyleObj is Style normalStyleAsStyle)
+        {
+            _pipButtonStyleNormal = normalStyleAsStyle;
+        }
+
+        if (_pipButtonStyleSelected is null &&
+            Application.Current.Resources.TryGetValue(selectedStyle, out object selectedStyleObj) &&
+            selectedStyleObj is Style selectedStyleAsStyle)
+        {
+            _pipButtonStyleSelected = selectedStyleAsStyle;
+        }
+
+        repeater.UpdateLayout();
+
+        int  childCount       = repeater.ItemsSourceView.Count;
+        bool isUpdateNewChild = newIndex >= 0 && newIndex < childCount;
+        bool isUpdateOldChild = oldIndex >= 0 && oldIndex < childCount;
+
+        Button? newIndexButtonView = null;
+        if (isUpdateNewChild &&
+            repeater.GetOrCreateElement(newIndex) is Button newIndexButton)
+        {
+            newIndexButton.Style = _pipButtonStyleSelected;
+            newIndexButtonView   = newIndexButton;
+            newIndexButton.UpdateLayout();
+            VisualStateManager.GoToState(newIndexButton, "Normal", true);
+        }
+
+        if (isUpdateOldChild &&
+            repeater.TryGetElement(oldIndex) is Button oldIndexButton)
+        {
+            oldIndexButton.Style = _pipButtonStyleNormal;
+            oldIndexButton.UpdateLayout();
+            VisualStateManager.GoToState(oldIndexButton, "Normal", true);
+        }
+
+        return newIndexButtonView;
     }
 
     private static void PreviousNavigationButtonMode_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -82,17 +82,6 @@ public partial class NewPipsPager
         return selfSize;
     }
 
-    private void ItemsRepeaterMeasure_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        if (Parent is not FrameworkElement element)
-        {
-            return;
-        }
-
-        Size parentSize = element.DesiredSize;
-        MeasureOverride(parentSize);
-    }
-
     #endregion
 
     #region UI Events - Navigation Buttons
@@ -114,6 +103,52 @@ public partial class NewPipsPager
                 NextPageButtonOnClick(sender, e);
                 break;
         }
+    }
+
+    #endregion
+
+    #region ItemsRepeater
+
+    private void ItemsRepeaterMeasure_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (Parent is not FrameworkElement element)
+        {
+            return;
+        }
+
+        Size parentSize = element.DesiredSize;
+        MeasureOverride(parentSize);
+    }
+
+    private void ItemsRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
+    {
+        if (args.Element is Button asButton)
+        {
+            asButton.Click += ItemsRepeater_ItemOnClick;
+        }
+    }
+
+    private void ItemsRepeater_ItemOnClick(object? sender, RoutedEventArgs args)
+    {
+        if (sender is not Button { Tag: int pipButtonIndex })
+        {
+            return;
+        }
+
+        ItemIndex = pipButtonIndex; 
+    }
+
+    #endregion
+
+    #region Loaded and Unloaded
+
+    private void NewPipsPager_Unloaded(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private void NewPipsPager_Loaded(object sender, RoutedEventArgs e)
+    {
+        UpdateAndBringSelectedPipToView(this, ItemIndex, -1);
     }
 
     #endregion

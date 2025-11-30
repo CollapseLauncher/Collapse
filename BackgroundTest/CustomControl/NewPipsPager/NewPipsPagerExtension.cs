@@ -35,7 +35,7 @@ public static class NewPipsPagerExtension
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "GetTemplateChild")]
         private extern DependencyObject GetTemplateChildAccessor(string name);
 
-        public T GetTemplateChild<T>(string name)
+        internal T GetTemplateChild<T>(string name)
         {
             DependencyObject obj = source.GetTemplateChildAccessor(name);
             if (obj is not T)

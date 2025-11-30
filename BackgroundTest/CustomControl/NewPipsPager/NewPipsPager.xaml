@@ -129,10 +129,10 @@
                                 </ItemsRepeater.Layout>
                                 <ItemsRepeater.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Content="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                                Style="{ThemeResource NewPipsPagerButtonBaseStyle}"
+                                        <Button Style="{ThemeResource NewPipsPagerButtonBaseStyle}"
                                                 CornerRadius="{ThemeResource PipsPagerCornerRadius}"
                                                 controls:NewPipsPagerExtension.CursorType="Hand"
+                                                Tag="{Binding}"
                                                 ToolTipService.Placement="Top"
                                                 ToolTipService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}"
                                                 ToolTipService.ToolTip="{Binding Converter={StaticResource IndexAddOneConverter}}"/>

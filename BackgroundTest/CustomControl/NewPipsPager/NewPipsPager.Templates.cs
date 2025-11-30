@@ -3,10 +3,10 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace BackgroundTest.CustomControl.NewPipsPager;
 
-[TemplatePart(Name = TemplateNamePreviousPageButton,      Type = typeof(Button))]
-[TemplatePart(Name = TemplateNameNextPageButton,          Type = typeof(Button))]
-[TemplatePart(Name = TemplateNamePipsPagerScrollViewer,   Type = typeof(ScrollViewer))]
-[TemplatePart(Name = TemplateNamePipsPagerItemsRepeater,  Type = typeof(ItemsRepeater))]
+[TemplatePart(Name = TemplateNamePreviousPageButton,     Type = typeof(Button))]
+[TemplatePart(Name = TemplateNameNextPageButton,         Type = typeof(Button))]
+[TemplatePart(Name = TemplateNamePipsPagerScrollViewer,  Type = typeof(ScrollViewer))]
+[TemplatePart(Name = TemplateNamePipsPagerItemsRepeater, Type = typeof(ItemsRepeater))]
 public partial class NewPipsPager
 {
     #region Constants
@@ -29,7 +29,6 @@ public partial class NewPipsPager
 
     private double _pipsButtonSize;
 
-
     #endregion
 
     #region Apply Template Methods
@@ -45,9 +44,11 @@ public partial class NewPipsPager
         ApplyNavigationButtonEvents();
         ApplyInitialTemplates();
         ApplyKeyPressEvents();
-        ApplyItemsRepeaterBridgeMeasureEvents();
+        ApplyItemsRepeaterEvents();
 
         ItemsCount_OnChange(this, ItemsCount);
+        Loaded   += NewPipsPager_Loaded;
+        Unloaded += NewPipsPager_Unloaded;
 
         Resources.TryGetValue(ResourceNamePipsPagerButtonSize, out object value);
         if (value is double size)
@@ -74,9 +75,10 @@ public partial class NewPipsPager
 
     private void ApplyKeyPressEvents() => KeyDown += OnKeyPressed;
 
-    private void ApplyItemsRepeaterBridgeMeasureEvents()
+    private void ApplyItemsRepeaterEvents()
     {
         _pipsPagerItemsRepeater!.SizeChanged += ItemsRepeaterMeasure_SizeChanged;
+        _pipsPagerItemsRepeater.ElementPrepared += ItemsRepeater_ElementPrepared;
     }
 
     #endregion

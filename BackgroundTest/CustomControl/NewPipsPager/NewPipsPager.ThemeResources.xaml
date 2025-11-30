@@ -31,13 +31,13 @@
     <x:Double x:Key="PipsButtonBulletBackScalePointerOver">0.8</x:Double>
     <x:Double x:Key="PipsButtonBulletBackScalePressed">0.7</x:Double>
 
-    <x:Double x:Key="PipsButtonSelectedBulletFrontOpacityNormal">0.5</x:Double>
+    <x:Double x:Key="PipsButtonSelectedBulletFrontOpacityNormal">1</x:Double>
     <x:Double x:Key="PipsButtonSelectedBulletFrontOpacityPointerOver">1</x:Double>
-    <x:Double x:Key="PipsButtonSelectedBulletFrontOpacityPressed">1</x:Double>
+    <x:Double x:Key="PipsButtonSelectedBulletFrontOpacityPressed">0.5</x:Double>
 
-    <x:Double x:Key="PipsButtonSelectedBulletFrontScaleNormal">0.3</x:Double>
+    <x:Double x:Key="PipsButtonSelectedBulletFrontScaleNormal">0.45</x:Double>
     <x:Double x:Key="PipsButtonSelectedBulletFrontScalePointerOver">0.5</x:Double>
-    <x:Double x:Key="PipsButtonSelectedBulletFrontScalePressed">0.45</x:Double>
+    <x:Double x:Key="PipsButtonSelectedBulletFrontScalePressed">0.3</x:Double>
 
     <x:Double x:Key="PipsButtonSelectedBulletBackOpacityNormal">0.0</x:Double>
     <x:Double x:Key="PipsButtonSelectedBulletBackOpacityPointerOver">1</x:Double>
