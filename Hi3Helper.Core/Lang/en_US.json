@@ -742,10 +742,10 @@
     "FileDialogTitle": "Import Collapse Launcher Plugin",
     "FileDialogFileFilter1": "Collapse Launcher Plugin",
 
-    "LeftPanelNoPluginTitle": "Hey, you have no plugin loaded!",
-    "LeftPanelNoPluginButton1": "Go to",
+    "LeftPanelNoPluginTitle": "Hey, you have no plugins loaded!",
+    "LeftPanelNoPluginButton1": "Go to the",
     "LeftPanelNoPluginButton2": "Plugin Download Catalog",
-    "LeftPanelNoPluginButton3": "page",
+    "LeftPanelNoPluginButton3": "page to get some!",
 
     "LeftPanelListViewTitle": "Loaded Plugin Information",
 
@@ -774,16 +774,16 @@
     "ListViewItemUpdateStatusAvailableButton": "Update to {0}",
     "ListViewItemUpdateStatusAvailableButtonUpdating": "Updating ({0}%)...",
     "ListViewItemUpdateStatusCompleted": "Your plugin has been updated to {0}. Please restart your launcher to apply the update!",
-    "ListViewItemUpdateStatusChecking": "Checking for Update...",
-    "ListViewItemUpdateStatusUpToDate": "Plugin is Up-to-date!",
+    "ListViewItemUpdateStatusChecking": "Checking for updates...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin is up-to-date!",
 
     "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
     "ListViewFooterRestartButton": "Restart the Launcher",
 
-    "RightPanelImportTitle1": "Drag the",
+    "RightPanelImportTitle1": "Click to add the",
     "RightPanelImportTitle2": "or",
     "RightPanelImportTitle3": "here",
-    "RightPanelImportTitle4": "or click this box to import the plugin"
+    "RightPanelImportTitle4": "Anywhere in the box is fine!"
   },
 
   "_Misc": {
