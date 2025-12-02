@@ -51,12 +51,12 @@
                 </TextBlock>
                 <newPipsPager:NewPipsPager x:Name="NewPipsPager"
                                            Grid.Column="1"
-                                           ItemsCount="128"
+                                           ItemsCount="24"
                                            ItemIndex="0"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
-                                           PreviousNavigationButtonMode="Visible"
-                                           NextNavigationButtonMode="Visible"
+                                           PreviousNavigationButtonMode="Auto"
+                                           NextNavigationButtonMode="Auto"
                                            Orientation="Horizontal"/>
             </Grid>
         </Grid>
@@ -70,12 +70,13 @@
             <Grid HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <newPipsPager:NewPipsPager x:Name="NewPipsPagerVertical"
-                                           ItemsCount="8"
-                                           ItemIndex="0"
+                                           ItemsCount="10"
+                                           ItemIndex="2"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
-                                           PreviousNavigationButtonMode="Visible"
-                                           NextNavigationButtonMode="Visible"
+                                           PreviousNavigationButtonMode="Hidden"
+                                           NextNavigationButtonMode="Hidden"
+                                           SelectionMode="Hover"
                                            Orientation="Vertical"/>
             </Grid>
         </Grid>

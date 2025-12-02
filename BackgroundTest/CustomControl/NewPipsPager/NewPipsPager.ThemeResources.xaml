@@ -64,33 +64,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontOpacityNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackOpacityNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -99,33 +99,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -134,33 +134,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletFrontOpacityPressed}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonBulletBackOpacityPressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -224,33 +224,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontOpacityNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScaleNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackOpacityNormal}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -259,33 +259,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -294,33 +294,33 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletFrontOpacityPressed}" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackScalePressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="{StaticResource PipsButtonSelectedBulletBackOpacityPressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -394,12 +394,12 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -417,12 +417,12 @@
                                         </ObjectAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1.3" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1.3" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -440,12 +440,12 @@
                                         </ObjectAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value=".8" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="0,0,0,1"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value=".8" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>

@@ -13,7 +13,6 @@
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="ItemCounterIndicatorVisibility" Value="Visible" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:NewPipsPager">
@@ -23,12 +22,23 @@
                         
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="PreviousPageButtonVisibilityStates">
-                                <VisualState x:Name="PreviousPageButtonVisible" />
+                                <VisualState x:Name="PreviousPageButtonVisible">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousPageButton" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
                                 <VisualState x:Name="PreviousPageButtonHidden">
-                                    <VisualState.Setters>
-                                        <Setter Target="PreviousPageButton.Opacity" Value="0" />
-
-                                    </VisualState.Setters>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousPageButton" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PreviousPageButtonCollapsed">
                                     <VisualState.Setters>
@@ -49,12 +59,23 @@
 
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="NextPageButtonVisibilityStates">
-                                <VisualState x:Name="NextPageButtonVisible" />
+                                <VisualState x:Name="NextPageButtonVisible">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextPageButton" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
                                 <VisualState x:Name="NextPageButtonHidden">
-                                    <VisualState.Setters>
-                                        <Setter Target="NextPageButton.Opacity" Value="0" />
-
-                                    </VisualState.Setters>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextPageButton" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="NextPageButtonCollapsed">
                                     <VisualState.Setters>
@@ -132,6 +153,7 @@
                                         <Button Style="{ThemeResource NewPipsPagerButtonBaseStyle}"
                                                 CornerRadius="{ThemeResource PipsPagerCornerRadius}"
                                                 controls:NewPipsPagerExtension.CursorType="Hand"
+                                                IsTabStop="False"
                                                 Tag="{Binding}"
                                                 ToolTipService.Placement="Top"
                                                 ToolTipService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}"

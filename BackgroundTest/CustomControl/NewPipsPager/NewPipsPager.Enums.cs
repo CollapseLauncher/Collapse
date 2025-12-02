@@ -6,3 +6,9 @@ public enum NewPipsPagerNavigationMode
     Hidden,
     Visible
 }
+
+public enum NewPipsPagerSelectionMode
+{
+    Click,
+    Hover
+}
