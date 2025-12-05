@@ -8,7 +8,6 @@
     <controls:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
     <Style TargetType="controls:NewPipsPager">
-        <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="IsTabStop" Value="False" />
@@ -17,9 +16,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="controls:NewPipsPager">
                     <StackPanel x:Name="RootPanel"
-                                Background="{TemplateBinding Background}"
                                 Orientation="{TemplateBinding Orientation}">
-                        
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="PreviousPageButtonVisibilityStates">
                                 <VisualState x:Name="PreviousPageButtonVisible">
@@ -48,16 +45,6 @@
                                 </VisualState>
 
                             </VisualStateGroup>
-                            <VisualStateGroup x:Name="PreviousPageButtonIsEnabledStates">
-                                <VisualState x:Name="PreviousPageButtonEnabled" />
-                                <VisualState x:Name="PreviousPageButtonDisabled">
-                                    <VisualState.Setters>
-                                        <Setter Target="PreviousPageButton.IsEnabled" Value="False" />
-
-                                    </VisualState.Setters>
-                                </VisualState>
-
-                            </VisualStateGroup>
                             <VisualStateGroup x:Name="NextPageButtonVisibilityStates">
                                 <VisualState x:Name="NextPageButtonVisible">
                                     <Storyboard>
@@ -80,16 +67,6 @@
                                 <VisualState x:Name="NextPageButtonCollapsed">
                                     <VisualState.Setters>
                                         <Setter Target="NextPageButton.Visibility" Value="Collapsed" />
-
-                                    </VisualState.Setters>
-                                </VisualState>
-
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="NextPageButtonIsEnabledStates">
-                                <VisualState x:Name="NextPageButtonEnabled" />
-                                <VisualState x:Name="NextPageButtonDisabled">
-                                    <VisualState.Setters>
-                                        <Setter Target="NextPageButton.IsEnabled" Value="False" />
 
                                     </VisualState.Setters>
                                 </VisualState>
@@ -150,7 +127,9 @@
                                 </ItemsRepeater.Layout>
                                 <ItemsRepeater.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Style="{ThemeResource NewPipsPagerButtonBaseStyle}"
+                                        <Button Style="{StaticResource NewPipsPagerButtonBaseStyle}"
+                                                Foreground="{ThemeResource NewPipsPageButtonForeground}"
+                                                Background="{ThemeResource NewPipsPageButtonBackground}"
                                                 CornerRadius="{ThemeResource PipsPagerCornerRadius}"
                                                 controls:NewPipsPagerExtension.CursorType="Hand"
                                                 IsTabStop="False"

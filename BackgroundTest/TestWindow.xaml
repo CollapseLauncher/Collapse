@@ -13,7 +13,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid>
+    <Grid RequestedTheme="Dark">
         <Grid.Resources>
             <newPipsPager:IndexAddOneConverter x:Key="IndexAddOneConverter"/>
         </Grid.Resources>
@@ -22,13 +22,18 @@
                VerticalAlignment="Center"
                HorizontalAlignment="Center"/>
         <Grid x:Name="ContainerGrid"
-              Background="{ThemeResource ContentBackgroundAcrylicBrush}"
               VerticalAlignment="Bottom"
               HorizontalAlignment="Center"
-              Padding="10, 10"
+              MaxWidth="500"
+              Padding="12, 10"
               CornerRadius="24"
               Margin="32"
               SizeChanged="ContainerGrid_OnSizeChanged">
+            <Grid Background="{ThemeResource ContentBackgroundAcrylicBrush}"
+                  Margin="-16"/>
+            <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="-16"
+                  Opacity=".15"/>
             <TextBlock x:Name="ContainerSizeIndicator"
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Center"
@@ -45,13 +50,13 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            FontWeight="Bold">
-                    <Run Text="{Binding ElementName=NewPipsPager, Path=ItemIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}"/>
-                    <Run Text="/"/>
-                    <Run Text="{Binding ElementName=NewPipsPager, Path=ItemsCount, Mode=OneWay}"/>
+                    <Run Text="{Binding ElementName=NewPipsPager, Path=ItemIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
+                    <Run Text="/" />
+                    <Run Text="{Binding ElementName=NewPipsPager, Path=ItemsCount, Mode=OneWay}" />
                 </TextBlock>
                 <newPipsPager:NewPipsPager x:Name="NewPipsPager"
                                            Grid.Column="1"
-                                           ItemsCount="24"
+                                           ItemsCount="32"
                                            ItemIndex="0"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -61,12 +66,16 @@
             </Grid>
         </Grid>
         <Grid x:Name="ContainerVerticalGrid"
-              Background="{ThemeResource ContentBackgroundAcrylicBrush}"
               VerticalAlignment="Center"
               HorizontalAlignment="Right"
               Padding="12, 10"
               CornerRadius="24"
               Margin="32">
+            <Grid Background="{ThemeResource ContentBackgroundAcrylicBrush}"
+                  Margin="-16"/>
+            <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="-16"
+                  Opacity=".15"/>
             <Grid HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <newPipsPager:NewPipsPager x:Name="NewPipsPagerVertical"

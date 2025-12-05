@@ -4,9 +4,17 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:BackgroundTest.CustomControl.NewPipsPager">
     <ResourceDictionary.ThemeDictionaries>
-        <ResourceDictionary x:Key="Default">
-        </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
+            <AcrylicBrush x:Key="NewPipsPagerNavigationButtonBackground" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" TintOpacity=".6"/>
+            <AcrylicBrush x:Key="NewPipsPagerNavigationButtonForeground" TintColor="#222222" FallbackColor="#222222" TintOpacity="1" />
+            <AcrylicBrush x:Key="NewPipsPageButtonBackground" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" TintOpacity=".65"/>
+            <AcrylicBrush x:Key="NewPipsPageButtonForeground" TintColor="#222222" FallbackColor="#222222" TintOpacity=".65" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Default">
+            <AcrylicBrush x:Key="NewPipsPagerNavigationButtonBackground" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" />
+            <AcrylicBrush x:Key="NewPipsPagerNavigationButtonForeground" TintColor="#FFFFFF" FallbackColor="#FFFFFF" />
+            <AcrylicBrush x:Key="NewPipsPageButtonBackground" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" />
+            <AcrylicBrush x:Key="NewPipsPageButtonForeground" TintColor="#FFFFFF"  FallbackColor="#FFFFFF" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
@@ -47,7 +55,9 @@
     <x:Double x:Key="PipsButtonSelectedBulletBackScalePointerOver">0.8</x:Double>
     <x:Double x:Key="PipsButtonSelectedBulletBackScalePressed">0.7</x:Double>
 
-    <ThemeShadow x:Key="PipsButtonBulletFrontShadow"/>
+    <x:Double x:Key="PipsButtonNavigationButtonOpacityNormal">0.6</x:Double>
+    <x:Double x:Key="PipsButtonNavigationButtonOpacityPointerOver">1</x:Double>
+    <x:Double x:Key="PipsButtonNavigationButtonOpacityPressed">0.8</x:Double>
 
     <Style x:Key="NewPipsPagerButtonBaseStyle" TargetType="Button">
         <Setter Property="Template">
@@ -181,26 +191,30 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Border x:Name="BulletBack"
-                                Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                Background="{TemplateBinding Background}"
                                 CornerRadius="{StaticResource PipsPagerCornerRadius}"
                                 Width="{StaticResource PipsPagerButtonSize}"
                                 Height="{StaticResource PipsPagerButtonSize}"
                                 Opacity="{StaticResource PipsButtonBulletBackOpacityNormal}"
                                 RenderTransformOrigin=".5, .5">
                             <Border.RenderTransform>
-                                <CompositeTransform x:Name="BulletBackScaleTransform" ScaleX="{StaticResource PipsButtonBulletBackScaleNormal}" ScaleY="{StaticResource PipsButtonBulletBackScaleNormal}"/>
+                                <CompositeTransform x:Name="BulletBackScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletBackScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletBackScaleNormal}"/>
                             </Border.RenderTransform>
                         </Border>
 
                         <Border x:Name="BulletFront"
-                                Background="{ThemeResource ButtonForegroundThemeBrush}"
+                                Background="{TemplateBinding Foreground}"
                                 CornerRadius="{StaticResource PipsPagerCornerRadius}"
                                 Width="{StaticResource PipsPagerButtonSize}"
                                 Height="{StaticResource PipsPagerButtonSize}"
                                 Opacity="{StaticResource PipsButtonBulletFrontOpacityNormal}"
                                 RenderTransformOrigin=".5, .5">
                             <Border.RenderTransform>
-                                <CompositeTransform x:Name="BulletFrontScaleTransform" ScaleX="{StaticResource PipsButtonBulletFrontScaleNormal}" ScaleY="{StaticResource PipsButtonBulletFrontScaleNormal}"/>
+                                <CompositeTransform x:Name="BulletFrontScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletFrontScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletFrontScaleNormal}"/>
                             </Border.RenderTransform>
                         </Border>
                     </Grid>
@@ -341,7 +355,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Border x:Name="BulletBack"
-                                Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                Background="{TemplateBinding Background}"
                                 CornerRadius="{StaticResource PipsPagerCornerRadius}"
                                 Width="{StaticResource PipsPagerButtonSize}"
                                 Height="{StaticResource PipsPagerButtonSize}"
@@ -353,7 +367,7 @@
                         </Border>
 
                         <Border x:Name="BulletFront"
-                                Background="{ThemeResource ButtonForegroundThemeBrush}"
+                                Background="{TemplateBinding Foreground}"
                                 CornerRadius="{StaticResource PipsPagerCornerRadius}"
                                 Width="{StaticResource PipsPagerButtonSize}"
                                 Height="{StaticResource PipsPagerButtonSize}"
@@ -370,8 +384,8 @@
     </Style>
 
     <Style x:Key="NewPipsPagerNavigationButtonBaseStyle" TargetType="Button">
-        <Setter Property="Background" Value="{ThemeResource PipsPagerNavigationButtonBackground}" />
-        <Setter Property="Foreground" Value="{ThemeResource PipsPagerNavigationButtonForeground}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource NewPipsPagerNavigationButtonForeground}" />
         <Setter Property="BorderBrush" Value="{ThemeResource PipsPagerNavigationButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="{StaticResource PipsPagerNavigationButtonBorderThickness}" />
         <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
@@ -402,18 +416,17 @@
                                                                   KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonBackgroundPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonBorderBrushPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonForegroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -424,19 +437,18 @@
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                   KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value="1.3" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonBackgroundPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonBorderBrushPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PipsPagerNavigationButtonForegroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -447,6 +459,11 @@
                                             <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                   KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   Value=".8" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityPressed}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -471,17 +488,28 @@
                                     <ScaleTransform x:Name="ScaleTransform" ScaleY="1" ScaleX="1" />
                                 </TransformGroup>
                             </Border.RenderTransform>
-                            <FontIcon x:Name="Content" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" Glyph="{TemplateBinding Content}" MirroredWhenRightToLeft="True" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw" />
+                            <FontIcon x:Name="Content"
+                                      FontSize="{TemplateBinding FontSize}"
+                                      FontFamily="{TemplateBinding FontFamily}"
+                                      Glyph="{TemplateBinding Content}"
+                                      MirroredWhenRightToLeft="True"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Opacity="{StaticResource PipsButtonNavigationButtonOpacityNormal}"
+                                      AutomationProperties.AccessibilityView="Raw" />
                         </Border>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
     <Style x:Key="NewPipsPagerPreviousPageButtonStyle" TargetType="Button" BasedOn="{StaticResource NewPipsPagerNavigationButtonBaseStyle}">
         <Setter Property="Content" Value="{StaticResource PipsPagerPreviousPageButtonGlyph}" />
         <Setter Property="FontSize" Value="16"></Setter>
     </Style>
+
     <Style x:Key="NewPipsPagerNextPageButtonStyle" TargetType="Button" BasedOn="{StaticResource NewPipsPagerNavigationButtonBaseStyle}">
         <Setter Property="Content" Value="{StaticResource PipsPagerNextPageButtonGlyph}" />
         <Setter Property="FontSize" Value="16"></Setter>
