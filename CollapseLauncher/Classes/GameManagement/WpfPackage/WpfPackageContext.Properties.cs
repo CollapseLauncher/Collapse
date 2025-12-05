@@ -79,6 +79,7 @@ internal partial class WpfPackageContext
     public bool IsWpfPackageEnabled
     {
         get => GameVersionManager.IsGameInstalled() &&
+               GameVersionManager.IsGameVersionMatch() &&
                GameVersionManager.GamePreset.IsWpfUpdateEnabled &&
                WpfPackageData != null &&
                WpfGetGameData != null;
