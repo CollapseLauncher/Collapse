@@ -4,23 +4,20 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace BackgroundTest.CustomControl.NewPipsPager;
+namespace BackgroundTest.CustomControl;
 
-public static class NewPipsPagerExtension
+public static class Extensions
 {
     public static readonly DependencyProperty CursorTypeProperty =
         DependencyProperty.RegisterAttached("CursorType", typeof(InputSystemCursorShape),
-                                            typeof(UIElement), new PropertyMetadata(false));
+                                            typeof(UIElement), new PropertyMetadata(InputSystemCursorShape.Arrow));
 
-    public static InputSystemCursorShape GetCursorType(DependencyObject obj)
-    {
-        return (InputSystemCursorShape)obj.GetValue(CursorTypeProperty);
-    }
+    public static InputSystemCursorShape GetCursorType(DependencyObject obj) => (InputSystemCursorShape)obj.GetValue(CursorTypeProperty);
 
     public static void SetCursorType(DependencyObject obj, InputSystemCursorShape value)
     {
         InputSystemCursor? cursor = InputSystemCursor.Create(value);
-        if (cursor == null ||
+        if (cursor is null ||
             obj is not UIElement asElement)
         {
             return;
@@ -36,15 +33,16 @@ public static class NewPipsPagerExtension
         private extern DependencyObject GetTemplateChildAccessor(string name);
 
         internal T GetTemplateChild<T>(string name)
+            where T : class
         {
             DependencyObject obj = source.GetTemplateChildAccessor(name);
-            if (obj is not T)
+            if (obj is not T castObj)
             {
                 throw new
                     InvalidCastException($"Cannot cast type to: {typeof(T).Name} as the object expects type: {obj.GetType().Name}");
             }
 
-            return (T)(object)obj;
+            return castObj;
         }
     }
 

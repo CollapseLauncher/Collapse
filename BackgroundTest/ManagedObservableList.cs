@@ -47,7 +47,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
             return;
         }
 
-        _backedList = new List<T>(enumerable);
+        _backedList = [.. enumerable];
     }
 
     /// <inheritdoc/>

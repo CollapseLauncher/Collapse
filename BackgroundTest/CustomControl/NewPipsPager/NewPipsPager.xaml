@@ -2,9 +2,9 @@
 <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:customControls="using:BackgroundTest.CustomControl"
                     xmlns:controls="using:BackgroundTest.CustomControl.NewPipsPager">
 
-    <ThemeShadow x:Key="SharedShadow" />
     <controls:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
     <Style TargetType="controls:NewPipsPager">
@@ -104,7 +104,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Style="{ThemeResource NewPipsPagerPreviousPageButtonStyle}"
-                                controls:NewPipsPagerExtension.CursorType="Hand"
+                                customControls:Extensions.CursorType="Hand"
                                 ToolTipService.Placement="Top"
                                 ToolTipService.ToolTip="{Binding ElementName=PreviousPageButton, Path=(AutomationProperties.Name)}"
                                 Margin="0, 0, 0, 4"/>
@@ -131,7 +131,7 @@
                                                 Foreground="{ThemeResource NewPipsPageButtonForeground}"
                                                 Background="{ThemeResource NewPipsPageButtonBackground}"
                                                 CornerRadius="{ThemeResource PipsPagerCornerRadius}"
-                                                controls:NewPipsPagerExtension.CursorType="Hand"
+                                                customControls:Extensions.CursorType="Hand"
                                                 IsTabStop="False"
                                                 Tag="{Binding}"
                                                 ToolTipService.Placement="Top"
@@ -145,7 +145,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Style="{ThemeResource NewPipsPagerNextPageButtonStyle}"
-                                controls:NewPipsPagerExtension.CursorType="Hand"
+                                customControls:Extensions.CursorType="Hand"
                                 ToolTipService.Placement="Bottom"
                                 ToolTipService.ToolTip="{Binding ElementName=NextPageButton, Path=(AutomationProperties.Name)}"
                                 Margin="0, 4, 0, 0"/>

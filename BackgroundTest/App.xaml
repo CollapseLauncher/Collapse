@@ -7,6 +7,8 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager_themeresources.xaml" />
                 <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager.xaml" />
+
+                <ResourceDictionary Source="ms-appx:///CustomControl/PanelSlideshow/PanelSlideshow.xaml" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default">

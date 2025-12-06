@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:newPipsPager="using:BackgroundTest.CustomControl.NewPipsPager"
+    xmlns:panelSlideshow="using:BackgroundTest.CustomControl.PanelSlideshow"
     mc:Ignorable="d"
     Title="TestWindow">
 
@@ -17,10 +18,27 @@
         <Grid.Resources>
             <newPipsPager:IndexAddOneConverter x:Key="IndexAddOneConverter"/>
         </Grid.Resources>
-        <Image Source="ms-appx:///CustomControl/BGTestImage.jpg"
-               Stretch="UniformToFill"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center"/>
+        <panelSlideshow:PanelSlideshow x:Name="PanelSlideshow"
+                                       Margin="64"
+                                       CornerRadius="16">
+            <panelSlideshow:PanelSlideshow.ItemTransition>
+                <PaneThemeTransition Edge="Right"/>
+            </panelSlideshow:PanelSlideshow.ItemTransition>
+            <panelSlideshow:PanelSlideshow.Items>
+                <Image Source="/CustomControl/BGTestImage1.jpg"
+                       Stretch="UniformToFill"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+                <Image Source="/CustomControl/BGTestImage2.jpg"
+                       Stretch="UniformToFill"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+                <Image Source="/CustomControl/BGTestImage3.jpg"
+                       Stretch="UniformToFill"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+            </panelSlideshow:PanelSlideshow.Items>
+        </panelSlideshow:PanelSlideshow>
         <Grid x:Name="ContainerGrid"
               VerticalAlignment="Bottom"
               HorizontalAlignment="Center"
@@ -56,12 +74,13 @@
                 </TextBlock>
                 <newPipsPager:NewPipsPager x:Name="NewPipsPager"
                                            Grid.Column="1"
-                                           ItemsCount="32"
-                                           ItemIndex="0"
+                                           ItemsCount="{x:Bind PanelSlideshow.Items.Count, Mode=OneWay}"
+                                           ItemIndex="{x:Bind PanelSlideshow.ItemIndex, Mode=TwoWay}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
-                                           PreviousNavigationButtonMode="Auto"
-                                           NextNavigationButtonMode="Auto"
+                                           PreviousNavigationButtonMode="Visible"
+                                           NextNavigationButtonMode="Visible"
+                                           SelectionMode="Hover"
                                            Orientation="Horizontal"/>
             </Grid>
         </Grid>

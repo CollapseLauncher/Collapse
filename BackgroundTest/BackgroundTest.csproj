@@ -68,11 +68,9 @@
     <Optimize>true</Optimize>
     <GitSkipCache>true</GitSkipCache>
   </PropertyGroup>
+
   <ItemGroup>
-    <None Remove="CustomControl\BGTestImage.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CustomControl\BGTestImage.jpg">
+    <Content Include="CustomControl\BGTestImage*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

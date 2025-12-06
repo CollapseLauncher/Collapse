@@ -1,0 +1,21 @@
+﻿<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:customControls="using:BackgroundTest.CustomControl"
+                    xmlns:controls="using:BackgroundTest.CustomControl.PanelSlideshow">
+
+    <Style TargetType="controls:PanelSlideshow">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:PanelSlideshow">
+                    <ScrollContentPresenter x:Name="Presenter"
+                                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid x:Name="RootGrid"
+                              IsTabStop="False"/>
+                    </ScrollContentPresenter>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
