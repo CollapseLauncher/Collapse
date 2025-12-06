@@ -203,7 +203,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 (sdkApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypChannelSdkData sdkData) ?? false) &&
                 sdkData.SdkPackageDetail?.Url is { } sdkZipUrl)
             {
-                ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(sdkZipUrl);
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromAsync(sdkZipUrl);
                 localFileInfos.AddRange(reader
                                        .Where(x => !x.IsDirectory)
                                        .Select(ConvertZipEntry));
@@ -214,7 +214,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 (wpfApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypWpfPackageData wpfData) ?? false) &&
                 wpfData.PackageInfo?.Url is { } wpfZipUrl)
             {
-                ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(wpfZipUrl);
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromAsync(wpfZipUrl);
                 localFileInfos.AddRange(reader
                                        .Where(x => !x.IsDirectory)
                                        .Select(ConvertZipEntry));

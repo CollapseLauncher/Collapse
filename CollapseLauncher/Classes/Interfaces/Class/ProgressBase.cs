@@ -1007,7 +1007,7 @@ internal abstract class ProgressBase : GamePropertyBase
         string url      = sdkData.SdkPackageDetail?.Url ?? throw new NullReferenceException();
 
         // Create ZipArchiveReader and get the remote stream of the zip file
-        ZipArchiveReader reader = await ZipArchiveReader.CreateFromRemoteAsync(url, token);
+        ZipArchiveReader reader = await ZipArchiveReader.CreateFromAsync(url, token);
         HttpClient       client = FallbackCDNUtil.GetGlobalHttpClient(true);
 
         await Parallel.ForEachAsync(reader.Where(x => !x.IsDirectory),
@@ -1041,7 +1041,7 @@ internal abstract class ProgressBase : GamePropertyBase
                 return;
             }
 
-            await using Stream entryStream = await entry.OpenStreamFromFactoryAsync(CreateStreamFromPosUrl, innerToken);
+            await using Stream entryStream = await entry.OpenStreamFromAsync(CreateStreamFromPosUrl, innerToken);
             // Reset the SDK DLL stream pos and write the data
             sdkDllStream.Position = 0;
             await entryStream.CopyToAsync(sdkDllStream, innerToken);
@@ -1359,11 +1359,11 @@ internal abstract class ProgressBase : GamePropertyBase
     protected virtual long GetArchiveUncompressedSizeManaged(Stream archiveStream)
     {
         ZipArchiveReader archive = ZipArchiveReader
-           .CreateFromStreamFactory((pos, _) =>
-                                    {
-                                        archiveStream.Position = pos ?? 0;
-                                        return archiveStream;
-                                    });
+           .CreateFrom((pos, _) =>
+           {
+               archiveStream.Position = pos ?? 0;
+               return archiveStream;
+           });
 
         return archive.Sum(x => x.Size);
     }
@@ -1424,9 +1424,24 @@ internal abstract class ProgressBase : GamePropertyBase
         string            outputDir,
         CancellationToken token)
     {
+        // Use ThreadObjectPool to cache the Streams and re-using it.
+        using ThreadObjectPool<Stream> streamPool = new(
+            () => CreateStreamWithPos(0, 0, token),
+            capacity: ThreadCount * 2, // Double the thread count for spare capacity
+            isDisposeObjects: true);
+
         int threadCounts = ThreadCount;
-        ZipArchiveReader archive = await ZipArchiveReader
-           .CreateFromStreamFactoryAsync(CreateStreamWithPos, token);
+        Stream zipInitialStream = await streamPool.GetOrCreateObjectAsync(token);
+        ZipArchiveReader archive;
+        
+        try
+        {
+            archive = await ZipArchiveReader.CreateFromAsync(zipInitialStream, token);
+        }
+        finally
+        {
+            streamPool.Return(zipInitialStream);
+        }
 
         // Run the workers
         await Parallel.ForEachAsync(archive,
@@ -1439,45 +1454,53 @@ internal abstract class ProgressBase : GamePropertyBase
 
         return;
 
-        ValueTask Impl(ZipArchiveEntry entry, CancellationToken innerToken)
+        async ValueTask Impl(ZipArchiveEntry entry, CancellationToken innerToken)
         {
-            return ExtractUsingManagedZipWorker(entry,
-                                                CreateStreamWithPos,
-                                                outputDir,
-                                                innerToken);
+            string outputPath = Path.Combine(outputDir, entry.Filename);
+            if (entry.IsDirectory)
+            {
+                _ = Directory.CreateDirectory(outputPath);
+                return;
+            }
+
+            Stream reusableStream = await streamPool.GetOrCreateObjectAsync(innerToken);
+            try
+            {
+                await ExtractUsingManagedZipWorker(entry,
+                                                   reusableStream,
+                                                   outputDir,
+                                                   innerToken);
+            }
+            finally
+            {
+                streamPool.Return(reusableStream);
+            }
         }
 
-        Task<Stream> CreateStreamWithPos(long? start, long? _, CancellationToken innerToken)
-            => Task.Factory.StartNew(() =>
-                                     {
-                                         Stream stream = streamFactory();
-                                         stream.Position = start ?? 0;
-                                         return stream;
-                                     }, innerToken);
+        Stream CreateStreamWithPos(long? start, long? _, CancellationToken innerToken)
+        {
+            Stream stream = streamFactory();
+            stream.Position = start ?? 0;
+            return stream;
+        }
     }
 
     protected virtual async ValueTask ExtractUsingManagedZipWorker(
-        ZipArchiveEntry    entry,
-        StreamFactoryAsync streamFactory,
-        string             outputDir,
-        CancellationToken  token)
+        ZipArchiveEntry   entry,
+        Stream            sourceStream,
+        string            outputDir,
+        CancellationToken token)
     {
         byte[] buffer = ArrayPool<byte>.Shared.Rent(128 << 10);
 
         try
         {
-            if (token.IsCancellationRequested ||
-                entry.IsDirectory)
-            {
-                return;
-            }
-
             string outputPath = Path.Combine(outputDir, entry.Filename);
             FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory()
                                                           .StripAlternateDataStream()
                                                           .EnsureNoReadOnly();
 
-            await using Stream deflateStream = await entry.OpenStreamFromFactoryAsync(streamFactory, token);
+            await using Stream deflateStream = await entry.OpenStreamFromAsync(sourceStream, false, false, token);
             await using FileStream fileStream = outputFile.Open(FileMode.Create,
                                                                   FileAccess.Write,
                                                                   FileShare.Write);

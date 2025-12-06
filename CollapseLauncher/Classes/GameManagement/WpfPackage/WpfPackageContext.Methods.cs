@@ -67,6 +67,7 @@ internal partial class WpfPackageContext
             }
 
             SpawnUpdateFinishedNotification();
+            CurrentInstalledVersion = CurrentAvailableVersion;
         }
         catch when (_localCts.Token.IsCancellationRequested)
         {
@@ -94,7 +95,7 @@ internal partial class WpfPackageContext
         string gamePath = GamePath;
 
         ZipArchiveReader reader =
-            await ZipArchiveReader.CreateFromRemoteAsync(url, _localCts.Token);
+            await ZipArchiveReader.CreateFromAsync(url, _localCts.Token);
 
         long totalSizeUncompressed = reader.Sum(x => x.Size);
         ProgressAllSizeTotal     = totalSizeUncompressed;
@@ -146,8 +147,7 @@ internal partial class WpfPackageContext
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             try
             {
-                await using Stream deflateStream =
-                    await entry.OpenStreamFromFactoryAsync(CreateStreamFromUrl, token);
+                await using Stream deflateStream = await entry.OpenStreamFromAsync(CreateStreamFromUrl, token);
 
                 int read;
                 while ((read = await deflateStream.ReadAsync(buffer, token)) > 0)

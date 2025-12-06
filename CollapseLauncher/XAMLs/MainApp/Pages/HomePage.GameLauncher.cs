@@ -546,6 +546,18 @@ public partial class HomePage
                 return;
             }
 
+            if (gameType is GameNameType.Plugin)
+            {
+                await Task.Run(() => ((PluginPresetConfigWrapper)gamePreset)
+                  .UseToggledGameLaunchContext()
+                  .StartResizableWindowHookAsync(executableName,
+                                                 height,
+                                                 width,
+                                                 gameExecutableDirectory,
+                                                 ResizableWindowHookToken.Token));
+                return;
+            }
+
             // Set the pos + size reinitialization to true if the game is Honkai: Star Rail or ZZZ
             // This is required for Honkai: Star Rail or ZZZ since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
