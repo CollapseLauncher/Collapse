@@ -27,10 +27,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI;
 using WinRT.Interop;
+using Rect = Windows.Foundation.Rect;
 using Size = System.Drawing.Size;
 using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable InconsistentNaming
@@ -38,6 +38,7 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Helper
 {
@@ -60,7 +61,7 @@ namespace CollapseLauncher.Helper
 
         private static readonly TaskbarList Taskbar = new();
 
-        internal static Window? CurrentWindow { get; set; }
+        internal static Window? CurrentWindow { get; private set; }
 
         internal static nint CurrentWindowPtr
         {

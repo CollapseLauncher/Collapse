@@ -1,10 +1,11 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -14,10 +15,18 @@ using static Hi3Helper.Logger;
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class WindowsHDR
+    internal class WindowsHDR : IGameSettingsValue<WindowsHDR>
     {
         #region Fields
         private const string ValueName = "WINDOWS_HDR_ON_h3132281285";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        internal WindowsHDR(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -26,7 +35,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 0 - 1
         /// Default: 0
         /// </summary>
-        public int HDR { get; set; }
+        private int HDR { get; set; }
 
         /// <summary>
         /// Converted value from HDR integer inside WINDOWS_HDR_ON registry to usable boolean.
@@ -36,20 +45,20 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         #region Methods
 #nullable enable
-        public static WindowsHDR Load()
+        public static WindowsHDR Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} since RegistryRoot is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} since RegistryRoot is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     int hdr = (int)value;
 #if DEBUG
                     LogWriteLine($"Loaded Genshin Settings: {ValueName} : {value}", LogType.Debug, true);
 #endif 
-                    return new WindowsHDR { HDR = hdr };
+                    return new WindowsHDR(gameSettings) { HDR = hdr };
                 }
             }
             catch (Exception ex)
@@ -63,15 +72,15 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
-            return new WindowsHDR();
+            return new WindowsHDR(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(ValueName, HDR, RegistryValueKind.DWord);
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, HDR, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {ValueName} : {HDR}", LogType.Debug, true);
 #endif

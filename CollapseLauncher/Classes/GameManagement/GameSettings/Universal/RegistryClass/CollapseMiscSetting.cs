@@ -6,7 +6,7 @@ using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable RedundantArgumentDefaultValue
@@ -23,10 +23,20 @@ namespace CollapseLauncher.GameSettings.Universal
         #region Fields
         private const string ValueName = "CollapseLauncher_Misc";
 
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
+
         private static bool _isDeserializing;
         #endregion
 
         #region Properties
+        public CollapseMiscSetting() : this(null) {}
+
+        private CollapseMiscSetting(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
+
         /// <summary>
         /// This defines if the game's main process should be run in Above Normal priority.<br/><br/>
         /// Default: false
@@ -127,14 +137,14 @@ namespace CollapseLauncher.GameSettings.Universal
 
         #region Methods
 
-        public static CollapseMiscSetting Load()
+        public static CollapseMiscSetting Load(IGameSettings gameSettings)
         {
             try
             {
                 _isDeserializing = true;
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -142,7 +152,8 @@ namespace CollapseLauncher.GameSettings.Universal
                     #if DEBUG
                     LogWriteLine($"Loaded Collapse Misc Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
                     #endif
-                    return byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
+                    CollapseMiscSetting result = byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
+                    result.ParentGameSettings = gameSettings;
                 }
             }
             catch ( Exception ex )
@@ -155,21 +166,21 @@ namespace CollapseLauncher.GameSettings.Universal
                 _isDeserializing = false;
             }
 
-            return new CollapseMiscSetting();
+            return new CollapseMiscSetting(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Misc Settings:\r\n{data}", LogType.Debug, true);
 #endif
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {

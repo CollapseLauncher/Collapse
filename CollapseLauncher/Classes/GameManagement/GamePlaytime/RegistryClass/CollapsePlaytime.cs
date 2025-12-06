@@ -39,7 +39,7 @@ namespace CollapseLauncher.GamePlaytime
         /// Default: TimeSpan.Zero
         /// </summary>
         [JsonIgnore]
-        public TimeSpan TotalPlaytime { get; set; } = TimeSpan.Zero;
+        public TimeSpan TotalPlaytime { get; private set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the daily playtime.<br/>
@@ -118,7 +118,7 @@ namespace CollapseLauncher.GamePlaytime
 
                 playtimeInner._gameVersion  = gameVersion;
                 playtimeInner._gameType     = gameVersion.GameType is not GameNameType.Plugin 
-                                                ? gameVersion.GameType.ToString() : gameVersion.GameName?.Replace(" ", "");
+                                                ? gameVersion.GameType.ToString() : gameVersion.GameName.Replace(" ", "");
                 playtimeInner._gameSettings = gameSettings;
                 playtimeInner._registryRoot = root;
                 playtimeInner._hashID       = hashID;

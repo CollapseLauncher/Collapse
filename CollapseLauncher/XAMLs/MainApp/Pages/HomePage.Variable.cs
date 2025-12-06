@@ -1,10 +1,11 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
+﻿using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -14,21 +15,87 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage
     {
-        internal string GameDirPath { get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException(); }
-        internal static LauncherGameNewsData? GameNewsData { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
-        internal static HoYoPlayGameInfoField? GameInfoDisplayField { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameInfoField; }
-        internal static bool IsPostPanelAvailable => (GameNewsData?.NewsPost?.Count ?? 0) > 0;
-        internal static bool IsCarouselPanelAvailable => (GameNewsData?.NewsCarousel?.Count ?? 0) > 0;
-        internal static bool IsGameStatusPreRegister => GameInfoDisplayField?.DisplayStatus == LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
-        internal static bool IsGameStatusComingSoon => GameInfoDisplayField?.DisplayStatus == LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
-        internal static string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
+        private string GameDirPath
+        {
+            get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
+        }
 
-        internal static Visibility IsPostEventPanelVisible  => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostEventPanelEmpty    => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelVisible => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelEmpty   => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelVisible   => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelEmpty     => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        private static ILauncherApi? CurrentGameLauncherApi
+        {
+            get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+        }
+
+        private static HypLauncherBackgroundList? GameBackgroundData
+        {
+            get => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
+        }
+
+        private static HypLauncherContentKind? GameContentData
+        {
+            get => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
+        }
+
+        internal static List<HypLauncherSocialMediaContentData>? GameSocialMediaData
+        {
+            get => GameContentData?.SocialMedia;
+        }
+
+        private static List<HypLauncherMediaContentData>? GameNewsDataAll
+        {
+            get => GameContentData?.News;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataEventKind
+        {
+            get => GameContentData?.NewsEventKind;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind
+        {
+            get => GameContentData?.NewsAnnouncementKind;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataInformationKind
+        {
+            get => GameContentData?.NewsInformationKind;
+        }
+
+        internal static List<HypLauncherCarouselContentData>? GameCarouselData
+        {
+            get => GameContentData?.Carousel;
+        }
+
+        private static HypGameInfoData? GameInfoDisplayField
+        {
+            get => CurrentGameLauncherApi?.LauncherGameInfoField;
+        }
+
+        private static bool IsGameStatusPreRegister
+        {
+            get =>
+                GameInfoDisplayField?.DisplayStatus ==
+                LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
+        }
+
+        private static bool IsGameStatusComingSoon
+        {
+            get =>
+                GameInfoDisplayField?.DisplayStatus ==
+                LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
+        }
+
+        internal static string? GamePreRegisterLink
+        {
+            get => GameInfoDisplayField?.ReservationLink?.ClickLink;
+        }
+
+        internal static Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+
         internal static Visibility IsPostInfoPanelAllEmpty  =>
             IsPostEventPanelVisible == Visibility.Collapsed
             && IsPostNoticePanelVisible == Visibility.Collapsed
@@ -47,7 +114,7 @@ namespace CollapseLauncher.Pages
             get => !IsCommunityToolsOfficialAvailable ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        internal static bool IsCommunityToolsOfficialAvailable
+        private static bool IsCommunityToolsOfficialAvailable
         {
             get => (PageStatics.CommunityToolsProperty?.OfficialToolsList?.Count ?? 0) != 0;
         }
@@ -57,7 +124,7 @@ namespace CollapseLauncher.Pages
             get => !IsCommunityToolsCommunityAvailable ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        internal static bool IsCommunityToolsCommunityAvailable
+        private static bool IsCommunityToolsCommunityAvailable
         {
             get => (PageStatics.CommunityToolsProperty?.CommunityToolsList?.Count ?? 0) != 0;
         }
@@ -76,18 +143,19 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal bool IsEventsPanelShow
+        private static bool IsCarouselPanelAvailable
         {
-            get
-            {
-                bool ret = GetAppConfigValue("ShowEventsPanel").ToBoolNullable() ?? true;
-                return ret;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ShowEventsPanel", value);
-                ToggleEventsPanel(value);
-            }
+            get => GameCarouselData?.Count > 0;
+        }
+
+        private static bool IsNewsPanelAvailable
+        {
+            get => GameNewsDataAll?.Count > 0;
+        }
+
+        private static bool IsSocialMediaPanelAvailable
+        {
+            get => GameSocialMediaData?.Count > 0;
         }
 
         internal static bool IsEventsPanelScaleUp
@@ -103,33 +171,42 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal bool IsSocMedPanelShow
-        {
-            get
-            {
-                bool ret = GetAppConfigValue("ShowSocialMediaPanel").ToBoolNullable() ?? true;
-                return ret;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
-                ToggleSocmedPanelPanel(value);
-            }
-        }
-
         internal bool IsPlaytimeBtnVisible
         {
             get
             {
-                var v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
-                TogglePlaytimeBtn(v);
+                bool v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
+                HidePlaytimeButton(!v);
 
                 return v;
             }
             set
             {
                 SetAndSaveConfigValue("ShowGamePlaytime", value);
-                TogglePlaytimeBtn(value);
+                HidePlaytimeButton(!value);
+            }
+        }
+
+        internal bool IsShowSidePanel
+        {
+            get => GetAppConfigValue("ShowEventsPanel") &&
+                   IsCarouselPanelAvailable &&
+                   IsNewsPanelAvailable;
+            set
+            {
+                SetAndSaveConfigValue("ShowEventsPanel", value);
+                HideImageCarousel(!value);
+            }
+        }
+
+        internal bool IsShowSocialMediaPanel
+        {
+            get => GetAppConfigValue("ShowSocialMediaPanel") &&
+                   IsSocialMediaPanelAvailable;
+            set
+            {
+                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
+                HideSocialMediaPanel(!value);
             }
         }
 
@@ -218,9 +295,5 @@ namespace CollapseLauncher.Pages
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
-
-        public void ToggleEventsPanel(bool      hide) => HideImageCarousel(!hide);
-        public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
-        public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 }

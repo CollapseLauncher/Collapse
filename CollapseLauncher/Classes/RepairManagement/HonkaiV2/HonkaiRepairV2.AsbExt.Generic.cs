@@ -68,7 +68,7 @@ internal static partial class AssetBundleExtension
         progressBase.UpdateStatus();
     }
 
-    internal static RepairAssetType GetRepairAssetType(this FilePropertiesRemote asset) =>
+    private static RepairAssetType GetRepairAssetType(this FilePropertiesRemote asset) =>
         asset switch
         {
             { FT: FileType.Audio, IsPatchApplicable: true } => RepairAssetType.AudioUpdate,

@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2ChangeGameLocation": "Change Game Location",
     "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "Cannot move game to the root of your drive!\r\nPlease make a folder and try again.",
     "GameSettings_Panel2StopGame": "Force Close Game",
@@ -741,10 +742,10 @@
     "FileDialogTitle": "Import Collapse Launcher Plugin",
     "FileDialogFileFilter1": "Collapse Launcher Plugin",
 
-    "LeftPanelNoPluginTitle": "Hey, you have no plugin loaded!",
-    "LeftPanelNoPluginButton1": "Go to",
+    "LeftPanelNoPluginTitle": "Hey, you have no plugins loaded!",
+    "LeftPanelNoPluginButton1": "Go to the",
     "LeftPanelNoPluginButton2": "Plugin Download Catalog",
-    "LeftPanelNoPluginButton3": "page",
+    "LeftPanelNoPluginButton3": "page to get more!",
 
     "LeftPanelListViewTitle": "Loaded Plugin Information",
 
@@ -773,16 +774,16 @@
     "ListViewItemUpdateStatusAvailableButton": "Update to {0}",
     "ListViewItemUpdateStatusAvailableButtonUpdating": "Updating ({0}%)...",
     "ListViewItemUpdateStatusCompleted": "Your plugin has been updated to {0}. Please restart your launcher to apply the update!",
-    "ListViewItemUpdateStatusChecking": "Checking for Update...",
-    "ListViewItemUpdateStatusUpToDate": "Plugin is Up-to-date!",
+    "ListViewItemUpdateStatusChecking": "Checking for updates...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin is up-to-date!",
 
     "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
     "ListViewFooterRestartButton": "Restart the Launcher",
 
-    "RightPanelImportTitle1": "Drag the",
+    "RightPanelImportTitle1": "Click to add the",
     "RightPanelImportTitle2": "or",
     "RightPanelImportTitle3": "here",
-    "RightPanelImportTitle4": "or click this box to import the plugin"
+    "RightPanelImportTitle4": "Anywhere in the box is fine!"
   },
 
   "_Misc": {
@@ -1608,6 +1609,7 @@
     "General_OpenNotifTray": "Open the Notification Tray",
     "General_ReloadRegion": "Reload current page",
     "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
+    "General_OpenPluginManager": "Opens the Plugin Manager overlay",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
@@ -1658,6 +1660,19 @@
     "Japan": "Japan",
     "Bilibili": "Bilibili",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Start Update",
+    "CancelUpdateBtn": "Cancel Update",
+    "ReinstallToolBtn": "Re-install",
+    "StartUpdateAutomatically": "Starts Update Automatically",
+    "NotifUpdateCompletedTitle": "{0} has been updated!",
+    "NotifUpdateCompletedSubtitle": "Tool: {0} for your game: {1} - {2} has been updated to v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "Miliastra Sandbox"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1746,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(Experimental)",
     "Graphics_ColorFilter": "Color Filter Strength",
     "Graphics_RenderRes": "Render Resolution",
     "Graphics_EffectsQ": "Effects Quality",
@@ -1741,7 +1757,18 @@
     "Audio_PlaybackDev_Headphones": "Headphones",
     "Audio_PlaybackDev_Speakers": "Speakers",
     "Audio_PlaybackDev_TV": "TV",
-    "Audio_Ambient": "Ambient Noise Volume"
+    "Audio_Ambient": "Ambient Noise Volume",
+    "AdvancedGraphics_Title": "Advanced Graphics Settings",
+    "AdvancedGraphics_Tooltip1": "Some features can only be used if you have an Nvidia GeForce RTX Series graphics card and DirectX 12 API enabled.",
+    "AdvancedGraphics_Tooltip2": "Please take a note that any features available in this section are EXPERIMENTAL. Use at your own risk!",
+    "AdvancedGraphics_UseDirectX12API": "Use DirectX 12 API",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Ray Tracing Quality",
+    "AdvancedGraphics_SuperScaling": "Super Scaling",
+    "AdvancedGraphics_SuperScalingQ": "Super Scaling Priority",
+    "AdvancedGraphics_SuperScalingQ_Performance": "Performance",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "Balanced",
+    "AdvancedGraphics_SuperScalingQ_Quality": "Quality"
   },
 
   "_NotificationToast": {

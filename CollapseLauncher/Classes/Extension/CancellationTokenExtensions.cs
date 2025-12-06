@@ -1,30 +1,37 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable PartialTypeWithSinglePart
+#pragma warning disable IDE0130
 
-namespace CollapseLauncher.Extension
+namespace CollapseLauncher.Extension;
+
+public sealed partial class CancellationTokenSourceWrapper : CancellationTokenSource
 {
-    public sealed partial class CancellationTokenSourceWrapper : CancellationTokenSource
+    public volatile bool IsDisposed;
+    public volatile bool IsCancelled;
+
+    public new void Cancel()
     {
-        public bool IsDisposed;
-        public bool IsCancelled;
+        IsCancelled = true;
+        if (!IsCancellationRequested)
+            base.Cancel();
+    }
 
-        public new void Cancel()
-        {
-            if (!IsCancellationRequested) base.Cancel();
-            IsCancelled = true;
-        }
-
-        public new async ValueTask CancelAsync()
-        {
+    public new async ValueTask CancelAsync()
+    {
+        IsCancelled = true;
+        if (!IsCancellationRequested)
             await base.CancelAsync();
-            IsCancelled = true;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            IsDisposed = true;
-            base.Dispose(disposing);
-        }
+        IsDisposed = true;
+        base.Dispose(true);
     }
 }

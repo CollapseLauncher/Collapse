@@ -5,7 +5,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -18,13 +18,21 @@ namespace CollapseLauncher.GameSettings.Honkai
     {
         #region Fields
         private const string ValueName = "GENERAL_DATA_V2_UsePhysicsSimulation_h1109146915";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        private PhysicsSimulation(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
         /// <summary>
         /// This defines if "<c>Physics</c>" toggle in "More" settings is enabled or not.<br/>
         /// </summary>
-        public int UsePhysicsSimulation { get; set; }
+        public int UsePhysicsSimulation { get; private set; }
 
         public bool PhysicsSimulationBool
         {
@@ -35,13 +43,13 @@ namespace CollapseLauncher.GameSettings.Honkai
         
         #region Methods
         #nullable enable
-        public static PhysicsSimulation Load()
+        public static PhysicsSimulation Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     int physicsSimulation = (int)value;
@@ -49,7 +57,7 @@ namespace CollapseLauncher.GameSettings.Honkai
                     LogWriteLine($"Loaded HI3 Settings: {ValueName} : {value}", LogType.Debug, true);
                     #endif
 
-                    return new PhysicsSimulation { UsePhysicsSimulation = physicsSimulation };
+                    return new PhysicsSimulation(gameSettings) { UsePhysicsSimulation = physicsSimulation };
                 }
             }
             catch ( Exception ex )
@@ -64,15 +72,15 @@ namespace CollapseLauncher.GameSettings.Honkai
                             $"{ex}", ex));
             }
 
-            return new PhysicsSimulation();
+            return new PhysicsSimulation(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(ValueName, UsePhysicsSimulation, RegistryValueKind.DWord);
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, UsePhysicsSimulation, RegistryValueKind.DWord);
                 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName} : {UsePhysicsSimulation}", LogType.Debug, true);
                 #endif

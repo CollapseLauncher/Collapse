@@ -18,7 +18,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -133,7 +132,7 @@ namespace CollapseLauncher
                 // Skip the removal for Delta-Patch
                 if (!IsOnlyRecoverMain)
                 {
-                    EliminatePluginAssetIndex(assetIndex);
+                    EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
                 }
             }
             finally
@@ -143,24 +142,6 @@ namespace CollapseLauncher
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
                 // _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
-        }
-
-        private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
-        {
-            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
-              {
-                  if (plugin.package?.validate == null) return;
-                  assetIndex.RemoveAll(asset =>
-                  {
-                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
-                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
-                      if (r ?? false)
-                      {
-                          LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
-                      }
-                      return r ?? false;
-                  });
-              });
         }
 
         #region PrimaryManifest
@@ -193,13 +174,10 @@ namespace CollapseLauncher
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
             await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
-            if (stream != null)
-            {
-                // Deserialize asset index and set it to list
-                AssetIndexV2 parserTool = new AssetIndexV2();
-                pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
-                LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-            }
+            // Deserialize asset index and set it to list
+            AssetIndexV2 parserTool = new AssetIndexV2();
+            pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
+            LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
 
             // Convert the pkg version list to asset index
             ConvertPkgVersionToAssetIndex(pkgVersion, assetIndex);
@@ -279,7 +257,7 @@ namespace CollapseLauncher
 
 #nullable enable
             // Try to get the value as nullable object
-            object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
+            object? value = GameSettings?.RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             // Check if the value is null, then return the default name
             // Return the dispatch default name. If none, then throw
             if (value == null) return GetDefaultValue();

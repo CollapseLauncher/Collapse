@@ -3,7 +3,6 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Loading;
-using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
@@ -632,134 +631,6 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe()
-        {
-            Dictionary<string, PresetConfig> convertibleRegions = new();
-
-            if (!(LauncherMetadataHelper.LauncherMetadataConfig?
-                   .TryGetValue(LauncherMetadataHelper.CurrentMetadataConfigGameName ?? "",
-                                out Dictionary<string, PresetConfig>? configDictionary) ?? false))
-            {
-                throw new KeyNotFoundException("Game name not found in metadata config!");
-            }
-
-            foreach (KeyValuePair<string, PresetConfig> config in configDictionary!
-                        .Where(x => x.Value.IsConvertible ?? false))
-            {
-                convertibleRegions.Add(config.Key, config.Value);
-            }
-
-            ContentDialogCollapse dialog     = new ContentDialogCollapse();
-            ComboBox              targetGame = new ComboBox();
-
-            var sourceGame = new ComboBox
-            {
-                Width = 200,
-                ItemsSource =
-                    InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
-                                                              [.. convertibleRegions.Keys]),
-                PlaceholderText = Lang._InstallConvert.SelectDialogSource,
-                CornerRadius    = new CornerRadius(14)
-            };
-            sourceGame.SelectionChanged += SourceGameChangedArgs;
-            targetGame = new ComboBox
-            {
-                Width           = 200,
-                PlaceholderText = Lang._InstallConvert.SelectDialogTarget,
-                IsEnabled       = false,
-                CornerRadius    = new CornerRadius(14)
-            };
-            targetGame.SelectionChanged += TargetGameChangedArgs;
-
-            StackPanel dialogContainer = CollapseUIExt.CreateStackPanel();
-            StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal)
-                                                        .WithHorizontalAlignment(HorizontalAlignment.Center);
-            comboBoxContainer.AddElementToStackPanel(
-                                                     sourceGame,
-                                                     new FontIcon
-                                                         {
-                                                             Glyph      = "",
-                                                             FontFamily = FontCollections.FontAwesomeSolid,
-                                                             Opacity    = 0.5f
-                                                         }.WithVerticalAlignment(VerticalAlignment.Center)
-                                                          .WithMargin(16d, 0d),
-                                                     targetGame
-                                                    );
-            dialogContainer.AddElementToStackPanel(new TextBlock
-            {
-                Text         = Lang._InstallConvert.SelectDialogSubtitle,
-                TextWrapping = TextWrapping.Wrap
-            }.WithMargin(0d, 0d, 0d, 16d));
-            dialogContainer.AddElementToStackPanel(comboBoxContainer);
-
-            dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
-            {
-                Title                    = Lang._InstallConvert.SelectDialogTitle,
-                Content                  = dialogContainer,
-                CloseButtonText          = null,
-                PrimaryButtonText        = Lang._Misc.Cancel,
-                SecondaryButtonText      = Lang._Misc.Next,
-                IsSecondaryButtonEnabled = false,
-                DefaultButton            = ContentDialogButton.Secondary,
-                Background               = CollapseUIExt.GetApplicationResource<Brush>("DialogAcrylicBrush"),
-                Style                    = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot                 = SharedXamlRoot
-            };
-            return (await dialog.QueueAndSpawnDialog(), sourceGame, targetGame);
-
-            void SourceGameChangedArgs(object sender, SelectionChangedEventArgs _)
-            {
-                // ReSharper disable AccessToModifiedClosure
-                targetGame.IsEnabled            = true;
-                dialog.IsSecondaryButtonEnabled = false;
-                targetGame.ItemsSource =
-                    InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
-                                                              InstallationConvert
-                                                                 .GetConvertibleNameList(InnerLauncherConfig
-                                                                     .GetComboBoxGameRegionValue((sender as
-                                                                          ComboBox)!.SelectedItem)));
-            }
-
-            void TargetGameChangedArgs(object sender, SelectionChangedEventArgs _)
-            {
-                if ((sender as ComboBox)!.SelectedIndex != -1)
-                {
-                    dialog.IsSecondaryButtonEnabled = true;
-                }
-                // ReSharper restore AccessToModifiedClosure
-            }
-        }
-
-        public static Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(string fileName)
-        {
-            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
-               .AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle1);
-            texts.Inlines.Add(new Hyperlink
-            {
-                Inlines =
-                {
-                    new Run
-                    {
-                        Text       = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold,
-                        Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor")
-                    }
-                },
-                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe")
-            });
-            texts.AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle3)
-                 .AddTextBlockLine($" {Lang._Misc.Next} ", FontWeights.Bold)
-                 .AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle5)
-                 .AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle6, FontWeights.Bold)
-                 .AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle7)
-                 .AddTextBlockLine(fileName, FontWeights.Bold);
-
-            return SpawnDialog(Lang._Dialogs.CookbookLocateTitle,
-                               texts,
-                               null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.Next);
-        }
-
         public static Task<ContentDialogResult> Dialog_ChangeReleaseToChannel(string channelName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
@@ -811,7 +682,7 @@ namespace CollapseLauncher.Dialogs
                                Lang._Misc.NoKeepInstallIt);
         }
 
-        public static Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(
+        private static Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(
             string gamePath, bool isHasOnlyMigrateOption)
         {
             return SpawnDialog(Lang._Dialogs.ExistingInstallBHI3LTitle,
@@ -822,7 +693,7 @@ namespace CollapseLauncher.Dialogs
                                isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
         }
 
-        public static Task<ContentDialogResult> Dialog_ExistingInstallationSteam(
+        private static Task<ContentDialogResult> Dialog_ExistingInstallationSteam(
             string gamePath, bool isHasOnlyMigrateOption)
         {
             return SpawnDialog(Lang._Dialogs.ExistingInstallSteamTitle,

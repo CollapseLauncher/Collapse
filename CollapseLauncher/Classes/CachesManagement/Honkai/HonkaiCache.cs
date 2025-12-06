@@ -20,15 +20,24 @@ namespace CollapseLauncher
         private       KianaDispatch    GameGateway      { get; set; }
         private       List<CacheAsset> UpdateAssetIndex { get; set; }
         private       int              LuckyNumber      { get; set; }
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirAppDataPath;
+            set => throw new InvalidOperationException();
+        }
+
         #endregion
 
-        public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager)
-            : base(
-                  parentUI,
-                  gameVersionManager!,
-                  gameVersionManager!.GameDirAppDataPath,
-                  null,
-                  gameVersionManager.GetGameVersionApi()?.VersionString)
+        public HonkaiCache(
+            UIElement parentUI,
+            IGameVersion gameVersionManager,
+            IGameSettings gameSettings)
+            : base(parentUI,
+                   gameVersionManager,
+                   gameSettings,
+                   null,
+                   gameVersionManager.GetGameVersionApi()?.VersionString)
         {
             GameLang = GameVersionManager!.GamePreset!.GetGameLanguage() ?? "en";
         }
@@ -103,7 +112,9 @@ namespace CollapseLauncher
 
         public void CancelRoutine()
         {
-            Token!.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

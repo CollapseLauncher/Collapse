@@ -583,6 +583,70 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         #endregion
 
+        #region Advanced Graphics Settings
+
+        // Key 22003 Ray Tracing
+        private SystemSettingLocalData<int>? _rayTracingEnabled;
+
+        /// <summary>
+        ///     Sets whether Ray Tracing is enabled or not
+        /// </summary>
+        /// <see cref="GraphicsPresetOption" />
+        [JsonIgnore]
+        public bool RayTracing_Enabled
+        {
+            get => (_rayTracingEnabled ??= SystemSettingDataMap .AsSystemSettingLocalData("22003", 0))
+               .GetData() == 1;
+            set => _rayTracingEnabled?.SetData(value ? 1 : 0);
+        }
+
+        // Key 23001 Ray Tracing Quality
+        private SystemSettingLocalData<QualityOption3>? _rayTracingQuality;
+
+        /// <summary>
+        ///     Sets the Ray Tracing quality level
+        /// </summary>
+        /// <see cref="QualityOption3" />
+        [JsonIgnore]
+        public QualityOption3 RayTracing_Quality
+        {
+            get => (_rayTracingQuality ??= SystemSettingDataMap.AsSystemSettingLocalData("23001", QualityOption3.Medium))
+               .GetDataEnum<QualityOption3>();
+            set => _rayTracingQuality?.SetDataEnum(value);
+        }
+
+        // Key 22004 Super Resolution
+        private SystemSettingLocalData<SuperResolutionScalingOption>? _superResolutionOption;
+
+        /// <summary>
+        ///     Sets the mode of available Super Resolution scaling
+        /// </summary>
+        /// <see cref="SuperResolutionScalingOption" />
+        [JsonIgnore]
+        public SuperResolutionScalingOption SuperResolution_Option
+        {
+            get => (_superResolutionOption ??= SystemSettingDataMap.AsSystemSettingLocalData("22004", SuperResolutionScalingOption.Disabled))
+               .GetDataEnum<SuperResolutionScalingOption>();
+            set => _superResolutionOption?.SetDataEnum(value);
+        }
+
+        // Key 22005 Super Resolution Quality
+        private SystemSettingLocalData<SuperResolutionScalingQuality>? _superResolutionQuality;
+
+        /// <summary>
+        ///     Sets the mode of available quality for Super Resolution scaling
+        /// </summary>
+        /// <see cref="SuperResolutionScalingQuality" />
+        [JsonIgnore]
+        public SuperResolutionScalingQuality SuperResolution_Quality
+        {
+            get => (_superResolutionQuality ??= SystemSettingDataMap.AsSystemSettingLocalData("22005", SuperResolutionScalingQuality.Balanced))
+               .GetDataEnum<SuperResolutionScalingQuality>();
+            set => _superResolutionQuality?.SetDataEnum(value);
+        }
+
+        #endregion
+
         #region Audio
 
         // Key 31 Main Volume
@@ -675,7 +739,7 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!",
                   true)]
-        public new static GeneralData Load()
+        public static GeneralData Load()
         {
             throw new
                 NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");

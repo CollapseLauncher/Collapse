@@ -34,11 +34,12 @@ namespace CollapseLauncher.Helper
 
     public partial class HttpClientBuilder
     {
-        internal static readonly IPAddressEqualityComparer IPAddressComparer = new();
+        private static readonly IPAddressEqualityComparer IPAddressComparer = new();
 
         public const string DnsHostSeparators = ";:,#/@%";
-        public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
-                                                              StringSplitOptions.TrimEntries;
+
+        private const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
+                                                               StringSplitOptions.TrimEntries;
 
         private const           string    DnsLoopbackHost          = "localhost";
         private static readonly IPAddress DnsLoopbackIPAddrv4      = IPAddress.Loopback;
@@ -73,7 +74,7 @@ namespace CollapseLauncher.Helper
         private static readonly ConcurrentDictionary<string, DateTimeOffset> DnsClientResolveTtlCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        internal static bool IsUseExternalDns => SharedExternalDnsServers is { Length: > 0 };
+        private static bool IsUseExternalDns => SharedExternalDnsServers is { Length: > 0 };
         internal static NameServer[]? SharedExternalDnsServers
         {
             get;
@@ -119,7 +120,7 @@ namespace CollapseLauncher.Helper
         /// <param name="hosts"></param>
         /// <param name="connectionType"></param>
         /// <exception cref="NullReferenceException"></exception>
-        internal static void ParseDnsSettings(string? inputString, out string[]? hosts, out DnsConnectionType connectionType)
+        private static void ParseDnsSettings(string? inputString, out string[]? hosts, out DnsConnectionType connectionType)
         {
             // Accepted string formats to test (just in-case you entered a weird string)
             //     - $google;|doT             -> Expected Result: Uses Google as DNS server, uses DnsConnectionType.DoT
@@ -353,7 +354,7 @@ namespace CollapseLauncher.Helper
             Logger.LogWriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
         }
 
-        internal static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
+        private static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
         {
             Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> lookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
 
@@ -378,9 +379,9 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        internal static void UseExternalDns(NameServer[]? nameServers = null) => SharedExternalDnsServers = nameServers;
+        private static void UseExternalDns(NameServer[]? nameServers = null) => SharedExternalDnsServers = nameServers;
 
-        protected static async ValueTask<Stream> ExternalDnsConnectCallback(
+        private static async ValueTask<Stream> ExternalDnsConnectCallback(
             SocketsHttpConnectionContext context, CancellationToken token)
         {
             Socket socket = new(SocketType.Stream, ProtocolType.Tcp)

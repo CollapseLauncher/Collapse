@@ -24,10 +24,10 @@ namespace CollapseLauncher
 
         public string ZipHash { get; set; }
         public string MD5hash { get; set; }
-        public string ProfileName { get; set; }
-        public string SourceVer { get; set; }
-        public string TargetVer { get; set; }
+        public string ProfileName { get; }
+        public string SourceVer { get; }
+        public string TargetVer { get; }
         public string PatchCompr { get; set; }
-        public string PatchPath { get; set; }
+        public string PatchPath { get; }
     }
 }

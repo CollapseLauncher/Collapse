@@ -9,7 +9,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -56,13 +56,16 @@ namespace CollapseLauncher.GameSettings.StarRail
     internal class Model : IGameSettingsValue<Model>
     {
         #region Fields
-
-        public const  string ValueName       = "GraphicsSettings_Model_h2986158309";
+        private const string ValueName       = "GraphicsSettings_Model_h2986158309";
         private const string GraphicsQuality = "GraphicsSettings_GraphicsQuality_h523255858";
-        
-        public static readonly int[]                FpsIndex        = [30, 60, 120];
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
+
         public const           int                  FpsDefaultIndex = 1; // 60 in FPSIndex[]
-        public static          Dictionary<int, int> FpsIndexDict    = GenerateStaticFpsIndexDict();
+        public static readonly int[]                FpsIndex        = [30, 60, 120];
+        public static readonly Dictionary<int, int> FpsIndexDict    = GenerateStaticFpsIndexDict();
+
         private static Dictionary<int, int> GenerateStaticFpsIndexDict()
         {
             Dictionary<int, int> ret = new();
@@ -71,6 +74,13 @@ namespace CollapseLauncher.GameSettings.StarRail
                 ret.Add(FpsIndex[i], i);
             }
             return ret;
+        }
+
+        public Model() : this(null) {}
+
+        private Model(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
         }
         #endregion
 
@@ -286,15 +296,16 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         #region Methods
 #nullable enable
-        public static Model Load()
+        public static Model Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {GraphicsQuality} RegistryKey is unexpectedly not initialized!");
-                var graphicsQuality = (Quality)RegistryRoot.GetValue(GraphicsQuality, Quality.Medium);
-                return graphicsQuality switch
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {GraphicsQuality} RegistryKey is unexpectedly not initialized!");
+                Quality graphicsQuality = (Quality)gameSettings.RegistryRoot.GetValue(GraphicsQuality, Quality.Medium);
+                
+                Model result = graphicsQuality switch
                 {
-                    Quality.Custom => LoadCustom(),
+                    Quality.Custom => LoadCustom(gameSettings),
                     Quality.VeryLow => VeryLowPreset,
                     Quality.Low => LowPreset,
                     Quality.Medium => MediumPreset,
@@ -302,6 +313,8 @@ namespace CollapseLauncher.GameSettings.StarRail
                     Quality.VeryHigh => VeryHighPreset,
                     _ => new Model()
                 };
+                result.ParentGameSettings = gameSettings;
+                return result;
             }
             catch (Exception ex)
             {
@@ -315,15 +328,15 @@ namespace CollapseLauncher.GameSettings.StarRail
                     $"{ex}", ex));
             }
 
-            return new Model();
+            return new Model(gameSettings);
         }
 
-        private static Model LoadCustom()
+        private static Model LoadCustom(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -354,7 +367,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 
                 if (StarRailGameSettingsPage.CheckAbTest())
                 {
@@ -363,11 +376,11 @@ namespace CollapseLauncher.GameSettings.StarRail
                     return;
                 }
 
-                RegistryRoot.SetValue(GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot.SetValue(GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
                 string data = this.Serialize(StarRailSettingsJsonContext.Default.Model);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved StarRail Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif

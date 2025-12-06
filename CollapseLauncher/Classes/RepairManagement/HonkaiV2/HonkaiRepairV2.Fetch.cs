@@ -35,11 +35,10 @@ internal partial class HonkaiRepairV2
 {
     internal class SenadinaFileResult
     {
-        public SenadinaFileIdentifier? Audio          { get; set; }
-        public SenadinaFileIdentifier? XmfMeta        { get; set; }
-        public SenadinaFileIdentifier? XmfInfoBase    { get; set; }
-        public SenadinaFileIdentifier? XmfInfoCurrent { get; set; }
-        public SenadinaFileIdentifier? XmfPatch       { get; set; }
+        public SenadinaFileIdentifier? Audio          { get; init; }
+        public SenadinaFileIdentifier? XmfMeta        { get; init; }
+        public SenadinaFileIdentifier? XmfInfoCurrent { get; init; }
+        public SenadinaFileIdentifier? XmfPatch       { get; init; }
     }
 
     #region Fetch by Sophon
@@ -51,7 +50,7 @@ internal partial class HonkaiRepairV2
         Status.IsIncludePerFileIndicator = false;
         UpdateStatus();
 
-        PresetConfig gamePreset    = GameVersionManager.GamePreset;
+        PresetConfig gamePreset    = GameVersionManager!.GamePreset;
         string?      sophonApiUrl  = gamePreset.LauncherResourceChunksURL?.MainUrl;
         string?      matchingField = gamePreset.LauncherResourceChunksURL?.MainBranchMatchingField;
 
@@ -109,7 +108,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game AssetBundle
     private async Task FetchAssetFromGameAssetBundle(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        PresetConfig gamePresetConfig = GameVersionManager.GamePreset;
+        PresetConfig gamePresetConfig = GameVersionManager!.GamePreset;
         FinalizeBasicAssetsPath(assetIndex);
 
         // Get ignored assets from registry
@@ -143,10 +142,9 @@ internal partial class HonkaiRepairV2
         Task assetListFromVideoTask =
             HttpClientAssetBundle
                .GetVideoAssetListAsync(gamePresetConfig,
-                                       GameVersion,
                                        gameServerInfo,
                                        this,
-                                       ignoredAssets.IgnoredVideoCGSubCategory,
+                                       ignoredAssets.IgnoredVideoCgSubCategory,
                                        token)
                .GetResultFromAction(result =>
                                     {
@@ -164,7 +162,7 @@ internal partial class HonkaiRepairV2
                                        gameServerInfo,
                                        senadinaResult.Audio,
                                        this,
-                                       ignoredAssets.IgnoredAudioPCKType,
+                                       ignoredAssets.IgnoredAudioPckType,
                                        token)
                .GetResultFromAction(async result =>
                                     {
@@ -211,9 +209,9 @@ internal partial class HonkaiRepairV2
     #endregion
 
     #region Fetch by Game Cache Files
-    private async Task FetchAssetFromGameCacheFiles(List<FilePropertiesRemote> assetIndex, CancellationToken token)
+    private static Task FetchAssetFromGameCacheFiles(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-
+        return Task.CompletedTask;
     }
     #endregion
 
@@ -278,8 +276,8 @@ internal partial class HonkaiRepairV2
         // Return the property value
         return new HonkaiRepairAssetIgnore
         {
-            IgnoredAudioPCKType       = ignoredAudioPckTypes,
-            IgnoredVideoCGSubCategory = ignoredVideoCgSubCategory
+            IgnoredAudioPckType       = ignoredAudioPckTypes,
+            IgnoredVideoCgSubCategory = ignoredVideoCgSubCategory
         };
     }
 

@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management.Api;
@@ -14,9 +14,9 @@ namespace CollapseLauncher.Plugins;
 
 #nullable enable
 
-internal partial class PluginLauncherApiWrapper
+internal sealed partial class PluginLauncherApiWrapper
 {
-    private async Task ConvertBackgroundImageEntries(LauncherGameNewsData newsData, CancellationToken token)
+    private async Task ConvertBackgroundImageEntries(HypLauncherBackgroundList newsData, CancellationToken token)
     {
         // TODO: Handle image sequence format with logo overlay (example: Wuthering Waves)
         string  backgroundFolder     = Path.Combine(LauncherConfig.AppGameImgFolder, "bg");
@@ -25,6 +25,13 @@ internal partial class PluginLauncherApiWrapper
 
         using PluginDisposableMemory<LauncherPathEntry> backgroundEntries = PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
         int count = backgroundEntries.Length;
+
+        newsData.GameContentList.Clear();
+        if (count == 0)
+        {
+            return;
+        }
+
         for (int i = 0; i < count; i++)
         {
             using LauncherPathEntry entry = backgroundEntries[i];
@@ -90,10 +97,5 @@ internal partial class PluginLauncherApiWrapper
         GameBackgroundImgLocal      = firstImageSpritePath;
         GameBackgroundSequenceCount = count;
         GameBackgroundSequenceFps   = fps;
-
-        newsData.Background = new LauncherGameNewsBackground
-        {
-            BackgroundImg = GameBackgroundImg
-        };
     }
 }

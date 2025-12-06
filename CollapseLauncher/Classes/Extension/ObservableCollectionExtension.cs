@@ -26,14 +26,14 @@ namespace CollapseLauncher.Extension
         /// </summary>
         /// <param name="source">The observable collection to invoke the method on.</param>
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "OnCountPropertyChanged")]
-        internal static extern void OnCountPropertyChanged(ObservableCollection<T> source);
+        private static extern void OnCountPropertyChanged(ObservableCollection<T> source);
 
         /// <summary>
         /// Invokes the OnIndexerPropertyChanged method on the specified observable collection.
         /// </summary>
         /// <param name="source">The observable collection to invoke the method on.</param>
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "OnIndexerPropertyChanged")]
-        internal static extern void OnIndexerPropertyChanged(ObservableCollection<T> source);
+        private static extern void OnIndexerPropertyChanged(ObservableCollection<T> source);
 
         /// <summary>
         /// Invokes the OnCollectionChanged method on the specified observable collection.
@@ -41,7 +41,7 @@ namespace CollapseLauncher.Extension
         /// <param name="source">The observable collection to invoke the method on.</param>
         /// <param name="e">The event arguments for the collection changed event.</param>
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "OnCollectionChanged")]
-        internal static extern void OnCollectionChanged(ObservableCollection<T> source, NotifyCollectionChangedEventArgs e);
+        private static extern void OnCollectionChanged(ObservableCollection<T> source, NotifyCollectionChangedEventArgs e);
 
         /// <summary>
         /// Refreshes all events for the specified observable collection.

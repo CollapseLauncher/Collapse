@@ -45,8 +45,8 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string name = Settings.PresetSettingsGraphics.GetPresetKey();
-                int index = Settings.PresetSettingsGraphics.PresetKeys.IndexOf(name);
+                string                    name        = Settings.PresetSettingsGraphics.GetPresetKey(Settings);
+                int                       index       = Settings.PresetSettingsGraphics.PresetKeys.IndexOf(name);
                 PersonalGraphicsSettingV2 presetValue = Settings.PresetSettingsGraphics.GetPresetFromKey(name);
 
                 if (presetValue != null)
@@ -442,7 +442,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGraphics.UseDistortion = value;
         }
 
-        public byte GraphicsAPI
+        public int GraphicsAPI
         {
             get => Settings.SettingsCollapseScreen.GameGraphicsAPI;
             set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value;

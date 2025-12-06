@@ -1,8 +1,11 @@
 ﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.IO;
+using WinRT;
+
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -11,44 +14,213 @@ using System.IO;
 
 namespace CollapseLauncher
 {
-    internal class TotalPerFileProgress
+    [GeneratedBindableCustomProperty]
+    internal partial class TotalPerFileProgress : NotifyPropertyChanged
     {
-        public double ProgressPerFilePercentage;
-        public double ProgressPerFileSpeed;
-        public double ProgressAllPercentage;
-        public double ProgressAllSpeed;
+        public double ProgressPerFilePercentage
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public long ProgressPerFileEntryCountCurrent;
-        public long ProgressPerFileEntryCountTotal;
-        public long ProgressAllEntryCountCurrent;
-        public long ProgressAllEntryCountTotal;
+        public double ProgressPerFileSpeed
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double ProgressAllPercentage
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double ProgressAllSpeed
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
         // Extension for IGameInstallManager
-        public long ProgressPerFileSizeCurrent;
-        public long ProgressPerFileSizeTotal;
-        public long ProgressAllSizeCurrent;
-        public long ProgressAllSizeTotal;
-        public TimeSpan ProgressAllTimeLeft;
+        public long ProgressPerFileSizeCurrent
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long ProgressPerFileSizeTotal
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long ProgressAllSizeCurrent
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long ProgressAllSizeTotal
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public TimeSpan ProgressAllTimeLeft
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
-    internal class TotalPerFileStatus
+    [GeneratedBindableCustomProperty]
+    internal partial class TotalPerFileStatus : NotifyPropertyChanged
     {
-        public string ActivityStatus { get; set; }
-        public bool ActivityStatusInternet { get; set; }
+        public string ActivityStatus
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public string ActivityAll { get; set; }
-        public bool IsProgressAllIndetermined { get; set; }
+        public bool ActivityStatusInternet
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public string ActivityPerFile { get; set; }
-        public bool IsProgressPerFileIndetermined { get; set; }
+        public string ActivityAll
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public bool IsAssetEntryPanelShow { get; set; }
+        public bool IsProgressAllIndetermined
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public bool IsCompleted { get; set; }
-        public bool IsCanceled { get; set; }
-        public bool IsRunning { get; set; }
+        public string ActivityPerFile
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public bool IsIncludePerFileIndicator { get; set; }
+        public bool IsProgressPerFileIndetermined
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsAssetEntryPanelShow
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsCompleted
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsCanceled
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsRunning
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsIncludePerFileIndicator
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
 #nullable enable
@@ -87,8 +259,8 @@ namespace CollapseLauncher
             GameName = infoEntries[1];
         }
 
-        public string? VendorType { get; set; }
-        public string? GameName { get; set; }
+        public string? VendorType { get; init; }
+        public string? GameName { get; init; }
     }
 #nullable restore
 
@@ -116,16 +288,16 @@ namespace CollapseLauncher
         : IAssetProperty
         where T : struct, Enum
     {
-        public string  AssetTypeString { get => Enum.GetName(AssetType) ?? "Unknown"; }
-        public string  Name { get; } = name;
-        public T       AssetType { get; } = assetType;
-        public string  Source { get; } = '\\' + source;
-        public long    Size { get; } = size;
-        public string  SizeStr { get => ConverterTool.SummarizeSizeSimple(Size); }
-        public string  LocalCRC { get => LocalCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(LocalCRCByte) ?? "-"; }
-        public byte[]? LocalCRCByte { get; } = localCrcByte;
-        public string  RemoteCRC { get => RemoteCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(RemoteCRCByte) ?? "-"; }
-        public byte[]? RemoteCRCByte { get; } = remoteCrcByte;
+        public  string  AssetTypeString { get => Enum.GetName(AssetType) ?? "Unknown"; }
+        public  string  Name            { get; } = name;
+        private T       AssetType       { get; } = assetType;
+        public  string  Source          { get; } = '\\' + source;
+        public  long    Size            { get; } = size;
+        public  string  SizeStr         { get => ConverterTool.SummarizeSizeSimple(Size); }
+        public  string  LocalCRC        { get => LocalCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(LocalCRCByte) ?? "-"; }
+        public  byte[]? LocalCRCByte    { get; } = localCrcByte;
+        public  string  RemoteCRC       { get => RemoteCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(RemoteCRCByte) ?? "-"; }
+        public  byte[]? RemoteCRCByte   { get; } = remoteCrcByte;
 
         public IAssetProperty ToIAssetProperty() => this;
     }

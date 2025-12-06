@@ -4,14 +4,15 @@
     using Microsoft.UI.Xaml.Media;
     using Windows.Foundation;
     using NColor = Windows.UI.Color;
+// ReSharper disable UnusedMember.Global
 
     namespace CollapseLauncher.CustomControls
 {
     // ReSharper disable once PartialTypeWithSinglePart
     public partial class ContentDialogOverlay : ContentDialog
     {
-        public string ThemeTitleGlyph { get; set; }
-        public ContentDialogTheme Theme { get; set; }
+        private string             ThemeTitleGlyph { get; }
+        private ContentDialogTheme Theme           { get; }
         public ContentDialogOverlay()
             : this(ContentDialogTheme.Warning) { }
 

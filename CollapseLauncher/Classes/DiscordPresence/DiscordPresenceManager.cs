@@ -53,7 +53,7 @@ namespace CollapseLauncher.DiscordPresence
         {
             get
             {
-                bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
+                bool value = GetAppConfigValue("EnableDiscordIdleStatus");
                 _cachedIsIdleEnabled = value;
                 return value;
             }

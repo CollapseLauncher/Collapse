@@ -22,7 +22,7 @@ namespace CollapseLauncher.Helper.Update
     internal static class LauncherUpdateHelper
     {
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
-        internal static bool IsLauncherUpdateAvailable;
+        private static  bool                  _isLauncherUpdateAvailable;
 
         internal static GameVersion? LauncherCurrentVersion => field ??= LauncherConfig.AppCurrentVersionString;
 
@@ -91,13 +91,13 @@ namespace CollapseLauncher.Helper.Update
             }
 
             // Compare the version
-            IsLauncherUpdateAvailable = LauncherCurrentVersion < updateVersion;
+            _isLauncherUpdateAvailable = LauncherCurrentVersion < updateVersion;
 
             // Get the status if the update is ignorable or forced update.
             bool isUserIgnoreUpdate = (LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false) && !isForceCheckUpdate;
             bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !AppUpdateVersionProp.IsForceUpdate;
 
-            return IsLauncherUpdateAvailable && !isUpdateRoutineSkipped;
+            return _isLauncherUpdateAvailable && !isUpdateRoutineSkipped;
         }
 
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)

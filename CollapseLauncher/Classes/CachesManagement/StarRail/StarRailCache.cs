@@ -11,17 +11,23 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailCache(UIElement parentUI, IGameVersion gameVersionManager)
+    internal partial class StarRailCache(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
         : ProgressBase<SRAsset>(parentUI,
                                 gameVersionManager,
-                                gameVersionManager.GameDirPath,
+                                gameSettings,
                                 null,
                                 gameVersionManager.GetGameVersionApi()?.VersionString), ICache
     {
         #region Properties
         private            GameTypeStarRailVersion InnerGameVersionManager { get; } = gameVersionManager as GameTypeStarRailVersion;
         private            List<SRAsset>           UpdateAssetIndex        { get; set; }
-        protected override string                  UserAgent               { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+        protected override string                  UserAgent               => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => throw new InvalidOperationException();
+        }
         #endregion
 
         ~StarRailCache() => Dispose();
@@ -90,7 +96,9 @@ namespace CollapseLauncher
 
         public void CancelRoutine()
         {
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

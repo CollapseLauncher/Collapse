@@ -7,7 +7,7 @@ using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -22,6 +22,17 @@ namespace CollapseLauncher.GameSettings.Honkai
     {
         #region Fields
         private const string ValueName = "GENERAL_DATA_V2_PersonalAudioSettingVolume_h600615720";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
+
+        public PersonalAudioSettingVolume() : this(null) { }
+
+        private PersonalAudioSettingVolume(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
+
         #endregion
 
         #region Properties
@@ -75,13 +86,13 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         #region Methods
 #nullable enable
-        public static PersonalAudioSettingVolume Load()
+        public static PersonalAudioSettingVolume Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -89,7 +100,9 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSettingVolume) ?? new PersonalAudioSettingVolume();
+                    PersonalAudioSettingVolume settings = byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSettingVolume) ?? new PersonalAudioSettingVolume();
+                    settings.ParentGameSettings = gameSettings;
+                    return settings;
                 }
             }
             catch (Exception ex)
@@ -103,19 +116,19 @@ namespace CollapseLauncher.GameSettings.Honkai
                     $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
-            return new PersonalAudioSettingVolume();
+            return new PersonalAudioSettingVolume(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(HonkaiSettingsJsonContext.Default.PersonalAudioSettingVolume);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif

@@ -1,25 +1,27 @@
-﻿using System;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Helper.JsonConverter
 {
-    public class RegionResourcePluginValidateConverter : JsonConverter<List<RegionResourcePluginValidate>>
+    public class HypPackageDataConverter : JsonConverter<List<HypPackageData>>
     {
         public override bool CanConvert(Type type)
         {
             return true;
         }
 
-        public override List<RegionResourcePluginValidate> Read(
+        public override List<HypPackageData> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
         {
             string valueString = EmptiedBackslash(reader.ValueSpan);
-            List<RegionResourcePluginValidate> returnList = valueString.Deserialize(RegionResourcePluginValidateJsonContext.Default.ListRegionResourcePluginValidate);
+            List<HypPackageData> returnList = valueString.Deserialize(HypApiJsonContext.Default.ListHypPackageData);
 
             return returnList;
         }
@@ -49,8 +51,8 @@ namespace CollapseLauncher.Helper.JsonConverter
         }
 
         public override void Write(
-                Utf8JsonWriter writer,
-                List<RegionResourcePluginValidate> baseType,
+                Utf8JsonWriter        writer,
+                List<HypPackageData>  baseType,
                 JsonSerializerOptions options)
         {
 

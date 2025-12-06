@@ -121,7 +121,7 @@ namespace CollapseLauncher.Helper.Background
             return output;
         }
 
-        internal static void SetColorPalette<T>(T page, WColor? palette = null)
+        private static void SetColorPalette<T>(T page, WColor? palette = null)
             where T : FrameworkElement
         {
             if (!palette.HasValue) return;
@@ -149,7 +149,7 @@ namespace CollapseLauncher.Helper.Background
 
         // Credit:
         // https://gist.github.com/zihotki/09fc41d52981fb6f93a81ebf20b35cd5
-        public static WColor ChangeColorBrightness(WColor color, float correctionFactor)
+        private static WColor ChangeColorBrightness(WColor color, float correctionFactor)
         {
             float red   = color.R;
             float green = color.G;

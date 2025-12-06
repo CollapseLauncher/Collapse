@@ -40,7 +40,17 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     public event EventHandler? FlushingTrigger;
 
-    public bool IsRunning { get; private set; }
+    public bool IsRunning
+    {
+        get;
+        private set;
+    }
+
+    public override string GamePath
+    {
+        get => GameVersionManager.GameDirPath;
+        set => GameVersionManager.GameDirPath = value;
+    }
 
     private readonly IPlugin                   _plugin;
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
@@ -54,10 +64,15 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private PluginGameVersionWrapper GameManager =>
         GameVersionManager as PluginGameVersionWrapper ?? throw new InvalidCastException("GameVersionManager is not PluginGameVersionWrapper");
 
-    internal PluginGameInstallWrapper(UIElement parentUi, PluginPresetConfigWrapper pluginPresetConfig, PluginGameVersionWrapper pluginVersionManager)
-        : base(parentUi, pluginVersionManager, pluginVersionManager.GameDirPath, null, null)
+    internal PluginGameInstallWrapper(
+        UIElement                 parentUi,
+        PluginPresetConfigWrapper pluginPresetConfig,
+        PluginGameVersionWrapper  pluginVersionManager)
+        : base(parentUi,
+               pluginVersionManager,
+               null,
+               null)
     {
-        ParentUI        = parentUi ?? throw new ArgumentNullException(nameof(parentUi));
         IsRunning       = false;
 
         _pluginPresetConfig = pluginPresetConfig ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
@@ -74,13 +89,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     public void CancelRoutine()
     {
-        Token.Cancel();
+        Token?.Cancel();
         ResetAndCancelTokenSource();
     }
 
     private void ResetAndCancelTokenSource()
     {
-        Token.Dispose();
+        Token?.Dispose();
         ResetStatusAndProgressProperty();
     }
 
@@ -210,7 +225,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Status.IsIncludePerFileIndicator     = false;
             UpdateStatus();
 
-            Guid cancelGuid = _plugin.RegisterCancelToken(Token.Token);
+            Guid cancelGuid = _plugin.RegisterCancelToken(Token!.Token);
             await _gameInstaller.InitPluginComAsync(_plugin, Token.Token);
 
             GameInstallerKind sizeInstallerKind = _updateProgressProperty.IsUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
@@ -247,7 +262,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             await routineTask.ConfigureAwait(false);
         }
-        catch (OperationCanceledException) when (Token.IsCancellationRequested)
+        catch (OperationCanceledException) when (Token!.IsCancellationRequested)
         {
             Status.IsCanceled = true;
             throw;
@@ -275,9 +290,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
             double currentSpeed = CalculateSpeed(readDownload);
-
-            Progress.ProgressAllEntryCountCurrent = _updateProgressProperty.AssetCount;
-            Progress.ProgressAllEntryCountTotal   = _updateProgressProperty.AssetCountTotal;
 
             Progress.ProgressAllSizeCurrent = downloadedBytes;
             Progress.ProgressAllSizeTotal = downloadedBytesTotal;

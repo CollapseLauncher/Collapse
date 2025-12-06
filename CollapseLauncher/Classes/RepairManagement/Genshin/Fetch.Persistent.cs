@@ -30,13 +30,12 @@ namespace CollapseLauncher
 
         internal class PersistentDispatchUrls
         {
-            public required string  BaseUrl                 { get; init; }
             public required string  RefUrl                  { get; init; }
             public required string  RefPath                 { get; init; }
             public required string  FileUrl                 { get; init; }
             public required string  FileStreamingAssetsPath { get; init; }
             public required string  FilePersistentPath      { get; init; }
-            public          string? PatchUrl                { get; set; }
+            public          string? PatchUrl                { get; init; }
         }
 
         internal delegate (string RelativePath, string PrimaryUrl, string? AltUrl, RepairAssetType AssetType)
@@ -82,9 +81,8 @@ namespace CollapseLauncher
                 string resVerExtRefUrl  = resVerExtBaseUrl.CombineURLFromString("res_versions_external");
                 string resVerExtRefPath = Path.Combine(persistentDir, "res_versions_persist");
                 string resVerExtFileUrl = queryProperty.ClientAudioAssetsURL.CombineURLFromString(platform);
-                PersistentDispatchUrls resVerUrls = new PersistentDispatchUrls
+                PersistentDispatchUrls resVerUrls = new()
                 {
-                    BaseUrl                 = resVerExtBaseUrl,
                     RefUrl                  = resVerExtRefUrl,
                     RefPath                 = resVerExtRefPath,
                     PatchUrl                = resVerExtBaseUrl,
@@ -98,9 +96,8 @@ namespace CollapseLauncher
                 string designBaseUrl = queryProperty.ClientDesignDataURL ?? "";
                 string designRefUrl  = designBaseUrl.CombineURLFromString("AssetBundles", "data_versions");
                 string designRefPath = Path.Combine(persistentDir, "data_versions_persist");
-                PersistentDispatchUrls designUrls = new PersistentDispatchUrls
+                PersistentDispatchUrls designUrls = new()
                 {
-                    BaseUrl                 = designBaseUrl,
                     RefUrl                  = designRefUrl,
                     RefPath                 = designRefPath,
                     PatchUrl                = designBaseUrl,

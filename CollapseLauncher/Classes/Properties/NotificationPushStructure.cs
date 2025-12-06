@@ -58,11 +58,11 @@ namespace Hi3Helper.Shared.ClassStruct
 
     public class NotificationActionClickLink : NotificationActionBase
     {
-        public string URL { get; set; }
-        public string Description { get; set; }
+        private string URL         { get; set; }
+        private string Description { get; set; }
 #nullable enable
-        public string? GlyphIcon { get; set; }
-        public string? GlyphFont { get; set; }
+        private string? GlyphIcon { get; set; }
+        private string? GlyphFont { get; set; }
 #nullable restore
 
         public NotificationActionClickLink()

@@ -1,7 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
@@ -15,11 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
 using LauncherApiBase = CollapseLauncher.Helper.LauncherApiLoader.LauncherApiBase;
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal partial class PluginLauncherApiWrapper : ILauncherApi
+internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
 {
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
     private readonly IPlugin                   _plugin;
@@ -29,8 +28,8 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
     public PluginLauncherApiWrapper(IPlugin plugin, PluginPresetConfigWrapper presetConfig)
     {
-        ArgumentNullException.ThrowIfNull(plugin,       nameof(plugin));
-        ArgumentNullException.ThrowIfNull(presetConfig, nameof(presetConfig));
+        ArgumentNullException.ThrowIfNull(plugin);
+        ArgumentNullException.ThrowIfNull(presetConfig);
 
         _plugin             = plugin;
         _pluginPresetConfig = presetConfig;
@@ -39,7 +38,8 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
         _pluginNewsApi      = presetConfig.PluginNewsApi;
     }
 
-    public bool IsPlugin                => true;
+    public bool IsPlugin => true;
+
     public bool IsForceRedirectToSophon => false;
     public bool IsLoadingCompleted      { get; private set; }
 
@@ -51,25 +51,35 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     public float GameBackgroundSequenceFps   { get; private set; }
     // ReSharper enable UnusedAutoPropertyAccessor.Global
 
-    public string GameName              => _pluginPresetConfig.GameName;
-    public string GameRegion            => _pluginPresetConfig.ZoneName;
+    public string  GameName   => _pluginPresetConfig.GameName;
+    public string  GameRegion => _pluginPresetConfig.ZoneName;
+    public string? GameBiz    => null;
+    public string? GameId     => null;
+
     public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
     public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
 
-    public HoYoPlayGameInfoField? LauncherGameInfoField { get; } = new();
-    public LauncherGameNews       LauncherGameNews      { get; } = new();
-    public RegionResourceProp     LauncherGameResource  { get; } = new();
+    public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; set; }
+    public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; set; }
+    public HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; set; }
+    public HypLauncherGameResourceWpfApi?     LauncherGameResourceWpf     { get; set; }
+    public HypGameInfoData?                   LauncherGameInfoField       { get; set; }
+    public HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; set; }
+    public HypLauncherBackgroundApi?          LauncherGameBackground      { get; private set; }
+    public HypLauncherContentApi?             LauncherGameContent         { get; private set; }
+    public HypLauncherGetGameApi?             LauncherGetGame             { get; set; }
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
 
-    public async Task<bool> LoadAsync(OnLoadTaskAction?         beforeLoadRoutine = null,
-                                      OnLoadTaskAction?         afterLoadRoutine  = null,
-                                      ActionOnTimeOutRetry?     onTimeoutRoutine  = null,
-                                      ErrorLoadRoutineDelegate? errorLoadRoutine  = null,
-                                      CancellationToken         token             = default)
+    public async ValueTask<bool> LoadAsync(
+        Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync = null,
+        Func<CancellationToken, ValueTask>? afterLoadRoutineAsync  = null,
+        ActionOnTimeOutRetry?               onTimeoutRoutine       = null,
+        Action<Exception>?                  errorLoadRoutine       = null,
+        CancellationToken                   token                  = default)
     {
-        _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
+        _ = beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask;
 
         try
         {
@@ -78,13 +88,15 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
             Task[] initTasks = GetApiInitTasks(onTimeoutRoutine, token);
             await Task.WhenAll(initTasks);
 
-            LauncherGameNews.Content = new LauncherGameNewsData();
+            LauncherGameBackground      ??= new HypLauncherBackgroundApi();
+            LauncherGameBackground.Data ??= new HypLauncherBackgroundList();
+            LauncherGameContent         ??= new HypLauncherContentApi();
 
-            await ConvertBackgroundImageEntries(LauncherGameNews.Content, token);
-            await ConvertSocialMediaEntries(LauncherGameNews.Content, token);
-            await ConvertNewsAndCarouselEntries(LauncherGameNews.Content, token);
+            await ConvertBackgroundImageEntries(LauncherGameBackground.Data, token);
+            await ConvertSocialMediaEntries(LauncherGameContent, token);
+            await ConvertNewsAndCarouselEntries(LauncherGameContent, token);
 
-            await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
+            await(afterLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
             return true;
         }
         catch (Exception ex)
@@ -162,7 +174,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
         return [initGameManagerTask, initMediaApiTask, initNewsApi];
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!disposing)
         {

@@ -150,7 +150,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         /// </summary>
         /// <param name="actionCallbackTaskOnSubmit">An <see cref="Task"/> callback where it consumes the result of <see cref="UserFeedbackResult"/> record asynchronously.</param>
         /// <returns>Returns a record of <see cref="UserFeedbackResult"/> if submitted, or <c>null</c> if cancelled.</returns>
-        public async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
+        private async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
         {
             // Find an overlay grid where the UI element will be spawn to
             _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
@@ -255,13 +255,13 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackTitleInput?.BindProperty(TextBox.TextProperty,
                                                     this,
                                                     nameof(Title),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(TextBox.TextProperty,
                                                       this,
                                                       nameof(Message),
-                                                      null,
-                                                      BindingMode.TwoWay);
+                                                      converter: null,
+                                                      bindingMode: BindingMode.TwoWay);
 
             // Bind Visibility property to the UI FeedbackTitleInput
             _layoutFeedbackTitleInput?.BindProperty(VisibilityProperty,
@@ -272,30 +272,30 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackTitleInput?.BindProperty(TextBox.IsReadOnlyProperty,
                                                     this,
                                                     nameof(IsTitleReadOnly),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackTitleInput?.BindProperty(IsEnabledProperty,
                                                     this,
                                                     nameof(IsTitleReadOnly),
-                                                    _inverseBooleanConverter,
-                                                    BindingMode.TwoWay);
+                                                    converter: _inverseBooleanConverter,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(TextBox.IsReadOnlyProperty,
                                                       this,
                                                       nameof(IsMessageReadOnly),
-                                                      null,
-                                                      BindingMode.TwoWay);
+                                                      converter: null,
+                                                      bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(IsEnabledProperty,
                                                       this,
                                                       nameof(IsMessageReadOnly),
-                                                      _inverseBooleanConverter,
-                                                      BindingMode.TwoWay);
+                                                      converter: _inverseBooleanConverter,
+                                                      bindingMode: BindingMode.TwoWay);
 
             // Bind this RatingValue property to the UI FeedbackRatingControl
             _layoutFeedbackRatingControl?.BindProperty(RatingControl.ValueProperty,
                                                     this,
                                                     nameof(RatingValue),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
 
             // Simulate changes
             OnFeedbackInputsChanged(null!, null!);
@@ -324,7 +324,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private static async Task UseTokenAndWait([NotNull] CancellationTokenSource? tokenSource)
         {
             // Throw if tokenSource is null
-            ArgumentNullException.ThrowIfNull(tokenSource, nameof(tokenSource));
+            ArgumentNullException.ThrowIfNull(tokenSource);
 
             try
             {

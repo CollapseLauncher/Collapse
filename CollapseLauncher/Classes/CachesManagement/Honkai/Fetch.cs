@@ -4,7 +4,6 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.Http;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Concurrent;

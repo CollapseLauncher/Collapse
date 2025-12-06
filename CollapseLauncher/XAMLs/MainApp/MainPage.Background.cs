@@ -221,11 +221,7 @@ public partial class MainPage : Page
             
         // If the custom per region is enabled, then execute below
         BackgroundImgChanger.ChangeBackground(gameLauncherApi.GameBackgroundImgLocal,
-                                              () =>
-                                              {
-                                                  IsFirstStartup = false;
-                                                  this.ReloadPageTheme();
-                                              },
+                                              this.ReloadPageTheme,
                                               IsCustomBG || isUseCustomPerRegionBg,
                                               true,
                                               true);

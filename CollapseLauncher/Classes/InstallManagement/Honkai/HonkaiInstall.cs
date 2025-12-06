@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.InstallManager.Base;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
@@ -40,15 +41,13 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Properties
 
-        private HonkaiCache  _gameCacheManager  { get; }
-        private HonkaiRepair _gameRepairManager { get; set; }
+        private HonkaiRepairV2 _gameRepairManager { get; set; }
 
         #endregion
 
-        public HonkaiInstall(UIElement     parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
-            : base(parentUI, GameVersionManager)
+        public HonkaiInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI, gameVersionManager, gameSettings)
         {
-            _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 
         #region Public Methods
@@ -65,7 +64,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // If the confirm is 1 (verified) or -1 (cancelled), then return the code
             int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as HonkaiRepair);
+                                                                  _gameRepairManager ??= GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer));
             if (deltaPatchConfirm is -1 or 1)
             {
                 return deltaPatchConfirm;
@@ -76,12 +75,13 @@ namespace CollapseLauncher.InstallManager.Honkai
         }
 
 #nullable enable
-        protected override IRepair GetGameRepairInstance(string? versionString) =>
-            new HonkaiRepair(ParentUI,
-                        GameVersionManager,
-                        _gameCacheManager, GameSettings,
-                        true,
-                        versionString);
+        protected override HonkaiRepairV2 GetGameRepairInstance(string? versionString) =>
+            new HonkaiRepairV2(ParentUI,
+                               GameVersionManager!,
+                               GameSettings!,
+                               versionString,
+                               true,
+                               false);
 #nullable restore
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null,
@@ -179,14 +179,19 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Override Methods - UninstallGame
 
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
-            return new UninstallGameProperty
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
             {
-                gameDataFolderName  = "BH3_Data",
-                foldersToDelete     = ["BH3_Data", "AntiCheatExpert"],
-                filesToDelete       = ["ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini"],
-                foldersToKeepInData = []
+                return gameInstallFileInfo;
+            }
+
+            return new GameInstallFileInfo
+            {
+                GameDataFolderName  = "BH3_Data",
+                FoldersToDelete     = ["BH3_Data", "AntiCheatExpert"],
+                FilesToDelete       = ["ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini"],
+                FoldersToKeepInData = []
             };
         }
 
@@ -202,7 +207,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             string             relativePath     = localFileInfo.RelativePath;
             ReadOnlySpan<char> relativePathSpan = relativePath;
             string             fileName         = localFileInfo.FileName;
-            string             gameFolder       = _uninstallGameProperty?.gameDataFolderName ?? string.Empty;
+            string             gameFolder       = _gameInstallFileInfo?.GameDataFolderName ?? string.Empty;
 
             // 1st check: Ensure that the file is not a config or pkg_version file
             if (relativePathSpan.EndsWith("config.ini",     StringComparison.OrdinalIgnoreCase)
@@ -219,7 +224,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             }
 
             // 3rd check: Ensure that the file isn't in excluded list
-            if (_uninstallGameProperty?.foldersToKeepInData
+            if (_gameInstallFileInfo?.FoldersToKeepInData
                                        .Any(x => relativePath
                                                 .AsSpan() // As Span<T> since StartsWith() in it is typically faster
                                                  // than the one from String primitive
@@ -243,7 +248,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // 6th check: Ensure that the file is one of the files included
             //            in the Regex pattern list
-            if (_uninstallGameProperty?.filesToDelete
+            if (_gameInstallFileInfo?.FilesToDelete
                                        .Any(pattern => Regex.IsMatch(fileName,
                                                                      pattern,
                                                                      RegexOptions.Compiled |

@@ -1,15 +1,16 @@
 using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.Metadata;
 using System;
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameVersioning
 {
     internal sealed class GameTypeHonkaiVersion(
-        RegionResourceProp gameRegionProp,
-        string             gameName,
-        string             gameRegion)
-        : GameVersionBase(gameRegionProp, gameName, gameRegion)
+        ILauncherApi launcherApi,
+        PresetConfig presetConfig) : GameVersionBase(launcherApi, presetConfig)
     {
         #region Statics
         private static readonly Version SenadinaVersion = new(7, 3, 0);
