@@ -67,6 +67,7 @@ internal partial class WpfPackageContext
             }
 
             SpawnUpdateFinishedNotification();
+            CurrentInstalledVersion = CurrentAvailableVersion;
         }
         catch when (_localCts.Token.IsCancellationRequested)
         {
