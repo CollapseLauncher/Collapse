@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换游戏版本",
+    "GameSettings_Panel2ChangeGameLocation": "更改游戏位置",
     "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "无法将游戏移动到硬盘根目录！\r\n请新建一个文件夹并重试。",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
@@ -744,7 +745,7 @@
     "LeftPanelNoPluginTitle": "嘿，你还没加载插件！",
     "LeftPanelNoPluginButton1": "转到",
     "LeftPanelNoPluginButton2": "插件下载目录",
-    "LeftPanelNoPluginButton3": "页",
+    "LeftPanelNoPluginButton3": "页以获取更多！",
 
     "LeftPanelListViewTitle": "加载插件信息",
 
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "您需要重启您的启动器以应用更新！",
     "ListViewFooterRestartButton": "重启启动器",
 
-    "RightPanelImportTitle1": "拖动",
+    "RightPanelImportTitle1": "点击以添加",
     "RightPanelImportTitle2": "或",
     "RightPanelImportTitle3": "这里",
-    "RightPanelImportTitle4": "或者点击这个框以导入插件"
+    "RightPanelImportTitle4": "框里的任何位置都可以！"
   },
 
   "_Misc": {
@@ -1659,6 +1660,19 @@
     "Japan": "日本",
     "Bilibili": "哔哩哔哩",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "开始更新",
+    "CancelUpdateBtn": "取消更新",
+    "ReinstallToolBtn": "重新安装",
+    "StartUpdateAutomatically": "自动开始更新",
+    "NotifUpdateCompletedTitle": "{0} 已更新！",
+    "NotifUpdateCompletedSubtitle": "工具：您的游戏 {1} - {2} 的 {0} 已更新到 v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "千星沙箱"
   },
 
   "_OOBEAgreementMenu": {
