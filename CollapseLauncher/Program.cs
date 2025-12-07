@@ -634,7 +634,14 @@ namespace CollapseLauncher
         {
             // Workaround to artificially start new process and wait for the current one to be killed.
             string collapsePath = AppExecutablePath;
-            Process.Start("cmd.exe", $"/c timeout /T 1 && start /I \"\" \"{collapsePath}\"");
+            Process.Start(new ProcessStartInfo
+            {
+                FileName        = "cmd.exe",
+                Arguments       = $"/c timeout /T 1 && start \"\" \"{collapsePath}\"",
+                UseShellExecute = true,
+            });
+            
+            Task.Delay(100).Wait();
             Application.Current.Exit();
         }
     }

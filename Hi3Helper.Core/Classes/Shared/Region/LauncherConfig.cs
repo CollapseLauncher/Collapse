@@ -547,7 +547,14 @@ namespace Hi3Helper.Shared.Region
             Guid g = Guid.NewGuid();
             SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
             return g;
+        }
 
+        public static Guid SetGuid(int sessionNum, Guid? guid)
+        {
+            guid ??= Guid.NewGuid();
+
+            SetAndSaveConfigValue($"sessionGuid{sessionNum}", guid.Value);
+            return guid.Value;
         }
 
         #endregion

@@ -61,11 +61,30 @@ namespace CollapseLauncher
             InitializeComponent();
 
             CollapseTaskbar.Logger = LoggerInstance;
-            CollapseTaskbar.SetValue(TaskbarIcon.LoggerProp, LoggerInstance);
+            var instanceCount = MainEntryPoint.InstanceCount;
 
+            ExceptionCatcher.ExceptionRaised += 
+                (_, e) =>
+                    {
+                        LogWriteLine($"[TrayIcon] Somehow GUID set is failed, restarting app with new GUID!\r\n{e.Exception.Message}",
+                                     LogType.Error, true);
+
+                        var guid = LauncherConfig.SetGuid(instanceCount, null);
+
+                        // Restart the app on failure because currently there is no
+                        // legit way of reinitializing TrayIcon due to it being a
+                        // dependency to many external functions
+                        MainEntryPoint.ForceRestart();
+                    };
+            
+            Initializer(instanceCount);
+        }
+
+        private void Initializer(int instanceCount)
+        {
             var instanceIndicator = "";
-            var instanceCount     = MainEntryPoint.InstanceCount;
-            var guid              = LauncherConfig.GetGuid(instanceCount);
+
+            var guid = LauncherConfig.GetGuid(instanceCount);
             if (Environment.OSVersion.Version >= new Version(10, 0, 22621))
             {
                 LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
@@ -111,8 +130,6 @@ namespace CollapseLauncher
             CollapseTaskbar.Visibility = Visibility.Visible;
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
-
-            Current = this;
         }
 
         public void Dispose()
