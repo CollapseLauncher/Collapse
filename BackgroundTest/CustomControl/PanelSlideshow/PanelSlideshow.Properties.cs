@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BackgroundTest.CustomControl.PanelSlideshow;
 
@@ -24,7 +25,29 @@ public partial class PanelSlideshow
     public int ItemIndex
     {
         get => (int)GetValue(ItemIndexProperty);
-        set => SetValue(ItemIndexProperty, value);
+        set
+        {
+            using (_atomicLock.EnterScope())
+            {
+                int itemsCount = Items.Count;
+                if (itemsCount == 0)
+                {
+                    return;
+                }
+
+                if (value < 0)
+                {
+                    value = itemsCount - 1;
+                }
+
+                if (value >= itemsCount)
+                {
+                    value = 0;
+                }
+
+                SetValue(ItemIndexProperty, value);
+            }
+        }
     }
 
     /// <summary>
@@ -44,6 +67,12 @@ public partial class PanelSlideshow
         get => (double)GetValue(SlideshowDurationProperty);
         set => SetValue(SlideshowDurationProperty, value);
     }
+
+    #endregion
+
+    #region Fields
+
+    private readonly Lock _atomicLock = new();
 
     #endregion
 

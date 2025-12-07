@@ -398,6 +398,7 @@
         <Setter Property="Width" Value="{StaticResource PipsPagerNavigationButtonWidth}" />
         <Setter Property="Height" Value="{StaticResource PipsPagerNavigationButtonHeight}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -482,7 +483,8 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Border RenderTransformOrigin="0.5, 0.5">
+                        <Border RenderTransformOrigin="0.5, 0.5"
+                                Padding="{TemplateBinding Padding}">
                             <Border.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform x:Name="ScaleTransform" ScaleY="1" ScaleX="1" />

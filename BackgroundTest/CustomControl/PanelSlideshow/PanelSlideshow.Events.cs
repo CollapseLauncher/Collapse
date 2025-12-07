@@ -1,9 +1,15 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using Windows.System;
 
 namespace BackgroundTest.CustomControl.PanelSlideshow;
 
@@ -47,6 +53,7 @@ public partial class PanelSlideshow
         {
             slideshow._preloadGrid.Children.Remove(firstElement);
             slideshow._presenter.Content = firstElement;
+            slideshow._presenter.Transitions.Add(slideshow.ItemTransition);
             return;
         }
 
@@ -262,13 +269,138 @@ public partial class PanelSlideshow
     {
         Loaded -= PanelSlideshow_Loaded;
         Unloaded -= PanelSlideshow_Unloaded;
+
+        PointerEntered -= PanelSlideshow_PointerEntered;
+        PointerExited -= PanelSlideshow_PointerExited;
+
+        KeyDown -= PanelSlideshow_KeyDown;
+        PointerWheelChanged -= PanelSlideshow_OnPointerWheelChanged;
+
+        _previousButton.Click -= PreviousButton_OnClick;
+        _nextButton.Click -= NextButton_OnClick;
     }
 
     private void PanelSlideshow_Loaded(object sender, RoutedEventArgs e)
     {
         // Initialize element on the current index.
         ItemIndex_OnChange(this, ItemIndex, -1);
+
+        PointerEntered += PanelSlideshow_PointerEntered;
+        PointerExited += PanelSlideshow_PointerExited;
+
+        KeyDown += PanelSlideshow_KeyDown;
+        PointerWheelChanged += PanelSlideshow_OnPointerWheelChanged;
+
+        _previousButton.Click += PreviousButton_OnClick;
+        _nextButton.Click += NextButton_OnClick;
     }
+
+    #endregion
+
+    #region Key Presses and Scroll
+
+    private void PanelSlideshow_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case VirtualKey.Left:
+            case VirtualKey.Up:
+                PreviousButton_OnClick(sender, e);
+                break;
+            case VirtualKey.Right:
+            case VirtualKey.Down:
+                NextButton_OnClick(sender, e);
+                break;
+        }
+    }
+
+    private void PanelSlideshow_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
+    {
+        if (!e.Pointer.IsInRange ||
+            sender is not UIElement element)
+        {
+            return;
+        }
+
+        PointerPoint pointer = e.GetCurrentPoint(element);
+        int orientation = pointer.Properties.MouseWheelDelta;
+        bool isNext = orientation < 0;
+
+        if (isNext)
+        {
+            ItemIndex++;
+        }
+        else
+        {
+            ItemIndex--;
+        }
+    }
+
+    #endregion
+
+    #region PointerEntered and PointerExited
+
+    private void PanelSlideshow_PointerEntered(object sender, PointerRoutedEventArgs e)
+    {
+        VisualStateManager.GoToState(this, "PointerOver", true);
+
+        if (_previousButtonGrid == null ||
+            _nextButtonGrid == null)
+        {
+            return;
+        }
+
+        StartElevateShadowAnim(_previousButtonGrid);
+        StartElevateShadowAnim(_nextButtonGrid);
+
+        static void StartElevateShadowAnim(UIElement element)
+        {
+            var visual = ElementCompositionPreview.GetElementVisual(element);
+            var comp = visual.Compositor;
+
+            var ani = comp.CreateVector3KeyFrameAnimation();
+            ani.InsertKeyFrame(0f, new Vector3(0, 0, 0));
+            ani.InsertKeyFrame(1f, new Vector3(0, 0, 32));
+            ani.Duration = TimeSpan.FromSeconds(0.25);
+
+            visual.StartAnimation("Translation", ani);
+        }
+    }
+
+    private void PanelSlideshow_PointerExited(object sender, PointerRoutedEventArgs e)
+    {
+        VisualStateManager.GoToState(this, "Normal", true);
+
+        if (_previousButtonGrid == null ||
+            _nextButtonGrid == null)
+        {
+            return;
+        }
+
+        StartDeelevateShadowAnim(_previousButtonGrid);
+        StartDeelevateShadowAnim(_nextButtonGrid);
+
+        static void StartDeelevateShadowAnim(UIElement element)
+        {
+            var visual = ElementCompositionPreview.GetElementVisual(element);
+            var comp = visual.Compositor;
+
+            var ani = comp.CreateVector3KeyFrameAnimation();
+            ani.InsertKeyFrame(0f, new Vector3(0, 0, 32));
+            ani.InsertKeyFrame(1f, new Vector3(0, 0, 0));
+            ani.Duration = TimeSpan.FromSeconds(0.25);
+
+            visual.StartAnimation("Translation", ani);
+        }
+    }
+
+    #endregion
+
+    #region Navigation Buttons
+
+    private void PreviousButton_OnClick(object? sender, RoutedEventArgs args) => ItemIndex--;
+
+    private void NextButton_OnClick(object? sender, RoutedEventArgs args) => ItemIndex++;
 
     #endregion
 }
