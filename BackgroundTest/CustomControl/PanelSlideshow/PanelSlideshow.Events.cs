@@ -28,7 +28,7 @@ public partial class PanelSlideshow
 
     private static void ItemIndex_OnChange(PanelSlideshow slideshow, int newIndex, int oldIndex)
     {
-        if (slideshow.Items is null || slideshow.Items.Count == 0)
+        if (slideshow.Items is null || slideshow.Items.Count == 0 || slideshow._presenter == null || !slideshow.IsLoaded)
         {
             return;
         }
@@ -38,9 +38,14 @@ public partial class PanelSlideshow
             return;
         }
 
+        // Preload to invisible grid. This preload is necessary to avoid
+        // the element jumping off the element due to size and offset being unset.
+        PreloadPastOrFutureItem(slideshow.Items, slideshow._preloadGrid, newIndex, slideshow.Items.Count);
+
         // Just add to Grid if oldIndex is -1 (initialization on startup)
         if (oldIndex == -1 && slideshow.Items.FirstOrDefault() is UIElement firstElement)
         {
+            slideshow._preloadGrid.Children.Remove(firstElement);
             slideshow._presenter.Content = firstElement;
             return;
         }
@@ -80,6 +85,69 @@ public partial class PanelSlideshow
 
     #endregion
 
+    #region Element Preload Helper
+
+    private static void PreloadPastOrFutureItem(IList<UIElement> collection, Grid preloadGrid, int currentIndex, int itemsCount)
+    {
+        if (currentIndex < 0)
+        {
+            return;
+        }
+
+        int pastIndex = -1;
+        if (currentIndex == 0 && itemsCount >= 3)
+        {
+            pastIndex = itemsCount - 1;
+        }
+        else if (currentIndex > 0)
+        {
+            pastIndex = currentIndex - 1;
+        }
+
+        int futureIndex = -1;
+        if (currentIndex >= 0 && itemsCount - 1 > currentIndex)
+        {
+            futureIndex = currentIndex + 1;
+        }
+        else if (currentIndex + 1 >= itemsCount)
+        {
+            futureIndex = 0;
+        }
+
+        UIElement? pastElement   = pastIndex   == -1 ? null : collection[pastIndex];
+        UIElement? futureElement = futureIndex == -1 ? null : collection[futureIndex];
+
+        preloadGrid.Children.Clear();
+        AssignToPreloadGridAndApplyPayload(pastElement);
+        AssignToPreloadGridAndApplyPayload(futureElement);
+
+        void AssignToPreloadGridAndApplyPayload(UIElement? element)
+        {
+            if (element is not FrameworkElement elementFe ||
+                elementFe.ActualSize is not { X: 0, Y: 0 })
+            {
+                return;
+            }
+
+            elementFe.SizeChanged += PreloadItem_OnLoaded;
+            preloadGrid.Children.Add(elementFe);
+        }
+    }
+
+    private static void PreloadItem_OnLoaded(object? sender, SizeChangedEventArgs args)
+    {
+        if (sender is not FrameworkElement element ||
+            element.Parent is not Grid parentGrid)
+        {
+            return;
+        }
+
+        element.SizeChanged -= PreloadItem_OnLoaded;
+        parentGrid.Children.Remove(element);
+    }
+
+    #endregion
+
     #region Transition Switch Helper
 
     private static void SwitchUsingEdgeUIThemeTransition(
@@ -90,7 +158,7 @@ public partial class PanelSlideshow
         bool isBackward)
     {
         UIElement currentElement = items[index];
-        UIElement? lastElement = presenter.Content as UIElement;
+        UIElement? lastElement   = presenter.Content as UIElement;
 
         EdgeTransitionLocation currentEdge = paneThemeTransition.Edge;
         if (isBackward)
@@ -185,6 +253,7 @@ public partial class PanelSlideshow
 
         presenter.Content = currentElement;
     }
+
     #endregion
 
     #region Loaded and Unloaded

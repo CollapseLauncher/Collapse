@@ -11,6 +11,7 @@ public partial class PanelSlideshow
 
     private const string TemplateNameRootGrid = "RootGrid";
     private const string TemplateNamePresenterScrollContent = "Presenter";
+    private const string TemplateNamePreloadGrid = "PreloadGrid";
 
     #endregion
 
@@ -18,6 +19,7 @@ public partial class PanelSlideshow
 
     private Grid _rootGrid = null!;
     private ScrollContentPresenter _presenter = null!;
+    private Grid _preloadGrid = null!;
 
     private bool _isTemplateLoaded;
 
@@ -30,6 +32,7 @@ public partial class PanelSlideshow
         base.OnApplyTemplate();
         _rootGrid = this.GetTemplateChild<Grid>(TemplateNameRootGrid);
         _presenter = this.GetTemplateChild<ScrollContentPresenter>(TemplateNamePresenterScrollContent);
+        _preloadGrid = this.GetTemplateChild<Grid>(TemplateNamePreloadGrid);
 
         Interlocked.Exchange(ref _isTemplateLoaded, true);
 
