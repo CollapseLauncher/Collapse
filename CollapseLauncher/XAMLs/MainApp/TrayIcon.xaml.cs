@@ -78,6 +78,7 @@ namespace CollapseLauncher
                     };
             
             Initializer(instanceCount);
+            Current = this;
         }
 
         private void Initializer(int instanceCount)
