@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon", "H.NotifyIco
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon.WinUI", "H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj", "{0128963B-3044-224A-7E5D-3FC91B8B054C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.SimpleZipArchiveReader", "Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj", "{833CA9EB-26C4-D977-383C-E3F90AE509F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -168,6 +170,12 @@ Global
 		{0128963B-3044-224A-7E5D-3FC91B8B054C}.Publish|x64.Build.0 = Release|x64
 		{0128963B-3044-224A-7E5D-3FC91B8B054C}.Release|x64.ActiveCfg = Release|x64
 		{0128963B-3044-224A-7E5D-3FC91B8B054C}.Release|x64.Build.0 = Release|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Debug|x64.ActiveCfg = Debug|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Debug|x64.Build.0 = Debug|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Publish|x64.ActiveCfg = Release|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Publish|x64.Build.0 = Release|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Release|x64.ActiveCfg = Release|x64
+		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
