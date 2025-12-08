@@ -633,15 +633,14 @@ namespace CollapseLauncher
         public static void ForceRestart()
         {
             // Workaround to artificially start new process and wait for the current one to be killed.
-            string collapsePath = AppExecutablePath;
-            Process.Start(new ProcessStartInfo
+            var cmdProc = Process.Start(new ProcessStartInfo
             {
                 FileName        = "cmd.exe",
-                Arguments       = $"/c timeout /T 1 && start \"\" \"{collapsePath}\"",
+                Arguments       = $"/c timeout /T 1 && start \"\" \"{AppExecutablePath}\"",
                 UseShellExecute = true,
             });
-            
-            Task.Delay(100).Wait();
+
+            cmdProc?.WaitForExit();
             Application.Current.Exit();
         }
     }

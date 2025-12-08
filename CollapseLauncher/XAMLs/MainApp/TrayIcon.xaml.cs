@@ -156,11 +156,11 @@ namespace CollapseLauncher
         {
             if (cached_isOldTaskbar_EP.HasValue)
                 return cached_isOldTaskbar_EP.Value;
-            
+            #nullable enable
             try
             {
                 var regPath = "Software\\ExplorerPatcher";
-                var regRoot = Registry.CurrentUser.OpenSubKey(regPath, false);
+                using RegistryKey? regRoot = Registry.CurrentUser.OpenSubKey(regPath, false);
 
                 if (regRoot == null)
                 {
@@ -168,7 +168,7 @@ namespace CollapseLauncher
                     return false;
                 }
 
-                var  val = regRoot.TryGetValue("OldTaskbar", false, null);
+                var  val = regRoot.TryGetValue("OldTaskbar", false, null!);
                 bool ret = false;
                 if (val is int i)
                     ret = i != 0; // Return true on anything other than 0 (default W11 Taskbar)
@@ -185,6 +185,7 @@ namespace CollapseLauncher
         }
 
         private bool? cached_isOldTaskbar_EP = null;
+        #nullable restore
         
         private ILogger LoggerInstance => ILoggerHelper.GetILogger("TrayIcon");
 
