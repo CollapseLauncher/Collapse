@@ -6,9 +6,17 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <AcrylicBrush x:Key="SlideshowButtonBackground" TintColor="#FFFFFF" FallbackColor="#FFFFFF" TintOpacity=".65" />
+            <LinearGradientBrush x:Key="SlideshowProgressBarSmokeBackground" StartPoint="0,0" EndPoint="0,1" ColorInterpolationMode="ScRgbLinearInterpolation">
+                <GradientStop Offset="0" Color="#00000000" />
+                <GradientStop Offset="1" Color="#A0000000" />
+            </LinearGradientBrush>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Default">
             <AcrylicBrush x:Key="SlideshowButtonBackground" TintColor="#222222" FallbackColor="#222222" TintOpacity=".5" />
+            <LinearGradientBrush x:Key="SlideshowProgressBarSmokeBackground" StartPoint="0,0" EndPoint="0,1" ColorInterpolationMode="ScRgbLinearInterpolation">
+                <GradientStop Offset="0.25" Color="#00000000" />
+                <GradientStop Offset="1" Color="#E0000000" />
+            </LinearGradientBrush>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

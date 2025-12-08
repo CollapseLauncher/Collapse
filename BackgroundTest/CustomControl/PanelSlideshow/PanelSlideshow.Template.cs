@@ -10,6 +10,7 @@ namespace BackgroundTest.CustomControl.PanelSlideshow;
 [TemplatePart(Name = TemplateNamePreloadGrid, Type = typeof(Grid))]
 [TemplatePart(Name = TemplateNamePreviousButton, Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameNextButton, Type = typeof(Button))]
+[TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(ProgressBar))]
 public partial class PanelSlideshow
 {
     #region Constants
@@ -19,6 +20,7 @@ public partial class PanelSlideshow
     private const string TemplateNamePreloadGrid = "PreloadGrid";
     private const string TemplateNamePreviousButton = "PreviousButton";
     private const string TemplateNameNextButton = "NextButton";
+    private const string TemplateNameCountdownProgressBar = "CountdownProgressBar";
 
     #endregion
 
@@ -30,6 +32,7 @@ public partial class PanelSlideshow
     private Grid _previousButtonGrid = null!;
     private Button _nextButton = null!;
     private Grid _nextButtonGrid = null!;
+    private ProgressBar _countdownProgressBar = null!;
 
     private bool _isTemplateLoaded;
 
@@ -44,6 +47,7 @@ public partial class PanelSlideshow
         _preloadGrid = this.GetTemplateChild<Grid>(TemplateNamePreloadGrid);
         _previousButton = this.GetTemplateChild<Button>(TemplateNamePreviousButton);
         _nextButton = this.GetTemplateChild<Button>(TemplateNameNextButton);
+        _countdownProgressBar = this.GetTemplateChild<ProgressBar>(TemplateNameCountdownProgressBar);
 
         _previousButtonGrid = (Grid)_previousButton.Parent;
         _nextButtonGrid = (Grid)_nextButton.Parent;

@@ -44,6 +44,9 @@ public partial class PanelSlideshow
             return;
         }
 
+        // Restart slideshow timer
+        slideshow.RestartTimer(slideshow.SlideshowDuration);
+
         // Preload to invisible grid. This preload is necessary to avoid
         // the element jumping off the element due to size and offset being unset.
         PreloadPastOrFutureItem(slideshow.Items, slideshow._preloadGrid, newIndex, slideshow.Items.Count);
@@ -88,6 +91,12 @@ public partial class PanelSlideshow
             element.Transitions.Clear();
             element.Transitions.Add(transition);
         }
+    }
+
+    private static void SlideshowDuration_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        PanelSlideshow slideshow = (PanelSlideshow)d;
+        slideshow.RestartTimer((double)e.NewValue);
     }
 
     #endregion
@@ -278,6 +287,9 @@ public partial class PanelSlideshow
 
         _previousButton.Click -= PreviousButton_OnClick;
         _nextButton.Click -= NextButton_OnClick;
+
+        // Deregister timer
+        DisposeAndDeregisterTimer();
     }
 
     private void PanelSlideshow_Loaded(object sender, RoutedEventArgs e)
@@ -342,56 +354,18 @@ public partial class PanelSlideshow
 
     private void PanelSlideshow_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
+        _isMouseHover = true;
         VisualStateManager.GoToState(this, "PointerOver", true);
 
-        if (_previousButtonGrid == null ||
-            _nextButtonGrid == null)
-        {
-            return;
-        }
-
-        StartElevateShadowAnim(_previousButtonGrid);
-        StartElevateShadowAnim(_nextButtonGrid);
-
-        static void StartElevateShadowAnim(UIElement element)
-        {
-            var visual = ElementCompositionPreview.GetElementVisual(element);
-            var comp = visual.Compositor;
-
-            var ani = comp.CreateVector3KeyFrameAnimation();
-            ani.InsertKeyFrame(0f, new Vector3(0, 0, 0));
-            ani.InsertKeyFrame(1f, new Vector3(0, 0, 32));
-            ani.Duration = TimeSpan.FromSeconds(0.25);
-
-            visual.StartAnimation("Translation", ani);
-        }
+        PauseSlideshow();
     }
 
     private void PanelSlideshow_PointerExited(object sender, PointerRoutedEventArgs e)
     {
+        _isMouseHover = false;
         VisualStateManager.GoToState(this, "Normal", true);
 
-        if (_previousButtonGrid == null ||
-            _nextButtonGrid == null)
-        {
-            return;
-        }
-
-        StartDeelevateShadowAnim(_previousButtonGrid);
-        StartDeelevateShadowAnim(_nextButtonGrid);
-
-        static void StartDeelevateShadowAnim(UIElement element)
-        {
-            var visual = ElementCompositionPreview.GetElementVisual(element);
-            var comp = visual.Compositor;
-
-            var ani = comp.CreateVector3KeyFrameAnimation();
-            ani.InsertKeyFrame(0f, new Vector3(0, 0, 32));
-            ani.InsertKeyFrame(1f, new Vector3(0, 0, 0));
-            ani.Duration = TimeSpan.FromSeconds(0.25);
-
-            visual.StartAnimation("Translation", ani);
-        }
+        ResumeSlideshow();
     }
 
     #endregion

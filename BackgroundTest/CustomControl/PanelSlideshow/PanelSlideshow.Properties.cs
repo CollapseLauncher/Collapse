@@ -68,11 +68,21 @@ public partial class PanelSlideshow
         set => SetValue(SlideshowDurationProperty, value);
     }
 
+    /// <summary>
+    /// Toggle the progress bar visibility to show slideshow duration countdown.
+    /// </summary>
+    public Visibility ProgressBarVisibility
+    {
+        get => (Visibility)GetValue(ProgressBarVisibilityProperty);
+        set => SetValue(ProgressBarVisibilityProperty, value);
+    }
+
     #endregion
 
     #region Fields
 
     private readonly Lock _atomicLock = new();
+    private bool _isMouseHover = false;
 
     #endregion
 
@@ -92,7 +102,11 @@ public partial class PanelSlideshow
 
     public static readonly DependencyProperty SlideshowDurationProperty =
         DependencyProperty.Register(nameof(SlideshowDuration), typeof(double), typeof(PanelSlideshow),
-                                    new PropertyMetadata(0));
+                                    new PropertyMetadata(0, SlideshowDuration_OnChange));
+
+    public static readonly DependencyProperty ProgressBarVisibilityProperty =
+        DependencyProperty.Register(nameof(ProgressBarVisibility), typeof(Visibility), typeof(PanelSlideshow),
+                                    new PropertyMetadata(Visibility.Visible));
 
     #endregion
 }

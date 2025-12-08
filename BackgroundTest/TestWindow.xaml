@@ -17,17 +17,23 @@
     <Grid RequestedTheme="Dark">
         <Grid.Resources>
             <newPipsPager:IndexAddOneConverter x:Key="IndexAddOneConverter"/>
+            <ThemeShadow x:Key="ThisShadow"/>
         </Grid.Resources>
         <panelSlideshow:PanelSlideshow x:Name="PanelSlideshow"
-                                       Margin="64"
-                                       CornerRadius="16">
+                                       Margin="8"
+                                       CornerRadius="16"
+                                       SlideshowDuration="10"
+                                       PreviousButtonMargin="-16"
+                                       NextButtonMargin="-16"
+                                       PreviousButtonVerticalAlignment="Center"
+                                       NextButtonVerticalAlignment="Center">
             <panelSlideshow:PanelSlideshow.ItemTransition>
-                <PaneThemeTransition Edge="Right"/>
+                <PaneThemeTransition Edge="Right" />
             </panelSlideshow:PanelSlideshow.ItemTransition>
             <panelSlideshow:PanelSlideshow.Items>
                 <Image Source="/CustomControl/BGTestImage1.jpg"
                        Stretch="UniformToFill"
-                       VerticalAlignment="Center"
+                       VerticalAlignment="Stretch"
                        HorizontalAlignment="Center"/>
                 <Image Source="/CustomControl/BGTestImage2.jpg"
                        Stretch="UniformToFill"
@@ -46,7 +52,9 @@
               Padding="12, 10"
               CornerRadius="24"
               Margin="32"
-              SizeChanged="ContainerGrid_OnSizeChanged">
+              SizeChanged="ContainerGrid_OnSizeChanged"
+              Shadow="{StaticResource ThisShadow}"
+              Translation="0,0,16">
             <Grid Background="{ThemeResource ContentBackgroundAcrylicBrush}"
                   Margin="-16"/>
             <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
@@ -82,30 +90,6 @@
                                            NextNavigationButtonMode="Visible"
                                            SelectionMode="Hover"
                                            Orientation="Horizontal"/>
-            </Grid>
-        </Grid>
-        <Grid x:Name="ContainerVerticalGrid"
-              VerticalAlignment="Center"
-              HorizontalAlignment="Right"
-              Padding="12, 10"
-              CornerRadius="24"
-              Margin="32">
-            <Grid Background="{ThemeResource ContentBackgroundAcrylicBrush}"
-                  Margin="-16"/>
-            <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
-                  Margin="-16"
-                  Opacity=".15"/>
-            <Grid HorizontalAlignment="Center"
-                  VerticalAlignment="Center">
-                <newPipsPager:NewPipsPager x:Name="NewPipsPagerVertical"
-                                           ItemsCount="10"
-                                           ItemIndex="2"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           PreviousNavigationButtonMode="Hidden"
-                                           NextNavigationButtonMode="Hidden"
-                                           SelectionMode="Hover"
-                                           Orientation="Vertical"/>
             </Grid>
         </Grid>
     </Grid>
