@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
@@ -8,6 +9,7 @@ using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -86,7 +88,7 @@ namespace CollapseLauncher
             var instanceIndicator = "";
 
             var guid = LauncherConfig.GetGuid(instanceCount);
-            if (Environment.OSVersion.Version >= new Version(10, 0, 22621))
+            if (Environment.OSVersion.Version >= new Version(10, 0, 22621) && !isOldTaskbar_EP())
             {
                 LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guid}\r\n\t" +
@@ -95,6 +97,13 @@ namespace CollapseLauncher
             }
             else // Do not use static GUID on W10 and W11 21H2
             {
+                if (isOldTaskbar_EP())
+                {
+                    LogWriteLine("[TrayIcon] Detected ExplorerPatcher W10 Taskbar behavior!" +
+                                 "Reverting to old GUID behavior, your taskbar position might be inconsistent.",
+                                 LogType.Warning, true);
+                }
+                
                 var guidGet = CollapseTaskbar.GetValue(TaskbarIcon.IdProperty).ToString();
                 LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guidGet}\r\n\t" +
@@ -137,6 +146,45 @@ namespace CollapseLauncher
         {
             CollapseTaskbar.Dispose();
         }
+
+        /// <summary>
+        /// Detects presence of ExplorerPatcher setting for OldTaskbar
+        /// This is useful to check for Taskbar behavior whether its using W11 or W10 behaviors
+        /// </summary>
+        /// <returns>True when it detects "OldTaskbar" registry value >0</returns>
+        private bool isOldTaskbar_EP()
+        {
+            if (cached_isOldTaskbar_EP.HasValue)
+                return cached_isOldTaskbar_EP.Value;
+            
+            try
+            {
+                var regPath = "Software\\ExplorerPatcher";
+                var regRoot = Registry.CurrentUser.OpenSubKey(regPath, false);
+
+                if (regRoot == null)
+                {
+                    cached_isOldTaskbar_EP = false;
+                    return false;
+                }
+
+                var  val = regRoot.TryGetValue("OldTaskbar", false, null);
+                bool ret = false;
+                if (val is int i)
+                    ret = i != 0; // Return true on anything other than 0 (default W11 Taskbar)
+
+                cached_isOldTaskbar_EP = ret;
+                return ret;
+            }
+            catch (Exception)
+            {
+                // If any error in this method occurrs, just return false (EP not exist)
+                cached_isOldTaskbar_EP = false;
+                return false;
+            }
+        }
+
+        private bool? cached_isOldTaskbar_EP = null;
         
         private ILogger LoggerInstance => ILoggerHelper.GetILogger("TrayIcon");
 
