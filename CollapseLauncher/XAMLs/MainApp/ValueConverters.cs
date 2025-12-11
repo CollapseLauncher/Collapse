@@ -8,6 +8,7 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -708,7 +709,7 @@ namespace CollapseLauncher.Pages
                                                CancellationToken.None);
 
                 resultStream = result.Stream;
-                IRandomAccessStream stream = resultStream.AsRandomAccessStream();
+                using IRandomAccessStream stream = resultStream.AsRandomAccessStream(true);
                 image.ImageOpened += ImageOnImageOpened;
 
                 await image.SetSourceAsync(stream);
