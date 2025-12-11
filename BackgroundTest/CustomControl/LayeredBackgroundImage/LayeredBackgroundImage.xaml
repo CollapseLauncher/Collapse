@@ -1,0 +1,36 @@
+﻿<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:BackgroundTest.CustomControl.LayeredBackgroundImage"
+                    xmlns:parallax="using:BackgroundTest.CustomControl.ParallaxHoverView">
+
+    <Style TargetType="controls:LayeredBackgroundImage">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:LayeredBackgroundImage">
+                    <Grid x:Name="RootPanel">
+                        <Grid x:Name="ParallaxGrid"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+                            <Grid x:Name="PlaceholderGrid"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"/>
+                            <Grid x:Name="BackgroundGrid"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"/>
+                            <Image x:Name="Image"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Source="/CustomControl/BGTestImage4.jpg"
+                                   Stretch="UniformToFill"/>
+                        </Grid>
+                        <Grid x:Name="ForegroundGrid"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:layeredPanel="using:BackgroundTest.CustomControl.LayeredBackgroundImage"
     xmlns:newPipsPager="using:BackgroundTest.CustomControl.NewPipsPager"
     xmlns:panelSlideshow="using:BackgroundTest.CustomControl.PanelSlideshow"
     mc:Ignorable="d"
@@ -14,7 +15,8 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid RequestedTheme="Dark">
+    <Grid x:Name="ParentGrid"
+          RequestedTheme="Dark">
         <Grid.Resources>
             <newPipsPager:IndexAddOneConverter x:Key="IndexAddOneConverter"/>
             <ThemeShadow x:Key="ThisShadow"/>
@@ -27,9 +29,14 @@
                                        NextButtonMargin="-16"
                                        PreviousButtonVerticalAlignment="Center"
                                        NextButtonVerticalAlignment="Center">
-            <panelSlideshow:PanelSlideshow.ItemTransition>
-                <PaneThemeTransition Edge="Right" />
-            </panelSlideshow:PanelSlideshow.ItemTransition>
+            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center"
+                                                 IsParallaxEnabled="True"
+                                                 ParallaxHorizontalShift="16"
+                                                 ParallaxVerticalShift="16"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}">
+
+            </layeredPanel:LayeredBackgroundImage>
             <Image Source="/CustomControl/BGTestImage1.jpg"
                    Stretch="UniformToFill"
                    VerticalAlignment="Stretch"

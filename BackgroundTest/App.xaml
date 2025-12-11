@@ -8,6 +8,8 @@
                 <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager_themeresources.xaml" />
                 <ResourceDictionary Source="ms-appx:///CustomControl/NewPipsPager/NewPipsPager.xaml" />
 
+                <ResourceDictionary Source="ms-appx:///CustomControl/LayeredBackgroundImage/LayeredBackgroundImage.xaml" />
+
                 <ResourceDictionary Source="ms-appx:///CustomControl/PanelSlideshow/PanelSlideshow_themeresources.xaml" />
                 <ResourceDictionary Source="ms-appx:///CustomControl/PanelSlideshow/PanelSlideshow.xaml" />
                 <ResourceDictionary>
