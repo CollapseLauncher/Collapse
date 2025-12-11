@@ -8,6 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable MemberCanBePrivate.Global
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog

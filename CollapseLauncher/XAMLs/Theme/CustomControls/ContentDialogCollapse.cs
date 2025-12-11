@@ -13,8 +13,8 @@ namespace CollapseLauncher.CustomControls
 
     public partial class ContentDialogCollapse : ContentDialog
     {
-        public string ThemeTitleGlyph { get; set; }
-        public ContentDialogTheme Theme { get; set; }
+        private string             ThemeTitleGlyph { get; }
+        private ContentDialogTheme Theme           { get; }
         public ContentDialogCollapse()
             : this(ContentDialogTheme.Warning) { }
 
@@ -43,19 +43,21 @@ namespace CollapseLauncher.CustomControls
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
             => ShowAsync(ContentDialogPlacement.Popup);
 
-        public new IAsyncOperation<ContentDialogResult> ShowAsync(
+        private new IAsyncOperation<ContentDialogResult> ShowAsync(
             ContentDialogPlacement placement)
         {
-            if (Title is string titleString && Theme != ContentDialogTheme.Informational)
+            if (Title is not string titleString || Theme == ContentDialogTheme.Informational)
             {
-                Grid titleStack = UIElementExtensions.CreateIconTextGrid(
-                                                                         text: titleString,
-                                                                         iconGlyph: ThemeTitleGlyph,
-                                                                         iconSize: 20,
-                                                                         iconFontFamily: "FontAwesomeSolid"
-                                                                        ).WithPadding(-8d, 0d, 0d, 0d);
-                Title = titleStack;
+                return base.ShowAsync();
             }
+
+            Grid titleStack = UIElementExtensions.CreateIconTextGrid(
+                                                                     text: titleString,
+                                                                     iconGlyph: ThemeTitleGlyph,
+                                                                     iconSize: 20,
+                                                                     iconFontFamily: "FontAwesomeSolid"
+                                                                    ).WithPadding(-8d, 0d, 0d, 0d);
+            Title = titleStack;
             return base.ShowAsync();
         }
     }

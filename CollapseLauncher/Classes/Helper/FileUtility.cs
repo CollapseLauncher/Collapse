@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Helper
 {

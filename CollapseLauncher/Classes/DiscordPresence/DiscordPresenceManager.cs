@@ -41,11 +41,11 @@ namespace CollapseLauncher.DiscordPresence
 
         private DiscordRpcClient? _client;
 
-        private          RichPresence?             _presence;
-        private          ActivityType              _activityType;
-        private          DateTime?                 _lastPlayTime;
-        private          bool                      _firstTimeConnect = true;
-        private readonly ActionBlock<RichPresence> _presenceUpdateQueue;
+        private          RichPresence?              _presence;
+        private          ActivityType               _activityType;
+        private          DateTime?                  _lastPlayTime;
+        private          bool                       _firstTimeConnect = true;
+        private readonly ActionBlock<RichPresence?> _presenceUpdateQueue;
 
         private bool _cachedIsIdleEnabled = true;
 
@@ -53,7 +53,7 @@ namespace CollapseLauncher.DiscordPresence
         {
             get
             {
-                bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
+                bool value = GetAppConfigValue("EnableDiscordIdleStatus");
                 _cachedIsIdleEnabled = value;
                 return value;
             }
@@ -68,7 +68,7 @@ namespace CollapseLauncher.DiscordPresence
 
         public DiscordPresenceManager(bool initialStart = true)
         {
-            _presenceUpdateQueue = new ActionBlock<RichPresence>(_ => _client?.SetPresence(_presence),
+            _presenceUpdateQueue = new ActionBlock<RichPresence?>(_ => _client?.SetPresence(_presence),
                                                                  new ExecutionDataflowBlockOptions
                                                                  {
                                                                      MaxMessagesPerTask     = 1,
@@ -456,9 +456,13 @@ namespace CollapseLauncher.DiscordPresence
 
         private void UpdateActivity()
         {
-            if (_presence != null)
+            try
             {
                 _presenceUpdateQueue.Post(_presence);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Error when updating Discord Presence Activity\r\n{ex}", LogType.Error, true);
             }
         }
     }

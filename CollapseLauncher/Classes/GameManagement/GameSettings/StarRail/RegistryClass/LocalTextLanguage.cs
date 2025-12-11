@@ -6,7 +6,7 @@ using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -19,6 +19,14 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string ValueName = "LanguageSettings_LocalTextLanguage_h2764291023";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        private LocalTextLanguage(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -27,7 +35,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: en. // jp.
         /// Default: en.
         /// </summary>
-        public string LocalTextLang { get; set; } = "en";
+        private string LocalTextLang { get; set; } = "en";
 
         /// <summary>
         /// This defines "<c>Text</c>" language In-game settings -> Text.<br/><br/>
@@ -76,20 +84,20 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         #region Methods
 #nullable enable
-        public static LocalTextLanguage Load()
+        public static LocalTextLanguage Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     string localTextLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return new LocalTextLanguage { LocalTextLang = localTextLang };
+                    return new LocalTextLanguage(gameSettings) { LocalTextLang = localTextLang };
                 }
             }
             catch (Exception ex)
@@ -97,17 +105,17 @@ namespace CollapseLauncher.GameSettings.StarRail
                 LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
-            return new LocalTextLanguage();
+            return new LocalTextLanguage(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 string data = LocalTextLang + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved StarRail Settings: {ValueName} : {data}", LogType.Debug, true);
 #endif

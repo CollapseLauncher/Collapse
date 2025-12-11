@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -10,6 +11,18 @@ using System.Net.Http;
 
 #nullable enable
 namespace CollapseLauncher;
+
+internal class HonkaiRepairAssetIgnore
+{
+    internal static HonkaiRepairAssetIgnore CreateEmpty() => new()
+    {
+        IgnoredAudioPckType       = [],
+        IgnoredVideoCgSubCategory = []
+    };
+
+    internal required AudioPCKType[] IgnoredAudioPckType;
+    internal required int[]          IgnoredVideoCgSubCategory;
+}
 
 // TODO: Implement Repair + Cache Update Mechanism just like Zenless Zone Zero's one.
 internal partial class HonkaiRepairV2
@@ -24,22 +37,37 @@ internal partial class HonkaiRepairV2
     private HttpClient HttpClientAssetBundle { get; }
     private HttpClient HttpClientGeneric     { get; }
 
-    public HonkaiRepairV2(
-        UIElement    parentInterface,
-        IGameVersion gameVersionManager)
-        : this(parentInterface, gameVersionManager, null, false, false)
+    public override string GamePath
     {
+        get
+        {
+            string dir = IsCacheMode
+                ? GameVersionManager.GameDirAppDataPath
+                : GameVersionManager.GameDirPath;
+
+            return dir;
+        }
+        set
+        {
+            if (IsCacheMode)
+            {
+                throw new InvalidOperationException("You cannot apply GamePath while CacheMode is enabled!");
+            }
+
+            GameVersionManager.GameDirPath = value;
+        }
     }
 
     public HonkaiRepairV2(
-        UIElement    parentInterface,
-        IGameVersion gameVersionManager,
-        string?      useCustomVersion,
-        bool         isMainAssetOnlyMode,
-        bool         isCacheMode)
+        UIElement     parentInterface,
+        IGameVersion  gameVersionManager,
+        IGameSettings gameSettings,
+        string?       useCustomVersion    = null,
+        bool          isMainAssetOnlyMode = false,
+        bool          isCacheMode         = false)
         : base(parentInterface,
                gameVersionManager,
-               null,
+               gameSettings,
                null,
                useCustomVersion)
     {

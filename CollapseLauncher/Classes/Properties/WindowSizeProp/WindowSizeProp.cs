@@ -96,25 +96,25 @@ namespace CollapseLauncher.WindowSize
 
     internal class WindowSizeProp
     {
-        public Size                WindowBounds                 { get; set; }
-        public GridLength          SidePanel1Width              { get; set; }
-        public float               PostEventPanelScaleFactor    { get; set; }
-        public Size                EventPostCarouselBounds      { get; set; }
-        public Size                PostPanelBounds              { get; set; }
-        public Thickness           PostPanelBottomMargin        { get; set; }
-        public double              PostPanelPaimonTextSize      { get; set; }
-        public int                 PostPanelPaimonHeight        { get; set; }
-        public Thickness           PostPanelPaimonMargin        { get; set; }
-        public Thickness           PostPanelPaimonInnerMargin   { get; set; }
-        public Thickness           PostPanelPaimonTextMargin    { get; set; }
-        public int                 BannerIconHeight             { get; set; }
-        public int                 BannerIconHeightHYP          { get; set; }
-        public Thickness           BannerIconMargin             { get; set; }
-        public Thickness           BannerIconMarginHYP          { get; set; }
-        public HorizontalAlignment BannerIconAlignHorizontal    { get; set; }
-        public HorizontalAlignment BannerIconAlignHorizontalHYP { get; set; }
-        public VerticalAlignment   BannerIconAlignVertical      { get; set; }
-        public VerticalAlignment   BannerIconAlignVerticalHYP   { get; set; }
-        public int                 SettingsPanelWidth           { get; set; }
+        public Size                WindowBounds                 { get; init; }
+        public GridLength          SidePanel1Width              { get; init; }
+        public float               PostEventPanelScaleFactor    { get; init; }
+        public Size                EventPostCarouselBounds      { get; init; }
+        public Size                PostPanelBounds              { get; init; }
+        public Thickness           PostPanelBottomMargin        { get; init; }
+        public double              PostPanelPaimonTextSize      { get; init; }
+        public int                 PostPanelPaimonHeight        { get; init; }
+        public Thickness           PostPanelPaimonMargin        { get; init; }
+        public Thickness           PostPanelPaimonInnerMargin   { get; init; }
+        public Thickness           PostPanelPaimonTextMargin    { get; init; }
+        public int                 BannerIconHeight             { get; init; }
+        public int                 BannerIconHeightHYP          { get; init; }
+        public Thickness           BannerIconMargin             { get; init; }
+        public Thickness           BannerIconMarginHYP          { get; init; }
+        public HorizontalAlignment BannerIconAlignHorizontal    { get; init; }
+        public HorizontalAlignment BannerIconAlignHorizontalHYP { get; init; }
+        public VerticalAlignment   BannerIconAlignVertical      { get; init; }
+        public VerticalAlignment   BannerIconAlignVerticalHYP   { get; init; }
+        public int                 SettingsPanelWidth           { get; init; }
     }
 }

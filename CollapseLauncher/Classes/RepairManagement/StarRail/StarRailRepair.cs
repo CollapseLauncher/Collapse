@@ -15,6 +15,13 @@ namespace CollapseLauncher
     internal partial class StarRailRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => GameVersionManager.GameDirPath = value;
+        }
+
         private GameTypeStarRailVersion    InnerGameVersionManager { get; }
         private bool                       IsOnlyRecoverMain       { get; }
         private List<FilePropertiesRemote> OriginAssetIndex        { get; set; }
@@ -46,11 +53,20 @@ namespace CollapseLauncher
 
         internal const string AssetGameVideoStreamingPath = @"{0}_Data\StreamingAssets\Video\Windows";
         internal const string AssetGameVideoPersistentPath = @"{0}_Data\Persistent\Video\Windows";
-        protected override string UserAgent { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+        protected override string UserAgent => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
-        public StarRailRepair(UIElement parentUI, IGameVersion gameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, gameVersionManager, null, "", versionOverride)
+        public StarRailRepair(
+            UIElement     parentUI,
+            IGameVersion  gameVersionManager,
+            IGameSettings gameSettings,
+            bool          onlyRecoverMainAsset = false,
+            string        versionOverride      = null)
+            : base(parentUI,
+                   gameVersionManager,
+                   gameSettings,
+                   "",
+                   versionOverride)
         {
             // Get flag to only recover main assets
             IsOnlyRecoverMain = onlyRecoverMainAsset;
@@ -130,7 +146,9 @@ namespace CollapseLauncher
         public void CancelRoutine()
         {
             // Trigger token cancellation
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

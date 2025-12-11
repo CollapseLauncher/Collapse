@@ -419,19 +419,19 @@ namespace CollapseLauncher.Pages
             } 
         }
 
-        public double MaxLuminosity
+        private double MaxLuminosity
         {
             get => (double)Settings.SettingsGeneralData.maxLuminosity;
             set => Settings.SettingsGeneralData.maxLuminosity = (decimal)Math.Round(value, 1);
         }
 
-        public double UiPaperWhite
+        private double UiPaperWhite
         {
             get => (double)Settings.SettingsGeneralData.uiPaperWhite;
             set => Settings.SettingsGeneralData.uiPaperWhite = (decimal)Math.Round(value, 1);
         }
 
-        public double ScenePaperWhite
+        private double ScenePaperWhite
         {
             get => (double)Settings.SettingsGeneralData.scenePaperWhite;
             set => Settings.SettingsGeneralData.scenePaperWhite = (decimal)Math.Round(value, 1);

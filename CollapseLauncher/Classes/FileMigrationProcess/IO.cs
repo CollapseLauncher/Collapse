@@ -86,8 +86,8 @@ namespace CollapseLauncher
 
         private async ValueTask<bool> IsOutputPathSpaceSufficient(string inputPath, string outputPath)
         {
-            ArgumentException.ThrowIfNullOrEmpty(inputPath,  nameof(inputPath));
-            ArgumentException.ThrowIfNullOrEmpty(outputPath, nameof(outputPath));
+            ArgumentException.ThrowIfNullOrEmpty(inputPath);
+            ArgumentException.ThrowIfNullOrEmpty(outputPath);
 
             DriveInfo inputDriveInfo = new DriveInfo(Path.GetPathRoot(inputPath)!);
             DriveInfo outputDriveInfo = new DriveInfo(Path.GetPathRoot(outputPath)!);

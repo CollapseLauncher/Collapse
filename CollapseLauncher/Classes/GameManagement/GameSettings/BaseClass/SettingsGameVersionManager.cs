@@ -28,13 +28,13 @@ namespace CollapseLauncher.GameSettings.Base
             };
         }
 
-        internal IGameVersion? VersionManager { get; set; }
+        private IGameVersion? VersionManager { get; init; }
 
-        internal string? GameFolder => VersionManager?.GameDirPath;
-        internal string GameExecutable => Path.GetFileNameWithoutExtension(VersionManager?.GamePreset.GameExecutableName!);
-        internal string? ConfigFileLocationFormat { get; set; }
-        internal string? ConfigFileName { get; set; }
-        internal string ConfigFilePath { get => Path.Combine(GameFolder ?? string.Empty, string.Format(ConfigFileLocationFormat ?? string.Empty, GameExecutable, ConfigFileName)); }
+        private  string? GameFolder               => VersionManager?.GameDirPath;
+        private  string  GameExecutable           => Path.GetFileNameWithoutExtension(VersionManager?.GamePreset.GameExecutableName!);
+        private  string? ConfigFileLocationFormat { get; init; }
+        private  string? ConfigFileName           { get; init; }
+        internal string  ConfigFilePath           { get => Path.Combine(GameFolder ?? string.Empty, string.Format(ConfigFileLocationFormat ?? string.Empty, GameExecutable, ConfigFileName)); }
     }
 
 }

@@ -13,8 +13,9 @@ namespace CollapseLauncher.Extension
 {
     internal static class WriteableBitmapExtension
     {
-        internal static nint GetBufferPointer(this WriteableBitmap writeableBitmap)
+        internal static nint GetBufferPointer(this WriteableBitmap writeableBitmap, out uint length)
         {
+            length = writeableBitmap.PixelBuffer.Length;
             IBufferByteAccess byteAccess = writeableBitmap.PixelBuffer.AsBufferByteAccess();
             try
             {

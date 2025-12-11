@@ -11,6 +11,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 // ReSharper disable AsyncVoidMethod
+// ReSharper disable MemberCanBePrivate.Global
 
 // ReSharper disable CheckNamespace
 

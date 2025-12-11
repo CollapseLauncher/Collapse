@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
@@ -26,6 +27,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper.Metadata
@@ -71,9 +73,19 @@ namespace CollapseLauncher.Helper.Metadata
     [JsonConverter(typeof(JsonStringEnumConverter<LauncherType>))]
     public enum LauncherType
     {
-        Sophon,
+        Legacy,
+        Sophon = Legacy,
         HoYoPlay,
         Plugin
+    }
+
+    public class GameInstallFileInfo
+    {
+        public string   GameDataFolderName     { get; init; } = string.Empty;
+        public string[] FilesToDelete          { get; init; } = [];
+        public string[] FoldersToDelete        { get; init; } = [];
+        public string[] FoldersToKeepInData    { get; init; } = [];
+        public string[] FilesCleanupIgnoreList { get; init; } = [];
     }
 
     public class SophonChunkUrls
@@ -113,22 +125,24 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringArrayConverter))]
         public string[] ExcludeMatchingFieldUpdate { get; set; } = [];
 
-        public bool ResetAssociation() => IsReassociated = false;
-
-        public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
+        public void ResetAssociation()
         {
-            if (IsReassociated)
+            IsReassociated = false;
+        }
+
+        public Task EnsureReassociated(HttpClient? client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
+        {
+            if (IsReassociated || string.IsNullOrEmpty(branchUrl))
                 return Task.CompletedTask;
 
-            if (string.IsNullOrEmpty(branchUrl))
-                return Task.CompletedTask;
+            client ??= FallbackCDNUtil.GetGlobalHttpClient(true);
 
             // Fetch branch info
-            ActionTimeoutTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
+            ActionTimeoutTaskCallback<HypLauncherSophonBranchesApi?> hypLauncherBranchCallback =
                 innerToken =>
-                    FallbackCDNUtil.DownloadAsJSONType(branchUrl,
-                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                                                       innerToken);
+                    client.GetFromCachedJsonAsync(branchUrl,
+                                                  HypApiJsonContext.Default.HypLauncherSophonBranchesApi,
+                                                  token: innerToken);
 
             return hypLauncherBranchCallback
                 .WaitForRetryAsync(LauncherApiBase.ExecutionTimeout,
@@ -137,15 +151,15 @@ namespace CollapseLauncher.Helper.Metadata
                                    null, token)
                 .ContinueWith(async result =>
                 {
-                    HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await result;
+                    HypLauncherSophonBranchesApi? hypLauncherBranchInfo = await result;
 
                     // If branch info is null or empty, return
-                    HoYoPlayGameInfoBranch? branch = hypLauncherBranchInfo?
-                       .GameInfoData?
-                       .GameBranchesInfo?
-                       .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(bizName) ?? false);
-                    if (branch == null)
+                    if (!(hypLauncherBranchInfo?
+                           .Data?
+                           .TryFindByBiz(bizName, out HypLauncherSophonBranchesKind? branch) ?? false))
+                    {
                         return;
+                    }
 
                     // Re-associate url if main field is exist
                     if (branch.GameMainField != null)
@@ -180,12 +194,12 @@ namespace CollapseLauncher.Helper.Metadata
                     // Re-associate url if patch URL property exists
                     if (!string.IsNullOrEmpty(PatchUrl))
                     {
-                        HoYoPlayGameInfoBranchField branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
-                        ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
-                        ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
+                        HypGameInfoBranchData branchData = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
+                        ArgumentException.ThrowIfNullOrEmpty(branchData.PackageId);
+                        ArgumentException.ThrowIfNullOrEmpty(branchData.Password);
 
-                        string packageIdValue = branchField.PackageId;
-                        string passwordValue  = branchField.Password;
+                        string packageIdValue = branchData.PackageId;
+                        string passwordValue  = branchData.Password;
                         string branchValue    = isPreloadForPatch ? "predownload" : "main";
 
                         PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryPasswordHead,
@@ -237,7 +251,7 @@ namespace CollapseLauncher.Helper.Metadata
                 urlSpanBufferLen += splitRanges[0].End.Value - splitRanges[0].Start.Value;
                 urlSpanBuffer[urlSpanBufferLen++] = '?';
 
-                #region Parse and split queries - Sanitize the GameId and LauncherId query
+                #region Parse and split queries - Sanitize the GameId and GameId query
                 int querySplitRangesLen = querySpan.Split(splitRanges, '&', StringSplitOptions.RemoveEmptyEntries);
                 int queryWritten = 0;
                 Span<char> querySpanBuffer = urlSpanBuffer[urlSpanBufferLen..];
@@ -247,7 +261,7 @@ namespace CollapseLauncher.Helper.Metadata
                     int segmentLen = segmentRange.End.Value - segmentRange.Start.Value;
                     ReadOnlySpan<char> querySegment = querySpan[segmentRange];
 
-                    // Skip GameId or LauncherId query head
+                    // Skip GameId or GameId query head
                     if (querySegment.StartsWith(launcherIdOrPasswordHead, StringComparison.OrdinalIgnoreCase)
                      || querySegment.StartsWith(gameIdOrGamePackageIdHead, StringComparison.OrdinalIgnoreCase))
                         continue;
@@ -269,7 +283,7 @@ namespace CollapseLauncher.Helper.Metadata
                 urlSpanBufferLen += queryWritten;
                 #endregion
 
-                #region Append GameId and LauncherId query
+                #region Append GameId and GameId query
                 if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password head string to buffer");
                 urlSpanBufferLen += launcherIdOrPasswordHead.Length;
@@ -290,7 +304,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 string returnString = new string(urlBuffer, 0, urlSpanBufferLen);
 #if DEBUG
-                LogWriteLine($"URL string's GameId or Password and LauncherId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
+                LogWriteLine($"URL string's GameId or Password and GameId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
 #endif
                 return returnString;
                 #endregion
@@ -417,6 +431,22 @@ namespace CollapseLauncher.Helper.Metadata
                 value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGetGameURL
+        {
+            get;
+            init => field =
+                value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
+        }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherResourceWpfURL
+        {
+            get;
+            init => field =
+                value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
+        }
+
         public SophonChunkUrls? LauncherResourceChunksURL
         {
             get;
@@ -482,13 +512,14 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? IsGenshin        { get; init; }
         public bool? IsHideSocMedDesc { get; init; } = true;
 
+        public bool IsWpfUpdateEnabled { get; set; }
 #if !DEBUG
-        public bool? IsRepairEnabled            { get; set; }
-        public bool? IsCacheUpdateEnabled       { get; set; }
+        public bool IsRepairEnabled      { get; set; }
+        public bool IsCacheUpdateEnabled { get; set; }
 #else
-        public bool? IsRepairEnabled      = true;
-        public bool? IsCacheUpdateEnabled = true;
-        #endif
+        public bool IsRepairEnabled      { get; set; } = true;
+        public bool IsCacheUpdateEnabled { get; set; } = true;
+#endif
         public bool? LauncherSpriteURLMultiLang { get; init; }
 
         public byte? CachesListGameVerID { get; init; }
@@ -503,6 +534,8 @@ namespace CollapseLauncher.Helper.Metadata
         public Dictionary<string, SteamGameProp>?    ZoneSteamAssets   { get; init; } = new();
 
         public DateTime LastModifiedFile { get; set; }
+
+        public GameInstallFileInfo? GameInstallFileInfo { get; init; }
 
         #endregion
 
@@ -763,34 +796,44 @@ namespace CollapseLauncher.Helper.Metadata
         // This feature is only available for Genshin.
         public int GetRegServerNameID()
         {
-            if (!IsGenshin ?? true)
+            return (SubChannelID ?? 0, ChannelID ?? 1) switch
             {
-                return 0;
-            }
+                (1, 1)  => 4,                 // CN Main
+                (0, 14) => 5,                 // CN Bilibili
+                (6, 1)  => GetFromRegistry(), // Get from registry, defaulted from Registry: OS USA
+                _       => GetFromRegistry()  // Get from registry, defaulted from Registry: OS USA
+            };
 
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            byte[] value = (byte[])keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None)!;
+            int GetFromRegistry()
+            {
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                if (keys?.GetValue("GENERAL_DATA_h2389025596") is not byte[] value)
+                {
+                    goto ReturnDefault;
+                }
 
-            if (keys is null || value.Length is 0)
-            {
-                LogWriteLine($"Server name ID registry on \e[32;1m{Path.GetFileName(ConfigRegistryLocation)}\e[0m doesn't exist. Fallback value will be used (0 / USA).",
-                             LogType.Warning, true);
-                return 0;
-            }
+                try
+                {
+                    if (value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) is not { } generalData)
+                    {
+                        goto ReturnDefault;
+                    }
 
-            try
-            {
-                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
-            }
-            catch (Exception ex)
-            {
-                SentryHelper.ExceptionHandler(ex);
-                LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
-                             $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.AsSpan().Trim((byte)0))}\r\n{ex}",
-                             LogType.Warning, true);
-                return 0;
+                    return (int)generalData.selectedServerName;
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex);
+                    LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
+                                 $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.AsSpan().Trim((byte)0))}\r\n{ex}",
+                                 LogType.Warning, true);
+                }
+
+                ReturnDefault:
+                return 0; //Default to OS USA
             }
         }
+            
 
         #endregion
 
@@ -815,7 +858,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        public bool TryCheckGameLocationHoYoPlay()
+        private bool TryCheckGameLocationHoYoPlay()
         {
             // List the possible launcher parent registry path
             string[] possibleVendorList = ["miHoYo", "Cognosphere"];
@@ -845,7 +888,7 @@ namespace CollapseLauncher.Helper.Metadata
                     string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
                     if (string.IsNullOrEmpty(gameKeyName)) continue;
 
-                    // Get the game-key once a BizName is obtained.
+                    // Get the game-key once a GameBiz is obtained.
                     using RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
 
                     // Try to get the value of "GameInstallPath" key and check if the game
@@ -860,7 +903,7 @@ namespace CollapseLauncher.Helper.Metadata
             return false;
         }
 
-        public bool TryCheckGameLocationLegacy(string? path)
+        private bool TryCheckGameLocationLegacy(string? path)
         {
             if (string.IsNullOrEmpty(path))
             {

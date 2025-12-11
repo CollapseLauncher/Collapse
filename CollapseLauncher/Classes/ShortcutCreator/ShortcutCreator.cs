@@ -35,55 +35,55 @@ namespace CollapseLauncher.ShortcutUtils
 #nullable enable
         public static string GetIconPath(PresetConfig preset)
         {
-            var appPath = Path.GetDirectoryName(AppExecutablePath)!;
-            var iconPath = Path.Combine(appPath, $"Assets\\Images\\GameIcon");
+            string appPath = Path.GetDirectoryName(AppExecutablePath)!;
+            string iconPath = Path.Combine(appPath, @"Assets\Images\GameIcon");
 
-            var icon = Path.Combine(iconPath, GetIconName(preset));
-            if (preset is PluginPresetConfigWrapper pluginPresetConfig)
+            string icon = Path.Combine(iconPath, GetIconName(preset));
+            if (preset is not PluginPresetConfigWrapper pluginPresetConfig)
             {
-                pluginPresetConfig.Plugin.GetPluginAppIconUrl(out string? iconUrl);
-                string? appIconUrl = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl, iconPath);
-
-                if (appIconUrl == null)
-                    return icon;
-
-                icon = appIconUrl;
-                if (Path.GetExtension(icon) != ".ico")
-                {
-                    var expectedPath = Path.ChangeExtension(icon, ".ico");
-                    using (var stream = File.OpenWrite(expectedPath))
-                    {
-                        Image img = Image.FromFile(icon);
-                        ImageConverterHelper.ConvertToIcon(img)
-                            .Save(stream);
-                    }
-
-                    return expectedPath;
-                }
+                return icon;
             }
 
-            return icon;
+            pluginPresetConfig.Plugin.GetPluginAppIconUrl(out string? iconUrl);
+            string? appIconUrl = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl, iconPath);
+
+            if (appIconUrl == null)
+                return icon;
+
+            icon = appIconUrl;
+            if (Path.GetExtension(icon) == ".ico")
+            {
+                return icon;
+            }
+
+            string           expectedPath = Path.ChangeExtension(icon, ".ico");
+            using FileStream stream       = File.OpenWrite(expectedPath);
+            Image            img          = Image.FromFile(icon);
+            ImageConverterHelper.ConvertToIcon(img)
+                                .Save(stream);
+
+            return expectedPath;
         }
 #nullable disable
 
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
-            var translatedGameTitle =
+            string translatedGameTitle =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
                                                                         Lang._GameClientTitles)!;
-            var translatedGameRegion =
+            string translatedGameRegion =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
                                                                         Lang._GameClientRegions);
-            var shortcutName = $"{translatedGameTitle} ({translatedGameRegion}) - Collapse Launcher.url".Replace(":", "");
-            var url = $"collapse://open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
+            string shortcutName = $"{translatedGameTitle} ({translatedGameRegion}) - Collapse Launcher.url".Replace(":", "");
+            string url = $"collapse://open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
 
             if (play) url += " -p";
 
-            var icon = GetIconPath(preset);
+            string icon = GetIconPath(preset);
 
-            var fullPath = Path.Combine(path, shortcutName);
+            string fullPath = Path.Combine(path, shortcutName);
 
-            using var writer = new StreamWriter(fullPath, false);
+            using StreamWriter writer = new StreamWriter(fullPath, false);
             writer.WriteLine($"[InternetShortcut]\nURL={url}\nIconIndex=0\nIconFile={icon}");
         }
 
@@ -93,12 +93,12 @@ namespace CollapseLauncher.ShortcutUtils
         /// https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/blob/8bdee1383446d3b81e240a4300baaf337d48ec92/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
         internal static async Task<bool> AddToSteam(PresetConfig preset, bool play)
         {
-            var paths = GetShortcutsPath();
+            string[] paths = GetShortcutsPath();
 
             if (paths == null || paths.Length == 0)
                 return false;
 
-            var tokenSource = new CancellationTokenSourceWrapper();
+            CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
 
             LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", (_, _) =>
             {
@@ -108,12 +108,12 @@ namespace CollapseLauncher.ShortcutUtils
 
             List<SteamShortcut> shortcuts = [];
 
-            foreach (var path in paths)
+            foreach (string path in paths)
             {
-                var parser = new SteamShortcutParser(path);
+                SteamShortcutParser parser = new SteamShortcutParser(path);
 
-                var splitPath = path.Split('\\');
-                var userId = splitPath[^3];
+                string[] splitPath = path.Split('\\');
+                string userId = splitPath[^3];
 
                 shortcuts.Add(parser.Insert(preset, play));
 
@@ -121,7 +121,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine($"[ShortcutCreator::AddToSteam] Added shortcut for {preset.GameName} - {preset.ZoneName} for Steam3ID {userId}");
             }
 
-            foreach (var shortcut in shortcuts)
+            foreach (SteamShortcut shortcut in shortcuts)
             {
                 await shortcut.MoveImages(tokenSource.Token);
             }
@@ -131,14 +131,14 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static string[] GetShortcutsPath()
         {
-            var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam", false);
+            RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam", false);
 
             if (reg == null)
                 return null;
 
-            var steamPath = (string)reg.GetValue("InstallPath", @"C:\Program Files (x86)\Steam");
+            string steamPath = (string)reg.GetValue("InstallPath", @"C:\Program Files (x86)\Steam");
 
-            var steamUserData = Path.Combine(steamPath, "userdata");
+            string steamUserData = Path.Combine(steamPath, "userdata");
 
             if (!Directory.Exists(steamUserData))
             {
@@ -146,14 +146,14 @@ namespace CollapseLauncher.ShortcutUtils
                 return null;
             }
 
-            var res = Directory.GetDirectories(steamUserData)
-                .Where(x =>
-                {
-                    var y = x.Split("\\").Last();
-                    return y != "ac" && y != "0" && y != "anonymous";
-                }).ToArray();
+            string[] res = Directory.GetDirectories(steamUserData)
+                                    .Where(x =>
+                                           {
+                                               string y = x.Split("\\").Last();
+                                               return y != "ac" && y != "0" && y != "anonymous";
+                                           }).ToArray();
 
-            for (var i = 0; i < res.Length; i++)
+            for (int i = 0; i < res.Length; i++)
             {
                 res[i] = Path.Combine(res[i], "config", "shortcuts.vdf");
                 LogWriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], LogType.Debug);

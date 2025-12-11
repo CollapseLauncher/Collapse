@@ -24,9 +24,9 @@ namespace CollapseLauncher.Pages.OOBE
                 return !File.Exists(FilePath) ? $"### Failed to read the file\n**{FilePath}**" : File.ReadAllText(FilePath);
             }
         }
-        internal string Title { get; init; }
-        internal string FilePath { get; init; }
-        internal MarkdownConfig MarkdownConfig = new();
+        internal          string         Title    { get; }
+        private           string         FilePath { get; }
+        internal readonly MarkdownConfig MarkdownConfig = new();
     }
 
     public static class OOBEAgreementMenuExtensions

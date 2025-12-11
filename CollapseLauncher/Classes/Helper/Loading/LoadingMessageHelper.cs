@@ -15,11 +15,11 @@ namespace CollapseLauncher.Helper.Loading
 {
     internal static class LoadingMessageHelper
     {
-        internal static MainWindow CurrentMainWindow;
-        internal static bool IsLoadingProgressIndeterminate = true;
-        internal static bool IsCurrentlyShow;
-        internal static List<RoutedEventHandler> CurrentActionButtonHandler = [];
-        internal static DispatcherQueue CurrentDispatcherQueue;
+        private static          MainWindow               _currentMainWindow;
+        private static          bool                     _isLoadingProgressIndeterminate = true;
+        private static          bool                     _isCurrentlyShow;
+        private static          DispatcherQueue          _currentDispatcherQueue;
+        private static readonly List<RoutedEventHandler> CurrentActionButtonHandler = [];
 
         /// <summary>
         /// Initialize the necessary <c>MainWindow</c> for spawning the loading frame overlay.
@@ -27,9 +27,9 @@ namespace CollapseLauncher.Helper.Loading
         internal static void Initialize()
         {
             if (WindowUtility.CurrentWindow is MainWindow window)
-                CurrentMainWindow = window;
+                _currentMainWindow = window;
 
-            CurrentDispatcherQueue = CurrentMainWindow.DispatcherQueue;
+            _currentDispatcherQueue = _currentMainWindow.DispatcherQueue;
         }
 
         /// <summary>
@@ -39,12 +39,12 @@ namespace CollapseLauncher.Helper.Loading
         /// <param name="subtitle">Set the subtitle of the loading frame. You can set the value to <c>null</c> to ignore the change of the subtitle or <c>string.Empty</c> to disable the subtitle</param>
         internal static void SetMessage(string title, string subtitle)
         {
-            CurrentDispatcherQueue.TryEnqueue(() =>
+            _currentDispatcherQueue.TryEnqueue(() =>
             {
-                if (title != null) CurrentMainWindow.LoadingStatusTextTitle.Text = title;
-                if (subtitle != null) CurrentMainWindow.LoadingStatusTextSubtitle.Text = subtitle;
+                if (title != null) _currentMainWindow.LoadingStatusTextTitle.Text = title;
+                if (subtitle != null) _currentMainWindow.LoadingStatusTextSubtitle.Text = subtitle;
 
-                CurrentMainWindow.LoadingStatusTextSeparator.Visibility = title == string.Empty || subtitle == string.Empty ? Visibility.Collapsed : Visibility.Visible;
+                _currentMainWindow.LoadingStatusTextSeparator.Visibility = title == string.Empty || subtitle == string.Empty ? Visibility.Collapsed : Visibility.Visible;
             });
         }
 
@@ -54,7 +54,7 @@ namespace CollapseLauncher.Helper.Loading
         /// Note: If you would like to set the progress ring's value, make sure to set the <c>isProgressIndeterminate</c> to <c>true</c> with <c>SetProgressBarState()</c> method.
         /// </summary>
         /// <param name="value">Set the current value of the progress ring</param>
-        internal static void SetProgressBarValue(double value) => CurrentDispatcherQueue.TryEnqueue(() => CurrentMainWindow.LoadingStatusProgressRing.Value = value);
+        internal static void SetProgressBarValue(double value) => _currentDispatcherQueue.TryEnqueue(() => _currentMainWindow.LoadingStatusProgressRing.Value = value);
 
         /// <summary>
         /// Set the state and the maximum value of the progress ring.
@@ -63,11 +63,11 @@ namespace CollapseLauncher.Helper.Loading
         /// <param name="isProgressIndeterminate">Set the state of the progress ring's indeterminate.</param>
         internal static void SetProgressBarState(double maxValue = 100d, bool isProgressIndeterminate = true)
         {
-            CurrentDispatcherQueue.TryEnqueue(() =>
+            _currentDispatcherQueue.TryEnqueue(() =>
             {
-                IsLoadingProgressIndeterminate = isProgressIndeterminate;
-                CurrentMainWindow.LoadingStatusProgressRing.Maximum = maxValue;
-                CurrentMainWindow.LoadingStatusProgressRing.IsIndeterminate = IsLoadingProgressIndeterminate;
+                _isLoadingProgressIndeterminate = isProgressIndeterminate;
+                _currentMainWindow.LoadingStatusProgressRing.Maximum = maxValue;
+                _currentMainWindow.LoadingStatusProgressRing.IsIndeterminate = _isLoadingProgressIndeterminate;
             });
         }
 
@@ -78,13 +78,13 @@ namespace CollapseLauncher.Helper.Loading
         {
             try
             {
-                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
+                if (_currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
                 {
                     await ShowLoadingFrameInner();
                     return;
                 }
 
-                await CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(ShowLoadingFrameInner);
+                await _currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(ShowLoadingFrameInner);
             }
             catch
             {
@@ -94,19 +94,19 @@ namespace CollapseLauncher.Helper.Loading
 
         private static Task ShowLoadingFrameInner()
         {
-            if (IsCurrentlyShow) return Task.CompletedTask;
+            if (_isCurrentlyShow) return Task.CompletedTask;
 
-            IsCurrentlyShow                                            = true;
-            CurrentMainWindow.LoadingStatusGrid.Visibility           = Visibility.Visible;
-            CurrentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Visible;
+            _isCurrentlyShow                                            = true;
+            _currentMainWindow.LoadingStatusGrid.Visibility           = Visibility.Visible;
+            _currentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Visible;
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
 
-            return Task.WhenAll(CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
-                                                                                            CurrentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
-                               CurrentMainWindow.LoadingStatusGrid.StartAnimation(duration,
-                                                                                  CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, CurrentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(CurrentMainWindow.LoadingStatusGrid.ActualHeight + 16), CurrentMainWindow.LoadingStatusGrid.Translation.Z)),
-                                                                                  CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0))
+            return Task.WhenAll(_currentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
+                                                                                            _currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
+                               _currentMainWindow.LoadingStatusGrid.StartAnimation(duration,
+                                                                                  _currentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, _currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(_currentMainWindow.LoadingStatusGrid.ActualHeight + 16), _currentMainWindow.LoadingStatusGrid.Translation.Z)),
+                                                                                  _currentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0))
                               );
         }
 
@@ -117,13 +117,13 @@ namespace CollapseLauncher.Helper.Loading
         {
             try
             {
-                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
+                if (_currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
                 {
                     await HideLoadingFrameInner();
                     return;
                 }
 
-                await CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(HideLoadingFrameInner);
+                await _currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(HideLoadingFrameInner);
             }
             catch
             {
@@ -133,22 +133,22 @@ namespace CollapseLauncher.Helper.Loading
 
         private static Task HideLoadingFrameInner()
         {
-            if (!IsCurrentlyShow) return Task.CompletedTask;
+            if (!_isCurrentlyShow) return Task.CompletedTask;
 
-            IsCurrentlyShow = false;
+            _isCurrentlyShow = false;
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
-            return Task.WhenAll(CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
-                                    CurrentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
-                                CurrentMainWindow.LoadingStatusGrid.StartAnimation(duration,
-                                    CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(CurrentMainWindow.LoadingStatusGrid.ActualHeight + 16), CurrentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, 0, CurrentMainWindow.LoadingStatusGrid.Translation.Z)),
-                                    CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1))
+            return Task.WhenAll(_currentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
+                                    _currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
+                                _currentMainWindow.LoadingStatusGrid.StartAnimation(duration,
+                                    _currentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(_currentMainWindow.LoadingStatusGrid.ActualHeight + 16), _currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, 0, _currentMainWindow.LoadingStatusGrid.Translation.Z)),
+                                    _currentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1))
                                ).ContinueWith((_, _) =>
                                               {
-                                                  CurrentMainWindow.DispatcherQueue.TryEnqueue(() =>
+                                                  _currentMainWindow.DispatcherQueue.TryEnqueue(() =>
                                                   {
-                                                      CurrentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
-                                                      CurrentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
+                                                      _currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
+                                                      _currentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
                                                       HideActionButton();
                                                   });
                                               }, null);
@@ -167,18 +167,18 @@ namespace CollapseLauncher.Helper.Loading
         /// <param name="routedEvent">Set the event callback for the button's click event.</param>
         internal static void ShowActionButton(object buttonContent, string buttonIconGlyph = null, RoutedEventHandler routedEvent = null)
         {
-            CurrentDispatcherQueue.TryEnqueue(() =>
+            _currentDispatcherQueue.TryEnqueue(() =>
             {
                 if (routedEvent != null)
                 {
                     CurrentActionButtonHandler!.Add(routedEvent);
-                    CurrentMainWindow.LoadingStatusActionButton.Click += routedEvent;
+                    _currentMainWindow.LoadingStatusActionButton.Click += routedEvent;
                 }
 
                 bool isHasIcon = !string.IsNullOrEmpty(buttonIconGlyph);
-                CurrentMainWindow.LoadingStatusActionButtonIcon.Visibility = isHasIcon ? Visibility.Visible : Visibility.Collapsed;
-                CurrentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Visible;
-                if (isHasIcon) CurrentMainWindow.LoadingStatusActionButtonIcon.Glyph = buttonIconGlyph;
+                _currentMainWindow.LoadingStatusActionButtonIcon.Visibility = isHasIcon ? Visibility.Visible : Visibility.Collapsed;
+                _currentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Visible;
+                if (isHasIcon) _currentMainWindow.LoadingStatusActionButtonIcon.Glyph = buttonIconGlyph;
 
                 if (buttonContent is string buttonText)
                 {
@@ -190,13 +190,13 @@ namespace CollapseLauncher.Helper.Loading
                         Margin = new Thickness(0, isHasIcon ? -2 : 0, 0, 0)
                     };
                     textBlock.AddTextBlockLine(buttonText, FontWeights.SemiBold);
-                    CurrentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
-                    CurrentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(textBlock);
+                    _currentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
+                    _currentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(textBlock);
                     return;
                 }
 
-                CurrentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
-                CurrentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(buttonContent as FrameworkElement);
+                _currentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
+                _currentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(buttonContent as FrameworkElement);
             });
         }
 
@@ -205,17 +205,17 @@ namespace CollapseLauncher.Helper.Loading
         /// </summary>
         internal static void HideActionButton()
         {
-            CurrentDispatcherQueue.TryEnqueue(() =>
+            _currentDispatcherQueue.TryEnqueue(() =>
             {
                 if (CurrentActionButtonHandler.Count > 0)
                 {
                     foreach (var t in CurrentActionButtonHandler)
-                        CurrentMainWindow.LoadingStatusActionButton.Click -= t;
+                        _currentMainWindow.LoadingStatusActionButton.Click -= t;
 
                     CurrentActionButtonHandler.Clear();
                 }
 
-                CurrentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Collapsed;
+                _currentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Collapsed;
             });
         }
     }

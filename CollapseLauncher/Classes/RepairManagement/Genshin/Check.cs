@@ -48,25 +48,29 @@ namespace CollapseLauncher
             try
             {
                 var threadCount = ThreadCount;
-                var isSsd = DriveTypeChecker.IsDriveSsd(GameStreamingAssetsPath, ILoggerHelper.GetILogger());
+                var isSsd       = DriveTypeChecker.IsDriveSsd(GameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;
                     LogWriteLine($"The drive is not SSD, the repair process will be slower!.\r\n\t" +
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
-                
+
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
-                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>
-                {
-                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
-                });
+                await Parallel.ForEachAsync(assetIndex,
+                                            new ParallelOptions
+                                                { MaxDegreeOfParallelism = threadCount, CancellationToken = token },
+                                            async (asset, threadToken) =>
+                                            {
+                                                await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
+                                            });
             }
             catch (AggregateException ex)
             {
                 var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
-                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst,
+                                                         SentryHelper.ExceptionType.UnhandledOther);
                 throw innerExceptionsFirst;
             }
 
@@ -239,11 +243,11 @@ namespace CollapseLauncher
                 // Use deletefiles files to get the list of the redundant file
                 await using Stream fs         = await listFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None, FileOptions.DeleteOnClose);
                 using StreamReader listReader = new StreamReader(fs);
-                while (!listReader.EndOfStream)
+                while (await listReader.ReadLineAsync(token) is {} currentPath)
                 {
                     // Get the File name and FileInfo
-                    var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
-                    var fInfo = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
+                    var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(currentPath));
+                    var fInfo    = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
 
                     // If the file doesn't exist, then continue
                     if (!fInfo.Exists)

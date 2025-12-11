@@ -13,7 +13,6 @@ namespace CollapseLauncher.Interfaces
 
         void Reset();
         void Update(TimeSpan timeSpan, bool forceUpdateDb = false);
-        Task StartSession(Process proc, DateTime? begin = null);
         Task StartSessionFromAwaiter(Func<CancellationToken, Task> awaiterTask, DateTime? begin = null);
         Task CheckDb(bool redirectThrow = false);
     }

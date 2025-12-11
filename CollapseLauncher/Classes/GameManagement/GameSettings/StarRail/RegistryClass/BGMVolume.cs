@@ -5,7 +5,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -19,6 +19,14 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string ValueName = "AudioSettings_BGMVolume_h240914409";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        private BGMVolume(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -33,20 +41,20 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         #region Methods
 #nullable enable
-        public static BGMVolume Load()
+        public static BGMVolume Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     int bgmVolume = (int)value;
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {ValueName} : {value}", LogType.Debug, true);
 #endif
-                    return new BGMVolume { BGMVol = bgmVolume };
+                    return new BGMVolume(gameSettings) { BGMVol = bgmVolume };
                 }
             }
             catch (Exception ex)
@@ -60,15 +68,15 @@ namespace CollapseLauncher.GameSettings.StarRail
                     $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
-            return new BGMVolume();
+            return new BGMVolume(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(ValueName, BGMVol, RegistryValueKind.DWord);
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, BGMVol, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved StarRail Settings: {ValueName} : {BGMVol}", LogType.Debug, true);
 #endif

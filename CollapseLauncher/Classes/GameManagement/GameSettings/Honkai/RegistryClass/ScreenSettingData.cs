@@ -11,7 +11,6 @@ using System;
 using System.Drawing;
 using System.Text;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -31,6 +30,13 @@ namespace CollapseLauncher.GameSettings.Honkai
         #endregion
 
         #region Properties
+        public ScreenSettingData() : this(null) {}
+
+        private ScreenSettingData(IGameSettings gameSettings) : base(gameSettings)
+        {
+
+        }
+
         /// <summary>
         /// This value references values from inner width and height.<br/><br/>
         /// Range: 64 x 64 - int.MaxValue x int.MaxValue<br/>
@@ -59,7 +65,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             set
             {
                 string[] size = value.Split('x');
-                if (!int.TryParse(size[0], out var w) || !int.TryParse(size[1], out var h))
+                if (!int.TryParse(size[0], out int w) || !int.TryParse(size[1], out int h))
                 {
                     width = CurrentRes.Width;
                     height = CurrentRes.Height;
@@ -95,13 +101,13 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         #region Methods
 #nullable enable
-        public static ScreenSettingData Load()
+        public static ScreenSettingData Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -109,7 +115,9 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.ScreenSettingData) ?? new ScreenSettingData();
+                    ScreenSettingData result = byteStr.Deserialize(HonkaiSettingsJsonContext.Default.ScreenSettingData) ?? new ScreenSettingData();
+                    result.ParentGameSettings = gameSettings;
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -131,12 +139,12 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(HonkaiSettingsJsonContext.Default.ScreenSettingData);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif
@@ -151,9 +159,9 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         private void SaveIndividualRegistry()
         {
-            RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
-            RegistryRoot?.SetValue(ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
-            RegistryRoot?.SetValue(ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+            ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
+            ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
+            ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
 
         public override bool Equals(object? comparedTo) => comparedTo is ScreenSettingData toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);

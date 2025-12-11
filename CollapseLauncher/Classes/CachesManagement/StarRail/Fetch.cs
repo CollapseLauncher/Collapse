@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.GameSettings.StarRail;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
@@ -10,7 +11,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -112,7 +112,7 @@ namespace CollapseLauncher
         private unsafe string GetExistingGameRegionID()
         {
 #nullable enable
-            object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
+            object? value = (GameSettings as StarRailSettings)?.RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             if (value == null)
             {
                 return GameVersionManager!.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");

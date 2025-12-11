@@ -3,7 +3,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -12,11 +12,23 @@ using static Hi3Helper.Logger;
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
-    public class CustomArgs : IGameSettingsValue<CustomArgs>
+    internal class CustomArgs : IGameSettingsValue<CustomArgs>
     {
         #region Fields
         private const string ValueName = "CollapseLauncher_CustomArgs";
 
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        public CustomArgs() : this(null)
+        {
+
+        }
+
+        private CustomArgs(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -38,15 +50,15 @@ namespace CollapseLauncher.GameSettings.Universal
 
         #region Methods
 #nullable enable
-        public static CustomArgs Load()
+        public static CustomArgs Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 #if DEBUG
-                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot) ?? ""}", LogType.Debug, true);
+                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot) ?? ""}", LogType.Debug, true);
 #endif
-                return new CustomArgs { CustomArgumentValue = (string?)RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot) ?? "" };
+                return new CustomArgs(gameSettings) { CustomArgumentValue = (string?)gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot) ?? "" };
             }
             catch (Exception ex)
             {
@@ -59,11 +71,11 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 #if DEBUG
                 LogWriteLine($"Saved Collapse Custom Argument Settings:\r\n{CustomArgumentValue}", LogType.Debug, true);
 #endif
-                RegistryRoot.SetValue(ValueName, CustomArgumentValue, RegistryValueKind.String);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, CustomArgumentValue, RegistryValueKind.String);
             }
             catch (Exception ex)
             {

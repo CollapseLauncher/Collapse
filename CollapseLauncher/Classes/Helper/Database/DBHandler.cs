@@ -373,7 +373,7 @@ internal static class DbHandler
                                          ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                          ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine($"[DBHandler::QueryKey] Database stream expired.",
+            LogWriteLine("[DBHandler::QueryKey] Database stream expired.",
                          LogType.Error, true);
 
             await Init();

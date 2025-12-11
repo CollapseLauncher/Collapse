@@ -7,8 +7,9 @@ namespace CollapseLauncher.Interfaces
 {
     internal interface IGameSettingsValue<out T>
     {
-        static abstract T Load();
-        void Save();
+        IGameSettings     ParentGameSettings { get; }
+        static abstract T Load(IGameSettings gameSettings);
+        void              Save();
     }
 
     internal interface IGameSettingsValueMagic<T> : IGameSettingsValue<T>

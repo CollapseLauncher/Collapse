@@ -1,10 +1,12 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
 using System;
 using System.Text;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -14,8 +16,8 @@ namespace CollapseLauncher.GameVersioning
         public SRMetadata StarRailMetadataTool { get; set; }
         #endregion
 
-        public GameTypeStarRailVersion(RegionResourceProp gameRegionProp, string gameName, string gameRegion)
-            : base(gameRegionProp, gameName, gameRegion)
+        public GameTypeStarRailVersion(ILauncherApi launcherApi, PresetConfig presetConfig)
+            : base(launcherApi, presetConfig)
         {
             // Initialize Star Rail metadata tool
             if (GamePreset.ProtoDispatchKey != null)
@@ -55,20 +57,22 @@ namespace CollapseLauncher.GameVersioning
         public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp;
 
 #nullable enable
-        public void InitializeProtoId()
+        private void InitializeProtoId()
         {
-            if (GamePreset.GameDataTemplates != null && GamePreset.GameDataTemplates.Count != 0)
+            if (GamePreset.GameDataTemplates == null || GamePreset.GameDataTemplates.Count == 0)
             {
-                byte[]? data = GamePreset.GetGameDataTemplate("MagicSpell", [2, 3, 0, 0]);
-                if (data == null)
-                {
-                    Logger.LogWriteLine("[IGameVersion:InitializeProtoId] data is null!", LogType.Error, true);
-                    return;
-                }
-
-                string jsonResponse = Encoding.UTF8.GetString(data);
-                StarRailDispatchGatewayProps.Deserialize(jsonResponse);
+                return;
             }
+
+            byte[]? data = GamePreset.GetGameDataTemplate("MagicSpell", [2, 3, 0, 0]);
+            if (data == null)
+            {
+                Logger.LogWriteLine("[IGameVersion:InitializeProtoId] data is null!", LogType.Error, true);
+                return;
+            }
+
+            string jsonResponse = Encoding.UTF8.GetString(data);
+            StarRailDispatchGatewayProps.Deserialize(jsonResponse);
         }
     }
 }

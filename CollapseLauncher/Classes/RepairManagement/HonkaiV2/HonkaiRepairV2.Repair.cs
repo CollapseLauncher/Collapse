@@ -53,7 +53,7 @@ internal partial class HonkaiRepairV2
         await Parallel.ForEachAsync(AssetIndex,
                                     new ParallelOptions
                                     {
-                                        CancellationToken      = Token.Token,
+                                        CancellationToken      = Token!.Token,
                                         MaxDegreeOfParallelism = ThreadForIONormalized
                                     },
                                     Impl);

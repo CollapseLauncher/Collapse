@@ -15,13 +15,15 @@ using System;
 using System.Collections.Generic;
 using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable ClassNeverInstantiated.Global
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher
 {
     internal class BackgroundActivityManager
     {
         private static readonly ThemeShadow                          InfoBarShadow        = new();
-        public static           Dictionary<int, IBackgroundActivity> BackgroundActivities = new();
+        private static readonly Dictionary<int, IBackgroundActivity> BackgroundActivities = new();
 
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {

@@ -13,7 +13,9 @@ using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
-using Hi3Helper.Win32.Screen;
+using Hi3Helper.Win32.Native.Enums;
+using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.Structs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -22,7 +24,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -30,7 +32,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Size = System.Drawing.Size;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -54,18 +55,18 @@ public partial class HomePage
     private async void StartGame(object? sender, RoutedEventArgs? e)
     {
         // Initialize values
-        IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
-        PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset;
+        IGameSettings? _Settings   = CurrentGameProperty.GameSettings;
+        PresetConfig   _gamePreset = CurrentGameProperty.GameVersion!.GamePreset;
 
         bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
 
-        bool isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
+        bool isGenshin  = CurrentGameProperty.GameVersion.GameType == GameNameType.Genshin;
         bool giForceHDR = false;
 
         // Stop update check
         IsSkippingUpdateCheck = true;
         Process? proc           = null;
-        bool     isUseGameBoost = _Settings.SettingsCollapseMisc is { UseGameBoost: true };
+        bool     isUseGameBoost = _Settings?.SettingsCollapseMisc is { UseGameBoost: true };
 
         try
         {
@@ -74,7 +75,7 @@ public partial class HomePage
             if (isGenshin)
             {
                 giForceHDR = GetAppConfigValue("ForceGIHDREnable").ToBool();
-                if (giForceHDR) GenshinHDREnforcer();
+                if (giForceHDR) GenshinHDREnforcer(_Settings);
             }
 
             if (_Settings is { SettingsCollapseMisc: { UseAdvancedGameSettings: true, UseGamePreLaunchCommand: true } })
@@ -85,32 +86,42 @@ public partial class HomePage
                     await Task.Delay(delay);
             }
                 
-            int height = _Settings.SettingsScreen?.height ?? 0;
-            int width  = _Settings.SettingsScreen?.width ?? 0;
+            int height = _Settings?.SettingsScreen?.height ?? 0;
+            int width  = _Settings?.SettingsScreen?.width ?? 0;
 
-            string additionalArguments = GetLaunchArguments(_Settings);
+            var additionalArguments = _Settings?.GetLaunchArguments(CurrentGameProperty) ?? "";
 
             if (!usePluginGameLaunchApi)
             {
-                proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
-                proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = additionalArguments;
-                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
+                var exePath = Path.Combine(NormalizePath(GameDirPath), _gamePreset.GameExecutableName!);
+                string workingDir;
+                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{additionalArguments}");
                 if (File.Exists(Path.Combine(GameDirPath, "@AltLaunchMode")))
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
-                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
-                                                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
-                        Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
+                    workingDir = CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
+                                 (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
+                        Path.GetDirectoryName(NormalizePath(GameDirPath))!;
                 }
                 else
                 {
-                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
+                    workingDir = NormalizePath(GameDirPath);
                 }
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.Verb            = "runas";
-                proc.Start();
+
+                var pid = CreateProcessWithParent("explorer", exePath, additionalArguments, workingDir);
+                if (pid > 0)
+                {
+                    proc = Process.GetProcessById(pid);
+                }
+                else
+                {
+                    LogWriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
+                    proc = new Process();
+                    proc.StartInfo.FileName = exePath;
+                    proc.StartInfo.Arguments = additionalArguments;
+                    proc.StartInfo.WorkingDirectory = workingDir;
+                    proc.Start();
+                }
             }
             else
             {
@@ -132,7 +143,7 @@ public partial class HomePage
                 }
             }
 
-            if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+            if ((_Settings?.SettingsCollapseScreen.UseCustomResolution ?? false) && height != 0 && width != 0)
             {
                 SetBackScreenSettings(_Settings, height, width, CurrentGameProperty);
             }
@@ -183,8 +194,85 @@ public partial class HomePage
         }
     }
 
+    private static int CreateProcessWithParent(string parent, string applicationPath, string arguments,
+                                                  string workingDirectory)
+    {
+        var parentHandle = IntPtr.Zero;
+        var hToken = IntPtr.Zero;
+        var hDuplicateToken = IntPtr.Zero;
+        var attributeList = IntPtr.Zero;
+        var pHandle = IntPtr.Zero;
+
+        try
+        {
+            // Get the handle of the parent process
+            var parentProc = Process.GetProcessesByName(parent).FirstOrDefault();
+            if (parentProc == null)
+                return -1;
+            const int PROCESS_CREATE_PROCESS = 0x0080;
+            parentHandle = PInvoke.OpenProcess(PROCESS_CREATE_PROCESS, false, parentProc.Id);
+            if (parentHandle == IntPtr.Zero)
+                return -1;
+
+            // Obtain the current process token
+            if (!PInvoke.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ACCESS.TOKEN_ALL_ACCESS, out hToken))
+                return -1;
+            if (!PInvoke.DuplicateTokenEx(hToken, TOKEN_ACCESS.TOKEN_ALL_ACCESS, IntPtr.Zero,
+                                          SECURITY_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary,
+                                          out hDuplicateToken))
+                return -1;
+
+            // Initialize the attribute list with the parent process
+            var siex = new STARTUPINFOEX();
+            siex.StartupInfo.cb = Marshal.SizeOf<STARTUPINFOEX>();
+            var attributeSize = IntPtr.Zero;
+            PInvoke.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref attributeSize);
+            attributeList = Marshal.AllocHGlobal(attributeSize);
+            if (!PInvoke.InitializeProcThreadAttributeList(attributeList, 1, 0, ref attributeSize))
+                return -1;
+            pHandle = Marshal.AllocHGlobal(IntPtr.Size);
+            Marshal.WriteIntPtr(pHandle, parentHandle);
+            if (!PInvoke.UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE.PARENT_PROCESS, pHandle, IntPtr.Size,
+                                                   IntPtr.Zero, IntPtr.Zero))
+                return -1;
+            siex.lpAttributeList = attributeList;
+
+            // Create the new process as a child of the specified parent process, and with our process user token
+            var ok = PInvoke.CreateProcessAsUser(hDuplicateToken, applicationPath, arguments, IntPtr.Zero, IntPtr.Zero, false,
+                                                 ProcessCreationFlags.EXTENDED_STARTUPINFO_PRESENT, IntPtr.Zero, workingDirectory, ref siex,
+                                                  out var pi);
+            if (!ok)
+                return -1;
+
+            PInvoke.CloseHandle(pi.hProcess);
+            PInvoke.CloseHandle(pi.hThread);
+
+            return (int) pi.dwProcessId;
+        }
+        finally
+        {
+            if (hDuplicateToken != IntPtr.Zero)
+                PInvoke.CloseHandle(hDuplicateToken);
+
+            if (hToken != IntPtr.Zero)
+                PInvoke.CloseHandle(hToken);
+
+            if (pHandle != IntPtr.Zero)
+                Marshal.FreeHGlobal(pHandle);
+
+            if (attributeList != IntPtr.Zero)
+            {
+                PInvoke.DeleteProcThreadAttributeList(attributeList);
+                Marshal.FreeHGlobal(attributeList);
+            }
+
+            if (parentHandle != IntPtr.Zero)
+                PInvoke.CloseHandle(parentHandle);
+        }
+    }
+
     // Use this method to do something when game is closed
-    private async void GameRunningWatcher(IGameSettingsUniversal _settings)
+    private async void GameRunningWatcher(IGameSettings? _settings)
     {
         ArgumentNullException.ThrowIfNull(_settings);
 
@@ -217,7 +305,7 @@ public partial class HomePage
                 WindowUtility.WindowRestore();
                 break;
             case "ToTray":
-                WindowUtility.CurrentWindow!.Show();
+                WindowUtility.CurrentWindow?.Show();
                 WindowUtility.WindowRestore();
                 break;
             case "Nothing":
@@ -265,191 +353,6 @@ public partial class HomePage
     #endregion
 
     #region Game Launch Argument Builder
-
-    private bool RequireWindowExclusivePayload;
-
-    private string GetLaunchArguments(IGameSettingsUniversal _Settings)
-    {
-        StringBuilder parameter = new StringBuilder();
-
-        switch (CurrentGameProperty.GameVersion?.GameType)
-        {
-            case GameNameType.Honkai:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive ");
-                    RequireWindowExclusivePayload = true;
-                }
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                switch (apiID)
-                {
-                    case 0:
-                        parameter.Append("-force-feature-level-10-1 ");
-                        break;
-                    // case 1 is default
-                    default:
-                        parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 2:
-                        parameter.Append("-force-feature-level-11-1 ");
-                        break;
-                    case 3:
-                        parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 4:
-                        parameter.Append("-force-d3d12 ");
-                        break;
-                }
-
-                break;
-            }
-            case GameNameType.StarRail:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
-                    RequireWindowExclusivePayload = true;
-                }
-
-                // Enable mobile mode
-                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
-                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
-                    // Added pragma in-case this will be reused in the future.
-            #pragma warning disable CS0162 // Unreachable code detected
-                {
-                    const string regLoc  = GameSettings.StarRail.Model.ValueName;
-                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
-
-                    if (regRoot != null || !string.IsNullOrEmpty(regLoc))
-                    {
-                        var regModel = (byte[])regRoot!.GetValue(regLoc, null);
-
-                        if (regModel != null)
-                        {
-                            string regB64 = Convert.ToBase64String(regModel);
-                            parameter.Append($"-is_cloud 1 -platform_type CLOUD_WEB_TOUCH -graphics_setting {regB64} ");
-                        }
-                        else
-                        {
-                            LogWriteLine("Failed enabling MobileMode for HSR: regModel is null.", LogType.Error, true);
-                        }
-                    }
-                    else
-                    {
-                        LogWriteLine("Failed enabling MobileMode for HSR: regRoot/regLoc is unexpectedly uninitialized.",
-                                     LogType.Error, true);
-                    }
-                }
-            #pragma warning restore CS0162 // Unreachable code detected
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                break;
-            }
-            case GameNameType.Genshin:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
-                    RequireWindowExclusivePayload = true;
-                    LogWriteLine("Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
-                }
-
-                // Enable mobile mode
-                // Enable mobile mode
-                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
-                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
-                    // Added pragma in-case this will be reused in the future.
-                #pragma warning disable CS0162 // Unreachable code detected
-                    parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
-                #pragma  warning enable CS0162 // Unreachable code detected
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                break;
-            }
-            case GameNameType.Zenless:
-            {
-                // does not support exclusive mode at all
-                // also doesn't properly support dx12 or dx11 st
-                
-                if (_Settings.SettingsCollapseScreen.UseCustomResolution)
-                {
-                    Size screenSize = _Settings.SettingsScreen.sizeRes;
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-
-                break;
-            }
-        }
-
-        if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
-        {
-            parameter.Append("-popupwindow ");
-        }
-
-        if (!_Settings.SettingsCollapseMisc.UseCustomArguments)
-        {
-            return parameter.ToString();
-        }
-
-        string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
-        if (!string.IsNullOrEmpty(customArgs))
-            parameter.Append(customArgs);
-
-        return parameter.ToString();
-    }
 
     public string CustomArgsValue
     {
@@ -569,15 +472,18 @@ public partial class HomePage
             await using FileStream fs =
                 new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
             using StreamReader reader = new StreamReader(fs);
+
+            bool requireWindowExclusivePayload =
+                CurrentGameProperty.GameSettings?.SettingsCollapseScreen.UseExclusiveFullscreen ?? false;
+
             while (true)
             {
-                while (!reader.EndOfStream)
+                while (await reader.ReadLineAsync(WatchOutputLog.Token) is {} line)
                 {
-                    var line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                    if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                    if (requireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                     {
                         StartExclusiveWindowPayload();
-                        RequireWindowExclusivePayload = false;
+                        requireWindowExclusivePayload = false;
                     }
 
                     LogWriteLine(line!, LogType.Game, saveGameLog);
@@ -640,6 +546,18 @@ public partial class HomePage
                 return;
             }
 
+            if (gameType is GameNameType.Plugin)
+            {
+                await Task.Run(() => ((PluginPresetConfigWrapper)gamePreset)
+                  .UseToggledGameLaunchContext()
+                  .StartResizableWindowHookAsync(executableName,
+                                                 height,
+                                                 width,
+                                                 gameExecutableDirectory,
+                                                 ResizableWindowHookToken.Token));
+                return;
+            }
+
             // Set the pos + size reinitialization to true if the game is Honkai: Star Rail or ZZZ
             // This is required for Honkai: Star Rail or ZZZ since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
@@ -660,10 +578,10 @@ public partial class HomePage
         }
     }
 
-    private static async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal,
-                                                    int                    height,
-                                                    int                    width,
-                                                    GamePresetProperty     gameProp)
+    private static async void SetBackScreenSettings(IGameSettings      settingsUniversal,
+                                                    int                height,
+                                                    int                width,
+                                                    GamePresetProperty gameProp)
     {
         // Wait for the game to fully initialize
         await Task.Delay(20000);
@@ -678,14 +596,14 @@ public partial class HomePage
             switch (gameProp.GamePreset.GameType)
             {
                 case GameNameType.Zenless:
-                    var screenManagerZ = GameSettings.Zenless.ScreenManager.Load();
+                    var screenManagerZ = GameSettings.Zenless.ScreenManager.Load(settingsUniversal);
                     screenManagerZ.width  = width;
                     screenManagerZ.height = height;
                     screenManagerZ.Save();
                     break;
                     
                 case GameNameType.Honkai:
-                    var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load();
+                    var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load(settingsUniversal);
                     screenManagerH.width  = width;
                     screenManagerH.height = height;
                     screenManagerH.Save();
@@ -879,7 +797,6 @@ public partial class HomePage
 
                     RepairGameButton.IsEnabled       = false;
                     UninstallGameButton.IsEnabled    = false;
-                    ConvertVersionButton.IsEnabled   = false;
                     CustomArgsTextBox.IsEnabled      = false;
                     MoveGameLocationButton.IsEnabled = false;
                     StopGameButton.IsEnabled         = true;
@@ -959,7 +876,6 @@ public partial class HomePage
             RepairGameButton.IsEnabled       = true;
             MoveGameLocationButton.IsEnabled = true;
             UninstallGameButton.IsEnabled    = true;
-            ConvertVersionButton.IsEnabled   = true;
             CustomArgsTextBox.IsEnabled      = true;
             StopGameButton.IsEnabled         = false;
 

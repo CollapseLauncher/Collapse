@@ -52,6 +52,7 @@ namespace Hi3Helper
                 public string GameSettings_Panel2ConvertVersion { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ConvertVersion;
                 public string GameSettings_Panel2MoveGameLocationGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame;
                 public string GameSettings_Panel2MoveGameLocationGame_SamePath { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath;
+                public string GameSettings_Panel2ChangeGameLocation { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ChangeGameLocation;
                 public string GameSettings_Panel2StopGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2StopGame;
                 public string GameSettings_Panel3RegionalSettings { get; set; } = LangFallback?._HomePage.GameSettings_Panel3RegionalSettings;
                 public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;

@@ -6,7 +6,7 @@ using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -20,6 +20,16 @@ namespace CollapseLauncher.GameSettings.Universal
     {
         #region Fields
         private const string ValueName = "CollapseLauncher_ScreenSetting";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
+
+        public CollapseScreenSetting() : this(null) {}
+
+        private CollapseScreenSetting(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -58,18 +68,18 @@ namespace CollapseLauncher.GameSettings.Universal
         ///     - 4 = DirectX 12 (Feature Level: 12.0) [Experimental]<br/><br/>
         /// Default: 3
         /// </summary>
-        public byte GameGraphicsAPI { get; set; } = 3;
+        public int GameGraphicsAPI { get; set; } = 3;
         #endregion
 
         #region Methods
 #nullable enable
-        public static CollapseScreenSetting Load()
+        public static CollapseScreenSetting Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -77,7 +87,9 @@ namespace CollapseLauncher.GameSettings.Universal
 #if DEBUG
                     LogWriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting) ?? new CollapseScreenSetting();
+                    CollapseScreenSetting settings = byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting) ?? new CollapseScreenSetting();
+                    settings.ParentGameSettings = gameSettings;
+                    return settings;
                 }
             }
             catch (Exception ex)
@@ -86,21 +98,21 @@ namespace CollapseLauncher.GameSettings.Universal
                 SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
 
-            return new CollapseScreenSetting();
+            return new CollapseScreenSetting(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);
 #endif
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {

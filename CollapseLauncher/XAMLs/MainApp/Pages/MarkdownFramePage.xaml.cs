@@ -36,7 +36,7 @@ namespace CollapseLauncher
             /// <summary>
             /// (Optional) URL of the web page you want to open by pressing the "Open in External Browser" button.
             /// </summary>
-            public string? WebUri         { get; set; }
+            public string? WebUri         { get; init; }
 
             /// <summary>
             /// Raw markdown you want to show
@@ -46,12 +46,12 @@ namespace CollapseLauncher
             /// <summary>
             /// Relative path of Collapse's CDN you want to use for the markdown
             /// </summary>
-            public string? MarkdownUriCdn { get; set; }
+            public string? MarkdownUriCdn { get; init; }
 
             /// <summary>
             /// (Optional) Title of the overlay
             /// </summary>
-            public string? Title          { get; set; }
+            public string? Title          { get; init; }
         }
 
         private string? _webUri;

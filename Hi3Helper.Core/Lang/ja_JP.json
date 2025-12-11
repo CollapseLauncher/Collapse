@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "修復",
     "GameSettings_Panel2UninstallGame": "アンインストール",
     "GameSettings_Panel2ConvertVersion": "リージョンを変更",
+    "GameSettings_Panel2ChangeGameLocation": "ゲームの位置を変更",
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "ゲームをドライブのルートフォルダーに移動させることはできません！\r\nフォルダーを作成してから再度お試しください。",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
     "ListViewFooterRestartButton": "ランチャーを再起動",
 
-    "RightPanelImportTitle1": "ここに",
+    "RightPanelImportTitle1": "ここをクリックして",
     "RightPanelImportTitle2": "か",
-    "RightPanelImportTitle3": "をドラッグしてください",
-    "RightPanelImportTitle4": "ここをクリックしてもプラグインを読み込めますよ"
+    "RightPanelImportTitle3": "を追加します",
+    "RightPanelImportTitle4": "範囲内ならどこを押しても大丈夫！"
   },
 
   "_Misc": {
@@ -1608,6 +1609,7 @@
     "General_OpenNotifTray": "通知トレイを開く",
     "General_ReloadRegion": "ページを再読み込み",
     "General_ReloadRegion_Desc": "F5キーを押してページを再読み込みすることもできます。\n再読み込みによってサーバーと接続し直します。",
+    "General_OpenPluginManager": "プラグインマネージャーを開く",
 
     "Switch_Title": "ゲーム/サーバーのクイック切り替え",
     "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
@@ -1658,6 +1660,19 @@
     "Japan": "日本",
     "Bilibili": "Bilibili",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "アップデート開始",
+    "CancelUpdateBtn": "アップデートをキャンセル",
+    "ReinstallToolBtn": "再インストール",
+    "StartUpdateAutomatically": "自動的にアップデート",
+    "NotifUpdateCompletedTitle": "{0}が更新されました！",
+    "NotifUpdateCompletedSubtitle": "{1} - {2} 用のツール：{0}がv{3}に更新されました"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "星々の箱庭"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1746,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "（実験的）",
     "Graphics_ColorFilter": "カラーフィルター",
     "Graphics_RenderRes": "レンダリング精度",
     "Graphics_EffectsQ": "SFX品質",
@@ -1741,7 +1757,18 @@
     "Audio_PlaybackDev_Headphones": "ヘッドホン",
     "Audio_PlaybackDev_Speakers": "スピーカー",
     "Audio_PlaybackDev_TV": "TV",
-    "Audio_Ambient": "アンビエント音量"
+    "Audio_Ambient": "アンビエント音量",
+    "AdvancedGraphics_Title": "拡張的な画質設定",
+    "AdvancedGraphics_Tooltip1": "一部の設定には、Nvidia GeForce RTXシリーズのグラフィックボードとDirectX 12 APIの有効化が必要です。",
+    "AdvancedGraphics_Tooltip2": "このコーナーにある全ての設定は実験的な機能です。ご利用は自己責任でお願いします！",
+    "AdvancedGraphics_UseDirectX12API": "DirectX 12 APIを使う",
+    "AdvancedGraphics_RayTracing": "レイトレーシング",
+    "AdvancedGraphics_RayTracingQ": "レイトレーシング品質",
+    "AdvancedGraphics_SuperScaling": "スーパースケーリング",
+    "AdvancedGraphics_SuperScalingQ": "スーパースケーリング優先度",
+    "AdvancedGraphics_SuperScalingQ_Performance": "パフォーマンス",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "バランス",
+    "AdvancedGraphics_SuperScalingQ_Quality": "クォリティ"
   },
 
   "_NotificationToast": {

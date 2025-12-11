@@ -21,7 +21,7 @@ namespace CollapseLauncher.Helper.Image
             return new HlsColor(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
-        public HlsColor(Color color)
+        private HlsColor(Color color)
         {
             int r = color.R;
             int g = color.G;

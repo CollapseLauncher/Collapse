@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using CommunityToolkit.Mvvm.Input;
 using Hi3Helper;
@@ -12,7 +13,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -22,15 +22,14 @@ using WinRT;
 namespace CollapseLauncher.Plugins;
 
 [GeneratedBindableCustomProperty]
-public partial class PluginManagerPageContext : INotifyPropertyChanged
+public partial class PluginManagerPageContext : NotifyPropertyChanged
 {
     internal ObservableCollection<PluginInfo> PluginCollection { get; } = CreateNewCollectionFromPluginManager();
-    public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
     internal bool IsChanged
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -80,7 +79,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     internal bool IsUpdateCheckOnProgress
     {
         get;
-        set
+        private set
         {
             field = value;
             OnPropertyChanged();
@@ -123,7 +122,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
 
     public PluginManagerPageContext()
     {
-        PluginCollection.CollectionChanged +=  OnChangeUpdatePluginCollection;
+        PluginCollection.CollectionChanged += OnChangeUpdatePluginCollection;
     }
 
     private static ObservableCollection<PluginInfo> CreateNewCollectionFromPluginManager()
@@ -182,7 +181,8 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnOpenCurrentPluginFolderCommand { get; } = new RelayCommand<PluginInfo>(OnOpenCurrentPluginFolder);
-    public static void OnOpenCurrentPluginFolder(PluginInfo? obj)
+
+    private static void OnOpenCurrentPluginFolder(PluginInfo? obj)
     {
         if (obj == null)
         {
@@ -197,7 +197,8 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnOpenCollapsePluginFolderCommand { get; } = new RelayCommand<PluginInfo>(OnOpenCollapsePluginFolder);
-    public static void OnOpenCollapsePluginFolder(PluginInfo? obj)
+
+    private static void OnOpenCollapsePluginFolder(PluginInfo? obj)
     {
         if (obj == null)
         {
@@ -211,20 +212,20 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         });
     }
 
-    public static ICommand OnDisableSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnDisableSelectedPlugins);
-    public static void OnDisableSelectedPlugins(IList<object>? obj) => ToggleIsEnabledSelectedPlugins(obj, false);
+    public static  ICommand OnDisableSelectedPluginsCommand              { get; } = new RelayCommand<IList<object>>(OnDisableSelectedPlugins);
+    private static void     OnDisableSelectedPlugins(IList<object>? obj) => ToggleIsEnabledSelectedPlugins(obj, false);
 
     public static ICommand OnEnableSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnEnableSelectedPlugins);
-    public static void OnEnableSelectedPlugins(IList<object>? obj) => ToggleIsEnabledSelectedPlugins(obj, true);
+    private static void OnEnableSelectedPlugins(IList<object>? obj) => ToggleIsEnabledSelectedPlugins(obj, true);
 
     public static ICommand OnMarkForDeletionSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnMarkForDeletionSelectedPlugins);
-    public static void OnMarkForDeletionSelectedPlugins(IList<object>? obj) => ToggleIsMarkedForDeletionSelectedPlugins(obj, true);
+    private static void OnMarkForDeletionSelectedPlugins(IList<object>? obj) => ToggleIsMarkedForDeletionSelectedPlugins(obj, true);
 
     public static ICommand OnRestoreFromDeletionSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnRestoreFromDeletionSelectedPlugins);
-    public static void OnRestoreFromDeletionSelectedPlugins(IList<object>? obj) => ToggleIsMarkedForDeletionSelectedPlugins(obj, false);
+    private static void OnRestoreFromDeletionSelectedPlugins(IList<object>? obj) => ToggleIsMarkedForDeletionSelectedPlugins(obj, false);
 
     public static ICommand OnCheckUpdateCurrentPluginCommand { get; } = new RelayCommand<PluginInfo>(OnCheckUpdateCurrentPlugin);
-    public static void OnCheckUpdateCurrentPlugin(PluginInfo? plugin)
+    private static void OnCheckUpdateCurrentPlugin(PluginInfo? plugin)
     {
         if (plugin == null)
         {
@@ -235,7 +236,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnCheckAndDownloadUpdateCurrentPluginCommand { get; } = new RelayCommand<PluginInfo>(OnCheckAndDownloadUpdateCurrentPlugin);
-    public static void OnCheckAndDownloadUpdateCurrentPlugin(PluginInfo? plugin)
+    private static void OnCheckAndDownloadUpdateCurrentPlugin(PluginInfo? plugin)
     {
         if (plugin == null)
         {
@@ -246,7 +247,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnDownloadUpdateCurrentPluginCommand { get; } = new RelayCommand<PluginInfo>(OnDownloadUpdateCurrentPlugin);
-    public static async void OnDownloadUpdateCurrentPlugin(PluginInfo? plugin)
+    private static async void OnDownloadUpdateCurrentPlugin(PluginInfo? plugin)
     {
         try
         {
@@ -264,7 +265,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnCheckUpdateSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnCheckUpdateSelectedPlugins);
-    public static void OnCheckUpdateSelectedPlugins(IList<object>? obj)
+    private static void OnCheckUpdateSelectedPlugins(IList<object>? obj)
     {
         if (obj == null)
         {
@@ -275,7 +276,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
     }
 
     public static ICommand OnCheckAndDownloadUpdateSelectedPluginsCommand { get; } = new RelayCommand<IList<object>>(OnCheckAndDownloadUpdateSelectedPlugins);
-    public static void OnCheckAndDownloadUpdateSelectedPlugins(IList<object>? obj)
+    private static void OnCheckAndDownloadUpdateSelectedPlugins(IList<object>? obj)
     {
         if (obj == null)
         {
@@ -285,13 +286,13 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         CheckAndDownloadUpdateEnumeratePlugins(obj.OfType<PluginInfo>().ToList());
     }
 
-    internal static async void CheckUpdateEnumeratePlugins(params PluginInfo[] pluginInfos)
+    private static async void CheckUpdateEnumeratePlugins(params PluginInfo[] pluginInfos)
     {
         try
         {
             await Parallel.ForEachAsync(pluginInfos, Impl);
 
-            async ValueTask Impl(PluginInfo plugin, CancellationToken token)
+            static async ValueTask Impl(PluginInfo plugin, CancellationToken token)
             {
                 await plugin.RunCheckUpdateTask(token);
             }
@@ -308,7 +309,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         {
             await Parallel.ForEachAsync(pluginInfos, Impl);
 
-            async ValueTask Impl(PluginInfo plugin, CancellationToken token)
+            static async ValueTask Impl(PluginInfo plugin, CancellationToken token)
             {
                 await plugin.RunCheckUpdateTask(token);
             }
@@ -325,7 +326,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         {
             await Parallel.ForEachAsync(pluginInfos, Impl);
 
-            async ValueTask Impl(PluginInfo plugin, CancellationToken token)
+            static async ValueTask Impl(PluginInfo plugin, CancellationToken token)
             {
                 if (await plugin.RunCheckUpdateTask(token))
                 {
@@ -410,14 +411,5 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
-    }
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        InnerLauncherConfig
-           .m_mainPage?
-           .DispatcherQueue
-           .TryEnqueue(() => PropertyChanged?
-                          .Invoke(this, new PropertyChangedEventArgs(propertyName)));
     }
 }

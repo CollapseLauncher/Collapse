@@ -414,11 +414,11 @@ namespace CollapseLauncher
             Read = read;
         }
 
-        public long     SizePatched        { get; private set; }
-        public long     SizeToBePatched    { get; private set; }
-        public double   ProgressPercentage => ConverterTool.ToPercentage(SizeToBePatched, SizePatched);
-        public long     Read               { get; private set; }
-        public double   Speed              { get; private set; }
-        public TimeSpan TimeLeft           => ConverterTool.ToTimeSpanRemain(SizeToBePatched, SizePatched, Speed);
+        private long     SizePatched        { get; set; }
+        private long     SizeToBePatched    { get; set; }
+        public  double   ProgressPercentage => ConverterTool.ToPercentage(SizeToBePatched, SizePatched);
+        public  long     Read               { get; private set; }
+        public  double   Speed              { get; private set; }
+        public  TimeSpan TimeLeft           => ConverterTool.ToTimeSpanRemain(SizeToBePatched, SizePatched, Speed);
     }
 }

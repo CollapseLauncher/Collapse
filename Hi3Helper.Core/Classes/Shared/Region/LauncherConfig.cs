@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
-using System.Text;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -251,7 +250,7 @@ namespace Hi3Helper.Shared.Region
         public static List<string>   AppCurrentArgument { get; set; } = [];
 
         [field: AllowNull, MaybeNull]
-        public static Process AppCurrentProcess           { get => field ??= Process.GetCurrentProcess(); }
+        public static Process AppCurrentProcess { get => field ??= Process.GetCurrentProcess(); }
         public static int    AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
         public static string AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
         public static string AppPluginFolder             => Path.Combine(AppGameFolder, "_plugins");
@@ -272,10 +271,16 @@ namespace Hi3Helper.Shared.Region
             }
         }
 
+        public static event Action<string>? AppGameFolderChanged;
+
         public static string AppGameFolder
         {
             get => GetAppConfigValue("GameFolder").Value ?? "";
-            set => SetAppConfigValue("GameFolder", value);
+            set
+            {
+                AppGameFolderChanged?.Invoke(value);
+                SetAppConfigValue("GameFolder", value);
+            }
         }
 
         [field: AllowNull, MaybeNull]
