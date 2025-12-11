@@ -1,70 +1,78 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using Microsoft.UI.Xaml;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace BackgroundTest.CustomControl.PanelSlideshow;
 
-public partial class PanelSlideshow : Control
+public partial class PanelSlideshow
 {
     #region Fields
 
-    private volatile Timer? timer = null;
-    private double m_timer = 0;
+    private volatile Timer? _timer;
+    private          double _mTimer;
 
     #endregion
 
     #region Methods
 
-    private async void RestartTimer(double newDuration, double countIntervalMs = 100d, double delayBeforeStartMs = 500d)
+    private async void RestartTimer(double newDuration, double countIntervalMs = 100d, int delayBeforeStartMs = 1000)
     {
-        using (_atomicLock.EnterScope())
+        try
         {
-            m_timer = newDuration;
-
-            if (!IsLoaded || newDuration == 0)
+            using (_atomicLock.EnterScope())
             {
+                _mTimer = newDuration;
+
+                if (!IsLoaded || newDuration == 0)
+                {
+                    DisposeAndDeregisterTimer();
+                    return;
+                }
+
                 DisposeAndDeregisterTimer();
-                return;
+
+                _timer         =  new Timer(countIntervalMs);
+                _timer.Elapsed += Timer_Elapsed;
             }
 
-            DisposeAndDeregisterTimer();
+            await Task.Delay(delayBeforeStartMs);
 
-            timer = new Timer(countIntervalMs);
-            timer.Elapsed += Timer_Elapsed;
+            VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
+            if (!_isMouseHover)
+            {
+                _timer.Start();
+            }
         }
-
-        await Task.Delay(TimeSpan.FromMilliseconds(delayBeforeStartMs));
-
-        if (!_isMouseHover)
+        catch
         {
-            timer.Start();
+            // ignored
         }
     }
 
     private void DisposeAndDeregisterTimer()
     {
-        if (timer != null)
+        if (!_isTemplateLoaded)
         {
-            timer.Elapsed -= Timer_Elapsed;
+            return;
         }
 
-        if (_countdownProgressBar != null)
+        if (_timer != null)
         {
-            if (DispatcherQueue.HasThreadAccess)
-            {
-                _countdownProgressBar.Value = 0;
-            }
-            else
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                _countdownProgressBar.Value = 0);
-            }
+            _timer.Elapsed -= Timer_Elapsed;
         }
 
-        timer?.Stop();
-        timer?.Dispose();
-        timer = null;
+        if (DispatcherQueue.HasThreadAccess)
+        {
+            _countdownProgressBar.Value = 0;
+        }
+        else
+        {
+            DispatcherQueue.TryEnqueue(() => _countdownProgressBar.Value = 0);
+        }
+
+        _timer?.Stop();
+        _timer?.Dispose();
+        _timer = null;
     }
 
     private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -83,30 +91,34 @@ public partial class PanelSlideshow : Control
         {
             DispatcherQueue.TryEnqueue(Impl);
         }
-
         return;
 
-        void Impl()
+        // ReSharper disable once AsyncVoidMethod
+        async void Impl()
         {
             _countdownProgressBar.Value += interval;
-            m_timer -= interval;
-            if (m_timer < 0)
+            _mTimer -= interval;
+            if (!(_mTimer < 0))
             {
-                ItemIndex++;
                 return;
             }
+
+            thisTimer.Stop();
+            VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
+            await Task.Delay(500);
+            ItemIndex++;
         }
     }
 
     /// <summary>
     /// Stops the slideshow countdown timer.
     /// </summary>
-    public void PauseSlideshow() => timer?.Stop();
+    public void PauseSlideshow() => _timer?.Stop();
 
     /// <summary>
     /// Resumes the slideshow countdown timer.
     /// </summary>
-    public void ResumeSlideshow() => timer?.Start();
+    public void ResumeSlideshow() => _timer?.Start();
 
     #endregion
 }

@@ -11,28 +11,41 @@ namespace BackgroundTest.CustomControl.PanelSlideshow;
 [TemplatePart(Name = TemplateNamePreviousButton, Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameNextButton, Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(ProgressBar))]
+[TemplateVisualState(GroupName = StateGroupNameCommon, Name = StateNameNormal)]
+[TemplateVisualState(GroupName = StateGroupNameCommon, Name = StateNamePointerOver)]
+[TemplateVisualState(GroupName = StateGroupNameCommon, Name = StateNameDisabled)]
+[TemplateVisualState(GroupName = StateGroupNameCountdownProgressBar, Name = StateNameCountdownProgressBarFadeIn)]
+[TemplateVisualState(GroupName = StateGroupNameCountdownProgressBar, Name = StateNameCountdownProgressBarFadeOut)]
 public partial class PanelSlideshow
 {
     #region Constants
 
-    private const string TemplateNameRootGrid = "RootGrid";
+    private const string TemplateNameRootGrid               = "RootGrid";
     private const string TemplateNamePresenterScrollContent = "Presenter";
-    private const string TemplateNamePreloadGrid = "PreloadGrid";
-    private const string TemplateNamePreviousButton = "PreviousButton";
-    private const string TemplateNameNextButton = "NextButton";
-    private const string TemplateNameCountdownProgressBar = "CountdownProgressBar";
+    private const string TemplateNamePreloadGrid            = "PreloadGrid";
+    private const string TemplateNamePreviousButton         = "PreviousButton";
+    private const string TemplateNameNextButton             = "NextButton";
+    private const string TemplateNameCountdownProgressBar   = "CountdownProgressBar";
+
+    private const string StateGroupNameCommon                 = "CommonStates";
+    private const string StateNameNormal                      = "Normal";
+    private const string StateNamePointerOver                 = "PointerOver";
+    private const string StateNameDisabled                    = "Disabled";
+    private const string StateGroupNameCountdownProgressBar   = "CountdownProgressBarStates";
+    private const string StateNameCountdownProgressBarFadeIn  = "CountdownProgressBarFadeIn";
+    private const string StateNameCountdownProgressBarFadeOut = "CountdownProgressBarFadeOut";
 
     #endregion
 
     #region Fields
 
-    private ScrollContentPresenter _presenter = null!;
-    private Grid _preloadGrid = null!;
-    private Button _previousButton = null!;
-    private Grid _previousButtonGrid = null!;
-    private Button _nextButton = null!;
-    private Grid _nextButtonGrid = null!;
-    private ProgressBar _countdownProgressBar = null!;
+    private ScrollContentPresenter _presenter            = null!;
+    private Grid                   _preloadGrid          = null!;
+    private Button                 _previousButton       = null!;
+    private Grid                   _previousButtonGrid   = null!;
+    private Button                 _nextButton           = null!;
+    private Grid                   _nextButtonGrid       = null!;
+    private ProgressBar            _countdownProgressBar = null!;
 
     private bool _isTemplateLoaded;
 

@@ -1,23 +1,38 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media.Animation;
-using System.Collections.Generic;
 using System.Threading;
+using Windows.Foundation;
 
 namespace BackgroundTest.CustomControl.PanelSlideshow;
 
+[ContentProperty(Name = nameof(Items))]
 public partial class PanelSlideshow
 {
+    #region Events
+
+    public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<UIElement>>?            ItemChanged;
+    public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<ManagedUIElementList>>? ItemsChanged;
+    public event TypedEventHandler<PanelSlideshow, ChangedStructItemArgs<int>>?                  ItemIndexChanged;
+    public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<Transition>>?           ItemTransitionChanged;
+
+    #endregion
+
     #region Properties
 
     /// <summary>
     /// List of elements to be displayed in the slideshow.
     /// </summary>
-    public IList<UIElement> Items
+    public ManagedUIElementList Items
     {
-        get => (IList<UIElement>)GetValue(ItemsProperty);
+        get => (ManagedUIElementList)GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
     }
+
+    /// <summary>
+    /// Current element being displayed.
+    /// </summary>
+    public UIElement Item => (UIElement)GetValue(ItemProperty);
 
     /// <summary>
     /// The index of current element being displayed.
@@ -82,15 +97,19 @@ public partial class PanelSlideshow
     #region Fields
 
     private readonly Lock _atomicLock = new();
-    private bool _isMouseHover = false;
+    private bool _isMouseHover;
 
     #endregion
 
     #region Dependency Properties
 
     public static readonly DependencyProperty ItemsProperty =
-        DependencyProperty.Register(nameof(Items), typeof(UIElementCollection), typeof(PanelSlideshow),
-                                    new PropertyMetadata(new ManagedObservableList<UIElement>(), Items_OnChange));
+        DependencyProperty.Register(nameof(Items), typeof(ManagedUIElementList), typeof(PanelSlideshow),
+                                    new PropertyMetadata(new ManagedUIElementList(), Items_OnChange));
+
+    public static readonly DependencyProperty ItemProperty =
+        DependencyProperty.Register(nameof(Item), typeof(UIElement), typeof(PanelSlideshow),
+                                    new PropertyMetadata(null!));
 
     public static readonly DependencyProperty ItemIndexProperty =
         DependencyProperty.Register(nameof(ItemIndex), typeof(int), typeof(PanelSlideshow),

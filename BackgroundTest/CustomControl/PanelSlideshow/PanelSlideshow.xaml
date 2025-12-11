@@ -13,7 +13,7 @@
     <x:Double x:Key="SlideshowButtonOpacityPointerOver">1</x:Double>
     <x:Double x:Key="SlideshowButtonScale">.8</x:Double>
     <x:Double x:Key="SlideshowButtonScalePointerOver">1</x:Double>
-    <x:Double x:Key="SlideshowCountdownBarOpacity">.25</x:Double>
+    <x:Double x:Key="SlideshowCountdownBarOpacity">.5</x:Double>
     <x:Double x:Key="SlideshowCountdownBarOpacityPointerOver">1</x:Double>
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacity">.5</x:Double>
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacityPointerOver">1</x:Double>
@@ -47,6 +47,23 @@
                 <ControlTemplate TargetType="controls:PanelSlideshow">
                     <Grid x:Name="RootGrid" CornerRadius="{TemplateBinding CornerRadius}">
                         <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CountdownProgressBarStates">
+                                <VisualState x:Name="CountdownProgressBarFadeIn">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="CountdownProgressBarFadeOut">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:.5" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal">
                                     <Storyboard>
@@ -194,9 +211,11 @@
 
                         <Grid x:Name="PreloadGrid" Opacity="0"/>
                         <ScrollContentPresenter x:Name="Presenter" CornerRadius="{TemplateBinding CornerRadius}"/>
-                        <Grid HorizontalAlignment="Stretch"
+                        <Grid x:Name="CountdownProgressBarGrid"
+                              HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom"
-                              Visibility="{TemplateBinding ProgressBarVisibility}">
+                              Visibility="{TemplateBinding ProgressBarVisibility}"
+                              Opacity="0">
                             <Grid x:Name="CountdownProgressBarSmoke"
                                   Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
                                   MaxHeight="256"

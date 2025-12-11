@@ -2,13 +2,11 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Windows.System;
 
 namespace BackgroundTest.CustomControl.PanelSlideshow;
@@ -22,6 +20,14 @@ public partial class PanelSlideshow
         // Reset the index on applying media items
         PanelSlideshow slideshow = (PanelSlideshow)d;
         slideshow.ItemIndex = 0;
+        slideshow.Items_OnChange(e);
+    }
+
+    private void Items_OnChange(DependencyPropertyChangedEventArgs e)
+    {
+        ManagedUIElementList? oldList = e.OldValue as ManagedUIElementList;
+        ManagedUIElementList? newList = e.NewValue as ManagedUIElementList;
+        ItemsChanged?.Invoke(this, new ChangedObjectItemArgs<ManagedUIElementList>(oldList, newList));
     }
 
     private static void ItemIndex_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -29,68 +35,89 @@ public partial class PanelSlideshow
         PanelSlideshow slideshow = (PanelSlideshow)d;
         int newIndex = (int)e.NewValue;
         int oldIndex = (int)e.OldValue;
-        ItemIndex_OnChange(slideshow, newIndex, oldIndex);
+        slideshow.ItemIndex_OnChange(newIndex, oldIndex);
     }
 
-    private static void ItemIndex_OnChange(PanelSlideshow slideshow, int newIndex, int oldIndex)
+    private void ItemIndex_OnChange(int newIndex, int oldIndex)
     {
-        if (slideshow.Items is null || slideshow.Items.Count == 0 || slideshow._presenter == null || !slideshow.IsLoaded)
+        if (Items.Count == 0 || !IsLoaded)
         {
             return;
         }
 
-        if (newIndex < 0 || newIndex >= slideshow.Items.Count)
+        if (newIndex < 0 || newIndex >= Items.Count)
         {
             return;
         }
 
         // Restart slideshow timer
-        slideshow.RestartTimer(slideshow.SlideshowDuration);
+        RestartTimer(SlideshowDuration);
 
         // Preload to invisible grid. This preload is necessary to avoid
         // the element jumping off the element due to size and offset being unset.
-        PreloadPastOrFutureItem(slideshow.Items, slideshow._preloadGrid, newIndex, slideshow.Items.Count);
+        PreloadPastOrFutureItem(Items, _preloadGrid, newIndex, Items.Count);
 
         // Just add to Grid if oldIndex is -1 (initialization on startup)
-        if (oldIndex == -1 && slideshow.Items.FirstOrDefault() is UIElement firstElement)
+        if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
         {
-            slideshow._preloadGrid.Children.Remove(firstElement);
-            slideshow._presenter.Content = firstElement;
-            slideshow._presenter.Transitions.Add(slideshow.ItemTransition);
+            _preloadGrid.Children.Remove(firstElement);
+            _presenter.Content = firstElement;
+            _presenter.Transitions.Add(ItemTransition);
             return;
         }
 
-        bool isBackward = newIndex < oldIndex &&
-                          (oldIndex - 1 == newIndex) ||
-                          (newIndex == slideshow.Items.Count - 1 && oldIndex == 0);
-        if (slideshow.ItemTransition is PaneThemeTransition paneThemeTransition)
-        {
-            SwitchUsingPaneThemeTransition(slideshow._presenter, slideshow.Items, paneThemeTransition, newIndex, isBackward);
-            return;
-        }
+        bool isBackward = (newIndex < oldIndex &&
+                           oldIndex - 1 == newIndex) ||
+                          (newIndex == Items.Count - 1 && oldIndex == 0);
 
-        if (slideshow.ItemTransition is EdgeUIThemeTransition edgeUIThemeTransition)
-        {
-            SwitchUsingEdgeUIThemeTransition(slideshow._presenter, slideshow.Items, edgeUIThemeTransition, newIndex, isBackward);
-            return;
-        }
+        IList<UIElement> elements = Items;
 
-        SwitchUsingOtherTransition(slideshow._presenter, slideshow.Items, slideshow.ItemTransition, newIndex);
+        try
+        {
+            switch (ItemTransition)
+            {
+                case PaneThemeTransition paneThemeTransition:
+                    SwitchUsingPaneThemeTransition(_presenter, elements, paneThemeTransition, newIndex, isBackward);
+                    return;
+                case EdgeUIThemeTransition edgeUIThemeTransition:
+                    SwitchUsingEdgeUIThemeTransition(_presenter, elements, edgeUIThemeTransition, newIndex, isBackward);
+                    return;
+                default:
+                    SwitchUsingOtherTransition(_presenter, elements, ItemTransition, newIndex);
+                    break;
+            }
+        }
+        finally
+        {
+            UIElement newElement = elements[newIndex];
+            UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
+                ? null
+                : elements[oldIndex];
+
+            SetValue(ItemProperty, newElement);
+            ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
+            ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
+        }
     }
 
     private static void ItemTransition_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         PanelSlideshow slideshow = (PanelSlideshow)d;
-        ItemTransition_OnChange(slideshow.Items, (Transition)e.NewValue);
+        slideshow.ItemTransition_OnChange(slideshow.Items, e.OldValue as Transition, e.NewValue as Transition);
     }
 
-    private static void ItemTransition_OnChange(IList<UIElement> elements, Transition transition)
+    private void ItemTransition_OnChange(IList<UIElement> elements, Transition? oldTransition, Transition? newTransition)
     {
-        foreach (UIElement element in elements)
+        if (newTransition != null)
         {
-            element.Transitions.Clear();
-            element.Transitions.Add(transition);
+            foreach (UIElement element in elements)
+            {
+                element.Transitions.Clear();
+                element.Transitions.Add(newTransition);
+            }
         }
+
+        ItemTransitionChanged?.Invoke(this, new ChangedObjectItemArgs<Transition>(oldTransition, newTransition));
     }
 
     private static void SlideshowDuration_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -110,18 +137,15 @@ public partial class PanelSlideshow
             return;
         }
 
-        int pastIndex = -1;
-        if (currentIndex == 0 && itemsCount >= 3)
-        {
-            pastIndex = itemsCount - 1;
-        }
-        else if (currentIndex > 0)
-        {
-            pastIndex = currentIndex - 1;
-        }
+        int pastIndex = currentIndex switch
+                        {
+                            0 when itemsCount >= 3 => itemsCount - 1,
+                            > 0 => currentIndex - 1,
+                            _ => -1
+                        };
 
         int futureIndex = -1;
-        if (currentIndex >= 0 && itemsCount - 1 > currentIndex)
+        if (itemsCount - 1 > currentIndex)
         {
             futureIndex = currentIndex + 1;
         }
@@ -130,17 +154,17 @@ public partial class PanelSlideshow
             futureIndex = 0;
         }
 
-        UIElement? pastElement   = pastIndex   == -1 ? null : collection[pastIndex];
+        UIElement? pastElement   = pastIndex == -1 ? null : collection[pastIndex];
         UIElement? futureElement = futureIndex == -1 ? null : collection[futureIndex];
 
         preloadGrid.Children.Clear();
         AssignToPreloadGridAndApplyPayload(pastElement);
         AssignToPreloadGridAndApplyPayload(futureElement);
+        return;
 
         void AssignToPreloadGridAndApplyPayload(UIElement? element)
         {
-            if (element is not FrameworkElement elementFe ||
-                elementFe.ActualSize is not { X: 0, Y: 0 })
+            if (element is not FrameworkElement { ActualSize: { X: 0, Y: 0 } } elementFe)
             {
                 return;
             }
@@ -152,8 +176,7 @@ public partial class PanelSlideshow
 
     private static void PreloadItem_OnLoaded(object? sender, SizeChangedEventArgs args)
     {
-        if (sender is not FrameworkElement element ||
-            element.Parent is not Grid parentGrid)
+        if (sender is not FrameworkElement { Parent: Grid parentGrid } element)
         {
             return;
         }
@@ -182,19 +205,19 @@ public partial class PanelSlideshow
             currentEdge = GetReversedEdge(currentEdge);
         }
 
-        if (lastElement is not null &&
-            lastElement.Transitions.LastOrDefault() is EdgeUIThemeTransition lastElementTransition)
+        if (lastElement?.Transitions.LastOrDefault() is EdgeUIThemeTransition lastElementTransition)
         {
             lastElementTransition.Edge = GetReversedEdge(currentEdge);
         }
 
         currentElement.Transitions.Clear();
-        currentElement.Transitions.Add(new EdgeUIThemeTransition()
+        currentElement.Transitions.Add(new EdgeUIThemeTransition
         {
             Edge = currentEdge
         });
         presenter.Content = currentElement;
         currentElement.UpdateLayout();
+        return;
 
         static EdgeTransitionLocation GetReversedEdge(EdgeTransitionLocation edge)
         {
@@ -204,7 +227,7 @@ public partial class PanelSlideshow
                 EdgeTransitionLocation.Bottom => EdgeTransitionLocation.Top,
                 EdgeTransitionLocation.Left => EdgeTransitionLocation.Right,
                 EdgeTransitionLocation.Top => EdgeTransitionLocation.Bottom,
-                _ => throw new System.NotImplementedException()
+                _ => throw new NotImplementedException()
             };
         }
     }
@@ -225,19 +248,19 @@ public partial class PanelSlideshow
             currentEdge = GetReversedEdge(currentEdge);
         }
 
-        if (lastElement is not null &&
-            lastElement.Transitions.LastOrDefault() is PaneThemeTransition lastElementTransition)
+        if (lastElement?.Transitions.LastOrDefault() is PaneThemeTransition lastElementTransition)
         {
             lastElementTransition.Edge = GetReversedEdge(currentEdge);
         }
 
         currentElement.Transitions.Clear();
-        currentElement.Transitions.Add(new PaneThemeTransition()
+        currentElement.Transitions.Add(new PaneThemeTransition
         {
             Edge = currentEdge
         });
         presenter.Content = currentElement;
         currentElement.UpdateLayout();
+        return;
 
         static EdgeTransitionLocation GetReversedEdge(EdgeTransitionLocation edge)
         {
@@ -247,7 +270,7 @@ public partial class PanelSlideshow
                 EdgeTransitionLocation.Bottom => EdgeTransitionLocation.Top,
                 EdgeTransitionLocation.Left => EdgeTransitionLocation.Right,
                 EdgeTransitionLocation.Top => EdgeTransitionLocation.Bottom,
-                _ => throw new System.NotImplementedException()
+                _ => throw new NotImplementedException()
             };
         }
     }
@@ -295,7 +318,7 @@ public partial class PanelSlideshow
     private void PanelSlideshow_Loaded(object sender, RoutedEventArgs e)
     {
         // Initialize element on the current index.
-        ItemIndex_OnChange(this, ItemIndex, -1);
+        ItemIndex_OnChange(ItemIndex, -1);
 
         PointerEntered += PanelSlideshow_PointerEntered;
         PointerExited += PanelSlideshow_PointerExited;
@@ -355,7 +378,7 @@ public partial class PanelSlideshow
     private void PanelSlideshow_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
         _isMouseHover = true;
-        VisualStateManager.GoToState(this, "PointerOver", true);
+        VisualStateManager.GoToState(this, StateNamePointerOver, true);
 
         PauseSlideshow();
     }
@@ -363,7 +386,7 @@ public partial class PanelSlideshow
     private void PanelSlideshow_PointerExited(object sender, PointerRoutedEventArgs e)
     {
         _isMouseHover = false;
-        VisualStateManager.GoToState(this, "Normal", true);
+        VisualStateManager.GoToState(this, StateNameNormal, true);
 
         ResumeSlideshow();
     }

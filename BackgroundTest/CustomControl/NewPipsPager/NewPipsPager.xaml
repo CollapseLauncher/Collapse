@@ -101,7 +101,6 @@
 
                         </VisualStateManager.VisualStateGroups>
                         <Button x:Name="PreviousPageButton"
-                                HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Style="{ThemeResource NewPipsPagerPreviousPageButtonStyle}"
                                 customControls:Extensions.CursorType="Hand"
@@ -142,7 +141,6 @@
                             </ItemsRepeater>
                         </ScrollViewer>
                         <Button x:Name="NextPageButton"
-                                HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Style="{ThemeResource NewPipsPagerNextPageButtonStyle}"
                                 customControls:Extensions.CursorType="Hand"

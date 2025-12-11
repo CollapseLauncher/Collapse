@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using WinRT;
+
 // ReSharper disable StaticMemberInGenericType
 
-namespace BackgroundTest;
+namespace BackgroundTest.CustomControl;
 
-public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
+[ProjectedRuntimeClass(typeof(IList<UIElement>))]
+[GeneratedBindableCustomProperty]
+public partial class ManagedUIElementList : IList<UIElement>, INotifyCollectionChanged, INotifyPropertyChanged
 {
-    private readonly List<T> _backedList;
+    private readonly List<UIElement> _backedList;
 
     #region Cached Property Changes Arguments
 
@@ -31,16 +36,16 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     /// <summary>
     /// Creates a new empty Observable List
     /// </summary>
-    public ManagedObservableList() => _backedList = [];
+    public ManagedUIElementList() => _backedList = [];
 
     /// <summary>
     /// Creates a new Observable List from the enumerable.
     /// </summary>
     /// <param name="enumerable"></param>
     /// <param name="useBorrow">Borrow the current instance of <paramref name="enumerable"/> instead of allocating new backed list if possible.</param>
-    public ManagedObservableList(IEnumerable<T> enumerable, bool useBorrow = false)
+    public ManagedUIElementList(IEnumerable<UIElement> enumerable, bool useBorrow = false)
     {
-        if (enumerable is List<T> borrowedList &&
+        if (enumerable is List<UIElement> borrowedList &&
             useBorrow)
         {
             _backedList = borrowedList;
@@ -51,20 +56,20 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     }
 
     /// <inheritdoc/>
-    public IEnumerator<T> GetEnumerator() => _backedList.GetEnumerator();
+    public IEnumerator<UIElement> GetEnumerator() => _backedList.GetEnumerator();
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <inheritdoc/>
-    public void Add(T item) => Add(item, true);
+    public void Add(UIElement item) => Add(item, true);
 
     /// <summary>
     /// Adds an item to the backed List and notify the changes.
     /// </summary>
     /// <param name="item">The object to add to the backed List.</param>
     /// <param name="notifyChanges">Whether to notify the changes or not.</param>
-    public void Add(T item, bool notifyChanges)
+    public void Add(UIElement item, bool notifyChanges)
     {
         _backedList.Add(item);
         if (!notifyChanges)
@@ -74,7 +79,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
 
         NotifyCountPropertyChange();
         NotifyIndexerPropertyChange();
-        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
     }
 
     /// <inheritdoc/>
@@ -98,10 +103,10 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     }
 
     /// <inheritdoc/>
-    public bool Contains(T item) => _backedList.Contains(item);
+    public bool Contains(UIElement item) => _backedList.Contains(item);
 
     /// <inheritdoc/>
-    public void CopyTo(T[] array, int arrayIndex) => _backedList.CopyTo(array, arrayIndex);
+    public void CopyTo(UIElement[] array, int arrayIndex) => _backedList.CopyTo(array, arrayIndex);
 
     /// <inheritdoc/>
     public int Count => _backedList.Count;
@@ -110,10 +115,10 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     public bool IsReadOnly => false;
 
     /// <inheritdoc/>
-    public int IndexOf(T item) => _backedList.IndexOf(item);
+    public int IndexOf(UIElement item) => _backedList.IndexOf(item);
 
     /// <inheritdoc/>
-    public bool Remove(T item) => Remove(item, true);
+    public bool Remove(UIElement item) => Remove(item, true);
 
     /// <summary>
     /// Removes the first occurrence of a specific object from the backed List.
@@ -124,7 +129,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     /// <see langword="true"/> if <paramref name="item"/> was successfully removed from the backed List; otherwise, <see langword="false"/>.
     /// This method also returns <see langword="false"/> if <paramref name="item"/> is not found from the backed List.
     /// </returns>
-    public bool Remove(T item, bool notifyChanges)
+    public bool Remove(UIElement item, bool notifyChanges)
     {
         bool isSuccess = _backedList.Remove(item);
 
@@ -145,7 +150,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     }
 
     /// <inheritdoc/>
-    public void Insert(int index, T item) => Insert(index, item, true);
+    public void Insert(int index, UIElement item) => Insert(index, item, true);
 
     /// <summary>
     /// Inserts an item to the backed List at the specified index.
@@ -153,7 +158,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
     /// <param name="item">The object to insert into the backed List.</param>
     /// <param name="notifyChanges">Whether to notify the changes or not.</param>
-    public void Insert(int index, T item, bool notifyChanges)
+    public void Insert(int index, UIElement item, bool notifyChanges)
     {
         _backedList.Insert(index, item);
 
@@ -177,7 +182,7 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     /// <param name="notifyChanges">Whether to notify the changes or not.</param>
     public void RemoveAt(int index, bool notifyChanges)
     {
-        T item = _backedList[index];
+        UIElement item = _backedList[index];
         _backedList.Remove(item);
 
         if (!notifyChanges)
@@ -191,19 +196,20 @@ public class ManagedObservableList<T> : IList<T>, INotifyCollectionChanged, INot
     }
 
     /// <inheritdoc/>
-    public T this[int index]
+    [IndexerName("Item")]
+    public UIElement this[int index]
     {
         get => _backedList[index];
         set
         {
-            T oldItem = _backedList[index];
-            T newItem = _backedList[index] = value;
+            UIElement oldItem = _backedList[index];
+            UIElement newItem = _backedList[index] = value;
 
             NotifyIndexerPropertyChange();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, index));
         }
     }
 
-    private void NotifyCountPropertyChange() => PropertyChanged?.Invoke(this, CountPropertyChanged);
+    private void NotifyCountPropertyChange()   => PropertyChanged?.Invoke(this, CountPropertyChanged);
     private void NotifyIndexerPropertyChange() => PropertyChanged?.Invoke(this, IndexerPropertyChanged);
 }

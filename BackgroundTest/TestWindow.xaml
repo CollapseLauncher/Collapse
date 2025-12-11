@@ -30,20 +30,18 @@
             <panelSlideshow:PanelSlideshow.ItemTransition>
                 <PaneThemeTransition Edge="Right" />
             </panelSlideshow:PanelSlideshow.ItemTransition>
-            <panelSlideshow:PanelSlideshow.Items>
-                <Image Source="/CustomControl/BGTestImage1.jpg"
-                       Stretch="UniformToFill"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Center"/>
-                <Image Source="/CustomControl/BGTestImage2.jpg"
-                       Stretch="UniformToFill"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-                <Image Source="/CustomControl/BGTestImage3.jpg"
-                       Stretch="UniformToFill"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-            </panelSlideshow:PanelSlideshow.Items>
+            <Image Source="/CustomControl/BGTestImage1.jpg"
+                   Stretch="UniformToFill"
+                   VerticalAlignment="Stretch"
+                   HorizontalAlignment="Center"/>
+            <Image Source="/CustomControl/BGTestImage2.jpg"
+                   Stretch="UniformToFill"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"/>
+            <Image Source="/CustomControl/BGTestImage3.jpg"
+                   Stretch="UniformToFill"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"/>
         </panelSlideshow:PanelSlideshow>
         <Grid x:Name="ContainerGrid"
               VerticalAlignment="Bottom"

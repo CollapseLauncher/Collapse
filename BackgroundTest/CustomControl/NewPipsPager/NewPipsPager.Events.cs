@@ -10,12 +10,6 @@ using Windows.System;
 
 namespace BackgroundTest.CustomControl.NewPipsPager;
 
-public struct NewPipsPagerChangedItemArgs<TItem> where TItem : struct
-{
-    public TItem OldItem { get; set; }
-    public TItem NewItem { get; set; }
-}
-
 public partial class NewPipsPager
 {
     #region Size Measure Override
@@ -228,11 +222,7 @@ public partial class NewPipsPager
                     ItemIndex = 0;
                 }
 
-                ItemsCountChanged?.Invoke(this, new NewPipsPagerChangedItemArgs<int>
-                {
-                    OldItem = oldItemsCount,
-                    NewItem = value
-                });
+                ItemsCountChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldItemsCount, value));
             }
         }
     }

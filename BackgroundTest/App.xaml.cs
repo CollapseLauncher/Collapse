@@ -1,6 +1,4 @@
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable CommentTypo

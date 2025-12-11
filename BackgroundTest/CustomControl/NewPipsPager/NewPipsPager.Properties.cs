@@ -9,8 +9,8 @@ public partial class NewPipsPager
 {
     #region Events
 
-    public event TypedEventHandler<NewPipsPager, NewPipsPagerChangedItemArgs<int>>? ItemsCountChanged;
-    public event TypedEventHandler<NewPipsPager, NewPipsPagerChangedItemArgs<int>>? ItemIndexChanged;
+    public event TypedEventHandler<NewPipsPager, ChangedStructItemArgs<int>>? ItemsCountChanged;
+    public event TypedEventHandler<NewPipsPager, ChangedStructItemArgs<int>>? ItemIndexChanged;
 
     #endregion
 
@@ -211,11 +211,7 @@ public partial class NewPipsPager
         {
             if (newIndex != oldIndex)
             {
-                ItemIndexChanged?.Invoke(this, new NewPipsPagerChangedItemArgs<int>
-                {
-                    OldItem = oldIndex,
-                    NewItem = newIndex
-                });
+                ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
             }
         }
     }
