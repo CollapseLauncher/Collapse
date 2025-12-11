@@ -173,7 +173,8 @@ namespace CollapseLauncher.Helper.Background
         }
 
         private static async ValueTask<WColor[]> TryGenerateNewCachedPalette(BitmapInputStruct bitmapInput,
-                                                                             bool isLight, string? cachedPalettePath)
+                                                                             bool isLight,
+                                                                             string? cachedPalettePath)
         {
             WColor[] colors = [await GetPaletteList(bitmapInput, isLight)];
             colors = ConverterTool.EnsureLengthCopyLast(colors, 4);

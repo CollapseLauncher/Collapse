@@ -780,10 +780,10 @@
     "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
     "ListViewFooterRestartButton": "ランチャーを再起動",
 
-    "RightPanelImportTitle1": "ここに",
+    "RightPanelImportTitle1": "ここをクリックして",
     "RightPanelImportTitle2": "か",
-    "RightPanelImportTitle3": "をドラッグしてください",
-    "RightPanelImportTitle4": "ここをクリックしてもプラグインを読み込めますよ"
+    "RightPanelImportTitle3": "を追加します",
+    "RightPanelImportTitle4": "範囲内ならどこを押しても大丈夫！"
   },
 
   "_Misc": {
