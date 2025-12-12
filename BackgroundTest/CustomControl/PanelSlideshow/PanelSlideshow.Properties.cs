@@ -79,7 +79,7 @@ public partial class PanelSlideshow
     /// </summary>
     public double SlideshowDuration
     {
-        get => (double)GetValue(SlideshowDurationProperty);
+        get => GetValue(SlideshowDurationProperty).TryGetDouble();
         set => SetValue(SlideshowDurationProperty, value);
     }
 

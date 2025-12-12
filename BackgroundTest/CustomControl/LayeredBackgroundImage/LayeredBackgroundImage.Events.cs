@@ -9,12 +9,70 @@ namespace BackgroundTest.CustomControl.LayeredBackgroundImage;
 
 public partial class LayeredBackgroundImage
 {
+    #region Fields
+
+    private object? _lastPlaceholderSource;
+    private object? _lastBackgroundSource;
+    private object? _lastForegroundSource;
+
+    private bool _isPlaceholderHidden;
+
+    #endregion
+
     #region Loaded and Unloaded
+
+    private static bool IsSourceKindEquals(object? left, object? right)
+    {
+        if (left is string asStringLeft && right is string asStringRight)
+        {
+            return string.Equals(asStringLeft, asStringRight, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return left == right;
+    }
 
     private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
+
+        if (!_isPlaceholderHidden &&
+            !IsSourceKindEquals(_lastPlaceholderSource, PlaceholderSource))
+        {
+            LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
+                                        nameof(PlaceholderStretch),
+                                        nameof(PlaceholderHorizontalAlignment),
+                                        nameof(PlaceholderVerticalAlignment),
+                                        _placeholderGrid,
+                                        this,
+                                        false);
+            _lastPlaceholderSource = PlaceholderSource;
+        }
+
+        if (!IsSourceKindEquals(_lastBackgroundSource, BackgroundSource))
+        {
+            LoadFromSourceAsyncDetached(BackgroundSourceProperty,
+                                        nameof(BackgroundStretch),
+                                        nameof(BackgroundHorizontalAlignment),
+                                        nameof(BackgroundVerticalAlignment),
+                                        _backgroundGrid,
+                                        this,
+                                        true);
+            _lastBackgroundSource = BackgroundSource;
+        }
+
+        // ReSharper disable once InvertIf
+        if (!IsSourceKindEquals(_lastForegroundSource, ForegroundSource))
+        {
+            LoadFromSourceAsyncDetached(ForegroundSourceProperty,
+                                        nameof(ForegroundStretch),
+                                        nameof(ForegroundHorizontalAlignment),
+                                        nameof(ForegroundVerticalAlignment),
+                                        _foregroundGrid,
+                                        this,
+                                        false);
+            _lastForegroundSource = ForegroundSource;
+        }
     }
 
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
@@ -197,12 +255,6 @@ public partial class LayeredBackgroundImage
 
         _parallaxGridVisual.StartAnimationGroup(animGroup);
     }
-
-    #endregion
-
-    #region Layer Loading
-
-
 
     #endregion
 }

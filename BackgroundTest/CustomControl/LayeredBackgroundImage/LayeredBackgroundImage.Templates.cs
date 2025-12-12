@@ -19,6 +19,8 @@ public partial class LayeredBackgroundImage
     private const string TemplateNameBackgroundGrid    = "BackgroundGrid";
     private const string TemplateNameForegroundGrid    = "ForegroundGrid";
 
+    private const string StateNamePlaceholderStateHidden = "PlaceholderStateHidden";
+
     #endregion
 
     #region Fields
@@ -30,10 +32,6 @@ public partial class LayeredBackgroundImage
 
     private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;
-
-    private bool _isLastPlaceholderVideo = false;
-    private bool _isLastBackgroundVideo  = false;
-    private bool _isLastForegroundVideo  = false;
 
     private bool _isTemplateLoaded;
 

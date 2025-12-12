@@ -18,17 +18,7 @@ public class MainEntryPoint
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void Main(params string[] args)
     {
-        // Initialize support for MagicScaler's WebP decoding
-        CodecManager.Configure(InitializeMagicScalerCodecs);
         Application.Start(InitializeApp);
-    }
-
-    private static void InitializeMagicScalerCodecs(CodecCollection codecs)
-    {
-        codecs.UseLibwebp();
-        codecs.UseLibheif();
-        codecs.UseLibjxl();
-        codecs.UseWicCodecs(WicCodecPolicy.All);
     }
 
     private static void InitializeApp(ApplicationInitializationCallbackParams pContext)

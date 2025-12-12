@@ -123,7 +123,13 @@ public partial class PanelSlideshow
     private static void SlideshowDuration_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         PanelSlideshow slideshow = (PanelSlideshow)d;
-        slideshow.RestartTimer((double)e.NewValue);
+        double         duration  = e.NewValue.TryGetDouble();
+        if (double.IsNaN(duration))
+        {
+            duration = 0;
+        }
+
+        slideshow.RestartTimer(duration);
     }
 
     #endregion

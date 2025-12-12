@@ -8,6 +8,7 @@
     xmlns:layeredPanel="using:BackgroundTest.CustomControl.LayeredBackgroundImage"
     xmlns:newPipsPager="using:BackgroundTest.CustomControl.NewPipsPager"
     xmlns:panelSlideshow="using:BackgroundTest.CustomControl.PanelSlideshow"
+    xmlns:internal="using:BackgroundTest"
     mc:Ignorable="d"
     Title="TestWindow">
 
@@ -20,11 +21,12 @@
         <Grid.Resources>
             <newPipsPager:IndexAddOneConverter x:Key="IndexAddOneConverter"/>
             <ThemeShadow x:Key="ThisShadow"/>
+            <internal:TestMediaCacheHandler x:Key="MediaCacheHandler"/>
         </Grid.Resources>
         <panelSlideshow:PanelSlideshow x:Name="PanelSlideshow"
                                        Margin="8"
+                                       SlideshowDuration="15"
                                        CornerRadius="16"
-                                       SlideshowDuration="10"
                                        PreviousButtonMargin="-16"
                                        NextButtonMargin="-16"
                                        PreviousButtonVerticalAlignment="Center"
@@ -32,11 +34,56 @@
             <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
                                                  HorizontalContentAlignment="Center"
                                                  IsParallaxEnabled="True"
-                                                 ParallaxHorizontalShift="16"
-                                                 ParallaxVerticalShift="16"
-                                                 ParallaxHoverSource="{x:Bind ParentGrid}">
-
-            </layeredPanel:LayeredBackgroundImage>
+                                                 BackgroundStretch="UniformToFill"
+                                                 BackgroundHorizontalAlignment="Center"
+                                                 BackgroundVerticalAlignment="Center"
+                                                 ParallaxHorizontalShift="8"
+                                                 ParallaxVerticalShift="8"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
+                                                 PlaceholderSource="https://launcher-webstatic.hoyoverse.com/launcher-public/2025/12/02/4014ac2c0195569bf7fa0ac9f698a4ce_2739040987529641160.webp"
+                                                 BackgroundSource="https://launcher-webstatic.hoyoverse.com/launcher-public/2025/12/02/f05dcc5c4edd27ad3e53652f30860949_737821113154902300.webm"
+                                                 ForegroundStretch="UniformToFill"
+                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
+            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center"
+                                                 IsParallaxEnabled="True"
+                                                 BackgroundStretch="UniformToFill"
+                                                 BackgroundHorizontalAlignment="Center"
+                                                 BackgroundVerticalAlignment="Center"
+                                                 ParallaxHorizontalShift="8"
+                                                 ParallaxVerticalShift="8"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
+                                                 PlaceholderSource="/CustomControl/BGTestImage2.jpg"
+                                                 BackgroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/53fca2a4e78e4e36f228e1b3a04bc22a_3781060149550643599.webp"
+                                                 ForegroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/d4528ccbdd77b25b4a67f5175dc15029_2234238488482396141.webp"
+                                                 ForegroundStretch="Uniform"
+                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
+            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center"
+                                                 IsParallaxEnabled="True"
+                                                 BackgroundStretch="UniformToFill"
+                                                 BackgroundHorizontalAlignment="Center"
+                                                 BackgroundVerticalAlignment="Center"
+                                                 ParallaxHorizontalShift="8"
+                                                 ParallaxVerticalShift="8"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
+                                                 PlaceholderSource="/CustomControl/BGTestImage2.jpg"
+                                                 BackgroundSource="https://launcher-webstatic.hoyoverse.com/launcher-public/2025/12/02/4014ac2c0195569bf7fa0ac9f698a4ce_2739040987529641160.webp"
+                                                 ForegroundStretch="UniformToFill"
+                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
+            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center"
+                                                 IsParallaxEnabled="True"
+                                                 BackgroundStretch="UniformToFill"
+                                                 BackgroundHorizontalAlignment="Center"
+                                                 BackgroundVerticalAlignment="Center"
+                                                 ParallaxHorizontalShift="8"
+                                                 ParallaxVerticalShift="8"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
+                                                 PlaceholderSource="/CustomControl/BGTestImage2.jpg"
+                                                 BackgroundSource="https://launcher-webstatic.hoyoverse.com/launcher-public/2025/12/02/dbd88778b0627121d06b2156d019b95d_9082080339212671312.webp"
+                                                 ForegroundStretch="UniformToFill"
+                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
             <Image Source="/CustomControl/BGTestImage1.jpg"
                    Stretch="UniformToFill"
                    VerticalAlignment="Stretch"
