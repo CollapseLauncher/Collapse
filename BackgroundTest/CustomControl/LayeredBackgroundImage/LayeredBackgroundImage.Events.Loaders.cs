@@ -1,7 +1,12 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Win32.Native.Enums.DXGI;
+using Hi3Helper.Win32.Native.Structs.DXGI;
+using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.Graphics.DirectX;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -9,8 +14,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Graphics.Capture;
+using Windows.Graphics.DirectX;
+using Windows.Media.Playback;
+using Windows.Storage.Streams;
+using WinRT.Interop;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -76,6 +88,13 @@ public partial class LayeredBackgroundImage
     ], StringComparer.OrdinalIgnoreCase);
     internal static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> SupportedVideoExtensionsLookup =
         SupportedVideoExtensions.GetAlternateLookup<ReadOnlySpan<char>>();
+
+    #endregion
+
+    #region Fields
+
+    private bool _isResizingVideoCanvas;
+    private bool _isDrawingVideoFrame;
 
     #endregion
 
@@ -150,6 +169,13 @@ public partial class LayeredBackgroundImage
     {
         try
         {
+            if (IsInPreloadGrid())
+            {
+                return;
+            }
+
+            DisposeVideoPlayer();
+
             object? source = GetValue(sourceProperty);
             if (source is null)
             {
@@ -185,8 +211,6 @@ public partial class LayeredBackgroundImage
                                                stretchProperty,
                                                horizontalAlignmentProperty,
                                                verticalAlignmentProperty,
-                                               nameof(instance.IsAudioEnabled),
-                                               nameof(instance.AudioVolume),
                                                instance,
                                                grid))
             {
@@ -194,33 +218,11 @@ public partial class LayeredBackgroundImage
             }
 
         ClearGrid:
-            DisposeMediaPlayerElements(grid);
             ClearMediaGrid(grid);
         }
         catch
         {
             // ignored
-        }
-    }
-
-    private static async ValueTask<bool> LoadVideoFromSourceAsync(
-        object?                source,
-        string                 stretchProperty,
-        string                 horizontalAlignmentProperty,
-        string                 verticalAlignmentProperty,
-        string                 isAudioEnabledProperty,
-        string                 audioVolumeProperty,
-        LayeredBackgroundImage instance,
-        Grid                   grid)
-    {
-        try
-        {
-            return false;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
         }
     }
 
@@ -238,12 +240,13 @@ public partial class LayeredBackgroundImage
             Image image = new();
 
             // Bind property
-            image.BindProperty(instance, stretchProperty, Image.StretchProperty, BindingMode.OneWay);
+            image.BindProperty(instance, stretchProperty,             Image.StretchProperty,       BindingMode.OneWay);
             image.BindProperty(instance, horizontalAlignmentProperty, HorizontalAlignmentProperty, BindingMode.OneWay);
-            image.BindProperty(instance, verticalAlignmentProperty, VerticalAlignmentProperty, BindingMode.OneWay);
+            image.BindProperty(instance, verticalAlignmentProperty,   VerticalAlignmentProperty,   BindingMode.OneWay);
 
             image.Transitions.Add(new ContentThemeTransition());
             grid.Children.Add(image);
+
             image.Tag         =  (grid, instance);
             image.ImageOpened += Image_ImageOpened;
 
@@ -276,6 +279,192 @@ public partial class LayeredBackgroundImage
         }
     }
 
+    private static async Task<bool> LoadVideoFromSourceAsync(
+        object?                source,
+        string                 stretchProperty,
+        string                 horizontalAlignmentProperty,
+        string                 verticalAlignmentProperty,
+        LayeredBackgroundImage instance,
+        Grid                   grid)
+    {
+        // Setting up video player
+        instance.SetupVideoPlayer();
+        MediaPlayer player = instance._videoPlayer;
+        player.MediaOpened += InitializeVideoFrameOnMediaOpened;
+
+        if (instance.MediaCacheHandler is { } cacheHandler)
+        {
+            MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
+            source = cacheResult.CachedSource;
+        }
+
+        Uri? sourceUri = source as Uri;
+
+        if (sourceUri == null &&
+            source is string asStringSource)
+        {
+            sourceUri = asStringSource.GetStringAsUri();
+        }
+
+        Stream? sourceStream = null;
+        if (source is Stream { CanSeek: true, CanRead: true } asSeekableStream)
+        {
+            sourceStream = asSeekableStream;
+        }
+
+        if (sourceStream == null &&
+            sourceUri == null)
+        {
+            goto CleanupAndReturnFalse;
+        }
+
+        // Assign media source
+        if (sourceStream != null)
+        {
+            IRandomAccessStream? sourceStreamRandom = sourceStream.AsRandomAccessStream();
+            player.SetStreamSource(sourceStreamRandom);
+        }
+        else if (sourceUri != null)
+        {
+            player.SetUriSource(sourceUri);
+        }
+        else
+        {
+            goto CleanupAndReturnFalse;
+        }
+
+        return true;
+
+    CleanupAndReturnFalse:
+        player.MediaOpened -= InitializeVideoFrameOnMediaOpened;
+        return false;
+
+        void InitializeVideoFrameOnMediaOpened(MediaPlayer sender, object args)
+        {
+            instance.DispatcherQueue.TryEnqueue(() =>
+            {
+                // Create instance
+                Image image = new()
+                {
+                    Tag = (grid, instance)
+                };
+
+                // Bind property
+                image.BindProperty(instance,
+                                   stretchProperty,
+                                   Image.StretchProperty,
+                                   BindingMode.OneWay);
+                image.BindProperty(instance,
+                                   horizontalAlignmentProperty,
+                                   HorizontalAlignmentProperty,
+                                   BindingMode.OneWay);
+                image.BindProperty(instance,
+                                   verticalAlignmentProperty,
+                                   VerticalAlignmentProperty,
+                                   BindingMode.OneWay);
+
+                instance.InitializeCanvasBitmapSource(image, sender.PlaybackSession);
+
+                // Register events
+                image.Loaded   += Image_VideoFrameOnLoaded;
+                image.Unloaded += Image_VideoFrameOnUnloaded;
+
+                // Add to children
+                image.Transitions.Add(new ContentThemeTransition());
+                grid.Children.Add(image);
+                instance._videoPlayer.Play();
+            });
+        }
+    }
+
+    private unsafe void VideoPlayer_VideoFrameAvailable(MediaPlayer sender, object args)
+    {
+        if (_canvasImageSource == null)
+        {
+            return;
+        }
+
+        // Use Interlock to ensure thre session is only created one time. But with one downside that
+        // the first frame will always be skipped due to atomic operation.
+        // Note:
+        // _currentCanvasDrawingSession is ensured to expect null first, then create and exit.
+        // The next frame will be drawn.
+        CanvasDrawingSession? session = null;
+        if ((session = Interlocked.Exchange(ref _currentCanvasDrawingSession, null)) == null)
+        {
+            _currentCanvasDrawingSession = _canvasImageSource.CreateDrawingSession(default, _currentCanvasRenderSize);
+            return;
+        }
+
+        try
+        {
+#if USENATIVESWAPCHAIN
+            DXGI_PRESENT_PARAMETERS parameter = default;
+
+            var swapChain = _swapChainContext.DXGISwapChain;
+            var surface = _swapChainContext.Direct3DSurface;
+
+            Rect renderArea = new(0, 0, _canvasWidth, _canvasHeight);
+            // CanvasDrawingSession? canvasSession = _canvasImageSource.CreateDrawingSession(default);
+            sender.CopyFrameToVideoSurface(surface, renderArea);
+            swapChain?.Present1(1, 0, in parameter);
+#else
+            sender.CopyFrameToVideoSurface(_canvasRenderTarget);
+            session.DrawImage(_canvasRenderTarget);
+
+            if (DispatcherQueue.HasThreadAccess)
+            {
+                FinalizeFrame();
+            }
+            else
+            {
+                DispatcherQueue.TryEnqueue(FinalizeFrame);
+            }
+
+            void FinalizeFrame()
+            {
+                try
+                {
+                    session.Dispose();
+                }
+                catch { }
+                finally
+                {
+                }
+            }
+#endif
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _isDrawingVideoFrame, false);
+        }
+    }
+
+    private static void Image_VideoFrameOnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        {
+            return;
+        }
+
+        parentGrid.Item2.Play();
+        Image_ImageOpened(sender, e);
+    }
+
+    private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        {
+            return;
+        }
+
+        parentGrid.Item2.Pause();
+    }
+
     private static void Image_ImageOpened(object sender, RoutedEventArgs e)
     {
         if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid } image)
@@ -293,7 +482,6 @@ public partial class LayeredBackgroundImage
 
         // HACK: Tells the Grid to temporarily detach all UIElement children
         //       then re-add the image to the grid
-        DisposeMediaPlayerElements(parentGrid.Item1);
         ClearMediaGrid(parentGrid.Item1, image);
 
         // Remove transition once loaded
@@ -339,14 +527,19 @@ public partial class LayeredBackgroundImage
     private static void ClearMediaGrid(Grid grid, UIElement? except = null)
     {
         List<UIElement> elementExcepted =
-            grid.Children
-                .Where(x => x != except)
-                .ToList();
+            except == null ? grid.Children.ToList() :
+                grid.Children.Where(x => x != except)
+                    .ToList();
 
         foreach (Image image in elementExcepted.OfType<Image>())
         {
+            // This one is for Image. The source will always guarantee to call this event.
             image.ImageOpened -= Image_ImageOpened;
-            image.Source = null; // Clears the loaded ImageSource
+            // This one is for Video since ImageOpened with Canvas source will never triggers this so we use Loaded instead.
+            image.Loaded   -= Image_VideoFrameOnLoaded;
+            image.Unloaded -= Image_VideoFrameOnUnloaded;
+            // Clears the loaded ImageSource
+            image.Source = null;
         }
 
         foreach (UIElement element in elementExcepted)
@@ -355,19 +548,5 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private static void DisposeMediaPlayerElements(Grid grid)
-    {
-        foreach (UIElement element in grid.Children)
-        {
-            if (element is not MediaPlayerElement asMediaElement)
-            {
-                continue;
-            }
-
-            asMediaElement.MediaPlayer.Pause();
-            asMediaElement.MediaPlayer.Dispose();
-        }
-    }
-
-    #endregion
+#endregion
 }

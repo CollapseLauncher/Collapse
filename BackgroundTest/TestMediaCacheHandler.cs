@@ -19,81 +19,88 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
 
     public async Task<MediaCacheResult> LoadCachedSource(object? sourceObject)
     {
-        Uri? sourceUrl = sourceObject as Uri;
-
-        if (sourceUrl == null &&
-            sourceObject is string sourceAsString)
+        try
         {
-            sourceUrl = sourceAsString.GetStringAsUri();
-        }
+            Uri? sourceUrl = sourceObject as Uri;
 
-        string absolutePath = sourceUrl?.AbsoluteUri ?? "";
+            if (sourceUrl == null &&
+                sourceObject is string sourceAsString)
+            {
+                sourceUrl = sourceAsString.GetStringAsUri();
+            }
 
-        if (sourceUrl?.IsFile ?? false)
-        {
-            string normalizedPath = absolutePath[8..].Replace("/", "\\");
-            if (File.Exists(normalizedPath))
+            string absolutePath = sourceUrl?.AbsoluteUri ?? "";
+
+            if (sourceUrl?.IsFile ?? false)
+            {
+                string normalizedPath = sourceUrl.LocalPath;
+                if (File.Exists(normalizedPath))
+                {
+                    return new MediaCacheResult
+                    {
+                        ForceUseInternalDecoder = false,
+                        CachedSource = File.Open(normalizedPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
+                        DisposeStream = true
+                    };
+                }
+
+                return null!;
+            }
+
+            string extension = Path.GetExtension(absolutePath);
+            bool forceInternalCodec = extension is not (".webp" or ".webm" or ".avif" or ".jxl");
+            string tempDir = Path.GetTempPath();
+            byte[] nameHash = MD5.HashData(MemoryMarshal.AsBytes(absolutePath.AsSpan()));
+            string tempName = Convert.ToHexStringLower(nameHash) +
+                                        (forceInternalCodec ? ".png" : extension);
+
+            string tempPath = Path.Combine(tempDir, tempName);
+            if (File.Exists(tempPath))
             {
                 return new MediaCacheResult
                 {
-                    ForceUseInternalDecoder = false,
-                    CachedSource = File.Open(normalizedPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
+                    ForceUseInternalDecoder = forceInternalCodec,
+                    CachedSource = File.Open(tempPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
                     DisposeStream = true
                 };
             }
 
-            return null!;
-        }
-
-        string extension          = Path.GetExtension(absolutePath);
-        bool   forceInternalCodec = extension is not (".webp" or ".webm" or ".avif" or ".jxl");
-        string tempDir            = Path.GetTempPath();
-        byte[] nameHash           = MD5.HashData(MemoryMarshal.AsBytes(absolutePath.AsSpan()));
-        string tempName           = Convert.ToHexStringLower(nameHash) +
-                                    (forceInternalCodec ? ".png" : extension);
-
-        string tempPath = Path.Combine(tempDir, tempName);
-        if (File.Exists(tempPath))
-        {
-            return new MediaCacheResult
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(16 << 10);
+            try
             {
-                ForceUseInternalDecoder = forceInternalCodec,
-                CachedSource            = File.Open(tempPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
-                DisposeStream           = true
-            };
-        }
+                using HttpResponseMessage message =
+                    await Client.GetAsync(sourceUrl, HttpCompletionOption.ResponseHeadersRead);
+                await using Stream networkStream = await message.Content.ReadAsStreamAsync();
 
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(16 << 10);
-        try
-        {
-            using HttpResponseMessage message =
-                await Client.GetAsync(sourceUrl, HttpCompletionOption.ResponseHeadersRead);
-            await using Stream networkStream = await message.Content.ReadAsStreamAsync();
+                FileStream fileCreate = File.Open(tempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                int read;
+                while ((read = await networkStream.ReadAsync(buffer)) > 0)
+                {
+                    fileCreate.Write(buffer.AsSpan(0, read));
+                }
 
-            FileStream fileCreate = File.Open(tempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            int        read;
-            while ((read = await networkStream.ReadAsync(buffer)) > 0)
-            {
-                fileCreate.Write(buffer.AsSpan(0, read));
+                fileCreate.Flush();
+                fileCreate.Position = 0;
+
+                return new MediaCacheResult
+                {
+                    ForceUseInternalDecoder = forceInternalCodec,
+                    CachedSource = fileCreate,
+                    DisposeStream = true
+                };
             }
-
-            fileCreate.Flush();
-            fileCreate.Position = 0;
-
-            return new MediaCacheResult
+            catch
             {
-                ForceUseInternalDecoder = forceInternalCodec,
-                CachedSource            = fileCreate,
-                DisposeStream           = true
-            };
+                return null!;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
-        catch
+        catch (Exception)
         {
             return null!;
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer);
         }
     }
 }

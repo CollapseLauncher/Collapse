@@ -21,7 +21,7 @@ public partial class LayeredBackgroundImage
 
     public double AudioVolume
     {
-        get => (double)GetValue(AudioVolumeProperty);
+        get => GetValue(AudioVolumeProperty).TryGetDouble();
         set => SetValue(AudioVolumeProperty, value);
     }
 
@@ -141,13 +141,13 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(IsAudioEnabled),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false));
+                                    new PropertyMetadata(false, IsAudioEnabled_OnChange));
 
     public static readonly DependencyProperty AudioVolumeProperty =
         DependencyProperty.Register(nameof(AudioVolume),
                                     typeof(double),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(50d));
+                                    new PropertyMetadata(50d, AudioVolume_OnChange));
 
     public static readonly DependencyProperty IsParallaxEnabledProperty =
         DependencyProperty.Register(nameof(IsParallaxEnabled),

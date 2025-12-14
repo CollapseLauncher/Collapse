@@ -11,9 +11,12 @@ namespace BackgroundTest
     /// </summary>
     public sealed partial class TestWindow
     {
+        public static Window ThisWindow;
+
         public TestWindow()
         {
             InitializeComponent();
+            ThisWindow = this;
         }
 
         private void ContainerGrid_OnSizeChanged(object sender, SizeChangedEventArgs e)

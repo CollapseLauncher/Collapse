@@ -96,4 +96,9 @@
     <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
+    <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -50,53 +51,67 @@ public partial class PanelSlideshow
             return;
         }
 
-        // Restart slideshow timer
-        RestartTimer(SlideshowDuration);
-
-        // Preload to invisible grid. This preload is necessary to avoid
-        // the element jumping off the element due to size and offset being unset.
-        PreloadPastOrFutureItem(Items, _preloadGrid, newIndex, Items.Count);
-
-        // Just add to Grid if oldIndex is -1 (initialization on startup)
-        if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
-        {
-            _preloadGrid.Children.Remove(firstElement);
-            _presenter.Content = firstElement;
-            _presenter.Transitions.Add(ItemTransition);
-            return;
-        }
-
-        bool isBackward = (newIndex < oldIndex &&
-                           oldIndex - 1 == newIndex) ||
-                          (newIndex == Items.Count - 1 && oldIndex == 0);
-
-        IList<UIElement> elements = Items;
-
         try
         {
-            switch (ItemTransition)
+            // Restart slideshow timer
+            RestartTimer(SlideshowDuration);
+
+            // Preload to invisible grid. This preload is necessary to avoid
+            // the element jumping off the element due to size and offset being unset.
+            PreloadPastOrFutureItem(_presenter, Items, _preloadGrid, newIndex, Items.Count);
+
+            // Just add to Grid if oldIndex is -1 (initialization on startup)
+            if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
             {
-                case PaneThemeTransition paneThemeTransition:
-                    SwitchUsingPaneThemeTransition(_presenter, elements, paneThemeTransition, newIndex, isBackward);
-                    return;
-                case EdgeUIThemeTransition edgeUIThemeTransition:
-                    SwitchUsingEdgeUIThemeTransition(_presenter, elements, edgeUIThemeTransition, newIndex, isBackward);
-                    return;
-                default:
-                    SwitchUsingOtherTransition(_presenter, elements, ItemTransition, newIndex);
-                    break;
+                _preloadGrid.Children.Remove(firstElement);
+                _presenter.Content = firstElement;
+                _presenter.Transitions.Add(ItemTransition);
+                return;
+            }
+
+            bool isBackward = (newIndex < oldIndex &&
+                               oldIndex - 1 == newIndex) ||
+                              (newIndex == Items.Count - 1 && oldIndex == 0);
+
+            IList<UIElement> elements = Items;
+
+            try
+            {
+                switch (ItemTransition)
+                {
+                    case PaneThemeTransition paneThemeTransition:
+                        SwitchUsingPaneThemeTransition(_presenter, elements, paneThemeTransition, newIndex, isBackward);
+                        return;
+                    case EdgeUIThemeTransition edgeUIThemeTransition:
+                        SwitchUsingEdgeUIThemeTransition(_presenter, elements, edgeUIThemeTransition, newIndex, isBackward);
+                        return;
+                    default:
+                        SwitchUsingOtherTransition(_presenter, elements, ItemTransition, newIndex);
+                        break;
+                }
+            }
+            finally
+            {
+                try
+                {
+                    UIElement newElement = elements[newIndex];
+                    UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
+                        ? null
+                        : elements[oldIndex];
+
+                    SetValue(ItemProperty, newElement);
+                    ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
+                    ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
         }
-        finally
+        catch (Exception e)
         {
-            UIElement newElement = elements[newIndex];
-            UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
-                ? null
-                : elements[oldIndex];
-
-            SetValue(ItemProperty, newElement);
-            ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
-            ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
+            Console.WriteLine(e);
         }
     }
 
@@ -136,59 +151,85 @@ public partial class PanelSlideshow
 
     #region Element Preload Helper
 
-    private static void PreloadPastOrFutureItem(IList<UIElement> collection, Grid preloadGrid, int currentIndex, int itemsCount)
+    private static void PreloadPastOrFutureItem(
+        ScrollContentPresenter presenter,
+        IList<UIElement>       collection,
+        Grid                   preloadGrid,
+        int                    currentIndex,
+        int                    itemsCount)
     {
-        if (currentIndex < 0)
+        try
         {
-            return;
-        }
-
-        int pastIndex = currentIndex switch
-                        {
-                            0 when itemsCount >= 3 => itemsCount - 1,
-                            > 0 => currentIndex - 1,
-                            _ => -1
-                        };
-
-        int futureIndex = -1;
-        if (itemsCount - 1 > currentIndex)
-        {
-            futureIndex = currentIndex + 1;
-        }
-        else if (currentIndex + 1 >= itemsCount)
-        {
-            futureIndex = 0;
-        }
-
-        UIElement? pastElement   = pastIndex == -1 ? null : collection[pastIndex];
-        UIElement? futureElement = futureIndex == -1 ? null : collection[futureIndex];
-
-        preloadGrid.Children.Clear();
-        AssignToPreloadGridAndApplyPayload(pastElement);
-        AssignToPreloadGridAndApplyPayload(futureElement);
-        return;
-
-        void AssignToPreloadGridAndApplyPayload(UIElement? element)
-        {
-            if (element is not FrameworkElement { ActualSize: { X: 0, Y: 0 } } elementFe)
+            if (currentIndex < 0)
             {
                 return;
             }
 
-            elementFe.SizeChanged += PreloadItem_OnLoaded;
-            preloadGrid.Children.Add(elementFe);
+            int pastIndex = currentIndex switch
+            {
+                0 when itemsCount >= 3 => itemsCount - 1,
+                > 0                    => currentIndex - 1,
+                _                      => -1
+            };
+
+            int futureIndex = -1;
+            if (itemsCount - 1 > currentIndex)
+            {
+                futureIndex = currentIndex + 1;
+            }
+            else if (currentIndex + 1 >= itemsCount)
+            {
+                futureIndex = 0;
+            }
+
+            UIElement? pastElement   = pastIndex == -1 ? null : collection[pastIndex];
+            UIElement? futureElement = futureIndex == -1 ? null : collection[futureIndex];
+
+            preloadGrid.Children.Clear();
+            AssignToPreloadGridAndApplyPayload(pastElement);
+            AssignToPreloadGridAndApplyPayload(futureElement);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        return;
+
+        void AssignToPreloadGridAndApplyPayload(UIElement? element)
+        {
+            try
+            {
+                if (element is not FrameworkElement { ActualSize: { X: 0, Y: 0 } } elementFe)
+                {
+                    return;
+                }
+
+                elementFe.SizeChanged += PreloadItem_OnLoaded;
+                preloadGrid.Children.Add(elementFe);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 
     private static void PreloadItem_OnLoaded(object? sender, SizeChangedEventArgs args)
     {
-        if (sender is not FrameworkElement { Parent: Grid parentGrid } element)
+        try
         {
-            return;
-        }
+            if (sender is not FrameworkElement { Parent: Grid parentGrid } element)
+            {
+                return;
+            }
 
-        element.SizeChanged -= PreloadItem_OnLoaded;
-        parentGrid.Children.Remove(element);
+            element.SizeChanged -= PreloadItem_OnLoaded;
+            parentGrid.Children.Remove(element);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     #endregion

@@ -19,6 +19,7 @@
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacityPointerOver">1</x:Double>
 
     <controls:MoreThanZeroToVisibilityConverter x:Key="MoreThanZeroToVisibilityConverter"/>
+    <controls:CornerRadiusToDoubleConverter x:Key="CornerRadiusToDoubleConverter"/>
 
     <Style TargetType="controls:PanelSlideshow">
         <Setter Property="PreviousButtonCornerRadius" Value="16"/>
@@ -259,7 +260,7 @@
                                     <s:AttachedDropShadow x:Name="PreviousButtonShadow"
                                                           BlurRadius="8"
                                                           CastTo="{Binding ElementName=PreviousButtonShadowCaster}"
-                                                          CornerRadius="{Binding ElementName=PreviousButton, Path=CornerRadius, Mode=OneWay}"
+                                                          CornerRadius="{Binding ElementName=PreviousButton, Path=CornerRadius, Mode=OneWay, Converter={StaticResource CornerRadiusToDoubleConverter}}"
                                                           Opacity="0"
                                                           Offset="0, 0, 0" />
                                 </s:Effects.Shadow>
@@ -294,7 +295,7 @@
                                     <s:AttachedDropShadow x:Name="NextButtonShadow"
                                                           BlurRadius="8"
                                                           CastTo="{Binding ElementName=NextButtonShadowCaster}"
-                                                          CornerRadius="{Binding ElementName=NextButton, Path=CornerRadius, Mode=OneWay}"
+                                                          CornerRadius="{Binding ElementName=NextButton, Path=CornerRadius, Mode=OneWay, Converter={StaticResource CornerRadiusToDoubleConverter}}"
                                                           Opacity="0"
                                                           Offset="0, 0, 0" />
                                 </s:Effects.Shadow>

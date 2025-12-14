@@ -2,7 +2,8 @@
 <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:BackgroundTest.CustomControl.LayeredBackgroundImage">
+                    xmlns:controls="using:BackgroundTest.CustomControl.LayeredBackgroundImage"
+                    xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml">
 
     <Style TargetType="controls:LayeredBackgroundImage">
         <Setter Property="Template">
@@ -21,6 +22,34 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderGrid" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                     Value="Collapsed"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="VideoFrameStates">
+                                <VisualState x:Name="VideoFrameHidden">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                    Value="Collapsed"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="VideoFrameShowing">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                                                    Value="Visible"/>
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

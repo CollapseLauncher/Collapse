@@ -1,9 +1,11 @@
-﻿using Microsoft.UI.Composition;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Numerics;
 using Windows.Foundation;
+using Windows.Media.Playback;
 
 namespace BackgroundTest.CustomControl.LayeredBackgroundImage;
 
@@ -31,8 +33,19 @@ public partial class LayeredBackgroundImage
         return left == right;
     }
 
+    private bool IsInPreloadGrid()
+    {
+        return Parent is FrameworkElement asGrid &&
+               asGrid.Name.StartsWith("Preload", StringComparison.OrdinalIgnoreCase);
+    }
+
     private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (IsInPreloadGrid())
+        {
+            return;
+        }
+
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
 
@@ -73,12 +86,23 @@ public partial class LayeredBackgroundImage
                                         false);
             _lastForegroundSource = ForegroundSource;
         }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
+        if (IsInPreloadGrid())
+        {
+            return;
+        }
+
         ParallaxGrid_UnregisterEffect();
         _lastParallaxHoverSource = null;
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
     #endregion
@@ -88,7 +112,8 @@ public partial class LayeredBackgroundImage
     private static void IsParallaxEnabled_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         LayeredBackgroundImage element = (LayeredBackgroundImage)d;
-        if (!element.IsLoaded)
+        if (!element.IsLoaded ||
+            element.IsInPreloadGrid())
         {
             return;
         }
@@ -99,7 +124,8 @@ public partial class LayeredBackgroundImage
     private static void ParallaxHover_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         LayeredBackgroundImage element = (LayeredBackgroundImage)d;
-        if (!element.IsLoaded)
+        if (!element.IsLoaded ||
+            element.IsInPreloadGrid())
         {
             return;
         }
@@ -254,6 +280,69 @@ public partial class LayeredBackgroundImage
         animGroup.Add(scaleAnim);
 
         _parallaxGridVisual.StartAnimationGroup(animGroup);
+    }
+
+    #endregion
+
+    #region Video Player Events
+
+    private static void IsAudioEnabled_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
+        if (instance._videoPlayer is not { } videoPlayer)
+        {
+            return;
+        }
+
+        videoPlayer.IsMuted = !(bool)e.NewValue;
+    }
+
+    private static void AudioVolume_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
+        if (instance._videoPlayer is not { } videoPlayer)
+        {
+            return;
+        }
+
+        double volume = e.NewValue.TryGetDouble();
+        videoPlayer.Volume = volume.GetClampedVolume();
+    }
+
+    public void Play()
+    {
+        try
+        {
+            MediaPlayerState state           = _videoPlayer?.CurrentState ?? MediaPlayerState.Closed;
+            bool             isInPreloadGrid = IsInPreloadGrid();
+
+            if (!isInPreloadGrid &&
+                _videoPlayer != null! &&
+                state is MediaPlayerState.Paused or MediaPlayerState.Stopped)
+            {
+                _videoPlayer.Play();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    public void Pause()
+    {
+        try
+        {
+            if (_videoPlayer != null! &&
+                _videoPlayer is { CanPause: true, CurrentState: MediaPlayerState.Playing })
+            {
+                _videoPlayer.Pause();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     #endregion

@@ -290,4 +290,15 @@ internal static class LayeredBackgroundImageExtensions
         requestMessage.Dispose();
         return 0;
     }
+
+    internal static double GetClampedVolume(this double thisVolume)
+    {
+        if (double.IsNaN(thisVolume) ||
+            double.IsInfinity(thisVolume))
+        {
+            thisVolume = 0;
+        }
+
+        return Math.Clamp(thisVolume, 0, 100d) / 100d;
+    }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BackgroundTest": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
