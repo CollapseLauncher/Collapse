@@ -1,9 +1,4 @@
-﻿using Hi3Helper.Win32.Native.Enums.DXGI;
-using Hi3Helper.Win32.Native.Structs.DXGI;
-using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using Microsoft.Graphics.DirectX;
+﻿using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -14,15 +9,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Graphics.Capture;
-using Windows.Graphics.DirectX;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
-using WinRT.Interop;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -95,6 +85,8 @@ public partial class LayeredBackgroundImage
 
     private bool _isResizingVideoCanvas;
     private bool _isDrawingVideoFrame;
+
+    private MediaSourceType? _lastMediaType;
 
     #endregion
 
@@ -169,16 +161,6 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            if (IsInPreloadGrid())
-            {
-                return;
-            }
-
-            if (grid.Name.StartsWith("Background"))
-            {
-                DisposeVideoPlayer();
-            }
-
             object? source = GetValue(sourceProperty);
             if (source is null)
             {
@@ -195,6 +177,14 @@ public partial class LayeredBackgroundImage
             {
                 goto ClearGrid;
             }
+
+            if (grid.Name.StartsWith("Background") &&
+                _lastMediaType == MediaSourceType.Video)
+            {
+                DisposeVideoPlayer();
+            }
+
+            _lastMediaType = mediaType;
 
             // ReSharper disable once ConvertIfStatementToSwitchStatement
             if (mediaType == MediaSourceType.Image &&

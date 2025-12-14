@@ -48,11 +48,10 @@ public partial class NewPipsPager
 
     protected override void OnApplyTemplate()
     {
-        base.OnApplyTemplate();
-        _previousPageButton      = this.GetTemplateChild<Button>(TemplateNamePreviousPageButton);
-        _nextPageButton          = this.GetTemplateChild<Button>(TemplateNameNextPageButton);
-        _pipsPagerScrollViewer   = this.GetTemplateChild<ScrollViewer>(TemplateNamePipsPagerScrollViewer);
-        _pipsPagerItemsRepeater  = this.GetTemplateChild<ItemsRepeater>(TemplateNamePipsPagerItemsRepeater);
+        _previousPageButton = this.GetTemplateChild<Button>(TemplateNamePreviousPageButton);
+        _nextPageButton = this.GetTemplateChild<Button>(TemplateNameNextPageButton);
+        _pipsPagerScrollViewer = this.GetTemplateChild<ScrollViewer>(TemplateNamePipsPagerScrollViewer);
+        _pipsPagerItemsRepeater = this.GetTemplateChild<ItemsRepeater>(TemplateNamePipsPagerItemsRepeater);
 
         Interlocked.Exchange(ref _isTemplateLoaded, true);
 
@@ -61,11 +60,10 @@ public partial class NewPipsPager
         ApplyKeyPressEvents();
         ApplyItemsRepeaterEvents();
 
-        Loaded   += NewPipsPager_Loaded;
-        Unloaded += NewPipsPager_Unloaded;
-
         Resources.TryGetValue(ResourceNamePipsPagerButtonSize, out object? pipButtonSize);
         _pipsButtonSize = (double?)pipButtonSize ?? 28d;
+
+        base.OnApplyTemplate();
     }
 
     private void ApplyInitialTemplates()

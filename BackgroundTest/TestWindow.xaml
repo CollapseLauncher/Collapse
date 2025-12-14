@@ -30,6 +30,23 @@
                                        NextButtonMargin="-16"
                                        PreviousButtonVerticalAlignment="Center"
                                        NextButtonVerticalAlignment="Center">
+            <panelSlideshow:PanelSlideshow.ItemTransition>
+                <PaneThemeTransition/>
+            </panelSlideshow:PanelSlideshow.ItemTransition>
+            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center"
+                                                 IsParallaxEnabled="True"
+                                                 BackgroundStretch="UniformToFill"
+                                                 BackgroundHorizontalAlignment="Center"
+                                                 BackgroundVerticalAlignment="Center"
+                                                 ParallaxHorizontalShift="16"
+                                                 ParallaxVerticalShift="16"
+                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
+                                                 PlaceholderSource="/CustomControl/BGTestImage2.jpg"
+                                                 BackgroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/53fca2a4e78e4e36f228e1b3a04bc22a_3781060149550643599.webp"
+                                                 ForegroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/d4528ccbdd77b25b4a67f5175dc15029_2234238488482396141.webp"
+                                                 ForegroundStretch="Uniform"
+                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
             <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
                                                  HorizontalContentAlignment="Center"
                                                  IsParallaxEnabled="True"
@@ -91,20 +108,6 @@
                                                  PlaceholderSource="https://launcher-webstatic.mihoyo.com/launcher-public/2025/12/02/300f2f5484b6ad4a00ffcd2cef0a5485_4623697338504239646.webp"
                                                  BackgroundSource="https://launcher-webstatic.mihoyo.com/launcher-public/2025/12/02/a46fa4e195461d91ab89a67517ffcd7d_9205950831348787539.webm"
                                                  ForegroundSource="https://launcher-webstatic.mihoyo.com/launcher-public/2025/12/02/b137d556074d8775d15036d87fd27405_4978458609662018198.webp"
-                                                 ForegroundStretch="Uniform"
-                                                 MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
-            <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"
-                                                 HorizontalContentAlignment="Center"
-                                                 IsParallaxEnabled="True"
-                                                 BackgroundStretch="UniformToFill"
-                                                 BackgroundHorizontalAlignment="Center"
-                                                 BackgroundVerticalAlignment="Center"
-                                                 ParallaxHorizontalShift="16"
-                                                 ParallaxVerticalShift="16"
-                                                 ParallaxHoverSource="{x:Bind ParentGrid}"
-                                                 PlaceholderSource="/CustomControl/BGTestImage2.jpg"
-                                                 BackgroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/53fca2a4e78e4e36f228e1b3a04bc22a_3781060149550643599.webp"
-                                                 ForegroundSource="https://fastcdn.hoyoverse.com/static-resource-v2/2025/11/24/d4528ccbdd77b25b4a67f5175dc15029_2234238488482396141.webp"
                                                  ForegroundStretch="Uniform"
                                                  MediaCacheHandler="{StaticResource MediaCacheHandler}"/>
             <layeredPanel:LayeredBackgroundImage VerticalContentAlignment="Center"

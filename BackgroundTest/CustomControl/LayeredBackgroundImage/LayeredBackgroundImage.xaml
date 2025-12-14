@@ -55,7 +55,6 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <MediaPlayerElement Opacity="0"/>
                         <Grid x:Name="ParallaxGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">

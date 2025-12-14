@@ -179,7 +179,6 @@ public partial class NewPipsPager
         }
 
         ItemsRepeater repeater = _pipsPagerItemsRepeater;
-        repeater.UpdateLayout();
 
         int  childCount       = repeater.ItemsSourceView.Count;
         bool isUpdateNewChild = newIndex >= 0 && newIndex < childCount;
@@ -224,10 +223,7 @@ public partial class NewPipsPager
         }
 
         button.Style = style;
-        button.UpdateLayout(); // Ensure updated the input state
-
         VisualStateManager.GoToState(button, PipButtonStateNormal, true);
-        button.UpdateLayout(); // Ensure the state transition
         return button;
     }
 

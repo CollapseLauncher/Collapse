@@ -1,7 +1,6 @@
 ﻿using BackgroundTest.CustomControl;
 using BackgroundTest.CustomControl.LayeredBackgroundImage;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -65,21 +64,15 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
                 };
             }
 
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(16 << 10);
+            FileStream? fileCreate = null;
             try
             {
                 using HttpResponseMessage message =
                     await Client.GetAsync(sourceUrl, HttpCompletionOption.ResponseHeadersRead);
                 await using Stream networkStream = await message.Content.ReadAsStreamAsync();
 
-                FileStream fileCreate = File.Open(tempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-                int read;
-                while ((read = await networkStream.ReadAsync(buffer)) > 0)
-                {
-                    fileCreate.Write(buffer.AsSpan(0, read));
-                }
-
-                fileCreate.Flush();
+                fileCreate = File.Open(tempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                await networkStream.CopyToAsync(fileCreate, 16 << 10);
                 fileCreate.Position = 0;
 
                 return new MediaCacheResult
@@ -91,11 +84,8 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
             }
             catch
             {
+                fileCreate?.Dispose();
                 return null!;
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
         catch (Exception)

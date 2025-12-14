@@ -209,9 +209,8 @@
                                 <behaviors:StartAnimationAction Animation="{Binding ElementName=NavigationButtonPointerEntered}" />
                             </interactivity:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
-
-                        <Grid x:Name="PreloadGrid" Opacity="0"/>
-                        <ScrollContentPresenter x:Name="Presenter" CornerRadius="{TemplateBinding CornerRadius}"/>
+                        
+                        <Grid x:Name="PresenterGrid" CornerRadius="{TemplateBinding CornerRadius}"/>
                         <Grid x:Name="CountdownProgressBarGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom"

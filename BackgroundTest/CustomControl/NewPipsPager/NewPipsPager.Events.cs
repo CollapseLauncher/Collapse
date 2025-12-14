@@ -357,9 +357,6 @@ public partial class NewPipsPager
         UnapplyKeyPressEvents();
         UnapplyItemsRepeaterEvents();
 
-        Loaded   -= NewPipsPager_Loaded;
-        Unloaded -= NewPipsPager_Unloaded;
-
         _pipsPagerItemsRepeater.ItemsSource = null;
     }
 

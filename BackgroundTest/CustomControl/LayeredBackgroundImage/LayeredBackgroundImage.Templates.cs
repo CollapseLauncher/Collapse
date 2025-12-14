@@ -1,25 +1,14 @@
-﻿using Hi3Helper.Win32.Native.Enums.DXGI;
-using Hi3Helper.Win32.Native.Structs.DXGI;
-using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
-using Microsoft.Graphics.Canvas;
+﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
-using System;
 using System.Threading;
 using Windows.Foundation;
-using Windows.Graphics.Capture;
 using Windows.Media.Playback;
-using WinRT.Interop;
 
 namespace BackgroundTest.CustomControl.LayeredBackgroundImage;
-
-[TemplatePart(Name = TemplateNameParallaxGrid,    Type = typeof(Grid))]
-[TemplatePart(Name = TemplateNamePlaceholderGrid, Type = typeof(Grid))]
-[TemplatePart(Name = TemplateNameBackgroundGrid,  Type = typeof(Grid))]
-[TemplatePart(Name = TemplateNameForegroundGrid,  Type = typeof(Grid))]
 public partial class LayeredBackgroundImage
 {
     #region Constants
@@ -35,10 +24,10 @@ public partial class LayeredBackgroundImage
 
     #region Fields
 
-    private Grid _parallaxGrid    = null!;
+    private Grid _parallaxGrid = null!;
     private Grid _placeholderGrid = null!;
-    private Grid _backgroundGrid  = null!;
-    private Grid _foregroundGrid  = null!;
+    private Grid _backgroundGrid = null!;
+    private Grid _foregroundGrid = null!;
 
     private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;
@@ -50,13 +39,8 @@ public partial class LayeredBackgroundImage
     private CanvasDrawingSession? _currentCanvasDrawingSession = null;
     private Rect _currentCanvasRenderSize = default;
 
-    private SwapChainContext _swapChainContext = null!;
-    private SwapChainPanel _swapChainPanel = null!;
-
     private float _canvasWidth;
     private float _canvasHeight;
-    private float _lastCanvasWidth;
-    private float _lastCanvasHeight;
 
     private MediaPlayer _videoPlayer = null!;
 
@@ -64,30 +48,14 @@ public partial class LayeredBackgroundImage
 
     #endregion
 
-    #region Deconstructor
-
-    ~LayeredBackgroundImage()
-    {
-        if (_videoPlayer == null!)
-        {
-            return;
-        }
-
-        _videoPlayer.Dispose();
-        _videoPlayer = null!;
-    }
-    #endregion
-
     #region Apply Template Methods
 
     protected override void OnApplyTemplate()
     {
-        base.OnApplyTemplate();
-
-        _parallaxGrid    = this.GetTemplateChild<Grid>(TemplateNameParallaxGrid);
+        _parallaxGrid = this.GetTemplateChild<Grid>(TemplateNameParallaxGrid);
         _placeholderGrid = this.GetTemplateChild<Grid>(TemplateNamePlaceholderGrid);
-        _backgroundGrid  = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
-        _foregroundGrid  = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
+        _backgroundGrid = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
+        _foregroundGrid = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
 
         ElementCompositionPreview.SetIsTranslationEnabled(_parallaxGrid, true);
 
@@ -96,12 +64,11 @@ public partial class LayeredBackgroundImage
 
         Interlocked.Exchange(ref _isTemplateLoaded, true);
 
-        Loaded   += LayeredBackgroundImage_OnLoaded;
-        Unloaded += LayeredBackgroundImage_OnUnloaded;
-
 #if USENATIVESWAPCHAIN
         SizeChanged += LayeredBackgroundImage_SizeChanged;
 #endif
+
+        base.OnApplyTemplate();
     }
 
     private void SetupVideoPlayer()
@@ -118,40 +85,9 @@ public partial class LayeredBackgroundImage
         _videoPlayer.VideoFrameAvailable += VideoPlayer_VideoFrameAvailable;
     }
 
-    private void DisposeVideoPlayer()
-    {
-        MediaPlayer? pastMediaPlayer = _videoPlayer;
-        if (pastMediaPlayer != null!)
-        {
-            pastMediaPlayer.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailable;
-            pastMediaPlayer.Dispose();
-        }
-
-        if (_currentCanvasDrawingSession is { } previousCanvasDrawingSession)
-        {
-            previousCanvasDrawingSession.Dispose();
-            Interlocked.Exchange(ref _currentCanvasDrawingSession, null);
-        }
-
-        Interlocked.Exchange(ref _isDrawingVideoFrame, false);
-    }
-
     private void InitializeCanvasBitmapSource(Image image, MediaPlaybackSession playbackSession)
     {
-        if (Interlocked.Exchange(ref _isResizingVideoCanvas, true))
-        {
-            return;
-        }
-
-        if (_canvasRenderTarget is { } previousCanvasBitmap)
-        {
-            previousCanvasBitmap.Dispose();
-        }
-
-        if (_canvasDevice is { } previousCanvasDevice)
-        {
-            previousCanvasDevice.Dispose();
-        }
+        DisposeAndInvalidateCanvas();
 
         float currentCanvasWidth = playbackSession.NaturalVideoWidth;
         float currentCanvasHeight = playbackSession.NaturalVideoHeight;
@@ -168,7 +104,7 @@ public partial class LayeredBackgroundImage
                                                    currentCanvasHeight,
                                                    currentCanvasDpi,
                                                    CanvasAlphaMode.Premultiplied);
-        _canvasRenderTarget = new CanvasRenderTarget(_canvasImageSource,
+        _canvasRenderTarget = new CanvasRenderTarget(_canvasDevice,
                                                currentCanvasWidth,
                                                currentCanvasHeight,
                                                currentCanvasDpi);
@@ -180,6 +116,42 @@ public partial class LayeredBackgroundImage
 #endif
 
         Interlocked.Exchange(ref _isResizingVideoCanvas, false);
+    }
+
+    private void DisposeAndInvalidateCanvas()
+    {
+        if (Interlocked.Exchange(ref _isResizingVideoCanvas, true))
+        {
+            return;
+        }
+
+        if (_canvasRenderTarget is { } previousCanvasBitmap)
+        {
+            previousCanvasBitmap.Dispose();
+        }
+
+        if (_canvasDevice is { } previousCanvasDevice)
+        {
+            previousCanvasDevice.Dispose();
+        }
+    }
+
+    private void DisposeVideoPlayer()
+    {
+        if (_videoPlayer != null!)
+        {
+            _videoPlayer.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailable;
+            _videoPlayer.Dispose();
+            Interlocked.Exchange(ref _videoPlayer!, null);
+        }
+
+        if (_currentCanvasDrawingSession is { } previousCanvasDrawingSession)
+        {
+            previousCanvasDrawingSession.Dispose();
+            Interlocked.Exchange(ref _currentCanvasDrawingSession, null);
+        }
+
+        Interlocked.Exchange(ref _isDrawingVideoFrame, false);
     }
 
 #if USENATIVESWAPCHAIN
@@ -241,6 +213,6 @@ public partial class LayeredBackgroundImage
     }
 #endif
 
-#endregion
+    #endregion
 }
 

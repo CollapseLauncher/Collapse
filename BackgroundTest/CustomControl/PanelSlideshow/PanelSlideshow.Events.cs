@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -51,21 +50,18 @@ public partial class PanelSlideshow
             return;
         }
 
+        // Restart slideshow timer
+        RestartTimer(SlideshowDuration);
+
+        IList<UIElement> elements = Items;
+
         try
         {
-            // Restart slideshow timer
-            RestartTimer(SlideshowDuration);
-
-            // Preload to invisible grid. This preload is necessary to avoid
-            // the element jumping off the element due to size and offset being unset.
-            PreloadPastOrFutureItem(_presenter, Items, _preloadGrid, newIndex, Items.Count);
-
             // Just add to Grid if oldIndex is -1 (initialization on startup)
             if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
             {
-                _preloadGrid.Children.Remove(firstElement);
-                _presenter.Content = firstElement;
-                _presenter.Transitions.Add(ItemTransition);
+                firstElement.Transitions.Add(ItemTransition);
+                _presenterGrid.Children.Add(firstElement);
                 return;
             }
 
@@ -73,45 +69,29 @@ public partial class PanelSlideshow
                                oldIndex - 1 == newIndex) ||
                               (newIndex == Items.Count - 1 && oldIndex == 0);
 
-            IList<UIElement> elements = Items;
-
-            try
+            switch (ItemTransition)
             {
-                switch (ItemTransition)
-                {
-                    case PaneThemeTransition paneThemeTransition:
-                        SwitchUsingPaneThemeTransition(_presenter, elements, paneThemeTransition, newIndex, isBackward);
-                        return;
-                    case EdgeUIThemeTransition edgeUIThemeTransition:
-                        SwitchUsingEdgeUIThemeTransition(_presenter, elements, edgeUIThemeTransition, newIndex, isBackward);
-                        return;
-                    default:
-                        SwitchUsingOtherTransition(_presenter, elements, ItemTransition, newIndex);
-                        break;
-                }
-            }
-            finally
-            {
-                try
-                {
-                    UIElement newElement = elements[newIndex];
-                    UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
-                        ? null
-                        : elements[oldIndex];
-
-                    SetValue(ItemProperty, newElement);
-                    ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
-                    ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                case PaneThemeTransition paneThemeTransition:
+                    SwitchUsingPaneThemeTransition(_presenterGrid, elements, paneThemeTransition, newIndex, isBackward);
+                    return;
+                case EdgeUIThemeTransition edgeUIThemeTransition:
+                    SwitchUsingEdgeUIThemeTransition(_presenterGrid, elements, edgeUIThemeTransition, newIndex, isBackward);
+                    return;
+                default:
+                    SwitchUsingOtherTransition(_presenterGrid, elements, ItemTransition, newIndex);
+                    break;
             }
         }
-        catch (Exception e)
+        finally
         {
-            Console.WriteLine(e);
+            UIElement newElement = elements[newIndex];
+            UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
+                ? null
+                : elements[oldIndex];
+
+            SetValue(ItemProperty, newElement);
+            ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
+            ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
         }
     }
 
@@ -149,102 +129,17 @@ public partial class PanelSlideshow
 
     #endregion
 
-    #region Element Preload Helper
-
-    private static void PreloadPastOrFutureItem(
-        ScrollContentPresenter presenter,
-        IList<UIElement>       collection,
-        Grid                   preloadGrid,
-        int                    currentIndex,
-        int                    itemsCount)
-    {
-        try
-        {
-            if (currentIndex < 0)
-            {
-                return;
-            }
-
-            int pastIndex = currentIndex switch
-            {
-                0 when itemsCount >= 3 => itemsCount - 1,
-                > 0                    => currentIndex - 1,
-                _                      => -1
-            };
-
-            int futureIndex = -1;
-            if (itemsCount - 1 > currentIndex)
-            {
-                futureIndex = currentIndex + 1;
-            }
-            else if (currentIndex + 1 >= itemsCount)
-            {
-                futureIndex = 0;
-            }
-
-            UIElement? pastElement   = pastIndex == -1 ? null : collection[pastIndex];
-            UIElement? futureElement = futureIndex == -1 ? null : collection[futureIndex];
-
-            preloadGrid.Children.Clear();
-            AssignToPreloadGridAndApplyPayload(pastElement);
-            AssignToPreloadGridAndApplyPayload(futureElement);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        return;
-
-        void AssignToPreloadGridAndApplyPayload(UIElement? element)
-        {
-            try
-            {
-                if (element is not FrameworkElement { ActualSize: { X: 0, Y: 0 } } elementFe)
-                {
-                    return;
-                }
-
-                elementFe.SizeChanged += PreloadItem_OnLoaded;
-                preloadGrid.Children.Add(elementFe);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-    }
-
-    private static void PreloadItem_OnLoaded(object? sender, SizeChangedEventArgs args)
-    {
-        try
-        {
-            if (sender is not FrameworkElement { Parent: Grid parentGrid } element)
-            {
-                return;
-            }
-
-            element.SizeChanged -= PreloadItem_OnLoaded;
-            parentGrid.Children.Remove(element);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    #endregion
-
     #region Transition Switch Helper
 
     private static void SwitchUsingEdgeUIThemeTransition(
-        ScrollContentPresenter presenter,
+        Grid presenterGrid,
         IList<UIElement> items,
         EdgeUIThemeTransition paneThemeTransition,
         int index,
         bool isBackward)
     {
         UIElement currentElement = items[index];
-        UIElement? lastElement   = presenter.Content as UIElement;
+        UIElement? lastElement = presenterGrid.Children.FirstOrDefault();
 
         EdgeTransitionLocation currentEdge = paneThemeTransition.Edge;
         if (isBackward)
@@ -257,37 +152,22 @@ public partial class PanelSlideshow
             lastElementTransition.Edge = GetReversedEdge(currentEdge);
         }
 
-        currentElement.Transitions.Clear();
-        currentElement.Transitions.Add(new EdgeUIThemeTransition
-        {
-            Edge = currentEdge
-        });
-        presenter.Content = currentElement;
-        currentElement.UpdateLayout();
-        return;
+        presenterGrid.Children.Clear();
 
-        static EdgeTransitionLocation GetReversedEdge(EdgeTransitionLocation edge)
-        {
-            return edge switch
-            {
-                EdgeTransitionLocation.Right => EdgeTransitionLocation.Left,
-                EdgeTransitionLocation.Bottom => EdgeTransitionLocation.Top,
-                EdgeTransitionLocation.Left => EdgeTransitionLocation.Right,
-                EdgeTransitionLocation.Top => EdgeTransitionLocation.Bottom,
-                _ => throw new NotImplementedException()
-            };
-        }
+        currentElement.Transitions.Clear();
+        presenterGrid.Children.Add(currentElement);
+        currentElement.UpdateLayout();
     }
 
     private static void SwitchUsingPaneThemeTransition(
-        ScrollContentPresenter presenter,
+        Grid presenterGrid,
         IList<UIElement> items,
         PaneThemeTransition paneThemeTransition,
         int index,
         bool isBackward)
     {
         UIElement currentElement = items[index];
-        UIElement? lastElement = presenter.Content as UIElement;
+        UIElement? lastElement = presenterGrid.Children.FirstOrDefault();
 
         EdgeTransitionLocation currentEdge = paneThemeTransition.Edge;
         if (isBackward)
@@ -300,33 +180,22 @@ public partial class PanelSlideshow
             lastElementTransition.Edge = GetReversedEdge(currentEdge);
         }
 
+        presenterGrid.Children.Clear();
+
         currentElement.Transitions.Clear();
         currentElement.Transitions.Add(new PaneThemeTransition
         {
             Edge = currentEdge
         });
-        presenter.Content = currentElement;
+        presenterGrid.Children.Add(currentElement);
         currentElement.UpdateLayout();
-        return;
-
-        static EdgeTransitionLocation GetReversedEdge(EdgeTransitionLocation edge)
-        {
-            return edge switch
-            {
-                EdgeTransitionLocation.Right => EdgeTransitionLocation.Left,
-                EdgeTransitionLocation.Bottom => EdgeTransitionLocation.Top,
-                EdgeTransitionLocation.Left => EdgeTransitionLocation.Right,
-                EdgeTransitionLocation.Top => EdgeTransitionLocation.Bottom,
-                _ => throw new NotImplementedException()
-            };
-        }
     }
 
     private static void SwitchUsingOtherTransition(
-        ScrollContentPresenter presenter, IList<UIElement> items, Transition transition, int index)
+        Grid presenterGrid, IList<UIElement> items, Transition transition, int index)
     {
         UIElement currentElement = items[index];
-        UIElement? lastElement = presenter.Content as UIElement;
+        UIElement? lastElement = presenterGrid.Children.FirstOrDefault();
 
         if (lastElement != null)
         {
@@ -337,7 +206,22 @@ public partial class PanelSlideshow
         currentElement.Transitions.Clear();
         currentElement.Transitions.Add(transition);
 
-        presenter.Content = currentElement;
+        presenterGrid.Children.Clear();
+        presenterGrid.Children.Add(currentElement);
+        presenterGrid.UpdateLayout();
+        currentElement.UpdateLayout();
+    }
+
+    private static EdgeTransitionLocation GetReversedEdge(EdgeTransitionLocation edge)
+    {
+        return edge switch
+        {
+            EdgeTransitionLocation.Right => EdgeTransitionLocation.Left,
+            EdgeTransitionLocation.Bottom => EdgeTransitionLocation.Top,
+            EdgeTransitionLocation.Left => EdgeTransitionLocation.Right,
+            EdgeTransitionLocation.Top => EdgeTransitionLocation.Bottom,
+            _ => throw new NotImplementedException()
+        };
     }
 
     #endregion

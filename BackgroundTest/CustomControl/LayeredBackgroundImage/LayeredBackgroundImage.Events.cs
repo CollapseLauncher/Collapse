@@ -1,5 +1,4 @@
-﻿using Microsoft.Graphics.Canvas;
-using Microsoft.UI.Composition;
+﻿using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
@@ -33,19 +32,8 @@ public partial class LayeredBackgroundImage
         return left == right;
     }
 
-    private bool IsInPreloadGrid()
-    {
-        return Parent is FrameworkElement asGrid &&
-               asGrid.Name.StartsWith("Preload", StringComparison.OrdinalIgnoreCase);
-    }
-
     private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (IsInPreloadGrid())
-        {
-            return;
-        }
-
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
 
@@ -93,11 +81,6 @@ public partial class LayeredBackgroundImage
 
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
-        if (IsInPreloadGrid())
-        {
-            return;
-        }
-
         ParallaxGrid_UnregisterEffect();
         _lastParallaxHoverSource = null;
 
@@ -112,8 +95,7 @@ public partial class LayeredBackgroundImage
     private static void IsParallaxEnabled_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         LayeredBackgroundImage element = (LayeredBackgroundImage)d;
-        if (!element.IsLoaded ||
-            element.IsInPreloadGrid())
+        if (!element.IsLoaded)
         {
             return;
         }
@@ -124,8 +106,7 @@ public partial class LayeredBackgroundImage
     private static void ParallaxHover_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         LayeredBackgroundImage element = (LayeredBackgroundImage)d;
-        if (!element.IsLoaded ||
-            element.IsInPreloadGrid())
+        if (!element.IsLoaded)
         {
             return;
         }
@@ -313,12 +294,7 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            MediaPlayerState state           = _videoPlayer?.CurrentState ?? MediaPlayerState.Closed;
-            bool             isInPreloadGrid = IsInPreloadGrid();
-
-            if (!isInPreloadGrid &&
-                _videoPlayer != null! &&
-                state is MediaPlayerState.Paused or MediaPlayerState.Stopped)
+            if (_videoPlayer != null!)
             {
                 _videoPlayer.Play();
             }
@@ -333,8 +309,7 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            if (_videoPlayer != null! &&
-                _videoPlayer is { CanPause: true, CurrentState: MediaPlayerState.Playing })
+            if (_videoPlayer != null!)
             {
                 _videoPlayer.Pause();
             }

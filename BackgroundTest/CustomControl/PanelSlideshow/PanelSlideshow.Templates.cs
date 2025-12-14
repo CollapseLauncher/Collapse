@@ -6,8 +6,7 @@ using System.Threading;
 namespace BackgroundTest.CustomControl.PanelSlideshow;
 
 [TemplatePart(Name = TemplateNameRootGrid, Type = typeof(Grid))]
-[TemplatePart(Name = TemplateNamePresenterScrollContent, Type = typeof(ScrollContentPresenter))]
-[TemplatePart(Name = TemplateNamePreloadGrid, Type = typeof(Grid))]
+[TemplatePart(Name = TemplateNamePresenterGrid, Type = typeof(Grid))]
 [TemplatePart(Name = TemplateNamePreviousButton, Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameNextButton, Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(ProgressBar))]
@@ -21,8 +20,7 @@ public partial class PanelSlideshow
     #region Constants
 
     private const string TemplateNameRootGrid               = "RootGrid";
-    private const string TemplateNamePresenterScrollContent = "Presenter";
-    private const string TemplateNamePreloadGrid            = "PreloadGrid";
+    private const string TemplateNamePresenterGrid          = "PresenterGrid";
     private const string TemplateNamePreviousButton         = "PreviousButton";
     private const string TemplateNameNextButton             = "NextButton";
     private const string TemplateNameCountdownProgressBar   = "CountdownProgressBar";
@@ -39,8 +37,7 @@ public partial class PanelSlideshow
 
     #region Fields
 
-    private ScrollContentPresenter _presenter            = null!;
-    private Grid                   _preloadGrid          = null!;
+    private Grid                   _presenterGrid        = null!;
     private Button                 _previousButton       = null!;
     private Grid                   _previousButtonGrid   = null!;
     private Button                 _nextButton           = null!;
@@ -55,9 +52,7 @@ public partial class PanelSlideshow
 
     protected override void OnApplyTemplate()
     {
-        base.OnApplyTemplate();
-        _presenter = this.GetTemplateChild<ScrollContentPresenter>(TemplateNamePresenterScrollContent);
-        _preloadGrid = this.GetTemplateChild<Grid>(TemplateNamePreloadGrid);
+        _presenterGrid = this.GetTemplateChild<Grid>(TemplateNamePresenterGrid);
         _previousButton = this.GetTemplateChild<Button>(TemplateNamePreviousButton);
         _nextButton = this.GetTemplateChild<Button>(TemplateNameNextButton);
         _countdownProgressBar = this.GetTemplateChild<ProgressBar>(TemplateNameCountdownProgressBar);
@@ -69,8 +64,7 @@ public partial class PanelSlideshow
 
         Interlocked.Exchange(ref _isTemplateLoaded, true);
 
-        Loaded += PanelSlideshow_Loaded;
-        Unloaded += PanelSlideshow_Unloaded;
+        base.OnApplyTemplate();
     }
 
     #endregion
