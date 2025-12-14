@@ -20,7 +20,6 @@
 [![Build-Canary](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml)
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to GitLab](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml)
-[![Sync to Coding](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml)
 [![Sync to CNB](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-cnb.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-cnb.yml)
 [![Upload to R2](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
 [![Upload to DigitalOcean](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-do.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-do.yml)
