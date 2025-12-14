@@ -174,7 +174,10 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            DisposeVideoPlayer();
+            if (grid.Name.StartsWith("Background"))
+            {
+                DisposeVideoPlayer();
+            }
 
             object? source = GetValue(sourceProperty);
             if (source is null)
