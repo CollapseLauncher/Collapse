@@ -223,6 +223,7 @@ public partial class NewPipsPager
         }
 
         button.Style = style;
+        button.UpdateLayout();
         VisualStateManager.GoToState(button, PipButtonStateNormal, true);
         return button;
     }
