@@ -3,8 +3,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Numerics;
+using System.Threading;
 using Windows.Foundation;
-using Windows.Media.Playback;
 
 namespace BackgroundTest.CustomControl.LayeredBackgroundImage;
 
@@ -34,6 +34,7 @@ public partial class LayeredBackgroundImage
 
     private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        Interlocked.Exchange(ref _isLoaded, true);
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
 
@@ -45,7 +46,6 @@ public partial class LayeredBackgroundImage
                                         nameof(PlaceholderHorizontalAlignment),
                                         nameof(PlaceholderVerticalAlignment),
                                         _placeholderGrid,
-                                        this,
                                         false);
             _lastPlaceholderSource = PlaceholderSource;
         }
@@ -57,7 +57,6 @@ public partial class LayeredBackgroundImage
                                         nameof(BackgroundHorizontalAlignment),
                                         nameof(BackgroundVerticalAlignment),
                                         _backgroundGrid,
-                                        this,
                                         true);
             _lastBackgroundSource = BackgroundSource;
         }
@@ -70,7 +69,6 @@ public partial class LayeredBackgroundImage
                                         nameof(ForegroundHorizontalAlignment),
                                         nameof(ForegroundVerticalAlignment),
                                         _foregroundGrid,
-                                        this,
                                         false);
             _lastForegroundSource = ForegroundSource;
         }
@@ -81,6 +79,7 @@ public partial class LayeredBackgroundImage
 
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
+        Interlocked.Exchange(ref _isLoaded, false);
         ParallaxGrid_UnregisterEffect();
         _lastParallaxHoverSource = null;
 
@@ -261,63 +260,6 @@ public partial class LayeredBackgroundImage
         animGroup.Add(scaleAnim);
 
         _parallaxGridVisual.StartAnimationGroup(animGroup);
-    }
-
-    #endregion
-
-    #region Video Player Events
-
-    private static void IsAudioEnabled_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
-        if (instance._videoPlayer is not { } videoPlayer)
-        {
-            return;
-        }
-
-        videoPlayer.IsMuted = !(bool)e.NewValue;
-    }
-
-    private static void AudioVolume_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
-        if (instance._videoPlayer is not { } videoPlayer)
-        {
-            return;
-        }
-
-        double volume = e.NewValue.TryGetDouble();
-        videoPlayer.Volume = volume.GetClampedVolume();
-    }
-
-    public void Play()
-    {
-        try
-        {
-            if (_videoPlayer != null!)
-            {
-                _videoPlayer.Play();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    public void Pause()
-    {
-        try
-        {
-            if (_videoPlayer != null!)
-            {
-                _videoPlayer.Pause();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
     }
 
     #endregion
