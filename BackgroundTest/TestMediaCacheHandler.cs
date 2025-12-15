@@ -32,18 +32,11 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
 
             if (sourceUrl?.IsFile ?? false)
             {
-                string normalizedPath = sourceUrl.LocalPath;
-                if (File.Exists(normalizedPath))
+                return new MediaCacheResult()
                 {
-                    return new MediaCacheResult
-                    {
-                        ForceUseInternalDecoder = false,
-                        CachedSource = File.Open(normalizedPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
-                        DisposeStream = true
-                    };
-                }
-
-                return null!;
+                    CachedSource = sourceUrl,
+                    DisposeStream = true
+                };
             }
 
             string extension = Path.GetExtension(absolutePath);
@@ -59,7 +52,7 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
                 return new MediaCacheResult
                 {
                     ForceUseInternalDecoder = forceInternalCodec,
-                    CachedSource = File.Open(tempPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite),
+                    CachedSource = new Uri(tempPath),
                     DisposeStream = true
                 };
             }

@@ -65,7 +65,7 @@ internal static class LayeredBackgroundImageExtensions
                     return false;
                 }
 
-                Uri? cachedUrlSource = null;
+                Uri? cachedUrlSource = cacheResult.CachedSource as Uri;
                 Stream? cachedStreamSource = null;
 
                 if (cacheResult.CachedSource is string asString)
