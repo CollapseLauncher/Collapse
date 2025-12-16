@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Win32.Native.Interfaces.DXGI;
+using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
@@ -33,9 +34,10 @@ public partial class LayeredBackgroundImage
     private Visual _parallaxGridVisual = null!;
     private Compositor _parallaxGridCompositor = null!;
 
+    private D3DDeviceContext? _canvasD3DDeviceContext;
     private ISurfaceImageSourceNativeWithD2D? _canvasSurfaceImageSourceNative;
+    private nint _canvasSurfaceImageSourceNativePtr = nint.Zero;
     private SurfaceImageSource? _canvasSurfaceImageSource;
-
 
     private CanvasDevice? _canvasDevice = null!;
     private int _canvasWidth;

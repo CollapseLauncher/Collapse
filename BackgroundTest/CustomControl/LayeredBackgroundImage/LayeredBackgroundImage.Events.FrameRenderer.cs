@@ -1,4 +1,6 @@
-﻿using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
+﻿using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.Native.Interfaces.DXGI;
+using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -65,7 +67,8 @@ public partial class LayeredBackgroundImage
                     out nint surfacePpv);
 
                 SwapChainPanelHelper.MediaPlayer_CopyFrameToVideoSurfaceUnsafe(_videoPlayerPtr, surfacePpv);
-                _canvasSurfaceImageSourceNative.EndDraw();
+                // _canvasSurfaceImageSourceNative.EndDraw();
+                SwapChainPanelHelper.EndDrawNativeSurfaceImageSource(_canvasSurfaceImageSourceNativePtr);
                 Marshal.Release(surfacePpv);
             });
             // sender.CopyFrameToVideoSurface(_canvasRenderTarget);
@@ -137,7 +140,15 @@ public partial class LayeredBackgroundImage
 
         _canvasDevice = CanvasDevice.GetSharedDevice();
         _canvasSurfaceImageSource = new(_canvasWidth, _canvasHeight, true);
-        SwapChainPanelHelper.GetNativeSurfaceImageSource(_canvasSurfaceImageSource, out _canvasSurfaceImageSourceNative);
+        SwapChainPanelHelper.GetNativeSurfaceImageSource(_canvasSurfaceImageSource,
+                                                         out _canvasSurfaceImageSourceNative,
+                                                         out _canvasD3DDeviceContext);
+
+        ComMarshal<ISurfaceImageSourceNativeWithD2D>.TryGetComInterfaceReference(_canvasSurfaceImageSourceNative,
+                                                                                 out _canvasSurfaceImageSourceNativePtr,
+                                                                                 out _,
+                                                                                 CreateComInterfaceFlags.None,
+                                                                                 true);
 
         if (FindRenderImage() is Image image)
         {
@@ -147,13 +158,23 @@ public partial class LayeredBackgroundImage
 
     private void DisposeRenderTarget()
     {
+        // Dispose D3DDeviceContext and its dependencies
+        _canvasD3DDeviceContext?.Dispose();
+        _canvasSurfaceImageSourceNative?.SetDevice(nint.Zero);
+        ComMarshal<ISurfaceImageSourceNativeWithD2D>.TryReleaseComObject(_canvasSurfaceImageSourceNative, out _);
+
         _canvasDevice?.Dispose();
         if (FindRenderImage() is Image image)
         {
             image.Source = null;
         }
-        
+
+        _canvasSurfaceImageSourceNativePtr = nint.Zero;
+
         Interlocked.Exchange(ref _canvasDevice, null);
+        Interlocked.Exchange(ref _canvasD3DDeviceContext, null);
+        Interlocked.Exchange(ref _canvasSurfaceImageSourceNative, null);
+        Interlocked.Exchange(ref _canvasSurfaceImageSource, null);
     }
 
     private Image? FindRenderImage() => _backgroundGrid.Children
@@ -217,6 +238,11 @@ public partial class LayeredBackgroundImage
         {
             Console.WriteLine(e);
         }
+        finally
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
     }
 
     public void Pause()
@@ -238,6 +264,11 @@ public partial class LayeredBackgroundImage
         catch (Exception e)
         {
             Console.WriteLine(e);
+        }
+        finally
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
     }
 
