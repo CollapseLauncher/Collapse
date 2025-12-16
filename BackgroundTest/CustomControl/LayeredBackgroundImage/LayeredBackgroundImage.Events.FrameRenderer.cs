@@ -23,7 +23,7 @@ public partial class LayeredBackgroundImage
         get
         {
             ReadOnlySpan<byte> span = [
-                253, 55, 229, 207, 106, 248, 70, 68, 191, 77,
+                253, 55,  229, 207, 106, 248, 70, 68, 191, 77,
                 200, 231, 146, 183, 180, 179
             ];
             return ref Unsafe.As<byte, Guid>(ref MemoryMarshal.GetReference(span));
@@ -36,6 +36,7 @@ public partial class LayeredBackgroundImage
 
     private volatile int _isBlockVideoFrameDraw = 1;
     private int _isVideoFrameDrawInProgress;
+    private TimeSpan _lastVideoPlayerPosition;
     
     #endregion
 
@@ -105,6 +106,12 @@ public partial class LayeredBackgroundImage
     {
         if (_videoPlayer != null!)
         {
+            // Save last video player duration for later
+            if (_videoPlayer.CanSeek)
+            {
+                _lastVideoPlayerPosition = _videoPlayer.Position;
+            }
+
             _videoPlayer.Dispose();
             _videoPlayer.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailable;
             _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
@@ -192,6 +199,19 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.Play();
                 _isBlockVideoFrameDraw = 0;
             }
+            else if (_lastBackgroundSourceType == MediaSourceType.Video &&
+                     BackgroundSource != null)
+            {
+                // Try loading last media
+                LoadFromSourceAsyncDetached(BackgroundSourceProperty,
+                                            _lastBackgroundSource,
+                                            nameof(BackgroundStretch),
+                                            nameof(BackgroundHorizontalAlignment),
+                                            nameof(BackgroundVerticalAlignment),
+                                            _backgroundGrid,
+                                            true,
+                                            ref _lastBackgroundSourceType);
+            }
         }
         catch (Exception e)
         {
@@ -209,6 +229,7 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.Pause();
                 _videoPlayer.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailable;
                 DisposeRenderTarget();
+                DisposeVideoPlayer();
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();

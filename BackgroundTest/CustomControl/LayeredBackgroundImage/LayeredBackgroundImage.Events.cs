@@ -16,6 +16,10 @@ public partial class LayeredBackgroundImage
     private object? _lastBackgroundSource;
     private object? _lastForegroundSource;
 
+    private MediaSourceType _lastPlaceholderSourceType;
+    private MediaSourceType _lastBackgroundSourceType;
+    private MediaSourceType _lastForegroundSourceType;
+
     private bool _isPlaceholderHidden;
 
     #endregion
@@ -42,22 +46,26 @@ public partial class LayeredBackgroundImage
             !IsSourceKindEquals(_lastPlaceholderSource, PlaceholderSource))
         {
             LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
+                                        _lastPlaceholderSource,
                                         nameof(PlaceholderStretch),
                                         nameof(PlaceholderHorizontalAlignment),
                                         nameof(PlaceholderVerticalAlignment),
                                         _placeholderGrid,
-                                        false);
+                                        false,
+                                        ref _lastPlaceholderSourceType);
             _lastPlaceholderSource = PlaceholderSource;
         }
 
         if (!IsSourceKindEquals(_lastBackgroundSource, BackgroundSource))
         {
             LoadFromSourceAsyncDetached(BackgroundSourceProperty,
+                                        _lastBackgroundSource,
                                         nameof(BackgroundStretch),
                                         nameof(BackgroundHorizontalAlignment),
                                         nameof(BackgroundVerticalAlignment),
                                         _backgroundGrid,
-                                        true);
+                                        true,
+                                        ref _lastBackgroundSourceType);
             _lastBackgroundSource = BackgroundSource;
         }
 
@@ -65,11 +73,13 @@ public partial class LayeredBackgroundImage
         if (!IsSourceKindEquals(_lastForegroundSource, ForegroundSource))
         {
             LoadFromSourceAsyncDetached(ForegroundSourceProperty,
+                                        _lastForegroundSource,
                                         nameof(ForegroundStretch),
                                         nameof(ForegroundHorizontalAlignment),
                                         nameof(ForegroundVerticalAlignment),
                                         _foregroundGrid,
-                                        false);
+                                        false,
+                                        ref _lastForegroundSourceType);
             _lastForegroundSource = ForegroundSource;
         }
 

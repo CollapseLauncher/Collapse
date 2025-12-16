@@ -82,7 +82,6 @@ public partial class LayeredBackgroundImage
 
     #region Fields
 
-    private MediaSourceType? _lastMediaType;
     private bool _isLoaded = true;
 
     #endregion
@@ -99,11 +98,13 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._placeholderGrid;
         element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
+                                            e.OldValue,
                                             nameof(PlaceholderStretch),
                                             nameof(PlaceholderHorizontalAlignment),
                                             nameof(PlaceholderVerticalAlignment),
                                             grid,
-                                            false);
+                                            false,
+                                            ref element._lastPlaceholderSourceType);
     }
 
     private static void BackgroundSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -116,11 +117,13 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._backgroundGrid;
         element.LoadFromSourceAsyncDetached(BackgroundSourceProperty,
+                                            e.OldValue,
                                             nameof(BackgroundStretch),
                                             nameof(BackgroundHorizontalAlignment),
                                             nameof(BackgroundVerticalAlignment),
                                             grid,
-                                            true);
+                                            true,
+                                            ref element._lastBackgroundSourceType);
     }
 
     private static void ForegroundSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -133,85 +136,96 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._foregroundGrid;
         element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
+                                            e.OldValue,
                                             nameof(ForegroundStretch),
                                             nameof(ForegroundHorizontalAlignment),
                                             nameof(ForegroundVerticalAlignment),
                                             grid,
-                                            false);
+                                            false,
+                                            ref element._lastForegroundSourceType);
     }
 
     #endregion
 
     #region
 
-    private async void LoadFromSourceAsyncDetached(
+    private void LoadFromSourceAsyncDetached(
         DependencyProperty     sourceProperty,
+        object?                lastSource,
         string                 stretchProperty,
         string                 horizontalAlignmentProperty,
         string                 verticalAlignmentProperty,
         Grid                   grid,
-        bool                   canReceiveVideo)
+        bool                   canReceiveVideo,
+        ref    MediaSourceType lastMediaType)
     {
         try
         {
             object? source = GetValue(sourceProperty);
+
             if (source is null)
             {
-                goto ClearGrid;
+                goto ClearAndReturnUnknown;
             }
 
             if (!TryGetMediaPathFromSource(source, out string? mediaPath))
             {
-                goto ClearGrid;
+                goto ClearAndReturnUnknown;
             }
 
             if (GetMediaSourceTypeFromPath(mediaPath) is var mediaType &&
                 mediaType == MediaSourceType.Unknown)
             {
-                goto ClearGrid;
+                goto ClearAndReturnUnknown;
             }
 
-            if (grid.Name.StartsWith("Background") &&
-                _lastMediaType == MediaSourceType.Video)
+            if (lastMediaType == MediaSourceType.Video)
             {
                 // Pause and Invalidate Video Player
                 Pause();
-                DisposeVideoPlayer();
             }
 
-            _lastMediaType = mediaType;
+            InnerLoadDetached();
+            lastMediaType = mediaType;
+            return;
 
-            // ReSharper disable once ConvertIfStatementToSwitchStatement
-            if (mediaType == MediaSourceType.Image &&
-                await LoadImageFromSourceAsync(source,
-                                               stretchProperty,
-                                               horizontalAlignmentProperty,
-                                               verticalAlignmentProperty,
-                                               this,
-                                               grid))
+            async void InnerLoadDetached()
             {
-                return;
-            }
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
+                if (mediaType == MediaSourceType.Image &&
+                    await LoadImageFromSourceAsync(source,
+                                                   stretchProperty,
+                                                   horizontalAlignmentProperty,
+                                                   verticalAlignmentProperty,
+                                                   this,
+                                                   grid))
+                {
+                    return;
+                }
 
-            if (mediaType == MediaSourceType.Video &&
-                canReceiveVideo &&
-                await LoadVideoFromSourceAsync(source,
-                                               stretchProperty,
-                                               horizontalAlignmentProperty,
-                                               verticalAlignmentProperty,
-                                               this,
-                                               grid))
-            {
-                return;
+                if (mediaType == MediaSourceType.Video &&
+                    canReceiveVideo &&
+                    await LoadVideoFromSourceAsync(source,
+                                                   lastSource,
+                                                   stretchProperty,
+                                                   horizontalAlignmentProperty,
+                                                   verticalAlignmentProperty,
+                                                   this,
+                                                   grid))
+                {
+                    return;
+                }
             }
-
-        ClearGrid:
-            ClearMediaGrid(grid);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
+
+    ClearAndReturnUnknown:
+        ClearMediaGrid(grid);
+        lastMediaType = MediaSourceType.Unknown;
+        return;
     }
 
     private static async ValueTask<bool> LoadImageFromSourceAsync(
@@ -269,12 +283,15 @@ public partial class LayeredBackgroundImage
 
     private static async Task<bool> LoadVideoFromSourceAsync(
         object?                source,
+        object?                lastSource,
         string                 stretchProperty,
         string                 horizontalAlignmentProperty,
         string                 verticalAlignmentProperty,
         LayeredBackgroundImage instance,
         Grid                   grid)
     {
+        bool isLastStreamSame = IsSourceKindEquals(source, lastSource);
+
         bool canDisposeStream = source is not Stream;
         if (instance.MediaCacheHandler is { } cacheHandler)
         {
@@ -327,6 +344,13 @@ public partial class LayeredBackgroundImage
         {
             Console.WriteLine(e);
             return false;
+        }
+
+        // Seek to last position if source was the same
+        if (isLastStreamSame &&
+            instance._videoPlayer.CanSeek)
+        {
+            instance._videoPlayer.Position = instance._lastVideoPlayerPosition;
         }
 
         return true;
