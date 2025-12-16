@@ -78,11 +78,7 @@ internal static class LayeredBackgroundImageExtensions
                     cachedStreamSource = asStream;
                 }
 
-                if (cacheResult.DisposeStream &&
-                    cachedStreamSource != null)
-                {
-                    isDisposeStream = true;
-                }
+                isDisposeStream = cacheResult.DisposeStream;
 
                 if (cacheResult.ForceUseInternalDecoder &&
                     await image.LoadImageWithInternalDecoderAsync(sourceFromPath,
@@ -180,7 +176,7 @@ internal static class LayeredBackgroundImageExtensions
                 return false;
             }
 
-            bool    isDisposeStream = disposeStream || sourceFromStream == null;
+            bool isDisposeStream = disposeStream;
             Stream? sourceStream    = sourceFromStream ?? await TryGetStreamFromPathAsync(sourceFromPath);
             if (sourceStream is not { CanSeek: true, CanRead: true })
             {
