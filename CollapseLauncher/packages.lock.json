@@ -191,6 +191,24 @@
         "resolved": "0.15.0",
         "contentHash": "ajPOdS5wGIZrHGT0NHvmmrQ7sJb0Vp+Ex3JauD7Ru+U+F+N7tTYRVDcvXW2ER56MLzC+VSqK3KjRn4Sntkf3vA=="
       },
+      "PhotoSauce.NativeCodecs.Libheif": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.19.5-preview1",
+        "contentHash": "MkQ/HtuzfQi0aF158GLwubo8a+PoQFCVta6MJmqwfEdiUAZqlamtPQRcA/7JtYn7iO/jmgvgwJ3NAQrIILrPeA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libjxl": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "0.11.1-preview2",
+        "contentHash": "6/4aRRFIosViPNdQL5ciLJa/lUZHwwRbw/ApeR4Hc/PpMS9xn8X8spNf6oPqZdELbZFgu0DOInoI/OH5rIkEGA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",
         "requested": "[*-*, )",
@@ -540,7 +558,6 @@
         "dependencies": {
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.0, )",
-          "Microsoft.Graphics.Win2D": "[1.3.2, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.250720.1, )"
         }
       },
@@ -606,6 +623,24 @@
         "requested": "[1.0.3595.46, )",
         "resolved": "1.0.3595.46",
         "contentHash": "j+yzqAKwC8Zn+3FL5XJxm6N0Rh5iDqTANBfFaYvnjyRpbpqt3qkpFcqMWLjqEBGiWEClh3zLCkJINwRUcr1KxQ=="
+      },
+      "PhotoSauce.NativeCodecs.Libheif": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.19.5-preview1",
+        "contentHash": "MkQ/HtuzfQi0aF158GLwubo8a+PoQFCVta6MJmqwfEdiUAZqlamtPQRcA/7JtYn7iO/jmgvgwJ3NAQrIILrPeA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libjxl": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "0.11.1-preview2",
+        "contentHash": "6/4aRRFIosViPNdQL5ciLJa/lUZHwwRbw/ApeR4Hc/PpMS9xn8X8spNf6oPqZdELbZFgu0DOInoI/OH5rIkEGA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
       },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",

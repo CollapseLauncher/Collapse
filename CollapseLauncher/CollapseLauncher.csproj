@@ -293,6 +293,8 @@
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="System.CommandLine" Version="2.0.0" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
