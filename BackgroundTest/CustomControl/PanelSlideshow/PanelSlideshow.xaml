@@ -235,6 +235,7 @@
                               VerticalAlignment="{TemplateBinding PreviousButtonVerticalAlignment}"
                               CornerRadius="{TemplateBinding PreviousButtonCornerRadius}"
                               Margin="{TemplateBinding PreviousButtonMargin}"
+                              Visibility="{TemplateBinding PreviousButtonVisibilityMode}"
                               Padding="24"
                               RenderTransformOrigin=".5, .5">
                             <Grid.RenderTransform>
@@ -270,6 +271,7 @@
                               VerticalAlignment="{TemplateBinding NextButtonVerticalAlignment}"
                               CornerRadius="{TemplateBinding NextButtonCornerRadius}"
                               Margin="{TemplateBinding NextButtonMargin}"
+                              Visibility="{TemplateBinding NextButtonVisibilityMode}"
                               Padding="24"
                               RenderTransformOrigin=".5, .5">
                             <Grid.RenderTransform>

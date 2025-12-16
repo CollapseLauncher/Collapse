@@ -216,7 +216,7 @@ public partial class LayeredBackgroundImage
         double offsetY = ParallaxVerticalShift;
 
         // Move
-        Point pos = e.GetCurrentPoint(element).Position;
+        Point  pos = e.GetCurrentPoint(element).Position;
         double w   = element.ActualWidth;
         double h   = element.ActualHeight;
 

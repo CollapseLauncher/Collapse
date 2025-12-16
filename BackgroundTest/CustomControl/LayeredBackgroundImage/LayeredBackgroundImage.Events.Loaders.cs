@@ -191,29 +191,31 @@ public partial class LayeredBackgroundImage
 
             async void InnerLoadDetached()
             {
-                // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (mediaType == MediaSourceType.Image &&
-                    await LoadImageFromSourceAsync(source,
-                                                   stretchProperty,
-                                                   horizontalAlignmentProperty,
-                                                   verticalAlignmentProperty,
-                                                   this,
-                                                   grid))
+                try
                 {
-                    return;
-                }
+                    // ReSharper disable once ConvertIfStatementToSwitchStatement
+                    if (mediaType == MediaSourceType.Image &&
+                        await LoadImageFromSourceAsync(source,
+                                                       stretchProperty,
+                                                       horizontalAlignmentProperty,
+                                                       verticalAlignmentProperty,
+                                                       this,
+                                                       grid))
+                    {
+                        return;
+                    }
 
-                if (mediaType == MediaSourceType.Video &&
-                    canReceiveVideo &&
-                    await LoadVideoFromSourceAsync(source,
-                                                   lastSource,
-                                                   stretchProperty,
-                                                   horizontalAlignmentProperty,
-                                                   verticalAlignmentProperty,
-                                                   this,
-                                                   grid))
+                    if (mediaType == MediaSourceType.Video &&
+                        canReceiveVideo &&
+                        await LoadVideoFromSourceAsync(source,
+                                                       lastSource,
+                                                       this))
+                    {
+                    }
+                }
+                catch (Exception e)
                 {
-                    return;
+                    Console.WriteLine(e);
                 }
             }
         }
@@ -225,7 +227,6 @@ public partial class LayeredBackgroundImage
     ClearAndReturnUnknown:
         ClearMediaGrid(grid);
         lastMediaType = MediaSourceType.Unknown;
-        return;
     }
 
     private static async ValueTask<bool> LoadImageFromSourceAsync(
@@ -284,20 +285,14 @@ public partial class LayeredBackgroundImage
     private static async Task<bool> LoadVideoFromSourceAsync(
         object?                source,
         object?                lastSource,
-        string                 stretchProperty,
-        string                 horizontalAlignmentProperty,
-        string                 verticalAlignmentProperty,
-        LayeredBackgroundImage instance,
-        Grid                   grid)
+        LayeredBackgroundImage instance)
     {
         bool isLastStreamSame = IsSourceKindEquals(source, lastSource);
 
-        bool canDisposeStream = source is not Stream;
         if (instance.MediaCacheHandler is { } cacheHandler)
         {
             MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
             source = cacheResult.CachedSource;
-            canDisposeStream = cacheResult.DisposeStream;
         }
 
         Uri? sourceUri = source as Uri;
@@ -359,6 +354,7 @@ public partial class LayeredBackgroundImage
     private void InitializeVideoFrameOnMediaOpened(MediaPlayer sender, object args)
     {
         DispatcherQueue.TryEnqueue(Impl);
+        return;
 
         void Impl()
         {
@@ -386,7 +382,7 @@ public partial class LayeredBackgroundImage
             InitializeRenderTargetSize(sender.PlaybackSession);
 
             // Register events
-            image.Loaded += Image_VideoFrameOnLoaded;
+            image.Loaded   += Image_VideoFrameOnLoaded;
             image.Unloaded += Image_VideoFrameOnUnloaded;
 
             // Add to children
@@ -486,7 +482,7 @@ public partial class LayeredBackgroundImage
         {
             // This one is for Image. The source will always guarantee to call this event.
             image.ImageOpened -= Image_ImageOpened;
-            // This one is for Video since ImageOpened with Canvas source will never triggers this so we use Loaded instead.
+            // This one is for Video since ImageOpened with Canvas source will never trigger this so we use Loaded instead.
             image.Loaded   -= Image_VideoFrameOnLoaded;
             image.Unloaded -= Image_VideoFrameOnUnloaded;
             // Clears the loaded ImageSource

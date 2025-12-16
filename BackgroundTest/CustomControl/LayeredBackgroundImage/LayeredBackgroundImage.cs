@@ -6,7 +6,7 @@ public partial class LayeredBackgroundImage : Control
 {
     public LayeredBackgroundImage()
     {
-        Loaded += LayeredBackgroundImage_OnLoaded;
+        Loaded   += LayeredBackgroundImage_OnLoaded;
         Unloaded += LayeredBackgroundImage_OnUnloaded;
 
         DefaultStyleKey = typeof(LayeredBackgroundImage);
@@ -14,9 +14,10 @@ public partial class LayeredBackgroundImage : Control
 
     ~LayeredBackgroundImage()
     {
-        Loaded -= LayeredBackgroundImage_OnLoaded;
+        Loaded   -= LayeredBackgroundImage_OnLoaded;
         Unloaded -= LayeredBackgroundImage_OnUnloaded;
 
+        DisposeRenderTarget();
         DisposeVideoPlayer();
     }
 }

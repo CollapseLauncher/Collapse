@@ -80,10 +80,10 @@ public partial class PanelSlideshow
         set => SetValue(PreviousButtonMinHeightProperty, value);
     }
 
-    public NewPipsPagerNavigationMode PreviousButtonVisibilityMode
+    public Visibility PreviousButtonVisibilityMode
     {
-        get => (NewPipsPagerNavigationMode)GetValue(PreviousButtonMinHeightProperty);
-        set => SetValue(PreviousButtonMinHeightProperty, value);
+        get => (Visibility)GetValue(PreviousButtonVisibilityModeProperty);
+        set => SetValue(PreviousButtonVisibilityModeProperty, value);
     }
 
     public Brush PreviousButtonBackgroundBrush
@@ -157,8 +157,8 @@ public partial class PanelSlideshow
                                     new PropertyMetadata(0));
 
     public static readonly DependencyProperty PreviousButtonVisibilityModeProperty =
-        DependencyProperty.Register(nameof(PreviousButtonVisibilityMode), typeof(NewPipsPagerNavigationMode), typeof(PanelSlideshow),
-                                    new PropertyMetadata(NewPipsPagerNavigationMode.Visible));
+        DependencyProperty.Register(nameof(PreviousButtonVisibilityMode), typeof(Visibility), typeof(PanelSlideshow),
+                                    new PropertyMetadata(Visibility.Visible));
 
     public static readonly DependencyProperty PreviousButtonBackgroundBrushProperty =
         DependencyProperty.Register(nameof(PreviousButtonBackgroundBrush), typeof(Brush), typeof(PanelSlideshow),

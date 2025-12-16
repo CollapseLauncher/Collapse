@@ -77,7 +77,10 @@ internal class TestMediaCacheHandler : IMediaCacheHandler
             }
             catch
             {
-                fileCreate?.Dispose();
+                if (fileCreate != null)
+                {
+                    await fileCreate.DisposeAsync();
+                }
                 return null!;
             }
         }

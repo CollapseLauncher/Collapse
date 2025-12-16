@@ -1,8 +1,7 @@
 ﻿<!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:BackgroundTest.CustomControl.PanelSlideshow">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <AcrylicBrush x:Key="SlideshowButtonBackground" TintColor="#FFFFFF" FallbackColor="#FFFFFF" TintOpacity=".65" />

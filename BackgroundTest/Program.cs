@@ -1,9 +1,5 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using PhotoSauce.MagicScaler;
-using PhotoSauce.NativeCodecs.Libheif;
-using PhotoSauce.NativeCodecs.Libjxl;
-using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;

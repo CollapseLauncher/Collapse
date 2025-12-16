@@ -142,7 +142,7 @@ public partial class PanelSlideshow
         UIElement? lastElement = presenterGrid.Children.FirstOrDefault();
 
         EdgeTransitionLocation currentEdge = paneThemeTransition.Edge;
-        if (isBackward)
+        if (!isBackward)
         {
             currentEdge = GetReversedEdge(currentEdge);
         }
@@ -155,6 +155,10 @@ public partial class PanelSlideshow
         presenterGrid.Children.Clear();
 
         currentElement.Transitions.Clear();
+        currentElement.Transitions.Add(new EdgeUIThemeTransition
+        {
+            Edge = currentEdge
+        });
         presenterGrid.Children.Add(currentElement);
         currentElement.UpdateLayout();
     }
@@ -170,7 +174,7 @@ public partial class PanelSlideshow
         UIElement? lastElement = presenterGrid.Children.FirstOrDefault();
 
         EdgeTransitionLocation currentEdge = paneThemeTransition.Edge;
-        if (isBackward)
+        if (!isBackward)
         {
             currentEdge = GetReversedEdge(currentEdge);
         }
