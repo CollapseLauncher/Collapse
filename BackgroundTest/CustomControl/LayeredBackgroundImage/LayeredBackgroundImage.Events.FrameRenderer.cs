@@ -61,14 +61,9 @@ public partial class LayeredBackgroundImage
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                SwapChainPanelHelper.BeginDrawNativeSurfaceImageSource(
-                    _canvasSurfaceImageSourceNative,
-                    _canvasRenderArea,
-                    out nint surfacePpv);
-
+                SwapChainPanelHelper.NativeSurfaceImageSource_BeginDrawUnsafe(_canvasSurfaceImageSourceNativePtr, in _canvasRenderArea, out nint surfacePpv);
                 SwapChainPanelHelper.MediaPlayer_CopyFrameToVideoSurfaceUnsafe(_videoPlayerPtr, surfacePpv);
-                // _canvasSurfaceImageSourceNative.EndDraw();
-                SwapChainPanelHelper.EndDrawNativeSurfaceImageSource(_canvasSurfaceImageSourceNativePtr);
+                SwapChainPanelHelper.NativeSurfaceImageSource_EndDrawUnsafe(_canvasSurfaceImageSourceNativePtr);
                 Marshal.Release(surfacePpv);
             });
             // sender.CopyFrameToVideoSurface(_canvasRenderTarget);
