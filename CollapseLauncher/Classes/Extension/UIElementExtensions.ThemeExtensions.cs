@@ -8,7 +8,7 @@ using Windows.UI;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
         private static string CurrentReversedThemeKey => InnerLauncherConfig.IsAppThemeLight ? "Dark" : "Light";
 

@@ -36,7 +36,7 @@ namespace CollapseLauncher.Extension
         public string LocalePropertyName { get; init; }
     }
 
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
 #nullable enable
         /// <summary>
@@ -186,6 +186,20 @@ namespace CollapseLauncher.Extension
             }
 
             navViewControl.UpdateLayout();
+        }
+
+        internal static void BindProperty(this FrameworkElement element,
+                                          FrameworkElement      source,
+                                          string                propertyName,
+                                          DependencyProperty    dependencyProperty,
+                                          BindingMode           bindingMode)
+        {
+            element.SetBinding(dependencyProperty, new Binding
+            {
+                Mode   = bindingMode,
+                Source = source,
+                Path   = new PropertyPath(propertyName)
+            });
         }
 
         internal static void BindProperty<T>(
