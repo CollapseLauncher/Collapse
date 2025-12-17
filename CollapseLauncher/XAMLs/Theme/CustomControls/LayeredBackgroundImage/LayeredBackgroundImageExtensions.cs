@@ -179,8 +179,7 @@ internal static class LayeredBackgroundImageExtensions
                 return false;
             }
 
-            bool isDisposeStream = disposeStream;
-            Stream? sourceStream    = sourceFromStream ?? await TryGetStreamFromPathAsync(sourceFromPath);
+            Stream? sourceStream = sourceFromStream ?? await TryGetStreamFromPathAsync(sourceFromPath);
             if (sourceStream is not { CanSeek: true, CanRead: true })
             {
                 return false;
@@ -193,7 +192,7 @@ internal static class LayeredBackgroundImageExtensions
                 image.Source = bitmapImage;
 
                 await bitmapImage.SetSourceAsync(randomStream);
-                if (isDisposeStream)
+                if (disposeStream)
                 {
                     randomStream.Dispose();
                 }
@@ -206,7 +205,7 @@ internal static class LayeredBackgroundImageExtensions
             }
             finally
             {
-                if (isDisposeStream)
+                if (disposeStream)
                 {
                     await sourceStream.DisposeAsync();
                 }
