@@ -1,7 +1,7 @@
 {
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
-  "Author": "misaka10843, imgradeone, SatoSouta, Shatyuka, LaoShuBaby",
+  "Author": "misaka10843, imgradeone, CatSouta, Shatyuka, LaoShuBaby",
 
   "_StartupPage": {
     "SelectLang": "选择您的语言",
@@ -1806,3 +1806,4 @@
     "LauncherUpdated_NotifSubtitle": "您的启动器已被更新到 {0}。前往“{1}”并点击“{2}”以查看更新日志。"
   }
 }
+
