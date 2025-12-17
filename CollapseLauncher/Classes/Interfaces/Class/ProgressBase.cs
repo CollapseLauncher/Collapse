@@ -1358,13 +1358,7 @@ internal abstract class ProgressBase : GamePropertyBase
 #if USENEWZIPDECOMPRESS
     protected virtual long GetArchiveUncompressedSizeManaged(Stream archiveStream)
     {
-        ZipArchiveReader archive = ZipArchiveReader
-           .CreateFrom((pos, _) =>
-           {
-               archiveStream.Position = pos ?? 0;
-               return archiveStream;
-           });
-
+        ZipArchiveReader archive = ZipArchiveReader.CreateFrom(archiveStream);
         return archive.Sum(x => x.Size);
     }
 #endif
@@ -1385,26 +1379,22 @@ internal abstract class ProgressBase : GamePropertyBase
         using Stream stream = GetSingleOrSegmentedDownloadStream(asset);
 
 #if USENEWZIPDECOMPRESS
-        Func<Stream, long> summaryDelegate;
         if (LauncherConfig.IsEnforceToUse7zipOnExtract)
         {
-            summaryDelegate = GetArchiveUncompressedSizeNative7Zip;
+            return GetArchiveUncompressedSizeNative7Zip(stream);
         }
-        else if ((asset.PathOutput.EndsWith(".zip",     StringComparison.OrdinalIgnoreCase) ||
-                  asset.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase)) &&
-                 !IsAllowExtractCorruptZip)
+
+        if ((asset.PathOutput.EndsWith(".zip",     StringComparison.OrdinalIgnoreCase) ||
+             asset.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase)) &&
+            !IsAllowExtractCorruptZip)
         {
-            summaryDelegate = GetArchiveUncompressedSizeManaged;
+            return GetArchiveUncompressedSizeManaged(stream);
         }
-        else
-        {
-            summaryDelegate = GetArchiveUncompressedSizeNative7Zip;
-        }
+
+        return GetArchiveUncompressedSizeNative7Zip(stream);
 #else
         return GetArchiveUncompressedSizeNative7Zip(stream);
 #endif
-
-        return summaryDelegate(stream);
     }
 
     protected virtual Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
