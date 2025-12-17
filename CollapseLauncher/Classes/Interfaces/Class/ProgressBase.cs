@@ -1689,6 +1689,7 @@ internal abstract class ProgressBase : GamePropertyBase
                                                                           updateTotalProgress),
                                                hmacKey,
                                                stream.Length.GetFileStreamBufferSize(),
+                                               false,
                                                token);
 
     protected virtual Task<byte[]> GetHashAsync<T>(
