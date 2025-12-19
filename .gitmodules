@@ -31,3 +31,6 @@
 [submodule "Hi3Helper.Plugin.Core"]
 	path = Hi3Helper.Plugin.Core
 	url = https://github.com/CollapseLauncher/Hi3Helper.Plugin.Core
+[submodule "Hi3Helper.SimpleZipArchiveReader"]
+	path = Hi3Helper.SimpleZipArchiveReader
+	url = https://github.com/CollapseLauncher/Hi3Helper.SimpleZipArchiveReader

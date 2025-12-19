@@ -1,4 +1,5 @@
 using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using System;
@@ -15,9 +16,9 @@ namespace CollapseLauncher.GameVersioning
     internal sealed class GameTypeZenlessVersion : GameVersionBase
     {
         #region Properties
-        internal RSA SleepyInstance { get; set; }
-        internal string SleepyIdentity { get; set; }
-        internal string SleepyArea { get; set; }
+        internal RSA    SleepyInstance { get; private set; }
+        internal string SleepyIdentity { get; private set; }
+        internal string SleepyArea     { get; private set; }
         #endregion
 
         #region Initialize Sleepy
@@ -115,8 +116,8 @@ namespace CollapseLauncher.GameVersioning
         }
         #endregion
 
-        public GameTypeZenlessVersion(RegionResourceProp gameRegionProp, PresetConfig gamePreset, string gameName, string gameRegion)
-            : base(gameRegionProp, gameName, gameRegion)
+        public GameTypeZenlessVersion(ILauncherApi launcherApi,
+                                      PresetConfig gamePreset) : base(launcherApi, gamePreset)
         {
             // Try check for reinitializing game version.
             InitializeSleepy(gamePreset);

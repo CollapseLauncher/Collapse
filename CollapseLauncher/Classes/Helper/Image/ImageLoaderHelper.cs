@@ -48,6 +48,7 @@ using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Helper.Image
 {
@@ -311,7 +312,7 @@ namespace CollapseLauncher.Helper.Image
                 {
                     inputFileInfo.MoveTo(inputFileInfo.FullName + "_old", true);
                     FileInfo newCachedFileInfo = new FileInfo(inputFileName);
-                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
                         await using (FileStream oldInputFileStream = inputFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
                             await ResizeImageStream(oldInputFileStream, newCachedFileStream, toWidth, toHeight);
 
@@ -347,33 +348,82 @@ namespace CollapseLauncher.Helper.Image
             return new FileInfo(cachedFilePath);
         }
 
-        public static async Task ResizeImageStream(Stream input, Stream output, uint toWidth, uint toHeight)
+        public static Task ResizeImageStream(Stream input, Stream output, uint toWidth, uint toHeight)
         {
-            await Task.Run(() =>
+            return Task.Factory.StartNew(Impl);
+
+            void Impl()
             {
                 ProcessImageSettings settings = new()
                 {
-                    Width = (int)toWidth,
-                    Height = (int)toHeight,
-                    HybridMode = HybridScaleMode.Off,
+                    Width         = (int)toWidth,
+                    Height        = (int)toHeight,
+                    HybridMode    = HybridScaleMode.Off,
                     Interpolation = InterpolationSettings.CubicSmoother,
-                    Anchor = CropAnchor.Bottom | CropAnchor.Center
+                    Anchor        = CropAnchor.Bottom | CropAnchor.Center
                 };
                 settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
-                var imageFileInfo = ImageFileInfo.Load(input!);
-                var frame = imageFileInfo.Frames[0];
+                ImageFileInfo           imageFileInfo = ImageFileInfo.Load(input!);
+                ImageFileInfo.FrameInfo frame         = imageFileInfo.Frames[0];
                 input.Position = 0;
 
                 bool isUseWaifu2X = IsWaifu2XEnabled && (frame.Width < toWidth || frame.Height < toHeight);
-                using var pipeline = MagicImageProcessor.BuildPipeline(input, isUseWaifu2X ? ProcessImageSettings.Default : settings);
+                using ProcessingPipeline pipeline =
+                    MagicImageProcessor
+                       .BuildPipeline(input,
+                                      isUseWaifu2X
+                                          ? ProcessImageSettings.Default
+                                          : settings);
 
                 if (isUseWaifu2X)
                     pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
 
                 pipeline.WriteOutput(output);
-            });
+            }
         }
+
+#nullable enable
+        private static volatile ProcessImageSettings? _pngImageSettings;
+
+        public static Task GetConvertedImageAsPng(Stream input,
+                                                  Stream output,
+                                                  double dpiX = 96,
+                                                  double dpiY = 96)
+        {
+            TaskCompletionSource tcs = new();
+            Task.Factory.StartNew(Impl);
+
+            return tcs.Task;
+
+            void Impl()
+            {
+                try
+                {
+                    if (_pngImageSettings == null)
+                    {
+                        ProcessImageSettings settings = new()
+                        {
+                            DpiX = dpiX,
+                            DpiY = dpiY
+                        };
+                        settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+                        _pngImageSettings = settings;
+                    }
+
+                    using ProcessingPipeline pipeline =
+                        MagicImageProcessor.BuildPipeline(input, _pngImageSettings);
+
+                    pipeline.WriteOutput(output);
+                    tcs.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            }
+        }
+#nullable restore
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
         {
@@ -511,8 +561,7 @@ namespace CollapseLauncher.Helper.Image
             return true;
         }
 
-        private static readonly HashSet<FileInfo> ProcessingFiles = [];
-        private static readonly HashSet<string>   ProcessingUrls  = [];
+        private static readonly HashSet<string> ProcessingUrls = new(StringComparer.OrdinalIgnoreCase);
 
         public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
@@ -535,16 +584,16 @@ namespace CollapseLauncher.Helper.Image
 
             fileInfo.EnsureCreationOfDirectory().EnsureNoReadOnly();
 
-            if (ProcessingFiles.Contains(fileInfo) || ProcessingUrls.Contains(url))
+            if (ProcessingUrls.Contains(url))
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
                 return false;
             }
+
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
-                ProcessingFiles.Add(fileInfo);
                 ProcessingUrls.Add(url);
                 // Initialize file temporary name
                 FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp")
@@ -637,7 +686,6 @@ namespace CollapseLauncher.Helper.Image
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
-                ProcessingFiles.Remove(fileInfo);
                 ProcessingUrls.Remove(url);
             }
         }
@@ -682,14 +730,23 @@ namespace CollapseLauncher.Helper.Image
             if (client == null)
                 return await FallbackCDNUtil.GetHttpStreamFromResponse(urlLocal, tokenLocal);
 
-            return await BridgedNetworkStream.CreateStream(
-                                                           await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
+            return await BridgedNetworkStream.CreateStream(await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
                                                            tokenLocal);
         }
 
-        public static string? GetCachedSprites(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
+        public static string? GetCachedSprites(string? url, bool isSkipHashCheck = false)
         {
-            if (string.IsNullOrEmpty(url) || token.IsCancellationRequested) return url;
+            if (string.IsNullOrEmpty(url))
+            {
+                return url;
+            }
+
+            if (ProcessingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return url;
+            }
 
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(url));
             if (!Directory.Exists(AppGameImgCachedFolder))
@@ -701,9 +758,8 @@ namespace CollapseLauncher.Helper.Image
                 return cachePath;
             }
 
-            TryDownloadToCompletenessDetached(url, httpClient, fInfo, isSkipHashCheck, token);
+            TryDownloadToCompletenessDetached(url, null, fInfo, isSkipHashCheck, CancellationToken.None);
             return url;
-
         }
 
         public static async Task<string?> GetCachedSpritesAsync(string? url, bool isSkipHashCheck, CancellationToken token)
@@ -711,7 +767,13 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(url)) return url;
+            if (string.IsNullOrEmpty(url) ||
+                ProcessingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return url;
+            }
 
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(url));
             if (!Directory.Exists(AppGameImgCachedFolder))

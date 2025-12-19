@@ -14,7 +14,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 {
     internal partial class ZenlessInstall
     {
-        internal const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+        private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
         // ReSharper disable once StringLiteralTypo
         [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfo>k__BackingField")]
@@ -38,7 +38,7 @@ namespace CollapseLauncher.InstallManager.Zenless
         private async Task<HashSet<int>> GetExceptMatchFieldHashSet(CancellationToken token)
         {
             string gameExecDataName =
-                Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
+                Path.GetFileNameWithoutExtension(GameVersionManager?.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
             string gameExecDataPath         = $"{gameExecDataName}_Data";
             string gamePersistentDataPath   = Path.Combine(GamePath,               gameExecDataPath, "Persistent");
             string gameExceptMatchFieldFile = Path.Combine(gamePersistentDataPath, "KDelResource");

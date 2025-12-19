@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
@@ -61,8 +62,8 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #endregion
 
-        public StarRailInstall(UIElement parentUI, IGameVersion GameVersionManager)
-            : base(parentUI, GameVersionManager)
+        public StarRailInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI, gameVersionManager, gameSettings)
         {
         }
 
@@ -78,7 +79,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             // If the confirm is 1 (verified) or -1 (cancelled), then return the code
             int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as StarRailRepair);
+                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer));
             if (deltaPatchConfirm is -1 or 1)
             {
                 return deltaPatchConfirm;
@@ -89,9 +90,11 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
 #nullable enable
-        protected override IRepair GetGameRepairInstance(string? versionString) =>
+        protected override StarRailRepair GetGameRepairInstance(string? versionString) =>
             new StarRailRepair(ParentUI,
-                    GameVersionManager, true,
+                    GameVersionManager,
+                    GameSettings,
+                    true,
                     versionString);
 #nullable restore
 
@@ -138,17 +141,22 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #region Override Methods - UninstallGame
 
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
-            return new UninstallGameProperty
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
             {
-                gameDataFolderName = "StarRail_Data",
-                foldersToDelete    = ["AntiCheatExpert"],
-                filesToDelete =
+                return gameInstallFileInfo;
+            }
+
+            return new GameInstallFileInfo
+            {
+                GameDataFolderName = "StarRail_Data",
+                FoldersToDelete    = ["AntiCheatExpert"],
+                FilesToDelete =
                 [
                     "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*"
                 ],
-                foldersToKeepInData = ["ScreenShots"]
+                FoldersToKeepInData = ["ScreenShots"]
             };
         }
 
@@ -164,11 +172,10 @@ namespace CollapseLauncher.InstallManager.StarRail
             // Assign path to reader
             using StreamReader reader = new StreamReader(path, true);
             // Do loop until EOF
-            while (!reader.EndOfStream)
+            while (await reader.ReadLineAsync(token) is {} line)
             {
                 // Read line and deserialize
-                string? line = await reader.ReadLineAsync(token);
-                LocalFileInfo? localFileInfo = line?.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
+                LocalFileInfo? localFileInfo = line.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
 
                 // Assign the values
                 if (localFileInfo == null)

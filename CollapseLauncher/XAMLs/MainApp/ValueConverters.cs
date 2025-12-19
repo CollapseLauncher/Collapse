@@ -1,17 +1,31 @@
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.WinRT.WindowsStream;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Collections;
 using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Globalization.NumberFormatting;
+using Windows.Storage.Streams;
+
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Pages
 {
@@ -66,7 +80,20 @@ namespace CollapseLauncher.Pages
 
     public partial class FileSizeToStringLiteralConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => ConverterTool.SummarizeSizeSimple((long)value);
+        public object Convert(object value, Type targetType, object parameter, string input)
+        {
+            if (value is double asDouble)
+            {
+                return ConverterTool.SummarizeSizeSimple(asDouble);
+            }
+
+            if (value is float asFloat)
+            {
+                return ConverterTool.SummarizeSizeSimple(asFloat);
+            }
+
+            return ConverterTool.SummarizeSizeSimple((long)value);
+        }
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
@@ -150,7 +177,14 @@ namespace CollapseLauncher.Pages
     public partial class CountToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
+        {
+            if (value is ICollection asCollection)
+            {
+                return asCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+            
+            return value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
@@ -389,6 +423,51 @@ namespace CollapseLauncher.Pages
         }
     }
 
+    public partial class BooleanToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double thisValue = value is not bool boolean || boolean ? 1.0d : 0d;
+            return typeof(float) == targetType ? (float)thisValue : thisValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class FloorFloatingValueConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valEvaluated = Math.Floor((double)value);
+            if (!double.IsFinite(valEvaluated) ||
+                double.IsNaN(valEvaluated) ||
+                double.IsInfinity(valEvaluated))
+            {
+                return null;
+            }
+
+            return valEvaluated;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class PercentageValueConverter : FloorFloatingValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double result = (double)base.Convert(value, targetType, parameter, language);
+            return $"{result}%";
+        }
+    }
+
+    /*
     public partial class LocaleCodeToFlagUrlConverter : IValueConverter
     {
         private const string Separator = "-_";
@@ -424,6 +503,7 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+    */
 
     public partial class UpdateToVersionStringConverter : IValueConverter
     {
@@ -464,6 +544,193 @@ namespace CollapseLauncher.Pages
                                  null => GameVersion.Empty,
                                  _ => (GameVersion)value
                              });
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class NullableVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value is null ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+#nullable enable
+    public partial class UrlToCachedImageSourceConverter : IValueConverter
+    {
+        internal static         CDNCache   CacheManager;
+        private static readonly HttpClient Client;
+
+        static UrlToCachedImageSourceConverter()
+        {
+            Client = new HttpClientBuilder()
+                    .UseLauncherConfig()
+                    .Create();
+            CacheManager = new CDNCache
+            {
+                IsUseAggressiveMode        = true,
+                CurrentCacheDir            = LauncherConfig.AppGameImgCachedFolder,
+                Logger                     = ILoggerHelper.GetILogger("UrlToCachedImageSourceConverter"),
+                MaxAcceptedCacheExpireTime = TimeSpan.FromDays(7)
+            };
+            LauncherConfig.AppGameFolderChanged += AppGameFolderChanged;
+        }
+
+        private static void AppGameFolderChanged(string path)
+        {
+            string changedCacheFolder = LauncherConfig.AppGameImgCachedFolder;
+            CacheManager.CurrentCacheDir = changedCacheFolder;
+
+            CacheManager.Logger?.LogDebug("App game folder has been changed to: {path}", path);
+            CacheManager.Logger?.LogDebug("Sprite cache folder has been changed to: {path}", changedCacheFolder);
+        }
+
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is Uri { IsFile: true } asUrl)
+            {
+                return asUrl;
+            }
+
+            // Return if it's already a local path
+            string? stringUrl = value as string ?? (value as Uri)?.AbsolutePath;
+            if (string.IsNullOrEmpty(stringUrl) || stringUrl.Length < 3)
+            {
+                return stringUrl;
+            }
+
+            ReadOnlySpan<char> stringUrlSpan = stringUrl;
+
+            // If the image is .svg formatted, redirect to svg load routine.
+            if (stringUrlSpan.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            {
+                return ConvertToSvgImageSource(stringUrl);
+            }
+
+            if (stringUrl.IsPathLocal())
+            {
+                return stringUrl;
+            }
+
+            // Create BitmapImage instance, then lazy-load the resource in the background.
+            BitmapImage image = new();
+            _ = LoadLazyBitmap(image, stringUrl);
+
+            return image;
+        }
+
+        private static SvgImageSource ConvertToSvgImageSource(string url)
+        {
+            SvgImageSource image = new();
+            _ = LoadLazySvg(image, url);
+
+            return image;
+        }
+
+        private static async Task LoadLazySvg(SvgImageSource image, string url)
+        {
+            Stream? resultStream;
+
+            // ReSharper disable once AsyncVoidMethod
+            async void ImageOnImageOpened(SvgImageSource sender, SvgImageSourceOpenedEventArgs e)
+            {
+                if (resultStream != null)
+                {
+                    await resultStream.DisposeAsync();
+#if DEBUG
+                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
+#endif
+                }
+
+                sender.Opened -= ImageOnImageOpened;
+            }
+
+            try
+            {
+                if (url.IsPathLocal() &&
+                    File.Exists(url))
+                {
+                    resultStream = File.Open(url,
+                                             FileMode.Open,
+                                             FileAccess.Read,
+                                             FileShare.ReadWrite);
+                    IRandomAccessStream localStream = resultStream.AsRandomAccessStream();
+                    image.Opened += ImageOnImageOpened;
+
+                    await image.SetSourceAsync(localStream);
+                    return;
+                }
+
+                CDNCacheResult result =
+                    await CacheManager
+                       .TryGetCachedStreamFrom(Client,
+                                               url,
+                                               null,
+                                               CancellationToken.None);
+
+                resultStream = result.Stream;
+                IRandomAccessStream stream = resultStream.AsRandomAccessStream();
+                image.Opened += ImageOnImageOpened;
+
+                await image.SetSourceAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
+                                               LogType.Error,
+                                               true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+
+        private static async Task LoadLazyBitmap(BitmapImage image, string url)
+        {
+            Stream? resultStream;
+
+            // ReSharper disable once AsyncVoidMethod
+            async void ImageOnImageOpened(object sender, RoutedEventArgs e)
+            {
+                if (resultStream != null)
+                {
+                    await resultStream.DisposeAsync();
+#if DEBUG
+                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
+#endif
+                }
+
+                image.ImageOpened -= ImageOnImageOpened;
+            }
+
+            try
+            {
+                CDNCacheResult result =
+                    await CacheManager
+                       .TryGetCachedStreamFrom(Client,
+                                               url,
+                                               null,
+                                               CancellationToken.None);
+
+                resultStream = result.Stream;
+                IRandomAccessStream stream = resultStream.AsRandomAccessStream(true);
+                image.ImageOpened += ImageOnImageOpened;
+
+                await image.SetSourceAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
+                                               LogType.Error,
+                                               true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

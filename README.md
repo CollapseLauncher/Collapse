@@ -20,7 +20,6 @@
 [![Build-Canary](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml)
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to GitLab](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml)
-[![Sync to Coding](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml)
 [![Sync to CNB](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-cnb.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-cnb.yml)
 [![Upload to R2](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
 [![Upload to DigitalOcean](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-do.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-do.yml)
@@ -65,8 +64,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > ### You can find the list of features on our [new website](https://collapselauncher.com/features.html)!
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.35/CollapseLauncher-stable-Setup.exe)
-> **Note**: The version for this build is `1.82.35` (Released on: October 26th, 2025).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.36/CollapseLauncher-stable-Setup.exe)
+> **Note**: The version for this build is `1.82.36` (Released on: October 26th, 2025).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.83.12-pre/CollapseLauncher-preview-Setup.exe)
 > **Note**: The version for this build is `1.83.12` (Released on: October 26th, 2025).
@@ -160,6 +159,9 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Scighost"><img src="https://avatars.githubusercontent.com/u/61003590?v=4?s=100" width="100px;" alt="Scighost"/><br /><sub><b>Scighost</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/issues?q=author%3AScighost" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/IhoFox"><img src="https://avatars.githubusercontent.com/u/133899447?v=4?s=100" width="100px;" alt="IhoFox"/><br /><sub><b>IhoFox</b></sub></a><br /><a href="#translation-IhoFox" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kujou-kju"><img src="https://avatars.githubusercontent.com/u/23724383?v=4?s=100" width="100px;" alt="kujou"/><br /><sub><b>kujou</b></sub></a><br /><a href="#translation-kujou-kju" title="Translation">🌍</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://souta.cc"><img src="https://avatars.githubusercontent.com/u/18072048?v=4?s=100" width="100px;" alt="Souta"/><br /><sub><b>Souta</b></sub></a><br /><a href="#translation-CatSouta" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>

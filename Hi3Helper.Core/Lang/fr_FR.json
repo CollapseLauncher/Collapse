@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "Réparer le jeu",
     "GameSettings_Panel2UninstallGame": "Désinstaller le jeu",
     "GameSettings_Panel2ConvertVersion": "Convertir la version du jeu",
+    "GameSettings_Panel2ChangeGameLocation": "Modifier l'emplacement du jeu",
     "GameSettings_Panel2MoveGameLocationGame": "Déplacer le jeu",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "Impossible de déplacer le jeu à la racine de votre disque !\r\nVeuillez créer un nouveau dossier et réessayez.",
     "GameSettings_Panel2StopGame": "Forcer la fermeture du jeu",
@@ -744,7 +745,7 @@
     "LeftPanelNoPluginTitle": "Hé ! Vous n'avez aucun plugin chargé…",
     "LeftPanelNoPluginButton1": "Accéder au",
     "LeftPanelNoPluginButton2": "catalogue de téléchargement de plugins",
-    "LeftPanelNoPluginButton3": " ",
+    "LeftPanelNoPluginButton3": "pour en obtenir plus!",
 
     "LeftPanelListViewTitle": "Informations sur les plugins chargés",
 
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "Vous devez redémarrer le launcher pour appliquer les changements !",
     "ListViewFooterRestartButton": "Redémarrer le launcher",
 
-    "RightPanelImportTitle1": "Déposez le",
+    "RightPanelImportTitle1": "Importer le",
     "RightPanelImportTitle2": "ou le",
     "RightPanelImportTitle3": "ici",
-    "RightPanelImportTitle4": "ou cliquez sur cette boîte pour importer le plugin"
+    "RightPanelImportTitle4": "Cliquez sur cette boîte pour l'installer !"
   },
 
   "_Misc": {
@@ -1608,6 +1609,7 @@
     "General_OpenNotifTray": "Ouvrir le panneau de notifications",
     "General_ReloadRegion": "Recharger la page actuelle",
     "General_ReloadRegion_Desc": "Appuyer sur F5 est une alternative à ce raccourci.\r\nVeuillez noter que recharger la page d'accueil rechargera la région.",
+    "General_OpenPluginManager": "Ouvrir le Gestionnaire de plugins",
 
     "Switch_Title": "Basculement rapide de jeu/région",
     "Switch_Subtitle": "Note : Les combinaisons de touches suivent l'ordre des sélecteurs.",
@@ -1658,6 +1660,19 @@
     "Japan": "Japon",
     "Bilibili": "Bilibili",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Mettre à jour",
+    "CancelUpdateBtn": "Stopper la mise à jour",
+    "ReinstallToolBtn": "Réinstaller",
+    "StartUpdateAutomatically": "Mettre à jour automatiquement",
+    "NotifUpdateCompletedTitle": "{0} a été mis à jour !",
+    "NotifUpdateCompletedSubtitle": "L'outil « {0} » de {1} ({2}) a été mis à jour vers la v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "Bac à sable milliastral"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1746,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(Expérimental)",
     "Graphics_ColorFilter": "Intensité du filtre de couleurs",
     "Graphics_RenderRes": "Résolution de rendu",
     "Graphics_EffectsQ": "Qualité des effets",
@@ -1741,7 +1757,18 @@
     "Audio_PlaybackDev_Headphones": "Casque",
     "Audio_PlaybackDev_Speakers": "Haut-parleurs",
     "Audio_PlaybackDev_TV": "Téléviseur",
-    "Audio_Ambient": "Volume des bruits d'ambiance"
+    "Audio_Ambient": "Volume des bruits d'ambiance",
+    "AdvancedGraphics_Title": "Paramètres graphiques avancés",
+    "AdvancedGraphics_Tooltip1": "Certaines fonctionnalités ne peuvent être utilisées qu'avec un GPU NVIDIA GeForce RTX ainsi que l'API DirectX 12 activé.",
+    "AdvancedGraphics_Tooltip2": "Veuillez noter que les fonctionnalités présentes dans cette section sont EXPÉRIMENTALES, et que leur utilisation est à vos risques et périls.",
+    "AdvancedGraphics_UseDirectX12API": "Utiliser l'API DirectX 12",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Qualité du Ray Tracing",
+    "AdvancedGraphics_SuperScaling": "Super Scaling",
+    "AdvancedGraphics_SuperScalingQ": "Priorité du Super Scaling",
+    "AdvancedGraphics_SuperScalingQ_Performance": "Performance",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "Équilibré",
+    "AdvancedGraphics_SuperScalingQ_Quality": "Qualité"
   },
 
   "_NotificationToast": {

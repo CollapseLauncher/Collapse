@@ -42,11 +42,11 @@ namespace CollapseLauncher.GamePlaytime
             _gameVersionManager = gameVersionManager;
 
             CollapsePlaytime = CollapsePlaytime.Load(_registryRoot,
-                                              _gameVersionManager.GamePreset.HashID,
-                                              _gameVersionManager,
-                                              gameSettings);
-            
-            
+                                                     _gameVersionManager.GamePreset.HashID,
+                                                     _gameVersionManager,
+                                                     gameSettings);
+
+
             IGameSettingsUniversal gameSettingsUniversal = gameSettings.AsIGameSettingsUniversal();
             if ((DbHandler.IsEnabled ?? false) && gameSettingsUniversal.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                 _ = CheckDb();
@@ -150,9 +150,6 @@ namespace CollapseLauncher.GamePlaytime
                 // ignored
             }
         }
-
-        public Task StartSession(Process proc, DateTime? begin = null)
-            => StartSessionFromAwaiter(proc.WaitForExitAsync, begin);
 
         private static string TimeSpanToString(TimeSpan timeSpan) => $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
 

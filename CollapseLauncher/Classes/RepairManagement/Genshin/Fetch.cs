@@ -3,7 +3,6 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Genshin;
-using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
@@ -68,7 +67,7 @@ namespace CollapseLauncher
             await FetchBilibiliSdk(token);
 
             // Remove plugin from assetIndex
-            EliminatePluginAssetIndex(assetIndex);
+            EliminatePluginAssetIndex(assetIndex, x => x.localName, x => x.remoteName);
 
             // Clear hashtableManifest
             hashtableManifest.Clear();
@@ -103,27 +102,6 @@ namespace CollapseLauncher
 
             return assetIndex;
 #nullable restore
-        }
-
-        private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
-        {
-            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
-               {
-                   if (plugin.package?.validate == null) return;
-
-                   assetIndex.RemoveAll(asset =>
-                    {
-                        bool r = plugin.package.validate.Any(validate => validate.path != null &&
-                                                                         (asset.localName?.Contains(validate.path) ??
-                                                                          asset.remoteName.Contains(validate.path)));
-                        if (r)
-                        {
-                            LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
-                                true);
-                        }
-                        return r;
-                    });
-               });
         }
 
         internal static void EliminateUnnecessaryAssetIndex<T>(string          audioLangListPath,
@@ -162,10 +140,9 @@ namespace CollapseLauncher
             TryDeleteDownloadPref();
 
             // Get Sophon Properties
-            IGameVersion     gameVersionManager = GameVersionManager;
-            string           gameAudioListPath  = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
-            SophonChunkUrls? sophonManifestUrls = gameVersionManager.GamePreset.LauncherResourceChunksURL;
-            HttpClient       httpClient         = downloadClient.GetHttpClient();
+            string gameAudioListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            SophonChunkUrls? sophonManifestUrls = GameVersionManager?.GamePreset.LauncherResourceChunksURL;
+            HttpClient httpClient = downloadClient.GetHttpClient();
 
             if (sophonManifestUrls == null)
             {
@@ -187,7 +164,7 @@ namespace CollapseLauncher
             // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
             List<SophonAsset> sophonAssetList = [];
             await GenshinInstall.DownloadPkgVersionStatic(httpClient,
-                                                          gameVersionManager,
+                                                          GameVersionManager!,
                                                           GamePath,
                                                           gameAudioListPath,
                                                           manifestMainInfoPair,

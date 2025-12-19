@@ -248,7 +248,7 @@ namespace CollapseLauncher.ShortcutUtils
 
                 result.Add(name, subObject);
             }
-            finish:
+        finish:
             return result;
         }
 

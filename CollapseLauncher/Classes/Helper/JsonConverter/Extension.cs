@@ -127,19 +127,16 @@ namespace CollapseLauncher.Helper.JsonConverter
         // Docs:
         // https://github.com/dotnet/runtime/blob/907eff84ef204a2d71c10e7cd726b76951b051bd/src/libraries/System.Text.Json/src/System/Text/Json/Reader/JsonReaderHelper.Unescaping.cs#L429
 
-        internal static class JsonConstants
+        private static class JsonConstants
         {
-            public const byte Space             = (byte)' ';
-            public const byte CarriageReturn    = (byte)'\r';
-            public const byte LineFeed          = (byte)'\n';
-            public const byte Tab               = (byte)'\t';
-            public const byte Quote             = (byte)'"';
-            public const byte BackSlash         = (byte)'\\';
-            public const byte Slash             = (byte)'/';
-            public const byte BackSpace         = (byte)'\b';
-            public const byte FormFeed          = (byte)'\f';
-            public const byte Colon             = (byte)':';
-            public const byte Plus              = (byte)'+';
+            public const byte CarriageReturn = (byte)'\r';
+            public const byte LineFeed       = (byte)'\n';
+            public const byte Tab            = (byte)'\t';
+            public const byte Quote          = (byte)'"';
+            public const byte BackSlash      = (byte)'\\';
+            public const byte Slash          = (byte)'/';
+            public const byte BackSpace      = (byte)'\b';
+            public const byte FormFeed       = (byte)'\f';
 
             public const int UnicodePlane01StartValue = 0x10000;
             public const int HighSurrogateStartValue = 0xD800;
@@ -147,8 +144,6 @@ namespace CollapseLauncher.Helper.JsonConverter
             public const int LowSurrogateStartValue = 0xDC00;
             public const int LowSurrogateEndValue = 0xDFFF;
             public const int BitShiftBy10 = 0x400;
-
-            public const int DefaultIndentSize = 2;
         }
 
         /// <summary>
@@ -313,7 +308,7 @@ namespace CollapseLauncher.Helper.JsonConverter
                 }
             }
 
-            Success:
+        Success:
             return true;
 
             DestinationTooShort:

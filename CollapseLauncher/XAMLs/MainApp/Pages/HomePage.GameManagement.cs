@@ -1,6 +1,6 @@
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -617,15 +617,10 @@ public sealed partial class HomePage
         }
     }
 
-    private void ConvertVersionButton_Click(object sender, RoutedEventArgs e)
-    {
-        MainFrameChanger.ChangeWindowFrame(typeof(InstallationConvert));
-    }
-
     private async void StopGameButton_Click(object sender, RoutedEventArgs e)
     {
         if (await Dialog_StopGame() != ContentDialogResult.Primary) return;
-        StopGame(CurrentGameProperty.GameVersion?.GamePreset);
+        StopGame(CurrentGameProperty.GameVersion!.GamePreset);
     }
 
     private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
@@ -677,17 +672,34 @@ public sealed partial class HomePage
             ErrorSender.SendException(ex);
         }
     }
+
+    private async void ChangeGameLocationButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+            if (newPath == null || newPath == CurrentGameProperty.GameVersion.GameDirPath)
+            {
+                return;
+            }
+
+            CurrentGameProperty.GameVersion.UpdateGamePath(newPath);
+            CurrentGameProperty.GameInstall.ApplyGameConfig();
+            ReturnToHomePage();
+        }
+        catch (Exception ex)
+        {
+            LogWriteLine($"Error has occurred while changing Game Location!\r\n{ex}", LogType.Error, true);
+            ErrorSender.SendException(ex);
+        }
+    }
     #endregion
-    
+
     #region Game State
     private async ValueTask GetCurrentGameState()
     {
         Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion?.GamePreset.IsRepairEnabled ?? false ?
             Visibility.Visible : Visibility.Collapsed;
-
-        if (!(CurrentGameProperty.GameVersion?.GamePreset.IsConvertible ?? false)
-            || CurrentGameProperty.GameVersion.GameType != GameNameType.Honkai)
-            ConvertVersionButton.Visibility = Visibility.Collapsed;
 
         // Clear the _CommunityToolsProperty statics
         PageStatics.CommunityToolsProperty?.Clear();
@@ -769,10 +781,8 @@ public sealed partial class HomePage
                 OpenGameFolderButton.IsEnabled       = false;
                 CleanupFilesButton.IsEnabled         = false;
                 OpenCacheFolderButton.IsEnabled      = false;
-                ConvertVersionButton.IsEnabled       = false;
                 CustomArgsTextBox.IsEnabled          = false;
                 OpenScreenshotFolderButton.IsEnabled = false;
-                ConvertVersionButton.Visibility      = Visibility.Collapsed;
                 RepairGameButton.Visibility          = Visibility.Collapsed;
                 UninstallGameButton.Visibility       = Visibility.Collapsed;
                 MoveGameLocationButton.Visibility    = Visibility.Collapsed;

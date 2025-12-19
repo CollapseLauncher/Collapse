@@ -62,11 +62,10 @@ namespace CollapseLauncher
         private bool IsNotificationPanelShow;
         private bool IsLoadNotifComplete;
         private bool IsLoadFrameCompleted = true;
-        private bool IsFirstStartup       = true;
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
 
-        internal static List<string> PreviousTagString = [];
+        internal static readonly List<string> PreviousTagString = [];
 
 #nullable enable
         internal static BackgroundMediaUtility? CurrentBackgroundHandler;
@@ -172,8 +171,8 @@ namespace CollapseLauncher
             if (!isCacheUpdaterMode) SetActivatedRegion();
 
 #if !DISABLEDISCORD
-            bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
-            AppDiscordPresence = new DiscordPresenceManager(isInitialStart);
+            bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
+            AppDiscordPresence = new DiscordPresenceManager(isEnableDiscord);
             AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
 
@@ -190,7 +189,10 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
-                AppDiscordPresence.SetupPresence();
+                if (isEnableDiscord)
+                {
+                    AppDiscordPresence.SetupPresence();
+                }
             }
 
             // Unlock ChangeBtn for first start
@@ -536,9 +538,20 @@ namespace CollapseLauncher
             ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(selectedCategoryString);
         }
         #nullable disable
-
+        private bool IsDisableInstantRegionChangeTemporary = true;
         private async void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
+            if (IsDisableInstantRegionChangeTemporary) // Disabling instant change for the first start-up to avoid conflict
+            {
+                IsDisableInstantRegionChangeTemporary = false;
+                return;
+            }
+
+            if (ComboBoxGameRegion.SelectedIndex < 0)
+            {
+                return;
+            }
+
             if (ComboBoxGameCategory.SelectedIndex == CurrentGameCategory && ComboBoxGameRegion.SelectedIndex == CurrentGameRegion)
             {
                 ChangeRegionConfirmBtn.IsEnabled          = false;
@@ -562,7 +575,7 @@ namespace CollapseLauncher
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
 
-            if (!IsShowRegionChangeWarning && IsInstantRegionChange && !DisableInstantRegionChange && !IsFirstStartup)
+            if (!IsShowRegionChangeWarning && IsInstantRegionChange && !DisableInstantRegionChange)
                 ChangeRegionInstant();
         }
 
@@ -590,7 +603,7 @@ namespace CollapseLauncher
 
             if (isPluginHasUpdate)
             {
-                StartSpawn:
+            StartSpawn:
                 Grid textGridBox = UIElementExtensions.CreateGrid()
                                                       .WithRows(new GridLength(),
                                                                 new GridLength(1, GridUnitType.Auto))
@@ -860,7 +873,7 @@ namespace CollapseLauncher
 
             DisableInstantRegionChange = true;
             LockRegionChangeBtn        = true;
-            IsLoadRegionComplete       = false;
+            Interlocked.Exchange(ref IsLoadRegionComplete, false);
 
             (PresetConfig preset, string gameName, string gameRegion) = await LoadSavedGameSelection();
 

@@ -120,7 +120,7 @@ internal static class DbHandler
 
     public static async Task Init(bool redirectThrow = false, bool bypassEnableFlag = false)
     {
-        DbConfig.Init();
+        await Task.Factory.StartNew(DbConfig.Init).ConfigureAwait(false);
             
         if (!bypassEnableFlag && !(IsEnabled ?? false))
         {
@@ -373,7 +373,7 @@ internal static class DbHandler
                                          ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                          ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine($"[DBHandler::QueryKey] Database stream expired.",
+            LogWriteLine("[DBHandler::QueryKey] Database stream expired.",
                          LogType.Error, true);
 
             await Init();

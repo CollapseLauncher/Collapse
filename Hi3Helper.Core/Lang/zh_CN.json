@@ -1,7 +1,7 @@
 {
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
-  "Author": "misaka10843, imgradeone, SatoSouta",
+  "Author": "misaka10843, imgradeone, CatSouta, Shatyuka, LaoShuBaby",
 
   "_StartupPage": {
     "SelectLang": "选择您的语言",
@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换游戏版本",
+    "GameSettings_Panel2ChangeGameLocation": "更改游戏位置",
     "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "无法将游戏移动到硬盘根目录！\r\n请新建一个文件夹并重试。",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
@@ -736,7 +737,7 @@
   },
 
   "_PluginManagerPage": {
-    "PageTitle": "插件管理菜单",
+    "PageTitle": "插件管理器菜单",
 
     "FileDialogTitle": "导入 Collapse 启动器插件",
     "FileDialogFileFilter1": "Collapse 启动器插件",
@@ -744,7 +745,7 @@
     "LeftPanelNoPluginTitle": "嘿，你还没加载插件！",
     "LeftPanelNoPluginButton1": "转到",
     "LeftPanelNoPluginButton2": "插件下载目录",
-    "LeftPanelNoPluginButton3": "页",
+    "LeftPanelNoPluginButton3": "页以获取更多！",
 
     "LeftPanelListViewTitle": "加载插件信息",
 
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "您需要重启您的启动器以应用更新！",
     "ListViewFooterRestartButton": "重启启动器",
 
-    "RightPanelImportTitle1": "拖动",
+    "RightPanelImportTitle1": "点击以添加",
     "RightPanelImportTitle2": "或",
     "RightPanelImportTitle3": "这里",
-    "RightPanelImportTitle4": "或者点击这个框以导入插件"
+    "RightPanelImportTitle4": "框里的任何位置都可以！"
   },
 
   "_Misc": {
@@ -805,7 +806,7 @@
     "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
-    "CloseOverlay": "关闭叠加层",
+    "CloseOverlay": "关闭",
     "UseCurrentDir": "使用当前目录",
     "UseDefaultDir": "使用默认目录",
     "MoveToDifferentDir": "移动到不同的目录",
@@ -1608,6 +1609,7 @@
     "General_OpenNotifTray": "打开通知托盘",
     "General_ReloadRegion": "重新加载当前页面",
     "General_ReloadRegion_Desc": "F5 为备用快捷键。\n请注意，重新加载主页将会重新加载区服。",
+    "General_OpenPluginManager": "打开插件管理器叠加层",
 
     "Switch_Title": "快速游戏/区服切换",
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",
@@ -1658,6 +1660,19 @@
     "Japan": "日本",
     "Bilibili": "哔哩哔哩",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "开始更新",
+    "CancelUpdateBtn": "取消更新",
+    "ReinstallToolBtn": "重新安装",
+    "StartUpdateAutomatically": "自动开始更新",
+    "NotifUpdateCompletedTitle": "{0} 已更新！",
+    "NotifUpdateCompletedSubtitle": "工具：您的游戏 {1} - {2} 的 {0} 已更新到 v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "千星沙箱"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1746,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "（实验性）",
     "Graphics_ColorFilter": "调色滤镜强度",
     "Graphics_RenderRes": "渲染精度",
     "Graphics_EffectsQ": "特效质量",
@@ -1741,7 +1757,18 @@
     "Audio_PlaybackDev_Headphones": "耳机",
     "Audio_PlaybackDev_Speakers": "音响",
     "Audio_PlaybackDev_TV": "电视",
-    "Audio_Ambient": "人文氛围音量"
+    "Audio_Ambient": "人文氛围音量",
+    "AdvancedGraphics_Title": "高级图形设置",
+    "AdvancedGraphics_Tooltip1": "某些功能仅在您拥有 Nvidia GeForce RTX 系列显卡并启用 DirectX 12 API 时方可使用。",
+    "AdvancedGraphics_Tooltip2": "请注意，此部分所有功能均为实验性功能。使用风险自负！",
+    "AdvancedGraphics_UseDirectX12API": "使用 DirectX 12 API",
+    "AdvancedGraphics_RayTracing": "光线追踪",
+    "AdvancedGraphics_RayTracingQ": "光线追踪质量",
+    "AdvancedGraphics_SuperScaling": "超分辨率",
+    "AdvancedGraphics_SuperScalingQ": "超分辨率优先级",
+    "AdvancedGraphics_SuperScalingQ_Performance": "性能",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "平衡",
+    "AdvancedGraphics_SuperScalingQ_Quality": "质量"
   },
 
   "_NotificationToast": {

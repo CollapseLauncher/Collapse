@@ -60,7 +60,6 @@ internal static class SenadinaExtension
 
         SenadinaFileIdentifier? senadinaAudioManifestIdentity  = null;
         SenadinaFileIdentifier? senadinaXmfMetaIdentity        = null;
-        SenadinaFileIdentifier? senadinaXmfInfoBaseIdentity    = null;
         SenadinaFileIdentifier? senadinaXmfInfoCurrentIdentity = null;
         SenadinaFileIdentifier? senadinaXmfPatchIdentity       = null;
 
@@ -84,16 +83,6 @@ internal static class SenadinaExtension
                                              token)
                   .GetResultFromAction(result => senadinaXmfMetaIdentity = result);
 
-        Task senadinaXmfInfoBaseTask =
-            client.GetSenadinaIdentifierKind(senadinaManifest,
-                                             SenadinaKind.bricksBase,
-                                             gameVersion,
-                                             mainUrl,
-                                             secondaryUrl,
-                                             false,
-                                             token)
-                  .GetResultFromAction(result => senadinaXmfInfoBaseIdentity = result);
-
         Task senadinaXmfInfoCurrentTask =
             client.GetSenadinaIdentifierKind(senadinaManifest,
                                              SenadinaKind.bricksCurrent,
@@ -116,14 +105,12 @@ internal static class SenadinaExtension
 
         await Task.WhenAll(senadinaAudioManifestTask,
                            senadinaXmfMetaTask,
-                           senadinaXmfInfoBaseTask,
                            senadinaXmfInfoCurrentTask,
                            senadinaXmfPatchTask);
 
         if (throwIfFail &&
             (senadinaAudioManifestIdentity == null ||
              senadinaXmfMetaIdentity == null ||
-             senadinaXmfInfoBaseIdentity == null ||
              senadinaXmfInfoCurrentIdentity == null ||
              senadinaXmfPatchIdentity == null))
         {
@@ -135,7 +122,6 @@ internal static class SenadinaExtension
         {
             Audio          = senadinaAudioManifestIdentity,
             XmfMeta        = senadinaXmfMetaIdentity,
-            XmfInfoBase    = senadinaXmfInfoBaseIdentity,
             XmfInfoCurrent = senadinaXmfInfoCurrentIdentity,
             XmfPatch       = senadinaXmfPatchIdentity
         };

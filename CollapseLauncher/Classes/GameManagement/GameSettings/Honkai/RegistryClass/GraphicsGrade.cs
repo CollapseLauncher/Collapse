@@ -4,7 +4,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -17,8 +17,16 @@ namespace CollapseLauncher.GameSettings.Honkai
     {
         #region Fields
         private const string ValueName = "GENERAL_DATA_V2_GraphicsGrade_h1073342808";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        private GraphicsGrade(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
-        
+
         #region Enum
         // ReSharper disable once UnusedMember.Global
         public enum SelectGraphicsGrade {Performance = 1, Normal, HD, Quality, Max, Custom}
@@ -35,13 +43,13 @@ namespace CollapseLauncher.GameSettings.Honkai
         
         #region Methods
         #nullable enable
-        public static GraphicsGrade Load()
+        public static GraphicsGrade Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     SelectGraphicsGrade graphicsGrade = (SelectGraphicsGrade)value;
@@ -49,7 +57,7 @@ namespace CollapseLauncher.GameSettings.Honkai
                     LogWriteLine($"Loaded HI3 Settings: {ValueName} : {value}", LogType.Debug, true);
                     #endif
 
-                    return new GraphicsGrade { GraphicsGradeInt = graphicsGrade };
+                    return new GraphicsGrade(gameSettings) { GraphicsGradeInt = graphicsGrade };
                 }
             }
             catch ( Exception ex )
@@ -64,17 +72,17 @@ namespace CollapseLauncher.GameSettings.Honkai
                             $"{ex}", ex));
             }
 
-            return new GraphicsGrade();
+            return new GraphicsGrade(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 LogWriteLine("(HI3 GSP) Forcing GraphicsGrade to Custom!", LogType.Warning, true);
                 GraphicsGradeInt = SelectGraphicsGrade.Custom;
-                RegistryRoot.SetValue(ValueName, GraphicsGradeInt, RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, GraphicsGradeInt, RegistryValueKind.DWord);
                 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName} : {GraphicsGradeInt}", LogType.Debug, true);
                 #endif

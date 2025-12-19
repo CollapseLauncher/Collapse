@@ -88,9 +88,9 @@ namespace CollapseLauncher
 
     internal class LauncherUpdateProperty
     {
-        public bool IsUpdateAvailable { get; set; }
-        public GameVersion NewVersionName { get; set; }
-        public bool QuitFromUpdateMenu { get; set; }
+        public bool IsUpdateAvailable { get; init; }
+        public GameVersion NewVersionName { get; init; }
+        public bool QuitFromUpdateMenu { get; init; }
     }
     #endregion
     #region ThemeChangeRegion
@@ -207,8 +207,8 @@ namespace CollapseLauncher
             ErrorSender.ExceptionType    = errorType;
             ErrorSender.SetPageTitle(errorType);
         }
-        public Exception Exception { get; private set; }
-        public string ExceptionString { get; }
+        public  Exception Exception       { get; private set; }
+        private string    ExceptionString { get; }
     }
     #endregion
     #region MainFrameRegion
@@ -295,12 +295,12 @@ namespace CollapseLauncher
     public enum NotificationCustomAction { Add, Remove }
     public class NotificationInvokerProp
     {
-        public TypedEventHandler<InfoBar, object> CloseAction { get; set; }
+        public TypedEventHandler<InfoBar, object> CloseAction { get; init; }
         public FrameworkElement OtherContent { get; set; }
-        public NotificationProp Notification { get; set; }
-        public bool IsAppNotif { get; set; } = true;
-        public bool IsCustomNotif { get; set; }
-        public NotificationCustomAction CustomNotifAction { get; set; }
+        public NotificationProp Notification { get; init; }
+        public bool IsAppNotif { get; init; } = true;
+        public bool IsCustomNotif { get; init; }
+        public NotificationCustomAction CustomNotifAction { get; init; }
 
     }
     #endregion
@@ -341,11 +341,11 @@ namespace CollapseLauncher
             ActionAfterLoaded    = actionAfterLoaded;
         }
 
-        public Action ActionAfterLoaded { get; set; }
-        public bool IsRequestInit { get; set; }
-        public bool IsForceRecreateCache { get; set; }
-        public string ImgPath { get; private set; }
-        public bool IsCustom { get; private set; }
+        public Action ActionAfterLoaded    { get; }
+        public bool   IsRequestInit        { get; }
+        public bool   IsForceRecreateCache { get; }
+        public string ImgPath              { get; }
+        public bool   IsCustom             { get; }
     }
     #endregion
     #region SpawnWebView2Region
@@ -380,7 +380,7 @@ namespace CollapseLauncher
     {
         internal SpawnWebView2Property(string url) => URL = url;
 
-        public string URL { get; set; }
+        public string URL { get; }
     }
     #endregion
     #region ShowLoadingPage

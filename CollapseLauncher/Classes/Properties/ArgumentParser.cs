@@ -2,21 +2,34 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+#nullable enable
 namespace CollapseLauncher
 {
     public static class ArgumentParser
     {
         private static readonly List<string> AllowedProtocolCommands = ["tray", "open"];
 
-        private static RootCommand _rootCommand = new();
+        private static RootCommand _rootCommand     = new();
+
+        private const string OptsKeyInput     = "--input";
+        private const string OptsKeyInputPath = OptsKeyInput  + "-path";
+        private const string OptsKeyChannel   = "--channel";
+        private const string OptsKeyGame      = "--game";
+        private const string OptsKeyGamever   = OptsKeyGame + "ver";
+        private const string OptsKeyKeyname   = "--keyname";
+        private const string OptsKeyPlay      = "--play";
+        private const string OptsKeyRegion    = "--region";
+        private const string OptsKeyRegloc    = "--regloc";
+        private const string OptsKeyOutput    = "--output";
 
         public static void ParseArguments(params string[] args)
         {
@@ -143,14 +156,15 @@ namespace CollapseLauncher
 
         private static void AddUpdaterOptions(Command command)
         {
-            var oInput = new Option<string>("--input-path")
+
+            var oInput = new Option<string>(OptsKeyInputPath)
             {
                 Aliases = { "--input", "-i" },
                 Description = "Output path for the output file",
                 Required    = true
             };
 
-            var oChannel = new Option<AppReleaseChannel>("--channel")
+            var oChannel = new Option<AppReleaseChannel>(OptsKeyChannel)
             {
                 Aliases = { "-c" },
                 Required = true,
@@ -159,20 +173,25 @@ namespace CollapseLauncher
 
             command.Options.Add(oInput);
             command.Options.Add(oChannel);
-            
-            command.Action = CommandHandler.Create((string inputPath, AppReleaseChannel channel) =>
+            command.SetAction(SetAction);
+
+            return;
+
+            static void SetAction(ParseResult result)
             {
+                Dictionary<string, OptionResult> opts = result.ToOptionDictionary();
+
                 m_arguments.Updater = new ArgumentUpdater
                 {
-                    AppPath = inputPath,
-                    UpdateChannel = channel
+                    AppPath       = opts.GetOptionValueOrDefault<string>(OptsKeyInputPath) ?? throw new NullReferenceException("App path must be defined!"),
+                    UpdateChannel = opts.GetOptionValueOrDefault<AppReleaseChannel>(OptsKeyChannel)
                 };
-            });
+            }
         }
 
         private static void ParseTakeOwnershipArguments()
         {
-            var inputOption = new Option<string>("--input-path")
+            var inputOption = new Option<string>(OptsKeyInputPath)
             {
                 Required = true,
                 Description = "Folder path to claim"
@@ -180,15 +199,20 @@ namespace CollapseLauncher
 
             var command = new Command("takeownership", "Take ownership of the folder");
             command.Options.Add(inputOption);
-            command.Action = CommandHandler.Create((string inputPath) =>
+            command.SetAction(SetAction);
+            _rootCommand.Add(command);
+
+            return;
+
+            static void SetAction(ParseResult result)
             {
+                Dictionary<string, OptionResult> opts = result.ToOptionDictionary();
+
                 m_arguments.TakeOwnership = new ArgumentReindexer
                 {
-                    AppPath = inputPath
+                    AppPath = opts.GetOptionValueOrDefault<string>(OptsKeyInputPath) ?? throw new NullReferenceException("App path must be defined!")
                 };
-            });
-            
-            _rootCommand.Add(command);
+            }
         }
 
         private static void ParseMigrateArguments(bool isBhi3L)
@@ -210,14 +234,14 @@ namespace CollapseLauncher
 
         private static void AddMigrateOptions(bool isBhi3L, Command command)
         {
-            var inputOption = new Option<string>("--input")
+            var inputOption = new Option<string>(OptsKeyInput)
             {
                 Aliases     = { "-i" },
                 Description = "Installation Source",
                 Required    = true
             };
 
-            var outputOption = new Option<string>("--output")
+            var outputOption = new Option<string>(OptsKeyOutput)
             {
                 Aliases     = { "-o" },
                 Description = "Installation Target",
@@ -228,14 +252,14 @@ namespace CollapseLauncher
             command.Add(outputOption);
             if (isBhi3L)
             {
-                var gameVerOption = new Option<string>("--gamever")
+                var gameVerOption = new Option<string>(OptsKeyGamever)
                 {
                     Aliases     = { "-g" },
                     Description = "Game version string (Format: x.x.x)",
                     Required    = true
                 };
 
-                var regLocOption = new Option<string>("--regloc")
+                var regLocOption = new Option<string>(OptsKeyRegloc)
                 {
                     Aliases     = { "-r" },
                     Description = "Location of game registry for BetterHI3Launcher keys",
@@ -244,58 +268,50 @@ namespace CollapseLauncher
 
                 command.Add(gameVerOption);
                 command.Add(regLocOption);
-                command.Action = CommandHandler.Create(
-                    (string input, string output, string gameVer, string regLoc) =>
-                    {
-                        m_arguments.Migrate = new ArgumentMigrate
-                        {
-                            InputPath = input,
-                            OutputPath = output,
-                            GameVer = gameVer,
-                            RegLoc = regLoc,
-                            IsBhi3L = true
-                        };
-                    });
-                return;
             }
-            command.Action = CommandHandler.Create(
-                (string input, string output) =>
+
+            command.SetAction(SetAction);
+            return;
+
+            void SetAction(ParseResult result)
+            {
+                Dictionary<string, OptionResult> opts = result.ToOptionDictionary();
+
+                m_arguments.Migrate = new ArgumentMigrate
                 {
-                    m_arguments.Migrate = new ArgumentMigrate
-                    {
-                        InputPath = input,
-                        OutputPath = output,
-                        GameVer = null,
-                        RegLoc = null,
-                        IsBhi3L = false
-                    };
-                });
+                    InputPath  = opts.GetOptionValueOrDefault<string>(OptsKeyInput) ?? throw new NullReferenceException("Input path must be defined!"),
+                    OutputPath = opts.GetOptionValueOrDefault<string>(OptsKeyOutput) ?? throw new NullReferenceException("Output path must be defined!"),
+                    GameVer    = isBhi3L ? opts.GetOptionValueOrDefault<string>(OptsKeyGamever) ?? throw new NullReferenceException("Game version must be defined!") : null!,
+                    RegLoc     = isBhi3L ? opts.GetOptionValueOrDefault<string>(OptsKeyRegloc) ?? throw new NullReferenceException("Registry location must be defined!") : null!,
+                    IsBhi3L    = isBhi3L
+                };
+            }
         }
 
         private static void ParseMoveSteamArguments()
         {
-            var inputOption = new Option<string>("--input")
+            var inputOption = new Option<string>(OptsKeyInput)
             {
                 Aliases     = { "-i" },
                 Required    = true,
                 Description = "Steam Game Installation Source Path"
             };
 
-            var outputOption = new Option<string>("--output")
+            var outputOption = new Option<string>(OptsKeyOutput)
             {
                 Aliases     = { "-o" },
                 Required    = true,
                 Description = "Steam Game Installation Target"
             };
             
-            var keyNameOption = new Option<string>("--keyname")
+            var keyNameOption = new Option<string>(OptsKeyKeyname)
             {
                 Aliases     = { "-k" },
                 Required    = true,
                 Description = "Registry key name for the game"
             };
             
-            var regLocOption = new Option<string>("--regloc")
+            var regLocOption = new Option<string>(OptsKeyRegloc)
             {
                 Aliases     = { "-r" },
                 Required    = true,
@@ -307,20 +323,25 @@ namespace CollapseLauncher
             command.Options.Add(outputOption);
             command.Options.Add(keyNameOption);
             command.Options.Add(regLocOption);
-            command.Action = CommandHandler.Create(
-                (string input, string output, string keyName, string regLoc) =>
-                {
-                    m_arguments.Migrate = new ArgumentMigrate
-                    {
-                        InputPath = input,
-                        OutputPath = output,
-                        KeyName = keyName,
-                        RegLoc = regLoc,
-                        IsBhi3L = false
-                    };
-                });
+            command.SetAction(SetAction);
             
             _rootCommand.Add(command);
+
+            return;
+
+            static void SetAction(ParseResult result)
+            {
+                Dictionary<string, OptionResult> opts = result.ToOptionDictionary();
+
+                m_arguments.Migrate = new ArgumentMigrate
+                {
+                    InputPath = opts.GetOptionValueOrDefault<string>(OptsKeyInput) ?? throw new NullReferenceException("Input path must be defined!"),
+                    OutputPath = opts.GetOptionValueOrDefault<string>(OptsKeyOutput) ?? throw new NullReferenceException("Output path must be defined!"),
+                    KeyName = opts.GetOptionValueOrDefault<string>(OptsKeyKeyname) ?? throw new NullReferenceException("Game version must be defined!"),
+                    RegLoc = opts.GetOptionValueOrDefault<string>(OptsKeyRegloc) ?? throw new NullReferenceException("Registry location must be defined!"),
+                    IsBhi3L = false
+                };
+            }
         }
 
         private static void AddPublicCommands()
@@ -331,7 +352,7 @@ namespace CollapseLauncher
 
         private static void AddOpenCommand()
         {
-            var gameOption = new Option<string>("--game")
+            var gameOption = new Option<string>(OptsKeyGame)
             {
                 Aliases = { "-g" },
                 Description = "Game number/name\n" +
@@ -339,7 +360,7 @@ namespace CollapseLauncher
                 Required = true
             };
 
-            var regionOption = new Option<string>("--region")
+            var regionOption = new Option<string>(OptsKeyRegion)
             {
                 Aliases = { "-r" },
                 Description = "Region number/name\n" +
@@ -347,7 +368,7 @@ namespace CollapseLauncher
                 Required = false
             };
             
-            var startGameOption = new Option<bool>("--play")
+            var startGameOption = new Option<bool>(OptsKeyPlay)
             {
                 Aliases = { "-p" },
                 Description = "Start Game after loading the Game/Region",
@@ -360,23 +381,44 @@ namespace CollapseLauncher
             command.Options.Add(gameOption);
             command.Options.Add(regionOption);
             command.Options.Add(startGameOption);
-            command.Action = CommandHandler.Create(
-                (string game, string region, bool play) =>
-                {
-                    m_arguments.StartGame = new ArgumentStartGame
-                    {
-                        Game = game,
-                        Region = region,
-                        Play = play
-                    };
-                });
+            command.SetAction(SetAction);
+
             _rootCommand.Add(command);
+
+            return;
+
+            void SetAction(ParseResult result)
+            {
+                Dictionary<string, OptionResult> opts = result.ToOptionDictionary();
+
+                m_arguments.StartGame = new ArgumentStartGame
+                {
+                    Game   = opts.GetOptionValueOrDefault<string>(OptsKeyGame) ?? throw new NullReferenceException($"Game name must be defined! Example: {gameOption.Description}"),
+                    Region = opts.GetOptionValueOrDefault<string>(OptsKeyRegion) ?? null!,
+                    Play   = opts.GetOptionValueOrDefault<bool>(OptsKeyPlay)
+                };
+            }
         }
 
         public static void ResetRootCommand()
         {
             _rootCommand = new RootCommand();
         }
+
+        public static Dictionary<string, OptionResult> ToOptionDictionary(this ParseResult context)
+        {
+            Dictionary<string, OptionResult> opts = context.CommandResult
+                                                           .Children
+                                                           .OfType<OptionResult>()
+                                                           .ToDictionary(x => x.Option.Name);
+
+            return opts;
+        }
+
+        public static T? GetOptionValueOrDefault<T>(this Dictionary<string, OptionResult> dictionary, string key)
+            => !dictionary.TryGetValue(key, out OptionResult? result)
+                ? default
+                : result.GetValueOrDefault<T>();
     }
 
     public class Arguments

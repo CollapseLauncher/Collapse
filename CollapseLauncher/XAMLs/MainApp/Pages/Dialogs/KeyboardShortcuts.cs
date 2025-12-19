@@ -55,7 +55,9 @@ namespace CollapseLauncher.Dialogs
             _oldSender = page;
 
             // General shortcuts
-            StackPanel genStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
+            StackPanel genStack = CollapseUIExt.CreateStackPanel()
+                .WithVisibility(Visibility.Collapsed)
+                .WithWidth(_buttonWidth);
             genStack.AddElementToStackPanel(
                 new TextBlock
                 {
@@ -64,17 +66,21 @@ namespace CollapseLauncher.Dialogs
                     FontWeight  = FontWeights.Bold
                 }.WithMargin(0d, 0d, 0d, 2d),
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
-                GenerateShortcutBlock("KbShortcutsMenu",   KbShortcutList["KbShortcutsMenu"],   Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc),
-                GenerateShortcutBlock("HomePage",          KbShortcutList["HomePage"],          Lang._KbShortcuts.General_GoHome),
-                GenerateShortcutBlock("SettingsPage",      KbShortcutList["SettingsPage"],      Lang._KbShortcuts.General_GoSettings),
-                GenerateShortcutBlock("NotificationPanel", KbShortcutList["NotificationPanel"], Lang._KbShortcuts.General_OpenNotifTray),
-                GenerateShortcutBlock("ReloadRegion",      KbShortcutList["ReloadRegion"],      Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc),
+                GenerateShortcutBlock("KbShortcutsMenu", Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc),
+                GenerateShortcutBlock("HomePage", Lang._KbShortcuts.General_GoHome),
+                GenerateShortcutBlock("SettingsPage", Lang._KbShortcuts.General_GoSettings),
+                GenerateShortcutBlock("PluginManager", Lang._KbShortcuts.General_OpenPluginManager),
+                GenerateShortcutBlock("NotificationPanel", Lang._KbShortcuts.General_OpenNotifTray),
+                GenerateShortcutBlock("ReloadRegion", Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc),
+                
                 new MenuFlyoutSeparator().WithMargin(0d, 10d, 0d, 8d)
                 );
             _pageNum++;
 
             // Region/Game Shortcuts
-            StackPanel changeStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
+            StackPanel changeStack = CollapseUIExt.CreateStackPanel()
+                .WithVisibility(Visibility.Collapsed)
+                .WithWidth(_buttonWidth);
             Grid changeTitleGrid = CollapseUIExt.CreateGrid()
                 .WithColumns(GridLength.Auto, new GridLength(1.0d, GridUnitType.Star)).WithColumnSpacing(5d)
                 .WithVerticalAlignment(VerticalAlignment.Center)
@@ -116,8 +122,8 @@ namespace CollapseLauncher.Dialogs
 
             changeStack.AddElementToStackPanel(
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
-                GenerateShortcutBlock("GameSelection",   KbShortcutList["GameSelection"],   Lang._KbShortcuts.Switch_ChangeGame,   string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc,   gameMod),   false),
-                GenerateShortcutBlock("RegionSelection", KbShortcutList["RegionSelection"], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false),
+                GenerateShortcutBlock("GameSelection",   Lang._KbShortcuts.Switch_ChangeGame,   string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc,   gameMod),   false),
+                GenerateShortcutBlock("RegionSelection", Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false),
                 new MenuFlyoutSeparator().WithMargin(0d, 10d, 0d, 8d)
                 );
             _pageNum++;
@@ -127,9 +133,9 @@ namespace CollapseLauncher.Dialogs
             gameFolderStack.AddElementToStackPanel(
                 new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold }.WithMargin(0d, 0d, 0d, 2d),
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
-                GenerateShortcutBlock("ScreenshotFolder", KbShortcutList["ScreenshotFolder"], Lang._KbShortcuts.GameFolder_ScreenshotFolder),
-                GenerateShortcutBlock("GameFolder",       KbShortcutList["GameFolder"],       Lang._KbShortcuts.GameFolder_MainFolder),
-                GenerateShortcutBlock("CacheFolder",      KbShortcutList["CacheFolder"],      Lang._KbShortcuts.GameFolder_CacheFolder),
+                GenerateShortcutBlock("ScreenshotFolder", Lang._KbShortcuts.GameFolder_ScreenshotFolder),
+                GenerateShortcutBlock("GameFolder",       Lang._KbShortcuts.GameFolder_MainFolder),
+                GenerateShortcutBlock("CacheFolder",      Lang._KbShortcuts.GameFolder_CacheFolder),
                 new MenuFlyoutSeparator().WithMargin(0d, 10d, 0d, 8d)
                 );
             _pageNum++;
@@ -140,10 +146,10 @@ namespace CollapseLauncher.Dialogs
                 new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold }.WithMargin(0d, 0d, 0d, 2d),
                 new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5, TextWrapping = TextWrapping.Wrap },
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
-                GenerateShortcutBlock("ForceCloseGame",   KbShortcutList["ForceCloseGame"],   Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc),
-                GenerateShortcutBlock("RepairPage",       KbShortcutList["RepairPage"],       Lang._KbShortcuts.GameManagement_GoRepair),
-                GenerateShortcutBlock("GameSettingsPage", KbShortcutList["GameSettingsPage"], Lang._KbShortcuts.GameManagement_GoSettings),
-                GenerateShortcutBlock("CachesPage",       KbShortcutList["CachesPage"],       Lang._KbShortcuts.GameManagement_GoCaches),
+                GenerateShortcutBlock("ForceCloseGame",   Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc),
+                GenerateShortcutBlock("RepairPage",       Lang._KbShortcuts.GameManagement_GoRepair),
+                GenerateShortcutBlock("GameSettingsPage", Lang._KbShortcuts.GameManagement_GoSettings),
+                GenerateShortcutBlock("CachesPage",       Lang._KbShortcuts.GameManagement_GoCaches),
                 new MenuFlyoutSeparator().WithMargin(0d, 10d, 0d, 8d)
                 );
             _pageNum = 0;
@@ -180,8 +186,10 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        private static Grid GenerateShortcutBlock(string keyName, KbShortcut shortcut, string description, string example = null, bool enableSwapButton = true)
+        private static Grid GenerateShortcutBlock(string keyName, string description, string example = null, bool enableSwapButton = true)
         {
+            KbShortcut shortcut = KbShortcutList[keyName];
+
             Grid shortcutGrid = CollapseUIExt.CreateGrid()
                 .WithColumns(GridLength.Auto, new GridLength(1d, GridUnitType.Star)).WithColumnSpacing(5)
                 .WithMargin(0d, 8d)
@@ -587,7 +595,8 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Default/Forbidden Keyboard Shortcuts
-        public static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new()
+
+        private static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new()
         {
             { "GameSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.None } },
             { "RegionSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.None } },
@@ -606,7 +615,8 @@ namespace CollapseLauncher.Dialogs
             { "GameSettingsPage", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.S } },
             { "CachesPage", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.C } },
 
-            { "ReloadRegion", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.R } }
+            { "ReloadRegion", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.R } },
+            { "PluginManager", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.P } },
         };
 
         private static readonly List<KbShortcut> ForbiddenShortcutList =
@@ -684,7 +694,7 @@ namespace CollapseLauncher.Dialogs
                 SaveKbShortcuts();
         }
 
-        public static void SaveKbShortcuts()
+        private static void SaveKbShortcuts()
         {
             KbShortcutList ??= DefaultShortcutList;
             string res = "";

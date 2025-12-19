@@ -16,7 +16,6 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 public partial class FullPageOverlay : ContentControl
 {
     #region Constructors
-    public FullPageOverlay(FrameworkElement content, bool alwaysOnTop = false) : this(content, content.XamlRoot, alwaysOnTop) { }
 
     public FullPageOverlay(FrameworkElement content, XamlRoot xamlRoot, bool alwaysOnTop = false)
     {
@@ -108,7 +107,7 @@ public partial class FullPageOverlay : ContentControl
         }
     }
 
-    public void Hide()
+    private void Hide()
     {
         using (ThisThreadLock.EnterScope())
         {
@@ -200,7 +199,7 @@ public partial class FullPageOverlay : ContentControl
         // Binding overlay title visibility
         if (_layoutOverlayTitleGrid?.Children.OfType<TextBlock>().FirstOrDefault() is { } asOverlayTitleTextBlock)
         {
-            asOverlayTitleTextBlock.BindProperty(VisibilityProperty, this, nameof(OverlayTitle), StringToVisibilityConverter);
+            asOverlayTitleTextBlock.BindProperty(VisibilityProperty, this, nameof(OverlayTitle), converter: StringToVisibilityConverter);
         }
 
         // Try update overlay title if title source is available

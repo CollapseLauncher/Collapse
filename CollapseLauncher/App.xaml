@@ -29,6 +29,7 @@
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/UserFeedbackDialog/UserFeedbackDialog.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/SocMedIconButton/SocMedIconButton.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/FullPageOverlay/FullPageOverlay.xaml" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
@@ -124,7 +125,7 @@
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#E1222222"
                                           TintColor="#222222"
-                                          TintLuminosityOpacity="0.25"
+                                          TintLuminosityOpacity="0.5"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EE1D1D1D"
@@ -489,8 +490,8 @@
                                           TintOpacity="0.25" />
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#CCEEEEEE"
-                                          TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.6"
+                                          TintColor="#FFFFFF"
+                                          TintLuminosityOpacity="0.25"
                                           TintOpacity="0" />
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EEEAEAEA"

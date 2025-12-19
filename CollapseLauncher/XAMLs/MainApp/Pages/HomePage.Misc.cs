@@ -1,6 +1,7 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -82,12 +83,12 @@ public partial class HomePage
         }
     }
 
-    private static void GenshinHDREnforcer()
+    private static void GenshinHDREnforcer(IGameSettings gameSetings)
     {
-        WindowsHDR GenshinHDR = new WindowsHDR();
+        WindowsHDR GenshinHDR = new(gameSetings);
         try
         {
-            WindowsHDR.Load();
+            WindowsHDR.Load(gameSetings);
             GenshinHDR.isHDR = true;
             GenshinHDR.Save();
             LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);

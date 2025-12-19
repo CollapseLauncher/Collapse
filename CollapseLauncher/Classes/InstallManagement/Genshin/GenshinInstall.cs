@@ -1,13 +1,18 @@
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.SimpleZipArchiveReader;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
@@ -59,58 +64,21 @@ namespace CollapseLauncher.InstallManager.Genshin
         private string _gameAudioOldPath =>
             Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows");
 
+        private GenshinRepair Repair { get; set; }
+
         #endregion
 
-        public GenshinInstall(UIElement parentUI, IGameVersion GameVersionManager)
-            : base(parentUI, GameVersionManager)
+        public GenshinInstall(
+            UIElement parentUI,
+            IGameVersion gameVersionManager,
+            IGameSettings gameSettings,
+            IRepair gameRepair)
+            : base(parentUI,
+                  gameVersionManager,
+                  gameSettings)
         {
+            Repair = gameRepair as GenshinRepair ?? throw new InvalidOperationException("The type of game repair must be GenshinRepair!");
         }
-
-        #region Public Methods
-
-#nullable enable
-        public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
-        {
-            // If it's forcely redirected to sophon, check the preload using sophon
-            if (GameVersionManager.IsForceRedirectToSophon())
-            {
-                return await base.IsPreloadCompleted(token);
-            }
-
-            // Get the primary file first check
-            List<RegionResourceVersion>? resource = GameVersionManager.GetGamePreloadZip();
-
-            // Sanity Check: throw if resource returns null
-            if (resource == null)
-            {
-                throw new
-                    InvalidOperationException("You're trying to check this method while preload is not available!");
-            }
-
-            bool primaryAsset = resource.All(x =>
-                                             {
-                                                 string? name = Path.GetFileName(x.path);
-                                                 if (string.IsNullOrEmpty(name))
-                                                     return false;
-
-                                                 string path = Path.Combine(GamePath, name);
-                                                 return File.Exists(path);
-                                             });
-
-            // Get the second voice pack check
-            List<GameInstallPackage> voicePackList = [];
-
-            // Add another voice pack that already been installed
-            await TryAddOtherInstalledVoicePacks(resource.FirstOrDefault()?.voice_packs, voicePackList,
-                                                 resource.FirstOrDefault()?.version);
-
-            // Get the secondary file check
-            bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
-
-            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
-        }
-#nullable restore
-        #endregion
 
         #region Override Methods - StartPackageInstallationInner
 
@@ -129,7 +97,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(Token.Token);
+            await ApplyDeleteFileActionAsync(Token!.Token);
         }
 
         private void EnsureMoveOldToNewAudioDirectory()
@@ -174,8 +142,13 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #region Override Methods - UninstallGame
 
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
+            {
+                return gameInstallFileInfo;
+            }
+
             string execName = GameVersionManager.GamePreset.ZoneName switch
             {
                 "Global" => "GenshinImpact",
@@ -185,16 +158,16 @@ namespace CollapseLauncher.InstallManager.Genshin
                 _ => throw new NotSupportedException($"Unknown GI Game Region!: {GameVersionManager.GamePreset.ZoneName}")
             };
 
-            return new UninstallGameProperty
+            return new GameInstallFileInfo
             {
-                gameDataFolderName = $"{execName}_Data",
-                foldersToDelete    = [$"{execName}_Data"],
-                filesToDelete =
+                GameDataFolderName = $"{execName}_Data",
+                FoldersToDelete    = [$"{execName}_Data"],
+                FilesToDelete =
                 [
                     "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*",
                     "^Audio.*"
                 ],
-                foldersToKeepInData = ["ScreenShot"]
+                FoldersToKeepInData = ["ScreenShot"]
             };
         }
 
@@ -203,16 +176,90 @@ namespace CollapseLauncher.InstallManager.Genshin
         #region Override Methods - GetUnusedFileInfoList
         protected override async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
-            // Get the result from base method
-            (List<LocalFileInfo>, long) resultBase = await base.GetUnusedFileInfoList(includeZipCheck);
+            string gamePath = GamePath;
+            string gameBiz  = GameVersionManager.GameBiz;
+            string gameId   = GameVersionManager.GameId;
 
-            // Once we get the result, take the "StreamingAssets\\ctable.dat" and "svc_catalog" file out of the list
-            List<LocalFileInfo> unusedFilesFiltered = resultBase
-                                                     .Item1
-                                                     .Where(x => !x.FullPath.EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase) &&
-                                                                             !x.FullPath.EndsWith("svc_catalog", StringComparison.OrdinalIgnoreCase))
-                                                     .ToList();
-            return (unusedFilesFiltered, unusedFilesFiltered.Select(x => x.FileSize).ToArray().Sum());
+            // Preallocate list and start fetch from Repair
+            List<LocalFileInfo> localFileInfos = new(16 << 10);
+            List<PkgVersionProperties> assets = await Repair.ResetAndFetchAssets();
+
+            // Convert
+            localFileInfos.AddRange(assets.Select(ConvertPkgVersion));
+
+            // Add assets from Plugin
+            if (GameVersionManager.LauncherApi?.LauncherGameResourcePlugin is {} pluginApi &&
+                (pluginApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypResourcePluginData pluginData) ?? false) &&
+                pluginData.Plugins.Count > 0)
+            {
+                localFileInfos.AddRange(pluginData
+                                       .Plugins
+                                       .SelectMany(x => x.PluginPackage?.PackageAssetValidationList ?? [])
+                                       .Select(ConvertHypData));
+            }
+
+            // Add assets from SDK
+            if (GameVersionManager.LauncherApi?.LauncherGameResourceSdk is { } sdkApi &&
+                (sdkApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypChannelSdkData sdkData) ?? false) &&
+                sdkData.SdkPackageDetail?.Url is { } sdkZipUrl)
+            {
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromAsync(sdkZipUrl);
+                localFileInfos.AddRange(reader
+                                       .Where(x => !x.IsDirectory)
+                                       .Select(ConvertZipEntry));
+            }
+
+            // Add assets from WPF
+            if (GameVersionManager.LauncherApi?.LauncherGameResourceWpf is { } wpfApi &&
+                (wpfApi.Data?.TryFindByBizOrId(gameBiz, gameId, out HypWpfPackageData wpfData) ?? false) &&
+                wpfData.PackageInfo?.Url is { } wpfZipUrl)
+            {
+                ZipArchiveReader reader = await ZipArchiveReader.CreateFromAsync(wpfZipUrl);
+                localFileInfos.AddRange(reader
+                                       .Where(x => !x.IsDirectory)
+                                       .Select(ConvertZipEntry));
+            }
+
+            // Convert to Hash Set and clear the list for unused files later
+            Dictionary<string, LocalFileInfo> hashSet = localFileInfos.ToDictionary(x => x.FullPath);
+            localFileInfos.Clear();
+
+            // Get ignore list
+            GameInstallFileInfo gameInstallFileInfo = GetGameInstallFileInfo();
+            List<string>        regexMatchList      = gameInstallFileInfo.FilesCleanupIgnoreList.ToList();
+
+            // Add ignore list for pkg_version files
+            string audioInstalledList = _gameAudioLangListPathStatic;
+            if (File.Exists(audioInstalledList))
+            {
+                using StreamReader audioInstalledListReader = File.OpenText(audioInstalledList);
+                while (await audioInstalledListReader.ReadLineAsync() is { } audioInstalledEntry)
+                {
+                    string match = $"Audio_{audioInstalledEntry}_pkg_version";
+                    regexMatchList.Add($"^{Regex.Escape(match)}$");
+                }
+            }
+
+            // Compares with existing file
+            foreach (LocalFileInfo fileInfo in new DirectoryInfo(gamePath)
+                                              .EnumerateFiles("*", SearchOption.AllDirectories)
+                                              .Select(x => new LocalFileInfo(x, gamePath))
+                                              .WhereMatchPattern(x => x.RelativePath, true, regexMatchList))
+            {
+                if (hashSet.ContainsKey(fileInfo.FullPath))
+                {
+                    continue;
+                }
+
+                localFileInfos.Add(fileInfo);
+            }
+
+            long localFileSizes = localFileInfos.Sum(x => x.FileSize);
+            return (localFileInfos, localFileSizes);
+
+            LocalFileInfo ConvertZipEntry(ZipArchiveEntry        asset) => new LocalFileInfo(asset, gamePath);
+            LocalFileInfo ConvertPkgVersion(PkgVersionProperties asset) => new LocalFileInfo(asset, gamePath);
+            LocalFileInfo ConvertHypData(HypPackageData          asset) => new LocalFileInfo(asset, gamePath);
         }
         #endregion
     }

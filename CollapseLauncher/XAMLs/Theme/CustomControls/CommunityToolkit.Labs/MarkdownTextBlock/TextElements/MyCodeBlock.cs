@@ -30,9 +30,9 @@ internal class MyCodeBlock : IAddChild
         var border    = new Border
         {
             Background   = (Brush)Application.Current.Resources["ExpanderHeaderBackground"],
-            Padding      = config.Themes.Padding,
-            Margin       = config.Themes.InternalMargin,
-            CornerRadius = config.Themes.CornerRadius
+            Padding      = MarkdownConfig.Themes.Padding,
+            Margin       = MarkdownConfig.Themes.InternalMargin,
+            CornerRadius = MarkdownConfig.Themes.CornerRadius
         };
         var richTextBlock = new RichTextBlock();
 

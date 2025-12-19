@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "Reparar Juego",
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión",
+    "GameSettings_Panel2ChangeGameLocation": "Mover Ubicación del Juego",
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "¡No se puede mover el juego a la carpeta raíz de tu disco!\r\nPor favor, crea una carpeta e inténtalo de nuevo.",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
@@ -741,10 +742,10 @@
     "FileDialogTitle": "Importar Plugin a Collapse Launcher",
     "FileDialogFileFilter1": "Collapse Launcher Plugin",
 
-    "LeftPanelNoPluginTitle": "¡No tienes cargado ningún plugin!",
-    "LeftPanelNoPluginButton1": "Entra en el",
+    "LeftPanelNoPluginTitle": "¡No tienes ningún plugin cargado!",
+    "LeftPanelNoPluginButton1": "¡Ve al",
     "LeftPanelNoPluginButton2": "Catálogo de Plugin",
-    "LeftPanelNoPluginButton3": " ",
+    "LeftPanelNoPluginButton3": "para obtener mas!",
 
     "LeftPanelListViewTitle": "Información del plugin cargado",
 
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
     "ListViewFooterRestartButton": "Reiniciar el Launcher",
 
-    "RightPanelImportTitle1": "Arrastra el",
+    "RightPanelImportTitle1": "Haz clic para agregar el",
     "RightPanelImportTitle2": "o",
     "RightPanelImportTitle3": "aquí",
-    "RightPanelImportTitle4": "o haga clic en este cuadro para importar el plugin"
+    "RightPanelImportTitle4": "¡En cualquier parte del cuadro está bien!"
   },
 
   "_Misc": {
@@ -1608,6 +1609,7 @@
     "General_OpenNotifTray": "Abrir la bandeja de notificaciones",
     "General_ReloadRegion": "Recargar página actual",
     "General_ReloadRegion_Desc": "Presionar F5 es una alternativa a este atajo.\nTenga en cuenta que recargar la página de inicio volverá a cargar la región.",
+    "General_OpenPluginManager": "Abre el overlay de gestión de plugins",
 
     "Switch_Title": "Juego rápido / Cambio de región",
     "Switch_Subtitle": "Nota: Las combinaciones de teclas siguen el orden del selector.",
@@ -1658,6 +1660,19 @@
     "Japan": "Japan",
     "Bilibili": "Bilibili",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Iniciar Actualización ",
+    "CancelUpdateBtn": "Cancelar Actualización",
+    "ReinstallToolBtn": "Reinstalar",
+    "StartUpdateAutomatically": "Iniciar Actualización Automáticamente ",
+    "NotifUpdateCompletedTitle": "¡{0} fue actualizado!",
+    "NotifUpdateCompletedSubtitle": "Herramienta: {0} para tu juego: {1} - {2} fue actualizado a v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "Miliastra Sandbox"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1746,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(Experimental)",
     "Graphics_ColorFilter": "Fuerza Filtro de Color",
     "Graphics_RenderRes": "Calidad de Renderizado",
     "Graphics_EffectsQ": "Calidad del Efectos",
@@ -1741,7 +1757,18 @@
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
     "Audio_PlaybackDev_TV": "TV",
-    "Audio_Ambient": "Volumen Sonido Ambiente"
+    "Audio_Ambient": "Volumen Sonido Ambiente",
+    "AdvancedGraphics_Title": "Ajustes Gráficos Avanzados",
+    "AdvancedGraphics_Tooltip1": "Algunas funciones solo se pueden utilizar si tienes una tarjeta gráfica Nvidia GeForce RTX y habilitada la API DirectX 12",
+    "AdvancedGraphics_Tooltip2": "Ten en cuenta que todas las funciones en esta sección son EXPERIMENTALES. ¡Úselas bajo su propia responsabilidad!",
+    "AdvancedGraphics_UseDirectX12API": "Usar API DirectX 12",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Calidad Ray Tracing ",
+    "AdvancedGraphics_SuperScaling": "Superescalado",
+    "AdvancedGraphics_SuperScalingQ": "Prioridad Superescalado",
+    "AdvancedGraphics_SuperScalingQ_Performance": "Rendimiento",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "Balanceado",
+    "AdvancedGraphics_SuperScalingQ_Quality": "Calidad"
   },
 
   "_NotificationToast": {

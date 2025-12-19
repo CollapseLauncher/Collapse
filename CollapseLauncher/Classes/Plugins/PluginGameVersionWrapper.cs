@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
@@ -22,7 +24,7 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 
     internal PluginGameVersionWrapper(PluginPresetConfigWrapper presetConfig)
     {
-        ArgumentNullException.ThrowIfNull(presetConfig, nameof(presetConfig));
+        ArgumentNullException.ThrowIfNull(presetConfig);
 
         _pluginPresetConfig = presetConfig;
         _pluginGameManager  = presetConfig.PluginGameManager;
@@ -45,13 +47,30 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
         base.Reinitialize();
     }
 
-    public override string GameName
+    public override PresetConfig GamePreset
     {
-        get => _pluginPresetConfig.GameName ??
-                       throw new NullReferenceException("Game Name in Plugin Preset Config cannot be null!");
+        get => _pluginPresetConfig;
     }
 
-    public override string GameRegion => _pluginPresetConfig.ZoneName ?? throw new NullReferenceException("Game Region/Zone Name in Plugin Preset Config cannot be null!");
+    public override string GameName
+    {
+        get => _pluginPresetConfig.GameName ?? throw new NullReferenceException("Game Name in Plugin Preset Config cannot be null!");
+    }
+
+    public override string GameRegion
+    {
+        get => _pluginPresetConfig.ZoneName ?? throw new NullReferenceException("Game Region/Zone Name in Plugin Preset Config cannot be null!");
+    }
+
+    public override string GameBiz
+    {
+        get => "";
+    }
+
+    public override string GameId
+    {
+        get => "";
+    }
 
     public override IniSection? GameIniVersionSection => null;
     // public override IniSection GameIniProfileSection => null;
@@ -70,9 +89,7 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
         }
     }
 
-    public override PresetConfig GamePreset => _pluginPresetConfig;
-
-    // public override RegionResourceProp? GameApiProp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    // public override RegionResourceProp? LauncherApi { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public override GameNameType GameType => GameNameType.Plugin;
 
@@ -98,12 +115,10 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     }
 
     public override DeltaPatchProperty? GetDeltaPatchInfo() => null;
-
-    public override List<RegionResourceVersion>  GetGameLatestZip(GameInstallStateEnum gameState) => [];
-    public override List<RegionResourcePlugin>?  GetGamePluginZip()                               => null;
-    public override List<RegionResourceVersion>? GetGamePreloadZip()                              => null;
-    public override List<RegionResourcePlugin>?  GetGameSdkZip()                                  => null;
-
+    public override GamePackageResult GetGameLatestZip(GameInstallStateEnum gameState) => GamePackageResult.Empty;
+    public override GamePackageResult GetGamePreloadZip() => GamePackageResult.Empty;
+    public override List<HypChannelSdkData> GetGameSdkZip() => [];
+    public override List<HypPluginPackageInfo> GetGamePluginZip() => [];
 
     // ReSharper disable ConvertIfStatementToReturnStatement
     ValueTask<GameInstallStateEnum> IGameVersion.GetGameState()
@@ -186,8 +201,8 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     }
     public override bool IsGameVersionMatch() => GetGameExistingVersion() == GetGameVersionApi();
 
-    public override ValueTask<bool> IsPluginVersionsMatch() => ValueTask.FromResult(true);
-    public override ValueTask<bool> IsSdkVersionsMatch()    => ValueTask.FromResult(true);
+    public override Task<bool> IsPluginVersionsMatch() => Task.FromResult(true);
+    public override Task<bool> IsSdkVersionsMatch()    => Task.FromResult(true);
 
     /*
     public override void Reinitialize()

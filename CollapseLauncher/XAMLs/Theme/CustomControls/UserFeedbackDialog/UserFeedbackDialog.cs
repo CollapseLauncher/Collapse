@@ -5,6 +5,7 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -92,15 +93,25 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutCloseButton?.EnableImplicitAnimation();
 
             // Assign dialog title image background
-            GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            GameNameType       gameNameType        = currentGameProperty.GamePreset.GameType;
-            string relFilePath = gameNameType switch
+            var relFilePath = @"Assets\\Images\\GamePoster\\headerposter_genshin.png";
+            try
             {
-                GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
-                GameNameType.Honkai => @"Assets\\Images\\GamePoster\\headerposter_honkai.png",
-                GameNameType.StarRail => @"Assets\\Images\\GamePoster\\headerposter_starrail.png",
-                _ => @"Assets\\Images\\GamePoster\\headerposter_genshin.png"
-            };
+                var currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                var gameNameType        = currentGameProperty.GamePreset.GameType;
+                relFilePath = gameNameType switch
+                                     {
+                                         GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
+                                         GameNameType.Honkai => @"Assets\\Images\\GamePoster\\headerposter_honkai.png",
+                                         GameNameType.StarRail => @"Assets\\Images\\GamePoster\\headerposter_starrail.png",
+                                         _ => @"Assets\\Images\\GamePoster\\headerposter_genshin.png"
+                                     };
+            }
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex);
+                Logger.LogWriteLine($"[UserFeedbackDialog::OnApplyTemplate] Failed to grab game type! Returning default game header..." +
+                                    $"\r\n{ex}", LogType.Error, true);
+            }
             // Get the title image background and load it.
             FileInfo filePathInfo = new(Path.Combine(LauncherConfig.AppExecutableDir, relFilePath));
             if (filePathInfo.Exists)
@@ -150,13 +161,13 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         /// </summary>
         /// <param name="actionCallbackTaskOnSubmit">An <see cref="Task"/> callback where it consumes the result of <see cref="UserFeedbackResult"/> record asynchronously.</param>
         /// <returns>Returns a record of <see cref="UserFeedbackResult"/> if submitted, or <c>null</c> if cancelled.</returns>
-        public async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
+        private async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
         {
             // Find an overlay grid where the UI element will be spawn to
             _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
             // Get the count of the Rows and Column so it can be spanned across the grid.
-            int parentGridRowCount = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
-            int parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
+            var parentGridRowCount    = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
+            var parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
             // Add the UI element to the grid
             _parentOverlayGrid?.AddElementToGridRowColumn(this,
                                                           0,
@@ -200,14 +211,14 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private void AssignLocalization()
         {
             // Assign locale for Text header, button, placeholders and stuffs...
-            _layoutTitleGridText?.BindProperty(TextBlock.TextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_DialogTitle));
-            _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
-            _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
-            SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Locale.Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
-            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Locale.Lang._Dialogs.UserFeedback_TextFieldMessageHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
-            _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_RatingText));
-            SetButtonPropertyTextLocale(_layoutPrimaryButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn));
-            SetButtonPropertyTextLocale(_layoutCloseButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_CancelBtn));
+            _layoutTitleGridText?.BindProperty(TextBlock.TextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_DialogTitle));
+            _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
+            _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Lang._Dialogs.UserFeedback_TextFieldRequired);
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Lang._Dialogs.UserFeedback_TextFieldMessageHeader, Lang._Dialogs.UserFeedback_TextFieldRequired);
+            _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_RatingText));
+            SetButtonPropertyTextLocale(_layoutPrimaryButton, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_SubmitBtn));
+            SetButtonPropertyTextLocale(_layoutCloseButton, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_CancelBtn));
         }
 
         private static void SetButtonPropertyTextLocale(Button? button, object localeObject, string nameOfLocale)
@@ -255,13 +266,13 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackTitleInput?.BindProperty(TextBox.TextProperty,
                                                     this,
                                                     nameof(Title),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(TextBox.TextProperty,
                                                       this,
                                                       nameof(Message),
-                                                      null,
-                                                      BindingMode.TwoWay);
+                                                      converter: null,
+                                                      bindingMode: BindingMode.TwoWay);
 
             // Bind Visibility property to the UI FeedbackTitleInput
             _layoutFeedbackTitleInput?.BindProperty(VisibilityProperty,
@@ -272,30 +283,30 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackTitleInput?.BindProperty(TextBox.IsReadOnlyProperty,
                                                     this,
                                                     nameof(IsTitleReadOnly),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackTitleInput?.BindProperty(IsEnabledProperty,
                                                     this,
                                                     nameof(IsTitleReadOnly),
-                                                    _inverseBooleanConverter,
-                                                    BindingMode.TwoWay);
+                                                    converter: _inverseBooleanConverter,
+                                                    bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(TextBox.IsReadOnlyProperty,
                                                       this,
                                                       nameof(IsMessageReadOnly),
-                                                      null,
-                                                      BindingMode.TwoWay);
+                                                      converter: null,
+                                                      bindingMode: BindingMode.TwoWay);
             _layoutFeedbackMessageInput?.BindProperty(IsEnabledProperty,
                                                       this,
                                                       nameof(IsMessageReadOnly),
-                                                      _inverseBooleanConverter,
-                                                      BindingMode.TwoWay);
+                                                      converter: _inverseBooleanConverter,
+                                                      bindingMode: BindingMode.TwoWay);
 
             // Bind this RatingValue property to the UI FeedbackRatingControl
             _layoutFeedbackRatingControl?.BindProperty(RatingControl.ValueProperty,
                                                     this,
                                                     nameof(RatingValue),
-                                                    null,
-                                                    BindingMode.TwoWay);
+                                                    converter: null,
+                                                    bindingMode: BindingMode.TwoWay);
 
             // Simulate changes
             OnFeedbackInputsChanged(null!, null!);
@@ -324,7 +335,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private static async Task UseTokenAndWait([NotNull] CancellationTokenSource? tokenSource)
         {
             // Throw if tokenSource is null
-            ArgumentNullException.ThrowIfNull(tokenSource, nameof(tokenSource));
+            ArgumentNullException.ThrowIfNull(tokenSource);
 
             try
             {

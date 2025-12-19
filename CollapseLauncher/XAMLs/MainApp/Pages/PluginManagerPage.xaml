@@ -930,5 +930,33 @@
                 </Grid>
             </Button>
         </Grid>
+        <Button x:Name="OpenPluginCatalogBottomLeftButton"
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="26,0,0,26"
+                Click="OnClickGoToPluginDownloadCatalogButton"
+                CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(OpenPluginCatalogBottomLeftButton)}"
+                Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
+                Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                Style="{ThemeResource AccentButtonStyle}">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center"
+                           FontSize="14">
+                    <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
+                    <Run FontWeight="Bold"
+                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
+                    <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
+                </TextBlock>
+                <FontIcon Grid.Column="1"
+                          FontSize="20"
+                          Glyph="&#xE826;" />
+            </Grid>
+        </Button>
     </Grid>
 </Page>

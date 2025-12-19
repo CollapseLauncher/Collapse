@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Helper
 {
@@ -37,56 +39,73 @@ namespace CollapseLauncher.Helper
             return patterns.Any(pattern => MatchSimpleExpression(input, pattern));
         }
 
-        /// <summary>
-        /// Perform Regex Matching and enumerate element.
-        /// </summary>
-        /// <typeparam name="T">The type of element to enumerate.</typeparam>
         /// <param name="enumerable">The enumerable input instance.</param>
-        /// <param name="selector">Determines which string element to match the pattern from.</param>
-        /// <param name="isMatchNegate">Whether to select negated match.</param>
-        /// <param name="regexPatterns">Single or multiple patterns to use.</param>
-        /// <returns>Enumerated element matched by the pattern.</returns>
-        public static IEnumerable<T> WhereMatchPattern<T>(
-            this IEnumerable<T> enumerable,
-            Func<T, string>     selector,
-            bool                isMatchNegate,
-            params string[]     regexPatterns)
+        /// <typeparam name="T">The type of element to enumerate.</typeparam>
+        extension<T>(IEnumerable<T>  enumerable)
         {
-            if (regexPatterns.Length == 0)
+            /// <summary>
+            /// Perform Regex Matching and enumerate element.
+            /// </summary>
+            /// <param name="selector">Determines which string element to match the pattern from.</param>
+            /// <param name="isMatchNegate">Whether to select negated match.</param>
+            /// <param name="regexPatterns">Single or multiple patterns to use.</param>
+            /// <returns>Enumerated element matched by the pattern.</returns>
+            public IEnumerable<T> WhereMatchPattern(Func<T, string> selector,
+                                                    bool            isMatchNegate,
+                                                    List<string>    regexPatterns)
             {
-                return enumerable;
+                if (regexPatterns.Count == 0)
+                {
+                    return enumerable;
+                }
+
+                string mergedPattern = MergeRegexPattern(CollectionsMarshal.AsSpan(regexPatterns));
+                return WhereMatchPattern(enumerable, selector, isMatchNegate, mergedPattern);
             }
 
-            string mergedPattern = MergeRegexPattern(regexPatterns);
-            return WhereMatchPattern(enumerable, selector, isMatchNegate, mergedPattern);
-        }
-
-        /// <summary>
-        /// Perform Regex Matching and enumerate element.
-        /// </summary>
-        /// <typeparam name="T">The type of element to enumerate.</typeparam>
-        /// <param name="enumerable">The enumerable input instance.</param>
-        /// <param name="selector">Determines which string element to match the pattern from.</param>
-        /// <param name="isMatchNegate">Whether to select negated match.</param>
-        /// <param name="regexPattern">Regex pattern to use.</param>
-        /// <returns>Enumerated element matched by the pattern.</returns>
-        public static IEnumerable<T> WhereMatchPattern<T>(
-            this IEnumerable<T> enumerable,
-            Func<T, string>     selector,
-            bool                isMatchNegate,
-            string              regexPattern)
-        {
-            Regex regex = new(regexPattern,
-                              RegexOptions.IgnoreCase |
-                              RegexOptions.NonBacktracking |
-                              RegexOptions.Compiled);
-
-            if (string.IsNullOrEmpty(regexPattern))
+            /// <summary>
+            /// Perform Regex Matching and enumerate element.
+            /// </summary>
+            /// <param name="selector">Determines which string element to match the pattern from.</param>
+            /// <param name="isMatchNegate">Whether to select negated match.</param>
+            /// <param name="regexPatterns">Single or multiple patterns to use.</param>
+            /// <returns>Enumerated element matched by the pattern.</returns>
+            public IEnumerable<T> WhereMatchPattern(Func<T, string>             selector,
+                                                    bool                        isMatchNegate,
+                                                    params ReadOnlySpan<string> regexPatterns)
             {
-                return enumerable;
+                if (regexPatterns.Length == 0)
+                {
+                    return enumerable;
+                }
+
+                string mergedPattern = MergeRegexPattern(regexPatterns);
+                return WhereMatchPattern(enumerable, selector, isMatchNegate, mergedPattern);
             }
 
-            return enumerable.Where(x => regex.IsMatch(selector(x)) != isMatchNegate);
+            /// <summary>
+            /// Perform Regex Matching and enumerate element.
+            /// </summary>
+            /// <param name="selector">Determines which string element to match the pattern from.</param>
+            /// <param name="isMatchNegate">Whether to select negated match.</param>
+            /// <param name="regexPattern">Regex pattern to use.</param>
+            /// <returns>Enumerated element matched by the pattern.</returns>
+            public IEnumerable<T> WhereMatchPattern(Func<T, string> selector,
+                                                    bool            isMatchNegate,
+                                                    string          regexPattern)
+            {
+                Regex regex = new(regexPattern,
+                                  RegexOptions.IgnoreCase |
+                                  RegexOptions.NonBacktracking |
+                                  RegexOptions.Compiled);
+
+                if (string.IsNullOrEmpty(regexPattern))
+                {
+                    return enumerable;
+                }
+
+                return enumerable.Where(x => regex.IsMatch(selector(x)) != isMatchNegate);
+            }
         }
 
         /// <summary>

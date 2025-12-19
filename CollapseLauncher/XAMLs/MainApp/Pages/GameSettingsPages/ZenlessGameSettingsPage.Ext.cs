@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -274,7 +275,7 @@ namespace CollapseLauncher.Pages
             get => IsCustomResolutionEnabled;
         }
 
-        public string ResolutionSelected
+        internal string ResolutionSelected
         {
             get
             {
@@ -287,7 +288,6 @@ namespace CollapseLauncher.Pages
                 Size size = ScreenProp.CurrentResolution;
                 return $"{size.Width}x{size.Height}";
             }
-            set => Settings.SettingsScreen.sizeResString = value;
         }
 
         private bool _isAllowResolutionIndexChanged;
@@ -587,6 +587,63 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.GeneralData.HiPrecisionCharaAnim;
             set => Settings.GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
+        }
+
+        public bool AdvancedGraphics_UseDirectX12Api
+        {
+            get => Settings.SettingsCollapseScreen.GameGraphicsAPI == 4;
+            set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value ? 4 : 3;
+        }
+
+        public bool AdvancedGraphics_UseRayTracing
+        {
+            get => Settings.GeneralData.RayTracing_Enabled;
+            set => Settings.GeneralData.RayTracing_Enabled = value;
+        }
+
+        public int AdvancedGraphics_RayTracingQuality
+        {
+            get => (int)Settings.GeneralData.RayTracing_Quality;
+            set => Settings.GeneralData.RayTracing_Quality = (QualityOption3)value;
+        }
+
+        public int AdvancedGraphics_SuperResolutionOption
+        {
+            get => (int)Settings.GeneralData.SuperResolution_Option;
+            set => Settings.GeneralData.SuperResolution_Option = (SuperResolutionScalingOption)value;
+        }
+
+        public int AdvancedGraphics_SuperResolutionQuality
+        {
+            get => (int)Settings.GeneralData.SuperResolution_Quality;
+            set => Settings.GeneralData.SuperResolution_Quality = (SuperResolutionScalingQuality)value;
+        }
+
+        private static bool? _isDeviceHasRTXGPU;
+        public bool IsDeviceHasRTXGPU
+        {
+            get
+            {
+                if (_isDeviceHasRTXGPU != null)
+                {
+                    return (bool)_isDeviceHasRTXGPU;
+                }
+
+                foreach (ReadOnlySpan<char> str in EnumerateGpuNames.GetEnumerateGpuNames())
+                {
+                    if (!str.Contains("Nvidia", StringComparison.OrdinalIgnoreCase) ||
+                        !str.Contains("RTX",    StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    _isDeviceHasRTXGPU = true;
+                    return true;
+                }
+
+                _isDeviceHasRTXGPU = false;
+                return false;
+            }
         }
         #endregion
 

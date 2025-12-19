@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 #nullable enable
 namespace CollapseLauncher.Extension
@@ -18,8 +19,8 @@ namespace CollapseLauncher.Extension
 
     internal static partial class TaskExtensions
     {
-        internal const int DefaultTimeoutSec = 10;
-        internal const int DefaultRetryAttempt = 5;
+        private const int DefaultTimeoutSec   = 10;
+        private const int DefaultRetryAttempt = 5;
 
         internal static Task
             WaitForRetryAsync(this ActionTimeoutTaskCallback funcCallback,
@@ -183,7 +184,7 @@ namespace CollapseLauncher.Extension
         internal static async Task InitPluginComAsync<T>(this T initializableInterface, IPlugin pluginInstance, CancellationToken token)
             where T : class
         {
-            ArgumentNullException.ThrowIfNull(pluginInstance, nameof(pluginInstance));
+            ArgumentNullException.ThrowIfNull(pluginInstance);
 
             IInitializableTask initiableTask = GetInitializableTask(initializableInterface);
 

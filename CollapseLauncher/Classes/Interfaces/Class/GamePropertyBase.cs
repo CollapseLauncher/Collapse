@@ -1,81 +1,141 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.Interfaces
-{
-    internal class GamePropertyBase<T1> : IAssetEntry
-    {
-        private string      GamePathField       { get; }
-        private GameVersion GameVersionOverride { get; }
+#pragma warning disable IDE0130
 
 #nullable enable
-        public GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
-        {
-            GameSettings = gameSettings;
-            GameVersionManager = gameVersionManager;
-            ParentUI = parentUI;
-            GamePathField = gamePath;
-            GameRepoURL = gameRepoURL;
-            Token = new CancellationTokenSourceWrapper();
-            IsVersionOverride = versionOverride != null;
+namespace CollapseLauncher.Interfaces;
 
-            // If the version override is not null, then assign the override value
+internal abstract class GamePropertyBase : NotifyPropertyChanged
+{
+    protected const int    BufferMediumLength                        = 1 << 20; // 1 MiB
+    protected const int    BufferBigLength                           = 2 << 20; // 2 MiB
+    private const   double DownloadThreadCountReservedMultiplication = 1.5d;
+
+    protected virtual string UserAgent => "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+
+    protected GamePropertyBase(UIElement      parentUI,
+                               IGameVersion   gameVersionManager,
+                               IGameSettings? gameSettings,
+                               string?        gameRepoURL,
+                               string?        versionOverride)
+    {
+        GameSettings       = gameSettings;
+        GameVersionManager = gameVersionManager;
+        ParentUI           = parentUI;
+        GameRepoURL        = gameRepoURL;
+        Token              = new CancellationTokenSourceWrapper();
+        IsVersionOverride  = versionOverride != null;
+
+        // If the version override is not null, then assign the override value
+        if (IsVersionOverride)
+        {
+            GameVersionOverride = versionOverride;
+        }
+    }
+
+    private GameVersion GameVersionOverride
+    {
+        get;
+    }
+
+    protected static bool IsBurstDownloadEnabled
+    {
+        get => LauncherConfig.IsBurstDownloadModeEnabled;
+    }
+
+    protected bool IsVersionOverride
+    {
+        get;
+    }
+
+    protected CancellationTokenSourceWrapper? Token
+    {
+        get;
+        set;
+    }
+
+    protected static int DownloadThreadCount
+    {
+        get => LauncherConfig.AppCurrentDownloadThread;
+    }
+
+    protected static int DownloadThreadWithReservedCount
+    {
+        get => (int)Math.Round(DownloadThreadCount * DownloadThreadCountReservedMultiplication);
+    }
+
+    protected static int ThreadCount
+    {
+        get => (byte)LauncherConfig.AppCurrentThread;
+    }
+
+    protected GameVersion GameVersion
+    {
+        get
+        {
             if (IsVersionOverride)
             {
-                GameVersionOverride = versionOverride;
+                return GameVersionOverride;
             }
-
-            AssetEntry = [];
+            return GameVersionManager?.GetGameExistingVersion() ?? throw new NullReferenceException();
         }
+    }
 
-        public GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
-            : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
-#nullable restore
+    protected IGameVersion GameVersionManager
+    {
+        get;
+    }
 
-        protected const   int    BufferMediumLength                        = 1 << 20; // 1 MiB
-        protected const   int    BufferBigLength                           = 2 << 20; // 2 MiB
-        protected const   double DownloadThreadCountReservedMultiplication = 1.5d;
-        protected virtual string UserAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+    protected IGameSettings? GameSettings
+    {
+        get;
+        init;
+    }
 
-        protected static bool                           IsBurstDownloadEnabled          { get => IsBurstDownloadModeEnabled; }
-        protected static int                            DownloadThreadCount             { get => AppCurrentDownloadThread; }
-        protected static int                            DownloadThreadWithReservedCount { get => (int)Math.Round(DownloadThreadCount * DownloadThreadCountReservedMultiplication); }
-        protected static int                            ThreadCount                     { get => (byte)AppCurrentThread; }
-        protected        bool                           IsVersionOverride               { get; init; }
-        protected        CancellationTokenSourceWrapper Token                           { get; set; }
-        protected GameVersion GameVersion
+    public abstract string GamePath
+    {
+        get;
+        set;
+    }
+
+    protected string? GameRepoURL
+    {
+        get
         {
-            get
+            if (!string.IsNullOrEmpty(field))
             {
-                if (GameVersionManager != null && IsVersionOverride)
-                {
-                    return GameVersionOverride;
-                }
-                return GameVersionManager?.GetGameExistingVersion() ?? throw new NullReferenceException();
+                return field;
             }
+
+            string                             gameBiz         = GameVersionManager.LauncherApi?.GameBiz ?? "";
+            string                             gameId          = GameVersionManager.LauncherApi?.GameId ?? "";
+            HypLauncherGameResourcePackageApi? resourcePackage = GameVersionManager.LauncherApi?.LauncherGameResourcePackage;
+
+            if (!(resourcePackage?.Data?.TryFindByBizOrId(gameBiz, gameId, out HypResourcesData? data) ?? false))
+            {
+                return null;
+            }
+
+            field = data.MainPackage?.CurrentVersion?.ResourceListUrl;
+            return field;
         }
+        set;
+    }
 
-        protected IGameVersion GameVersionManager { get; set; }
-        protected IGameSettings GameSettings { get; set; }
-        protected string GamePath { get => string.IsNullOrEmpty(GamePathField) ? GameVersionManager.GameDirPath : GamePathField; }
+    protected bool UseFastMethod
+    {
+        get;
+        set;
+    }
 
-        [field: MaybeNull, AllowNull]
-        protected string GameRepoURL
-        {
-            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp?.data?.game?.latest?.decompressed_path : field;
-            set;
-        }
-
-        internal List<T1> AssetIndex { get; set; }
-        protected bool UseFastMethod { get; set; }
-
-        public ObservableCollection<IAssetProperty> AssetEntry { get; set; }
-        public UIElement ParentUI { get; init; }
+    public UIElement ParentUI
+    {
+        get;
     }
 }

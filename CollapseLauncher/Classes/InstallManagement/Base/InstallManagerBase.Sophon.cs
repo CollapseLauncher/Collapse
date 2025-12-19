@@ -47,9 +47,11 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Protected Properties
-        protected List<string> _sophonVOLanguageList      { get; set; } = [];
-        protected bool         _isSophonDownloadCompleted { get; set; }
-        protected bool         _isSophonPreloadCompleted
+
+        private List<string> _sophonVOLanguageList      { get; } = [];
+        private bool         _isSophonDownloadCompleted { get; set; }
+
+        private bool         _isSophonPreloadCompleted
         {
             get => File.Exists(Path.Combine(_gameSophonChunkDir, PreloadVerifiedFileName));
             set
@@ -88,7 +90,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             get
             {
-                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager.GamePreset.LauncherResourceChunksURL == null)
+                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager?.GamePreset.LauncherResourceChunksURL == null)
                 {
                     return false;
                 }
@@ -108,12 +110,12 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        public virtual bool AskAdditionalSophonPkg
+        protected virtual bool AskAdditionalSophonPkg
         {
             get => File.Exists(Path.Combine(GamePath, "@AskAdditionalSophonPackage"));
         }
 
-        public string[] CommonSophonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
+        private readonly string[] CommonSophonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
         #endregion
 
         #region Sophon Verification Methods
@@ -141,7 +143,8 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Sophon Download and Install/Update/Preload Methods
-        public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState, bool fallbackFromUpdate = false)
+
+        protected virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState, bool fallbackFromUpdate = false)
         {
             // Set the flag to false
             _isSophonDownloadCompleted = false;
@@ -185,13 +188,16 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the requested URL and version based on current state.
-                if (GameVersionManager.GamePreset
-                                      .LauncherResourceChunksURL != null)
+                if (GameVersionManager?
+                   .GamePreset
+                   .LauncherResourceChunksURL != null)
                 {
                     // Reassociate the URL if branch url exist
-                    string? branchUrl = GameVersionManager.GamePreset
-                                                           .LauncherResourceChunksURL
-                                                           .BranchUrl;
+                    string? branchUrl = GameVersionManager
+                                       .GamePreset
+                                       .LauncherResourceChunksURL
+                                       .BranchUrl;
+
                     if (!string.IsNullOrEmpty(branchUrl)
                         && !string.IsNullOrEmpty(GameVersionManager.GamePreset.LauncherBizName))
                     {
@@ -201,7 +207,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      false,
-                                                                     Token.Token);
+                                                                     Token!.Token);
                     }
 
                 #if SIMULATEAPPLYPRELOAD
@@ -247,7 +253,7 @@ namespace CollapseLauncher.InstallManager.Base
                             SophonManifest.CreateSophonChunkManifestInfoPair(httpClient,
                                                                              requestedUrl,
                                                                              GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
-                                                                             Token.Token);
+                                                                             Token!.Token);
 
                         // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
                         RearrangeDataListLocaleOrder(sophonMainInfoPair.OtherSophonBuildData!.ManifestIdentityList,
@@ -544,7 +550,7 @@ namespace CollapseLauncher.InstallManager.Base
             return sophonAssetList;
         }
 
-        protected async Task ConfirmAdditionalInstallDataPackageFiles(
+        private async Task ConfirmAdditionalInstallDataPackageFiles(
             List<SophonChunkManifestInfoPair> installManifest,
             CancellationToken                 token)
         {
@@ -641,7 +647,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
+        protected virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
         {
             if (!Enum.IsDefined(gameState))
             {
@@ -718,7 +724,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      false,
-                                                                     Token.Token);
+                                                                     Token!.Token);
                     }
 
                     string? requestedBaseUrlFrom = isPreloadMode
@@ -813,7 +819,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Filter asset list
-                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token.Token);
+                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token!.Token);
 
                 // Get the remote chunk size
                 ProgressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
@@ -1092,7 +1098,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                 SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             SophonChunkManifestInfoPair manifestPair = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, mainMatchingField, false, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, mainMatchingField, false, Token!.Token);
 
             if (!manifestPair.IsFound)
             {
@@ -1133,7 +1139,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, false, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, false, Token!.Token);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
                .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, false, Token.Token);
 

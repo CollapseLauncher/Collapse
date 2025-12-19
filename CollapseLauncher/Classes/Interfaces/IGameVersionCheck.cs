@@ -1,4 +1,7 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
@@ -10,6 +13,7 @@ using System.Threading.Tasks;
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -23,12 +27,22 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Get the game name
         /// </summary>
-        string? GameName { get; }
+        string GameName { get; }
 
         /// <summary>
         /// Get the region name of the game
         /// </summary>
-        string? GameRegion { get; }
+        string GameRegion { get; }
+
+        /// <summary>
+        /// Gets the game name alias
+        /// </summary>
+        string GameBiz { get; }
+
+        /// <summary>
+        /// Gets the HoYoPlay's game ID
+        /// </summary>
+        string GameId  { get; }
 
         /// <summary>
         /// Get the version section of the game INI's configuration
@@ -59,7 +73,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or set the API properties
         /// </summary>
-        RegionResourceProp? GameApiProp { get; set; }
+        ILauncherApi? LauncherApi { get; }
 
         /// <summary>
         /// Returns the type of the game
@@ -108,13 +122,13 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Checks if the plugin version is installed or matches the version provided from miHoYo's API.
         /// </summary>
-        ValueTask<bool> IsPluginVersionsMatch();
+        Task<bool> IsPluginVersionsMatch();
 
         /// <summary>
         /// Checks if the sdk version is installed or matches the version provided from miHoYo's API.
         /// This is used to obtain the status of the SDK .dlls for certain builds (for example: Bilibili version)
         /// </summary>
-        ValueTask<bool> IsSdkVersionsMatch();
+        Task<bool> IsSdkVersionsMatch();
 
         /// <summary>
         /// Check if the game version is installed.
@@ -152,23 +166,23 @@ namespace CollapseLauncher.Interfaces
         /// Returns the <c>List</c> of the Resource Version for the Latest Zip based on the game state
         /// </summary>
         /// <param name="gameState">The state of the game</param>
-        List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState);
+        GamePackageResult GetGameLatestZip(GameInstallStateEnum gameState);
 
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.
         /// If the Pre-load doesn't exist, then it will return a null.
         /// </summary>
-        List<RegionResourceVersion>? GetGamePreloadZip();
+        GamePackageResult GetGamePreloadZip();
 
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Plugins
         /// </summary>
-        List<RegionResourcePlugin>? GetGamePluginZip();
+        List<HypPluginPackageInfo> GetGamePluginZip();
 
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the SDKs
         /// </summary>
-        List<RegionResourcePlugin>? GetGameSdkZip();
+        List<HypChannelSdkData> GetGameSdkZip();
 
         /// <summary>
         /// Ensure the validity of the game's config.ini file.
@@ -224,6 +238,11 @@ namespace CollapseLauncher.Interfaces
         /// <param name="version">The version of the SDK</param>
         /// <param name="saveValue">Save the config file</param>
         void UpdateSdkVersion(GameVersion? version, bool saveValue = true);
+
+        /// <summary>
+        /// Save the <see cref="GameIniVersionSection"/> changes to the game version config.ini file.
+        /// </summary>
+        void SaveVersionConfig();
 
         /// <summary>
         /// Reinitialize the game version configs, including the INIs.

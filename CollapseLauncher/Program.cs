@@ -44,9 +44,9 @@ namespace CollapseLauncher
     public static class MainEntryPoint
     {
         // Decide AUMID string
-        public const string AppAumid = "Collapse";
-        public static int  InstanceCount      { get; set; }
-        public static App? CurrentAppInstance { get; set; }
+        public const   string AppAumid = "Collapse";
+        public static  int    InstanceCount      { get; private set; }
+        private static App?   CurrentAppInstance { get; set; }
 
         [STAThread]
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -240,18 +240,7 @@ namespace CollapseLauncher
             // Initialize Sentry SDK if enabled
             if (SentryHelper.IsEnabled)
             {
-                try
-                {
-                    // Sentry SDK Entry
-                    LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
-                    SentryHelper.InitializeSentrySdk();
-                    LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
-                    SentryHelper.InitializeExceptionRedirect();
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
-                }
+                _ = Task.Factory.StartNew(InitializeSentrySdk);
             }
 
             /* ---------------------------------------------------------------------------------------------
@@ -300,6 +289,26 @@ namespace CollapseLauncher
 
             // Start Updater Hook
             VelopackLocatorExtension.StartUpdaterHook(AppAumid);
+            return;
+
+            static async void InitializeSentrySdk()
+            {
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        // Sentry SDK Entry
+                        LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
+                        SentryHelper.InitializeSentrySdk();
+                        LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
+                        SentryHelper.InitializeExceptionRedirect();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                }
+            }
         }
 
         private static async Task InitDatabaseHandler()
@@ -377,7 +386,7 @@ namespace CollapseLauncher
             int posV = Console.CursorTop;
 
             Updater updater = new Updater(IsPreview ? "preview" : "stable");
-            if (await TryRunUpdateCheck() is not UpdateInfo updateInfo ||
+            if (await TryRunUpdateCheck() is not { } updateInfo ||
                 !IsCurrentUpToDate(updateInfo.TargetFullRelease.Version.ToString()))
             {
                 PrintAndFlush(Console.Out, "Activity: Fallback/Recovery update is currently not available.");
@@ -395,7 +404,7 @@ namespace CollapseLauncher
             while (seconds > 0)
             {
                 PrintAndFlush(Console.Out, $"Launcher will be restarted in {seconds}...");
-                await Task.Delay(1000);
+                await Task.Delay(1000, token);
                 seconds--;
             }
 
@@ -624,8 +633,14 @@ namespace CollapseLauncher
         public static void ForceRestart()
         {
             // Workaround to artificially start new process and wait for the current one to be killed.
-            string collapsePath = AppExecutablePath;
-            Process.Start("cmd.exe", $"/c timeout /T 1 && start /I \"\" \"{collapsePath}\"");
+            var cmdProc = Process.Start(new ProcessStartInfo
+            {
+                FileName        = "cmd.exe",
+                Arguments       = $"/c timeout /T 1 && start \"\" \"{AppExecutablePath}\"",
+                UseShellExecute = true,
+            });
+
+            cmdProc?.WaitForExit();
             Application.Current.Exit();
         }
     }

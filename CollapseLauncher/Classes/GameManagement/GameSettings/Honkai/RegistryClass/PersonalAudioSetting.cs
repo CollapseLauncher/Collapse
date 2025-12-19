@@ -8,7 +8,6 @@ using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
@@ -23,12 +22,31 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PersonalAudioSetting : IGameSettingsValue<PersonalAudioSetting>
     {
         #region Fields
-        internal const   string                     ValueName    = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
-        private readonly PersonalAudioSettingVolume _volumeValue = PersonalAudioSettingVolume.Load();
+        internal const string ValueName = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
 
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
+
+        [JsonIgnore]
+        private PersonalAudioSettingVolume _volumeValue;
         #endregion
 
         #region Properties
+
+        public PersonalAudioSetting() : this(null)
+        {
+
+        }
+
+        private PersonalAudioSetting(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+            if (gameSettings != null)
+            {
+                _volumeValue = PersonalAudioSettingVolume.Load(gameSettings);
+            }
+        }
+
 
         /// <summary>
         /// This defines "<c>Master Volume</c>" slider In-game settings -> Audio.<br/><br/>
@@ -40,8 +58,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                          = value;
-                _volumeValue.MasterVolumeValue = value;
+                field = value;
+                _volumeValue?.MasterVolumeValue = value;
             }
         } = 100;
 
@@ -55,8 +73,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                       = value;
-                _volumeValue.BGMVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
+                field = value;
+                _volumeValue?.BGMVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
             }
         } = 100;
 
@@ -70,8 +88,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                               = value;
-                _volumeValue.SoundEffectVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
+                field = value;
+                _volumeValue?.SoundEffectVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
             }
         } = 100;
 
@@ -85,8 +103,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                         = value;
-                _volumeValue.VoiceVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
+                field = value;
+                _volumeValue?.VoiceVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
             }
         } = 100;
 
@@ -100,8 +118,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                       = value;
-                _volumeValue.ElfVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
+                field = value;
+                _volumeValue?.ElfVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 3.0f);
             }
         } = 100;
 
@@ -115,8 +133,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             get;
             set
             {
-                field                      = value;
-                _volumeValue.CGVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 1.8f);
+                field = value;
+                _volumeValue?.CGVolumeValue = ConvertRangeValue(0.0f, 100.0f, value, 0.0f, 1.8f);
             }
         } = 100;
 
@@ -172,13 +190,13 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         #region Methods
 #nullable enable
-        public static PersonalAudioSetting Load()
+        public static PersonalAudioSetting Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -186,7 +204,11 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSetting) ?? new PersonalAudioSetting();
+                    PersonalAudioSetting obj = byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSetting) ?? new PersonalAudioSetting();
+                    obj._volumeValue = PersonalAudioSettingVolume.Load(gameSettings);
+                    obj.ParentGameSettings = gameSettings;
+
+                    return obj;
                 }
             }
             catch (Exception ex)
@@ -201,19 +223,19 @@ namespace CollapseLauncher.GameSettings.Honkai
                     $"{ex}", ex));
             }
 
-            return new PersonalAudioSetting();
+            return new PersonalAudioSetting(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(HonkaiSettingsJsonContext.Default.PersonalAudioSetting);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif

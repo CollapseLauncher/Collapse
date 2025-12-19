@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
@@ -31,18 +30,18 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Metadata and Stamp path/url prefixes
 
-        internal static string CurrentLauncherChannel => LauncherConfig.IsPreview ? "preview" : "stable";
+        private static string CurrentLauncherChannel => LauncherConfig.IsPreview ? "preview" : "stable";
         internal static string LauncherMetadataFolder => Path.Combine(LauncherConfig.AppGameFolder, "_metadatav3");
 
-        internal static string LauncherStampRemoteURLPath =>
+        private static string LauncherStampRemoteURLPath =>
             $"/metadata/{MetadataVersion}/{CurrentLauncherChannel}/".CombineURLFromString(LauncherMetadataStampPrefix);
 
         #endregion
 
         #region Metadata Stamp List and Config Dictionary
 
-        internal static List<Stamp?>? LauncherMetadataStamp { get; private set; }
-        internal static List<Stamp?>? NewUpdateMetadataStamp { get; private set; }
+        private static List<Stamp?>?              LauncherMetadataStamp           { get; set; }
+        private static List<Stamp?>?              NewUpdateMetadataStamp          { get; set; }
         private static Dictionary<string, Stamp>? LauncherMetadataStampDictionary { get; set; }
 
         internal static Dictionary<string, Dictionary<string, PresetConfig>?>? LauncherMetadataConfig
@@ -55,7 +54,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Game Name & Region Collection and Current Config
 
-        internal static PresetConfig? CurrentMetadataConfig { get; set; }
+        internal static PresetConfig? CurrentMetadataConfig { get; private set; }
 
         internal static string? CurrentMetadataConfigGameName;
         internal static string? CurrentMetadataConfigGameRegion;
@@ -67,14 +66,15 @@ namespace CollapseLauncher.Helper.Metadata
 
         internal static MasterKeyConfig? CurrentMasterKey { get; private set; }
 
-        internal static Dictionary<string, MasterKeyConfig>? OtherMasterKeyConfigVault { get; private set; }
+        private static Dictionary<string, MasterKeyConfig>? OtherMasterKeyConfigVault { get; set; }
 
         #endregion
 
         #region Current Game Name and Max Region Counts
 
-        internal static int CurrentGameNameCount { get; private set; }
-        internal static int CurrentGameRegionMaxCount { get; private set; }
+        internal static int CurrentGameNameCount => LauncherGameNameRegionCollection?.Count ?? 0;
+        internal static int CurrentGameRegionMaxCount => LauncherGameNameRegionCollection?
+            .GetValueOrDefault(CurrentMetadataConfigGameName ?? "")?.Count ?? 0;
 
         #endregion
 
@@ -225,7 +225,7 @@ namespace CollapseLauncher.Helper.Metadata
             string currentChannel = CurrentLauncherChannel;
 
             // Initialize the stamp and config file
-            await InitializeStamp(currentChannel);
+            await InitializeStamp();
             await InitializeConfig(currentChannel, isCacheUpdateModeOnly, isShowLoadingMessage);
 
             // Unload Plugins first
@@ -235,7 +235,7 @@ namespace CollapseLauncher.Helper.Metadata
             await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!, LauncherMetadataStampDictionary!);
         }
 
-        internal static async Task InitializeStamp(string currentChannel, bool throwAfterRetry = false)
+        private static async Task InitializeStamp(bool throwAfterRetry = false)
         {
             string stampLocalFilePath = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
             string stampRemoteFilePath = LauncherStampRemoteURLPath;
@@ -308,7 +308,7 @@ namespace CollapseLauncher.Helper.Metadata
                     File.Delete(stampLocalFilePath);
                 }
 
-                await InitializeStamp(currentChannel, true);
+                await InitializeStamp(true);
             }
             finally
             {
@@ -335,9 +335,9 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        internal static async Task InitializeConfig(string currentChannel,
-                                                    bool   isCacheUpdateModeOnly,
-                                                    bool   isShowLoadingMessage)
+        private static async Task InitializeConfig(string currentChannel,
+                                                   bool   isCacheUpdateModeOnly,
+                                                   bool   isShowLoadingMessage)
         {
             if (LauncherMetadataStamp == null)
             {
@@ -466,7 +466,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (regionMetadataObject is PresetConfig presetConfig)
                 {
                     // If the cache update mode is enabled and the config is not enabled, then skip
-                    if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
+                    if (isCacheUpdateModeOnly && !presetConfig.IsCacheUpdateEnabled) return;
 
                     // Try to add the preset config map into the dictionary
                     regionDictionary.TryAdd(stamp.MetadataPath ?? "", presetConfig);
@@ -495,13 +495,9 @@ namespace CollapseLauncher.Helper.Metadata
                 }
             }
             #endregion
-
-            // Save the current count of game name and game regions
-            CurrentGameNameCount      = LauncherMetadataConfig.Keys.Count;
-            CurrentGameRegionMaxCount = LauncherMetadataConfig.Max(x => x.Value?.Count ?? 0);
         }
 
-        internal static async Task<FileStream> LoadOrGetConfigStream(
+        private static async Task<FileStream> LoadOrGetConfigStream(
             Stamp stamp,
             string currentChannel)
         {
@@ -535,7 +531,7 @@ namespace CollapseLauncher.Helper.Metadata
                 }
                 catch
                 {
-                    fileStream.Dispose();
+                    await fileStream.DisposeAsync();
                     throw;
                 }
             }
@@ -543,10 +539,10 @@ namespace CollapseLauncher.Helper.Metadata
             return fileInfo.Open(FileMode.Open, FileAccess.Read);
         }
 
-        internal static async Task<object?> LoadAndGetConfig(Stamp  stamp,
-                                                             string currentChannel,
-                                                             bool   throwAfterRetry     = false,
-                                                             bool   allowDeserializeKey = false)
+        private static async Task<object?> LoadAndGetConfig(Stamp  stamp,
+                                                            string currentChannel,
+                                                            bool   throwAfterRetry     = false,
+                                                            bool   allowDeserializeKey = false)
         {
             // Get the local stream
             FileStream configLocalStream = await LoadOrGetConfigStream(stamp, currentChannel);
@@ -589,8 +585,8 @@ namespace CollapseLauncher.Helper.Metadata
                             presetConfig.GameName = stamp.GameName;
                             presetConfig.GameLauncherApi ??= presetConfig.LauncherType switch
                             {
-                                LauncherType.Sophon => LegacyLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
-                                LauncherType.HoYoPlay => HoYoPlayLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                LauncherType.HoYoPlay => HypApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                LauncherType.Legacy => throw new NotSupportedException("Legacy Launcher API is no longer supported!"),
                                 _ => throw new NotSupportedException($"Launcher type: {presetConfig.LauncherType} is not supported!")
                             };
 
@@ -664,59 +660,52 @@ namespace CollapseLauncher.Helper.Metadata
                     await FallbackCDNUtil.TryGetCDNFallbackStream(stampRemoteFilePath);
 
                 // Check and throw if the stream returns null or empty
-                if (stampRemoteStream != null)
+                List<Stamp?>? remoteMetadataStampList =
+                    await stampRemoteStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
+
+                // Check and throw if the metadata stamp returns null or empty
+                if (remoteMetadataStampList == null || remoteMetadataStampList.Count == 0)
                 {
-                    List<Stamp?>? remoteMetadataStampList =
-                        await stampRemoteStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
-
-                    // Check and throw if the metadata stamp returns null or empty
-                    if (remoteMetadataStampList == null || remoteMetadataStampList.Count == 0)
-                    {
-                        throw new
-                            NullReferenceException("MetadataV3 stamp list is returns a null or empty after deserialization!");
-                    }
-
-                    NewUpdateMetadataStamp ??= [];
-
-                    // Make sure to clear the new update list first
-                    NewUpdateMetadataStamp.Clear();
-
-                    // Do iteration and check if the stamp is outdated
-                    bool isOutdatedStampDetected = false;
-                    foreach (Stamp? remoteMetadataStamp in remoteMetadataStampList)
-                    {
-                        if (remoteMetadataStamp == null)
-                            continue;
-
-                        // Check if the local stamp does not have one, then add it to new update stamp list
-                        Stamp? localStamp =
-                            LauncherMetadataStamp?.FirstOrDefault(x => remoteMetadataStamp.GameRegion ==
-                                                                       x?.GameRegion
-                                                                       && remoteMetadataStamp.GameName ==
-                                                                       x?.GameName
-                                                                       && remoteMetadataStamp.LastUpdated ==
-                                                                       x?.LastUpdated
-                                                                       && remoteMetadataStamp.MetadataPath ==
-                                                                       x.MetadataPath
-                                                                       && remoteMetadataStamp.MetadataType ==
-                                                                       x.MetadataType);
-                        if (localStamp != null) continue;
-
-
-                        // If null, then add it to new update list
-                        Logger.LogWriteLine($"A new metadata config was found! [Name: {remoteMetadataStamp.GameName} | Region: {remoteMetadataStamp.GameRegion} | Type: {remoteMetadataStamp.MetadataType}] at {remoteMetadataStamp.LastUpdated}",
-                                            LogType.Default, true);
-                        isOutdatedStampDetected = true;
-                        NewUpdateMetadataStamp?.Add(remoteMetadataStamp);
-                    }
-
-                    // Return the status
-                    return isOutdatedStampDetected;
+                    throw new
+                        NullReferenceException("MetadataV3 stamp list is returns a null or empty after deserialization!");
                 }
-                else
+
+                NewUpdateMetadataStamp ??= [];
+
+                // Make sure to clear the new update list first
+                NewUpdateMetadataStamp.Clear();
+
+                // Do iteration and check if the stamp is outdated
+                bool isOutdatedStampDetected = false;
+                foreach (Stamp? remoteMetadataStamp in remoteMetadataStampList)
                 {
-                    throw new NullReferenceException("MetadataV3 stamp check stream returns a null or empty, which means there might be an issue while retrieving stream of the stamp!");
+                    if (remoteMetadataStamp == null)
+                        continue;
+
+                    // Check if the local stamp does not have one, then add it to new update stamp list
+                    Stamp? localStamp =
+                        LauncherMetadataStamp?.FirstOrDefault(x => remoteMetadataStamp.GameRegion ==
+                                                                   x?.GameRegion &&
+                                                                   remoteMetadataStamp.GameName ==
+                                                                   x?.GameName &&
+                                                                   remoteMetadataStamp.LastUpdated ==
+                                                                   x?.LastUpdated &&
+                                                                   remoteMetadataStamp.MetadataPath ==
+                                                                   x.MetadataPath &&
+                                                                   remoteMetadataStamp.MetadataType ==
+                                                                   x.MetadataType);
+                    if (localStamp != null) continue;
+
+
+                    // If null, then add it to new update list
+                    Logger.LogWriteLine($"A new metadata config was found! [Name: {remoteMetadataStamp.GameName} | Region: {remoteMetadataStamp.GameRegion} | Type: {remoteMetadataStamp.MetadataType}] at {remoteMetadataStamp.LastUpdated}",
+                                        LogType.Default, true);
+                    isOutdatedStampDetected = true;
+                    NewUpdateMetadataStamp?.Add(remoteMetadataStamp);
                 }
+
+                // Return the status
+                return isOutdatedStampDetected;
             }
             catch (Exception ex)
             {
@@ -732,7 +721,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        internal static ConcurrentDictionary<Stamp, byte> MetadataUpdateEntry = new();
+        private static readonly ConcurrentDictionary<Stamp, byte> MetadataUpdateEntry = new();
         internal static async ValueTask RunMetadataUpdate()
         {
             // Delay the routine if the update check or routine is running
@@ -785,9 +774,6 @@ namespace CollapseLauncher.Helper.Metadata
                 // Then update the stamp file
                 string stampLocalFilePath = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
                 await UpdateStampContent(stampLocalFilePath, NewUpdateMetadataStamp);
-
-                // Then reinitialize the metadata
-                await Initialize();
             }
             catch (Exception ex)
             {

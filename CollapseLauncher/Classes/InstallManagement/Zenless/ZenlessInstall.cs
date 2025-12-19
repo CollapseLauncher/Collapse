@@ -1,5 +1,6 @@
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameSettings.Zenless.Enums;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
@@ -24,14 +25,13 @@ namespace CollapseLauncher.InstallManager.Zenless
     internal sealed partial class ZenlessInstall : InstallManagerBase
     {
         #region Private Properties
-        private ZenlessSettings? ZenlessSettings          { get; }
         private ZenlessRepair?   ZenlessGameRepairManager { get; set; }
         #endregion
 
         #region Override Properties
         protected override int _gameVoiceLanguageID
         {
-            get => ZenlessSettings?.GeneralData?.DeviceLanguageVoiceType switch
+            get => (GameSettings as ZenlessSettings)?.GeneralData?.DeviceLanguageVoiceType switch
             {
                 LanguageVoice.zh_cn => 0,
                 LanguageVoice.en_us => 1,
@@ -62,10 +62,10 @@ namespace CollapseLauncher.InstallManager.Zenless
             Path.Combine(_gameDataPersistentPath, "audio_lang");
         #endregion
 
-        public ZenlessInstall(UIElement parentUI, IGameVersion GameVersionManager, ZenlessSettings zenlessSettings)
-            : base(parentUI, GameVersionManager)
+        public ZenlessInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings zenlessSettings)
+            : base(parentUI, gameVersionManager, zenlessSettings)
         {
-            ZenlessSettings = zenlessSettings;
+            GameSettings = zenlessSettings;
         }
 
         #region Override Methods - StartPackageInstallationInner
@@ -92,8 +92,10 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         protected override IRepair GetGameRepairInstance(string? versionString) =>
             new ZenlessRepair(ParentUI,
-                               GameVersionManager, ZenlessSettings!, true,
-                               versionString);
+                              GameVersionManager!,
+                              (GameSettings as ZenlessSettings)!,
+                              true,
+                              versionString);
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage>? gamePackage = null,
                                                                     bool isOnlyInstallPackage = false,
@@ -112,7 +114,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(Token.Token);
+            await ApplyDeleteFileActionAsync(Token!.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)
@@ -205,18 +207,23 @@ namespace CollapseLauncher.InstallManager.Zenless
         #endregion
 
         #region Override Methods - UninstallGame
-        protected override UninstallGameProperty AssignUninstallFolders()
+        protected override GameInstallFileInfo GetGameInstallFileInfo()
         {
-            return new UninstallGameProperty
+            if (GameVersionManager.GamePreset.GameInstallFileInfo is { } gameInstallFileInfo)
             {
-                gameDataFolderName = "ZenlessZoneZero_Data",
-                foldersToDelete    = ["APMCrashReporter"],
-                filesToDelete =
+                return gameInstallFileInfo;
+            }
+
+            return new GameInstallFileInfo
+            {
+                GameDataFolderName = "ZenlessZoneZero_Data",
+                FoldersToDelete    = ["APMCrashReporter"],
+                FilesToDelete =
                 [
                     "mhypbase.dll", "HoYoKProtect.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^ZZZ.*",
                     "^Unity.*"
                 ],
-                foldersToKeepInData = ["ScreenShots"]
+                FoldersToKeepInData = ["ScreenShots"]
             };
         }
         #endregion

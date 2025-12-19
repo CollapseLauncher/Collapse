@@ -24,20 +24,34 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager, string gameRepoURL)
-        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, null, gameRepoURL, null), IRepair
+    internal partial class GenshinRepair(
+        UIElement     parentUI,
+        IGameVersion  gameVersionManager,
+        IGameSettings gameSettings)
+        : ProgressBase<PkgVersionProperties>(parentUI,
+                                             gameVersionManager,
+                                             gameSettings,
+                                             null,
+                                             null)
+        , IRepair
     {
         #region ExtensionProperties
-        private protected string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
-        private protected int                  DispatcherRegionID      { get; init; } = gameVersionManager.GamePreset.GetRegServerNameID();
-        private protected string               DispatcherURL           { get => GameVersionManager.GamePreset.GameDispatchURL ?? ""; }
+        private           string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
+        private           int                  DispatcherRegionID      { get; } = gameVersionManager.GamePreset.GetRegServerNameID();
+        private           string               DispatcherURL           { get => GameVersionManager.GamePreset.GameDispatchURL ?? ""; }
         private protected string               DispatcherKey           { get => GameVersionManager.GamePreset.DispatcherKey ?? ""; }
         private protected int                  DispatcherKeyLength     { get => GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0x100; }
-        private protected QueryProperty        DispatchQuery           { get; set; }
-        private protected DateTime             LastDispatchQueryTime   { get; set; }
-        private protected string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
-        private protected string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
+        private           QueryProperty        DispatchQuery           { get; set; }
+        private           DateTime             LastDispatchQueryTime   { get; set; }
+        private           string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
+        private           string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage AudioLanguage           { get; init; } = (GenshinAudioLanguage)gameVersionManager.GamePreset.GetVoiceLanguageID();
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => GameVersionManager.GameDirPath = value;
+        }
 
         #endregion
 
@@ -46,7 +60,7 @@ namespace CollapseLauncher
         private Dictionary<string, SophonAsset> SophonAssetDictRef { get; } = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, SophonAsset>.AlternateLookup<ReadOnlySpan<char>> SophonAssetDictRefLookup { get => _sophonAssetDictRefLookup ??= SophonAssetDictRef.GetAlternateLookup<ReadOnlySpan<char>>(); }
         private bool IsParsePersistentManifestSuccess { get; set; }
-        protected override string UserAgent { get; set; } = "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+        protected override string UserAgent => "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         #endregion
 
         ~GenshinRepair() => Dispose();
@@ -71,35 +85,46 @@ namespace CollapseLauncher
 
         private async Task<bool> CheckRoutine()
         {
-            // Reset status and progress
-            ResetStatusAndProgress();
-            AssetIndex.Clear();
-            SophonAssetDictRef.Clear();
+            AssetIndex = await ResetAndFetchAssets();
 
-            // Step 1: Ensure that every file are not read-only
-            TryUnassignReadOnlyFiles(GamePath);
-
-            // Step 2: Fetch asset index
-            AssetIndex = await Fetch(AssetIndex, Token.Token);
-
-            // Step 3: Calculate all the size and count in total
+            // Calculate all the size and count in total
             CountAssetIndex(AssetIndex);
 
-            // Step 4: Check for the asset indexes integrity
-            await Check(AssetIndex, Token.Token);
+            // Check for the asset indexes integrity
+            await Check(AssetIndex, Token!.Token);
 
-            // Step 5: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
-            //         either way, returns false.
+            // Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
+            // either way, returns false.
             return SummarizeStatusAndProgress(
                 AssetIndex,
                 string.Format(Lang._GameRepairPage.Status3, ProgressAllCountFound, SummarizeSizeSimple(ProgressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
         }
 
+        internal Task<List<PkgVersionProperties>> ResetAndFetchAssets()
+        {
+            Task<List<PkgVersionProperties>> task = Impl();
+            return TryRunExamineThrow(task);
+
+            async Task<List<PkgVersionProperties>> Impl()
+            {
+                // Reset status and progress
+                ResetStatusAndProgress();
+                AssetIndex.Clear();
+                SophonAssetDictRef.Clear();
+
+                // Ensure that every file are not read-only
+                TryUnassignReadOnlyFiles(GamePath);
+
+                // Fetch asset index
+                return await Fetch(AssetIndex, Token!.Token);
+            }
+        }
+
         private async Task<bool> RepairRoutine()
         {
             // Assign repair task
-            Task<bool> repairTask = Repair(AssetIndex, Token.Token);
+            Task<bool> repairTask = Repair(AssetIndex, Token!.Token);
 
             // Run repair process
             bool repairTaskSuccess = await TryRunExamineThrow(repairTask);
@@ -121,7 +146,9 @@ namespace CollapseLauncher
         public void CancelRoutine()
         {
             // Trigger token cancellation
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         private async Task<QueryProperty> GetCachedDispatcherQuery(HttpClient client, CancellationToken token)

@@ -1,58 +1,31 @@
 ﻿using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
-using Microsoft.Win32;
-using System.IO;
 
 namespace CollapseLauncher.GameSettings.Base
 {
-    internal class SettingsBase : ImportExportBase, IGameSettings
+    internal abstract class SettingsBase : ImportExportBase, IGameSettings
     {
         #region Base Properties
-        public virtual CustomArgs SettingsCustomArgument { get; set; }
-        public virtual BaseScreenSettingData SettingsScreen { get; set; }
-        public virtual CollapseScreenSetting SettingsCollapseScreen { get; set; }
-        public virtual CollapseMiscSetting SettingsCollapseMisc { get; set; }
+        public virtual CustomArgs            SettingsCustomArgument { get; protected set; }
+        public virtual BaseScreenSettingData SettingsScreen         { get; protected set; }
+        public virtual CollapseScreenSetting SettingsCollapseScreen { get; protected set; }
+        public virtual CollapseMiscSetting   SettingsCollapseMisc   { get; protected set; }
         #endregion
 
 #nullable enable
 
-        internal static string? RegistryPath
+        public abstract string GetLaunchArguments(GamePresetProperty property);
+
+        protected SettingsBase() {}
+
+        protected SettingsBase(IGameVersion gameVersionManager) : base(gameVersionManager) { }
+
+        public static IGameSettings CreateBaseFrom<T>(IGameVersion gameVersionManager, bool isEnableResizableWindow = false)
+            where T : SettingsBase, new()
         {
-            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
-                Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
-        }
+            SettingsBase settings = new T();
+            settings.GameVersionManager = gameVersionManager;
 
-        private static RegistryKey? _registryRoot;
-        internal static RegistryKey? RegistryRoot
-        {
-            get
-             {
-                // If the registry path is null, then return null
-                if (RegistryPath == null) return null;
-
-                // Try to open the registry path
-                _registryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
-
-                // If it's still empty, then create a new one
-                _registryRoot ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
-
-                return _registryRoot;
-            }
-        }
-
-        internal static RegistryKey? RefreshRegistryRoot()
-        {
-            _registryRoot?.Close();
-            _registryRoot?.Dispose();
-            _registryRoot = null;
-            return RegistryRoot;
-        }
-
-        protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
-
-        public static IGameSettings CreateBaseFrom(IGameVersion gameVersionManager, bool isEnableResizableWindow = false)
-        {
-            SettingsBase settings = new SettingsBase(gameVersionManager);
             settings.InitializeSettings();
             settings.SettingsCollapseScreen.UseResizableWindow = isEnableResizableWindow;
 
@@ -61,13 +34,12 @@ namespace CollapseLauncher.GameSettings.Base
 
         public virtual void InitializeSettings()
         {
-            SettingsCustomArgument = CustomArgs.Load();
-            SettingsCollapseScreen = CollapseScreenSetting.Load();
-            SettingsCollapseMisc = CollapseMiscSetting.Load();
+            SettingsCustomArgument = CustomArgs.Load(this);
+            SettingsCollapseScreen = CollapseScreenSetting.Load(this);
+            SettingsCollapseMisc   = CollapseMiscSetting.Load(this);
         }
 
 #nullable disable
-        public static IGameVersion GameVersionManager { get; set; }
 
         public virtual void ReloadSettings() => InitializeSettings();
 

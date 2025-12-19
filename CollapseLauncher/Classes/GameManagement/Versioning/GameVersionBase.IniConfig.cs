@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -285,8 +286,15 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return;
 
             // If the sdk is empty, ignore it
-            if (GameApiProp?.data?.sdk == null)
+            if (!(LauncherApi?
+                 .LauncherGameResourceSdk?
+                 .Data?
+                 .TryFindByBizOrId(LauncherApi.GameBiz,
+                                   LauncherApi.GameId,
+                                   out HypChannelSdkData? _) ?? false))
+            {
                 return;
+            }
 
             // Set the value
             const string keyName = "plugin_sdk_version";
@@ -410,6 +418,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 ini.Save(filePath);
             }
         }
+
+        public void SaveVersionConfig() => SaveGameIni(GameIniVersionPath, GameIniVersion);
         #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
@@ -13,8 +14,9 @@ using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Locale;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable CommentTypo
@@ -24,9 +26,52 @@ using static Hi3Helper.Locale;
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
 {
-    internal class ImportExportBase
+    internal abstract class ImportExportBase(IGameVersion? gameVersionManager) : IGameSettingsExportable
     {
         private const byte XorKey = 69;
+
+        protected ImportExportBase() : this(null) { }
+
+        [JsonIgnore]
+        protected IGameVersion? GameVersionManager { get; set; } = gameVersionManager;
+
+        [JsonIgnore]
+        private string? RegistryPath
+        {
+            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
+                Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
+        }
+
+        [JsonIgnore]
+        private RegistryKey? _registryRoot;
+
+        [JsonIgnore]
+        public RegistryKey? RegistryRoot
+        {
+            get
+            {
+                // If the registry path is null, then return null
+                if (RegistryPath == null) return null;
+
+                // Try to open the registry path
+                _registryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
+
+                // If it's still empty, then create a new one
+                _registryRoot ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
+
+                return _registryRoot;
+            }
+        }
+
+        public RegistryKey? RefreshRegistryRoot()
+        {
+            RegistryKey? key = Interlocked.Exchange(ref _registryRoot, null);
+            key?.Close();
+            key?.Dispose();
+
+            return RegistryRoot;
+        }
+
         public async Task<Exception?> ImportSettings(string? gameBasePath = null)
         {
             try
@@ -199,7 +244,7 @@ namespace CollapseLauncher.GameSettings.Base
             return null;
         }
 
-        private static void EnsureReadImpostorData(Stream stream, string valueName)
+        private void EnsureReadImpostorData(Stream stream, string valueName)
         {
             int sizeOf = ReadValueKindAndSize(stream, out RegistryValueKind realValueType);
             object result = realValueType switch
@@ -257,7 +302,7 @@ namespace CollapseLauncher.GameSettings.Base
             WriteTypeBinary(stream, (byte[])value, realValueType);
         }
 
-        public static unsafe object ReadTypeNumberUnsafe(Stream stream, int sizeOf)
+        private static unsafe object ReadTypeNumberUnsafe(Stream stream, int sizeOf)
         {
             Span<byte> buffer = stackalloc byte[sizeOf];
             stream.ReadExactly(buffer);
@@ -465,19 +510,19 @@ namespace CollapseLauncher.GameSettings.Base
 
         private static string ReadValueName(EndianBinaryReader reader) => reader.ReadString8BitLength();
 
-        private static void ReadDWord(EndianBinaryReader reader, string valueName)
+        private void ReadDWord(EndianBinaryReader reader, string valueName)
         {
             int val = reader.ReadInt32();
             RegistryRoot?.SetValue(valueName, val, RegistryValueKind.DWord);
         }
 
-        private static void ReadQWord(EndianBinaryReader reader, string valueName)
+        private void ReadQWord(EndianBinaryReader reader, string valueName)
         {
             long val = reader.ReadInt64();
             RegistryRoot?.SetValue(valueName, val, RegistryValueKind.QWord);
         }
 
-        private static void ReadString(EndianBinaryReader reader, string valueName)
+        private void ReadString(EndianBinaryReader reader, string valueName)
         {
             string val = reader.ReadString8BitLength();
             RegistryRoot?.SetValue(valueName, val, RegistryValueKind.String);

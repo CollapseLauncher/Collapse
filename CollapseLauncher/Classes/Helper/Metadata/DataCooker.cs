@@ -28,7 +28,7 @@ namespace CollapseLauncher.Helper.Metadata
         private const long CollapseSignature     = 7310310183885631299;
         private const int  AllowedBufferPoolSize = 1 << 20; // 1 MiB
 
-        internal static         RSA  RsaInstance;
+        private static          RSA  _rsaInstance;
         private static readonly Lock RsaDecryptLock = new();
 
         internal static string ServeV3Data(string data)
@@ -110,9 +110,9 @@ namespace CollapseLauncher.Helper.Metadata
 
                     using (RsaDecryptLock.EnterScope())
                     {
-                        if (RsaInstance == null)
+                        if (_rsaInstance == null)
                         {
-                            RsaInstance = RSA.Create();
+                            _rsaInstance = RSA.Create();
                             byte[] key;
                             if (IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
                             {
@@ -127,14 +127,14 @@ namespace CollapseLauncher.Helper.Metadata
                                 key = LauncherMetadataHelper.CurrentMasterKey?.Key;
                             }
 
-                            RsaInstance.ImportRSAPrivateKey(key, out _);
+                            _rsaInstance.ImportRSAPrivateKey(key, out _);
                         }
 
                         int offset    = 0;
                         int offsetOut = 0;
                         while (offset < dataRawBuffer.Length)
                         {
-                            int decryptWritten = RsaInstance.Decrypt(dataRawBuffer.Slice(offset, encBitLength),
+                            int decryptWritten = _rsaInstance.Decrypt(dataRawBuffer.Slice(offset, encBitLength),
                                                                      decryptedDataSpan.AsSpan(offsetOut),
                                                                      RSAEncryptionPadding.Pkcs1);
                             offsetOut += decryptWritten;

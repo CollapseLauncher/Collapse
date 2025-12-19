@@ -11,6 +11,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
@@ -90,13 +91,18 @@ namespace CollapseLauncher.Helper.Background.Loaders
             await wBitmap.SetSourceAsync(imageStream.AsRandomAccessStream());
 
             // Run image switch task
-            nint wBitmapBufferP = wBitmap.GetBufferPointer();
+            nint wBitmapBufferP = wBitmap.GetBufferPointer(out uint colorChannels);
+            if (wBitmapBufferP == nint.Zero)
+            {
+                throw new COMException("Cannot obtain buffer pointer from WriteableBitmap");
+            }
+
             Task applyColorTask = ColorPaletteUtility
                .ApplyAccentColor(ParentUI,
                                  new BitmapInputStruct
                                  {
                                      Buffer  = wBitmapBufferP,
-                                     Channel = 4,
+                                     Channel = (int)colorChannels,
                                      Width   = wBitmap.PixelWidth,
                                      Height  = wBitmap.PixelHeight
                                  },
@@ -104,8 +110,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                  isImageLoadForFirstTime);
             Task applyAndSwitchImageTask = ApplyAndSwitchImage(AnimationDuration, wBitmap);
 
-            _ = Task.WhenAll(applyAndSwitchImageTask, applyColorTask)
-                    .ContinueWith(_ => GC.Collect(), token);
+            _ = Task.WhenAll(applyAndSwitchImageTask, applyColorTask).ContinueWith(_ => GC.Collect(), token);
         }
 
         private Task ApplyAndSwitchImage(double duration, BitmapSource imageToApply)
