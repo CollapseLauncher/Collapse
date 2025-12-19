@@ -23,7 +23,6 @@ jobs:
     strategy:
       matrix:
         platform: [x64]
-        framework: [net9.0-windows10.0.26100.0]
 
     # Required for build attestation
     permissions:
@@ -211,7 +210,11 @@ jobs:
       run: |
             $exePath = "${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}\CollapseLauncher.exe"
             if (Test-Path $exePath) {
-                $version = "CollapseLauncher@" + ([System.Diagnostics.FileVersionInfo]::GetVersionInfo("./CollapseLauncher.exe").ProductVersion)
+                $version = ((Get-Item $exePath).VersionInfo.FileVersion)
+                if ($version.EndsWith(".0")) {
+                    $version = $version.Substring(0, $version.Length - 2)
+                }
+
                 if ($version) {
                     sentry-cli releases new --org collapse --project collapse-launcher $version
                     sentry-cli releases set-commits --auto $version

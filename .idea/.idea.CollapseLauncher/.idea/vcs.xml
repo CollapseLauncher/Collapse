@@ -10,6 +10,7 @@
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Http" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Plugin.Core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.SharpDiscordRPC" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.SimpleZipArchiveReader" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Sophon" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Win32" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ImageEx" vcs="Git" />

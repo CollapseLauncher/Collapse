@@ -160,6 +160,9 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/IhoFox"><img src="https://avatars.githubusercontent.com/u/133899447?v=4?s=100" width="100px;" alt="IhoFox"/><br /><sub><b>IhoFox</b></sub></a><br /><a href="#translation-IhoFox" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kujou-kju"><img src="https://avatars.githubusercontent.com/u/23724383?v=4?s=100" width="100px;" alt="kujou"/><br /><sub><b>kujou</b></sub></a><br /><a href="#translation-kujou-kju" title="Translation">🌍</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://souta.cc"><img src="https://avatars.githubusercontent.com/u/18072048?v=4?s=100" width="100px;" alt="Souta"/><br /><sub><b>Souta</b></sub></a><br /><a href="#translation-CatSouta" title="Translation">🌍</a></td>
+    </tr>
   </tbody>
 </table>
 

@@ -36,10 +36,13 @@ internal partial class WpfPackageContext
 
             // Resets token
             ResetCancelToken();
+            ResetStatusAndProgress();
 
             ChangesInProgress                = true;
             IsCheckAlreadyPerformed          = true;
             Status.IsProgressAllIndetermined = true;
+            ProgressAllSizeTotal             = 0;
+            ProgressPerFileSizeTotal         = 0;
 
             // Cancel if no update is available
             if (WpfPackageData == null ||

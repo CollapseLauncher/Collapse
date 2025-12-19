@@ -152,6 +152,7 @@
     "GameSettings_Panel2RepairGame": "Reparar Juego",
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión",
+    "GameSettings_Panel2ChangeGameLocation": "Mover Ubicación del Juego",
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "¡No se puede mover el juego a la carpeta raíz de tu disco!\r\nPor favor, crea una carpeta e inténtalo de nuevo.",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
@@ -741,10 +742,10 @@
     "FileDialogTitle": "Importar Plugin a Collapse Launcher",
     "FileDialogFileFilter1": "Collapse Launcher Plugin",
 
-    "LeftPanelNoPluginTitle": "¡No tienes cargado ningún plugin!",
-    "LeftPanelNoPluginButton1": "Entra en el",
+    "LeftPanelNoPluginTitle": "¡No tienes ningún plugin cargado!",
+    "LeftPanelNoPluginButton1": "¡Ve al",
     "LeftPanelNoPluginButton2": "Catálogo de Plugin",
-    "LeftPanelNoPluginButton3": " ",
+    "LeftPanelNoPluginButton3": "para obtener mas!",
 
     "LeftPanelListViewTitle": "Información del plugin cargado",
 
@@ -779,10 +780,10 @@
     "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
     "ListViewFooterRestartButton": "Reiniciar el Launcher",
 
-    "RightPanelImportTitle1": "Arrastra el",
+    "RightPanelImportTitle1": "Haz clic para agregar el",
     "RightPanelImportTitle2": "o",
     "RightPanelImportTitle3": "aquí",
-    "RightPanelImportTitle4": "o haga clic en este cuadro para importar el plugin"
+    "RightPanelImportTitle4": "¡En cualquier parte del cuadro está bien!"
   },
 
   "_Misc": {

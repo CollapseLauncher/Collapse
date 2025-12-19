@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.12</Version>
+        <Version>1.83.13</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -256,9 +256,9 @@
     <ItemGroup>
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -283,12 +283,12 @@
         
         <PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Markdig.Signed" Version="0.43.0" />
+        <PackageReference Include="Markdig.Signed" Version="0.44.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3595.46" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3650.58" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
@@ -296,11 +296,8 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0" />
-        <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Text.Json" Version="10.0.0" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.1" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>

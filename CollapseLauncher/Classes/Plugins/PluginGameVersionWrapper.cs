@@ -201,8 +201,8 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     }
     public override bool IsGameVersionMatch() => GetGameExistingVersion() == GetGameVersionApi();
 
-    public override ValueTask<bool> IsPluginVersionsMatch() => ValueTask.FromResult(true);
-    public override ValueTask<bool> IsSdkVersionsMatch()    => ValueTask.FromResult(true);
+    public override Task<bool> IsPluginVersionsMatch() => Task.FromResult(true);
+    public override Task<bool> IsSdkVersionsMatch()    => Task.FromResult(true);
 
     /*
     public override void Reinitialize()

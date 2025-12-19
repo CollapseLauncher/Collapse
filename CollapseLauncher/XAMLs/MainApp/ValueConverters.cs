@@ -439,7 +439,7 @@ namespace CollapseLauncher.Pages
 
     public partial class FloorFloatingValueConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
         {
             double valEvaluated = Math.Floor((double)value);
             if (!double.IsFinite(valEvaluated) ||
@@ -455,6 +455,15 @@ namespace CollapseLauncher.Pages
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public partial class PercentageValueConverter : FloorFloatingValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double result = (double)base.Convert(value, targetType, parameter, language);
+            return $"{result}%";
         }
     }
 

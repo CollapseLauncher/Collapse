@@ -1,15 +1,14 @@
-#if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
-#endif
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
-using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -23,19 +22,19 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Hashing;
-using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Media;
+using WinRT;
+
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -44,12 +43,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
-using Point = Windows.Foundation.Point;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using WinRT;
-using CollapseLauncher.Helper.Loading;
-
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable AsyncVoidMethod

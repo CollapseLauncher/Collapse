@@ -120,7 +120,7 @@ internal static class DbHandler
 
     public static async Task Init(bool redirectThrow = false, bool bypassEnableFlag = false)
     {
-        DbConfig.Init();
+        await Task.Factory.StartNew(DbConfig.Init).ConfigureAwait(false);
             
         if (!bypassEnableFlag && !(IsEnabled ?? false))
         {
