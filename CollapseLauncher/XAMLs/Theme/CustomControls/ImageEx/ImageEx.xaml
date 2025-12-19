@@ -1,8 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:ImageEx"
+                    xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
                     xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie">
-    <Style TargetType="controls:ImageEx">
+    <Style BasedOn="{StaticResource CollapseImageExStyle}"
+           TargetType="controls:ImageEx" />
+    <Style BasedOn="{StaticResource CollapseImageExStyle}"
+           TargetType="c:NonFaultyImageEx" />
+    <Style x:Key="CollapseImageExStyle"
+           TargetType="controls:ImageEx">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
         <Setter Property="IsTabStop" Value="False" />
