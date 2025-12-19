@@ -924,10 +924,8 @@
                                        FontSize="11"
                                        FontWeight="Bold"
                                        HorizontalTextAlignment="Center"
-                                       TextAlignment="Center">
-                                <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}, FallbackValue='-'}" />
-                                <Run Text="%" />
-                            </TextBlock>
+                                       TextAlignment="Center"
+                                       Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"/>
                         </Grid>
                     </Grid>
                 </Button>
