@@ -1,6 +1,8 @@
 ﻿using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility.Json.Converters;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json.Serialization;
 #pragma warning disable IDE0130
 
@@ -25,8 +27,28 @@ public class HypResourcePluginData : HypApiIdentifiable
     public List<HypPluginPackageInfo> Plugins
     {
         get;
-        init;
+        init => field = RemoveExcludedPackages(value);
     } = [];
+
+    private static List<HypPluginPackageInfo> RemoveExcludedPackages(List<HypPluginPackageInfo> package)
+    {
+        List<HypPluginPackageInfo> returnList = [];
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (HypPluginPackageInfo plugin in package)
+        {
+            string packageUrl           = plugin.PluginPackage?.Url ?? "";
+            string packageFileNameNoExt = Path.GetFileNameWithoutExtension(packageUrl);
+
+            if (packageFileNameNoExt.Contains("DXSetup", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            returnList.Add(plugin);
+        }
+
+        return returnList;
+    }
 }
 
 public class HypPluginPackageInfo
