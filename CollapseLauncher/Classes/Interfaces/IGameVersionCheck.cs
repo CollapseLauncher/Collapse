@@ -122,13 +122,13 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Checks if the plugin version is installed or matches the version provided from miHoYo's API.
         /// </summary>
-        ValueTask<bool> IsPluginVersionsMatch();
+        Task<bool> IsPluginVersionsMatch();
 
         /// <summary>
         /// Checks if the sdk version is installed or matches the version provided from miHoYo's API.
         /// This is used to obtain the status of the SDK .dlls for certain builds (for example: Bilibili version)
         /// </summary>
-        ValueTask<bool> IsSdkVersionsMatch();
+        Task<bool> IsSdkVersionsMatch();
 
         /// <summary>
         /// Check if the game version is installed.

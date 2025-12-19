@@ -6,7 +6,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
@@ -20,8 +19,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AccessToDisposedClosure
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -132,7 +132,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             // But if the game version matches, then return to true.
             => GameVersionInstalled == GameVersionAPI;
 
-        public virtual async ValueTask<bool> IsPluginVersionsMatch()
+        public virtual Task<bool> IsPluginVersionsMatch()
         {
 #if !MHYPLUGINSUPPORT
             return true;
@@ -142,17 +142,12 @@ namespace CollapseLauncher.GameManagement.Versioning
             Dictionary<string, GameVersion> pluginVersionsInstalled = PluginVersionsInstalled;
 
             // If the plugin version installed is null, return true as it doesn't need to check
-            if (pluginVersionsInstalled.Count == 0)
+            if (pluginVersions.Count == 0)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
-            // Compare each entry in the dict
-            if (pluginVersions.Count != pluginVersionsInstalled.Count)
-            {
-                return false;
-            }
-
+            // Check each of the version
             MismatchPlugin.Clear();
             foreach (KeyValuePair<string, GameVersion> pluginVersion in pluginVersions)
             {
@@ -163,21 +158,15 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
 
                 // Uh-oh, we need to calculate the file hash.
-                MismatchPlugin = await CheckPluginUpdate(pluginVersion.Key);
-                if (MismatchPlugin.Count != 0)
-                {
-                    return false;
-                }
+                MismatchPlugin = CheckPluginUpdate(pluginVersion.Key);
             }
 
-            // Update cached plugin versions
-            PluginVersionsInstalled = PluginVersionsAPI;
-
-            return true;
+            // Return based on how many mismatched plugin found
+            return Task.FromResult(MismatchPlugin.Count == 0);
 #endif
         }
 
-        public virtual async ValueTask<bool> IsSdkVersionsMatch()
+        public virtual async Task<bool> IsSdkVersionsMatch()
         {
 #if !MHYPLUGINSUPPORT
             return true;
@@ -226,7 +215,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // Check if the executable file exist and has the size at least > 64 KiB. If not, then return as false.
-            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, executableName));
+            FileInfo execFileInfo = new(Path.Combine(GameDirPath, executableName));
 
             // Check if the vendor type exist. If not, then return false
             if (VendorTypeProp.GameName == null || string.IsNullOrEmpty(VendorTypeProp.VendorType))
@@ -299,7 +288,10 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // If the plugin version is not match, return that it's installed but have plugin updates.
-            if (!await IsPluginVersionsMatch() || !await IsSdkVersionsMatch())
+            Task<bool> pluginMatchTask      = IsPluginVersionsMatch();
+            Task<bool> sdkMatchTask         = IsSdkVersionsMatch();
+            bool[]     isBothDepTaskMatches = await Task.WhenAll(pluginMatchTask, sdkMatchTask);
+            if (!isBothDepTaskMatches.All(x => x))
             {
                 return GameInstallStateEnum.InstalledHavePlugin;
             }
@@ -389,45 +381,61 @@ namespace CollapseLauncher.GameManagement.Versioning
             return false;
         }
 
-        public virtual async ValueTask<bool> CheckSdkUpdate(string validatePath)
+        public virtual ValueTask<bool> CheckSdkUpdate(string validatePath)
         {
             try
             {
-                using StreamReader reader = new StreamReader(validatePath);
-                while (await reader.ReadLineAsync() is { } line)
+                if (!File.Exists(validatePath))
                 {
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-
-                    PkgVersionProperties? pkgVersion = line.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
-
-                    if (pkgVersion == null)
-                    {
-                        continue;
-                    }
-
-                    string filePath = Path.Combine(GameDirPath, pkgVersion.remoteName);
-                    if (!File.Exists(filePath))
-                        return false;
-
-                    await using FileStream fs        = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    byte[]                 hashArray = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(fs);
-                    string                 md5       = Convert.ToHexStringLower(hashArray);
-                    if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
-                        return false;
+                    return ValueTask.FromResult(false);
                 }
 
-                return true;
+                long totalSize    = 0;
+                long existingSize = 0;
+
+                string gamePath = GameDirPath;
+                foreach (PkgVersionProperties pkg in EnumerateList())
+                {
+                    Interlocked.Add(ref totalSize, pkg.fileSize);
+
+                    string   filePath = Path.Combine(gamePath, pkg.remoteName ?? "");
+                    FileInfo fileInfo = new(filePath);
+                    if (fileInfo.Exists)
+                    {
+                        Interlocked.Add(ref existingSize, fileInfo.Length);
+                    }
+                }
+
+                return ValueTask.FromResult(totalSize == existingSize);
+
+                IEnumerable<PkgVersionProperties> EnumerateList()
+                {
+                    using StreamReader reader = File.OpenText(validatePath);
+                    while (reader.ReadLine() is { } line)
+                    {
+                        PkgVersionProperties? pkgVersion = line.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+                        if (pkgVersion == null)
+                        {
+                            continue;
+                        }
+
+                        yield return pkgVersion;
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return ValueTask.FromResult(false);
             }
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Failed while checking the SDK file update\r\n{ex}", LogType.Error, true);
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                return false;
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                return ValueTask.FromResult(true);
             }
         }
 
-        protected virtual async Task<List<HypPluginPackageInfo>> CheckPluginUpdate(string pluginKey)
+        protected virtual List<HypPluginPackageInfo> CheckPluginUpdate(string pluginKey)
         {
             List<HypPluginPackageInfo> result = [];
             if (GameDataPlugin?.Plugins == null ||
@@ -436,7 +444,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return result;
             }
 
-            var pluginList = GameDataPlugin.Plugins;
+            List<HypPluginPackageInfo> pluginList = GameDataPlugin.Plugins;
             if (pluginList.FirstOrDefault(x => x.PluginId?.Equals(pluginKey, StringComparison.OrdinalIgnoreCase) ??
                                                false) is not { PluginPackage: { } packageData } packageInfo ||
                 packageData.PackageAssetValidationList.Count == 0)
@@ -458,18 +466,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                                        .EnsureNoReadOnly()
                                        .StripAlternateDataStream();
 
-                    if (!fileInfo.Exists)
-                    {
-                        result.Add(packageInfo);
-                        break;
-                    }
-
-                    await using FileStream fs = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-                    byte[]  hashBytes = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(fs);
-                    string? md5       = HexTool.BytesToHexUnsafe(hashBytes);
-
-                    if (md5?.Equals(validate.PackageMD5HashString, StringComparison.OrdinalIgnoreCase) ?? false)
+                    if (fileInfo.Exists &&
+                        fileInfo.Length == validate.PackageSize)
                     {
                         continue;
                     }
