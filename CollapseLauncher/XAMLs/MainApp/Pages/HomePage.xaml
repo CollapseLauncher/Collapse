@@ -45,7 +45,7 @@
         <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
-        <pages:FloorFloatingValueConverter x:Key="FloorFloatingValueConverter" />
+        <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -925,7 +925,7 @@
                                        FontWeight="Bold"
                                        HorizontalTextAlignment="Center"
                                        TextAlignment="Center">
-                                <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource FloorFloatingValueConverter}, FallbackValue='-'}" />
+                                <Run Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}, FallbackValue='-'}" />
                                 <Run Text="%" />
                             </TextBlock>
                         </Grid>
