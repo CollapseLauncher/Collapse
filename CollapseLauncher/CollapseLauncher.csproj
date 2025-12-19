@@ -256,9 +256,9 @@
     <ItemGroup>
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -295,10 +295,7 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="System.CommandLine" Version="2.0.0" />
-        <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Text.Json" Version="10.0.0" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.0" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>
