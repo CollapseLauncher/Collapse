@@ -636,12 +636,11 @@
             </Grid>
             <Grid x:Name="WpfPackageParentGrid"
                   Grid.Row="1"
-                  Width="48"
+                  Width="50"
+                  Height="50"
                   DataContext="{x:Bind WpfContext}"
                   Visibility="{Binding IsWpfPackageEnabled, Converter={StaticResource BooleanVisibilityConverter}}">
                 <Button x:Name="WpfPackageBtn"
-                        MinWidth="48"
-                        MinHeight="48"
                         Padding="0"
                         HorizontalAlignment="Right"
                         BorderThickness="0"
@@ -737,7 +736,7 @@
                                     </Button>
                                 </Grid>
                                 <Grid Grid.Row="2"
-                                      MinWidth="240"
+                                      MinWidth="260"
                                       Margin="0,0,0,8"
                                       Padding="8"
                                       HorizontalAlignment="Stretch"
@@ -894,9 +893,7 @@
                             </Grid>
                         </Flyout>
                     </Button.Resources>
-                    <Grid MinWidth="48"
-                          MinHeight="48"
-                          Margin="-1"
+                    <Grid Margin="-1"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="{ThemeResource GameSettingsBtnBrush}"
@@ -912,18 +909,14 @@
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}" />
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"
                                     Opacity=".5" />
-                            <ProgressRing Width="50"
-                                          Height="50"
-                                          MinWidth="48"
-                                          MinHeight="48"
-                                          Foreground="{ThemeResource AccentColorBrush}"
+                            <ProgressRing Foreground="{ThemeResource AccentColorBrush}"
                                           IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
                                           Maximum="100"
                                           Minimum="0"
+                                          Width="48"
+                                          Height="48"
                                           Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
-                            <TextBlock MinWidth="48"
-                                       MinHeight="8"
-                                       Margin="0,0,0,2"
+                            <TextBlock Margin="0,0,0,2"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        extension:TextBlockExtension.PreserveSpace="False"
