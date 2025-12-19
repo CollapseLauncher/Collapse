@@ -350,48 +350,36 @@ namespace CollapseLauncher.Helper.Image
 
         public static Task ResizeImageStream(Stream input, Stream output, uint toWidth, uint toHeight)
         {
-            TaskCompletionSource tcs = new();
-            Task.Factory.StartNew(Impl);
-
-            return tcs.Task;
+            return Task.Factory.StartNew(Impl);
 
             void Impl()
             {
-                try
+                ProcessImageSettings settings = new()
                 {
-                    ProcessImageSettings settings = new()
-                    {
-                        Width         = (int)toWidth,
-                        Height        = (int)toHeight,
-                        HybridMode    = HybridScaleMode.Off,
-                        Interpolation = InterpolationSettings.CubicSmoother,
-                        Anchor        = CropAnchor.Bottom | CropAnchor.Center
-                    };
-                    settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+                    Width         = (int)toWidth,
+                    Height        = (int)toHeight,
+                    HybridMode    = HybridScaleMode.Off,
+                    Interpolation = InterpolationSettings.CubicSmoother,
+                    Anchor        = CropAnchor.Bottom | CropAnchor.Center
+                };
+                settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
-                    ImageFileInfo           imageFileInfo = ImageFileInfo.Load(input!);
-                    ImageFileInfo.FrameInfo frame         = imageFileInfo.Frames[0];
-                    input.Position = 0;
+                ImageFileInfo           imageFileInfo = ImageFileInfo.Load(input!);
+                ImageFileInfo.FrameInfo frame         = imageFileInfo.Frames[0];
+                input.Position = 0;
 
-                    bool isUseWaifu2X = IsWaifu2XEnabled && (frame.Width < toWidth || frame.Height < toHeight);
-                    using ProcessingPipeline pipeline =
-                        MagicImageProcessor
-                           .BuildPipeline(input,
-                                          isUseWaifu2X
-                                              ? ProcessImageSettings.Default
-                                              : settings);
+                bool isUseWaifu2X = IsWaifu2XEnabled && (frame.Width < toWidth || frame.Height < toHeight);
+                using ProcessingPipeline pipeline =
+                    MagicImageProcessor
+                       .BuildPipeline(input,
+                                      isUseWaifu2X
+                                          ? ProcessImageSettings.Default
+                                          : settings);
 
-                    if (isUseWaifu2X)
-                        pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
+                if (isUseWaifu2X)
+                    pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
 
-                    pipeline.WriteOutput(output);
-
-                    tcs.SetResult();
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
+                pipeline.WriteOutput(output);
             }
         }
 
