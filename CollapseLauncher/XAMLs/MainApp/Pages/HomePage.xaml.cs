@@ -436,6 +436,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
+        private bool _isCarouselInitialized = false;
 
         private async Task StartCarouselAutoScroll(int delaySeconds = 5)
         {
@@ -444,11 +445,11 @@ namespace CollapseLauncher.Pages
             
             try
             {
+                CarouselToken ??= new CancellationTokenSourceWrapper();
                 while (true)
                 {
-                    CarouselToken ??= new CancellationTokenSourceWrapper();
-
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
+                    _isCarouselInitialized = true;
                     if (!IsCarouselPanelAvailable) return;
                     if (ImageCarousel.SelectedIndex != GameCarouselData?.Count - 1 
                         && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
@@ -456,6 +457,10 @@ namespace CollapseLauncher.Pages
                     else
                         for (int i = GameCarouselData?.Count ?? 0; i > 0; i--)
                         {
+                            while (!WindowUtility.IsCurrentWindowInFocus())
+                            {
+                                await Task.Delay(RefreshRate, CarouselToken.Token);
+                            }
                             if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
                             {
                                 ImageCarousel.SelectedIndex = i - 1;
@@ -464,7 +469,9 @@ namespace CollapseLauncher.Pages
                             {
                                 await Task.Delay(100, CarouselToken.Token);
                             }
+                            else break;
                         }
+                    break;
                 }
             }
             catch (TaskCanceledException)
@@ -496,6 +503,12 @@ namespace CollapseLauncher.Pages
 
         public async ValueTask CarouselStopScroll()
         {
+            // Wait until Carousel is fully initialized to invoke the cts cancellation
+            while (!_isCarouselInitialized)
+            {
+                await Task.Delay(500);
+            }
+
             if (CarouselToken is { IsCancellationRequested: false, IsDisposed: false, IsCancelled: false })
             {
                 await CarouselToken.CancelAsync();
