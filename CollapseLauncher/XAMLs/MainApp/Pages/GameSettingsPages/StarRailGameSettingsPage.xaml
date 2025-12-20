@@ -9,6 +9,7 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
+      xmlns:extension="using:CollapseLauncher.Extension"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
       NavigationCacheMode="Disabled"
@@ -58,6 +59,7 @@
                                                 <CheckBox x:Name="VSyncToggle"
                                                           HorizontalAlignment="Left"
                                                           VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                           IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
                                                                TextWrapping="Wrap" />
@@ -66,6 +68,7 @@
                                             <CheckBox x:Name="GameResolutionFullscreen"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
                                                            TextWrapping="Wrap" />
@@ -73,6 +76,7 @@
                                             <CheckBox x:Name="GameResolutionBorderless"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
                                                            TextWrapping="Wrap" />
@@ -85,6 +89,7 @@
                                                 <CheckBox x:Name="GameWindowResizable"
                                                           HorizontalAlignment="Stretch"
                                                           VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                           IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
                                                           IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
@@ -96,6 +101,7 @@
                                                         Margin="16,0,8,0"
                                                         Padding="0"
                                                         CornerRadius="4"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
@@ -120,6 +126,7 @@
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
                                                       Visibility="Collapsed">
@@ -132,6 +139,7 @@
                                             <CheckBox x:Name="MobileModeToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
                                                       IsEnabled="False"
                                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}">
@@ -150,6 +158,7 @@
                                                   MinWidth="128"
                                                   VerticalAlignment="Center"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResSelectPlaceholder}"
                                                   SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}" />
@@ -163,6 +172,7 @@
                                             <CheckBox x:Name="GameCustomResolutionCheckbox"
                                                       Margin="16,0,16,0"
                                                       VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustom}"
@@ -174,6 +184,7 @@
                                                     Margin="0,0,8,0"
                                                     Padding="0"
                                                     CornerRadius="4"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                     Style="{ThemeResource AcrylicButtonStyle}">
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
@@ -230,12 +241,14 @@
                                           MinWidth="128"
                                           Margin="0,8,0,0"
                                           CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                           ItemsSource="{x:Bind static:Model.FpsIndex}"
                                           SelectedIndex="{x:Bind FPS, Mode=TwoWay}" />
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel"
                                         Orientation="Horizontal">
                                 <ToggleSwitch Margin="4,0,0,8"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}"
                                               IsOn="{x:Bind IsGameBoost, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
@@ -283,6 +296,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"
@@ -308,6 +322,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind LightQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
@@ -331,6 +346,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
                                             <!--  dum workaround for the dum enum  -->
                                             <ComboBoxItem Content="0"
@@ -365,6 +381,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind EnvDetailQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
@@ -388,6 +405,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind ReflectionQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
@@ -411,6 +429,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind BloomQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
@@ -441,6 +460,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind AAMode, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="TAA" />
@@ -460,6 +480,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind ResolutionQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
@@ -481,6 +502,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind SFXQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
@@ -506,6 +528,7 @@
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind DlssQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_UHP}" />
@@ -528,6 +551,7 @@
                                               Grid.Column="0"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               IsChecked="{x:Bind SelfShadow, Mode=TwoWay}">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SelfShadow}"
                                                    TextWrapping="WrapWholeWords" />
@@ -536,6 +560,7 @@
                                               Grid.Column="1"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               IsChecked="{x:Bind HalfResTransparent, Mode=TwoWay}">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_HalfResTransparent}"
                                                    TextWrapping="WrapWholeWords" />
@@ -660,6 +685,7 @@
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
                                               CornerRadius="14"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}" />
@@ -679,6 +705,7 @@
                                               HorizontalAlignment="Stretch"
                                               CornerRadius="14"
                                               MaxDropDownHeight="200"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
                                         <ComboBoxItem Content="English" />
                                         <ComboBoxItem Content="日本語" />
@@ -708,7 +735,8 @@
                     <ToggleSwitch Margin="0,0,0,16"
                                   IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                  extension:UIElementExtensions.CursorType="Hand" />
                     <TextBox x:Name="CustomArgsTextBox"
                              Margin="0,0,0,16"
                              HorizontalAlignment="Stretch"
@@ -718,7 +746,8 @@
                                TextWrapping="WrapWholeWords">
                         <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer1}" />
                         <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
-                                   UnderlineStyle="None">
+                                   UnderlineStyle="None"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                             <Run FontWeight="Bold"
                                  Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer2}" />
                         </Hyperlink>
@@ -743,7 +772,8 @@
                                       FontWeight="SemiBold"
                                       IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                  extension:UIElementExtensions.CursorType="Hand" />
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel"
                                 Visibility="Collapsed">
@@ -761,13 +791,15 @@
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
                                       IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                  extension:UIElementExtensions.CursorType="Hand" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
                                       Margin="0,0,0,0"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                  extension:UIElementExtensions.CursorType="Hand" />
                         <NumberBox x:Name="GameLaunchDelay"
                                    Width="200"
                                    Margin="0,0,0,12"
@@ -791,7 +823,8 @@
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
                                       IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                  extension:UIElementExtensions.CursorType="Hand" />
                         <TextBox x:Name="PostExitCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
@@ -824,7 +857,8 @@
                         CornerRadius="16"
                         IsEnabled="True"
                         Shadow="{ThemeResource SharedShadow}"
-                        Style="{ThemeResource AccentButtonStyle}">
+                        Style="{ThemeResource AccentButtonStyle}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                     <StackPanel Margin="8,0"
                                 Orientation="Horizontal">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -857,7 +891,8 @@
                             CornerRadius="16,0,0,16"
                             Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -874,7 +909,8 @@
                             CornerRadius="0,16,16,0"
                             Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <TextBlock Margin="0,0,8,0"

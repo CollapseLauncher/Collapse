@@ -6,6 +6,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Unloaded="WebView2Unload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -49,7 +50,8 @@
                         Click="WebView2BackBtn_Click"
                         CornerRadius="16,0,0,16"
                         IsEnabled="False"
-                        Style="{ThemeResource AccentButtonStyle}">
+                        Style="{ThemeResource AccentButtonStyle}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -62,7 +64,8 @@
                         Click="WebView2ForwardBtn_Click"
                         CornerRadius="0,16,16,0"
                         IsEnabled="False"
-                        Style="{ThemeResource AccentButtonStyle}">
+                        Style="{ThemeResource AccentButtonStyle}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -76,7 +79,8 @@
                         VerticalAlignment="Stretch"
                         Click="WebView2ReloadBtn_Click"
                         CornerRadius="16"
-                        Style="{ThemeResource AccentButtonStyle}">
+                        Style="{ThemeResource AccentButtonStyle}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -99,7 +103,8 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Stretch"
                     Click="WebView2OpenExternalBtn_Click"
-                    CornerRadius="16">
+                    CornerRadius="16"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"
@@ -112,7 +117,8 @@
                     VerticalAlignment="Stretch"
                     Click="WebView2CloseBtn_Click"
                     CornerRadius="16"
-                    Style="{ThemeResource AccentButtonStyle}">
+                    Style="{ThemeResource AccentButtonStyle}"
+                                                  extension:UIElementExtensions.CursorType="Hand">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"

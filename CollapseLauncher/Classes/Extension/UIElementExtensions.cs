@@ -1053,29 +1053,6 @@ namespace CollapseLauncher.Extension
             where T : DependencyObject
             => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
 
-
-        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-
-        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetAllControlsCursorRecursive(HandCursor);
-        }
-
-        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetCursor(HandCursor);
-        }
-
         internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
         {
             if (sender is not UIElement element)

@@ -8,6 +8,7 @@
       xmlns:control="using:CommunityToolkit.WinUI.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
@@ -199,7 +200,8 @@
                                 Click="StartGameRepair"
                                 CornerRadius="16"
                                 Style="{ThemeResource AccentButtonStyle}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                extension:UIElementExtensions.CursorType="Hand">
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
@@ -215,6 +217,7 @@
                                      Click="StartGameCheckSplitButton"
                                      CornerRadius="16"
                                      Tag="Fast"
+                                     extension:UIElementExtensions.CursorType="Hand"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
@@ -233,6 +236,7 @@
                                                 HorizontalContentAlignment="Stretch"
                                                 Click="StartGameCheck"
                                                 Tag="Fast"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
@@ -256,6 +260,7 @@
                                                 Click="StartGameCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
@@ -283,6 +288,7 @@
                                 HorizontalAlignment="Stretch"
                                 Click="CancelOperation"
                                 CornerRadius="16"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"
                                        FontWeight="Medium"

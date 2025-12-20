@@ -8,6 +8,7 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:localUpdateHelper="using:CollapseLauncher.Helper.Update"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource UpdatePageAcrylicBrush}"
@@ -195,6 +196,7 @@
                         Orientation="Horizontal"
                         Visibility="{x:Bind localUpdateHelper:LauncherUpdateHelper.AppUpdateVersionProp.IsForceUpdate}">
                 <Button x:Name="CancelUpdateCountdownBtn"
+                        extension:UIElementExtensions.CursorType="Hand"
                         HorizontalAlignment="Right"
                         Click="CancelCountdownClick"
                         CornerRadius="14"
@@ -213,10 +215,12 @@
                     <PopupThemeTransition />
                 </StackPanel.ChildrenTransitions>
                 <HyperlinkButton Margin="0,0,8,0"
+                                 extension:UIElementExtensions.CursorType="Hand"
                                  HorizontalAlignment="Right"
                                  Click="RemindMeClick"
                                  Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" />
                 <Button HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="DoUpdateClick"
                         CornerRadius="14"
                         Style="{ThemeResource AccentButtonStyle}">
@@ -247,6 +251,7 @@
             </TextBlock>
         </StackPanel>
         <CheckBox x:Name="AskUpdateCheckbox"
+                  extension:UIElementExtensions.CursorType="Hand"
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
                   Margin="0,0,0,0"

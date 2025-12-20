@@ -5,6 +5,7 @@
       xmlns:control="using:CommunityToolkit.WinUI.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
@@ -172,6 +173,7 @@
                                 Click="StartCachesUpdate"
                                 CornerRadius="16"
                                 Style="{ThemeResource AccentButtonStyle}"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -186,6 +188,7 @@
                                      Grid.Column="0"
                                      HorizontalAlignment="Stretch"
                                      Click="StartCachesCheckSplitButton"
+                                     extension:UIElementExtensions.CursorType="Hand"
                                      CornerRadius="16"
                                      Tag="Fast"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
@@ -205,6 +208,7 @@
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
                                                 Click="StartCachesCheck"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Tag="Fast"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
@@ -228,6 +232,7 @@
                                                 HorizontalContentAlignment="Stretch"
                                                 Click="StartCachesCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Tag="Full"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
@@ -255,6 +260,7 @@
                                 Margin="16,0,0,0"
                                 HorizontalAlignment="Stretch"
                                 Click="CancelOperation"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 CornerRadius="16"
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"

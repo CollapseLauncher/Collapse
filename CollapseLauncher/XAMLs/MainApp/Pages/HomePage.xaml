@@ -77,7 +77,7 @@
             <Grid x:Name="ImageEventImgShadow" />
             <Image x:Name="ImageEventImg"
                    s:Effects.Shadow="{ThemeResource SharedDropShadow}"
-                   Loaded="SetHandCursor"
+                   extension:UIElementExtensions.CursorType="Hand"
                    PointerPressed="ClickImageEventSpriteLink" />
         </Grid>
         <InfoBar x:Name="PreloadDialogBox"
@@ -486,7 +486,7 @@
                                         Content="{Binding}"
                                         CornerRadius="12"
                                         FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
-                                        Loaded="SetHandCursor"
+                                        extension:UIElementExtensions.CursorType="Hand"
                                         PointerExited="FadeOutSocMedButton"
                                         Style="{ThemeResource SocialMediaButtonStyle}"
                                         s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
@@ -548,7 +548,7 @@
                                                                         HorizontalContentAlignment="Stretch"
                                                                         Click="OpenSocMedLink"
                                                                         CornerRadius="5"
-                                                                        Loaded="SetHandCursor"
+                                                                        extension:UIElementExtensions.CursorType="Hand"
                                                                         PointerEntered="ElementScaleOutHoveredPointerEntered"
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
@@ -997,7 +997,7 @@
                                 <imageex:ImageEx VerticalAlignment="Center"
                                              EnableLazyLoading="True"
                                              IsCacheEnabled="True"
-                                             Loaded="SetHandCursor"
+                                             extension:UIElementExtensions.CursorType="Hand"
                                              PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                              PointerPressed="OpenImageLinkFromTag"
                                              Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
@@ -1067,7 +1067,7 @@
                                 <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1083,7 +1083,7 @@
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1145,7 +1145,7 @@
                                 <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1161,7 +1161,7 @@
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1223,7 +1223,7 @@
                                 <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1239,7 +1239,7 @@
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1834,7 +1834,7 @@
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
                                 Click="OpenCommunityButtonLink"
-                                Loaded="SetHandCursor"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
@@ -1862,7 +1862,7 @@
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
                                 Click="OpenCommunityButtonLink"
-                                Loaded="SetHandCursor"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Style="{ThemeResource AccentButtonStyle}"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
@@ -2516,7 +2516,7 @@
                       Grid.Column="0"
                       HorizontalAlignment="Stretch"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
-                      Loaded="SetHandCursor"
+                      extension:UIElementExtensions.CursorType="Hand"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
                       Shadow="{ThemeResource SharedShadow}"
@@ -2559,7 +2559,7 @@
                             HorizontalContentAlignment="Stretch"
                             Click="UpdateGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
-                            Loaded="SetHandCursor"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Button.Content>
@@ -2594,7 +2594,7 @@
                             HorizontalContentAlignment="Stretch"
                             Click="StartGame"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
-                            Loaded="SetHandCursor"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
@@ -2633,7 +2633,7 @@
                             HorizontalContentAlignment="Stretch"
                             Click="CancelInstallationProcedure"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
-                            Loaded="SetHandCursor"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
@@ -2659,7 +2659,7 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
-                            Loaded="SetHandCursor"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">

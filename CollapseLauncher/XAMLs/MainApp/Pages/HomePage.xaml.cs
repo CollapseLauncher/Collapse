@@ -1019,11 +1019,6 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Set Hand Cursor
-        private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
-            (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
-        #endregion
-
         #region Hyper Link Color
         private void HyperLink_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
