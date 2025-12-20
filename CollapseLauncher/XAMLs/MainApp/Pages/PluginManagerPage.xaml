@@ -112,13 +112,13 @@
                 <StackPanel Grid.Column="1">
                     <SplitButton Padding="2,2"
                                  VerticalAlignment="Bottom"
+                                 extension:UIElementExtensions.CursorType="Hand"
                                  Click="OnClickCheckForUpdatesAllButton"
-                                 IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
-                                 extension:UIElementExtensions.CursorType="Hand">
+                                 IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}">
                         <SplitButton.Flyout>
                             <MenuFlyout Placement="Bottom">
-                                <MenuFlyoutItem Click="OnClickUpdateAndDownloadAllPlugin"
-                                                extension:UIElementExtensions.CursorType="Hand"
+                                <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                Click="OnClickUpdateAndDownloadAllPlugin"
                                                 Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton2}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE896;" />
@@ -175,37 +175,37 @@
                               Loaded="{x:Bind extension:UIElementExtensions.EnableImplicitAnimationRecursiveOnLoaded}">
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnMarkForDeletionSelectedPluginsCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnMarkForDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountRestored, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton1}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnRestoreFromDeletionSelectedPluginsCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnRestoreFromDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountUninstalled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton2}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE7A7;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnEnableSelectedPluginsCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnEnableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountDisabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton3}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE930;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnDisableSelectedPluginsCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnDisableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton4}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xEA39;" />
@@ -216,17 +216,17 @@
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon Glyph="&#xE895;" />
                                         </MenuFlyoutSubItem.Icon>
-                                        <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateSelectedPluginsCommand}"
+                                        <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateSelectedPluginsCommand}"
                                                         CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE895;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateSelectedPluginsCommand}"
+                                        <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateSelectedPluginsCommand}"
                                                         CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE896;" />
@@ -234,17 +234,17 @@
                                         </MenuFlyoutItem>
                                     </MenuFlyoutSubItem>
                                     <MenuFlyoutSeparator Margin="8,8" />
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCurrentPluginFolderCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCurrentPluginFolderCommand}"
                                                     CommandParameter="{x:Bind}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton6}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED43;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCollapsePluginFolderCommand}"
+                                    <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                    Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCollapsePluginFolderCommand}"
                                                     CommandParameter="{x:Bind}"
-                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton7}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED25;" />
@@ -254,27 +254,27 @@
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon Glyph="&#xE895;" />
                                         </MenuFlyoutSubItem.Icon>
-                                        <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateCurrentPluginCommand}"
+                                        <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE895;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateCurrentPluginCommand}"
+                                        <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE896;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Command="{x:Bind plugins:PluginManagerPageContext.OnDownloadUpdateCurrentPluginCommand}"
+                                        <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnDownloadUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonDownloadUpdate}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
@@ -293,12 +293,12 @@
                                                        Padding="0"
                                                        HorizontalAlignment="Stretch"
                                                        HorizontalContentAlignment="Stretch"
-                                                       HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
                                                        extension:UIElementExtensions.CursorType="Hand"
+                                                       HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
                                                        Visibility="Visible">
                                 <controls:SettingsExpander.Content>
-                                    <Grid ColumnSpacing="8"
-                                          extension:UIElementExtensions.CursorType="Hand">
+                                    <Grid extension:UIElementExtensions.CursorType="Hand"
+                                          ColumnSpacing="8">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
@@ -548,8 +548,8 @@
                                                     Padding="4"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Bottom"
-                                                    Click="{x:Bind pages:SettingsPage.CopyLoadedPluginInformationClick}"
                                                     extension:UIElementExtensions.CursorType="Hand"
+                                                    Click="{x:Bind pages:SettingsPage.CopyLoadedPluginInformationClick}"
                                                     Style="{ThemeResource TransparentDefaultButtonStyle}"
                                                     Tag="{x:Bind}">
                                                 <FontIcon FontSize="16"
@@ -609,10 +609,10 @@
                                            Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailable, Mode=OneWay}" />
                                 <Button Grid.Column="2"
                                         Padding="0"
+                                        extension:UIElementExtensions.CursorType="Hand"
                                         Click="OnClickUpdateCurrentPlugin"
                                         Foreground="{ThemeResource SystemFillColorSuccess}"
                                         IsEnabled="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
-                                        extension:UIElementExtensions.CursorType="Hand"
                                         Tag="{x:Bind}"
                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                                     <Grid ColumnSpacing="4">
@@ -764,10 +764,10 @@
                 <Button x:Name="RestartLauncherButton"
                         Grid.Column="1"
                         HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="{x:Bind pages:PluginManagerPage.AskLauncherRestart}"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(RestartLauncherButton)}"
                         IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsChanged, Mode=OneWay}"
-                        extension:UIElementExtensions.CursorType="Hand"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Grid ColumnSpacing="8">
                         <Grid.ColumnDefinitions>
@@ -933,14 +933,14 @@
         </Grid>
         <Button x:Name="OpenPluginCatalogBottomLeftButton"
                 Grid.Column="0"
+                Margin="26,0,0,26"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
-                Margin="26,0,0,26"
+                extension:UIElementExtensions.CursorType="Hand"
                 Click="OnClickGoToPluginDownloadCatalogButton"
                 CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(OpenPluginCatalogBottomLeftButton)}"
-                Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
-                extension:UIElementExtensions.CursorType="Hand"
-                Style="{ThemeResource AccentButtonStyle}">
+                Style="{ThemeResource AccentButtonStyle}"
+                Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
             <Grid ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />

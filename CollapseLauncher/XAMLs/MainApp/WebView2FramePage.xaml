@@ -5,8 +5,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Unloaded="WebView2Unload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -47,11 +47,11 @@
                 <Button x:Name="WebView2BackBtn"
                         Width="48"
                         VerticalAlignment="Stretch"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="WebView2BackBtn_Click"
                         CornerRadius="16,0,0,16"
                         IsEnabled="False"
-                        Style="{ThemeResource AccentButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                        Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -61,11 +61,11 @@
                 <Button x:Name="WebView2ForwardBtn"
                         Width="48"
                         VerticalAlignment="Stretch"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="WebView2ForwardBtn_Click"
                         CornerRadius="0,16,16,0"
                         IsEnabled="False"
-                        Style="{ThemeResource AccentButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                        Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -77,10 +77,10 @@
                         Margin="8,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Stretch"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="WebView2ReloadBtn_Click"
                         CornerRadius="16"
-                        Style="{ThemeResource AccentButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                        Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
@@ -102,9 +102,9 @@
                     Width="64"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Stretch"
+                    extension:UIElementExtensions.CursorType="Hand"
                     Click="WebView2OpenExternalBtn_Click"
-                    CornerRadius="16"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                    CornerRadius="16">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"
@@ -115,10 +115,10 @@
                     Grid.Column="5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Stretch"
+                    extension:UIElementExtensions.CursorType="Hand"
                     Click="WebView2CloseBtn_Click"
                     CornerRadius="16"
-                    Style="{ThemeResource AccentButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                    Style="{ThemeResource AccentButtonStyle}">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"

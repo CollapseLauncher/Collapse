@@ -4,9 +4,9 @@
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:page="using:CollapseLauncher.Pages"
       xmlns:type="using:CollapseLauncher.InstallManager.Base"
@@ -56,9 +56,9 @@
             </Button>
             <Button x:Name="MenuExitButton"
                     Grid.Column="2"
-                    extension:UIElementExtensions.CursorType="Hand"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
+                    extension:UIElementExtensions.CursorType="Hand"
                     x:FieldModifier="internal"
                     Style="{ThemeResource AccentButtonStyle}">
                 <Button.Content>
@@ -163,9 +163,9 @@
                           IsChecked="False"
                           Unchecked="ToggleCheckAll" />
                 <Button x:Name="DeleteSelectedFiles"
-                        extension:UIElementExtensions.CursorType="Hand"
                         Grid.Column="0"
                         HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="DeleteSelectedFiles_Click">
                     <Button.Content>
                         <Grid Margin="0,0">
@@ -189,9 +189,9 @@
                     </Button.Content>
                 </Button>
                 <Button x:Name="DeleteAllFiles"
-                        extension:UIElementExtensions.CursorType="Hand"
                         Grid.Column="1"
                         HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="DeleteAllFiles_Click"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>

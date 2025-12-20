@@ -170,10 +170,10 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="UpdateCachesBtn"
                                 HorizontalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="StartCachesUpdate"
                                 CornerRadius="16"
                                 Style="{ThemeResource AccentButtonStyle}"
-                                extension:UIElementExtensions.CursorType="Hand"
                                 Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -187,8 +187,8 @@
                         <SplitButton x:Name="CheckUpdateBtn"
                                      Grid.Column="0"
                                      HorizontalAlignment="Stretch"
-                                     Click="StartCachesCheckSplitButton"
                                      extension:UIElementExtensions.CursorType="Hand"
+                                     Click="StartCachesCheckSplitButton"
                                      CornerRadius="16"
                                      Tag="Fast"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
@@ -207,8 +207,8 @@
                                                 Margin="0,0,0,8"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
-                                                Click="StartCachesCheck"
                                                 extension:UIElementExtensions.CursorType="Hand"
+                                                Click="StartCachesCheck"
                                                 Tag="Fast"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
@@ -230,9 +230,9 @@
                                         <Button x:Name="CheckUpdateFullBtn"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartCachesCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
-                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Tag="Full"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
@@ -259,8 +259,8 @@
                                 Grid.Column="1"
                                 Margin="16,0,0,0"
                                 HorizontalAlignment="Stretch"
-                                Click="CancelOperation"
                                 extension:UIElementExtensions.CursorType="Hand"
+                                Click="CancelOperation"
                                 CornerRadius="16"
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"

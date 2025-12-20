@@ -433,11 +433,11 @@
                                                       Width="Auto"
                                                       Height="{ThemeResource FatSliderInnerThumbHeight}"
                                                       MinWidth="{ThemeResource FatSliderInnerThumbWidth}"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       Background="White"
                                                       CornerRadius="{ThemeResource FatSliderThumbCornerRadius}"
                                                       RenderTransformOrigin="0.5, 0.5"
                                                       Shadow="{ThemeResource FatSliderThumbShadow}"
-                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       Translation="0,0,16">
                                                     <Grid.RenderTransform>
                                                         <CompositeTransform />

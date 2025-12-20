@@ -5,9 +5,9 @@
                     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
                     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
                     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+                    xmlns:panelSlideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
                     xmlns:s="using:CommunityToolkit.WinUI"
-                    xmlns:xamlextension="using:CollapseLauncher.Extension"
-                    xmlns:panelSlideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow">
+                    xmlns:xamlextension="using:CollapseLauncher.Extension">
 
     <x:Double x:Key="SlideshowButtonOpacity">0</x:Double>
     <x:Double x:Key="SlideshowButtonOpacityPointerOver">1</x:Double>
@@ -18,51 +18,58 @@
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacity">.5</x:Double>
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacityPointerOver">1</x:Double>
 
-    <panelSlideshow:MoreThanZeroToVisibilityConverter x:Key="MoreThanZeroToVisibilityConverter"/>
-    <panelSlideshow:CornerRadiusToDoubleConverter x:Key="CornerRadiusToDoubleConverter"/>
+    <panelSlideshow:MoreThanZeroToVisibilityConverter x:Key="MoreThanZeroToVisibilityConverter" />
+    <panelSlideshow:CornerRadiusToDoubleConverter x:Key="CornerRadiusToDoubleConverter" />
 
     <Style TargetType="panelSlideshow:PanelSlideshow">
-        <Setter Property="PreviousButtonCornerRadius" Value="16"/>
-        <Setter Property="PreviousButtonHeight" Value="48"/>
-        <Setter Property="PreviousButtonWidth" Value="32"/>
-        <Setter Property="PreviousButtonOpacity" Value="1"/>
-        <Setter Property="PreviousButtonMargin" Value="0"/>
-        <Setter Property="PreviousButtonHorizontalAlignment" Value="Left"/>
-        <Setter Property="PreviousButtonVerticalAlignment" Value="Bottom"/>
-        <Setter Property="PreviousButtonBackgroundBrush" Value="{ThemeResource SlideshowButtonBackground}"/>
-        <Setter Property="PreviousButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}"/>
-        <Setter Property="PreviousButtonStyle" Value="{ThemeResource SlideshowPreviousButtonStyle}"/>
+        <Setter Property="PreviousButtonCornerRadius" Value="16" />
+        <Setter Property="PreviousButtonHeight" Value="48" />
+        <Setter Property="PreviousButtonWidth" Value="32" />
+        <Setter Property="PreviousButtonOpacity" Value="1" />
+        <Setter Property="PreviousButtonMargin" Value="0" />
+        <Setter Property="PreviousButtonHorizontalAlignment" Value="Left" />
+        <Setter Property="PreviousButtonVerticalAlignment" Value="Bottom" />
+        <Setter Property="PreviousButtonBackgroundBrush" Value="{ThemeResource SlideshowButtonBackground}" />
+        <Setter Property="PreviousButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}" />
+        <Setter Property="PreviousButtonStyle" Value="{ThemeResource SlideshowPreviousButtonStyle}" />
 
-        <Setter Property="NextButtonCornerRadius" Value="16"/>
-        <Setter Property="NextButtonHeight" Value="48"/>
-        <Setter Property="NextButtonWidth" Value="32"/>
-        <Setter Property="NextButtonOpacity" Value="1"/>
-        <Setter Property="NextButtonMargin" Value="0"/>
-        <Setter Property="NextButtonHorizontalAlignment" Value="Right"/>
-        <Setter Property="NextButtonVerticalAlignment" Value="Bottom"/>
-        <Setter Property="NextButtonBackgroundBrush" Value="{ThemeResource SlideshowButtonBackground}"/>
-        <Setter Property="NextButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}"/>
-        <Setter Property="NextButtonStyle" Value="{ThemeResource SlideshowNextButtonStyle}"/>
+        <Setter Property="NextButtonCornerRadius" Value="16" />
+        <Setter Property="NextButtonHeight" Value="48" />
+        <Setter Property="NextButtonWidth" Value="32" />
+        <Setter Property="NextButtonOpacity" Value="1" />
+        <Setter Property="NextButtonMargin" Value="0" />
+        <Setter Property="NextButtonHorizontalAlignment" Value="Right" />
+        <Setter Property="NextButtonVerticalAlignment" Value="Bottom" />
+        <Setter Property="NextButtonBackgroundBrush" Value="{ThemeResource SlideshowButtonBackground}" />
+        <Setter Property="NextButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}" />
+        <Setter Property="NextButtonStyle" Value="{ThemeResource SlideshowNextButtonStyle}" />
 
-        <Setter Property="CountdownProgressMargin" Value="16"/>
-        <Setter Property="CountdownSmokeHeight" Value="256"/>
+        <Setter Property="CountdownProgressMargin" Value="16" />
+        <Setter Property="CountdownSmokeHeight" Value="256" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="panelSlideshow:PanelSlideshow">
-                    <Grid x:Name="RootGrid" CornerRadius="{TemplateBinding CornerRadius}">
+                    <Grid x:Name="RootGrid"
+                          CornerRadius="{TemplateBinding CornerRadius}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CountdownProgressBarStates">
                                 <VisualState x:Name="CountdownProgressBarFadeIn">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="0:0:1" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="1" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="0:0:1"
+                                                                  Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="CountdownProgressBarFadeOut">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="0:0:.5" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="0" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="0:0:.5"
+                                                                  Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -71,94 +78,157 @@
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacity}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacity}" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowCountdownBarOpacity}" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarSmoke" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowCountdownBarSmokeOpacity}" />
-                                        </DoubleAnimationUsingKeyFrames>
-
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScale}" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScale}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScale}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowCountdownBarOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScale}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarSmoke"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowCountdownBarSmokeOpacity}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScale}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScale}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScale}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScale}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
-                                        </DoubleAnimationUsingKeyFrames>
-
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowCountdownBarOpacityPointerOver}" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarSmoke" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowCountdownBarSmokeOpacityPointerOver}" />
-                                        </DoubleAnimationUsingKeyFrames>
-
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScalePointerOver}" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowCountdownBarOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarSmoke"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowCountdownBarSmokeOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButtonScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonScalePointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton" Storyboard.TargetProperty="IsEnabled">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="False" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton"
+                                                                       Storyboard.TargetProperty="IsEnabled">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="False" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NextButton" Storyboard.TargetProperty="IsEnabled">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="False" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NextButton"
+                                                                       Storyboard.TargetProperty="IsEnabled">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="False" />
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowCountdownBarOpacity}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowCountdownBarOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value=".25" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value=".25" />
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacity}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PreviousButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="{StaticResource SlideshowButtonOpacity}" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NextButton"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        
+
                         <animations:Explicit.Animations>
                             <animations:AnimationSet x:Name="NavigationButtonPointerEntered">
                                 <animations:OffsetDropShadowAnimation Target="{Binding ElementName=PreviousButtonShadow}"
@@ -212,53 +282,55 @@
                                 <behaviors:StartAnimationAction Animation="{Binding ElementName=NavigationButtonPointerEntered}" />
                             </interactivity:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
-                        
-                        <Grid x:Name="PresenterGrid" CornerRadius="{TemplateBinding CornerRadius}"/>
+
+                        <Grid x:Name="PresenterGrid"
+                              CornerRadius="{TemplateBinding CornerRadius}" />
                         <Grid x:Name="CountdownProgressBarGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom"
-                              Visibility="{TemplateBinding ProgressBarVisibility}"
+                              IsHitTestVisible="False"
                               Opacity="0"
-                              IsHitTestVisible="False">
+                              Visibility="{TemplateBinding ProgressBarVisibility}">
                             <Grid x:Name="CountdownProgressBarSmoke"
-                                  Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
                                   Height="{TemplateBinding CountdownSmokeHeight}"
-                                  Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
-                                  Opacity="{StaticResource SlideshowCountdownBarSmokeOpacity}"/>
+                                  Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
+                                  Opacity="{StaticResource SlideshowCountdownBarSmokeOpacity}"
+                                  Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}" />
                             <ProgressBar x:Name="CountdownProgressBar"
-                                         Value="0"
+                                         Margin="{TemplateBinding CountdownProgressMargin}"
                                          VerticalAlignment="Bottom"
-                                         Opacity="{StaticResource SlideshowCountdownBarOpacity}"
                                          Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
+                                         Opacity="{StaticResource SlideshowCountdownBarOpacity}"
                                          Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
-                                         Margin="{TemplateBinding CountdownProgressMargin}"/>
+                                         Value="0" />
                         </Grid>
-                        <Grid Opacity="{TemplateBinding PreviousButtonOpacity}"
+                        <Grid Margin="{TemplateBinding PreviousButtonMargin}"
+                              Padding="24"
                               HorizontalAlignment="{TemplateBinding PreviousButtonHorizontalAlignment}"
                               VerticalAlignment="{TemplateBinding PreviousButtonVerticalAlignment}"
                               CornerRadius="{TemplateBinding PreviousButtonCornerRadius}"
-                              Margin="{TemplateBinding PreviousButtonMargin}"
-                              Visibility="{TemplateBinding PreviousButtonVisibilityMode}"
-                              Padding="24"
-                              RenderTransformOrigin=".5, .5">
+                              Opacity="{TemplateBinding PreviousButtonOpacity}"
+                              RenderTransformOrigin=".5, .5"
+                              Visibility="{TemplateBinding PreviousButtonVisibilityMode}">
                             <Grid.RenderTransform>
-                                <ScaleTransform x:Name="PreviousButtonScaleTransform" ScaleX="{StaticResource SlideshowButtonScale}" ScaleY="{StaticResource SlideshowButtonScale}"/>
+                                <ScaleTransform x:Name="PreviousButtonScaleTransform" ScaleX="{StaticResource SlideshowButtonScale}" ScaleY="{StaticResource SlideshowButtonScale}" />
                             </Grid.RenderTransform>
-                            <Grid x:Name="PreviousButtonShadowCaster" Margin="-24"/>
+                            <Grid x:Name="PreviousButtonShadowCaster"
+                                  Margin="-24" />
                             <Button x:Name="PreviousButton"
-                                    xamlextension:UIElementExtensions.CursorType="Hand"
-                                    Opacity="{StaticResource SlideshowButtonOpacity}"
-                                    Style="{TemplateBinding PreviousButtonStyle}"
-                                    Background="{TemplateBinding PreviousButtonBackgroundBrush}"
-                                    Foreground="{TemplateBinding PreviousButtonForegroundBrush}"
-                                    CornerRadius="{TemplateBinding PreviousButtonCornerRadius}"
-                                    Padding="{TemplateBinding PreviousButtonPadding}"
                                     Width="{TemplateBinding PreviousButtonWidth}"
-                                    MaxWidth="{TemplateBinding PreviousButtonMaxWidth}"
-                                    MinWidth="{TemplateBinding PreviousButtonMinWidth}"
                                     Height="{TemplateBinding PreviousButtonHeight}"
+                                    MinWidth="{TemplateBinding PreviousButtonMinWidth}"
+                                    MinHeight="{TemplateBinding PreviousButtonMinHeight}"
+                                    MaxWidth="{TemplateBinding PreviousButtonMaxWidth}"
                                     MaxHeight="{TemplateBinding PreviousButtonMaxHeight}"
-                                    MinHeight="{TemplateBinding PreviousButtonMinHeight}">
+                                    Padding="{TemplateBinding PreviousButtonPadding}"
+                                    xamlextension:UIElementExtensions.CursorType="Hand"
+                                    Background="{TemplateBinding PreviousButtonBackgroundBrush}"
+                                    CornerRadius="{TemplateBinding PreviousButtonCornerRadius}"
+                                    Foreground="{TemplateBinding PreviousButtonForegroundBrush}"
+                                    Opacity="{StaticResource SlideshowButtonOpacity}"
+                                    Style="{TemplateBinding PreviousButtonStyle}">
                                 <s:Effects.Shadow>
                                     <s:AttachedDropShadow x:Name="PreviousButtonShadow"
                                                           BlurRadius="8"
@@ -269,32 +341,33 @@
                                 </s:Effects.Shadow>
                             </Button>
                         </Grid>
-                        <Grid Opacity="{TemplateBinding NextButtonOpacity}"
+                        <Grid Margin="{TemplateBinding NextButtonMargin}"
+                              Padding="24"
                               HorizontalAlignment="{TemplateBinding NextButtonHorizontalAlignment}"
                               VerticalAlignment="{TemplateBinding NextButtonVerticalAlignment}"
                               CornerRadius="{TemplateBinding NextButtonCornerRadius}"
-                              Margin="{TemplateBinding NextButtonMargin}"
-                              Visibility="{TemplateBinding NextButtonVisibilityMode}"
-                              Padding="24"
-                              RenderTransformOrigin=".5, .5">
+                              Opacity="{TemplateBinding NextButtonOpacity}"
+                              RenderTransformOrigin=".5, .5"
+                              Visibility="{TemplateBinding NextButtonVisibilityMode}">
                             <Grid.RenderTransform>
-                                <ScaleTransform x:Name="NextButtonScaleTransform" ScaleX="{StaticResource SlideshowButtonScale}" ScaleY="{StaticResource SlideshowButtonScale}"/>
+                                <ScaleTransform x:Name="NextButtonScaleTransform" ScaleX="{StaticResource SlideshowButtonScale}" ScaleY="{StaticResource SlideshowButtonScale}" />
                             </Grid.RenderTransform>
-                            <Grid x:Name="NextButtonShadowCaster" Margin="-24"/>
+                            <Grid x:Name="NextButtonShadowCaster"
+                                  Margin="-24" />
                             <Button x:Name="NextButton"
-                                    xamlextension:UIElementExtensions.CursorType="Hand"
-                                    Opacity="{StaticResource SlideshowButtonOpacity}"
-                                    Style="{TemplateBinding NextButtonStyle}"
-                                    Background="{TemplateBinding NextButtonBackgroundBrush}"
-                                    Foreground="{TemplateBinding NextButtonForegroundBrush}"
-                                    CornerRadius="{TemplateBinding NextButtonCornerRadius}"
-                                    Padding="{TemplateBinding NextButtonPadding}"
                                     Width="{TemplateBinding NextButtonWidth}"
-                                    MaxWidth="{TemplateBinding NextButtonMaxWidth}"
-                                    MinWidth="{TemplateBinding NextButtonMinWidth}"
                                     Height="{TemplateBinding NextButtonHeight}"
+                                    MinWidth="{TemplateBinding NextButtonMinWidth}"
+                                    MinHeight="{TemplateBinding NextButtonMinHeight}"
+                                    MaxWidth="{TemplateBinding NextButtonMaxWidth}"
                                     MaxHeight="{TemplateBinding NextButtonMaxHeight}"
-                                    MinHeight="{TemplateBinding NextButtonMinHeight}">
+                                    Padding="{TemplateBinding NextButtonPadding}"
+                                    xamlextension:UIElementExtensions.CursorType="Hand"
+                                    Background="{TemplateBinding NextButtonBackgroundBrush}"
+                                    CornerRadius="{TemplateBinding NextButtonCornerRadius}"
+                                    Foreground="{TemplateBinding NextButtonForegroundBrush}"
+                                    Opacity="{StaticResource SlideshowButtonOpacity}"
+                                    Style="{TemplateBinding NextButtonStyle}">
                                 <s:Effects.Shadow>
                                     <s:AttachedDropShadow x:Name="NextButtonShadow"
                                                           BlurRadius="8"

@@ -4,15 +4,12 @@
 <Page x:Class="CollapseLauncher.Pages.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:animations="using:CommunityToolkit.WinUI.Animations"
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
-      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
-      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
-      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
+      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
@@ -22,8 +19,11 @@
       xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:media="using:CommunityToolkit.WinUI.Media"
+      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
+      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
       xmlns:s="using:CommunityToolkit.WinUI"
       CacheMode="BitmapCache"
       NavigationCacheMode="Enabled"
@@ -76,8 +76,8 @@
               Visibility="Collapsed">
             <Grid x:Name="ImageEventImgShadow" />
             <Image x:Name="ImageEventImg"
-                   s:Effects.Shadow="{ThemeResource SharedDropShadow}"
                    extension:UIElementExtensions.CursorType="Hand"
+                   s:Effects.Shadow="{ThemeResource SharedDropShadow}"
                    PointerPressed="ClickImageEventSpriteLink" />
         </Grid>
         <InfoBar x:Name="PreloadDialogBox"
@@ -440,13 +440,13 @@
             </InfoBar.ActionButton>
         </InfoBar>
         <c:NonFaultyGrid x:Name="SocMedPanelAndWpfButtonGrid"
-              Grid.Row="0"
-              Grid.RowSpan="2"
-              Grid.Column="1"
-              Margin="0,0,-24,16"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Center"
-              RowSpacing="16">
+                         Grid.Row="0"
+                         Grid.RowSpan="2"
+                         Grid.Column="1"
+                         Margin="0,0,-24,16"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Center"
+                         RowSpacing="16">
             <c:NonFaultyGrid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -475,21 +475,21 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
-                                        MaxWidth="48"
-                                        MaxHeight="48"
                                         MinWidth="48"
                                         MinHeight="48"
+                                        MaxWidth="48"
+                                        MaxHeight="48"
                                         Margin="4,4"
                                         Padding="8"
+                                        extension:UIElementExtensions.CursorType="Hand"
+                                        s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
                                         BorderThickness="0"
                                         Click="OpenSocMedLink"
                                         Content="{Binding}"
                                         CornerRadius="12"
                                         FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
-                                        extension:UIElementExtensions.CursorType="Hand"
                                         PointerExited="FadeOutSocMedButton"
                                         Style="{ThemeResource SocialMediaButtonStyle}"
-                                        s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
                                         Tag="{Binding Icon.ClickLink, FallbackValue={x:Null}}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
@@ -546,9 +546,9 @@
                                                                         Margin="0,2"
                                                                         HorizontalAlignment="Stretch"
                                                                         HorizontalContentAlignment="Stretch"
+                                                                        extension:UIElementExtensions.CursorType="Hand"
                                                                         Click="OpenSocMedLink"
                                                                         CornerRadius="5"
-                                                                        extension:UIElementExtensions.CursorType="Hand"
                                                                         PointerEntered="ElementScaleOutHoveredPointerEntered"
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
@@ -645,15 +645,15 @@
                              DataContext="{x:Bind WpfContext}"
                              Visibility="{Binding IsWpfPackageEnabled, Converter={StaticResource BooleanVisibilityConverter}}">
                 <c:NonFaultyButton x:Name="WpfPackageBtn"
-                                 Padding="0"
-                                 HorizontalAlignment="Right"
-                                 BorderThickness="0"
-                                 Click="WpfPackageBtn_OnClick"
-                                 CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
-                                 FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
-                                 Loaded="WpfPackageBtn_OnLoaded"
-                                 PointerEntered="WpfPackageBtn_OnPointerEntered"
-                                 PointerExited="WpfPackageBtn_OnPointerExited">
+                                   Padding="0"
+                                   HorizontalAlignment="Right"
+                                   BorderThickness="0"
+                                   Click="WpfPackageBtn_OnClick"
+                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
+                                   FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
+                                   Loaded="WpfPackageBtn_OnLoaded"
+                                   PointerEntered="WpfPackageBtn_OnPointerEntered"
+                                   PointerExited="WpfPackageBtn_OnPointerExited">
                     <ToolTipService.ToolTip>
                         <ToolTip x:Name="WpfPackageBtnToolTip"
                                  Opened="WpfPackageBtnToolTip_OnOpened"
@@ -681,9 +681,9 @@
                                 </c:NonFaultyGrid.RowDefinitions>
                                 <c:NonFaultyStackPanel Grid.Row="0">
                                     <c:NonFaultyImageEx MaxWidth="72"
-                                                     EnableLazyLoading="True"
-                                                     IsCacheEnabled="True"
-                                                     Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                                        EnableLazyLoading="True"
+                                                        IsCacheEnabled="True"
+                                                        Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                     <TextBlock MaxWidth="110"
                                                Margin="0,8,0,0"
                                                FontSize="14"
@@ -710,12 +710,12 @@
                                                  Margin="0,0,0,8"
                                                  Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                                     <c:NonFaultyButton x:Name="WpfPackageStartUpdateBtn"
-                                                     HorizontalAlignment="Center"
-                                                     Background="{ThemeResource SystemFillColorCautionBrush}"
-                                                     Click="WpfPackageStartUpdateBtn_OnClick"
-                                                     CornerRadius="12"
-                                                     Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                     Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                                       HorizontalAlignment="Center"
+                                                       Background="{ThemeResource SystemFillColorCautionBrush}"
+                                                       Click="WpfPackageStartUpdateBtn_OnClick"
+                                                       CornerRadius="12"
+                                                       Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                       Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="8">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -790,25 +790,25 @@
                                                FontSize="12"
                                                FontWeight="Bold"
                                                HorizontalTextAlignment="Right"
-                                               TextAlignment="Right"
-                                               Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"/>
+                                               Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"
+                                               TextAlignment="Right" />
                                     <c:NonFaultyProgressBar Grid.Row="1"
-                                                     Grid.Column="0"
-                                                     Grid.ColumnSpan="2"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Bottom"
-                                                     IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
-                                                     Maximum="100"
-                                                     Minimum="0"
-                                                     Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                                                            Grid.Column="0"
+                                                            Grid.ColumnSpan="2"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Bottom"
+                                                            IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                                            Maximum="100"
+                                                            Minimum="0"
+                                                            Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
                                     <c:NonFaultyButton x:Name="WpfPackageCancelUpdateBtn"
-                                                     Grid.Row="2"
-                                                     Grid.Column="0"
-                                                     Grid.ColumnSpan="2"
-                                                     HorizontalAlignment="Stretch"
-                                                     Click="WpfPackageCancelUpdateBtn_OnClick"
-                                                     CornerRadius="4"
-                                                     Style="{ThemeResource AccentButtonStyle}">
+                                                       Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       Grid.ColumnSpan="2"
+                                                       HorizontalAlignment="Stretch"
+                                                       Click="WpfPackageCancelUpdateBtn_OnClick"
+                                                       CornerRadius="4"
+                                                       Style="{ThemeResource AccentButtonStyle}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="8">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -833,14 +833,14 @@
                                 <ItemsControl Grid.Row="3"
                                               Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                     <c:NonFaultyButton x:Name="WpfPackageReinstallBtn"
-                                                     Margin="0,-2,0,4"
-                                                     Padding="4,4"
-                                                     HorizontalAlignment="Center"
-                                                     Background="{ThemeResource SystemFillColorCautionBrush}"
-                                                     Click="WpfPackageReinstallBtn_OnClick"
-                                                     CornerRadius="12"
-                                                     Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                     Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                                       Margin="0,-2,0,4"
+                                                       Padding="4,4"
+                                                       HorizontalAlignment="Center"
+                                                       Background="{ThemeResource SystemFillColorCautionBrush}"
+                                                       Click="WpfPackageReinstallBtn_OnClick"
+                                                       CornerRadius="12"
+                                                       Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                       Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="4">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -874,8 +874,8 @@
                                                   Width="22"
                                                   Height="22">
                                         <c:NonFaultyCheckBox x:Name="WpfPackageAutoCheckBox"
-                                                         Padding="0"
-                                                         IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
+                                                             Padding="0"
+                                                             IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
                                             <c:NonFaultyCheckBox.RenderTransform>
                                                 <CompositeTransform ScaleX=".75"
                                                                     ScaleY=".75" />
@@ -899,9 +899,9 @@
                                      Background="{ThemeResource GameSettingsBtnBrush}"
                                      DataContext="{x:Bind WpfContext}">
                         <c:NonFaultyImageEx Grid.Column="0"
-                                         EnableLazyLoading="True"
-                                         IsCacheEnabled="True"
-                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                            EnableLazyLoading="True"
+                                            IsCacheEnabled="True"
+                                            Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                         <c:NonFaultyGrid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
                             <c:NonFaultyGrid.OpacityTransition>
                                 <ScalarTransition Duration="0:0:.5" />
@@ -909,13 +909,13 @@
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}" />
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"
                                     Opacity=".5" />
-                            <c:NonFaultyProgressRing Foreground="{ThemeResource AccentColorBrush}"
-                                             IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
-                                             Maximum="100"
-                                             Minimum="0"
-                                             Width="48"
-                                             Height="48"
-                                             Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                            <c:NonFaultyProgressRing Width="48"
+                                                     Height="48"
+                                                     Foreground="{ThemeResource AccentColorBrush}"
+                                                     IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                                     Maximum="100"
+                                                     Minimum="0"
+                                                     Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
                             <TextBlock Margin="0,0,0,2"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
@@ -924,8 +924,8 @@
                                        FontSize="11"
                                        FontWeight="Bold"
                                        HorizontalTextAlignment="Center"
-                                       TextAlignment="Center"
-                                       Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"/>
+                                       Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"
+                                       TextAlignment="Center" />
                         </c:NonFaultyGrid>
                     </c:NonFaultyGrid>
                 </c:NonFaultyButton>
@@ -976,78 +976,77 @@
                 </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
-                    <panelslideshow:PanelSlideshow
-                              x:Name="ImageCarouselEventSlideshow"
-                              Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
-                              CornerRadius="8"
-                              ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
-                              Shadow="{ThemeResource SharedShadow}"
-                              SlideshowDuration="10"
-                              PreviousButtonMargin="-16"
-                              NextButtonMargin="-16"
-                              PreviousButtonVerticalAlignment="Center"
-                              NextButtonVerticalAlignment="Center"
-                              CountdownProgressMargin="8"
-                              CountdownSmokeHeight="80">
+                    <panelslideshow:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
+                                                   Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
+                                                   CornerRadius="8"
+                                                   CountdownProgressMargin="8"
+                                                   CountdownSmokeHeight="80"
+                                                   ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
+                                                   NextButtonMargin="-16"
+                                                   NextButtonVerticalAlignment="Center"
+                                                   PreviousButtonMargin="-16"
+                                                   PreviousButtonVerticalAlignment="Center"
+                                                   Shadow="{ThemeResource SharedShadow}"
+                                                   SlideshowDuration="10">
                         <panelslideshow:PanelSlideshow.ItemTransition>
-                            <PaneThemeTransition Edge="Left"/>
+                            <PaneThemeTransition Edge="Left" />
                         </panelslideshow:PanelSlideshow.ItemTransition>
                         <panelslideshow:PanelSlideshow.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx VerticalAlignment="Center"
-                                             EnableLazyLoading="True"
-                                             IsCacheEnabled="True"
-                                             extension:UIElementExtensions.CursorType="Hand"
-                                             PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
-                                             PointerPressed="OpenImageLinkFromTag"
-                                             Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
-                                             Stretch="UniformToFill"
-                                             Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
-                                             ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
+                                                 extension:UIElementExtensions.CursorType="Hand"
+                                                 EnableLazyLoading="True"
+                                                 IsCacheEnabled="True"
+                                                 PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
+                                                 PointerPressed="OpenImageLinkFromTag"
+                                                 Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
+                                                 Stretch="UniformToFill"
+                                                 Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
+                                                 ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
                             </DataTemplate>
                         </panelslideshow:PanelSlideshow.ItemTemplate>
                     </panelslideshow:PanelSlideshow>
                     <Grid x:Name="ImageCarouselPipsPager"
                           Grid.Row="0"
-                          Padding="8,0"
-                          Margin="8"
+                          Height="24"
                           MaxWidth="160"
+                          Margin="8"
+                          Padding="8,0"
                           HorizontalAlignment="Right"
                           VerticalAlignment="Top"
                           Background="{ThemeResource CarouselPipsAcrylicBrush}"
+                          ColumnSpacing="4"
                           CornerRadius="8"
-                          Shadow="{ThemeResource SharedShadow}"
-                          Translation="0,0,16"
                           Opacity="0.5"
-                          Height="24"
-                          ColumnSpacing="4">
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,16">
                         <Grid.OpacityTransition>
-                            <ScalarTransition Duration="0:0:.2"/>
+                            <ScalarTransition Duration="0:0:.2" />
                         </Grid.OpacityTransition>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontSize="9"
-                                   FontWeight="Bold"
+                        <TextBlock Margin="2,-2,0,0"
                                    VerticalAlignment="Center"
-                                   Opacity=".8"
-                                   Margin="2,-2,0,0">
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}"/>
-                            <Run Text="/"/>
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"/>
+                                   FontSize="9"
+                                   FontWeight="Bold"
+                                   Opacity=".8">
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}" />
                         </TextBlock>
                         <newpipspager:NewPipsPager Grid.Column="1"
-                                                   Margin="0, -1, 0, 0"
+                                                   Margin="0,-1,0,0"
                                                    VerticalAlignment="Center"
-                                                   ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
                                                    ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
-                                                   NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
-                                                   SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}"
-                                                   PreviousNavigationButtonMode="Visible"
-                                                   PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
+                                                   ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
+                                                   NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"
                                                    NextNavigationButtonMode="Visible"
-                                                   NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"/>
+                                                   NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
+                                                   PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
+                                                   PreviousNavigationButtonMode="Visible"
+                                                   SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
                     </Grid>
                 </Grid>
                 <Grid x:Name="PostPanel"
@@ -1065,9 +1064,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1082,8 +1081,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
-                                                            Click="OpenButtonLinkFromTag"
                                                             extension:UIElementExtensions.CursorType="Hand"
+                                                            Click="OpenButtonLinkFromTag"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1143,9 +1142,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1160,8 +1159,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
-                                                            Click="OpenButtonLinkFromTag"
                                                             extension:UIElementExtensions.CursorType="Hand"
+                                                            Click="OpenButtonLinkFromTag"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1221,9 +1220,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           extension:UIElementExtensions.CursorType="Hand"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1238,8 +1237,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
-                                                            Click="OpenButtonLinkFromTag"
                                                             extension:UIElementExtensions.CursorType="Hand"
+                                                            Click="OpenButtonLinkFromTag"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1833,8 +1832,8 @@
                                   x:DataType="local:CommunityToolsEntry">
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
-                                Click="OpenCommunityButtonLink"
                                 extension:UIElementExtensions.CursorType="Hand"
+                                Click="OpenCommunityButtonLink"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
@@ -1861,8 +1860,8 @@
                                   x:DataType="local:CommunityToolsEntry">
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
-                                Click="OpenCommunityButtonLink"
                                 extension:UIElementExtensions.CursorType="Hand"
+                                Click="OpenCommunityButtonLink"
                                 Style="{ThemeResource AccentButtonStyle}"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
@@ -2515,8 +2514,8 @@
                       Grid.Row="0"
                       Grid.Column="0"
                       HorizontalAlignment="Stretch"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                       extension:UIElementExtensions.CursorType="Hand"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
                       Shadow="{ThemeResource SharedShadow}"
@@ -2557,9 +2556,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="UpdateGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
-                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Button.Content>
@@ -2592,9 +2591,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="StartGame"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
-                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
@@ -2631,9 +2630,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="CancelInstallationProcedure"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
-                            extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
@@ -2658,8 +2657,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
                             extension:UIElementExtensions.CursorType="Hand"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">

@@ -197,11 +197,11 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="RepairFilesBtn"
                                 HorizontalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="StartGameRepair"
                                 CornerRadius="16"
                                 Style="{ThemeResource AccentButtonStyle}"
-                                Visibility="Collapsed"
-                                extension:UIElementExtensions.CursorType="Hand">
+                                Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
@@ -214,10 +214,10 @@
                         <SplitButton x:Name="CheckFilesBtn"
                                      Grid.Column="0"
                                      HorizontalAlignment="Stretch"
+                                     extension:UIElementExtensions.CursorType="Hand"
                                      Click="StartGameCheckSplitButton"
                                      CornerRadius="16"
                                      Tag="Fast"
-                                     extension:UIElementExtensions.CursorType="Hand"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
@@ -234,9 +234,9 @@
                                         <Button x:Name="CheckFilesQuickBtn"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartGameCheck"
                                                 Tag="Fast"
-                                                extension:UIElementExtensions.CursorType="Hand"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
@@ -257,10 +257,10 @@
                                         <Button x:Name="CheckFilesFullBtn"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartGameCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                extension:UIElementExtensions.CursorType="Hand"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
@@ -286,9 +286,9 @@
                                 Grid.Column="1"
                                 Margin="16,0,0,0"
                                 HorizontalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="CancelOperation"
                                 CornerRadius="16"
-                                extension:UIElementExtensions.CursorType="Hand"
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"
                                        FontWeight="Medium"

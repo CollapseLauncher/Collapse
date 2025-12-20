@@ -8,10 +8,10 @@
       xmlns:controls="using:CommunityToolkit.WinUI.Controls"
       xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Zenless"
-      xmlns:extension="using:CollapseLauncher.Extension"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
       NavigationCacheMode="Disabled"
@@ -54,10 +54,10 @@
                                                 <CheckBox x:Name="VSyncToggle"
                                                           HorizontalAlignment="Left"
                                                           VerticalAlignment="Center"
+                                                          extension:UIElementExtensions.CursorType="Hand"
                                                           Checked="EnforceCustomPreset_Checkbox"
                                                           IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"
-                                                          Unchecked="EnforceCustomPreset_Checkbox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                          Unchecked="EnforceCustomPreset_Checkbox">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_VSync}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
@@ -65,17 +65,17 @@
                                             <CheckBox x:Name="GameResolutionFullscreen"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"
-                                                      Visibility="Collapsed"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Fullscreen}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <CheckBox x:Name="GameResolutionBorderless"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      extension:UIElementExtensions.CursorType="Hand"
+                                                      IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
@@ -87,9 +87,9 @@
                                                 <CheckBox x:Name="GameWindowResizable"
                                                           HorizontalAlignment="Stretch"
                                                           VerticalAlignment="Center"
+                                                          extension:UIElementExtensions.CursorType="Hand"
                                                           IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
-                                                          IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                          IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
@@ -97,9 +97,9 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
+                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         CornerRadius="4"
-                                                        Style="{ThemeResource AcrylicButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                        Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                                   FontSize="10"
@@ -123,10 +123,10 @@
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
-                                                      Visibility="Collapsed"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
@@ -139,9 +139,9 @@
                                                 <CheckBox x:Name="GameCustomResolutionCheckbox"
                                                           Margin="0,0,0,0"
                                                           VerticalAlignment="Center"
+                                                          extension:UIElementExtensions.CursorType="Hand"
                                                           IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
-                                                          IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                          IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
@@ -150,9 +150,9 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
+                                                        extension:UIElementExtensions.CursorType="Hand"
                                                         CornerRadius="4"
-                                                        Style="{ThemeResource AcrylicButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                        Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                                   FontSize="10"
@@ -172,11 +172,11 @@
                                             <CheckBox x:Name="MobileModeToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
                                                       IsEnabled="False"
                                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}"
-                                                      Visibility="Collapsed"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
@@ -190,11 +190,11 @@
                                         <ComboBox x:Name="GameResolutionSelector"
                                                   MinWidth="128"
                                                   VerticalAlignment="Center"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResSelectPlaceholder}"
-                                                  SelectedIndex="{x:Bind ResolutionIndexSelected, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                                  SelectedIndex="{x:Bind ResolutionIndexSelected, Mode=TwoWay}" />
                                     </Grid>
                                 </StackPanel>
                                 <StackPanel x:Name="GameCustomResolutionPanel"
@@ -222,19 +222,19 @@
                             <StackPanel x:Name="GameBoostPanel"
                                         Orientation="Horizontal">
                                 <ToggleSwitch Margin="4,0,0,8"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}"
                                               IsOn="{x:Bind IsGameBoost, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             </StackPanel>
                             <ToggleSwitch x:Name="ToggleSwitchUseDirectX12Api"
-                                          Visibility="Collapsed"
                                           Margin="4,0,0,8"
+                                          extension:UIElementExtensions.CursorType="Hand"
                                           IsOn="{x:Bind AdvancedGraphics_UseDirectX12Api, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                          Visibility="Collapsed">
                                 <ToggleSwitch.Header>
                                     <TextBlock>
                                         <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}" />
@@ -267,10 +267,10 @@
                                     <ComboBox x:Name="GraphicsPresetSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Preset, Mode=TwoWay}"
-                                              SelectionChanged="PresetSelector"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="PresetSelector">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
@@ -286,9 +286,9 @@
                                     <ComboBox x:Name="FpsSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Fps, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectedIndex="{x:Bind Graphics_Fps, Mode=TwoWay}">
                                         <ComboBoxItem Content="30" />
                                         <ComboBoxItem Content="60" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FPSUnlimited}" />
@@ -326,10 +326,10 @@
                                     <ComboBox x:Name="RenderResolutionSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_RenderRes, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="0.8" />
                                         <ComboBoxItem Content="1.0" />
                                         <ComboBoxItem Content="1.2" />
@@ -344,10 +344,10 @@
                                     <ComboBox x:Name="AntiAliasingSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_AntiAliasing, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
                                         <ComboBoxItem Content="TAA" />
                                         <ComboBoxItem Content="SMAA" />
@@ -362,10 +362,10 @@
                                     <ComboBox x:Name="ShadowQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Shadow, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
@@ -387,10 +387,10 @@
                                     <ComboBox x:Name="VolumetricFogSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_VolFog, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
@@ -406,10 +406,10 @@
                                     <ComboBox x:Name="ReflectionQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Reflection, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
@@ -425,10 +425,10 @@
                                     <ComboBox x:Name="FxQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Effects, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryLow}" />
                                         <!--  Borrow Locale from Genshin Settings for now  -->
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
@@ -452,10 +452,10 @@
                                     <ComboBox x:Name="CharacterQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Character, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                     </ComboBox>
@@ -469,10 +469,10 @@
                                     <ComboBox x:Name="ShadingQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Shading, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
@@ -487,10 +487,10 @@
                                     <ComboBox x:Name="EnvironmentQualitySelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Environment, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                     </ComboBox>
@@ -511,10 +511,10 @@
                                     <ComboBox x:Name="AnisotropicSamplingSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_AnisotropicSampling, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="1x" />
                                         <ComboBoxItem Content="2x" />
                                         <ComboBoxItem Content="4x" />
@@ -531,10 +531,10 @@
                                     <ComboBox x:Name="GlobalIlluminationSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_GlobalIllumination, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"
                                                       Visibility="Collapsed" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
@@ -550,10 +550,10 @@
                                     <ComboBox x:Name="HpcaSelector"
                                               Margin="0,0,16,8"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
-                                              SelectionChanged="EnforceCustomPreset_ComboBox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDynamic}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecGlobal}" />
@@ -571,10 +571,10 @@
                                     <CheckBox x:Name="BloomToggle"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_Bloom, Mode=TwoWay}"
-                                              Unchecked="EnforceCustomPreset_Checkbox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_BloomQuality}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
@@ -584,10 +584,10 @@
                                     <CheckBox x:Name="DistortionToggle"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_Distortion, Mode=TwoWay}"
-                                              Unchecked="EnforceCustomPreset_Checkbox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_Distortion}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
@@ -597,19 +597,20 @@
                                     <CheckBox x:Name="MotionBlurToggle"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_MotionBlur, Mode=TwoWay}"
-                                              Unchecked="EnforceCustomPreset_Checkbox"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_MotionBlur}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
                                 </StackPanel>
                             </Grid>
-                            <MenuFlyoutSeparator Margin="8,16" Visibility="Collapsed" />
+                            <MenuFlyoutSeparator Margin="8,16"
+                                                 Visibility="Collapsed" />
                             <StackPanel Orientation="Horizontal"
-                                        Visibility="Collapsed"
-                                        Spacing="16">
+                                        Spacing="16"
+                                        Visibility="Collapsed">
                                 <TextBlock Margin="0,0,0,16"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                            TextWrapping="Wrap">
@@ -623,9 +624,9 @@
                                         Margin="0,-12,0,0"
                                         Padding="0"
                                         HorizontalAlignment="Right"
+                                        extension:UIElementExtensions.CursorType="Hand"
                                         CornerRadius="4"
-                                        Style="{ThemeResource AcrylicButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                        Style="{ThemeResource AcrylicButtonStyle}">
                                     <Button.Content>
                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                   FontSize="10"
@@ -659,7 +660,8 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="0"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -667,13 +669,14 @@
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_RayTracing}"
                                                        TextWrapping="WrapWholeWords" />
                                             <ToggleSwitch x:Name="RayTracingToggle"
+                                                          extension:UIElementExtensions.CursorType="Hand"
                                                           IsOn="{x:Bind AdvancedGraphics_UseRayTracing, Mode=TwoWay}"
                                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="1"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -681,17 +684,18 @@
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_RayTracingQ}"
                                                        TextWrapping="WrapWholeWords" />
                                             <ComboBox HorizontalAlignment="Stretch"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
                                                       IsEnabled="{x:Bind RayTracingToggle.IsOn, Mode=OneWay}"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_RayTracingQuality, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      SelectedIndex="{x:Bind AdvancedGraphics_RayTracingQuality, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="2"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -700,15 +704,16 @@
                                                        TextWrapping="WrapWholeWords" />
                                             <ComboBox x:Name="SuperResolutionOptionComboBox"
                                                       HorizontalAlignment="Stretch"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionOption, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionOption, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._Misc.Disabled}" />
                                                 <ComboBoxItem Content="DLSS" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="3"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -716,10 +721,10 @@
                                                        Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ}"
                                                        TextWrapping="WrapWholeWords" />
                                             <ComboBox HorizontalAlignment="Stretch"
+                                                      extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
                                                       IsEnabled="{x:Bind SuperResolutionOptionComboBox.SelectedIndex, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionQuality, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionQuality, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Performance}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Balanced}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Quality}" />
@@ -832,9 +837,9 @@
                                           MinWidth="176"
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Center"
+                                          extension:UIElementExtensions.CursorType="Hand"
                                           CornerRadius="14"
-                                          SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                          SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Headphones}" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Speakers}" />
                                     <ComboBoxItem Content="Placeholder, please report to @bagusnl if you see this message"
@@ -848,8 +853,8 @@
                                               MinWidth="250"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
-                                              IsOn="{x:Bind Audio_MuteOnMinimize, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              extension:UIElementExtensions.CursorType="Hand"
+                                              IsOn="{x:Bind Audio_MuteOnMinimize, Mode=TwoWay}">
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
                                                TextWrapping="Wrap" />
@@ -895,9 +900,9 @@
                                     <ComboBox x:Name="AudioLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Lang_Audio, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectedIndex="{x:Bind Lang_Audio, Mode=TwoWay}">
                                         <!--  Placeholder to bump int array  -->
                                         <ComboBoxItem IsEnabled="False"
                                                       Visibility="Collapsed" />
@@ -917,10 +922,10 @@
                                     <ComboBox x:Name="TextLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               MaxDropDownHeight="200"
-                                              SelectedIndex="{x:Bind Lang_Text, Mode=TwoWay}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                                              SelectedIndex="{x:Bind Lang_Text, Mode=TwoWay}">
                                         <!--  Placeholder to bump int array  -->
                                         <ComboBoxItem IsEnabled="False"
                                                       Visibility="Collapsed" />
@@ -950,10 +955,10 @@
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
                     <ToggleSwitch Margin="0,0,0,16"
+                                  extension:UIElementExtensions.CursorType="Hand"
                                   IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     <TextBox x:Name="CustomArgsTextBox"
                              Margin="0,0,0,16"
                              HorizontalAlignment="Stretch"
@@ -962,9 +967,9 @@
                     <TextBlock Height="Auto"
                                TextWrapping="WrapWholeWords">
                         <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}" />
-                        <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
-                                   UnderlineStyle="None"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                        <Hyperlink extension:UIElementExtensions.CursorType="Hand"
+                                   NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
+                                   UnderlineStyle="None">
                             <Run FontWeight="Bold"
                                  Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" />
                         </Hyperlink>
@@ -985,12 +990,12 @@
                                       Margin="8,12,0,8"
                                       VerticalAlignment="Stretch"
                                       VerticalContentAlignment="Stretch"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       FontSize="26"
                                       FontWeight="SemiBold"
                                       IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel"
                                 Visibility="Collapsed">
@@ -1005,18 +1010,18 @@
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
                         <ToggleSwitch Margin="0,0,0,0"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
                                       IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
                                       Margin="0,0,0,0"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <NumberBox x:Name="GameLaunchDelay"
                                    Width="200"
                                    Margin="0,0,0,12"
@@ -1037,11 +1042,11 @@
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
                         <ToggleSwitch Margin="0,0,0,8"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
                                       IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  extension:UIElementExtensions.CursorType="Hand" />
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBox x:Name="PostExitCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
@@ -1070,12 +1075,12 @@
                 <Button x:Name="ApplyButton"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="ApplyButton_Click"
                         CornerRadius="16"
                         IsEnabled="True"
                         Shadow="{ThemeResource SharedShadow}"
-                        Style="{ThemeResource AccentButtonStyle}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                        Style="{ThemeResource AccentButtonStyle}">
                     <StackPanel Margin="8,0"
                                 Orientation="Horizontal">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -1104,12 +1109,12 @@
                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" />
                     <Button x:Name="RegistryExport"
                             Height="32"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="RegistryExportClick"
                             CornerRadius="16,0,0,16"
                             Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -1122,12 +1127,12 @@
                     </Button>
                     <Button x:Name="RegistryImport"
                             Height="32"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="RegistryImportClick"
                             CornerRadius="0,16,16,0"
                             Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}"
-                                                  extension:UIElementExtensions.CursorType="Hand">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <TextBlock Margin="0,0,8,0"

@@ -13,14 +13,16 @@
                             <VisualStateGroup x:Name="PlaceholderStates">
                                 <VisualState x:Name="PlaceholderStateHidden">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderGrid" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                   Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderGrid" Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderGrid"
+                                                                       Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                    Value="Collapsed"/>
+                                                                    Value="Collapsed" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -28,27 +30,31 @@
                             <VisualStateGroup x:Name="VideoFrameStates">
                                 <VisualState x:Name="VideoFrameHidden">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                   Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid"
+                                                                       Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                    Value="Collapsed"/>
+                                                                    Value="Collapsed" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="VideoFrameShowing">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}"
-                                                                  KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                   Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid" Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundVideoFrameGrid"
+                                                                       Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0:0:0"
-                                                                    Value="Visible"/>
+                                                                    Value="Visible" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -56,17 +62,17 @@
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="PlaceholderGrid"
                               HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"/>
+                              VerticalAlignment="Stretch" />
                         <Grid x:Name="ParallaxGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
                             <Grid x:Name="BackgroundGrid"
                                   HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"/>
+                                  VerticalAlignment="Stretch" />
                         </Grid>
                         <Grid x:Name="ForegroundGrid"
                               HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"/>
+                              VerticalAlignment="Stretch" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
