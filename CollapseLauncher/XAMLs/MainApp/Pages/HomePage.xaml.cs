@@ -74,7 +74,6 @@ namespace CollapseLauncher.Pages
         #region Properties
         private GamePresetProperty             CurrentGameProperty { get; set; }
         private CancellationTokenSourceWrapper PageToken           { get; set; }
-        private CancellationTokenSourceWrapper CarouselToken       { get; set; }
 
         private int barWidth;
         private int consoleWidth;
@@ -156,7 +155,6 @@ namespace CollapseLauncher.Pages
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 PageToken = new CancellationTokenSourceWrapper();
-                CarouselToken = new CancellationTokenSourceWrapper();
 
                 InitializeComponent();
 
@@ -214,8 +212,6 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty.GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
                     UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
                 }
-
-                _ = StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
                 AppDiscordPresence?.SetActivity(ActivityType.Idle);
@@ -341,7 +337,6 @@ namespace CollapseLauncher.Pages
             }
 
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -437,66 +432,17 @@ namespace CollapseLauncher.Pages
 
         #region Carousel
 
-        private async Task StartCarouselAutoScroll(int delaySeconds = 5)
-        {
-            if (!IsCarouselPanelAvailable) return;
-            if (delaySeconds < 5) delaySeconds = 5;
-            
-            try
-            {
-                CarouselToken ??= new CancellationTokenSourceWrapper();
-            }
-            catch (TaskCanceledException)
-            {
-                // Ignore
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
-                _ = CarouselRestartScroll();
-            }
-        }
+        public void StartCarouselSlideshow()
+            => ImageCarouselEventSlideshow.ResumeSlideshow();
+
+        public void StopCarouselSlideshow()
+            => ImageCarouselEventSlideshow.PauseSlideshow();
 
         private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
-        {
-            ImageCarouselPipsPager.Opacity = .5d;
-        }
+            => ImageCarouselPipsPager.Opacity = .5d;
 
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
-        {
-            ImageCarouselPipsPager.Opacity = 1;
-        }
-
-        private void CarouselPointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            FrameworkElement element = (FrameworkElement)sender;
-
-            var pos = e.GetCurrentPoint(element).Position;
-            bool inside =
-                pos.X >= 0 && pos.X <= element.ActualWidth &&
-                pos.Y >= 0 && pos.Y <= element.ActualHeight;
-
-            ImageCarouselPipsPager.Opacity = inside ? 1 : .5d;
-        }
-
-        public async Task CarouselRestartScroll(int delaySeconds = 5)
-        {
-            // Don't restart carousel if game is running and LoPrio is on
-            if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
-            await CarouselStopScroll();
-
-            CarouselToken = new CancellationTokenSourceWrapper();
-            _ = StartCarouselAutoScroll(delaySeconds);
-        }
-
-        public async ValueTask CarouselStopScroll()
-        {
-            if (CarouselToken is { IsCancellationRequested: false, IsDisposed: false, IsCancelled: false })
-            {
-                await CarouselToken.CancelAsync();
-                CarouselToken.Dispose();
-            }
-        }
+            => ImageCarouselPipsPager.Opacity = 1;
 
         private async void HideImageCarousel(bool hide)
         {

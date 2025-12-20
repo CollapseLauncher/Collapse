@@ -511,13 +511,13 @@ namespace CollapseLauncher.Helper
                             case SC_MINIMIZE:
                                 {
                                     MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                                    InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
                                     MainPage.CurrentBackgroundHandler?.WindowFocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                                    InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                     break;
                                 }
                         }
@@ -528,12 +528,12 @@ namespace CollapseLauncher.Helper
                     {
                         if (wParam == 0)
                         {
-                            InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                            InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                         }
                         else
                         {
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
-                            InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                            InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                         }
                         break;
                     }
