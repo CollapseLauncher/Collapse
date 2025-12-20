@@ -154,6 +154,8 @@ namespace CollapseLauncher.GameSettings.Universal
                     #endif
                     CollapseMiscSetting result = byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
                     result.ParentGameSettings = gameSettings;
+
+                    return result;
                 }
             }
             catch ( Exception ex )
