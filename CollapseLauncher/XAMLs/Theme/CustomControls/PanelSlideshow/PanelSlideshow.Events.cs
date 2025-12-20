@@ -224,10 +224,11 @@ public partial class PanelSlideshow
             currentEdge = GetReversedEdge(currentEdge);
         }
 
-        if (lastElement?.Transitions.LastOrDefault() is EdgeUIThemeTransition lastElementTransition)
+        lastElement?.Transitions.Clear();
+        lastElement?.Transitions.Add(new EdgeUIThemeTransition()
         {
-            lastElementTransition.Edge = GetReversedEdge(currentEdge);
-        }
+            Edge = GetReversedEdge(currentEdge)
+        });
 
         presenterGrid.Children.Clear();
 
@@ -256,10 +257,11 @@ public partial class PanelSlideshow
             currentEdge = GetReversedEdge(currentEdge);
         }
 
-        if (lastElement?.Transitions.LastOrDefault() is PaneThemeTransition lastElementTransition)
+        lastElement?.Transitions.Clear();
+        lastElement?.Transitions.Add(new PaneThemeTransition()
         {
-            lastElementTransition.Edge = GetReversedEdge(currentEdge);
-        }
+            Edge = GetReversedEdge(currentEdge)
+        });
 
         presenterGrid.Children.Clear();
 
