@@ -83,6 +83,15 @@ public partial class ManagedUIElementList : IList<UIElement>, INotifyCollectionC
         CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
     }
 
+    public void AddRange(IEnumerable<UIElement> items)
+    {
+        _backedList.AddRange(items);
+
+        NotifyCountPropertyChange();
+        NotifyIndexerPropertyChange();
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items));
+    }
+
     /// <inheritdoc/>
     public void Clear() => Clear(true);
 

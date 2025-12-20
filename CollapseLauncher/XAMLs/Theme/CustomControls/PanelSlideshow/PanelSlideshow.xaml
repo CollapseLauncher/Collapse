@@ -43,6 +43,9 @@
         <Setter Property="NextButtonBackgroundBrush" Value="{ThemeResource SlideshowButtonBackground}"/>
         <Setter Property="NextButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}"/>
         <Setter Property="NextButtonStyle" Value="{ThemeResource SlideshowNextButtonStyle}"/>
+
+        <Setter Property="CountdownProgressMargin" Value="16"/>
+        <Setter Property="CountdownSmokeHeight" Value="256"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="panelSlideshow:PanelSlideshow">
@@ -215,11 +218,11 @@
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom"
                               Visibility="{TemplateBinding ProgressBarVisibility}"
-                              Opacity="0">
+                              Opacity="0"
+                              IsHitTestVisible="False">
                             <Grid x:Name="CountdownProgressBarSmoke"
                                   Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
-                                  MaxHeight="256"
-                                  MinHeight="78"
+                                  Height="{TemplateBinding CountdownSmokeHeight}"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
                                   Opacity="{StaticResource SlideshowCountdownBarSmokeOpacity}"/>
                             <ProgressBar x:Name="CountdownProgressBar"
@@ -228,7 +231,7 @@
                                          Opacity="{StaticResource SlideshowCountdownBarOpacity}"
                                          Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
                                          Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
-                                         Margin="16"/>
+                                         Margin="{TemplateBinding CountdownProgressMargin}"/>
                         </Grid>
                         <Grid Opacity="{TemplateBinding PreviousButtonOpacity}"
                               HorizontalAlignment="{TemplateBinding PreviousButtonHorizontalAlignment}"

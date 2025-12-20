@@ -19,11 +19,7 @@ public partial class NewPipsPager
     private const string TemplateNamePipsPagerScrollViewer  = "PipsPagerScrollViewer";
     private const string TemplateNamePipsPagerItemsRepeater = "PipsPagerItemsRepeater";
 
-    private const string ResourceNamePipsPagerButtonSize = "PipsPagerButtonSize";
-
-    private const string PipButtonStateNormal       = "Normal";
-    private const string PipButtonStyleNormalName   = "NewPipsPagerButtonBaseStyle";
-    private const string PipButtonStyleSelectedName = "NewPipsPagerButtonBaseSelectedStyle";
+    private const string PipButtonStateNormal = "Normal";
 
     private const string NavButtonStatePreviousPageButtonCollapsed = "PreviousPageButtonCollapsed";
     private const string NavButtonStatePreviousPageButtonVisible   = "PreviousPageButtonVisible";
@@ -41,8 +37,7 @@ public partial class NewPipsPager
     private ScrollViewer  _pipsPagerScrollViewer  = null!;
     private ItemsRepeater _pipsPagerItemsRepeater = null!;
 
-    private double _pipsButtonSize;
-    private bool   _isTemplateLoaded;
+    private bool _isTemplateLoaded;
 
     #endregion
 
@@ -50,22 +45,25 @@ public partial class NewPipsPager
 
     protected override void OnApplyTemplate()
     {
+        if (Interlocked.Exchange(ref _isTemplateLoaded, true))
+        {
+            return;
+        }
+
+        base.OnApplyTemplate();
+
         _previousPageButton = this.GetTemplateChild<Button>(TemplateNamePreviousPageButton);
         _nextPageButton = this.GetTemplateChild<Button>(TemplateNameNextPageButton);
         _pipsPagerScrollViewer = this.GetTemplateChild<ScrollViewer>(TemplateNamePipsPagerScrollViewer);
         _pipsPagerItemsRepeater = this.GetTemplateChild<ItemsRepeater>(TemplateNamePipsPagerItemsRepeater);
 
-        Interlocked.Exchange(ref _isTemplateLoaded, true);
+        _pipsPagerScrollViewer.Loaded += NewPipsPager_Loaded;
+        _pipsPagerScrollViewer.Unloaded += NewPipsPager_Unloaded;
 
         ApplyNavigationButtonEvents();
         ApplyInitialTemplates();
         ApplyKeyPressEvents();
         ApplyItemsRepeaterEvents();
-
-        Resources.TryGetValue(ResourceNamePipsPagerButtonSize, out object? pipButtonSize);
-        _pipsButtonSize = (double?)pipButtonSize ?? 28d;
-
-        base.OnApplyTemplate();
     }
 
     private void ApplyInitialTemplates()

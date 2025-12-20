@@ -17,9 +17,6 @@ public partial class NewPipsPager
 
     #region Properties
 
-    private static Style? PipButtonStyleNormal   => field ??= TryGetStyle(PipButtonStyleNormalName);
-    private static Style? PipButtonStyleSelected => field ??= TryGetStyle(PipButtonStyleSelectedName);
-
     public Orientation Orientation
     {
         get => (Orientation)GetValue(OrientationProperty);
@@ -78,6 +75,30 @@ public partial class NewPipsPager
         set => SetValue(NextNavigationButtonModeProperty, value);
     }
 
+    public Style PreviousButtonStyle
+    {
+        get => (Style)GetValue(PreviousButtonStyleProperty);
+        set => SetValue(PreviousButtonStyleProperty, value);
+    }
+
+    public Style NextButtonStyle
+    {
+        get => (Style)GetValue(NextButtonStyleProperty);
+        set => SetValue(NextButtonStyleProperty, value);
+    }
+
+    public Style NormalPipButtonStyle
+    {
+        get => (Style)GetValue(NormalPipButtonStyleProperty);
+        set => SetValue(NormalPipButtonStyleProperty, value);
+    }
+
+    public Style SelectedPipButtonStyle
+    {
+        get => (Style)GetValue(SelectedPipButtonStyleProperty);
+        set => SetValue(SelectedPipButtonStyleProperty, value);
+    }
+
     #endregion
 
     #region Fields
@@ -92,62 +113,60 @@ public partial class NewPipsPager
 
     private static void UpdatePreviousButtonVisualState(NewPipsPager pager)
     {
-        if (!pager._isTemplateLoaded)
-        {
-            return;
-        }
-
-        NewPipsPagerNavigationMode mode = pager.PreviousNavigationButtonMode;
-        if (mode == NewPipsPagerNavigationMode.Hidden)
-        {
-            VisualStateManager.GoToState(pager, NavButtonStatePreviousPageButtonCollapsed, true);
-            return;
-        }
-
-        pager._previousPageButton.IsEnabled = true;
-        VisualStateManager.GoToState(pager, NavButtonStatePreviousPageButtonVisible, true);
-        if (mode == NewPipsPagerNavigationMode.Visible)
-        {
-            return;
-        }
-
-        if (pager.ItemIndex > 0)
-        {
-            return;
-        }
-
-        pager._previousPageButton.IsEnabled = false;
-        VisualStateManager.GoToState(pager, NavButtonStatePreviousPageButtonHidden, true);
+        UpdateButtonVisualState(pager,
+                                pager._previousPageButton,
+                                pager.ItemIndex > 0,
+                                NavButtonStatePreviousPageButtonCollapsed,
+                                NavButtonStatePreviousPageButtonVisible,
+                                NavButtonStatePreviousPageButtonHidden,
+                                pager.PreviousNavigationButtonMode);
     }
 
     private static void UpdateNextButtonVisualState(NewPipsPager pager)
     {
-        if (!pager._isTemplateLoaded)
+        UpdateButtonVisualState(pager,
+                                pager._nextPageButton,
+                                pager.ItemIndex + 1 < pager.ItemsCount,
+                                NavButtonStateNextPageButtonCollapsed,
+                                NavButtonStateNextPageButtonVisible,
+                                NavButtonStateNextPageButtonHidden,
+                                pager.NextNavigationButtonMode);
+    }
+
+    private static void UpdateButtonVisualState(
+        NewPipsPager instance,
+        Button? button,
+        bool conditionForAutoVisible,
+        string stateNameForCollapsed,
+        string stateNameForVisible,
+        string stateNameForHidden,
+        NewPipsPagerNavigationMode mode)
+    {
+        if (button == null)
         {
             return;
         }
 
-        NewPipsPagerNavigationMode mode = pager.NextNavigationButtonMode;
         if (mode == NewPipsPagerNavigationMode.Hidden)
         {
-            VisualStateManager.GoToState(pager, NavButtonStateNextPageButtonCollapsed, true);
+            VisualStateManager.GoToState(instance, stateNameForCollapsed, true);
             return;
         }
 
-        pager._nextPageButton.IsEnabled = true;
-        VisualStateManager.GoToState(pager, NavButtonStateNextPageButtonVisible, true);
+        VisualStateManager.GoToState(instance, stateNameForVisible, true);
+        button.IsEnabled = true;
         if (mode == NewPipsPagerNavigationMode.Visible)
         {
             return;
         }
 
-        if (pager.ItemIndex + 1 < pager.ItemsCount)
+        if (conditionForAutoVisible)
         {
             return;
         }
 
-        pager._nextPageButton.IsEnabled = false;
-        VisualStateManager.GoToState(pager, NavButtonStateNextPageButtonHidden, true);
+        button.IsEnabled = false;
+        VisualStateManager.GoToState(instance, stateNameForHidden, true);
     }
 
     private static void UpdateAndBringSelectedPipToView(NewPipsPager pager, int newIndex, int oldIndex)
@@ -174,12 +193,13 @@ public partial class NewPipsPager
 
     private Button? UpdateSelectedPipStyle(int newIndex, int oldIndex)
     {
-        if (!_isTemplateLoaded)
+        ItemsRepeater? repeater = _pipsPagerItemsRepeater;
+
+        if (!_isTemplateLoaded ||
+            repeater?.ItemsSourceView == null)
         {
             return null;
         }
-
-        ItemsRepeater repeater = _pipsPagerItemsRepeater;
 
         int  childCount       = repeater.ItemsSourceView.Count;
         bool isUpdateNewChild = newIndex >= 0 && newIndex < childCount;
@@ -197,12 +217,12 @@ public partial class NewPipsPager
         {
             if (isUpdateOldChild)
             {
-                AssignPipButtonStyle(oldIndexPipButton, PipButtonStyleNormal);
+                AssignPipButtonStyle(oldIndexPipButton, NormalPipButtonStyle);
             }
 
             if (isUpdateNewChild)
             {
-                return AssignPipButtonStyle(newIndexPipButton, PipButtonStyleSelected);
+                return AssignPipButtonStyle(newIndexPipButton, SelectedPipButtonStyle);
             }
 
             return newIndexPipButton;
@@ -260,6 +280,11 @@ public partial class NewPipsPager
     public static readonly DependencyProperty SelectionModeProperty = DependencyProperty.Register(nameof(SelectionMode), typeof(bool), typeof(NewPipsPager), new PropertyMetadata(NewPipsPagerSelectionMode.Click));
     public static readonly DependencyProperty PreviousNavigationButtonModeProperty = DependencyProperty.Register(nameof(PreviousNavigationButtonMode), typeof(NewPipsPagerNavigationMode), typeof(NewPipsPager), new PropertyMetadata(NewPipsPagerNavigationMode.Auto, PreviousNavigationButtonMode_OnChange));
     public static readonly DependencyProperty NextNavigationButtonModeProperty = DependencyProperty.Register(nameof(NextNavigationButtonMode), typeof(NewPipsPagerNavigationMode), typeof(NewPipsPager), new PropertyMetadata(NewPipsPagerNavigationMode.Auto, NextNavigationButtonMode_OnChange));
+
+    public static readonly DependencyProperty PreviousButtonStyleProperty = DependencyProperty.Register(nameof(PreviousButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
+    public static readonly DependencyProperty NextButtonStyleProperty = DependencyProperty.Register(nameof(NextButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
+    public static readonly DependencyProperty NormalPipButtonStyleProperty = DependencyProperty.Register(nameof(NormalPipButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
+    public static readonly DependencyProperty SelectedPipButtonStyleProperty = DependencyProperty.Register(nameof(SelectedPipButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
 
     #endregion
 }

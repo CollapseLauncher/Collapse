@@ -2,11 +2,12 @@
 <Page x:Class="CollapseLauncher.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+      xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
+      xmlns:helper="using:Hi3Helper"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>

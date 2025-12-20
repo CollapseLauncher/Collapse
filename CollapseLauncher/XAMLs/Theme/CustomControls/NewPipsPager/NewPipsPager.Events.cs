@@ -17,6 +17,9 @@ public partial class NewPipsPager
 
     protected override Size MeasureOverride(Size parentSize)
     {
+        Orientation orientation = Orientation;
+        double pipsButtonSize = GetButtonSize(orientation);
+
         Vector2 containerSize = _pipsPagerItemsRepeater.ActualSize;
         double  containerTotalWidth  = containerSize.X;
         double  containerTotalHeight = containerSize.Y;
@@ -39,14 +42,14 @@ public partial class NewPipsPager
         double totalCalculatedWidth  = selfSize.Width;
         double totalCalculatedHeight = selfSize.Height;
 
-        if (Orientation == Orientation.Horizontal)
+        if (orientation == Orientation.Horizontal)
         {
             _pipsPagerScrollViewer.MaxWidth =
                 GetViewportSize(scrollViewportTotalWidth,
                                 containerTotalWidth,
                                 buttonPrevSizeTotalWidth,
                                 buttonNextSizeTotalWidth,
-                                _pipsButtonSize,
+                                pipsButtonSize,
                                 out bool isContainerLarger);
 
             totalCalculatedWidth = 0;
@@ -63,7 +66,7 @@ public partial class NewPipsPager
                                 containerTotalHeight,
                                 buttonPrevSizeTotalHeight,
                                 buttonNextSizeTotalHeight,
-                                _pipsButtonSize,
+                                pipsButtonSize,
                                 out bool isContainerLarger);
 
             totalCalculatedHeight = 0;
@@ -245,6 +248,9 @@ public partial class NewPipsPager
 
         // Update pip buttons state
         UpdateAndBringSelectedPipToView(pager, asNewIndex, asOldIndex);
+
+        // Update pager layout
+        pager.UpdateLayout();
     }
 
     #endregion
@@ -265,8 +271,8 @@ public partial class NewPipsPager
 
         AssignPipButtonStyle(asButton,
                              asIndex != ItemIndex
-                                 ? PipButtonStyleNormal
-                                 : PipButtonStyleSelected);
+                                 ? NormalPipButtonStyle
+                                 : SelectedPipButtonStyle);
 
         // Avoid redundant loaded + unloaded events assignment
         if (asButton.IsLoaded)
@@ -326,15 +332,18 @@ public partial class NewPipsPager
             return;
         }
 
+        Orientation layoutOrientation = Orientation;
+        double pipsButtonSize = GetButtonSize(layoutOrientation);
+
         PointerPoint pointer      = e.GetCurrentPoint(element);
         int          orientation  = pointer.Properties.MouseWheelDelta;
-        bool         isHorizontal = Orientation == Orientation.Horizontal;
-        double       delta        = _pipsButtonSize * (orientation / 120d);
+        bool         isHorizontal = layoutOrientation == Orientation.Horizontal;
+        double       delta        = pipsButtonSize * (orientation / 120d);
 
         double toOffset = (isHorizontal
             ? _pipsPagerScrollViewer.HorizontalOffset
             : _pipsPagerScrollViewer.VerticalOffset) + -delta;
-        toOffset = Math.Round(toOffset / _pipsButtonSize) * _pipsButtonSize;
+        toOffset = Math.Round(toOffset / pipsButtonSize) * pipsButtonSize;
 
         if (isHorizontal)
         {
@@ -346,6 +355,21 @@ public partial class NewPipsPager
             toOffset = Math.Clamp(toOffset, 0, _pipsPagerScrollViewer.ExtentHeight);
             _pipsPagerScrollViewer.ChangeView(_pipsPagerScrollViewer.HorizontalOffset, toOffset, _pipsPagerScrollViewer.ZoomFactor);
         }
+    }
+
+    private double GetButtonSize(Orientation orientation)
+    {
+        double pipsButtonSize = 0d;
+
+        if (_pipsPagerItemsRepeater.TryGetElement(0) is UIElement button)
+        {
+            var desiredSize = button.ActualSize;
+            pipsButtonSize = orientation == Orientation.Horizontal
+                ? desiredSize.X
+                : desiredSize.Y;
+        }
+
+        return pipsButtonSize;
     }
 
     #endregion
@@ -366,14 +390,9 @@ public partial class NewPipsPager
         ItemsCount_OnChange(ItemsCount);
         UpdateAndBringSelectedPipToView(this, ItemIndex, -1);
 
-        if (sender is not NewPipsPager pager)
-        {
-            return;
-        }
-
         // Update navigation buttons state
-        UpdatePreviousButtonVisualState(pager);
-        UpdateNextButtonVisualState(pager);
+        UpdatePreviousButtonVisualState(this);
+        UpdateNextButtonVisualState(this);
     }
 
     #endregion

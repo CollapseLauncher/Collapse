@@ -7,15 +7,12 @@ public partial class NewPipsPager : Control
 {
     public NewPipsPager()
     {
-        Loaded += NewPipsPager_Loaded;
-        Unloaded += NewPipsPager_Unloaded;
-
         DefaultStyleKey = typeof(NewPipsPager);
     }
 
     ~NewPipsPager()
     {
-        Loaded -= NewPipsPager_Loaded;
-        Unloaded -= NewPipsPager_Unloaded;
+        _pipsPagerScrollViewer?.Loaded -= NewPipsPager_Loaded;
+        _pipsPagerScrollViewer?.Unloaded -= NewPipsPager_Unloaded;
     }
 }

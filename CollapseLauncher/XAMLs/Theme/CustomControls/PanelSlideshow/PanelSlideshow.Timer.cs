@@ -39,7 +39,7 @@ public partial class PanelSlideshow
             await Task.Delay(delayBeforeStartMs);
 
             VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
-            if (!_isMouseHover)
+            if (!_isMouseHover && _timer != null)
             {
                 _timer.Start();
             }

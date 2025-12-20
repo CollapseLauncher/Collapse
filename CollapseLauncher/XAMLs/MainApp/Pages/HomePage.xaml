@@ -11,6 +11,8 @@
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
       xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
+      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
+      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
@@ -47,6 +49,7 @@
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
         <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
+        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -973,29 +976,79 @@
                 </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
-                    <FlipView x:Name="ImageCarousel"
+                    <panelslideshow:PanelSlideshow
+                              x:Name="ImageCarouselEventSlideshow"
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
-                              HorizontalAlignment="Stretch"
-                              CornerRadius="4"
+                              CornerRadius="8"
                               ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
                               Shadow="{ThemeResource SharedShadow}"
-                              Style="{ThemeResource CollapseFlipViewStyle}"
-                              Translation="0,0,12">
-                        <FlipView.ItemTemplate>
+                              SlideshowDuration="10"
+                              PreviousButtonMargin="-16"
+                              NextButtonMargin="-16"
+                              PreviousButtonVerticalAlignment="Center"
+                              NextButtonVerticalAlignment="Center"
+                              CountdownProgressMargin="8"
+                              CountdownSmokeHeight="80">
+                        <panelslideshow:PanelSlideshow.ItemTransition>
+                            <PaneThemeTransition Edge="Left"/>
+                        </panelslideshow:PanelSlideshow.ItemTransition>
+                        <panelslideshow:PanelSlideshow.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx VerticalAlignment="Center"
-                                                 EnableLazyLoading="True"
-                                                 IsCacheEnabled="True"
-                                                 Loaded="SetHandCursor"
-                                                 PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
-                                                 PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
-                                                 Stretch="UniformToFill"
-                                                 Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
-                                                 ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
+                                             EnableLazyLoading="True"
+                                             IsCacheEnabled="True"
+                                             Loaded="SetHandCursor"
+                                             PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
+                                             PointerPressed="OpenImageLinkFromTag"
+                                             Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
+                                             Stretch="UniformToFill"
+                                             Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
+                                             ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
                             </DataTemplate>
-                        </FlipView.ItemTemplate>
-                    </FlipView>
+                        </panelslideshow:PanelSlideshow.ItemTemplate>
+                    </panelslideshow:PanelSlideshow>
+                    <Grid x:Name="ImageCarouselPipsPager"
+                          Grid.Row="0"
+                          Padding="8,0"
+                          Margin="8"
+                          MaxWidth="160"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Top"
+                          Background="{ThemeResource CarouselPipsAcrylicBrush}"
+                          CornerRadius="8"
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,16"
+                          Opacity="0.5"
+                          Height="24"
+                          ColumnSpacing="4">
+                        <Grid.OpacityTransition>
+                            <ScalarTransition Duration="0:0:.2"/>
+                        </Grid.OpacityTransition>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock FontSize="9"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Opacity=".8"
+                                   Margin="2,-2,0,0">
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}"/>
+                            <Run Text="/"/>
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"/>
+                        </TextBlock>
+                        <newpipspager:NewPipsPager Grid.Column="1"
+                                                   Margin="0, -1, 0, 0"
+                                                   VerticalAlignment="Center"
+                                                   ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
+                                                   ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
+                                                   NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
+                                                   SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}"
+                                                   PreviousNavigationButtonMode="Visible"
+                                                   PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
+                                                   NextNavigationButtonMode="Visible"
+                                                   NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"/>
+                    </Grid>
                 </Grid>
                 <Grid x:Name="PostPanel"
                       Grid.Row="1"
@@ -1244,22 +1297,6 @@
                             </Grid>
                         </PivotItem>
                     </Pivot>
-                </Grid>
-                <Grid x:Name="ImageCarouselPipsPager"
-                      Grid.Row="0"
-                      Padding="8,0"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Bottom"
-                      Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                      CornerRadius="8,8,0,0"
-                      Shadow="{ThemeResource SharedShadow}"
-                      Translation="0,0,16">
-                    <PipsPager VerticalAlignment="Center"
-                               NextButtonVisibility="Collapsed"
-                               NumberOfPages="{x:Bind pages:HomePage.GameCarouselData.Count, Mode=OneWay}"
-                               Orientation="Horizontal"
-                               PreviousButtonVisibility="Collapsed"
-                               SelectedPageIndex="{Binding ElementName=ImageCarousel, Path=SelectedIndex, Mode=TwoWay}" />
                 </Grid>
             </Grid>
         </Grid>

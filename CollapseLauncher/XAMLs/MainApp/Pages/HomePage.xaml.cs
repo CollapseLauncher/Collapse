@@ -186,8 +186,8 @@ namespace CollapseLauncher.Pages
 
                 if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
-                    ImageCarousel.SelectedIndex = 0;
-                    ImageCarousel.Visibility = Visibility.Visible;
+                    // ImageCarousel.SelectedIndex = 0;
+                    // ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
 
                     ShowEventsPanelToggle.IsEnabled = true;
@@ -444,28 +444,7 @@ namespace CollapseLauncher.Pages
             
             try
             {
-                while (true)
-                {
-                    CarouselToken ??= new CancellationTokenSourceWrapper();
-
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
-                    if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameCarouselData?.Count - 1 
-                        && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
-                        ImageCarousel.SelectedIndex++;
-                    else
-                        for (int i = GameCarouselData?.Count ?? 0; i > 0; i--)
-                        {
-                            if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
-                            {
-                                ImageCarousel.SelectedIndex = i - 1;
-                            }
-                            if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
-                            {
-                                await Task.Delay(100, CarouselToken.Token);
-                            }
-                        }
-                }
+                CarouselToken ??= new CancellationTokenSourceWrapper();
             }
             catch (TaskCanceledException)
             {
@@ -478,11 +457,27 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) =>
-            await CarouselRestartScroll();
+        private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
+        {
+            ImageCarouselPipsPager.Opacity = .5d;
+        }
 
-        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) =>
-            await CarouselStopScroll();
+        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
+        {
+            ImageCarouselPipsPager.Opacity = 1;
+        }
+
+        private void CarouselPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            FrameworkElement element = (FrameworkElement)sender;
+
+            var pos = e.GetCurrentPoint(element).Position;
+            bool inside =
+                pos.X >= 0 && pos.X <= element.ActualWidth &&
+                pos.Y >= 0 && pos.Y <= element.ActualHeight;
+
+            ImageCarouselPipsPager.Opacity = inside ? 1 : .5d;
+        }
 
         public async Task CarouselRestartScroll(int delaySeconds = 5)
         {
@@ -1237,7 +1232,7 @@ namespace CollapseLauncher.Pages
                                          compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
                                         );
         }
-        
+
         #endregion
     }
 }

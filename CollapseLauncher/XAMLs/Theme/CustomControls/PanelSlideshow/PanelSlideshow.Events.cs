@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.System;
@@ -62,13 +63,12 @@ public partial class PanelSlideshow
             // Just add to Grid if oldIndex is -1 (initialization on startup)
             if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
             {
-                firstElement.Transitions.Add(ItemTransition);
+                firstElement.Transitions.Add(new PopupThemeTransition());
                 _presenterGrid.Children.Add(firstElement);
                 return;
             }
 
-            bool isBackward = (newIndex < oldIndex &&
-                               oldIndex - 1 == newIndex) ||
+            bool isBackward = (newIndex < oldIndex && !(newIndex == 0 && oldIndex == Items.Count - 1)) ||
                               (newIndex == Items.Count - 1 && oldIndex == 0);
 
             switch (ItemTransition)
@@ -127,6 +127,81 @@ public partial class PanelSlideshow
         }
 
         slideshow.RestartTimer(duration);
+    }
+
+    private static void ItemTemplate_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        PanelSlideshow thisPanel = (PanelSlideshow)d;
+        if (!thisPanel.IsLoaded)
+        {
+            return;
+        }
+
+        ItemsSource_OnChange(thisPanel, thisPanel.ItemsSource);
+    }
+
+    private static void ItemsSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        PanelSlideshow thisPanel = (PanelSlideshow)d;
+        if (!thisPanel.IsLoaded)
+        {
+            return;
+        }
+
+        ItemsSource_OnChange(thisPanel, thisPanel.ItemsSource);
+    }
+
+    private static void ItemsSource_OnChange(PanelSlideshow thisElement, object? source)
+    {
+        if (thisElement._lastItemsSource == source)
+        {
+            return;
+        }
+
+        thisElement.Items.Clear();
+        thisElement.Items = [];
+        try
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            if (source is IEnumerable<UIElement> uiElements)
+            {
+                thisElement.Items.AddRange(uiElements);
+                return;
+            }
+
+            if (source is IEnumerable enumerable &&
+                thisElement.ItemTemplate is { } dataTemplate)
+            {
+                List<UIElement> batchedElement = [];
+                foreach (object context in enumerable)
+                {
+                    UIElement element = dataTemplate.GetElement(new ElementFactoryGetArgs
+                    {
+                        Data = context
+                    });
+
+                    if (element is FrameworkElement asFrameworkElement)
+                    {
+                        asFrameworkElement.DataContext = context;
+                    }
+
+                    // batchedElement.Add(element);
+                    thisElement.Items.Add(element);
+                }
+
+                return;
+            }
+
+            throw new InvalidOperationException("Cannot load items as ItemsSource or ItemTemplate was invalid.");
+        }
+        finally
+        {
+            thisElement._lastItemsSource = source;
+        }
     }
 
     #endregion
@@ -236,8 +311,10 @@ public partial class PanelSlideshow
 
     private void PanelSlideshow_Unloaded(object sender, RoutedEventArgs e)
     {
-        Loaded -= PanelSlideshow_Loaded;
-        Unloaded -= PanelSlideshow_Unloaded;
+        _presenterGrid?.Children.Clear();
+
+        _presenterGrid?.Loaded -= PanelSlideshow_Loaded;
+        _presenterGrid?.Unloaded -= PanelSlideshow_Unloaded;
 
         PointerEntered -= PanelSlideshow_PointerEntered;
         PointerExited -= PanelSlideshow_PointerExited;
@@ -245,8 +322,8 @@ public partial class PanelSlideshow
         KeyDown -= PanelSlideshow_KeyDown;
         PointerWheelChanged -= PanelSlideshow_OnPointerWheelChanged;
 
-        _previousButton.Click -= PreviousButton_OnClick;
-        _nextButton.Click -= NextButton_OnClick;
+        _previousButton?.Click -= PreviousButton_OnClick;
+        _nextButton?.Click -= NextButton_OnClick;
 
         // Deregister timer
         DisposeAndDeregisterTimer();
@@ -254,6 +331,13 @@ public partial class PanelSlideshow
 
     private void PanelSlideshow_Loaded(object sender, RoutedEventArgs e)
     {
+        // Setup Items if ItemTemplate, ItemsSource and backed item list is empty
+        if (ItemsSource != null &&
+            ItemTemplate != null)
+        {
+            ItemsSource_OnChange(this, ItemsSource);
+        }
+
         // Initialize element on the current index.
         ItemIndex_OnChange(ItemIndex, -1);
 
@@ -263,8 +347,8 @@ public partial class PanelSlideshow
         KeyDown += PanelSlideshow_KeyDown;
         PointerWheelChanged += PanelSlideshow_OnPointerWheelChanged;
 
-        _previousButton.Click += PreviousButton_OnClick;
-        _nextButton.Click += NextButton_OnClick;
+        _previousButton?.Click += PreviousButton_OnClick;
+        _nextButton?.Click += NextButton_OnClick;
     }
 
     #endregion

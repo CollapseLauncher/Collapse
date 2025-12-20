@@ -20,6 +20,12 @@ public partial class PanelSlideshow
 
     #endregion
 
+    #region
+
+    private object? _lastItemsSource = null;
+
+    #endregion
+
     #region Properties
 
     /// <summary>
@@ -94,6 +100,42 @@ public partial class PanelSlideshow
         set => SetValue(ProgressBarVisibilityProperty, value);
     }
 
+    /// <summary>
+    /// The ItemsSource for the item to be displayed in the slideshow or context for DataTemplate.
+    /// </summary>
+    public object? ItemsSource
+    {
+        get => GetValue(ItemsSourceProperty);
+        set => SetValue(ItemsSourceProperty, value);
+    }
+
+    /// <summary>
+    /// The DataTemplate for the item to be displayed in the slideshow.
+    /// </summary>
+    public DataTemplate? ItemTemplate
+    {
+        get => (DataTemplate)GetValue(ItemTemplateProperty);
+        set => SetValue(ItemTemplateProperty, value);
+    }
+
+    /// <summary>
+    /// Margin for the countdown progress bar.
+    /// </summary>
+    public Thickness CountdownProgressMargin
+    {
+        get => (Thickness)GetValue(CountdownProgressMarginProperty);
+        set => SetValue(CountdownProgressMarginProperty, value);
+    }
+
+    /// <summary>
+    /// The height for the countdown progress bar's gradient background.
+    /// </summary>
+    public double CountdownSmokeHeight
+    {
+        get => GetValue(CountdownSmokeHeightProperty).TryGetDouble();
+        set => SetValue(CountdownSmokeHeightProperty, value);
+    }
+
     #endregion
 
     #region Fields
@@ -128,6 +170,22 @@ public partial class PanelSlideshow
     public static readonly DependencyProperty ProgressBarVisibilityProperty =
         DependencyProperty.Register(nameof(ProgressBarVisibility), typeof(Visibility), typeof(PanelSlideshow),
                                     new PropertyMetadata(Visibility.Visible));
+
+    public static readonly DependencyProperty ItemsSourceProperty =
+        DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(PanelSlideshow),
+                                    new PropertyMetadata(null!, ItemsSource_OnChange));
+
+    public static readonly DependencyProperty ItemTemplateProperty =
+        DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(PanelSlideshow),
+                                    new PropertyMetadata(null!, ItemTemplate_OnChange));
+
+    public static readonly DependencyProperty CountdownProgressMarginProperty =
+        DependencyProperty.Register(nameof(CountdownProgressMargin), typeof(Thickness), typeof(PanelSlideshow),
+                                    new PropertyMetadata(default(Thickness)));
+
+    public static readonly DependencyProperty CountdownSmokeHeightProperty =
+        DependencyProperty.Register(nameof(CountdownSmokeHeight), typeof(double), typeof(PanelSlideshow),
+                                    new PropertyMetadata(0d));
 
     #endregion
 }

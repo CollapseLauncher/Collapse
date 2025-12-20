@@ -13,6 +13,10 @@
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="PreviousButtonStyle" Value="{ThemeResource NewPipsPagerPreviousPageButtonStyle}"/>
+        <Setter Property="NextButtonStyle" Value="{ThemeResource NewPipsPagerNextPageButtonStyle}"/>
+        <Setter Property="NormalPipButtonStyle" Value="{ThemeResource NewPipsPagerButtonBaseStyle}"/>
+        <Setter Property="SelectedPipButtonStyle" Value="{ThemeResource NewPipsPagerButtonBaseSelectedStyle}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="newPipsPager:NewPipsPager">
@@ -103,7 +107,7 @@
                         </VisualStateManager.VisualStateGroups>
                         <Button x:Name="PreviousPageButton"
                                 VerticalAlignment="Center"
-                                Style="{ThemeResource NewPipsPagerPreviousPageButtonStyle}"
+                                Style="{TemplateBinding PreviousButtonStyle}"
                                 xamlextension:UIElementExtensions.CursorType="Hand"
                                 ToolTipService.Placement="Top"
                                 ToolTipService.ToolTip="{Binding ElementName=PreviousPageButton, Path=(AutomationProperties.Name)}"
@@ -127,7 +131,7 @@
                                 </ItemsRepeater.Layout>
                                 <ItemsRepeater.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource NewPipsPagerButtonBaseStyle}"
+                                        <Button Style="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=NormalPipButtonStyle}"
                                                 Foreground="{ThemeResource NewPipsPageButtonForeground}"
                                                 Background="{ThemeResource NewPipsPageButtonBackground}"
                                                 CornerRadius="{ThemeResource PipsPagerCornerRadius}"
@@ -143,7 +147,7 @@
                         </ScrollViewer>
                         <Button x:Name="NextPageButton"
                                 VerticalAlignment="Center"
-                                Style="{ThemeResource NewPipsPagerNextPageButtonStyle}"
+                                Style="{TemplateBinding NextButtonStyle}"
                                 xamlextension:UIElementExtensions.CursorType="Hand"
                                 ToolTipService.Placement="Bottom"
                                 ToolTipService.ToolTip="{Binding ElementName=NextPageButton, Path=(AutomationProperties.Name)}"

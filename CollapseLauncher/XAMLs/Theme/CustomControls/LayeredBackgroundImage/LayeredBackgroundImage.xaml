@@ -54,12 +54,12 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="PlaceholderGrid"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"/>
                         <Grid x:Name="ParallaxGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
-                            <Grid x:Name="PlaceholderGrid"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"/>
                             <Grid x:Name="BackgroundGrid"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"/>
