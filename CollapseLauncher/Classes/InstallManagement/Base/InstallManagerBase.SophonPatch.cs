@@ -125,7 +125,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                 Token.Token);
 
             // Filter asset list
-            await FilterSophonPatchAssetList(patchAssets.AssetList, Token.Token);
+            await FilterAssetList(patchAssets.AssetList, x => x.TargetFilePath, Token.Token);
 
             // Start the patch pipeline
             await StartAlterSophonPatch(httpClient,
@@ -140,7 +140,10 @@ namespace CollapseLauncher.InstallManager.Base
             return true;
         }
 
-        protected virtual Task FilterSophonPatchAssetList(List<SophonPatchAsset> itemList, CancellationToken token)
+        public virtual Task FilterAssetList<T>(
+            List<T>           itemList,
+            Func<T, string?>  itemPathSelector,
+            CancellationToken token)
         {
             // NOP
             return Task.CompletedTask;
