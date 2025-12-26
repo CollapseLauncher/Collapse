@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable InvertIf
 #pragma warning disable IDE0130
 
 namespace CollapseLauncher.InstallManager.StarRail
@@ -35,7 +36,8 @@ namespace CollapseLauncher.InstallManager.StarRail
                     continue;
                 }
 
-                blackListAlt.Add(span);
+                // Normalize path
+                AddBothPersistentOrStreamingAssets(blackListAlt, span);
             }
 
             if (blackList.Count == 0)
@@ -55,8 +57,8 @@ namespace CollapseLauncher.InstallManager.StarRail
                     continue;
                 }
 
-                string assetPath = Path.Combine(GamePath, patchAsset.TargetFilePath);
-                if (assetPath.AsSpan().ContainsAny(searchValues))
+                int indexOfAny = patchAsset.TargetFilePath.IndexOfAny(searchValues);
+                if (indexOfAny >= 0)
                 {
                     continue;
                 }
@@ -89,6 +91,34 @@ namespace CollapseLauncher.InstallManager.StarRail
                 }
 
                 return line[..endIndexOf];
+            }
+        }
+
+        private static void AddBothPersistentOrStreamingAssets(
+            HashSet<string>.AlternateLookup<ReadOnlySpan<char>> hashList,
+            ReadOnlySpan<char> filePath)
+        {
+            const string streamingAssetsSegment = "StarRail_Data/StreamingAssets/";
+            const string persistentSegment      = "StarRail_Data/Persistent/";
+
+            bool isContainStreamingAssets = filePath.Contains(streamingAssetsSegment, StringComparison.OrdinalIgnoreCase);
+            bool isContainPersistent      = filePath.Contains(persistentSegment, StringComparison.OrdinalIgnoreCase);
+
+            // Add original path
+            hashList.Add(filePath);
+
+            if (isContainStreamingAssets)
+            {
+                string persistentPath = persistentSegment
+                                        + filePath[streamingAssetsSegment.Length..].ToString();
+                hashList.Add(persistentPath);
+            }
+
+            if (isContainPersistent)
+            {
+                string streamingAssetsPath = streamingAssetsSegment
+                                           + filePath[persistentSegment.Length..].ToString();
+                hashList.Add(streamingAssetsPath);
             }
         }
     }
