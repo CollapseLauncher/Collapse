@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
@@ -23,6 +24,7 @@ namespace CollapseLauncher
         }
 
         private GameTypeStarRailVersion    InnerGameVersionManager { get; }
+        private StarRailInstall            InnerGameInstaller      { get; }
         private bool                       IsOnlyRecoverMain       { get; }
         private List<FilePropertiesRemote> OriginAssetIndex        { get; set; }
         private string                     ExecName                { get; }
@@ -59,6 +61,7 @@ namespace CollapseLauncher
         public StarRailRepair(
             UIElement     parentUI,
             IGameVersion  gameVersionManager,
+            IGameInstallManager  gameInstallManager,
             IGameSettings gameSettings,
             bool          onlyRecoverMainAsset = false,
             string        versionOverride      = null)
@@ -71,6 +74,7 @@ namespace CollapseLauncher
             // Get flag to only recover main assets
             IsOnlyRecoverMain = onlyRecoverMainAsset;
             InnerGameVersionManager = gameVersionManager as GameTypeStarRailVersion;
+            InnerGameInstaller = gameInstallManager as StarRailInstall;
             ExecName = Path.GetFileNameWithoutExtension(InnerGameVersionManager!.GamePreset.GameExecutableName);
         }
 
@@ -105,15 +109,18 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            await Fetch(AssetIndex, Token.Token);
+            await Fetch(AssetIndex, Token!.Token);
 
-            // Step 2: Calculate the total size and count of the files
+            // Step 2: Remove blacklisted files from asset index (borrow function from StarRailInstall)
+            await InnerGameInstaller.FilterAssetList(AssetIndex, x => x.N, Token.Token);
+
+            // Step 3: Calculate the total size and count of the files
             CountAssetIndex(AssetIndex);
 
-            // Step 3: Check for the asset indexes integrity
+            // Step 4: Check for the asset indexes integrity
             await Check(AssetIndex, Token.Token);
 
-            // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
+            // Step 5: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 AssetIndex,
@@ -124,7 +131,7 @@ namespace CollapseLauncher
         private async Task<bool> RepairRoutine()
         {
             // Assign repair task
-            Task<bool> repairTask = Repair(AssetIndex, Token.Token);
+            Task<bool> repairTask = Repair(AssetIndex, Token!.Token);
 
             // Run repair process
             bool repairTaskSuccess = await TryRunExamineThrow(repairTask);
