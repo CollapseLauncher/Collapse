@@ -74,7 +74,6 @@ namespace CollapseLauncher.Pages
         #region Properties
         private GamePresetProperty             CurrentGameProperty { get; set; }
         private CancellationTokenSourceWrapper PageToken           { get; set; }
-        private CancellationTokenSourceWrapper CarouselToken       { get; set; }
 
         private int barWidth;
         private int consoleWidth;
@@ -156,7 +155,6 @@ namespace CollapseLauncher.Pages
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 PageToken = new CancellationTokenSourceWrapper();
-                CarouselToken = new CancellationTokenSourceWrapper();
 
                 InitializeComponent();
 
@@ -186,8 +184,8 @@ namespace CollapseLauncher.Pages
 
                 if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
-                    ImageCarousel.SelectedIndex = 0;
-                    ImageCarousel.Visibility = Visibility.Visible;
+                    // ImageCarousel.SelectedIndex = 0;
+                    // ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
 
                     ShowEventsPanelToggle.IsEnabled = true;
@@ -214,8 +212,6 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty.GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
                     UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
                 }
-
-                _ = StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
                 AppDiscordPresence?.SetActivity(ActivityType.Idle);
@@ -341,7 +337,6 @@ namespace CollapseLauncher.Pages
             }
 
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -437,71 +432,17 @@ namespace CollapseLauncher.Pages
 
         #region Carousel
 
-        private async Task StartCarouselAutoScroll(int delaySeconds = 5)
-        {
-            if (!IsCarouselPanelAvailable) return;
-            if (delaySeconds < 5) delaySeconds = 5;
-            
-            try
-            {
-                while (true)
-                {
-                    CarouselToken ??= new CancellationTokenSourceWrapper();
+        public void StartCarouselSlideshow()
+            => ImageCarouselEventSlideshow.ResumeSlideshow();
 
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
-                    if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameCarouselData?.Count - 1 
-                        && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
-                        ImageCarousel.SelectedIndex++;
-                    else
-                        for (int i = GameCarouselData?.Count ?? 0; i > 0; i--)
-                        {
-                            if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
-                            {
-                                ImageCarousel.SelectedIndex = i - 1;
-                            }
-                            if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
-                            {
-                                await Task.Delay(100, CarouselToken.Token);
-                            }
-                        }
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                // Ignore
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
-                _ = CarouselRestartScroll();
-            }
-        }
+        public void StopCarouselSlideshow()
+            => ImageCarouselEventSlideshow.PauseSlideshow();
 
-        private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) =>
-            await CarouselRestartScroll();
+        private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
+            => ImageCarouselPipsPager.Opacity = .5d;
 
-        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) =>
-            await CarouselStopScroll();
-
-        public async Task CarouselRestartScroll(int delaySeconds = 5)
-        {
-            // Don't restart carousel if game is running and LoPrio is on
-            if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
-            await CarouselStopScroll();
-
-            CarouselToken = new CancellationTokenSourceWrapper();
-            _ = StartCarouselAutoScroll(delaySeconds);
-        }
-
-        public async ValueTask CarouselStopScroll()
-        {
-            if (CarouselToken is { IsCancellationRequested: false, IsDisposed: false, IsCancelled: false })
-            {
-                await CarouselToken.CancelAsync();
-                CarouselToken.Dispose();
-            }
-        }
+        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
+            => ImageCarouselPipsPager.Opacity = 1;
 
         private async void HideImageCarousel(bool hide)
         {
@@ -1024,11 +965,6 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Set Hand Cursor
-        private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
-            (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
-        #endregion
-
         #region Hyper Link Color
         private void HyperLink_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
@@ -1237,7 +1173,7 @@ namespace CollapseLauncher.Pages
                                          compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
                                         );
         }
-        
+
         #endregion
     }
 }
