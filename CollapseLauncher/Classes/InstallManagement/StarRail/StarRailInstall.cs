@@ -93,7 +93,6 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override StarRailRepair GetGameRepairInstance(string? versionString) =>
             new StarRailRepair(ParentUI,
                     GameVersionManager,
-                    this,
                     GameSettings,
                     true,
                     versionString);

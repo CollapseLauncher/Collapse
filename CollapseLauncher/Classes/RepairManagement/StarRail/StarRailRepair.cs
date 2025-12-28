@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -23,8 +24,12 @@ namespace CollapseLauncher
             set => GameVersionManager.GameDirPath = value;
         }
 
-        private GameTypeStarRailVersion    InnerGameVersionManager { get; }
-        private StarRailInstall            InnerGameInstaller      { get; }
+        private GameTypeStarRailVersion InnerGameVersionManager { get; }
+        private StarRailInstall InnerGameInstaller
+        {
+            get => field ??= GamePropertyVault.GetCurrentGameProperty().GameInstall as StarRailInstall;
+        }
+
         private bool                       IsOnlyRecoverMain       { get; }
         private List<FilePropertiesRemote> OriginAssetIndex        { get; set; }
         private string                     ExecName                { get; }
@@ -61,7 +66,6 @@ namespace CollapseLauncher
         public StarRailRepair(
             UIElement     parentUI,
             IGameVersion  gameVersionManager,
-            IGameInstallManager  gameInstallManager,
             IGameSettings gameSettings,
             bool          onlyRecoverMainAsset = false,
             string        versionOverride      = null)
@@ -74,7 +78,6 @@ namespace CollapseLauncher
             // Get flag to only recover main assets
             IsOnlyRecoverMain = onlyRecoverMainAsset;
             InnerGameVersionManager = gameVersionManager as GameTypeStarRailVersion;
-            InnerGameInstaller = gameInstallManager as StarRailInstall;
             ExecName = Path.GetFileNameWithoutExtension(InnerGameVersionManager!.GamePreset.GameExecutableName);
         }
 

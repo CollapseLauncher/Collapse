@@ -1,8 +1,10 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
@@ -25,6 +27,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
+#nullable enable
 namespace CollapseLauncher
 {
     internal static partial class StarRailRepairExtension
@@ -101,13 +104,32 @@ namespace CollapseLauncher
                     }
                 }
 
+                string regionId = GetExistingGameRegionID();
+
+                // Fetch assets from game server
+                if (!IsVersionOverride &&
+                    !IsOnlyRecoverMain)
+                {
+                    PresetConfig gamePreset = GameVersionManager.GamePreset;
+                    SRDispatcherInfo dispatcherInfo = new(gamePreset.GameDispatchArrayURL,
+                                                          gamePreset.ProtoDispatchKey,
+                                                          gamePreset.GameDispatchURLTemplate,
+                                                          gamePreset.GameGatewayURLTemplate,
+                                                          gamePreset.GameDispatchChannelName,
+                                                          GameVersionManager.GetGameVersionApi().ToString());
+                    await dispatcherInfo.Initialize(client, regionId, token);
+
+                    Task<StarRailPersistentRefResult> persistentRef = StarRailPersistentRefResult
+                       .GetReferenceAsync(this, dispatcherInfo, client, GameDataPersistentPath, token);
+                }
+
                 // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
                 // _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize the metadata tool (including dispatcher and gateway).
                 // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
                 // not for delta patch integrity check.
-                if (!IsVersionOverride && !IsOnlyRecoverMain && await InnerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                if (!IsVersionOverride && !IsOnlyRecoverMain && await InnerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, regionId, Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     await Task.WhenAll(
                         // Read Block metadata
@@ -147,43 +169,37 @@ namespace CollapseLauncher
         #region PrimaryManifest
         private async Task GetPrimaryManifest(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            // Initialize pkgVersion list
-            List<PkgVersionProperties> pkgVersion = [];
+            // 2025/12/28:
+            // Starting from this, we use Sophon as primary manifest source instead of relying on our Game Repair Index
+            // as miHoYo might remove uncompressed files from their CDN and fully moving to Sophon.
 
-            // Initialize repo metadata
-            try
+            HttpClient client = FallbackCDNUtil.GetGlobalHttpClient(true);
+
+            string[] excludedMatchingField = ["en-us", "zh-cn", "ja-jp", "ko-kr"];
+            if (File.Exists(GameAudioLangListPathStatic))
             {
-                // Get the metadata
-                Dictionary<string, string> repoMetadata = await FetchMetadata(token);
+                string[] installedAudioLang = (await File.ReadAllLinesAsync(GameAudioLangListPathStatic, token))
+                                       .Select(x => x switch
+                                                    {
+                                                        "English" => "en-us",
+                                                        "Japanese" => "ja-jp",
+                                                        "Chinese(PRC)" => "zh-cn",
+                                                        "Korean" => "ko-kr",
+                                                        _ => ""
+                                                    })
+                                       .Where(x => !string.IsNullOrEmpty(x))
+                                       .ToArray();
 
-                // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!repoMetadata.TryGetValue(GameVersion.VersionString, out var value))
-                {
-                    throw new VersionNotFoundException($"Manifest for {GameVersionManager.GamePreset.ZoneName} (version: {GameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
-                }
-
-                // Assign the URL based on the version
-                GameRepoURL = value;
+                excludedMatchingField = excludedMatchingField.Where(x => !installedAudioLang.Contains(x))
+                                                             .ToArray();
             }
-            // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
-            catch when (IsVersionOverride) { throw; }
 
-            // Fetch the asset index from CDN
-            // Set asset index URL
-            string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, GameVersionManager.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
-
-            // Start downloading asset index using FallbackCDNUtil and return its stream
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
-            // Deserialize asset index and set it to list
-            AssetIndexV2 parserTool = new AssetIndexV2();
-            pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
-            LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-
-            // Convert the pkg version list to asset index
-            ConvertPkgVersionToAssetIndex(pkgVersion, assetIndex);
-
-            // Clear the pkg version list
-            pkgVersion.Clear();
+            await this.FetchAssetsFromSophonAsync(client,
+                                                  assetIndex,
+                                                  DetermineFileTypeFromExtension,
+                                                  GameVersion,
+                                                  excludedMatchingField,
+                                                  token);
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
@@ -215,6 +231,26 @@ namespace CollapseLauncher
         #endregion
 
         #region Utilities
+        private static FileType DetermineFileTypeFromExtension(string fileName)
+        {
+            if (fileName.EndsWith(".block", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Block;
+            }
+
+            if (fileName.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Video;
+            }
+
+            if (fileName.EndsWith(".pck", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Audio;
+            }
+
+            return FileType.Generic;
+        }
+
         private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
                                                                         string remoteRelativePath,
                                                                         long fileSize,

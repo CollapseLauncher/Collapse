@@ -62,7 +62,7 @@ namespace CollapseLauncher
                     property.GameSettings = new StarRailSettings(property.GameVersion);
                     property.GameInstall  = new StarRailInstall(uiElementParent, property.GameVersion, property.GameSettings);
                     property.GameCache    = new StarRailCache(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion, property.GameInstall, property.GameSettings);
+                    property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion, property.GameSettings);
                     break;
                 case GameNameType.Genshin:
                     property.GameVersion = new GameTypeGenshinVersion(launcherApis, gamePreset);
