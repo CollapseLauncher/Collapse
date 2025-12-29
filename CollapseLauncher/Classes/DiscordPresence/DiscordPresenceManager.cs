@@ -37,6 +37,24 @@ namespace CollapseLauncher.DiscordPresence
     public sealed partial class DiscordPresenceManager : IDisposable
     {
         #region Properties
+
+        [field: NonSerialized]
+        private bool? _isRpcEnabled;
+        public bool IsRpcEnabled
+        {
+            get => _isRpcEnabled ??= GetAppConfigValue("EnableDiscordRPC").ToBoolNullable() ?? false;
+            set
+            {
+                if (_isRpcEnabled == value) return;
+
+                _isRpcEnabled = value;
+
+                SetAndSaveConfigValue("EnableDiscordRPC", value);
+                if (value) SetupPresence();
+                else DisablePresence();
+            }
+        }
+
         private const string CollapseLogoExt = "https://collapselauncher.com/img/logo@2x.webp";
 
         private DiscordRpcClient? _client;
@@ -46,8 +64,8 @@ namespace CollapseLauncher.DiscordPresence
         private          DateTime?                  _lastPlayTime;
         private          bool                       _firstTimeConnect = true;
         private readonly ActionBlock<RichPresence?> _presenceUpdateQueue;
-
-        private bool _cachedIsIdleEnabled = true;
+        
+        private bool  _cachedIsIdleEnabled = true;
 
         public bool IdleEnabled
         {
@@ -103,6 +121,7 @@ namespace CollapseLauncher.DiscordPresence
 
         private void EnablePresence(ulong applicationId)
         {
+            if (!IsRpcEnabled) return;
             _firstTimeConnect = true;
 
             // Flush and dispose the session
@@ -168,8 +187,10 @@ namespace CollapseLauncher.DiscordPresence
 
         public void SetupPresence()
         {
-            string? gameCategory        = GetAppConfigValue("GameCategory").ToString();
-            bool    isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+            if (!IsRpcEnabled) return;
+            
+            var gameCategory        = GetAppConfigValue("GameCategory").ToString();
+            var isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
 
             if (isGameStatusEnabled)
             {
@@ -220,10 +241,7 @@ namespace CollapseLauncher.DiscordPresence
 
         public void SetActivity(ActivityType activity, DateTime? activityOffset = null)
         {
-            if (!GetAppConfigValue("EnableDiscordRPC").ToBool())
-            {
-                return;
-            }
+            if (!IsRpcEnabled) return;
 
             //_lastAttemptedActivityType = activity;
             _activityType = activity;
