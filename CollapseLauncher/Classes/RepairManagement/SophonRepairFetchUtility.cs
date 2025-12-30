@@ -68,7 +68,6 @@ internal static class RepairSharedUtility
                                         .ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
                           .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField)) ?? []);
 
-
         foreach (SophonChunkManifestInfoPair pair in infoPairs)
         {
             instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Sophon ({pair.MatchingField})");

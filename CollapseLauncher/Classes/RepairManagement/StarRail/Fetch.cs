@@ -119,7 +119,7 @@ namespace CollapseLauncher
                                                           GameVersionManager.GetGameVersionApi().ToString());
                     await dispatcherInfo.Initialize(client, regionId, token);
 
-                    Task<StarRailPersistentRefResult> persistentRef = StarRailPersistentRefResult
+                    StarRailPersistentRefResult persistentRef = await StarRailPersistentRefResult
                        .GetReferenceAsync(this, dispatcherInfo, client, GameDataPersistentPath, token);
                 }
 

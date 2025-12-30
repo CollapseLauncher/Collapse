@@ -6,39 +6,87 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 #pragma warning disable IDE0130
+#nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 
-internal abstract class StarRailBinaryData<TAsset>
+public abstract class StarRailBinaryData
 {
-    protected abstract ReadOnlySpan<byte>   MagicSignature { get; }
-    public             StarRailBinaryHeader Header         { get; private set; }
-    public             List<TAsset>         DataList       { get; protected set; }
+    protected abstract ReadOnlySpan<byte>             MagicSignature { get; }
+    public             StarRailBinaryDataHeaderStruct Header         { get; protected set; }
 
-    public virtual async Task<StarRailBinaryData<TAsset>> ParseAsync(Stream dataStream, CancellationToken token)
+    public static T CreateDefault<T>() where T : StarRailBinaryData, new() => new();
+
+    /// <summary>
+    /// Parse the binary data from the provided <see cref="Stream"/> and populate the <see cref="StarRailBinaryData{TAsset}.DataList"/>.
+    /// </summary>
+    /// <param name="dataStream">The <see cref="Stream"/> which provides the source of the data to be parsed.</param>
+    /// <param name="seekToEnd">
+    /// Whether to seek the data <see cref="Stream"/> to the end, even though not all data being read.<br/>
+    /// Keep in mind that this operation will actually read all remaining data from the <see cref="Stream"/> and discard it.
+    /// </param>
+    /// <param name="token">Cancellation token for cancelling asynchronous operations.</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public virtual async Task ParseAsync(Stream dataStream, bool seekToEnd = false, CancellationToken token = default)
     {
-        (Header, int offset) = await dataStream.ReadDataAssertAndSeekAsync<StarRailBinaryHeader>(x => x.SubStructStartOffset, token);
+        (Header, int offset) = await ReadHeaderCoreAsync(dataStream, token);
         if (!Header.MagicSignature.SequenceEqual(MagicSignature))
         {
             throw new InvalidOperationException($"Magic Signature doesn't match! Expecting: {Encoding.UTF8.GetString(MagicSignature)} but got: {Encoding.UTF8.GetString(Header.MagicSignature)} instead.");
         }
 
         await ReadDataCoreAsync(offset, dataStream, token);
-        return this;
+        if (seekToEnd) // Read all remained data to null stream, even though not all data is being read.
+        {
+            await dataStream.CopyToAsync(Stream.Null, token);
+        }
     }
 
-    protected abstract ValueTask<long> ReadDataCoreAsync(long currentOffset, Stream dataStream, CancellationToken token);
+    protected virtual async ValueTask<(StarRailBinaryDataHeaderStruct Header, int Offset)> ReadHeaderCoreAsync(
+        Stream            dataStream,
+        CancellationToken token = default)
+    {
+        return await dataStream
+           .ReadDataAssertAndSeekAsync<StarRailBinaryDataHeaderStruct>(x => x.HeaderOrDataLength,
+                                                                       token);
+    }
+
+    protected abstract ValueTask<long> ReadDataCoreAsync(long currentOffset, Stream dataStream, CancellationToken token = default);
+}
+
+public abstract class StarRailBinaryData<TAsset> : StarRailBinaryData
+{
+    public List<TAsset> DataList { get; protected set; } = [];
+
+    protected StarRailBinaryData(ReadOnlySpan<byte> magicSignature,
+                                 short              parentTypeFlag,
+                                 short              typeVersionFlag,
+                                 int                headerOrDataLength,
+                                 short              subStructCount,
+                                 short              subStructSize)
+    {
+        StarRailBinaryDataHeaderStruct header = default;
+        magicSignature.CopyTo(header.MagicSignature);
+
+        header.ParentTypeFlag     = parentTypeFlag;
+        header.TypeVersionFlag    = typeVersionFlag;
+        header.HeaderOrDataLength = headerOrDataLength;
+        header.SubStructCount     = subStructCount;
+        header.SubStructSize      = subStructSize;
+
+        Header = header;
+    }
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 2)]
-public unsafe struct StarRailBinaryHeader
+public unsafe struct StarRailBinaryDataHeaderStruct
 {
     private fixed byte  _magicSignature[4];
     public        short ParentTypeFlag;
     public        short TypeVersionFlag;
-    public        int   HeaderLength;
+    public        int   HeaderOrDataLength;
     public        short SubStructCount;
-    public        short SubStructStartOffset;
+    public        short SubStructSize;
 
     public Span<byte> MagicSignature
     {
@@ -51,5 +99,5 @@ public unsafe struct StarRailBinaryHeader
         }
     }
 
-    public override string ToString() => $"{Encoding.UTF8.GetString(MagicSignature)} | ParentTypeFlag: {ParentTypeFlag} | TypeVersionFlag: {TypeVersionFlag} | SubStructCount: {SubStructCount} | SubStructStartOffset: {SubStructStartOffset} | {HeaderLength} bytes";
+    public override string ToString() => $"{Encoding.UTF8.GetString(MagicSignature)} | ParentTypeFlag: {ParentTypeFlag} | TypeVersionFlag: {TypeVersionFlag} | SubStructCount: {SubStructCount} | SubStructSize: {SubStructSize} | HeaderReportedLength: {HeaderOrDataLength} bytes";
 }

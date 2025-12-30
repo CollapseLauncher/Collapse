@@ -1,6 +1,8 @@
 ﻿using Hi3Helper.EncTool;
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -16,35 +18,113 @@ namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 
 internal static class StarRailBinaryDataExtension
 {
-    internal static async ValueTask<(T Data, int Read)> ReadDataAssertAndSeekAsync<T>(
-        this Stream       stream,
-        Func<T, int>      minimalSizeAssertGet,
-        CancellationToken token)
-        where T : unmanaged
+    extension(Stream stream)
     {
-        T   result              = await stream.ReadAsync<T>(token).ConfigureAwait(false);
-        int sizeOfImplemented   = Unsafe.SizeOf<T>();
-        int minimalSizeToAssert = minimalSizeAssertGet(result);
-
-        // ASSERT: Make sure the struct size is versionable and at least, bigger than what we currently implement.
-        //         (cuz we know you might change this in the future, HoYo :/)
-        if (sizeOfImplemented > minimalSizeToAssert)
+        internal async ValueTask<(T Data, int Read)> ReadDataAssertAndSeekAsync<T>(
+            Func<T, int>      minimalSizeAssertGet,
+            CancellationToken token)
+            where T : unmanaged
         {
-            throw new InvalidOperationException($"Game data use {minimalSizeToAssert} bytes of struct for {nameof(T)} while current implementation only supports struct with size >= {sizeOfImplemented}. Please contact @neon-nyan or ping us on our Official Discord to report this issue :D");
+            T   result              = await stream.ReadAsync<T>(token).ConfigureAwait(false);
+            int sizeOfImplemented   = Unsafe.SizeOf<T>();
+            int minimalSizeToAssert = minimalSizeAssertGet(result);
+
+            // ASSERT: Make sure the struct size is versionable and at least, bigger than what we currently implement.
+            //         (cuz we know you might change this in the future, HoYo :/)
+            if (sizeOfImplemented > minimalSizeToAssert)
+            {
+                throw new InvalidOperationException($"Game data use {minimalSizeToAssert} bytes of struct for {typeof(T).Name} while current implementation only supports struct with size >= {sizeOfImplemented}. Please contact @neon-nyan or ping us on our Official Discord to report this issue :D");
+            }
+
+            // ASSERT: Make sure to advance the stream position if the struct is bigger than what we currently implement.
+            int read     = sizeOfImplemented;
+            int remained = minimalSizeToAssert - read;
+            read += await stream.SeekForwardAsync(remained, token);
+
+            return (result, read);
         }
 
-        // ASSERT: Make sure to advance the stream position if the struct is bigger than what we currently implement.
-        int read     = sizeOfImplemented;
-        int remained = minimalSizeToAssert - read;
-        read += await stream.SeekForwardAsync(remained, token);
+        internal async ValueTask<(T Data, int Read)> ReadDataAssertWithPosAndSeekAsync<T>(
+            long              currentPos,
+            Func<T, long>     expectedPosAfterReadGet,
+            CancellationToken token)
+            where T : unmanaged
+        {
+            T    result               = await stream.ReadAsync<T>(token).ConfigureAwait(false);
+            int  sizeOfImplemented    = Unsafe.SizeOf<T>();
+            long expectedPosAfterRead = expectedPosAfterReadGet(result);
 
-        return (result, read);
+            int read = sizeOfImplemented;
+            currentPos += read;
+
+            // ASSERT: Make sure the current stream position is at least smaller or equal to what the game
+            //         expect to be positioned at.
+            //         (Again, as the same situation for ReadDataAssertAndSeekAsync, HoYo might change this in the future
+            //          so we got to stop this from reading out of bounds :/)
+            if (currentPos > expectedPosAfterRead)
+            {
+                throw new InvalidOperationException($"Game data expect stream position to: {expectedPosAfterRead} bytes after reading struct for {typeof(T).Name} while our current data stream implementation stops at position: {currentPos + read} bytes. Please contact @neon-nyan or ping us on our Official Discord to report this issue :D");
+            }
+
+            // ASSERT: Make sure to advance the stream position if the struct we implement is smaller than the game implement.
+            int remained = (int)(expectedPosAfterRead - currentPos);
+            read += await stream.SeekForwardAsync(remained, token);
+
+            return (result, read);
+        }
+
+        internal async ValueTask<int> ReadBufferAssertAsync(long              currentPos,
+                                                            Memory<byte>      buffer,
+                                                            CancellationToken token)
+        {
+            int read = await stream.ReadAtLeastAsync(buffer,
+                                                     buffer.Length,
+                                                     cancellationToken: token)
+                                       .ConfigureAwait(false);
+            // ASSERT: Make sure the amount of data being read is equal to buffer size
+            Debug.Assert(buffer.Length == read);
+            return read;
+        }
+
+        internal async ValueTask WriteAsync<T>(
+            T                 value,
+            CancellationToken token)
+            where T : unmanaged
+        {
+            int    sizeOfImplemented = Unsafe.SizeOf<T>();
+            byte[] buffer            = ArrayPool<byte>.Shared.Rent(sizeOfImplemented);
+
+            try
+            {
+                // ASSERT: Try copy the value to buffer and assert whether the size is unequal
+                if (!TryCopyStructToBuffer(in value, buffer, out int writtenValueSize) ||
+                    writtenValueSize != sizeOfImplemented)
+                {
+                    throw new DataMisalignedException($"Buffer size is insufficient than the size of the actual struct of {typeof(T).Name}");
+                }
+
+                await stream.WriteAsync(buffer.AsMemory(0, writtenValueSize), token)
+                            .ConfigureAwait(false);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+    }
+
+    private static unsafe bool TryCopyStructToBuffer<T>(in T value, Span<byte> buffer, out int written)
+        where T : unmanaged
+    {
+        written = Unsafe.SizeOf<T>();
+        ReadOnlySpan<byte> valueSpan = new(Unsafe.AsPointer(in value), written);
+        return valueSpan.TryCopyTo(buffer);
     }
 
     internal static unsafe void ReverseReorderBy4X4HashData(Span<byte> data)
     {
         if (data.Length != 16)
-            throw new ArgumentException("Data length must be multiple of 4x4.", nameof(data));
+            throw new ArgumentException("Data length must be 16 bytes.", nameof(data));
 
         void* dataP = Unsafe.AsPointer(ref MemoryMarshal.GetReference(data));
         if (Sse3.IsSupported)
@@ -100,6 +180,16 @@ internal static class StarRailBinaryDataExtension
         uintP[1] = BinaryPrimitives.ReverseEndianness(uintP[1]);
         uintP[2] = BinaryPrimitives.ReverseEndianness(uintP[2]);
         uintP[3] = BinaryPrimitives.ReverseEndianness(uintP[3]);
+    }
+
+    internal static unsafe bool IsStructEqual<T>(T left, T right)
+        where T : unmanaged
+    {
+        int        structSize = Marshal.SizeOf<T>();
+        Span<byte> leftSpan   = new(Unsafe.AsPointer(ref left),  structSize);
+        Span<byte> rightSpan  = new(Unsafe.AsPointer(ref right), structSize);
+
+        return leftSpan.SequenceEqual(rightSpan);
     }
 }
 
