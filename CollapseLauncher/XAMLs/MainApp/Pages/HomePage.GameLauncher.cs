@@ -814,6 +814,7 @@ public partial class HomePage
                         if (!usePluginGameLaunchApi)
                             currentGameProcess = Process.GetProcessById(processId);
 
+                        Task playtimeTask = Task.CompletedTask;
                         try
                         {
                             // HACK: For some reason, the text still unchanged.
@@ -844,7 +845,7 @@ public partial class HomePage
                                     ? Task.CompletedTask
                                     : ((PluginPresetConfigWrapper)presetConfig).RunGameContext.WaitRunningGameAsync(x));
 
-                            _ = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
+                            playtimeTask = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
 
                             await ProcessAwaiter(token);
 
@@ -852,6 +853,7 @@ public partial class HomePage
                         }
                         finally
                         {
+                            await playtimeTask;
                             currentGameProcess?.Dispose();
                         }
                     }
