@@ -1,6 +1,11 @@
-﻿using System;
+﻿using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;

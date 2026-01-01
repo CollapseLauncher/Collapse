@@ -60,7 +60,7 @@ internal partial class StarRailAssetJsonMetadata : StarRailAssetBinaryMetadata<S
     [JsonSerializable(typeof(Metadata))]
     public partial class MetadataJsonContext : JsonSerializerContext;
 
-    public class Metadata : StarRailAssetGenericFileInfo
+    public class Metadata : StarRailAssetFlaggable
     {
         [JsonPropertyName("Patch")]
         public bool IsPatch { get; init; }
@@ -70,6 +70,8 @@ internal partial class StarRailAssetJsonMetadata : StarRailAssetBinaryMetadata<S
 
         [JsonPropertyName("TaskIds")]
         public int[]? TaskIdList { get; init; }
+
+        public override bool IsPersistent => IsPatch;
 
         public override string ToString() => $"{base.ToString()} | Patch: {IsPatch} | SubPackId: {SubPackId}" +
                                              (TaskIdList?.Length == 0 ? "" : $" | TaskIds: [{string.Join(", ", TaskIdList ?? [])}]");

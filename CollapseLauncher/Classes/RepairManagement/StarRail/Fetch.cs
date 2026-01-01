@@ -2,25 +2,17 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
-using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
@@ -84,12 +76,13 @@ namespace CollapseLauncher
                 .Create();
 
             // Initialize the new DownloadClient
-            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+            string   regionId           = GetExistingGameRegionID();
+            string[] installedVoiceLang = await GetInstalledVoiceLanguageOrDefault(token);
 
             try
             {
                 // Get the primary manifest
-                await GetPrimaryManifest(assetIndex, token);
+                await GetPrimaryManifest(assetIndex, installedVoiceLang, token);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (IsOnlyRecoverMain && IsVersionOverride)
@@ -104,8 +97,6 @@ namespace CollapseLauncher
                     }
                 }
 
-                string regionId = GetExistingGameRegionID();
-
                 // Fetch assets from game server
                 if (!IsVersionOverride &&
                     !IsOnlyRecoverMain)
@@ -119,32 +110,15 @@ namespace CollapseLauncher
                                                           GameVersionManager.GetGameVersionApi().ToString());
                     await dispatcherInfo.Initialize(client, regionId, token);
 
-                    StarRailPersistentRefResult persistentRef = await StarRailPersistentRefResult
-                       .GetReferenceAsync(this, dispatcherInfo, client, GameDataPersistentPath, token);
-                }
+                    StarRailPersistentRefResult persistentRefResult = await StarRailPersistentRefResult
+                       .GetReferenceAsync(this,
+                                          dispatcherInfo,
+                                          client,
+                                          GamePath,
+                                          GameDataPersistentPathRelative,
+                                          token);
 
-                // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
-                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
-
-                // Initialize the metadata tool (including dispatcher and gateway).
-                // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
-                // not for delta patch integrity check.
-                if (!IsVersionOverride && !IsOnlyRecoverMain && await InnerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, regionId, Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
-                {
-                    await Task.WhenAll(
-                        // Read Block metadata
-                        InnerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
-                        InnerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
-                        // Read Audio metadata
-                        InnerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
-                        // Read Video metadata
-                        InnerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token)
-                        ).ConfigureAwait(false);
-
-                    // Convert Block, Audio and Video metadata to FilePropertiesRemote
-                    ConvertSrMetadataToAssetIndex(InnerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
-                    ConvertSrMetadataToAssetIndex(InnerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
-                    ConvertSrMetadataToAssetIndex(InnerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
+                    persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang, token);
                 }
 
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
@@ -156,6 +130,9 @@ namespace CollapseLauncher
                 {
                     EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
                 }
+
+                // Remove blacklisted assets
+                await InnerGameInstaller.FilterAssetList(assetIndex, x => x.N, token);
             }
             finally
             {
@@ -167,7 +144,21 @@ namespace CollapseLauncher
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(List<FilePropertiesRemote> assetIndex, CancellationToken token)
+
+        private async Task<string[]> GetInstalledVoiceLanguageOrDefault(CancellationToken token)
+        {
+            if (!File.Exists(GameAudioLangListPathStatic))
+            {
+                return []; // Return empty. For now, let's not mind about what VOs the user actually have and let the game decide.
+            }
+
+            string[] installedAudioLang = (await File.ReadAllLinesAsync(GameAudioLangListPathStatic, token))
+                                   .Where(x => !string.IsNullOrEmpty(x))
+                                   .ToArray();
+            return installedAudioLang;
+        }
+
+        private async Task GetPrimaryManifest(List<FilePropertiesRemote> assetIndex, string[] voiceLang, CancellationToken token)
         {
             // 2025/12/28:
             // Starting from this, we use Sophon as primary manifest source instead of relying on our Game Repair Index
@@ -178,10 +169,11 @@ namespace CollapseLauncher
             string[] excludedMatchingField = ["en-us", "zh-cn", "ja-jp", "ko-kr"];
             if (File.Exists(GameAudioLangListPathStatic))
             {
-                string[] installedAudioLang = (await File.ReadAllLinesAsync(GameAudioLangListPathStatic, token))
+                string[] installedAudioLang = voiceLang
                                        .Select(x => x switch
                                                     {
                                                         "English" => "en-us",
+                                                        "English(US)" => "en-us",
                                                         "Japanese" => "ja-jp",
                                                         "Chinese(PRC)" => "zh-cn",
                                                         "Korean" => "ko-kr",
@@ -202,36 +194,11 @@ namespace CollapseLauncher
                                                   token);
         }
 
-        private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
-        {
-            // Set metadata URL
-            string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManager.GamePreset.ProfileName);
-
-            // Start downloading metadata using FallbackCDNUtil
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token: token);
-            return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
-        }
-
-        private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex)
-        {
-            for (var index = pkgVersion.Count - 1; index >= 0; index--)
-            {
-                var entry = pkgVersion[index];
-                // Add the pkgVersion entry to asset index
-                FilePropertiesRemote normalizedProperty = GetNormalizedFilePropertyTypeBased(
-                     GameRepoURL,
-                     entry.remoteName,
-                     entry.fileSize,
-                     entry.md5,
-                     FileType.Generic,
-                     true);
-                assetIndex.AddSanitize(normalizedProperty);
-            }
-        }
         #endregion
 
         #region Utilities
-        private static FileType DetermineFileTypeFromExtension(string fileName)
+
+        internal static FileType DetermineFileTypeFromExtension(string fileName)
         {
             if (fileName.EndsWith(".block", StringComparison.OrdinalIgnoreCase))
             {
@@ -249,41 +216,6 @@ namespace CollapseLauncher
             }
 
             return FileType.Generic;
-        }
-
-        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
-                                                                        string remoteRelativePath,
-                                                                        long fileSize,
-                                                                        string hash,
-                                                                        FileType type = FileType.Generic,
-                                                                        bool isPatchApplicable = false, 
-                                                                        bool isHasHashMark = false)
-        {
-            string remoteAbsolutePath = type switch
-                                        {
-                                            FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
-                                            _ => remoteParentURL
-                                        },
-                   typeAssetRelativeParentPath = string.Format(type switch
-                                                               {
-                                                                   FileType.Block => AssetGameBlocksStreamingPath,
-                                                                   FileType.Audio => AssetGameAudioStreamingPath,
-                                                                   FileType.Video => AssetGameVideoStreamingPath,
-                                                                   _ => string.Empty
-                                                               }, ExecName);
-
-            var localAbsolutePath = Path.Combine(GamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
-
-            return new FilePropertiesRemote
-            {
-                FT = type,
-                CRC = hash,
-                S = fileSize,
-                N = localAbsolutePath,
-                RN = remoteAbsolutePath,
-                IsPatchApplicable = isPatchApplicable,
-                IsHasHashMark = isHasHashMark
-            };
         }
 
         private unsafe string GetExistingGameRegionID()
@@ -320,129 +252,6 @@ namespace CollapseLauncher
             }
         }
 
-        private void ConvertSrMetadataToAssetIndex(SRMetadataBase metadata, List<FilePropertiesRemote> assetIndex, bool writeAudioLangReordered = false)
-        {
-            // Get the voice Lang ID
-            int voLangID = InnerGameVersionManager.GamePreset.GetVoiceLanguageID();
-            // Get the voice Lang name by ID
-            string voLangName = PresetConfig.GetStarRailVoiceLanguageFullNameByID(voLangID);
-
-            // If prompt to write Redord file
-            if (writeAudioLangReordered)
-            {
-                // Get game executable name, directory and file path
-                string execName = Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName);
-                string audioReorderedDir = Path.Combine(GamePath, @$"{execName}_Data\Persistent\Audio\AudioPackage\Windows");
-                string audioReorderedPath = EnsureCreationOfDirectory(Path.Combine(audioReorderedDir, "AudioLangRedord.txt"));
-
-                // Then write the Redord file content
-                File.WriteAllText(audioReorderedPath, "{\"AudioLang\":\"" + voLangName + "\"}");
-            }
-
-            // Get the audio lang list
-            string[] audioLangList = GetCurrentAudioLangList(voLangName);
-
-            // Enumerate the Asset List
-            int lastAssetIndexCount = assetIndex.Count;
-            foreach (SRAsset asset in metadata.EnumerateAssets())
-            {
-                // Get the hash by bytes
-                string hash = HexTool.BytesToHexUnsafe(asset.Hash);
-
-                // Filter only current audio language file and other assets
-                if (!FilterCurrentAudioLangFile(asset, audioLangList, out bool isHasHashMark))
-                {
-                    continue;
-                }
-
-                // Convert and add the asset as FilePropertiesRemote to assetIndex
-                FilePropertiesRemote assetProperty = GetNormalizedFilePropertyTypeBased(
-                     asset.RemoteURL,
-                     asset.LocalName,
-                     asset.Size,
-                     hash,
-                     ConvertFileTypeEnum(asset.AssetType),
-                     asset.IsPatch,
-                     isHasHashMark
-                    );
-                assetIndex.AddSanitize(assetProperty);
-            }
-
-            int addedCount = assetIndex.Count - lastAssetIndexCount;
-            long addedSize = 0;
-            ReadOnlySpan<FilePropertiesRemote> assetIndexSpan = CollectionsMarshal.AsSpan(assetIndex)[lastAssetIndexCount..];
-            for (int i = assetIndexSpan.Length - 1; i >= 0; i--) addedSize += assetIndexSpan[i].S;
-
-            LogWriteLine($"Added additional {addedCount} assets with {SummarizeSizeSimple(addedSize)}/{addedSize} bytes in size", LogType.Default, true);
-        }
-
-        private string[] GetCurrentAudioLangList(string fallbackCurrentLangName)
-        {
-            // Initialize the variable.
-            string audioLangListPath = GameAudioLangListPath;
-            string audioLangListPathStatic = GameAudioLangListPathStatic;
-            string[] returnValue;
-
-            // Check if the audioLangListPath is null or the file is not exist,
-            // then create a new one from the fallback value
-            if (audioLangListPath == null || !File.Exists(audioLangListPathStatic))
-            {
-                // Try check if the folder exist. If not, create one.
-                string audioLangPathDir = Path.GetDirectoryName(audioLangListPathStatic);
-                if (Directory.Exists(audioLangPathDir))
-                    Directory.CreateDirectory(audioLangPathDir);
-
-                // Assign the default value and write to the file, then return.
-                returnValue = [fallbackCurrentLangName];
-                if (audioLangListPathStatic != null)
-                {
-                    File.WriteAllLines(audioLangListPathStatic, returnValue);
-                }
-
-                return returnValue;
-            }
-
-            // Read all the lines. If empty, then assign the default value and rewrite it
-            returnValue = File.ReadAllLines(audioLangListPathStatic);
-            if (returnValue.Length != 0)
-            {
-                return returnValue;
-            }
-
-            returnValue = [fallbackCurrentLangName];
-            File.WriteAllLines(audioLangListPathStatic, returnValue);
-
-            // Return the value
-            return returnValue;
-        }
-
-        private static bool FilterCurrentAudioLangFile(SRAsset asset, string[] langNames, out bool isHasHashMark)
-        {
-            // Set output value as false
-            isHasHashMark = false;
-            switch (asset.AssetType)
-            {
-                // In case if the type is SRAssetType.Audio, then do filtering
-                case SRAssetType.Audio:
-                    // Set isHasHashMark to true
-                    isHasHashMark = true;
-                    // Split the name definition from LocalName
-                    string[] nameDef = asset.LocalName.Split('/');
-                    // If the name definition array length > 1, then start do filtering
-                    if (nameDef.Length > 1)
-                    {
-                        // Compare if the first name definition is equal to target langName.
-                        // Also return if the file is an audio language file if it is SFX file or not.
-                        return langNames.Contains(nameDef[0], StringComparer.OrdinalIgnoreCase) || nameDef[0] == "SFX";
-                    }
-                    // If it's not in criteria of name definition, then return true as "normal asset"
-                    return true;
-                default:
-                    // return true as "normal asset"
-                    return true;
-            }
-        }
-
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
             // Sum the assetIndex size and assign to _progressAllSize
@@ -451,15 +260,6 @@ namespace CollapseLauncher
             // Assign the assetIndex count to _progressAllCount
             ProgressAllCountTotal = assetIndex.Count;
         }
-
-        private static FileType ConvertFileTypeEnum(SRAssetType assetType) => assetType switch
-                                                                              {
-                                                                                  SRAssetType.Asb => FileType.Block,
-                                                                                  SRAssetType.Block => FileType.Block,
-                                                                                  SRAssetType.Audio => FileType.Audio,
-                                                                                  SRAssetType.Video => FileType.Video,
-                                                                                  _ => FileType.Generic
-                                                                              };
 
         private static RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
                                                                                          {

@@ -108,13 +108,8 @@ internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<
         return currentOffset;
     }
 
-    public class Metadata : StarRailAssetGenericFileInfo
+    public class Metadata : StarRailAssetFlaggable
     {
-        /// <summary>
-        /// Defined flags of the asset bundle block file.
-        /// </summary>
-        public required uint Flags { get; init; }
-
         public static void Parse(ReadOnlySpan<byte> buffer,
                                  int                subDataSize,
                                  long               lastDataStreamPos,
@@ -141,8 +136,5 @@ internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<
                 Flags       = assetType
             };
         }
-
-        public override string ToString() =>
-            $"{Filename} | Flags: {ConverterTool.ToBinaryString(Flags)} | Hash: {HexTool.BytesToHexUnsafe(MD5Checksum)} | Size: {FileSize}";
     }
 }

@@ -7,6 +7,22 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
+public class StarRailAssetFlaggable : StarRailAssetGenericFileInfo
+{
+    /// <summary>
+    /// Defined flags of the asset bundle block file.
+    /// </summary>
+    public uint Flags { get; init; }
+
+    /// <summary>
+    /// To indicate whether this asset is persistent.
+    /// </summary>
+    public virtual bool IsPersistent => (Flags & 0b00000000_00010000_00000000_00000000u) != 0;
+
+    public override string ToString() =>
+        $"{Filename} | Flags: {ConverterTool.ToBinaryString(Flags)} | IsPersistent: {IsPersistent} | Hash: {HexTool.BytesToHexUnsafe(MD5Checksum)} | Size: {FileSize}";
+}
+
 public class StarRailAssetGenericFileInfo
 {
     /// <summary>

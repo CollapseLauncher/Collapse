@@ -14,6 +14,7 @@ namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 ///   <see cref="StarRailAssetBlockMetadata"/>
 /// </summary>
 public abstract class StarRailAssetBinaryMetadata<TAsset> : StarRailBinaryData<TAsset>
+    where TAsset : StarRailAssetGenericFileInfo
 {
     protected StarRailAssetBinaryMetadata(
         short parentTypeFlag,

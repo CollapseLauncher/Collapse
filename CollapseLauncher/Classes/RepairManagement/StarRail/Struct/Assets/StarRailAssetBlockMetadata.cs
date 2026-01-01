@@ -120,13 +120,8 @@ public sealed class StarRailAssetBlockMetadata : StarRailAssetBinaryMetadata<Sta
         }
     }
 
-    public class Metadata : StarRailAssetGenericFileInfo
+    public class Metadata : StarRailAssetFlaggable
     {
-        /// <summary>
-        /// Defined flags of the asset bundle block file.
-        /// </summary>
-        public required uint Flags { get; init; }
-
         public static ReadOnlySpan<byte> Parse(ReadOnlySpan<byte> buffer,
                                                int sizeOfStruct,
                                                out Metadata       result)
@@ -147,8 +142,5 @@ public sealed class StarRailAssetBlockMetadata : StarRailAssetBinaryMetadata<Sta
 
             return buffer[sizeOfStruct..];
         }
-
-        public override string ToString() =>
-            $"{Filename} | Flags: {ConverterTool.ToBinaryString(Flags)} | Hash: {HexTool.BytesToHexUnsafe(MD5Checksum)} | Size: {FileSize}";
     }
 }

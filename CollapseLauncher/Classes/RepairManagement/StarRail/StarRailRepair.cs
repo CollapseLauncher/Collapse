@@ -33,7 +33,8 @@ namespace CollapseLauncher
         private bool                       IsOnlyRecoverMain       { get; }
         private List<FilePropertiesRemote> OriginAssetIndex        { get; set; }
         private string                     ExecName                { get; }
-        private string                     GameDataPersistentPath  { get => Path.Combine(GamePath, $"{ExecName}_Data", "Persistent"); }
+        private string GameDataPersistentPathRelative { get => Path.Combine($"{ExecName}_Data", "Persistent"); }
+        private string GameDataPersistentPath { get => Path.Combine(GamePath, GameDataPersistentPathRelative); }
         private string GameAudioLangListPath
         {
             get

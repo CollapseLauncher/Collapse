@@ -5,28 +5,34 @@ using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-
 // ReSharper disable CommentTypo
-
-#nullable enable
 #pragma warning disable IDE0130
+#nullable enable
+
 namespace CollapseLauncher;
 
-internal class StarRailPersistentRefResult
+internal partial class StarRailPersistentRefResult
 {
+    public required AssetBaseUrls BaseUrls { get; set; }
+    public required AssetBaseDirs BaseDirs { get; set; }
+    public required AssetMetadata Metadata { get; set; }
+
     public static async Task<StarRailPersistentRefResult> GetReferenceAsync(
         StarRailRepair    instance,
         SRDispatcherInfo  dispatcherInfo,
         HttpClient        client,
+        string            gameBaseDir,
         string            persistentDir,
         CancellationToken token)
     {
@@ -34,22 +40,78 @@ internal class StarRailPersistentRefResult
         Dictionary<string, string> gatewayKvp = gateway.ValuePairs;
 
         string mainUrlAsb        = gatewayKvp["AssetBundleVersionUpdateUrl"].CombineURLFromString("client/Windows");
+        string mainUrlAsbAlt     = gatewayKvp["AssetBundleVersionUpdateUrlAlt"].CombineURLFromString("client/Windows");
         string mainUrlDesignData = gatewayKvp["DesignDataBundleVersionUpdateUrl"].CombineURLFromString("client/Windows");
         string mainUrlArchive    = mainUrlAsb.CombineURLFromString("Archive");
-        string mainUrlAudio      = mainUrlAsb.CombineURLFromString("AudioBlock");
-        string mainUrlAsbBlock   = mainUrlAsb.CombineURLFromString("Block");
-        string mainUrlNativeData = mainUrlDesignData.CombineURLFromString("NativeData");
-        string mainUrlVideo      = mainUrlAsb.CombineURLFromString("Video");
-
-        string lDirArchive    = Path.Combine(persistentDir, @"Archive\Windows");
-        string lDirAsbBlock   = Path.Combine(persistentDir, @"Asb\Windows");
-        string lDirAudio      = Path.Combine(persistentDir, @"Audio\AudioPackage\Windows");
-        string lDirDesignData = Path.Combine(persistentDir, @"DesignData\Windows");
-        string lDirNativeData = Path.Combine(persistentDir, @"NativeData\Windows");
-        string lDirVideo      = Path.Combine(persistentDir, @"Video\Windows");
 
         string refDesignArchiveUrl = mainUrlDesignData.CombineURLFromString("M_Design_ArchiveV.bytes");
         string refArchiveUrl       = mainUrlArchive.CombineURLFromString("M_ArchiveV.bytes");
+
+        // -- Test ArchiveV endpoint
+        //    Notes to Dev: This is intentional. We need to find which endpoint is actually represents the ArchiveV file URL.
+        bool isSecondArchiveVEndpointRetry = false;
+    TestArchiveVEndpoint:
+        if (!await IsEndpointAlive(client, refArchiveUrl, token))
+        {
+            if (isSecondArchiveVEndpointRetry)
+            {
+                throw new HttpRequestException("Seems like the URL for ArchiveV is missing. Please report this issue to our devs!");
+            }
+
+            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Given ArchiveV Url is invalid! (previously: {refArchiveUrl}). Try swapping...",
+                                LogType.Warning,
+                                true);
+
+            // Also swap the Asset bundle URL so we know that the URL assigned inside the gateway is flipped.
+            (mainUrlAsb, mainUrlAsbAlt) = (mainUrlAsbAlt, mainUrlAsb);
+
+            isSecondArchiveVEndpointRetry = true;
+            mainUrlArchive = mainUrlAsb.CombineURLFromString("Archive");
+            refArchiveUrl  = mainUrlArchive.CombineURLFromString("M_ArchiveV.bytes");
+            goto TestArchiveVEndpoint;
+        }
+        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] ArchiveV Url is found! at: {refArchiveUrl}",
+                            LogType.Debug,
+                            true);
+
+        // -- Assign other URLs after checks
+        //    Notes to Dev:
+        //    We are now only assigning URL after above check because the game sometimes being a dick for swapping these
+        //    distinct Asset bundle URLs. We don't want to assign these other URLs below unless the Asb URL is already correct.
+        //    We also made the second check for the actual block URLs below so HoYo wouldn't be able to fuck around with our code
+        //    anymore.
+        string mainUrlAudio       = mainUrlAsb.CombineURLFromString("AudioBlock");
+        string mainUrlAsbBlock    = mainUrlAsb.CombineURLFromString("Block");
+        string mainUrlAsbBlockAlt = mainUrlAsbAlt.CombineURLFromString("Block");
+        string mainUrlNativeData  = mainUrlDesignData.CombineURLFromString("NativeData");
+        string mainUrlVideo       = mainUrlAsb.CombineURLFromString("Video");
+
+        AssetBaseUrls baseUrl = new()
+        {
+            GatewayKvp         = gatewayKvp,
+            DesignData         = mainUrlDesignData,
+            Archive            = mainUrlArchive,
+            Audio              = mainUrlAudio,
+            AsbBlock           = mainUrlAsbBlock,
+            AsbBlockPersistent = mainUrlAsbBlockAlt,
+            NativeData         = mainUrlNativeData,
+            Video              = mainUrlVideo
+        };
+
+        // -- Initialize persistent dirs
+        string        lDirArchive    = Path.Combine(persistentDir, @"Archive\Windows");
+        string        lDirAsbBlock   = Path.Combine(persistentDir, @"Asb\Windows");
+        string        lDirAudio      = Path.Combine(persistentDir, @"Audio\AudioPackage\Windows");
+        string        lDirDesignData = Path.Combine(persistentDir, @"DesignData\Windows");
+        string        lDirNativeData = Path.Combine(persistentDir, @"NativeData\Windows");
+        string        lDirVideo      = Path.Combine(persistentDir, @"Video\Windows");
+        string        aDirArchive    = Path.Combine(gameBaseDir, lDirArchive);
+        string        aDirAsbBlock   = Path.Combine(gameBaseDir, lDirAsbBlock);
+        string        aDirAudio      = Path.Combine(gameBaseDir, lDirAudio);
+        string        aDirDesignData = Path.Combine(gameBaseDir, lDirDesignData);
+        string        aDirNativeData = Path.Combine(gameBaseDir, lDirNativeData);
+        string        aDirVideo      = Path.Combine(gameBaseDir, lDirVideo);
+        AssetBaseDirs baseDirs = new(lDirArchive, lDirAsbBlock, lDirAudio, lDirDesignData, lDirNativeData, lDirVideo);
 
         // -- Fetch and parse the index references
         Dictionary<string, StarRailRefMainInfo> handleDesignArchive = await StarRailRefMainInfo
@@ -63,19 +125,41 @@ internal class StarRailPersistentRefResult
            .ParseListFromUrlAsync(instance,
                                   client,
                                   refArchiveUrl,
-                                  lDirArchive,
+                                  aDirArchive,
                                   token);
+
+        // -- Test Asset bundle endpoint
+        //    Notes to Dev: This is intentional. We need to find which endpoint is actually represents the persistent file URL.
+        bool isSecondAsbEndpointRetry = false;
+    TestAsbPersistentEndpoint:
+        if (!await IsEndpointAlive(handleArchive, client, baseUrl.AsbBlockPersistent, "BlockV", token))
+        {
+            if (isSecondAsbEndpointRetry)
+            {
+                throw new HttpRequestException("Seems like the URL for persistent asset bundle is missing. Please report this issue to our devs!");
+            }
+
+            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Given persistent asset bundle URL is invalid! (previously: {baseUrl.AsbBlockPersistent}). Try swapping...",
+                                LogType.Warning,
+                                true);
+            isSecondAsbEndpointRetry = true;
+            baseUrl.SwapAsbPersistentUrl();
+            goto TestAsbPersistentEndpoint;
+        }
+        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Persistent asset bundle URL is found! at: {baseUrl.AsbBlockPersistent}",
+                            LogType.Debug,
+                            true);
 
         // -- Save local index files
         //    Notes to Dev: HoYo no longer provides a proper raw bytes data anymore and the client creates it based
         //                  on data provided by "handleArchive", so we need to emulate how the game generates these data.
-        await SaveLocalIndexFiles(instance, handleDesignArchive, lDirDesignData, "DesignV",      token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirAsbBlock,   "AsbV",         token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirAsbBlock,   "BlockV",       token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirAsbBlock,   "Start_AsbV",   token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirAsbBlock,   "Start_BlockV", token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirAudio,      "AudioV",       token);
-        await SaveLocalIndexFiles(instance, handleArchive,       lDirVideo,      "VideoV",       token);
+        await SaveLocalIndexFiles(instance, handleDesignArchive, aDirDesignData, "DesignV",      token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirAsbBlock,   "AsbV",         token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirAsbBlock,   "BlockV",       token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirAsbBlock,   "Start_AsbV",   token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirAsbBlock,   "Start_BlockV", token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirAudio,      "AudioV",       token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirVideo,      "VideoV",       token);
 
         // -- Load metadata files
         //   -- DesignV
@@ -83,9 +167,9 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetSignaturelessMetadata>(instance,
                                                                        handleDesignArchive,
                                                                        client,
-                                                                       mainUrlDesignData,
+                                                                       baseUrl.DesignData,
                                                                        "DesignV",
-                                                                       lDirDesignData,
+                                                                       aDirDesignData,
                                                                        token);
 
         //   -- NativeDataV
@@ -93,9 +177,9 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetNativeDataMetadata>(instance,
                                                                     handleDesignArchive,
                                                                     client,
-                                                                    mainUrlNativeData,
+                                                                    baseUrl.NativeData,
                                                                     "NativeDataV",
-                                                                    lDirNativeData,
+                                                                    aDirNativeData,
                                                                     token);
 
         //   -- Start_AsbV
@@ -103,9 +187,9 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetBundleMetadata>(instance,
                                                                 handleArchive,
                                                                 client,
-                                                                mainUrlAsbBlock,
+                                                                baseUrl.AsbBlockPersistent,
                                                                 "Start_AsbV",
-                                                                lDirAsbBlock,
+                                                                aDirAsbBlock,
                                                                 token);
 
         //   -- Start_BlockV
@@ -113,9 +197,9 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetBlockMetadata>(instance,
                                                                handleArchive,
                                                                client,
-                                                               mainUrlAsbBlock,
+                                                               baseUrl.AsbBlockPersistent,
                                                                "Start_BlockV",
-                                                               lDirAsbBlock,
+                                                               aDirAsbBlock,
                                                                token);
 
         //   -- AsbV
@@ -123,7 +207,7 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetBundleMetadata>(instance,
                                                                 handleArchive,
                                                                 client,
-                                                                mainUrlAsbBlock,
+                                                                baseUrl.AsbBlockPersistent,
                                                                 "AsbV",
                                                                 null,
                                                                 token);
@@ -133,7 +217,7 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetBlockMetadata>(instance,
                                                                handleArchive,
                                                                client,
-                                                               mainUrlAsbBlock,
+                                                               baseUrl.AsbBlockPersistent,
                                                                "BlockV",
                                                                null,
                                                                token);
@@ -143,9 +227,9 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetJsonMetadata>(instance,
                                                               handleArchive,
                                                               client,
-                                                              mainUrlAudio,
+                                                              baseUrl.Audio,
                                                               "AudioV",
-                                                              lDirAudio,
+                                                              aDirAudio,
                                                               token);
 
         //   -- VideoV
@@ -153,12 +237,27 @@ internal class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetJsonMetadata>(instance,
                                                               handleArchive,
                                                               client,
-                                                              mainUrlVideo,
+                                                              baseUrl.Video,
                                                               "VideoV",
-                                                              lDirVideo,
+                                                              aDirVideo,
                                                               token);
 
-        return default;
+        return new StarRailPersistentRefResult
+        {
+            BaseDirs = baseDirs,
+            BaseUrls = baseUrl,
+            Metadata = new AssetMetadata
+            {
+                DesignV     = metadataDesignV,
+                NativeDataV = metadataNativeDataV,
+                StartAsbV   = metadataStartAsbV,
+                StartBlockV = metadataStartBlockV,
+                AsbV        = metadataAsbV,
+                BlockV      = metadataBlockV,
+                AudioV      = metadataAudioV,
+                VideoV      = metadataVideoV
+            }
+        };
     }
 
     private static async ValueTask SaveLocalIndexFiles(
@@ -209,14 +308,58 @@ internal class StarRailPersistentRefResult
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
 
-        string             filename      = index.RemoteFileName;
-        string             fileUrl       = baseUrl.CombineURLFromString(filename);
+        if (!string.IsNullOrEmpty(saveToLocalDir) &&
+            Directory.Exists(saveToLocalDir))
+        {
+            DirectoryInfo dirInfo = new(saveToLocalDir);
+            foreach (FileInfo oldFilePath in dirInfo.EnumerateFiles($"{index.UnaliasedFileName}_*.bytes", SearchOption.TopDirectoryOnly))
+            {
+                ReadOnlySpan<char> fileNameOnly = oldFilePath.Name;
+                ReadOnlySpan<char> fileHash     = ConverterTool.GetSplit(fileNameOnly, ^2, "_.");
+                if (HexTool.IsHexString(fileHash) &&
+                    !fileHash.Equals(index.ContentHash, StringComparison.OrdinalIgnoreCase))
+                {
+                    oldFilePath
+                       .EnsureNoReadOnly()
+                       .StripAlternateDataStream()
+                       .TryDeleteFile();
+                }
+            }
+        }
+
+        string filename = index.RemoteFileName;
+
+        // Check if the stream has been downloaded
+        if (!string.IsNullOrEmpty(saveToLocalDir) &&
+            Path.Combine(saveToLocalDir, filename) is {} localFilePath &&
+            File.Exists(localFilePath))
+        {
+            await using FileStream existingFileStream = File.OpenRead(localFilePath);
+            byte[] hash = await CryptoHashUtility<MD5>
+                               .ThreadSafe
+                               .GetHashFromStreamAsync(existingFileStream, token: token);
+            byte[] hashRemote = HexTool.HexToBytesUnsafe(index.ContentHash);
+
+            if (!hash.SequenceEqual(hashRemote))
+            {
+                goto GetReadFromRemote;
+            }
+
+            existingFileStream.Position = 0;
+            await parser.ParseAsync(existingFileStream, true, token);
+
+            return parser;
+        }
+
+    GetReadFromRemote:
+        string fileUrl = baseUrl.CombineURLFromString(filename);
         await using Stream networkStream = (await client.TryGetCachedStreamFrom(fileUrl, token: token)).Stream;
         await using Stream sourceStream = !string.IsNullOrEmpty(saveToLocalDir)
             ? CreateLocalStream(networkStream, Path.Combine(saveToLocalDir, filename))
             : networkStream;
 
         await parser.ParseAsync(sourceStream, true, token);
+
         return parser;
 
         static Stream CreateLocalStream(Stream thisSourceStream, string filePath)
@@ -227,6 +370,91 @@ internal class StarRailPersistentRefResult
                                .StripAlternateDataStream();
             return new CopyToStream(thisSourceStream, fileInfo.Create(), null, true);
         }
+    }
+
+    private static async ValueTask<bool> IsEndpointAlive(
+        Dictionary<string, StarRailRefMainInfo> handleArchiveSource,
+        HttpClient                              client,
+        string                                  baseUrl,
+        string                                  indexKey,
+        CancellationToken                       token)
+    {
+        if (!handleArchiveSource.TryGetValue(indexKey, out StarRailRefMainInfo? index))
+        {
+            Logger.LogWriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
+            return false;
+        }
+
+        string filename = index.RemoteFileName;
+        string url      = baseUrl.CombineURLFromString(filename);
+
+        return await IsEndpointAlive(client, url, token);
+    }
+
+    private static async ValueTask<bool> IsEndpointAlive(
+        HttpClient        client,
+        string            url,
+        CancellationToken token)
+    {
+        UrlStatus status = await client.GetCachedUrlStatus(url, token);
+        if (!status.IsSuccessStatusCode)
+        {
+            Logger.LogWriteLine($"[StarRailPersistentRefResult::IsEndpointAlive] Url: {url} returns unsuccessful status code: {status.StatusCode} ({(int)status.StatusCode})",
+                                LogType.Warning,
+                                true);
+        }
+
+        return status.IsSuccessStatusCode;
+    }
+
+    public class AssetBaseDirs(
+        string nArchive,
+        string nAsbBlock,
+        string nAudio,
+        string nDesignData,
+        string nNativeData,
+        string nVideo)
+    {
+        public string PersistentArchive    { get; set; } = nArchive;
+        public string PersistentAsbBlock   { get; set; } = nAsbBlock;
+        public string PersistentAudio      { get; set; } = nAudio;
+        public string PersistentDesignData { get; set; } = nDesignData;
+        public string PersistentNativeData { get; set; } = nNativeData;
+        public string PersistentVideo      { get; set; } = nVideo;
+        public string StreamingArchive     { get; set; } = GetStreamingAssetsDir(nArchive);
+        public string StreamingAsbBlock    { get; set; } = GetStreamingAssetsDir(nAsbBlock);
+        public string StreamingAudio       { get; set; } = GetStreamingAssetsDir(nAudio);
+        public string StreamingDesignData  { get; set; } = GetStreamingAssetsDir(nDesignData);
+        public string StreamingNativeData  { get; set; } = GetStreamingAssetsDir(nNativeData);
+        public string StreamingVideo       { get; set; } = GetStreamingAssetsDir(nVideo);
+
+        private static string GetStreamingAssetsDir(string dir) => dir.Replace("Persistent", "StreamingAssets");
+    }
+
+    public class AssetBaseUrls
+    {
+        public required Dictionary<string, string> GatewayKvp         { get; set; }
+        public required string                     DesignData         { get; set; }
+        public required string                     Archive            { get; set; }
+        public required string                     Audio              { get; set; }
+        public required string                     AsbBlock           { get; set; }
+        public required string                     AsbBlockPersistent { get; set; }
+        public required string                     NativeData         { get; set; }
+        public required string                     Video              { get; set; }
+
+        public void SwapAsbPersistentUrl() => (AsbBlock, AsbBlockPersistent) = (AsbBlockPersistent, AsbBlock);
+    }
+
+    public class AssetMetadata
+    {
+        public StarRailAssetSignaturelessMetadata? DesignV     { get; set; }
+        public StarRailAssetNativeDataMetadata?    NativeDataV { get; set; }
+        public StarRailAssetBundleMetadata?        StartAsbV   { get; set; }
+        public StarRailAssetBlockMetadata?         StartBlockV { get; set; }
+        public StarRailAssetBundleMetadata?        AsbV        { get; set; }
+        public StarRailAssetBlockMetadata?         BlockV      { get; set; }
+        public StarRailAssetJsonMetadata?          AudioV      { get; set; }
+        public StarRailAssetJsonMetadata?          VideoV      { get; set; }
     }
 }
 
