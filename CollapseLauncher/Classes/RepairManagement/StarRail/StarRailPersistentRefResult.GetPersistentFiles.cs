@@ -67,6 +67,7 @@ internal partial class StarRailPersistentRefResult
                             BaseDirs.PersistentAsbBlock,
                             BaseUrls.AsbBlock,
                             BaseUrls.AsbBlockPersistent,
+                            false,
                             fileList,
                             unusedAssets,
                             oldDic,
@@ -77,6 +78,7 @@ internal partial class StarRailPersistentRefResult
                             BaseDirs.PersistentAsbBlock,
                             BaseUrls.AsbBlock,
                             BaseUrls.AsbBlockPersistent,
+                            false,
                             fileList,
                             unusedAssets,
                             oldDic,
@@ -87,6 +89,7 @@ internal partial class StarRailPersistentRefResult
                             BaseDirs.PersistentVideo,
                             BaseUrls.Video,
                             BaseUrls.Video,
+                            true,
                             fileList,
                             unusedAssets,
                             oldDic,
@@ -97,6 +100,7 @@ internal partial class StarRailPersistentRefResult
                             BaseDirs.PersistentAudio,
                             BaseUrls.Audio,
                             BaseUrls.Audio,
+                            true,
                             fileList,
                             unusedAssets,
                             oldDic,
@@ -112,6 +116,7 @@ internal partial class StarRailPersistentRefResult
         string                                   assetDirPathPersistent,
         string                                   urlBase,
         string                                   urlBasePersistent,
+        bool                                     isHashMarked,
         List<FilePropertiesRemote>               fileList,
         Dictionary<string, FilePropertiesRemote> unusedFileList,
         Dictionary<string, FilePropertiesRemote> fileDic,
@@ -168,11 +173,12 @@ internal partial class StarRailPersistentRefResult
 
             FilePropertiesRemote file = new()
             {
-                RN       = url,
-                N        = relPathInPersistent,
-                S        = asset.FileSize,
-                CRCArray = asset.MD5Checksum,
-                FT       = StarRailRepair.DetermineFileTypeFromExtension(asset.Filename ?? "")
+                RN            = url,
+                N             = relPathInPersistent,
+                S             = asset.FileSize,
+                CRCArray      = asset.MD5Checksum,
+                FT            = StarRailRepair.DetermineFileTypeFromExtension(asset.Filename ?? ""),
+                IsHasHashMark = isHashMarked
             };
             fileDic.TryAdd(relPathInPersistent, file);
             fileList.Add(file);

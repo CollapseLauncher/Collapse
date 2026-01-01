@@ -1,7 +1,6 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -14,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -22,41 +20,6 @@ using static Hi3Helper.Logger;
 #nullable enable
 namespace CollapseLauncher
 {
-    internal static partial class StarRailRepairExtension
-    {
-        private static readonly Dictionary<string, int> Hashtable = new();
-
-        internal static void ClearHashtable() => Hashtable.Clear();
-
-        internal static void AddSanitize(this List<FilePropertiesRemote> assetIndex, FilePropertiesRemote assetProperty)
-        {
-            string key = assetProperty.N + assetProperty.IsPatchApplicable;
-
-            // Check if the asset has the key
-            // If yes (exist), then get the index of the asset from hashtable
-            if (Hashtable.TryGetValue(key, out int index))
-            {
-                // Get the property of the asset based on index from hashtable
-                FilePropertiesRemote oldAssetProperty = assetIndex[index];
-                // If the hash is not equal, then replace the existing property from assetIndex
-                if (oldAssetProperty.CRCArray
-                                    .AsSpan()
-                                    .SequenceEqual(assetProperty.CRCArray))
-                {
-                    return;
-                }
-            #if DEBUG
-                LogWriteLine($"[StarRailRepairExtension::AddSanitize()] Replacing duplicate of: {assetProperty.N} from: {oldAssetProperty.CRC}|{oldAssetProperty.S} to {assetProperty.CRC}|{assetProperty.S}", LogType.Debug, true);
-            #endif
-                assetIndex[index] = assetProperty;
-                return;
-            }
-
-            Hashtable.Add(key, assetIndex.Count);
-            assetIndex.Add(assetProperty);
-        }
-    }
-
     internal partial class StarRailRepair
     {
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
@@ -66,14 +29,13 @@ namespace CollapseLauncher
             Status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
-            StarRailRepairExtension.ClearHashtable();
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig(DownloadThreadWithReservedCount)
-                .SetUserAgent(UserAgent)
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
+                                     .UseLauncherConfig(DownloadThreadWithReservedCount)
+                                     .SetUserAgent(UserAgent)
+                                     .SetAllowedDecompression(DecompressionMethods.None)
+                                     .Create();
 
             HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
 
@@ -81,65 +43,57 @@ namespace CollapseLauncher
             string   regionId           = GetExistingGameRegionID();
             string[] installedVoiceLang = await GetInstalledVoiceLanguageOrDefault(token);
 
-            try
+            // Get the primary manifest
+            await GetPrimaryManifest(assetIndex, installedVoiceLang, token);
+
+            // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
+            if (IsOnlyRecoverMain && IsVersionOverride)
             {
-                // Get the primary manifest
-                await GetPrimaryManifest(assetIndex, installedVoiceLang, token);
-
-                // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
-                if (IsOnlyRecoverMain && IsVersionOverride)
+                OriginAssetIndex = [];
+                foreach (FilePropertiesRemote asset in assetIndex)
                 {
-                    OriginAssetIndex = [];
-                    foreach (FilePropertiesRemote asset in assetIndex)
-                    {
-                        FilePropertiesRemote newAsset = asset.Copy();
-                        ReadOnlyMemory<char> assetRelativePath = newAsset.N.AsMemory(GamePath.Length).TrimStart('\\');
-                        newAsset.N = assetRelativePath.ToString();
-                        OriginAssetIndex.Add(newAsset);
-                    }
-                }
-
-                // Fetch assets from game server
-                if (!IsVersionOverride &&
-                    !IsOnlyRecoverMain)
-                {
-                    PresetConfig gamePreset = GameVersionManager.GamePreset;
-                    SRDispatcherInfo dispatcherInfo = new(gamePreset.GameDispatchArrayURL,
-                                                          gamePreset.ProtoDispatchKey,
-                                                          gamePreset.GameDispatchURLTemplate,
-                                                          gamePreset.GameGatewayURLTemplate,
-                                                          gamePreset.GameDispatchChannelName,
-                                                          GameVersionManager.GetGameVersionApi().ToString());
-                    await dispatcherInfo.Initialize(client, regionId, token);
-
-                    StarRailPersistentRefResult persistentRefResult = await StarRailPersistentRefResult
-                       .GetReferenceAsync(this,
-                                          dispatcherInfo,
-                                          client,
-                                          GamePath,
-                                          GameDataPersistentPathRelative,
-                                          token);
-
-                    persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang, token);
-                    await StarRailPersistentRefResult.FinalizeFetchAsync(this, sharedClient, assetIndex, GameDataPersistentPath, token);
-                }
-
-                // Force-Fetch the Bilibili SDK (if exist :pepehands:)
-                await FetchBilibiliSdk(token);
-
-                // Remove plugin from assetIndex
-                // Skip the removal for Delta-Patch
-                if (!IsOnlyRecoverMain)
-                {
-                    EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
+                    FilePropertiesRemote newAsset          = asset.Copy();
+                    ReadOnlyMemory<char> assetRelativePath = newAsset.N.AsMemory(GamePath.Length).TrimStart('\\');
+                    newAsset.N = assetRelativePath.ToString();
+                    OriginAssetIndex.Add(newAsset);
                 }
             }
-            finally
+
+            // Fetch assets from game server
+            if (!IsVersionOverride &&
+                !IsOnlyRecoverMain)
             {
-                // Clear the hashtable
-                StarRailRepairExtension.ClearHashtable();
-                // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
+                PresetConfig gamePreset = GameVersionManager.GamePreset;
+                SRDispatcherInfo dispatcherInfo = new(gamePreset.GameDispatchArrayURL,
+                                                      gamePreset.ProtoDispatchKey,
+                                                      gamePreset.GameDispatchURLTemplate,
+                                                      gamePreset.GameGatewayURLTemplate,
+                                                      gamePreset.GameDispatchChannelName,
+                                                      GameVersionManager.GetGameVersionApi().ToString());
+                await dispatcherInfo.Initialize(client, regionId, token);
+
+                StarRailPersistentRefResult persistentRefResult = await StarRailPersistentRefResult
+                   .GetReferenceAsync(this,
+                                      dispatcherInfo,
+                                      client,
+                                      GamePath,
+                                      GameDataPersistentPathRelative,
+                                      token);
+
+                assetIndex.AddRange(persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang,
+                                                                           token));
+                await StarRailPersistentRefResult.FinalizeFetchAsync(this, sharedClient, assetIndex,
+                                                                     GameDataPersistentPath, token);
+            }
+
+            // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+            await FetchBilibiliSdk(token);
+
+            // Remove plugin from assetIndex
+            // Skip the removal for Delta-Patch
+            if (!IsOnlyRecoverMain)
+            {
+                EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
             }
         }
 
@@ -223,13 +177,11 @@ namespace CollapseLauncher
             // Delegate the default return value
             string GetDefaultValue() => InnerGameVersionManager.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
 
-#nullable enable
             // Try to get the value as nullable object
             object? value = GameSettings?.RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             // Check if the value is null, then return the default name
             // Return the dispatch default name. If none, then throw
             if (value == null) return GetDefaultValue();
-#nullable disable
 
             // Cast the value as byte array
             byte[] valueBytes = (byte[])value;
@@ -262,12 +214,13 @@ namespace CollapseLauncher
         }
 
         private static RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
-                                                                                         {
-                                                                                             FileType.Block => RepairAssetType.Block,
-                                                                                             FileType.Audio => RepairAssetType.Audio,
-                                                                                             FileType.Video => RepairAssetType.Video,
-                                                                                             _ => RepairAssetType.Generic
-                                                                                         };
+        {
+            FileType.Unused => RepairAssetType.Unused,
+            FileType.Block => RepairAssetType.Block,
+            FileType.Audio => RepairAssetType.Audio,
+            FileType.Video => RepairAssetType.Video,
+            _ => RepairAssetType.Generic
+        };
         #endregion
     }
 }

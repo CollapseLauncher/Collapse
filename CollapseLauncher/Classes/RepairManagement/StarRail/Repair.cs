@@ -1,143 +1,288 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using Hi3Helper.Sophon;
+using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
+#pragma warning disable IDE0130
+#nullable enable
 
 namespace CollapseLauncher
 {
     internal partial class StarRailRepair
     {
-        private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
-        {
-            // Set total activity string as "Waiting for repair process to start..."
-            Status.ActivityStatus = Lang._GameRepairPage.Status11;
-            Status.IsProgressAllIndetermined = true;
-            Status.IsProgressPerFileIndetermined = true;
+        private static ReadOnlySpan<byte> HashMarkFileContent => [0x20];
 
-            // Update status
-            UpdateStatus();
+        public async Task StartRepairRoutine(
+            bool showInteractivePrompt = false,
+            Action? actionIfInteractiveCancel = null)
+        {
+            await TryRunExamineThrow(StartRepairRoutineCoreAsync(showInteractivePrompt, actionIfInteractiveCancel));
+
+            // Reset status and progress
+            ResetStatusAndProgress();
+
+            // Set as completed
+            Status.ActivityStatus = Locale.Lang._GameRepairPage.Status7;
+
+            // Update status and progress
+            UpdateAll();
+        }
+
+        private async Task StartRepairRoutineCoreAsync(bool showInteractivePrompt = false,
+                                                       Action? actionIfInteractiveCancel = null)
+        {
+            if (AssetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't perform repair process!");
+
+            // Swap current found all size to per file size
+            ProgressPerFileSizeTotal = ProgressAllSizeTotal;
+            ProgressAllSizeTotal = AssetIndex.Where(x => x.FT != FileType.Unused).Sum(x => x.S);
+
+            // Reset progress counter
+            ResetProgressCounter();
+
+            if (showInteractivePrompt &&
+                actionIfInteractiveCancel != null)
+            {
+                await SpawnRepairDialog(AssetIndex, actionIfInteractiveCancel);
+            }
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig(DownloadThreadWithReservedCount)
-                .SetUserAgent(UserAgent)
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
+                                     .UseLauncherConfig(DownloadThreadWithReservedCount)
+                                     .SetUserAgent(UserAgent)
+                                     .SetAllowedDecompression(DecompressionMethods.None)
+                                     .Create();
 
-            // Use the new DownloadClient instance
-            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+            int threadNum = IsBurstDownloadEnabled
+                ? 1
+                : ThreadForIONormalized;
 
-            // Iterate repair asset and check it using different method for each type
-            ObservableCollection<IAssetProperty>                               assetProperty = [.. AssetEntry];
-            ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte> runningTask   = new();
-            if (IsBurstDownloadEnabled)
+            await Parallel.ForEachAsync(AssetIndex,
+                                        new ParallelOptions
+                                        {
+                                            CancellationToken = Token!.Token,
+                                            MaxDegreeOfParallelism = threadNum
+                                        },
+                                        Impl);
+
+            return;
+
+            async ValueTask Impl(FilePropertiesRemote asset, CancellationToken token)
             {
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHttpSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = DownloadThreadCount },
-                    async (asset, innerToken) =>
-                    {
-                        if (!runningTask.TryAdd(asset, 0))
-                        {
-                            LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
-                            return;
-                        }
-                        // Assign a task depends on the asset type
-                        Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken);
-
-                        // Await the task
-                        await assetTask;
-                        runningTask.Remove(asset, out _);
-                    });
-            }
-            else
-            {
-                foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHttpSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    , assetProperty))
+                await (asset switch
                 {
-                    if (!runningTask.TryAdd(asset, 0))
-                    {
-                        LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
-                        break;
-                    }
-                    // Assign a task depends on the asset type
-                    Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token);
+                    { AssociatedObject: SophonAsset } => RepairAssetGenericSophonType(asset, token),
+                    // ReSharper disable once AccessToDisposedClosure
+                    _ => RepairAssetGenericType(client, asset, token)
+                });
 
-                    // Await the task
-                    await assetTask;
-                    runningTask.Remove(asset, out _);
+                if (!asset.IsHasHashMark)
+                {
+                    return;
                 }
-            }
 
-            return true;
+                string fileDir       = Path.Combine(GamePath, Path.GetDirectoryName(asset.N) ?? "");
+                string fileNameNoExt = Path.GetFileNameWithoutExtension(asset.N);
+                string markPath      = Path.Combine(fileDir, $"{fileNameNoExt}_{asset.CRC}.hash");
+
+                File.WriteAllBytes(markPath, HashMarkFileContent);
+            }
         }
 
-        #region GenericRepair
-        private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
+        private async ValueTask RepairAssetGenericSophonType(
+            FilePropertiesRemote asset,
+            CancellationToken token)
         {
-            // Increment total count current
-            ProgressAllCountCurrent++;
-            // Set repair activity status
-            string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
-            UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
-                true);
+            // Update repair status to the UI
+            this.UpdateCurrentRepairStatus(asset);
 
-            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).StripAlternateDataStream().EnsureNoReadOnly();
-
-            // If asset type is unused, then delete it
-            if (asset.AssetIndex.FT == FileType.Unused)
+            try
             {
-                if (fileInfo.Exists)
-                {
-                    fileInfo.Delete();
-                    LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
-                }
-                RemoveHashMarkFile(asset.AssetIndex.N, out _, out _);
-            }
-            else
-            {
-                try
-                {
-                    // Start asset download task
-                    await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                    LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
-                }
-                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
-                {
-                    LogWriteLine($"URL for asset {asset.AssetIndex.N} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
-                                 $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
-                }
-            }
+                string assetPath = Path.Combine(GamePath, asset.N);
+                FileInfo assetFileInfo = new FileInfo(assetPath)
+                                        .StripAlternateDataStream()
+                                        .EnsureCreationOfDirectory()
+                                        .EnsureNoReadOnly();
 
-            // Pop repair asset display entry
-            PopRepairAssetEntry(asset.AssetProperty);
+                await using FileStream assetFileStream = assetFileInfo
+                   .Open(FileMode.Create,
+                         FileAccess.Write,
+                         FileShare.Write,
+                         asset.S.GetFileStreamBufferSize());
+
+                if (asset.AssociatedObject is not SophonAsset sophonAsset)
+                {
+                    throw new
+                        InvalidOperationException("Invalid operation! This asset shouldn't have been here! It's not a sophon-based asset!");
+                }
+
+                // Download as Sophon asset
+                await sophonAsset
+                   .WriteToStreamAsync(FallbackCDNUtil.GetGlobalHttpClient(true),
+                                       assetFileStream,
+                                       readBytes => UpdateProgressCounter(readBytes, readBytes),
+                                       token: token);
+            }
+            finally
+            {
+                this.PopBrokenAssetFromList(asset);
+            }
         }
-        #endregion
+
+        private async ValueTask RepairAssetGenericType(
+            HttpClient downloadHttpClient,
+            FilePropertiesRemote asset,
+            CancellationToken token)
+        {
+            // Update repair status to the UI
+            this.UpdateCurrentRepairStatus(asset);
+
+            string assetPath = Path.Combine(GamePath, asset.N);
+            FileInfo assetFileInfo = new FileInfo(assetPath)
+                                    .StripAlternateDataStream()
+                                    .EnsureNoReadOnly();
+
+            try
+            {
+                if (asset.FT == FileType.Unused)
+                {
+                    if (assetFileInfo.TryDeleteFile())
+                    {
+                        Logger.LogWriteLine($"[StarRailRepair::RepairAssetGenericType] Unused asset {asset} has been deleted!",
+                                            LogType.Default,
+                                            true);
+                    }
+
+                    return;
+                }
+
+                // Use Hi3Helper.Http module to download the file.
+                DownloadClient downloadClient = DownloadClient
+                   .CreateInstance(downloadHttpClient);
+
+                // Perform download
+                await RunDownloadTask(asset.S,
+                                      assetFileInfo,
+                                      asset.RN,
+                                      downloadClient,
+                                      ProgressRepairAssetGenericType,
+                                      token);
+
+                Logger.LogWriteLine($"[StarRailRepair::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
+                                    LogType.Default,
+                                    true);
+            }
+            finally
+            {
+                this.PopBrokenAssetFromList(asset);
+            }
+        }
+
+        // Note for future me @neon-nyan:
+        // This is intended that we ignore DownloadProgress for now as the download size for "per-file" progress
+        // is now being handled by this own class progress counter.
+        private void ProgressRepairAssetGenericType(int read, DownloadProgress progress) => UpdateProgressCounter(read, read);
+
+        private double _downloadReadLastSpeed;
+        private long _downloadReadLastReceivedBytes;
+        private long _downloadReadLastTick;
+
+        private double _dataWriteLastSpeed;
+        private long _dataWriteLastReceivedBytes;
+        private long _dataWriteLastTick;
+
+        private void UpdateProgressCounter(long dataWrite, long downloadRead)
+        {
+            double speedAll = CalculateSpeed(dataWrite, // dataWrite used as All Progress overall speed.
+                                             ref _dataWriteLastSpeed,
+                                             ref _dataWriteLastReceivedBytes,
+                                             ref _dataWriteLastTick);
+
+            double speedPerFile = CalculateSpeed(downloadRead, // downloadRead used as Per File Progress overall speed.
+                                                 ref _downloadReadLastSpeed,
+                                                 ref _downloadReadLastReceivedBytes,
+                                                 ref _downloadReadLastTick);
+
+            Interlocked.Add(ref ProgressAllSizeCurrent, dataWrite);
+            Interlocked.Add(ref ProgressPerFileSizeCurrent, downloadRead);
+
+            if (!CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
+            double speedClamped = speedAll.ClampLimitedSpeedNumber();
+            TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal,
+                                                                   ProgressAllSizeCurrent,
+                                                                   speedClamped);
+
+            double percentPerFile = ProgressPerFileSizeCurrent != 0
+                ? ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent)
+                : 0;
+            double percentAll = ProgressAllSizeCurrent != 0
+                ? ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent)
+                : 0;
+
+            lock (Progress)
+            {
+                Progress.ProgressPerFilePercentage = percentPerFile;
+                Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
+                Progress.ProgressPerFileSizeTotal = ProgressPerFileSizeTotal;
+                Progress.ProgressAllSizeCurrent = ProgressAllSizeCurrent;
+                Progress.ProgressAllSizeTotal = ProgressAllSizeTotal;
+
+                // Calculate speed
+                Progress.ProgressAllSpeed = speedClamped;
+                Progress.ProgressAllTimeLeft = timeLeftSpan;
+
+                // Update current progress percentages
+                Progress.ProgressAllPercentage = percentAll;
+            }
+
+            lock (Status)
+            {
+                // Update current activity status
+                Status.IsProgressAllIndetermined = false;
+                Status.IsProgressPerFileIndetermined = false;
+
+                // Set time estimation string
+                string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+
+                Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedPerFile));
+                Status.ActivityAll = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+                                                   ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
+                                                   ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal))
+                                     + $" | {timeLeftString}"
+                                     + $" ({string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedAll))})";
+
+                // Trigger update
+                UpdateAll();
+            }
+        }
+
+        private void ResetProgressCounter()
+        {
+            _dataWriteLastSpeed = 0;
+            _dataWriteLastReceivedBytes = 0;
+            _dataWriteLastTick = 0;
+
+            _downloadReadLastSpeed = 0;
+            _downloadReadLastReceivedBytes = 0;
+            _downloadReadLastTick = 0;
+
+            ProgressAllSizeCurrent = 0;
+            ProgressPerFileSizeCurrent = 0;
+        }
     }
 }

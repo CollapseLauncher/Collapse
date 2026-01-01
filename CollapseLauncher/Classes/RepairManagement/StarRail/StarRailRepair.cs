@@ -35,32 +35,9 @@ namespace CollapseLauncher
         private string                     ExecName                { get; }
         private string GameDataPersistentPathRelative { get => Path.Combine($"{ExecName}_Data", "Persistent"); }
         private string GameDataPersistentPath { get => Path.Combine(GamePath, GameDataPersistentPathRelative); }
-        private string GameAudioLangListPath
-        {
-            get
-            {
-                // If the persistent folder is not exist, then return null
-                if (!Directory.Exists(GameDataPersistentPath)) return null;
 
-                // Set the file list path
-                string audioRecordPath = Path.Combine(GameDataPersistentPath, "AudioLaucherRecord.txt");
-
-                // Check if the file exist. If not, return null
-                return !File.Exists(audioRecordPath) ? null :
-                    // If it exists, then return the path
-                    audioRecordPath;
-            }
-        }
         private string GameAudioLangListPathStatic { get => Path.Combine(GameDataPersistentPath, "AudioLaucherRecord.txt"); }
 
-        internal const string AssetGameAudioStreamingPath = @"{0}_Data\StreamingAssets\Audio\AudioPackage\Windows";
-        internal const string AssetGameAudioPersistentPath = @"{0}_Data\Persistent\Audio\AudioPackage\Windows";
-
-        internal const string AssetGameBlocksStreamingPath = @"{0}_Data\StreamingAssets\Asb\Windows";
-        internal const string AssetGameBlocksPersistentPath = @"{0}_Data\Persistent\Asb\Windows";
-
-        internal const string AssetGameVideoStreamingPath = @"{0}_Data\StreamingAssets\Video\Windows";
-        internal const string AssetGameVideoPersistentPath = @"{0}_Data\Persistent\Video\Windows";
         protected override string UserAgent => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
@@ -92,18 +69,6 @@ namespace CollapseLauncher
             return await TryRunExamineThrow(CheckRoutine());
         }
 
-        public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
-        {
-            if (AssetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
-
-            if (showInteractivePrompt)
-            {
-                await SpawnRepairDialog(AssetIndex, actionIfInteractiveCancel);
-            }
-
-            _ = await TryRunExamineThrow(RepairRoutine());
-        }
-
         private async Task<bool> CheckRoutine()
         {
             // Always clear the asset index list
@@ -130,28 +95,6 @@ namespace CollapseLauncher
                 AssetIndex,
                 string.Format(Lang._GameRepairPage.Status3, ProgressAllCountFound, ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
-        }
-
-        private async Task<bool> RepairRoutine()
-        {
-            // Assign repair task
-            Task<bool> repairTask = Repair(AssetIndex, Token!.Token);
-
-            // Run repair process
-            bool repairTaskSuccess = await TryRunExamineThrow(repairTask);
-
-            // Reset status and progress
-            ResetStatusAndProgress();
-
-            // Set as completed
-            Status.IsCompleted = true;
-            Status.IsCanceled = false;
-            Status.ActivityStatus = Lang._GameRepairPage.Status7;
-
-            // Update status and progress
-            UpdateAll();
-
-            return repairTaskSuccess;
         }
 
         public void CancelRoutine()

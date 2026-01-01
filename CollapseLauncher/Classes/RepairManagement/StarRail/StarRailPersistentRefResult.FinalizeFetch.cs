@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
