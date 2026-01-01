@@ -75,6 +75,8 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
+            HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
+
             // Initialize the new DownloadClient
             string   regionId           = GetExistingGameRegionID();
             string[] installedVoiceLang = await GetInstalledVoiceLanguageOrDefault(token);
@@ -119,6 +121,7 @@ namespace CollapseLauncher
                                           token);
 
                     persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang, token);
+                    await StarRailPersistentRefResult.FinalizeFetchAsync(this, sharedClient, assetIndex, GameDataPersistentPath, token);
                 }
 
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
@@ -130,9 +133,6 @@ namespace CollapseLauncher
                 {
                     EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
                 }
-
-                // Remove blacklisted assets
-                await InnerGameInstaller.FilterAssetList(assetIndex, x => x.N, token);
             }
             finally
             {

@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 #pragma warning disable IDE0130
+#nullable enable
 namespace CollapseLauncher;
 
 file static class StarRailPersistentExtension
@@ -173,7 +174,7 @@ internal partial class StarRailPersistentRefResult
                 CRCArray = asset.MD5Checksum,
                 FT       = StarRailRepair.DetermineFileTypeFromExtension(asset.Filename ?? "")
             };
-            fileDic.TryAdd(asset.Filename, file);
+            fileDic.TryAdd(relPathInPersistent, file);
             fileList.Add(file);
         }
     }
