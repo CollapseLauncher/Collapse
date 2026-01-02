@@ -52,7 +52,7 @@ namespace CollapseLauncher
             try
             {
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
-                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = 1, CancellationToken = token }, async (asset, threadToken) =>
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = ThreadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
                     await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                 });
