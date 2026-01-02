@@ -11,8 +11,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
+
 namespace CollapseLauncher;
 
 file static class StarRailPersistentExtension
@@ -107,7 +109,72 @@ internal partial class StarRailPersistentRefResult
                             Metadata.AudioV!.DataList
                                     .WhereNotStartWith(excludedAudioLangPrefix));
 
+        AddUnusedAudioAssets(gameDirPath,
+                             BaseDirs.StreamingAudio,
+                             BaseDirs.PersistentAudio,
+                             Metadata.AudioV!.DataList,
+                             fileList,
+                             excludedAudioLangPrefix);
+
         return unusedAssets.Values.ToList();
+    }
+
+    private static void AddUnusedAudioAssets<T>(
+        string                      gameDir,
+        string                      streamingDir,
+        string                      persistentDir,
+        IEnumerable<T>              listEnumerator,
+        List<FilePropertiesRemote>  fileList,
+        params ReadOnlySpan<string> excludedAudioLang)
+        where T : StarRailAssetFlaggable
+    {
+        if (excludedAudioLang.Length == 4) // Assume the user doesn't have any language installed, so ignore it.
+        {
+            return;
+        }
+
+        string baseStreamingDir  = Path.Combine(gameDir, streamingDir);
+        string basePersistentDir = Path.Combine(gameDir, persistentDir);
+
+        SearchValues<string> searchIndexes = SearchValues.Create(excludedAudioLang, StringComparison.OrdinalIgnoreCase);
+        foreach (T entry in listEnumerator)
+        {
+            ReadOnlySpan<char> filename = entry.Filename;
+            int                indexOf  = filename.IndexOfAny(searchIndexes);
+            if (indexOf != 0)
+            {
+                continue;
+            }
+
+            string filenameStr = entry.Filename ?? "";
+
+            string atStreaming  = Path.Combine(baseStreamingDir,  filenameStr).NormalizePath();
+            string atPersistent = Path.Combine(basePersistentDir, filenameStr).NormalizePath();
+
+            string relStreaming  = Path.Combine(streamingDir,  filenameStr).NormalizePath();
+            string relPersistent = Path.Combine(persistentDir, filenameStr).NormalizePath();
+
+            if (File.Exists(atStreaming))
+            {
+                FilePropertiesRemote entryToRemove = new()
+                {
+                    FT = FileType.Unused,
+                    N  = relStreaming
+                };
+                fileList.Add(entryToRemove);
+            }
+
+            // ReSharper disable once InvertIf
+            if (File.Exists(atPersistent))
+            {
+                FilePropertiesRemote entryToRemove = new()
+                {
+                    FT = FileType.Unused,
+                    N  = relPersistent
+                };
+                fileList.Add(entryToRemove);
+            }
+        }
     }
 
     private static void AddAdditionalAssets<T>(
@@ -177,7 +244,7 @@ internal partial class StarRailPersistentRefResult
                 N             = relPathInPersistent,
                 S             = asset.FileSize,
                 CRCArray      = asset.MD5Checksum,
-                FT            = StarRailRepair.DetermineFileTypeFromExtension(asset.Filename ?? ""),
+                FT            = StarRailRepairV2.DetermineFileTypeFromExtension(asset.Filename ?? ""),
                 IsHasHashMark = isHashMarked
             };
             fileDic.TryAdd(relPathInPersistent, file);

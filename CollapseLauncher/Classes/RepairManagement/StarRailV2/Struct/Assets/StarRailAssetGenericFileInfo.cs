@@ -2,11 +2,15 @@
 using Hi3Helper.Plugin.Core.Utility.Json.Converters;
 using System.Text.Json.Serialization;
 
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
+/// <summary>
+/// Star Rail Asset Generic and Flaggable File Info
+/// </summary>
 public class StarRailAssetFlaggable : StarRailAssetGenericFileInfo
 {
     /// <summary>
@@ -23,6 +27,9 @@ public class StarRailAssetFlaggable : StarRailAssetGenericFileInfo
         $"{Filename} | Flags: {ConverterTool.ToBinaryString(Flags)} | IsPersistent: {IsPersistent} | Hash: {HexTool.BytesToHexUnsafe(MD5Checksum)} | Size: {FileSize}";
 }
 
+/// <summary>
+/// Star Rail Asset Generic File Info
+/// </summary>
 public class StarRailAssetGenericFileInfo
 {
     /// <summary>

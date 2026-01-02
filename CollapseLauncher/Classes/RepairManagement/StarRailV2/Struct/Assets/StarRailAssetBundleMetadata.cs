@@ -1,5 +1,4 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.EncTool;
+﻿using Hi3Helper.EncTool;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -9,12 +8,16 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-#pragma warning disable IDE0290
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
+#nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
-public class StarRailAssetBundleMetadata : StarRailAssetBinaryMetadata<StarRailAssetBlockMetadata.Metadata>
+/// <summary>
+/// Star Rail Asset Bundle Metadata (SRAM) data parser for Start_AsbV and AsbV. This parser read-only and cannot be written back.<br/>
+/// </summary>
+public sealed class StarRailAssetBundleMetadata : StarRailAssetBinaryMetadata<StarRailAssetBlockMetadata.Metadata>
 {
     public StarRailAssetBundleMetadata()
         : base(1280,

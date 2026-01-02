@@ -12,7 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable InconsistentNaming
 
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
+#nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 

@@ -8,19 +8,33 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-#pragma warning disable IDE0290
+
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
+#nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
-internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
+/// <summary>
+/// Star Rail Signatureless Metadata parser for LuaV, DesignV. This parser is read-only and cannot be written back.<br/>
+/// </summary>
+public sealed class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
 {
-    public StarRailAssetSignaturelessMetadata()
+    public StarRailAssetSignaturelessMetadata() : this(null)
+    {
+    }
+
+    public StarRailAssetSignaturelessMetadata(string? customAssetExtension = null)
         : base(0,
                256,
                0, // Leave the rest of it to 0 as this metadata has non-consistent header struct
                0,
-               0) { }
+               0)
+    {
+        AssetExtension = customAssetExtension ?? ".block";
+    }
+
+    private string AssetExtension { get; }
 
     protected override ReadOnlySpan<byte> MagicSignature => [0x00, 0x00, 0x00, 0xFF];
 
@@ -89,6 +103,7 @@ internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<
                                                                    cancellationToken: token)
                                                  .ConfigureAwait(false);
                 Metadata.Parse(parentDataBuffer,
+                               AssetExtension,
                                childrenDataBufferLen,
                                lastPos,
                                out int bytesToSkip,
@@ -111,6 +126,7 @@ internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<
     public class Metadata : StarRailAssetFlaggable
     {
         public static void Parse(ReadOnlySpan<byte> buffer,
+                                 string             assetExtension,
                                  int                subDataSize,
                                  long               lastDataStreamPos,
                                  out int            bytesToSkip,
@@ -131,7 +147,7 @@ internal class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<
             result = new Metadata
             {
                 MD5Checksum = md5Hash,
-                Filename    = $"{HexTool.BytesToHexUnsafe(md5Hash)}.block",
+                Filename    = $"{HexTool.BytesToHexUnsafe(md5Hash)}{assetExtension}",
                 FileSize    = fileSize,
                 Flags       = assetType
             };

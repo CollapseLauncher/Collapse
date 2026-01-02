@@ -1,25 +1,38 @@
-﻿using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
-using Hi3Helper.Data;
-using Hi3Helper.EncTool;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
+
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 
+/// <summary>
+/// Generic/Abstract Star Rail Binary Data. Do not use this class directly.
+/// </summary>
 public abstract class StarRailBinaryData
 {
-    protected abstract ReadOnlySpan<byte>             MagicSignature { get; }
-    public             StarRailBinaryDataHeaderStruct Header         { get; protected set; }
+    /// <summary>
+    /// Magic Signature of the binary data. This property must be overriden by the derivative instances.
+    /// </summary>
+    protected abstract ReadOnlySpan<byte> MagicSignature { get; }
 
+    /// <summary>
+    /// The header of the parsed binary data.
+    /// </summary>
+    public StarRailBinaryDataHeaderStruct Header { get; protected set; }
+
+    /// <summary>
+    /// Create a default instance of the <see cref="StarRailBinaryData"/> members.
+    /// </summary>
+    /// <typeparam name="T">Member type of <see cref="StarRailBinaryData"/>.</typeparam>
+    /// <returns>A parser instance which is a member of <see cref="StarRailBinaryData"/>.</returns>
     public static T CreateDefault<T>() where T : StarRailBinaryData, new() => new();
 
     /// <summary>
@@ -47,6 +60,14 @@ public abstract class StarRailBinaryData
         }
     }
 
+    /// <summary>
+    /// Reads the header and perform assertion on the header.
+    /// </summary>
+    /// <param name="dataStream">The <see cref="Stream"/> which provides the source of the data to be parsed.</param>
+    /// <param name="token">Cancellation token for cancelling asynchronous operations.</param>
+    /// <returns>
+    /// This returns the <see cref="StarRailBinaryDataHeaderStruct"/> and the current offset/position of the data stream after reading the header.
+    /// </returns>
     protected virtual async ValueTask<(StarRailBinaryDataHeaderStruct Header, int Offset)> ReadHeaderCoreAsync(
         Stream            dataStream,
         CancellationToken token = default)
@@ -56,11 +77,26 @@ public abstract class StarRailBinaryData
                                                                        token);
     }
 
+    /// <summary>
+    /// Reads the body of the binary data.
+    /// </summary>
+    /// <param name="currentOffset">The current offset of the data stream.</param>
+    /// <param name="dataStream">The <see cref="Stream"/> which provides the source of the data to be parsed.</param>
+    /// <param name="token">Cancellation token for cancelling asynchronous operations.</param>
+    /// <returns>
+    /// This returns the current offset/position of the data stream after reading the data.
+    /// </returns>
     protected abstract ValueTask<long> ReadDataCoreAsync(long currentOffset, Stream dataStream, CancellationToken token = default);
 }
 
+/// <summary>
+/// Generic/Abstract Star Rail Binary Data which contain the list of assets. Do not use this class directly.
+/// </summary>
 public abstract class StarRailBinaryData<TAsset> : StarRailBinaryData
 {
+    /// <summary>
+    /// List of the assets parsed from the binary data.
+    /// </summary>
     public List<TAsset> DataList { get; protected set; } = [];
 
     protected StarRailBinaryData(ReadOnlySpan<byte> magicSignature,
@@ -83,6 +119,10 @@ public abstract class StarRailBinaryData<TAsset> : StarRailBinaryData
     }
 }
 
+/// <summary>
+/// Generic Star Rail Binary Data Header Structure.<br/>
+/// This header is globally used by SRMI, SRBM, SRAM and Signatureless metadata format.
+/// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 2)]
 public unsafe struct StarRailBinaryDataHeaderStruct
 {

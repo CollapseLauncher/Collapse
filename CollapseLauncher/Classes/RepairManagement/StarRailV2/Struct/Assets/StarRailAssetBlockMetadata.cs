@@ -7,12 +7,17 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
+
 #pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
+/// <summary>
+/// Star Rail Binary Metadata (SRBM) data parser for Start_BlockV and BlockV. This parser is read-only and cannot be written back.<br/>
+/// </summary>
 public sealed class StarRailAssetBlockMetadata : StarRailAssetBinaryMetadata<StarRailAssetBlockMetadata.Metadata>
 {
     public StarRailAssetBlockMetadata()

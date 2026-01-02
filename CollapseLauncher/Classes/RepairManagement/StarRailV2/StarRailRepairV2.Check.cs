@@ -15,9 +15,13 @@ using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
+#pragma warning disable IDE0290 // Shut the fuck up
+#pragma warning disable IDE0130
+#nullable enable
+
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair
+    internal partial class StarRailRepairV2
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -48,9 +52,8 @@ namespace CollapseLauncher
             try
             {
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
-                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = ThreadCount, CancellationToken = token }, async (asset, threadToken) =>
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = 1, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    // Assign a task depends on the asset type
                     await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                 });
             }
@@ -77,7 +80,7 @@ namespace CollapseLauncher
             ProgressAllCountCurrent++;
 
             // Reset per file size counter
-            ProgressPerFileSizeTotal = asset.S;
+            ProgressPerFileSizeTotal   = asset.S;
             ProgressPerFileSizeCurrent = 0;
 
             string gamePath = GamePath;
@@ -146,7 +149,7 @@ namespace CollapseLauncher
             // Increment the total current progress
             ProgressAllSizeCurrent += asset.S;
 
-            var prop = new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N)!,
+            var prop = new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
                                                           ConvertRepairAssetTypeEnum(asset.FT),
                                                           Path.GetDirectoryName(asset.N),
                                                           asset.S,
@@ -163,7 +166,7 @@ namespace CollapseLauncher
                                            FilePropertiesRemote       asset,
                                            List<FilePropertiesRemote> brokenFileList)
         {
-            if (asset.CRCArray.Length == 0 ||
+            if (asset.CRCArray?.Length == 0 ||
                 (!asset.IsHasHashMark && asset.FT != FileType.Unused))
             {
                 return;

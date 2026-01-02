@@ -17,6 +17,9 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
+
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
@@ -24,12 +27,125 @@ namespace CollapseLauncher;
 
 internal partial class StarRailPersistentRefResult
 {
-    public required AssetBaseUrls BaseUrls { get; set; }
-    public required AssetBaseDirs BaseDirs { get; set; }
-    public required AssetMetadata Metadata { get; set; }
+    public required AssetBaseUrls BaseUrls    { get; set; }
+    public required AssetBaseDirs BaseDirs    { get; set; }
+    public required AssetMetadata Metadata    { get; set; }
+    public          bool          IsCacheMode { get; set; }
 
-    public static async Task<StarRailPersistentRefResult> GetReferenceAsync(
-        StarRailRepair    instance,
+    public static async Task<StarRailPersistentRefResult> GetCacheReferenceAsync(
+        StarRailRepairV2  instance,
+        SRDispatcherInfo  dispatcherInfo,
+        HttpClient        client,
+        string            gameBaseDir,
+        string            persistentDir,
+        CancellationToken token)
+    {
+        StarRailGatewayStatic      gateway    = dispatcherInfo.RegionGateway;
+        Dictionary<string, string> gatewayKvp = gateway.ValuePairs;
+
+        // -- Assign main URLs
+        string mainUrlLua  = gatewayKvp["LuaBundleVersionUpdateUrl"].CombineURLFromString("client/Windows");
+        string mainUrlIFix = gatewayKvp["IFixPatchVersionUpdateUrl"].CombineURLFromString("client/Windows");
+        AssetBaseUrls baseUrls = new()
+        {
+            GatewayKvp         = gatewayKvp,
+            Archive            = "",
+            AsbBlock           = "",
+            AsbBlockPersistent = "",
+            Audio              = "",
+            DesignData         = "",
+            NativeData         = "",
+            Video              = "",
+            CacheLua           = mainUrlLua,
+            CacheIFix          = mainUrlIFix
+        };
+
+        string refLuaUrl  = mainUrlLua.CombineURLFromString("M_LuaV.bytes");
+        string refIFixUrl = mainUrlIFix.CombineURLFromString("M_IFixV.bytes");
+
+        // -- Initialize persistent dirs
+        string        lDirLua  = Path.Combine(persistentDir, @"Lua\Windows");
+        string        lDirIFix = Path.Combine(persistentDir, @"Asb\Windows");
+        string        aDirLua  = Path.Combine(gameBaseDir,   lDirLua);
+        string        aDirIFix = Path.Combine(gameBaseDir,   lDirIFix);
+        AssetBaseDirs baseDirs = new()
+        {
+            CacheLua  = lDirLua,
+            CacheIFix = lDirIFix
+        };
+
+        // -- Fetch and parse the index references
+        StarRailAssetMetadataIndex metadataLua = new(useHeaderSizeOfForAssert: true);
+        Dictionary<string, StarRailRefMainInfo> handleLua = await StarRailRefMainInfo
+           .ParseMetadataFromUrlAsync(instance,
+                                      client,
+                                      refLuaUrl,
+                                      metadataLua,
+                                      x => x.DataList[0].MD5Checksum,
+                                      x => x.DataList[0].MetadataIndexFileSize,
+                                      x => x.DataList[0].Timestamp,
+                                      x => new Version(x.DataList[0].MajorVersion, x.DataList[0].MinorVersion, x.DataList[0].PatchVersion),
+                                      aDirLua,
+                                      token);
+
+        StarRailAssetMetadataIndex metadataIFix = new(use6BytesPadding: true, useHeaderSizeOfForAssert: true);
+        Dictionary<string, StarRailRefMainInfo> handleIFix = await StarRailRefMainInfo
+           .ParseMetadataFromUrlAsync(instance,
+                                      client,
+                                      refIFixUrl,
+                                      metadataIFix,
+                                      x => x.DataList[0].MD5Checksum,
+                                      x => x.DataList[0].MetadataIndexFileSize,
+                                      x => x.DataList[0].Timestamp,
+                                      x => new Version(x.DataList[0].MajorVersion, x.DataList[0].MinorVersion, x.DataList[0].PatchVersion),
+                                      aDirIFix,
+                                      token);
+
+        // -- Save local index files
+        //    Notes to Dev: HoYo no longer provides a proper raw bytes data anymore and the client creates it based
+        //                  on data provided by "handleArchive", so we need to emulate how the game generates these data.
+        await SaveLocalIndexFiles(instance, handleLua,  aDirLua,  "LuaV",  token);
+        await SaveLocalIndexFiles(instance, handleIFix, aDirIFix, "IFixV", token);
+
+        // -- Load metadata files
+        //   -- LuaV
+        StarRailAssetSignaturelessMetadata? metadataLuaV = new(".bytes");
+        metadataLuaV = await LoadMetadataFile(instance,
+                                              handleLua,
+                                              client,
+                                              baseUrls.CacheLua,
+                                              "LuaV",
+                                              metadataLuaV,
+                                              aDirLua,
+                                              token);
+
+        //   -- IFixV
+        StarRailAssetCsvMetadata? metadataIFixV =
+            await LoadMetadataFile<StarRailAssetCsvMetadata>(instance,
+                                                             handleIFix,
+                                                             client,
+                                                             baseUrls.CacheIFix,
+                                                             "IFixV",
+                                                             aDirIFix,
+                                                             token);
+
+        // -- Generate ChangeLuaPathInfo.bytes
+
+        return new StarRailPersistentRefResult
+        {
+            BaseDirs = baseDirs,
+            BaseUrls = baseUrls,
+            Metadata = new AssetMetadata
+            {
+                CacheLua  = metadataLuaV,
+                CacheIFix = metadataIFixV
+            },
+            IsCacheMode = true
+        };
+    }
+
+    public static async Task<StarRailPersistentRefResult> GetRepairReferenceAsync(
+        StarRailRepairV2  instance,
         SRDispatcherInfo  dispatcherInfo,
         HttpClient        client,
         string            gameBaseDir,
@@ -58,7 +174,7 @@ internal partial class StarRailPersistentRefResult
                 throw new HttpRequestException("Seems like the URL for ArchiveV is missing. Please report this issue to our devs!");
             }
 
-            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Given ArchiveV Url is invalid! (previously: {refArchiveUrl}). Try swapping...",
+            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given ArchiveV Url is invalid! (previously: {refArchiveUrl}). Try swapping...",
                                 LogType.Warning,
                                 true);
 
@@ -70,7 +186,7 @@ internal partial class StarRailPersistentRefResult
             refArchiveUrl  = mainUrlArchive.CombineURLFromString("M_ArchiveV.bytes");
             goto TestArchiveVEndpoint;
         }
-        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] ArchiveV Url is found! at: {refArchiveUrl}",
+        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] ArchiveV Url is found! at: {refArchiveUrl}",
                             LogType.Debug,
                             true);
 
@@ -139,14 +255,14 @@ internal partial class StarRailPersistentRefResult
                 throw new HttpRequestException("Seems like the URL for persistent asset bundle is missing. Please report this issue to our devs!");
             }
 
-            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Given persistent asset bundle URL is invalid! (previously: {baseUrl.AsbBlockPersistent}). Try swapping...",
+            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given persistent asset bundle URL is invalid! (previously: {baseUrl.AsbBlockPersistent}). Try swapping...",
                                 LogType.Warning,
                                 true);
             isSecondAsbEndpointRetry = true;
             baseUrl.SwapAsbPersistentUrl();
             goto TestAsbPersistentEndpoint;
         }
-        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetReferenceAsync] Persistent asset bundle URL is found! at: {baseUrl.AsbBlockPersistent}",
+        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Persistent asset bundle URL is found! at: {baseUrl.AsbBlockPersistent}",
                             LogType.Debug,
                             true);
 
@@ -261,7 +377,7 @@ internal partial class StarRailPersistentRefResult
     }
 
     private static async ValueTask SaveLocalIndexFiles(
-        StarRailRepair                          instance,
+        StarRailRepairV2                          instance,
         Dictionary<string, StarRailRefMainInfo> handleArchiveSource,
         string                                  outputDir,
         string                                  indexKey,
@@ -284,8 +400,8 @@ internal partial class StarRailPersistentRefResult
         await indexMetadata.WriteAsync(filePath, token);
     }
 
-    private static async ValueTask<T?> LoadMetadataFile<T>(
-        StarRailRepair                          instance,
+    private static ValueTask<T?> LoadMetadataFile<T>(
+        StarRailRepairV2                        instance,
         Dictionary<string, StarRailRefMainInfo> handleArchiveSource,
         HttpClient                              client,
         string                                  baseUrl,
@@ -295,7 +411,27 @@ internal partial class StarRailPersistentRefResult
         where T : StarRailBinaryData, new()
     {
         T parser = StarRailBinaryData.CreateDefault<T>();
+        return LoadMetadataFile(instance,
+                                handleArchiveSource,
+                                client,
+                                baseUrl,
+                                indexKey,
+                                parser,
+                                saveToLocalDir,
+                                token);
+    }
 
+    private static async ValueTask<T?> LoadMetadataFile<T>(
+        StarRailRepairV2                        instance,
+        Dictionary<string, StarRailRefMainInfo> handleArchiveSource,
+        HttpClient                              client,
+        string                                  baseUrl,
+        string                                  indexKey,
+        T                                       parser,
+        string?                                 saveToLocalDir = null,
+        CancellationToken                       token          = default)
+        where T : StarRailBinaryData
+    {
         if (!handleArchiveSource.TryGetValue(indexKey, out StarRailRefMainInfo? index))
         {
             Logger.LogWriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
@@ -315,7 +451,7 @@ internal partial class StarRailPersistentRefResult
             foreach (FileInfo oldFilePath in dirInfo.EnumerateFiles($"{index.UnaliasedFileName}_*.bytes", SearchOption.TopDirectoryOnly))
             {
                 ReadOnlySpan<char> fileNameOnly = oldFilePath.Name;
-                ReadOnlySpan<char> fileHash     = ConverterTool.GetSplit(fileNameOnly, ^2, "_.");
+                ReadOnlySpan<char> fileHash = ConverterTool.GetSplit(fileNameOnly, ^2, "_.");
                 if (HexTool.IsHexString(fileHash) &&
                     !fileHash.Equals(index.ContentHash, StringComparison.OrdinalIgnoreCase))
                 {
@@ -331,7 +467,7 @@ internal partial class StarRailPersistentRefResult
 
         // Check if the stream has been downloaded
         if (!string.IsNullOrEmpty(saveToLocalDir) &&
-            Path.Combine(saveToLocalDir, filename) is {} localFilePath &&
+            Path.Combine(saveToLocalDir, filename) is { } localFilePath &&
             File.Exists(localFilePath))
         {
             await using FileStream existingFileStream = File.OpenRead(localFilePath);
@@ -415,6 +551,11 @@ internal partial class StarRailPersistentRefResult
         string nNativeData,
         string nVideo)
     {
+        public AssetBaseDirs() : this("", "", "", "", "", "")
+        {
+
+        }
+
         public string PersistentArchive    { get; set; } = nArchive;
         public string PersistentAsbBlock   { get; set; } = nAsbBlock;
         public string PersistentAudio      { get; set; } = nAudio;
@@ -427,6 +568,9 @@ internal partial class StarRailPersistentRefResult
         public string StreamingDesignData  { get; set; } = GetStreamingAssetsDir(nDesignData);
         public string StreamingNativeData  { get; set; } = GetStreamingAssetsDir(nNativeData);
         public string StreamingVideo       { get; set; } = GetStreamingAssetsDir(nVideo);
+
+        public string? CacheIFix { get; set; }
+        public string? CacheLua  { get; set; }
 
         private static string GetStreamingAssetsDir(string dir) => dir.Replace("Persistent", "StreamingAssets");
     }
@@ -442,6 +586,9 @@ internal partial class StarRailPersistentRefResult
         public required string                     NativeData         { get; set; }
         public required string                     Video              { get; set; }
 
+        public string? CacheLua  { get; set; }
+        public string? CacheIFix { get; set; }
+
         public void SwapAsbPersistentUrl() => (AsbBlock, AsbBlockPersistent) = (AsbBlockPersistent, AsbBlock);
     }
 
@@ -455,6 +602,9 @@ internal partial class StarRailPersistentRefResult
         public StarRailAssetBlockMetadata?         BlockV      { get; set; }
         public StarRailAssetJsonMetadata?          AudioV      { get; set; }
         public StarRailAssetJsonMetadata?          VideoV      { get; set; }
+
+        public StarRailAssetSignaturelessMetadata? CacheLua  { get; set; }
+        public StarRailAssetCsvMetadata?           CacheIFix { get; set; }
     }
 }
 
@@ -504,7 +654,8 @@ internal class StarRailRefMainInfo
             MD5Checksum           = HexTool.HexToBytesUnsafe(ContentHash),
             MetadataIndexFileSize = (int)FileSize,
             PrevPatch             = 0, // Leave PrevPatch to be 0
-            Timestamp             = TimeStamp
+            Timestamp             = TimeStamp,
+            Reserved              = new byte[10]
         };
 
         metadataIndex.DataList.Add(indexData);
@@ -520,7 +671,7 @@ internal class StarRailRefMainInfo
     public static implicit operator StarRailAssetMetadataIndex(StarRailRefMainInfo instance) => instance.ToMetadataIndex();
 
     public static async Task<Dictionary<string, StarRailRefMainInfo>> ParseListFromUrlAsync(
-        StarRailRepair    instance,
+        StarRailRepairV2  instance,
         HttpClient        client,
         string            url,
         string?           saveToLocalDir = null,
@@ -548,14 +699,64 @@ internal class StarRailRefMainInfo
         }
 
         return returnList;
+    }
 
-        static Stream CreateLocalStream(Stream thisSourceStream, string filePath)
+    public static async Task<Dictionary<string, StarRailRefMainInfo>>
+        ParseMetadataFromUrlAsync<TParser>(
+        StarRailRepairV2              instance,
+        HttpClient                    client,
+        string                        url,
+        TParser                       parser,
+        Func<TParser, byte[]>         md5Selector,
+        Func<TParser, long>           sizeSelector,
+        Func<TParser, DateTimeOffset> timestampSelector,
+        Func<TParser, Version>        versionSelector,
+        string?                       saveToLocalDir = null,
+        CancellationToken             token          = default)
+        where TParser : StarRailBinaryData
+    {
+        // Set total activity string as "Fetching Caches Type: <type>"
+        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Game Ref: {Path.GetFileNameWithoutExtension(url)}");
+        instance.Status.IsProgressAllIndetermined = true;
+        instance.Status.IsIncludePerFileIndicator = false;
+        instance.UpdateStatus();
+
+        await using Stream networkStream = (await client.TryGetCachedStreamFrom(url, token: token)).Stream;
+        await using Stream sourceStream = !string.IsNullOrEmpty(saveToLocalDir)
+            ? CreateLocalStream(networkStream, Path.Combine(saveToLocalDir, Path.GetFileName(url)))
+            : networkStream;
+
+        string filenameNoExt = Path.GetFileNameWithoutExtension(url);
+
+        // Start parsing
+        await parser.ParseAsync(sourceStream, true, token);
+        byte[]         md5Checksum = md5Selector(parser);
+        long           fileSize    = sizeSelector(parser);
+        DateTimeOffset timestamp   = timestampSelector(parser);
+        Version        version     = versionSelector(parser);
+
+        StarRailRefMainInfo relInfo = new()
         {
-            FileInfo fileInfo = new FileInfo(filePath)
-                                .EnsureCreationOfDirectory()
-                                .EnsureNoReadOnly()
-                                .StripAlternateDataStream();
-            return new CopyToStream(thisSourceStream, fileInfo.Create(), null, true);
-        }
+            ContentHash  = HexTool.BytesToHexUnsafe(md5Checksum)!,
+            FileName     = filenameNoExt,
+            FileSize     = fileSize,
+            TimeStamp    = timestamp,
+            MajorVersion = version.Major,
+            MinorVersion = version.Minor,
+            PatchVersion = version.Build
+        };
+
+        Dictionary<string, StarRailRefMainInfo> dict = [];
+        dict.Add(relInfo.UnaliasedFileName, relInfo);
+        return dict;
+    }
+
+    private static CopyToStream CreateLocalStream(Stream thisSourceStream, string filePath)
+    {
+        FileInfo fileInfo = new FileInfo(filePath)
+                           .EnsureCreationOfDirectory()
+                           .EnsureNoReadOnly()
+                           .StripAlternateDataStream();
+        return new CopyToStream(thisSourceStream, fileInfo.Create(), null, true);
     }
 }

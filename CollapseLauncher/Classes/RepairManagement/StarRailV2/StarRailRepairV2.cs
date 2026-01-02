@@ -12,9 +12,13 @@ using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
 
+#pragma warning disable IDE0290 // Shut the fuck up
+#pragma warning disable IDE0130
+#nullable enable
+
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
+    internal partial class StarRailRepairV2 : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
 
@@ -25,14 +29,16 @@ namespace CollapseLauncher
         }
 
         private GameTypeStarRailVersion InnerGameVersionManager { get; }
-        private StarRailInstall InnerGameInstaller
+        private StarRailInstall? InnerGameInstaller
         {
             get => field ??= GamePropertyVault.GetCurrentGameProperty().GameInstall as StarRailInstall;
         }
 
-        private bool                       IsOnlyRecoverMain       { get; }
-        private List<FilePropertiesRemote> OriginAssetIndex        { get; set; }
-        private string                     ExecName                { get; }
+        private bool                       IsCacheUpdateMode       { get; }
+        private bool                       IsOnlyRecoverMain { get; }
+        private List<FilePropertiesRemote> OriginAssetIndex  { get; set; } = [];
+        private string                     ExecName          { get; }
+
         private string GameDataPersistentPathRelative { get => Path.Combine($"{ExecName}_Data", "Persistent"); }
         private string GameDataPersistentPath { get => Path.Combine(GamePath, GameDataPersistentPathRelative); }
 
@@ -41,12 +47,13 @@ namespace CollapseLauncher
         protected override string UserAgent => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
-        public StarRailRepair(
+        public StarRailRepairV2(
             UIElement     parentUI,
             IGameVersion  gameVersionManager,
             IGameSettings gameSettings,
             bool          onlyRecoverMainAsset = false,
-            string        versionOverride      = null)
+            string?       versionOverride      = null,
+            bool          isCacheUpdateMode          = false)
             : base(parentUI,
                    gameVersionManager,
                    gameSettings,
@@ -55,11 +62,12 @@ namespace CollapseLauncher
         {
             // Get flag to only recover main assets
             IsOnlyRecoverMain = onlyRecoverMainAsset;
-            InnerGameVersionManager = gameVersionManager as GameTypeStarRailVersion;
-            ExecName = Path.GetFileNameWithoutExtension(InnerGameVersionManager!.GamePreset.GameExecutableName);
+            InnerGameVersionManager = (gameVersionManager as GameTypeStarRailVersion)!;
+            ExecName = Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName) ?? "";
+            IsCacheUpdateMode = isCacheUpdateMode;
         }
 
-        ~StarRailRepair() => Dispose();
+        ~StarRailRepairV2() => Dispose();
 
         public List<FilePropertiesRemote> GetAssetIndex() => OriginAssetIndex;
 
@@ -81,7 +89,7 @@ namespace CollapseLauncher
             await Fetch(AssetIndex, Token!.Token);
 
             // Step 2: Remove blacklisted files from asset index (borrow function from StarRailInstall)
-            await InnerGameInstaller.FilterAssetList(AssetIndex, x => x.N, Token.Token);
+            await InnerGameInstaller!.FilterAssetList(AssetIndex, x => x.N, Token.Token);
 
             // Step 3: Calculate the total size and count of the files
             CountAssetIndex(AssetIndex);

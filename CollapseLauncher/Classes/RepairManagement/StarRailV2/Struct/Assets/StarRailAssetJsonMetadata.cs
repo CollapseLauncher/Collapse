@@ -6,13 +6,17 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-#pragma warning disable IDE0290
+
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
-internal partial class StarRailAssetJsonMetadata : StarRailAssetBinaryMetadata<StarRailAssetJsonMetadata.Metadata>
+/// <summary>
+/// Star Rail JSON-based Metadata parser for AudioV and VideoV. This parser read-only and cannot be written back.<br/>
+/// </summary>
+public sealed partial class StarRailAssetJsonMetadata : StarRailAssetBinaryMetadata<StarRailAssetJsonMetadata.Metadata>
 {
     public StarRailAssetJsonMetadata()
         : base(0, // Leave the rest of it to 0 as this metadata has JSON struct

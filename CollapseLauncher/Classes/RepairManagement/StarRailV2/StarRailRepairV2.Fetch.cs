@@ -17,10 +17,13 @@ using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
+#pragma warning disable IDE0290 // Shut the fuck up
+#pragma warning disable IDE0130
 #nullable enable
+
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair
+    internal partial class StarRailRepairV2
     {
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -37,11 +40,17 @@ namespace CollapseLauncher
                                      .SetAllowedDecompression(DecompressionMethods.None)
                                      .Create();
 
-            HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
+            // Get shared HttpClient
+            HttpClient sharedClient       = FallbackCDNUtil.GetGlobalHttpClient(true);
+            string     regionId           = GetExistingGameRegionID();
+            string[]   installedVoiceLang = await GetInstalledVoiceLanguageOrDefault(token);
 
-            // Initialize the new DownloadClient
-            string   regionId           = GetExistingGameRegionID();
-            string[] installedVoiceLang = await GetInstalledVoiceLanguageOrDefault(token);
+            // Redirect to fetch cache if Cache Update Mode is used.
+            if (IsCacheUpdateMode)
+            {
+                await FetchForCacheUpdateMode(client, regionId, assetIndex, token);
+                return;
+            }
 
             // Get the primary manifest
             await GetPrimaryManifest(assetIndex, installedVoiceLang, token);
@@ -73,7 +82,7 @@ namespace CollapseLauncher
                 await dispatcherInfo.Initialize(client, regionId, token);
 
                 StarRailPersistentRefResult persistentRefResult = await StarRailPersistentRefResult
-                   .GetReferenceAsync(this,
+                   .GetRepairReferenceAsync(this,
                                       dispatcherInfo,
                                       client,
                                       GamePath,
@@ -82,8 +91,8 @@ namespace CollapseLauncher
 
                 assetIndex.AddRange(persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang,
                                                                            token));
-                await StarRailPersistentRefResult.FinalizeFetchAsync(this, sharedClient, assetIndex,
-                                                                     GameDataPersistentPath, token);
+                await persistentRefResult.FinalizeRepairFetchAsync(this, sharedClient, assetIndex,
+                                                                   GameDataPersistentPath, token);
             }
 
             // Force-Fetch the Bilibili SDK (if exist :pepehands:)

@@ -8,13 +8,18 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
+
 #pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
-internal sealed class StarRailAssetNativeDataMetadata : StarRailAssetBinaryMetadata<StarRailAssetNativeDataMetadata.Metadata>
+/// <summary>
+/// Star Rail Binary Metadata (SRBM) data parser for NativeDataV. This parser is read-only and cannot be written back.<br/>
+/// </summary>
+public sealed class StarRailAssetNativeDataMetadata : StarRailAssetBinaryMetadata<StarRailAssetNativeDataMetadata.Metadata>
 {
     public StarRailAssetNativeDataMetadata()
         : base(256,
@@ -154,7 +159,7 @@ internal sealed class StarRailAssetNativeDataMetadata : StarRailAssetBinaryMetad
 
     public class Metadata : StarRailAssetGenericFileInfo
     {
-        public static Span<byte> Parse(Span<byte>               filenameBuffer,
+        public static Span<byte> Parse(Span<byte>         filenameBuffer,
                                        ref FileInfoStruct assetInfo,
                                        out Metadata?      result)
         {

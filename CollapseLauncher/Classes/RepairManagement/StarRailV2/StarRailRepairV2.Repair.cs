@@ -14,12 +14,14 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
+#pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
 #nullable enable
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair
+    internal partial class StarRailRepairV2
     {
         private static ReadOnlySpan<byte> HashMarkFileContent => [0x20];
 
@@ -107,14 +109,14 @@ namespace CollapseLauncher
             // Update repair status to the UI
             this.UpdateCurrentRepairStatus(asset);
 
+            string assetPath = Path.Combine(GamePath, asset.N);
+            FileInfo assetFileInfo = new FileInfo(assetPath)
+                                    .StripAlternateDataStream()
+                                    .EnsureCreationOfDirectory()
+                                    .EnsureNoReadOnly();
+
             try
             {
-                string assetPath = Path.Combine(GamePath, asset.N);
-                FileInfo assetFileInfo = new FileInfo(assetPath)
-                                        .StripAlternateDataStream()
-                                        .EnsureCreationOfDirectory()
-                                        .EnsureNoReadOnly();
-
                 await using FileStream assetFileStream = assetFileInfo
                    .Open(FileMode.Create,
                          FileAccess.Write,
@@ -137,6 +139,7 @@ namespace CollapseLauncher
             finally
             {
                 this.PopBrokenAssetFromList(asset);
+                assetFileInfo.Directory?.DeleteEmptyDirectory(true);
             }
         }
 
@@ -159,7 +162,7 @@ namespace CollapseLauncher
                 {
                     if (assetFileInfo.TryDeleteFile())
                     {
-                        Logger.LogWriteLine($"[StarRailRepair::RepairAssetGenericType] Unused asset {asset} has been deleted!",
+                        Logger.LogWriteLine($"[StarRailRepairV2::RepairAssetGenericType] Unused asset {asset} has been deleted!",
                                             LogType.Default,
                                             true);
                     }
@@ -179,13 +182,14 @@ namespace CollapseLauncher
                                       ProgressRepairAssetGenericType,
                                       token);
 
-                Logger.LogWriteLine($"[StarRailRepair::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
+                Logger.LogWriteLine($"[StarRailRepairV2::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
                                     LogType.Default,
                                     true);
             }
             finally
             {
                 this.PopBrokenAssetFromList(asset);
+                assetFileInfo.Directory?.DeleteEmptyDirectory(true);
             }
         }
 
