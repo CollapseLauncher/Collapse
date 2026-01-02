@@ -65,7 +65,7 @@ internal partial class StarRailPersistentRefResult
 
         // -- Initialize persistent dirs
         string        lDirLua  = Path.Combine(persistentDir, @"Lua\Windows");
-        string        lDirIFix = Path.Combine(persistentDir, @"Asb\Windows");
+        string        lDirIFix = Path.Combine(persistentDir, @"IFix\Windows");
         string        aDirLua  = Path.Combine(gameBaseDir,   lDirLua);
         string        aDirIFix = Path.Combine(gameBaseDir,   lDirIFix);
         AssetBaseDirs baseDirs = new()

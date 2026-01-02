@@ -47,8 +47,7 @@ internal partial class StarRailPersistentRefResult
     public List<FilePropertiesRemote> GetPersistentFiles(
         List<FilePropertiesRemote> fileList,
         string                     gameDirPath,
-        string[]                   installedVoiceLang,
-        CancellationToken          token)
+        string[]                   installedVoiceLang)
     {
         Dictionary<string, FilePropertiesRemote> oldDic       = fileList.ToDictionary(x => x.N);
         Dictionary<string, FilePropertiesRemote> unusedAssets = new(StringComparer.OrdinalIgnoreCase);
@@ -64,57 +63,97 @@ internal partial class StarRailPersistentRefResult
             oldDic.TryAdd(asset.N, asset);
         }
 
-        AddAdditionalAssets(gameDirPath,
-                            BaseDirs.StreamingAsbBlock,
-                            BaseDirs.PersistentAsbBlock,
-                            BaseUrls.AsbBlock,
-                            BaseUrls.AsbBlockPersistent,
-                            false,
-                            fileList,
-                            unusedAssets,
-                            oldDic,
-                            Metadata.StartBlockV!.DataList);
+        if (Metadata.StartBlockV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingAsbBlock,
+                                BaseDirs.PersistentAsbBlock,
+                                BaseUrls.AsbBlock,
+                                BaseUrls.AsbBlockPersistent,
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.StartBlockV.DataList);
+        }
 
-        AddAdditionalAssets(gameDirPath,
-                            BaseDirs.StreamingAsbBlock,
-                            BaseDirs.PersistentAsbBlock,
-                            BaseUrls.AsbBlock,
-                            BaseUrls.AsbBlockPersistent,
-                            false,
-                            fileList,
-                            unusedAssets,
-                            oldDic,
-                            Metadata.BlockV!.DataList);
+        if (Metadata.BlockV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingAsbBlock,
+                                BaseDirs.PersistentAsbBlock,
+                                BaseUrls.AsbBlock,
+                                BaseUrls.AsbBlockPersistent,
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.BlockV.DataList);
+        }
 
-        AddAdditionalAssets(gameDirPath,
-                            BaseDirs.StreamingVideo,
-                            BaseDirs.PersistentVideo,
-                            BaseUrls.Video,
-                            BaseUrls.Video,
-                            true,
-                            fileList,
-                            unusedAssets,
-                            oldDic,
-                            Metadata.VideoV!.DataList);
+        if (Metadata.VideoV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingVideo,
+                                BaseDirs.PersistentVideo,
+                                BaseUrls.Video,
+                                BaseUrls.Video,
+                                true,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.VideoV.DataList);
+        }
 
-        AddAdditionalAssets(gameDirPath,
-                            BaseDirs.StreamingAudio,
-                            BaseDirs.PersistentAudio,
-                            BaseUrls.Audio,
-                            BaseUrls.Audio,
-                            true,
-                            fileList,
-                            unusedAssets,
-                            oldDic,
-                            Metadata.AudioV!.DataList
-                                    .WhereNotStartWith(excludedAudioLangPrefix));
+        if (Metadata.AudioV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingAudio,
+                                BaseDirs.PersistentAudio,
+                                BaseUrls.Audio,
+                                BaseUrls.Audio,
+                                true,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.AudioV!.DataList
+                                        .WhereNotStartWith(excludedAudioLangPrefix));
 
-        AddUnusedAudioAssets(gameDirPath,
-                             BaseDirs.StreamingAudio,
-                             BaseDirs.PersistentAudio,
-                             Metadata.AudioV!.DataList,
-                             fileList,
-                             excludedAudioLangPrefix);
+            AddUnusedAudioAssets(gameDirPath,
+                                 BaseDirs.StreamingAudio,
+                                 BaseDirs.PersistentAudio,
+                                 Metadata.AudioV!.DataList,
+                                 fileList,
+                                 excludedAudioLangPrefix);
+        }
+
+        if (Metadata.CacheLua != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.CacheLua!.Replace("Persistent", "StreamingAssets"),
+                                BaseDirs.CacheLua ?? "",
+                                BaseUrls.CacheLua ?? "",
+                                BaseUrls.CacheLua ?? "",
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.CacheLua.DataList);
+        }
+
+        if (Metadata.CacheIFix != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.CacheIFix ?? "",
+                                BaseDirs.CacheIFix ?? "",
+                                BaseUrls.CacheIFix ?? "",
+                                BaseUrls.CacheIFix ?? "",
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.CacheIFix.DataList);
+        }
 
         return unusedAssets.Values.ToList();
     }
@@ -204,7 +243,8 @@ internal partial class StarRailPersistentRefResult
             // remove the persistent one.
             if (!asset.IsPersistent &&
                 File.Exists(pathInPersistent) &&
-                File.Exists(pathInStreaming))
+                File.Exists(pathInStreaming) &&
+                pathInStreaming != pathInPersistent)
             {
                 unusedFileList.TryAdd(relPathInPersistent, new FilePropertiesRemote
                 {

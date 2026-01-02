@@ -89,8 +89,7 @@ namespace CollapseLauncher
                                       GameDataPersistentPathRelative,
                                       token);
 
-                assetIndex.AddRange(persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang,
-                                                                           token));
+                assetIndex.AddRange(persistentRefResult.GetPersistentFiles(assetIndex, GamePath, installedVoiceLang));
                 await persistentRefResult.FinalizeRepairFetchAsync(this, sharedClient, assetIndex,
                                                                    GameDataPersistentPath, token);
             }

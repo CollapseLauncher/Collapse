@@ -2,11 +2,9 @@
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Media.Protection.PlayReady;
 
 #pragma warning disable IDE0290 // Shut the fuck up
 #pragma warning disable IDE0130
@@ -51,6 +49,11 @@ internal partial class StarRailRepairV2
                                                           GamePath,
                                                           persistentRefResult.BaseDirs.CacheLua!,
                                                           token);
+
+        // HACK: Duplicate List from Sophon so we know which one is being added
+        List<FilePropertiesRemote> sophonAssetsDup = new(sophonAssets);
+        assetIndex.AddRange(persistentRefResult.GetPersistentFiles(sophonAssetsDup, GamePath, []));
+        assetIndex.AddRange(sophonAssetsDup[sophonAssets.Count..]);
     }
 
     #endregion

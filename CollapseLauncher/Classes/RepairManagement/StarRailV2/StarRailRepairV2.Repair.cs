@@ -35,7 +35,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            Status.ActivityStatus = Locale.Lang._GameRepairPage.Status7;
+            Status.ActivityStatus = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusUpToDate : Locale.Lang._GameRepairPage.Status7;
 
             // Update status and progress
             UpdateAll();
@@ -149,7 +149,7 @@ namespace CollapseLauncher
             CancellationToken token)
         {
             // Update repair status to the UI
-            this.UpdateCurrentRepairStatus(asset);
+            this.UpdateCurrentRepairStatus(asset, IsCacheUpdateMode);
 
             string assetPath = Path.Combine(GamePath, asset.N);
             FileInfo assetFileInfo = new FileInfo(assetPath)

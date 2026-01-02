@@ -56,11 +56,11 @@ internal static partial class AssetBundleExtension
             }
         }
 
-        internal void UpdateCurrentRepairStatus(FilePropertiesRemote asset)
+        internal void UpdateCurrentRepairStatus(FilePropertiesRemote asset, bool isCacheUpdateMode = false)
         {
             // Increment total count current
             progressBase.ProgressAllCountCurrent++;
-            progressBase.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status8, asset.N);
+            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, asset.N);
             progressBase.UpdateStatus();
         }
     }
