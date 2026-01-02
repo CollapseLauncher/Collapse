@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
 
 #pragma warning disable IDE0290 // Shut the fuck up
