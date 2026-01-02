@@ -36,7 +36,7 @@ namespace CollapseLauncher.Extension
         public string LocalePropertyName { get; init; }
     }
 
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
 #nullable enable
         /// <summary>
@@ -186,6 +186,20 @@ namespace CollapseLauncher.Extension
             }
 
             navViewControl.UpdateLayout();
+        }
+
+        internal static void BindProperty(this FrameworkElement element,
+                                          FrameworkElement      source,
+                                          string                propertyName,
+                                          DependencyProperty    dependencyProperty,
+                                          BindingMode           bindingMode)
+        {
+            element.SetBinding(dependencyProperty, new Binding
+            {
+                Mode   = bindingMode,
+                Source = source,
+                Path   = new PropertyPath(propertyName)
+            });
         }
 
         internal static void BindProperty<T>(
@@ -1038,29 +1052,6 @@ namespace CollapseLauncher.Extension
         public static T? GetDependencyObjectFromPointer<T>(this nint ptr)
             where T : DependencyObject
             => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
-
-
-        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-
-        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetAllControlsCursorRecursive(HandCursor);
-        }
-
-        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetCursor(HandCursor);
-        }
 
         internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
         {

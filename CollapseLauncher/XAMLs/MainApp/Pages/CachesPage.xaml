@@ -5,6 +5,7 @@
       xmlns:control="using:CommunityToolkit.WinUI.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
@@ -169,6 +170,7 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="UpdateCachesBtn"
                                 HorizontalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="StartCachesUpdate"
                                 CornerRadius="16"
                                 Style="{ThemeResource AccentButtonStyle}"
@@ -185,6 +187,7 @@
                         <SplitButton x:Name="CheckUpdateBtn"
                                      Grid.Column="0"
                                      HorizontalAlignment="Stretch"
+                                     extension:UIElementExtensions.CursorType="Hand"
                                      Click="StartCachesCheckSplitButton"
                                      CornerRadius="16"
                                      Tag="Fast"
@@ -204,6 +207,7 @@
                                                 Margin="0,0,0,8"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartCachesCheck"
                                                 Tag="Fast"
                                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
@@ -226,6 +230,7 @@
                                         <Button x:Name="CheckUpdateFullBtn"
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
+                                                extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartCachesCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
@@ -254,6 +259,7 @@
                                 Grid.Column="1"
                                 Margin="16,0,0,0"
                                 HorizontalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="CancelOperation"
                                 CornerRadius="16"
                                 IsEnabled="False">
