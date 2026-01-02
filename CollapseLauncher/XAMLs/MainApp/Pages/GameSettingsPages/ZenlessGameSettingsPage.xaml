@@ -164,7 +164,7 @@
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
-                                                      IsEnabled="False"
+                                                      IsEnabled="True"
                                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}"
                                                       Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
@@ -217,11 +217,11 @@
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             </StackPanel>
                             <ToggleSwitch x:Name="ToggleSwitchUseDirectX12Api"
-                                          Visibility="Collapsed"
                                           Margin="4,0,0,8"
                                           IsOn="{x:Bind AdvancedGraphics_UseDirectX12Api, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}">
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                          Visibility="Collapsed">
                                 <ToggleSwitch.Header>
                                     <TextBlock>
                                         <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}" />
@@ -576,10 +576,11 @@
                                     </CheckBox>
                                 </StackPanel>
                             </Grid>
-                            <MenuFlyoutSeparator Margin="8,16" Visibility="Collapsed" />
+                            <MenuFlyoutSeparator Margin="8,16"
+                                                 Visibility="Collapsed" />
                             <StackPanel Orientation="Horizontal"
-                                        Visibility="Collapsed"
-                                        Spacing="16">
+                                        Spacing="16"
+                                        Visibility="Collapsed">
                                 <TextBlock Margin="0,0,0,16"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                            TextWrapping="Wrap">
@@ -628,7 +629,8 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="0"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -641,7 +643,8 @@
                                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="1"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -658,7 +661,8 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="2"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -674,7 +678,8 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="3"
+                                                Visibility="Collapsed">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"

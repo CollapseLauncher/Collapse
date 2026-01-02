@@ -45,7 +45,7 @@ namespace CollapseLauncher.ShortcutUtils
             }
 
             pluginPresetConfig.Plugin.GetPluginAppIconUrl(out string? iconUrl);
-            string? appIconUrl = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl, iconPath);
+            string? appIconUrl = PluginLauncherApiWrapper.CopyOverEmbeddedData(iconPath, iconUrl);
 
             if (appIconUrl == null)
                 return icon;
