@@ -127,6 +127,20 @@ internal partial class StarRailPersistentRefResult
                                  excludedAudioLangPrefix);
         }
 
+        if (Metadata.RawResV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingRawRes,
+                                BaseDirs.PersistentRawRes,
+                                BaseUrls.RawRes,
+                                BaseUrls.RawRes,
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.RawResV.DataList);
+        }
+
         if (Metadata.CacheLua != null)
         {
             AddAdditionalAssets(gameDirPath,

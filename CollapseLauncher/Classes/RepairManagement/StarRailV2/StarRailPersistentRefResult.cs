@@ -56,6 +56,7 @@ internal partial class StarRailPersistentRefResult
             DesignData         = "",
             NativeData         = "",
             Video              = "",
+            RawRes             = "",
             CacheLua           = mainUrlLua,
             CacheIFix          = mainUrlIFix
         };
@@ -201,6 +202,7 @@ internal partial class StarRailPersistentRefResult
         string mainUrlAsbBlockAlt = mainUrlAsbAlt.CombineURLFromString("Block");
         string mainUrlNativeData  = mainUrlDesignData.CombineURLFromString("NativeData");
         string mainUrlVideo       = mainUrlAsb.CombineURLFromString("Video");
+        string mainUrlRawRes      = mainUrlAsb.CombineURLFromString("RawRes");
 
         AssetBaseUrls baseUrl = new()
         {
@@ -211,7 +213,8 @@ internal partial class StarRailPersistentRefResult
             AsbBlock           = mainUrlAsbBlock,
             AsbBlockPersistent = mainUrlAsbBlockAlt,
             NativeData         = mainUrlNativeData,
-            Video              = mainUrlVideo
+            Video              = mainUrlVideo,
+            RawRes             = mainUrlRawRes
         };
 
         // -- Initialize persistent dirs
@@ -221,13 +224,15 @@ internal partial class StarRailPersistentRefResult
         string        lDirDesignData = Path.Combine(persistentDir, @"DesignData\Windows");
         string        lDirNativeData = Path.Combine(persistentDir, @"NativeData\Windows");
         string        lDirVideo      = Path.Combine(persistentDir, @"Video\Windows");
+        string        lDirRawRes     = Path.Combine(persistentDir, @"RawRes\Windows");
         string        aDirArchive    = Path.Combine(gameBaseDir, lDirArchive);
         string        aDirAsbBlock   = Path.Combine(gameBaseDir, lDirAsbBlock);
         string        aDirAudio      = Path.Combine(gameBaseDir, lDirAudio);
         string        aDirDesignData = Path.Combine(gameBaseDir, lDirDesignData);
         string        aDirNativeData = Path.Combine(gameBaseDir, lDirNativeData);
         string        aDirVideo      = Path.Combine(gameBaseDir, lDirVideo);
-        AssetBaseDirs baseDirs = new(lDirArchive, lDirAsbBlock, lDirAudio, lDirDesignData, lDirNativeData, lDirVideo);
+        string        aDirRawRes     = Path.Combine(gameBaseDir, lDirRawRes);
+        AssetBaseDirs baseDirs = new(lDirArchive, lDirAsbBlock, lDirAudio, lDirDesignData, lDirNativeData, lDirVideo, lDirRawRes);
 
         // -- Fetch and parse the index references
         Dictionary<string, StarRailRefMainInfo> handleDesignArchive = await StarRailRefMainInfo
@@ -276,6 +281,7 @@ internal partial class StarRailPersistentRefResult
         await SaveLocalIndexFiles(instance, handleArchive,       aDirAsbBlock,   "Start_BlockV", token);
         await SaveLocalIndexFiles(instance, handleArchive,       aDirAudio,      "AudioV",       token);
         await SaveLocalIndexFiles(instance, handleArchive,       aDirVideo,      "VideoV",       token);
+        await SaveLocalIndexFiles(instance, handleArchive,       aDirRawRes,     "RawResV",      token);
 
         // -- Load metadata files
         //   -- DesignV
@@ -358,6 +364,16 @@ internal partial class StarRailPersistentRefResult
                                                               aDirVideo,
                                                               token);
 
+        //   -- RawResV
+        StarRailAssetJsonMetadata? metadataRawResV =
+            await LoadMetadataFile<StarRailAssetJsonMetadata>(instance,
+                                                              handleArchive,
+                                                              client,
+                                                              baseUrl.RawRes,
+                                                              "RawResV",
+                                                              aDirRawRes,
+                                                              token);
+
         return new StarRailPersistentRefResult
         {
             BaseDirs = baseDirs,
@@ -371,7 +387,8 @@ internal partial class StarRailPersistentRefResult
                 AsbV        = metadataAsbV,
                 BlockV      = metadataBlockV,
                 AudioV      = metadataAudioV,
-                VideoV      = metadataVideoV
+                VideoV      = metadataVideoV,
+                RawResV     = metadataRawResV
             }
         };
     }
@@ -549,9 +566,10 @@ internal partial class StarRailPersistentRefResult
         string nAudio,
         string nDesignData,
         string nNativeData,
-        string nVideo)
+        string nVideo,
+        string nRawRes)
     {
-        public AssetBaseDirs() : this("", "", "", "", "", "")
+        public AssetBaseDirs() : this("", "", "", "", "", "", "")
         {
 
         }
@@ -562,12 +580,14 @@ internal partial class StarRailPersistentRefResult
         public string PersistentDesignData { get; set; } = nDesignData;
         public string PersistentNativeData { get; set; } = nNativeData;
         public string PersistentVideo      { get; set; } = nVideo;
+        public string PersistentRawRes     { get; set; } = nRawRes;
         public string StreamingArchive     { get; set; } = GetStreamingAssetsDir(nArchive);
         public string StreamingAsbBlock    { get; set; } = GetStreamingAssetsDir(nAsbBlock);
         public string StreamingAudio       { get; set; } = GetStreamingAssetsDir(nAudio);
         public string StreamingDesignData  { get; set; } = GetStreamingAssetsDir(nDesignData);
         public string StreamingNativeData  { get; set; } = GetStreamingAssetsDir(nNativeData);
         public string StreamingVideo       { get; set; } = GetStreamingAssetsDir(nVideo);
+        public string StreamingRawRes      { get; set; } = GetStreamingAssetsDir(nRawRes);
 
         public string? CacheIFix { get; set; }
         public string? CacheLua  { get; set; }
@@ -585,6 +605,7 @@ internal partial class StarRailPersistentRefResult
         public required string                     AsbBlockPersistent { get; set; }
         public required string                     NativeData         { get; set; }
         public required string                     Video              { get; set; }
+        public required string                     RawRes             { get; set; }
 
         public string? CacheLua  { get; set; }
         public string? CacheIFix { get; set; }
@@ -602,6 +623,7 @@ internal partial class StarRailPersistentRefResult
         public StarRailAssetBlockMetadata?         BlockV      { get; set; }
         public StarRailAssetJsonMetadata?          AudioV      { get; set; }
         public StarRailAssetJsonMetadata?          VideoV      { get; set; }
+        public StarRailAssetJsonMetadata?          RawResV     { get; set; }
 
         public StarRailAssetSignaturelessMetadata? CacheLua  { get; set; }
         public StarRailAssetCsvMetadata?           CacheIFix { get; set; }
