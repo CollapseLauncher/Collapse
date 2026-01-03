@@ -75,7 +75,7 @@ internal abstract class GamePropertyBase : NotifyPropertyChanged
         get => (byte)LauncherConfig.AppCurrentThread;
     }
 
-    protected GameVersion GameVersion
+    internal GameVersion GameVersion
     {
         get
         {
@@ -87,7 +87,7 @@ internal abstract class GamePropertyBase : NotifyPropertyChanged
         }
     }
 
-    protected IGameVersion GameVersionManager
+    internal IGameVersion GameVersionManager
     {
         get;
     }

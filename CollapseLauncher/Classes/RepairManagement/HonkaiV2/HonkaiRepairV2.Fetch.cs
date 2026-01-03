@@ -44,64 +44,12 @@ internal partial class HonkaiRepairV2
     #region Fetch by Sophon
     private async Task FetchAssetFromSophon(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        // Set total activity string as "Fetching Caches Type: <type>"
-        Status.ActivityStatus            = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Sophon");
-        Status.IsProgressAllIndetermined = true;
-        Status.IsIncludePerFileIndicator = false;
-        UpdateStatus();
-
-        PresetConfig gamePreset    = GameVersionManager!.GamePreset;
-        string?      sophonApiUrl  = gamePreset.LauncherResourceChunksURL?.MainUrl;
-        string?      matchingField = gamePreset.LauncherResourceChunksURL?.MainBranchMatchingField;
-
-        if (sophonApiUrl == null)
-        {
-            throw new NullReferenceException("Sophon API URL inside of the metadata is null. Try to clear your metadata by going to \"App Settings\" > \"Clear Metadata and Restart\"");
-        }
-
-        string versionApiToUse = GameVersion.ToString();
-        sophonApiUrl += $"&tag={versionApiToUse}";
-
-        SophonChunkManifestInfoPair infoPair = await SophonManifest
-           .CreateSophonChunkManifestInfoPair(HttpClientGeneric,
-                                              sophonApiUrl,
-                                              matchingField,
-                                              false,
+        await this.FetchAssetsFromSophonAsync(HttpClientGeneric,
+                                              assetIndex,
+                                              DetermineFileTypeFromExtension,
+                                              GameVersion,
+                                              ["en-us", "zh-cn", "ja-jp", "ko-kr"],
                                               token);
-
-        if (!infoPair.IsFound)
-        {
-            throw new InvalidOperationException($"Sophon cannot find matching field: {matchingField} from API URL: {sophonApiUrl}");
-        }
-
-        SearchValues<string> excludedMatchingFields =
-            SearchValues.Create(["en-us", "zh-cn", "ja-jp", "ko-kr"], StringComparison.OrdinalIgnoreCase);
-        List<SophonChunkManifestInfoPair> infoPairs = [infoPair];
-        infoPairs.AddRange(infoPair
-                          .OtherSophonBuildData?
-                          .ManifestIdentityList
-                          .Where(x => !x.MatchingField
-                                        .ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
-                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField)) ?? []);
-
-
-        foreach (SophonChunkManifestInfoPair pair in infoPairs)
-        {
-            await foreach (SophonAsset asset in SophonManifest
-                              .EnumerateAsync(HttpClientGeneric,
-                                              pair,
-                                              token: token))
-            {
-                assetIndex.Add(new FilePropertiesRemote
-                {
-                    AssociatedObject = asset,
-                    S                = asset.AssetSize,
-                    N                = asset.AssetName.NormalizePath(),
-                    CRC              = asset.AssetHash,
-                    FT               = DetermineFileTypeFromExtension(asset.AssetName)
-                });
-            }
-        }
     }
     #endregion
 

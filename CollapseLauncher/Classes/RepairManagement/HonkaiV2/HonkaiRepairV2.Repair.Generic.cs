@@ -24,30 +24,37 @@ internal partial class HonkaiRepairV2
         // Update repair status to the UI
         this.UpdateCurrentRepairStatus(asset);
 
-        string assetPath = Path.Combine(GamePath, asset.N);
-        FileInfo assetFileInfo = new FileInfo(assetPath)
-                                .StripAlternateDataStream()
-                                .EnsureCreationOfDirectory()
-                                .EnsureNoReadOnly();
-
-        await using FileStream assetFileStream = assetFileInfo
-           .Open(FileMode.Create,
-                 FileAccess.Write,
-                 FileShare.Write,
-                 asset.S.GetFileStreamBufferSize());
-
-        if (asset.AssociatedObject is not SophonAsset sophonAsset)
+        try
         {
-            throw new
-                InvalidOperationException("Invalid operation! This asset shouldn't have been here! It's not a sophon-based asset!");
-        }
+            string assetPath = Path.Combine(GamePath, asset.N);
+            FileInfo assetFileInfo = new FileInfo(assetPath)
+                                    .StripAlternateDataStream()
+                                    .EnsureCreationOfDirectory()
+                                    .EnsureNoReadOnly();
 
-        // Download as Sophon asset
-        await sophonAsset
-           .WriteToStreamAsync(HttpClientGeneric,
-                               assetFileStream,
-                               readBytes => UpdateProgressCounter(readBytes, readBytes),
-                               token: token);
+            await using FileStream assetFileStream = assetFileInfo
+               .Open(FileMode.Create,
+                     FileAccess.Write,
+                     FileShare.Write,
+                     asset.S.GetFileStreamBufferSize());
+
+            if (asset.AssociatedObject is not SophonAsset sophonAsset)
+            {
+                throw new
+                    InvalidOperationException("Invalid operation! This asset shouldn't have been here! It's not a sophon-based asset!");
+            }
+
+            // Download as Sophon asset
+            await sophonAsset
+               .WriteToStreamAsync(HttpClientGeneric,
+                                   assetFileStream,
+                                   readBytes => UpdateProgressCounter(readBytes, readBytes),
+                                   token: token);
+        }
+        finally
+        {
+            this.PopBrokenAssetFromList(asset);
+        }
     }
 
     private async ValueTask RepairAssetGenericType(
@@ -61,6 +68,7 @@ internal partial class HonkaiRepairV2
         string assetPath = Path.Combine(GamePath, asset.N);
         FileInfo assetFileInfo = new FileInfo(assetPath)
                                 .StripAlternateDataStream()
+                                .EnsureCreationOfDirectory()
                                 .EnsureNoReadOnly();
 
         try

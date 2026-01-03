@@ -50,11 +50,15 @@ internal partial class HonkaiRepairV2
             await SpawnRepairDialog(AssetIndex, actionIfInteractiveCancel);
         }
 
+        int threadNum = IsBurstDownloadEnabled
+            ? 1
+            : ThreadForIONormalized;
+
         await Parallel.ForEachAsync(AssetIndex,
                                     new ParallelOptions
                                     {
                                         CancellationToken      = Token!.Token,
-                                        MaxDegreeOfParallelism = ThreadForIONormalized
+                                        MaxDegreeOfParallelism = threadNum
                                     },
                                     Impl);
 

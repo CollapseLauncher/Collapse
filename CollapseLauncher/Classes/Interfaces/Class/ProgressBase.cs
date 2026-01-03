@@ -1108,21 +1108,54 @@ internal abstract class ProgressBase : GamePropertyBase
 
     protected virtual async Task<T> TryRunExamineThrow<T>(Task<T> action)
     {
-        await TryRunExamineThrow((Task)action);
+        // Define if the status is still running
+        Status.IsRunning   = true;
+        Status.IsCompleted = false;
+        Status.IsCanceled  = false;
 
-        if (action.IsCompletedSuccessfully)
+        try
         {
-            return action.Result;
-        }
+            // Run the task
+            T result = await action;
 
-        if ((action.IsFaulted ||
-             action.IsCanceled) &&
-            action.Exception != null)
+            Status.IsCompleted = true;
+            return result;
+        }
+        catch (TaskCanceledException)
         {
-            throw action.Exception;
+            // If a cancellation was thrown, then set IsCanceled as true
+            Status.IsCompleted = false;
+            Status.IsCanceled  = true;
+            throw;
         }
+        catch (OperationCanceledException)
+        {
+            // If a cancellation was thrown, then set IsCanceled as true
+            Status.IsCompleted = false;
+            Status.IsCanceled  = true;
+            throw;
+        }
+        catch (Exception)
+        {
+            // Except, if the other exception was thrown, then set both IsCompleted
+            // and IsCanceled as false.
+            Status.IsCompleted = false;
+            Status.IsCanceled  = false;
+            throw;
+        }
+        finally
+        {
+            if (Status is { IsCompleted: false, IsCanceled: false })
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Error);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
 
-        throw new InvalidOperationException();
+            Status.IsRunning = false;
+        }
     }
 
     protected virtual async Task TryRunExamineThrow(Task task)
@@ -1163,7 +1196,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
         finally
         {
-            if (Status is { IsCompleted: false })
+            if (Status is { IsCompleted: false, IsCanceled: false })
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Error);
             }
@@ -1215,7 +1248,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
         finally
         {
-            if (Status is { IsCompleted: false })
+            if (Status is { IsCompleted: false, IsCanceled: false })
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Error);
             }

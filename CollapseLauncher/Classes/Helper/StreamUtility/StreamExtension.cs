@@ -325,7 +325,7 @@ namespace CollapseLauncher.Helper.StreamUtility
             {
                 foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
                 {
-                    DeleteEmptyDirectory(childDir);
+                    childDir.DeleteEmptyDirectory();
                 }
             }
 

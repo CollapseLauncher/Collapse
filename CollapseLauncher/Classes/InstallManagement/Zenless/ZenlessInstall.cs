@@ -159,34 +159,30 @@ namespace CollapseLauncher.InstallManager.Zenless
             }
         }
 
-        protected override void WriteAudioLangListSophon(List<string> sophonVOList)
+        protected override void WriteAudioLangListSophon(ICollection<string> sophonVOList)
         {
             // Run the writing method from the base first
             base.WriteAudioLangListSophon(sophonVOList);
 
             // Then create the one from the alternate one
             // Read all the existing list
-            List<string> langList = File.Exists(_gameAudioLangListPathAlternateStatic)
-                ? File.ReadAllLines(_gameAudioLangListPathAlternateStatic).ToList()
+            HashSet<string> langList = File.Exists(_gameAudioLangListPathAlternateStatic)
+                ? File.ReadAllLines(_gameAudioLangListPathAlternateStatic).ToHashSet(StringComparer.OrdinalIgnoreCase)
                 : [];
 
             // Try lookup if there is a new language list, then add it to the list
-            for (int index = sophonVOList.Count - 1; index >= 0; index--)
+            foreach (string vo in sophonVOList)
             {
-                var packageLocaleCodeString = sophonVOList[index];
-                string langString = GetLanguageStringByLocaleCodeAlternate(packageLocaleCodeString);
-                if (!langList.Contains(langString, StringComparer.OrdinalIgnoreCase))
-                {
-                    langList.Add(langString);
-                }
+                string langString = GetLanguageStringByLocaleCodeAlternate(vo);
+                langList.Add(langString);
             }
 
             // Create the audio lang list file
-            using var sw = new StreamWriter(_gameAudioLangListPathAlternateStatic,
-                                            new FileStreamOptions
-                                            { Mode = FileMode.Create, Access = FileAccess.Write });
+            using StreamWriter sw = new StreamWriter(_gameAudioLangListPathAlternateStatic,
+                                                     new FileStreamOptions
+                                                         { Mode = FileMode.Create, Access = FileAccess.Write });
             // Iterate the package list
-            foreach (var voIds in langList)
+            foreach (string voIds in langList)
             // Write the language string as per ID
             {
                 sw.WriteLine(voIds);

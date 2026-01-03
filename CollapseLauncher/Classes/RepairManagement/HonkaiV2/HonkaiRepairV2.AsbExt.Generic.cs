@@ -14,58 +14,55 @@ namespace CollapseLauncher.RepairManagement;
 
 internal static partial class AssetBundleExtension
 {
-    internal static void AddBrokenAssetToList(
-        this ProgressBase<FilePropertiesRemote> progressBase,
-        FilePropertiesRemote                    asset,
-        byte[]?                                 finalHash    = null,
-        long?                                   useFoundSize = null)
+    extension(ProgressBase<FilePropertiesRemote> progressBase)
     {
-        AssetProperty<RepairAssetType> property =
-            new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
-                                               asset.GetRepairAssetType(),
-                                               Path.GetDirectoryName(asset.N) ?? "\\",
-                                               useFoundSize ?? asset.S,
-                                               finalHash,
-                                               asset.CRCArray);
-
-        asset.AssociatedAssetProperty = property;
-        progressBase.Dispatch(AddToUITable);
-        lock (progressBase.AssetIndex)
+        internal void AddBrokenAssetToList(FilePropertiesRemote asset,
+                                           byte[]?              finalHash    = null,
+                                           long?                useFoundSize = null)
         {
-            progressBase.AssetIndex.Add(asset);
+            AssetProperty<RepairAssetType> property =
+                new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
+                                                   asset.GetRepairAssetType(),
+                                                   Path.GetDirectoryName(asset.N) ?? "\\",
+                                                   useFoundSize ?? asset.S,
+                                                   finalHash,
+                                                   asset.CRCArray);
+
+            asset.AssociatedAssetProperty = property;
+            progressBase.Dispatch(AddToUITable);
+            lock (progressBase.AssetIndex)
+            {
+                progressBase.AssetIndex.Add(asset);
+            }
+
+            progressBase.Status.IsAssetEntryPanelShow = progressBase.AssetIndex.Count > 0;
+            progressBase.UpdateStatus();
+            Interlocked.Add(ref progressBase.ProgressAllSizeFound, useFoundSize ?? asset.S);
+            Interlocked.Increment(ref progressBase.ProgressAllCountFound);
+
+            return;
+
+            void AddToUITable()
+            {
+                progressBase.AssetEntry.Add(property);
+            }
         }
 
-        progressBase.Status.IsAssetEntryPanelShow = progressBase.AssetIndex.Count > 0;
-        progressBase.UpdateStatus();
-        Interlocked.Add(ref progressBase.ProgressAllSizeFound, useFoundSize ?? asset.S);
-        Interlocked.Increment(ref progressBase.ProgressAllCountFound);
-
-        return;
-
-        void AddToUITable()
+        internal void PopBrokenAssetFromList(FilePropertiesRemote asset)
         {
-            progressBase.AssetEntry.Add(property);
+            if (asset.AssociatedAssetProperty is IAssetProperty assetProperty)
+            {
+                progressBase.PopRepairAssetEntry(assetProperty);
+            }
         }
-    }
 
-    internal static void PopBrokenAssetFromList(
-        this ProgressBase<FilePropertiesRemote> progressBase,
-        FilePropertiesRemote                    asset)
-    {
-        if (asset.AssociatedAssetProperty is IAssetProperty assetProperty)
+        internal void UpdateCurrentRepairStatus(FilePropertiesRemote asset, bool isCacheUpdateMode = false)
         {
-            progressBase.PopRepairAssetEntry(assetProperty);
+            // Increment total count current
+            progressBase.ProgressAllCountCurrent++;
+            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, asset.N);
+            progressBase.UpdateStatus();
         }
-    }
-
-    internal static void UpdateCurrentRepairStatus(
-        this ProgressBase<FilePropertiesRemote> progressBase,
-        FilePropertiesRemote                    asset)
-    {
-        // Increment total count current
-        progressBase.ProgressAllCountCurrent++;
-        progressBase.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status8, asset.N);
-        progressBase.UpdateStatus();
     }
 
     private static RepairAssetType GetRepairAssetType(this FilePropertiesRemote asset) =>

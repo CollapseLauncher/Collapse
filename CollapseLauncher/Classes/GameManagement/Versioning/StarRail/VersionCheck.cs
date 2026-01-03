@@ -37,8 +37,7 @@ namespace CollapseLauncher.GameVersioning
                 {
                     throw new NullReferenceException(GamePreset.GameDispatchArrayURL + " is null!");
                 }
-                StarRailMetadataTool = new SRMetadata(
-                                                      GamePreset.GameDispatchArrayURL[0],
+                StarRailMetadataTool = new SRMetadata(GamePreset.GameDispatchArrayURL[0],
                                                       GamePreset.ProtoDispatchKey,
                                                       dispatchUrlTemplate,
                                                       gatewayUrlTemplate,

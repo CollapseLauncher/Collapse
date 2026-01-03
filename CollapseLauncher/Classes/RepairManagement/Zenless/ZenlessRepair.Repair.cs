@@ -107,7 +107,7 @@ namespace CollapseLauncher
             // Set repair activity status
             string timeLeftString = string.Format(Locale.Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
-                string.Format(Locale.Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
+                string.Format(IsCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
                 string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
