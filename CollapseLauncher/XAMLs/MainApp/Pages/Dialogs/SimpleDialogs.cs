@@ -1436,7 +1436,12 @@ namespace CollapseLauncher.Dialogs
                                          {
                                              Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6,
                                              TextWrapping = TextWrapping.WrapWholeWords
-                                         }.WithMargin(0d, 2d, 0d, 4d));
+                                         }.WithMargin(0d, 2d, 0d, 1d),
+                                         new TextBlock
+                                         {
+                                             Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle8,
+                                             TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 1d, 0d, 4d));
 
             return SpawnDialog(Lang._Dialogs.SteamShortcutCreationSuccessTitle,
                                panel,

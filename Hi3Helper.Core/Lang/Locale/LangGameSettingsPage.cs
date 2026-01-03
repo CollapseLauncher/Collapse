@@ -123,6 +123,10 @@ namespace Hi3Helper
                 public string Advanced_GLC_PreLaunch_Delay    { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Delay;
                 public string Advanced_GLC_PostExit_Title     { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Title;
                 public string Advanced_GLC_PostExit_Subtitle  { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Subtitle;
+
+                public string Advanced_RunWithExplorerAsParent_Title    { get; set; } = LangFallback?._GameSettingsPage.Advanced_RunWithExplorerAsParent_Title;
+                public string Advanced_RunWithExplorerAsParent_Subtitle { get; set; } = LangFallback?._GameSettingsPage.Advanced_RunWithExplorerAsParent_Subtitle;
+                public string Advanced_RunWithExplorerAsParent_Warning  { get; set; } = LangFallback?._GameSettingsPage.Advanced_RunWithExplorerAsParent_Warning;
             }
         }
         #endregion

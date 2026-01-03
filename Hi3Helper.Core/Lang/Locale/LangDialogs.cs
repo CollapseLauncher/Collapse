@@ -166,6 +166,7 @@ namespace Hi3Helper
                 public string SteamShortcutCreationSuccessSubtitle5 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle5;
                 public string SteamShortcutCreationSuccessSubtitle6 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle6;
                 public string SteamShortcutCreationSuccessSubtitle7 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle7;
+                public string SteamShortcutCreationSuccessSubtitle8 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle8;
                 public string SteamShortcutCreationFailureTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureTitle;
                 public string SteamShortcutCreationFailureSubtitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureSubtitle;
                 public string SteamShortcutTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutTitle;
