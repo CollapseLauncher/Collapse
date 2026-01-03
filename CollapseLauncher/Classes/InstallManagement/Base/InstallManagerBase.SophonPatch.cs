@@ -11,6 +11,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -24,8 +25,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -189,7 +192,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
-            matchingFieldsList.AddRange(otherManifestIdentity.Select(identity => identity.MatchingField));
+            matchingFieldsList.AddRange(otherManifestIdentity.Select(identity => identity.MatchingField ?? ""));
             return;
 
             string GetFileDetails()
@@ -558,29 +561,67 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonPatchAsset        patchAsset     = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
-                using (dictionaryLock.EnterScope())
+                try
                 {
-                    _ = downloadedDict.TryAdd(patchAsset.PatchNameSource, 0);
-                    downloadedDict[patchAsset.PatchNameSource]++;
+                    UpdateCurrentDownloadStatus();
+                    // Check if target file has already been patched so the launcher won't redownload everything.
+                    if (!isPreloadMode && patchAsset.PatchMethod != SophonPatchMethod.Remove)
+                    {
+                        FileInfo fileInfo = new FileInfo(Path.Combine(GamePath, patchAsset.TargetFilePath))
+                                           .EnsureNoReadOnly()
+                                           .StripAlternateDataStream();
+
+                        if (fileInfo.Exists &&
+                            fileInfo.Length == patchAsset.TargetFileSize)
+                        {
+                            byte[] remoteHashBytes = HexTool.HexToBytesUnsafe(patchAsset.TargetFileHash);
+                            byte[] localHashBytes = remoteHashBytes.Length > 8
+                                ? await GetCryptoHashAsync<MD5>(fileInfo, null, false, false, innerToken)
+                                : await GetHashAsync<XxHash64>(fileInfo, false, false, innerToken);
+
+                            // Try to reverse hash bytes in case the returned bytes are going to be Big-endian.
+                            if (!localHashBytes.SequenceEqual(remoteHashBytes))
+                            {
+                                Array.Reverse(localHashBytes);
+                            }
+
+                            // Now compare. If the hash is already equal (means the target file is already downloaded),
+                            // then skip from downloading the patch.
+                            if (localHashBytes.SequenceEqual(remoteHashBytes))
+                            {
+                                long patchSize = patchAsset.PatchSize;
+                                UpdateSophonFileTotalProgress(patchSize);
+                                UpdateSophonFileDownloadProgress(patchSize, patchSize);
+                                return;
+                            }
+                        }
+                    }
+
+                    await patchAsset.DownloadPatchAsync(httpClient,
+                                                        GamePath,
+                                                        patchOutputDir,
+                                                        true,
+                                                        read =>
+                                                        {
+                                                            UpdateSophonFileTotalProgress(read);
+                                                            UpdateSophonFileDownloadProgress(read, read);
+                                                        },
+                                                        downloadLimiter,
+                                                        innerToken);
                 }
+                finally
+                {
+                    using (dictionaryLock.EnterScope())
+                    {
+                        _ = downloadedDict.TryAdd(patchAsset.PatchNameSource, 0);
+                        downloadedDict[patchAsset.PatchNameSource]++;
+                    }
 
-                UpdateCurrentDownloadStatus();
-                await patchAsset.DownloadPatchAsync(httpClient,
-                                                    GamePath,
-                                                    patchOutputDir,
-                                                    true,
-                                                    read =>
-                                                    {
-                                                        UpdateSophonFileTotalProgress(read);
-                                                        UpdateSophonFileDownloadProgress(read, read);
-                                                    },
-                                                    downloadLimiter,
-                                                    innerToken);
-
-                Logger.LogWriteLine($"Downloaded patch file for: {patchAsset.TargetFilePath}",
-                                    LogType.Debug,
-                                    true);
-                Interlocked.Increment(ref ProgressAllCountCurrent);
+                    Logger.LogWriteLine($"Downloaded patch file for: {patchAsset.TargetFilePath}",
+                                        LogType.Debug,
+                                        true);
+                    Interlocked.Increment(ref ProgressAllCountCurrent);
+                }
             }
 
             async ValueTask ImplPatchUpdate(Tuple<SophonPatchAsset, Dictionary<string, int>> ctx, CancellationToken innerToken)
