@@ -67,8 +67,8 @@ namespace CollapseLauncher
                                      .Create();
 
             int threadNum = IsBurstDownloadEnabled
-                ? 1
-                : ThreadForIONormalized;
+                ? ThreadForIONormalized
+                : 1;
 
             await Parallel.ForEachAsync(AssetIndex,
                                         new ParallelOptions

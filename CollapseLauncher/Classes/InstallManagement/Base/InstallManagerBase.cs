@@ -2747,15 +2747,12 @@ namespace CollapseLauncher.InstallManager.Base
                 else
                 {
                     // Get the dialog and go for the selection
-                    (Dictionary<string, string> addedVO, string setAsDefaultVOLocalecode) =
+                    (HashSet<string> addedVO, string setAsDefaultVOLocalecode) =
                         await Dialog_ChooseAudioLanguageChoice(langStringsDict);
                     if (addedVO == null && string.IsNullOrEmpty(setAsDefaultVOLocalecode))
                     {
                         throw new TaskCanceledException();
                     }
-
-                    // Get the game default VO index
-                    int setAsDefaultVO = GetIDByLanguageLocaleCode(setAsDefaultVOLocalecode);
 
                     // Sanitize check for invalid values
                     if (addedVO == null || string.IsNullOrEmpty(setAsDefaultVOLocalecode))
@@ -2765,11 +2762,11 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Lookup for the package
-                    foreach (KeyValuePair<string, string> voChoice in addedVO)
+                    foreach (string VoLocaleId in addedVO)
                     {
                         // Try find the VO resource by locale code
                         if (!TryGetVoiceOverResourceByLocaleCode(packageDetail.AudioPackage,
-                                                                 voChoice.Key,
+                                                                 VoLocaleId,
                                                                  out HypPackageData voRes))
                         {
                             continue;
@@ -2777,7 +2774,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                         package = new GameInstallPackage(voRes, GamePath, packageDetail.UncompressedUrl, packageDetail.Version)
                         {
-                            LanguageID  = voChoice.Key,
+                            LanguageID  = VoLocaleId,
                             PackageType = GameInstallPackageType.Audio
                         };
                         packageList.Add(package);
@@ -2786,7 +2783,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Set the voice language ID to value given
-                    GameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+                    GameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVOLocalecode);
                 }
             }
         }
