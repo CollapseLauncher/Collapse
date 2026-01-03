@@ -959,6 +959,14 @@ namespace CollapseLauncher.InstallManager.Base
                 return RunSophonAssetUpdateThread(client, asset, parallelOptions);
             }
 
+            // HACK: To avoid user unable to continue the download due to executable being downloaded completely,
+            //       append "_tempSophon" on it.
+            string filename = Path.GetFileNameWithoutExtension(assetName);
+            if (filename.Equals(GameVersionManager.GamePreset.GameExecutableName, StringComparison.OrdinalIgnoreCase))
+            {
+                filePath += "_tempSophon";
+            }
+
             // Get the target and temp file info
             FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
 
