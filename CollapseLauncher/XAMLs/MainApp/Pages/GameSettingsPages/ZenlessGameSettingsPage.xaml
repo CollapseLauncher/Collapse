@@ -1,4 +1,4 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <!--  ReSharper disable Xaml.RedundantNamespaceAlias  -->
@@ -221,7 +221,7 @@
                                           IsOn="{x:Bind AdvancedGraphics_UseDirectX12Api, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                          Visibility="Collapsed">
+                                          Visibility="Visible">
                                 <ToggleSwitch.Header>
                                     <TextBlock>
                                         <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}" />
@@ -576,11 +576,9 @@
                                     </CheckBox>
                                 </StackPanel>
                             </Grid>
-                            <MenuFlyoutSeparator Margin="8,16"
-                                                 Visibility="Collapsed" />
+                            <MenuFlyoutSeparator Margin="8,16" />
                             <StackPanel Orientation="Horizontal"
-                                        Spacing="16"
-                                        Visibility="Collapsed">
+                                        Spacing="16">
                                 <TextBlock Margin="0,0,0,16"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                            TextWrapping="Wrap">
@@ -629,8 +627,7 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0"
-                                                Visibility="Collapsed">
+                                    <StackPanel Grid.Column="0">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -643,8 +640,7 @@
                                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1"
-                                                Visibility="Collapsed">
+                                    <StackPanel Grid.Column="1">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -661,8 +657,7 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2"
-                                                Visibility="Collapsed">
+                                    <StackPanel Grid.Column="2">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -678,8 +673,7 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3"
-                                                Visibility="Collapsed">
+                                    <StackPanel Grid.Column="3">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
