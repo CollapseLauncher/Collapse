@@ -58,14 +58,17 @@ namespace CollapseLauncher
             // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
             if (IsOnlyRecoverMain && IsVersionOverride)
             {
-                OriginAssetIndex = [];
+                OriginAssetIndex = [..assetIndex];
+                // Due to all assets have relative path instead of absolute path, this code is no longer necessary.
+                /*
                 foreach (FilePropertiesRemote asset in assetIndex)
                 {
                     FilePropertiesRemote newAsset          = asset.Copy();
                     ReadOnlyMemory<char> assetRelativePath = newAsset.N.AsMemory(GamePath.Length).TrimStart('\\');
                     newAsset.N = assetRelativePath.ToString();
                     OriginAssetIndex.Add(newAsset);
-                }
+                }*/
+
             }
 
             // Fetch assets from game server
