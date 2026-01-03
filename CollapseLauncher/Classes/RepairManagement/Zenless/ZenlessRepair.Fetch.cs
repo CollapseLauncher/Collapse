@@ -107,7 +107,7 @@ namespace CollapseLauncher
             }
 
             string exceptMatchFieldContent = File.ReadAllText(gameExceptMatchFieldFile);
-            HashSet<int> exceptMatchFieldHashSet = ZenlessInstall.CreateExceptMatchFieldHashSet<int>(exceptMatchFieldContent);
+            HashSet<string> exceptMatchFieldHashSet = ZenlessInstall.CreateExceptMatchFieldHashSet(exceptMatchFieldContent);
 
             List<FilePropertiesRemote> filteredList = [];
             foreach (FilePropertiesRemote asset in assetList)
@@ -120,7 +120,7 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                bool isExceptionFound = zenlessResAsset.PackageMatchingIds.Any(exceptMatchFieldHashSet.Contains);
+                bool isExceptionFound = zenlessResAsset.PackageMatchingIds.Any(x => exceptMatchFieldHashSet.Contains($"{x}"));
                 if (isExceptionFound)
                 {
                     continue;
