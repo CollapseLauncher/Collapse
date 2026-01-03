@@ -38,16 +38,13 @@ namespace CollapseLauncher.DiscordPresence
     {
         #region Properties
 
-        [field: NonSerialized]
-        private bool? _isRpcEnabled;
         public bool IsRpcEnabled
         {
-            get => _isRpcEnabled ??= GetAppConfigValue("EnableDiscordRPC").ToBoolNullable() ?? false;
+            get => field = GetAppConfigValue("EnableDiscordRPC");
             set
             {
-                if (_isRpcEnabled == value) return;
-
-                _isRpcEnabled = value;
+                if (field == value) return;
+                field = value;
 
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
                 if (value) SetupPresence();
