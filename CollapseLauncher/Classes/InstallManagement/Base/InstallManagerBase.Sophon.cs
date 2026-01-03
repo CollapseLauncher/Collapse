@@ -961,8 +961,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             // HACK: To avoid user unable to continue the download due to executable being downloaded completely,
             //       append "_tempSophon" on it.
-            string filename = Path.GetFileNameWithoutExtension(assetName);
-            if (filename.Equals(GameVersionManager.GamePreset.GameExecutableName, StringComparison.OrdinalIgnoreCase))
+            string filename = Path.GetFileName(assetName);
+            if (filename.StartsWith(GameVersionManager.GamePreset.GameExecutableName ?? "", StringComparison.OrdinalIgnoreCase))
             {
                 filePath += "_tempSophon";
             }
