@@ -245,7 +245,7 @@ internal static class Sleepy
         if (*(evil + n))
         {
             byte eepy = 0;
-            if (*(bp + j) > 0x40)
+            if (*(bp + j) >= 0x40)
             {
                 ch   -= 0x40;
                 eepy =  1;

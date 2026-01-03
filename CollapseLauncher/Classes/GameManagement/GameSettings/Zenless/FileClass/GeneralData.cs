@@ -532,7 +532,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             set => _envGlobalIllumination?.SetDataEnum(value);
         }
 
-        // Key 8 VSync
+        // Key 106 Motion Blur
         private SystemSettingLocalData<int>? _vMotionBlur;
 
         /// <summary>
