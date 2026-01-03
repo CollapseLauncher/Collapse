@@ -2575,11 +2575,8 @@ namespace CollapseLauncher.InstallManager.Base
             if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
                 // Iterate the package resource version and add it into packageList
-                if (packageDetail.AudioPackage.Count != 0)
-                {
-                    RearrangeDataListLocaleOrder(packageDetail.AudioPackage, x => x.Language);
-                    await TryAddResourceVersionList(packageDetail, packageList);
-                }
+                RearrangeDataListLocaleOrder(packageDetail.AudioPackage, x => x.Language);
+                await TryAddResourceVersionList(packageDetail, packageList);
             }
 
             // Check if the existing installation has the plugin installed or not
