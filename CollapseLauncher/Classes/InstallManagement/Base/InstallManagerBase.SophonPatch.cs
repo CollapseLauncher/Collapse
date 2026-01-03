@@ -11,7 +11,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -51,15 +50,14 @@ namespace CollapseLauncher.InstallManager.Base
                                               nameof(GameVersionManager.GamePreset.LauncherBizName));
 
             // Get GameVersionManager and GamePreset
-            IGameVersion gameVersion = GameVersionManager;
-            PresetConfig gamePreset = gameVersion.GamePreset;
+            PresetConfig gamePreset = GameVersionManager.GamePreset;
 
             // Gt current and future version
-            GameVersion? requestedVersionFrom = gameVersion.GetGameExistingVersion() ??
+            GameVersion? requestedVersionFrom = GameVersionManager.GetGameExistingVersion() ??
                                                 throw new NullReferenceException("Cannot get previous/current version of the game");
             GameVersion? requestedVersionTo = (isPreloadMode ?
-                                                  gameVersion.GetGameVersionApiPreload() :
-                                                  gameVersion.GetGameVersionApi()) ??
+                                                  GameVersionManager.GetGameVersionApiPreload() :
+                                                  GameVersionManager.GetGameVersionApi()) ??
                                               throw new NullReferenceException("Cannot get next/future version of the game");
 
             // Assign branch properties
@@ -168,13 +166,13 @@ namespace CollapseLauncher.InstallManager.Base
                                                       .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                       .Sum(x =>
                                                            {
-                                                               var firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                                               SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
                                                                return firstTag?.CompressedSize ?? 0;
                                                            });
             long sizeAdditionalToDownload = otherManifestIdentity
                                            .Sum(x =>
                                                 {
-                                                    var firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                                    SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
                                                     return firstTag?.CompressedSize ?? 0;
                                                 });
 
@@ -205,12 +203,12 @@ namespace CollapseLauncher.InstallManager.Base
                 long chunkCount       = 0;
 
                 // ReSharper disable once ConvertToUsingDeclaration
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                using (FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    using StreamWriter writer = new StreamWriter(fileStream);
-                    foreach (var field in otherManifestIdentity)
+                    using StreamWriter writer = new(fileStream);
+                    foreach (SophonManifestPatchIdentity field in otherManifestIdentity)
                     {
-                        var fieldInfo = field.DiffTaggedInfo.FirstOrDefault(x => x.Key == currentVersion).Value;
+                        SophonManifestChunkInfo? fieldInfo = field.DiffTaggedInfo.FirstOrDefault(x => x.Key == currentVersion).Value;
                         if (fieldInfo == null)
                         {
                             continue;

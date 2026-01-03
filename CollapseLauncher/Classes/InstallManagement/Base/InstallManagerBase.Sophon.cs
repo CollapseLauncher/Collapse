@@ -577,7 +577,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                              .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                              .Sum(x =>
                                                                   {
-                                                                      var firstTag = x.ChunkInfo;
+                                                                      SophonManifestChunkInfo? firstTag = x.ChunkInfo;
                                                                       return firstTag?.CompressedSize ?? 0;
                                                                   });
 
