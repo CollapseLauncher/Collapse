@@ -769,9 +769,9 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool isEnabled = GetAppConfigValue("EnableDiscordRPC");
-                ToggleDiscordGameStatus.IsEnabled = IsEnabled;
-                if (isEnabled)
+                var e = AppDiscordPresence.IsRpcEnabled;
+                ToggleDiscordGameStatus.IsEnabled = e;
+                if (e)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
@@ -781,23 +781,22 @@ namespace CollapseLauncher.Pages
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
-                return isEnabled;
+                return e;
             }
             set
             {
                 if (value)
                 {
-                    AppDiscordPresence.SetupPresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    AppDiscordPresence.DisablePresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
-                SetAndSaveConfigValue("EnableDiscordRPC", value);
+
+                AppDiscordPresence.IsRpcEnabled   = value;
                 ToggleDiscordGameStatus.IsEnabled = value;
             }
         }

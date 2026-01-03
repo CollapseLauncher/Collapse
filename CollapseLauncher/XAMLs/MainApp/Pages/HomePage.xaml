@@ -2219,6 +2219,7 @@
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionRpc}" />
                                     <ToggleSwitch x:Name="RegionRpcToggle"
+                                                  IsEnabled="{x:Bind IsRpcEnabled_QS}"
                                                   IsOn="{x:Bind ToggleRegionPlayingRpc, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />

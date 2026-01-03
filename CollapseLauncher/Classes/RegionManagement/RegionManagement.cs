@@ -489,7 +489,7 @@ namespace CollapseLauncher
 
             LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
         #if !DISABLEDISCORD
-            if (GetAppConfigValue("EnableDiscordRPC").ToBool())
+            if (AppDiscordPresence.IsRpcEnabled)
                 AppDiscordPresence.SetupPresence();
         #endif
             return true;

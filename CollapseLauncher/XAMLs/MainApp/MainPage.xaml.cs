@@ -881,8 +881,8 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(preset, gameName, gameRegion))
             {
             #if !DISABLEDISCORD
-                if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)
-                    AppDiscordPresence?.SetupPresence();
+                if ((AppDiscordPresence?.IsRpcEnabled ?? false) && !sameRegion)
+                    AppDiscordPresence.SetupPresence();
             #endif
                 InvokeLoadingRegionPopup(false);
                 LauncherFrame.BackStack.Clear();
