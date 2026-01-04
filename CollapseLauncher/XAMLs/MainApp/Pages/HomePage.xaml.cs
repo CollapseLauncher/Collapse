@@ -79,6 +79,8 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
+        private readonly bool IsRpcEnabled_QS = AppDiscordPresence?.IsRpcEnabled ?? false; 
+
         public static int RefreshRateDefault => 500;
         public static int RefreshRateSlow    => 1000;
 
