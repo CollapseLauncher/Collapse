@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
-using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
@@ -83,7 +83,7 @@ internal partial class StarRailPersistentRefResult
 
         // -- Get game server's dictionary asset
         StarRailAssetSignaturelessMetadata.Metadata? gameServStockLuaPath = Metadata.CacheLua?.DataList.FirstOrDefault();
-        string gameServLuaDictUrl = BaseUrls.CacheLua.CombineUrlFromString(gameServStockLuaPath?.Filename);
+        string gameServLuaDictUrl = BaseUrls.CacheLua.CombineURLFromString(gameServStockLuaPath?.Filename);
         if (string.IsNullOrEmpty(gameServLuaDictUrl))
         {
             Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Game Server's Lua Dictionary file is not found! Skipping",
