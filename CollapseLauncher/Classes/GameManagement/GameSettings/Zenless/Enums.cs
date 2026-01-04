@@ -189,7 +189,7 @@ public enum AnisotropicSamplingOption
 public enum LocalUiLayoutPlatform
 {
     Mobile = 1,
-    PC = 3
+    PC = 2
 }
 
 public static class ServerName

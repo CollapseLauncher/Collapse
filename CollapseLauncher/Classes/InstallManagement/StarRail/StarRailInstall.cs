@@ -58,7 +58,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override string _gameAudioLangListPathStatic =>
             Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt");
 
-        private StarRailRepair _gameRepairManager { get; set; }
+        private StarRailRepairV2 _gameRepairManager { get; set; }
 
         #endregion
 
@@ -90,10 +90,9 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
 #nullable enable
-        protected override StarRailRepair GetGameRepairInstance(string? versionString) =>
-            new StarRailRepair(ParentUI,
+        protected override StarRailRepairV2 GetGameRepairInstance(string? versionString) =>
+            new StarRailRepairV2(ParentUI,
                     GameVersionManager,
-                    this,
                     GameSettings,
                     true,
                     versionString);

@@ -1083,6 +1083,17 @@
                         <TextBlock Margin="0,0,0,16"
                                    FontWeight="Semibold"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                        <TextBlock Margin="0,0,8,8"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Title}" />
+                        <ToggleSwitch Margin="0,0,0,0"
+                                      Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Subtitle}"
+                                      IsOn="{x:Bind RunWithExplorerAsParent, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <TextBlock Margin="0,0,8,8"
+                                   FontWeight="Semibold"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Warning}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
