@@ -968,7 +968,9 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Get the target and temp file info
-            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
+            FileInfo existingFileInfo = new FileInfo(filePath)
+                                       .EnsureCreationOfDirectory()
+                                       .EnsureNoReadOnly();
 
             return asset.WriteToStreamAsync(client,
                                             assetSize => existingFileInfo.Open(new FileStreamOptions
@@ -1001,9 +1003,13 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the target and temp file info
             FileInfo existingFileInfo =
-                new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
+                new FileInfo(filePath)
+                   .EnsureCreationOfDirectory()
+                   .EnsureNoReadOnly(out bool isExistingFileInfoExist);
             FileInfo sophonFileInfo =
-                new FileInfo(filePath + "_tempSophon").EnsureNoReadOnly(out bool isSophonFileInfoExist);
+                new FileInfo(filePath + "_tempSophon")
+                   .EnsureCreationOfDirectory()
+                   .EnsureNoReadOnly(out bool isSophonFileInfoExist);
 
             // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
             if (!isExistingFileInfoExist || isSophonFileInfoExist
