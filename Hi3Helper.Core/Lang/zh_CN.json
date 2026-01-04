@@ -425,7 +425,11 @@
     "Advanced_GLC_PreLaunch_Exit": "游戏关闭或停止时强制退出启动的进程",
     "Advanced_GLC_PreLaunch_Delay": "延迟游戏启动（毫秒）",
     "Advanced_GLC_PostExit_Title": "退出后命令",
-    "Advanced_GLC_PostExit_Subtitle": "在游戏关闭后执行的命令"
+    "Advanced_GLC_PostExit_Subtitle": "在游戏关闭后执行的命令",
+
+    "Advanced_RunWithExplorerAsParent_Title": "以资源管理器作为父进程启动游戏",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "禁用以兼容 Steam 输入和叠加层",
+    "Advanced_RunWithExplorerAsParent_Warning": "警告：禁用后可能导致游戏登录被封禁！"
   },
 
   "_SettingsPage": {
@@ -1128,6 +1132,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 新的快捷方式仅在 Steam 重新加载后才会显示。",
     "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
     "SteamShortcutCreationSuccessSubtitle7": " • 如果游戏未安装/更新，Collapse 会尝试安装/更新。请注意，与这些过程相关的对话框仍会显示。",
+    "SteamShortcutCreationSuccessSubtitle8": "   此外，该区服的“高级设置”中的“以资源管理器作为父进程启动游戏”选项必须禁用。",
     "SteamShortcutCreationFailureTitle": "无效的 Steam 数据文件夹",
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
     "SteamShortcutTitle": "Steam 快捷方式",
