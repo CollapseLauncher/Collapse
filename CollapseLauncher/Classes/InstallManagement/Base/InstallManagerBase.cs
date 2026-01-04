@@ -1926,6 +1926,7 @@ namespace CollapseLauncher.InstallManager.Base
             ) => langString switch
                  {
                      "Chinese" => "zh-cn",
+                     "Chinese(PRC)" => "zh-cn",
                      "English" => "en-us",
                      "English(US)" => "en-us",
                      "Korean" => "ko-kr",
