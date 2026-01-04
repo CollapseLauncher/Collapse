@@ -24,7 +24,10 @@ namespace CollapseLauncher.InstallManager.Zenless
         [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfoAlt>k__BackingField")]
         private static extern ref SophonChunksInfo GetChunkAssetChunksInfoAlt(SophonAsset element);
 
-        protected override async Task FilterSophonPatchAssetList(List<SophonPatchAsset> itemList, CancellationToken token)
+        public override async Task FilterAssetList<T>(
+            List<T>           itemList,
+            Func<T, string?>  itemPathSelector,
+            CancellationToken token)
         {
             HashSet<int> exceptMatchFieldHashSet = await GetExceptMatchFieldHashSet(token);
             if (exceptMatchFieldHashSet.Count == 0)
@@ -32,13 +35,44 @@ namespace CollapseLauncher.InstallManager.Zenless
                 return;
             }
 
-            FilterSophonAsset(itemList, x => x.MainAssetInfo, exceptMatchFieldHashSet, token);
+            FilterSophonAsset(itemList, Selector, exceptMatchFieldHashSet);
+            return;
+
+            string? Selector(T item)
+            {
+                // For Game Update
+                if (item is SophonPatchAsset asset)
+                {
+                    if (asset.MainAssetInfo is not { } assetSelected)
+                    {
+                        return null;
+                    }
+
+                    token.ThrowIfCancellationRequested();
+                    ref SophonChunksInfo chunkInfo = ref Unsafe.IsNullRef(ref assetSelected)
+                        ? ref Unsafe.NullRef<SophonChunksInfo>()
+                        : ref GetChunkAssetChunksInfo(assetSelected);
+
+                    if (Unsafe.IsNullRef(ref chunkInfo))
+                    {
+                        chunkInfo = ref GetChunkAssetChunksInfoAlt(assetSelected);
+                    }
+
+                    return Unsafe.IsNullRef(ref chunkInfo)
+                        ? asset.MainAssetInfo.AssetName
+                        : chunkInfo.ChunksBaseUrl;
+                }
+
+                // TODO: For Game Repair handle
+
+                return null;
+            }
         }
 
         private async Task<HashSet<int>> GetExceptMatchFieldHashSet(CancellationToken token)
         {
             string gameExecDataName =
-                Path.GetFileNameWithoutExtension(GameVersionManager?.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
+                Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
             string gameExecDataPath         = $"{gameExecDataName}_Data";
             string gamePersistentDataPath   = Path.Combine(GamePath,               gameExecDataPath, "Persistent");
             string gameExceptMatchFieldFile = Path.Combine(gamePersistentDataPath, "KDelResource");
@@ -55,7 +89,7 @@ namespace CollapseLauncher.InstallManager.Zenless
         }
 
         // ReSharper disable once IdentifierTypo
-        private static void FilterSophonAsset<T>(List<T> itemList, Func<T, SophonAsset?> assetSelector, HashSet<int> exceptMatchFieldHashSet, CancellationToken token)
+        private static void FilterSophonAsset<T>(List<T> itemList, Func<T, string?> assetSelector, HashSet<int> exceptMatchFieldHashSet)
         {
             const string       separators    = "/\\";
             scoped Span<Range> urlPathRanges = stackalloc Range[32];
@@ -63,27 +97,15 @@ namespace CollapseLauncher.InstallManager.Zenless
             List<T> filteredList = [];
             foreach (T asset in itemList)
             {
-                SophonAsset? assetSelected = assetSelector(asset);
-
-                token.ThrowIfCancellationRequested();
-                ref SophonChunksInfo chunkInfo = ref assetSelected == null
-                    ? ref Unsafe.NullRef<SophonChunksInfo>()
-                    : ref GetChunkAssetChunksInfo(assetSelected);
-
-                if (assetSelected != null && Unsafe.IsNullRef(ref chunkInfo))
-                {
-                    chunkInfo = ref GetChunkAssetChunksInfoAlt(assetSelected);
-                }
-
-                if (Unsafe.IsNullRef(ref chunkInfo))
+                string? assetPath = assetSelector(asset);
+                if (assetPath == null)
                 {
                     filteredList.Add(asset);
                     continue;
                 }
 
-                ReadOnlySpan<char> manifestUrl = chunkInfo.ChunksBaseUrl;
+                ReadOnlySpan<char> manifestUrl = assetPath;
                 int                rangeLen    = manifestUrl.SplitAny(urlPathRanges, separators, SplitOptions);
-
                 if (rangeLen <= 0)
                 {
                     continue;

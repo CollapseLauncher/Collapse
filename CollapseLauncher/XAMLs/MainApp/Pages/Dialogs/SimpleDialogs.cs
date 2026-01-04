@@ -118,25 +118,17 @@ namespace CollapseLauncher.Dialogs
                                Lang._Misc.Okay);
         }
 
-        public static async Task<(Dictionary<string, string>?, string?)> Dialog_ChooseAudioLanguageChoice(
+        public static async Task<(HashSet<string>?, string?)> Dialog_ChooseAudioLanguageChoice(
             Dictionary<string, string> langDict, string defaultLocaleCode = "ja-jp")
         {
-            bool[] choices = new bool[langDict.Count];
             if (!langDict.ContainsKey(defaultLocaleCode))
             {
                 throw new
                     KeyNotFoundException($"Default locale code: {defaultLocaleCode} is not found within langDict argument");
             }
 
-            List<string> localeCodeList = langDict.Keys.ToList();
-            List<string> langList       = langDict.Values.ToList();
-
             // Naive approach to lookup default index value
-            string? refLocaleCode =
-                localeCodeList.FirstOrDefault(x => x.Equals(defaultLocaleCode, StringComparison.OrdinalIgnoreCase));
-            int        defaultIndex    = localeCodeList.IndexOf(refLocaleCode ?? "");
-            int        choiceAsDefault = defaultIndex;
-            StackPanel parentPanel     = CollapseUIExt.CreateStackPanel();
+            StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
             parentPanel.AddElementToStackPanel(new TextBlock
             {
@@ -153,7 +145,7 @@ namespace CollapseLauncher.Dialogs
             defaultChoiceRadioButton.HorizontalContentAlignment = HorizontalAlignment.Stretch;
             parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
 
-            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
+            ContentDialogCollapse dialog = new(ContentDialogTheme.Warning)
             {
                 Title               = Lang._Dialogs.ChooseAudioLangTitle,
                 Content             = parentPanel,
@@ -165,8 +157,10 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot            = SharedXamlRoot
             };
 
+            List<CheckBox> checkboxes = [];
+
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-            for (int i = 0; i < langList.Count; i++)
+            foreach ((string localeId, string language) in langDict)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
                                                  .WithColumns(new GridLength(1, GridUnitType.Star),
@@ -174,27 +168,28 @@ namespace CollapseLauncher.Dialogs
                                                  .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                                  .WithMargin(0, 0, 0, 8);
 
-                CheckBox checkBox = new CheckBox
+                CheckBox checkBox = new()
                 {
                     Content                    = checkBoxGrid,
                     HorizontalAlignment        = HorizontalAlignment.Stretch,
                     HorizontalContentAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment          = VerticalAlignment.Center,
-                    VerticalContentAlignment   = VerticalAlignment.Center
+                    VerticalContentAlignment   = VerticalAlignment.Center,
+                    Tag                        = localeId
                 };
+                checkboxes.Add(checkBox);
 
-                TextBlock useAsDefaultText = new TextBlock
+                TextBlock useAsDefaultText = new()
                 {
-                    Text                    = Lang._Misc.UseAsDefault,
-                    HorizontalAlignment     = HorizontalAlignment.Right,
+                    Text = Lang._Misc.UseAsDefault,
+                    HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
-                    VerticalAlignment       = VerticalAlignment.Top,
-                    Opacity                 = 0.5,
-                    Name                    = "UseAsDefaultLabel"
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Opacity = 0.5,
+                    Name = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
-                Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(
-                                                                     langList[i],
+                Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(language,
                                                                      "\uf1ab",
                                                                      iconSize: 14,
                                                                      textSize: 14,
@@ -204,167 +199,161 @@ namespace CollapseLauncher.Dialogs
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
 
-                checkBoxGrid.AddElementToGridColumn(iconTextGrid,     0);
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
                 checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
 
                 RadioButton radioButton = new RadioButton
-                                          {
-                                              Content = checkBox,
-                                              Style =
-                                                  CollapseUIExt
-                                                     .GetApplicationResource<
-                                                          Style>("AudioLanguageSelectionRadioButtonStyle"),
-                                              Background =
-                                                  CollapseUIExt
-                                                     .GetApplicationResource<
-                                                          Brush>("AudioLanguageSelectionRadioButtonBrush")
-                                          }
-                                         .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                                         .WithVerticalAlignment(VerticalAlignment.Center)
-                                         .WithCursor(inputCursor);
+                {
+                    Content = checkBox,
+                    Style =
+                        CollapseUIExt
+                           .GetApplicationResource<
+                                Style>("AudioLanguageSelectionRadioButtonStyle"),
+                    Background =
+                        CollapseUIExt
+                           .GetApplicationResource<
+                                Brush>("AudioLanguageSelectionRadioButtonBrush"),
+                    Tag = localeId
+                }
+               .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+               .WithVerticalAlignment(VerticalAlignment.Center)
+               .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
-                radioButton.Tag = i;
-                checkBox.Tag    = i;
-
-                radioButton.Checked += (sender, _) =>
-                                       {
-                                           RadioButton? radioButtonLocal = sender as RadioButton;
-                                           choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
-                                           checkBox.IsChecked = true;
-
-                                           if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
-                                               textBlockLocal)
-                                           {
-                                               textBlockLocal.Opacity = 1;
-                                           }
-                                       };
-
-                radioButton.Unchecked += (sender, _) =>
-                                         {
-                                             RadioButton? radioButtonLocal = sender as RadioButton;
-                                             if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
-                                                 textBlockLocal)
-                                             {
-                                                 textBlockLocal.Opacity = 0.5;
-                                             }
-                                         };
-
-                radioButton.PointerEntered += (sender, _) =>
-                                              {
-                                                  RadioButton? radioButtonLocal = sender as RadioButton;
-                                                  TextBlock? textBlockLocal =
-                                                      radioButtonLocal
-                                                        ?.FindDescendant("UseAsDefaultLabel") as TextBlock;
-
-                                                  CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                                                  Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
-                                                  if (textBlockLocal is null || thisIconText is null ||
-                                                      (thisCheckBox?.IsChecked ?? false))
-                                                  {
-                                                      return;
-                                                  }
-
-                                                  textBlockLocal.Opacity = 1;
-                                                  thisIconText.Opacity   = 1;
-                                              };
-
-                radioButton.PointerExited += (sender, _) =>
-                                             {
-                                                 RadioButton? radioButtonLocal = sender as RadioButton;
-                                                 TextBlock? textBlockLocal =
-                                                     radioButtonLocal?.FindDescendant("UseAsDefaultLabel") as TextBlock;
-
-                                                 CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                                                 Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
-                                                 if (textBlockLocal is null || thisIconText is null ||
-                                                     (thisCheckBox?.IsChecked ?? false))
-                                                 {
-                                                     return;
-                                                 }
-
-                                                 textBlockLocal.Opacity = 0.5;
-                                                 thisIconText.Opacity   = 0.5;
-                                             };
-
-                if (i == defaultIndex)
+                // Check the radio button and check box if the localeId is equal to default
+                if (localeId.Equals(defaultLocaleCode, StringComparison.OrdinalIgnoreCase))
                 {
-                    choices[i]                             = true;
-                    checkBox.IsChecked                     = true;
-                    defaultChoiceRadioButton.SelectedIndex = i;
-                    iconTextGrid.Opacity                   = 1;
+                    checkBox.IsChecked                    = true;
+                    defaultChoiceRadioButton.SelectedItem = radioButton;
+
+                    iconTextGrid.Opacity = 1;
                 }
 
+                radioButton.Checked += (sender, _) =>
+                {
+                    RadioButton? radioButtonLocal = sender as RadioButton;
+                    checkBox.IsChecked = true;
+
+                    if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                        textBlockLocal)
+                    {
+                        textBlockLocal.Opacity = 1;
+                    }
+                };
+
+                radioButton.Unchecked += (sender, _) =>
+                {
+                    RadioButton? radioButtonLocal = sender as RadioButton;
+                    if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                        textBlockLocal)
+                    {
+                        textBlockLocal.Opacity = 0.5;
+                    }
+                };
+
+                radioButton.PointerEntered += (sender, _) =>
+                {
+                    RadioButton? radioButtonLocal = sender as RadioButton;
+                    TextBlock? textBlockLocal =
+                        radioButtonLocal
+                          ?.FindDescendant("UseAsDefaultLabel") as TextBlock;
+
+                    CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                    if (textBlockLocal is null || thisIconText is null ||
+                        (thisCheckBox?.IsChecked ?? false))
+                    {
+                        return;
+                    }
+
+                    textBlockLocal.Opacity = 1;
+                    thisIconText.Opacity = 1;
+                };
+
+                radioButton.PointerExited += (sender, _) =>
+                {
+                    RadioButton? radioButtonLocal = sender as RadioButton;
+                    TextBlock? textBlockLocal =
+                        radioButtonLocal?.FindDescendant("UseAsDefaultLabel") as TextBlock;
+
+                    CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                    if (textBlockLocal is null || thisIconText is null ||
+                        (thisCheckBox?.IsChecked ?? false))
+                    {
+                        return;
+                    }
+
+                    textBlockLocal.Opacity = 0.5;
+                    thisIconText.Opacity = 0.5;
+                };
+
                 checkBox.Checked += (sender, _) =>
-                                    {
-                                        CheckBox? thisCheckBox = sender as CheckBox;
-                                        int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
-                                        choices[thisIndex]    = true;
-                                        radioButton.IsEnabled = true;
+                {
+                    CheckBox thisCheckBox = (CheckBox)sender;
+                    radioButton.IsEnabled = true;
 
-                                        bool isHasAnyChoices = choices.Any(x => x);
-                                        dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
-                                        if (defaultChoiceRadioButton.SelectedIndex < 0)
-                                        {
-                                            defaultChoiceRadioButton.SelectedIndex = thisIndex;
-                                        }
+                    dialog.IsPrimaryButtonEnabled         =   IsHasAnyChoices();
+                    defaultChoiceRadioButton.SelectedItem ??= radioButton;
 
-                                        if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
-                                        {
-                                            thisIconText.Opacity = 1;
-                                        }
-                                    };
+                    if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                    {
+                        thisIconText.Opacity = 1;
+                    }
+                };
+
                 checkBox.Unchecked += (sender, _) =>
-                                      {
-                                          CheckBox? thisCheckBox = sender as CheckBox;
-                                          int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
-                                          choices[thisIndex]    = false;
-                                          radioButton.IsChecked = false;
+                {
+                    CheckBox thisCheckBox = (CheckBox)sender;
+                    radioButton.IsChecked = false;
 
-                                          if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
-                                          {
-                                              thisIconText.Opacity = 0.5;
-                                          }
+                    if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                    {
+                        thisIconText.Opacity = 0.5;
+                    }
 
-                                          bool isHasAnyChoices = choices.Any(x => x);
-                                          dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                    bool isHasAnyChoices = IsHasAnyChoices();
+                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
 
-                                          // TODO: Find a better way rather than this SPAGHEETTTTT CODE
-                                          if (defaultChoiceRadioButton.SelectedIndex >= 0 || !isHasAnyChoices)
-                                          {
-                                              return;
-                                          }
+                    if (defaultChoiceRadioButton.SelectedItem != null || !isHasAnyChoices)
+                    {
+                        return;
+                    }
 
-                                          for (int index = 0; index < choices.Length; index++)
-                                          {
-                                              if (!choices[index])
-                                              {
-                                                  continue;
-                                              }
+                    for (int index = 0; index < checkboxes.Count; index++)
+                    {
+                        CheckBox otherCheckbox = checkboxes[index];
+                        if (!(otherCheckbox.IsChecked ?? false))
+                        {
+                            continue;
+                        }
 
-                                              defaultChoiceRadioButton.SelectedIndex = index;
-                                              break;
-                                          }
-                                      };
+                        defaultChoiceRadioButton.SelectedIndex = index;
+                        break;
+                    }
+                };
             }
 
             ContentDialogResult dialogResult = await dialog.ShowAsync();
-            if (dialogResult == ContentDialogResult.None)
+            if (dialogResult == ContentDialogResult.None ||
+                defaultChoiceRadioButton.SelectedIndex < 0 ||
+                defaultChoiceRadioButton.SelectedItem as RadioButton is not { Tag: string selectedDefaultVoLocaleId })
             {
                 return (null, null);
             }
 
-            Dictionary<string, string> returnDictionary = new();
-            for (int i = 0; i < choices.Length; i++)
+            HashSet<string> selectedVoLocaleIds = new(StringComparer.OrdinalIgnoreCase);
+            foreach (string selectedVoLocateId in checkboxes.Where(x => x.IsChecked ?? false)
+                                                    .Select(x => x.Tag)
+                                                    .OfType<string>())
             {
-                if (choices[i])
-                {
-                    returnDictionary.Add(localeCodeList[i], langList[i]);
-                }
+                selectedVoLocaleIds.Add(selectedVoLocateId);
             }
 
-            return (returnDictionary, localeCodeList[choiceAsDefault]);
+            return (selectedVoLocaleIds, selectedDefaultVoLocaleId);
+
+            bool IsHasAnyChoices() => checkboxes.Any(x => x.IsChecked ?? false);
         }
 
         public static async Task<(List<int>?, int)> Dialog_ChooseAudioLanguageChoice(
@@ -1436,7 +1425,12 @@ namespace CollapseLauncher.Dialogs
                                          {
                                              Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6,
                                              TextWrapping = TextWrapping.WrapWholeWords
-                                         }.WithMargin(0d, 2d, 0d, 4d));
+                                         }.WithMargin(0d, 2d, 0d, 1d),
+                                         new TextBlock
+                                         {
+                                             Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle8,
+                                             TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 1d, 0d, 4d));
 
             return SpawnDialog(Lang._Dialogs.SteamShortcutCreationSuccessTitle,
                                panel,

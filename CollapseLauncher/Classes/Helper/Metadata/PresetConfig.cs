@@ -626,8 +626,8 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
-                RegistryKey?       keys  = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-                byte[]?            value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
+                RegistryKey? keys  = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                byte[]?      value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
 
                 if (keys is null || value is null || value.Length is 0)
                 {
@@ -658,15 +658,25 @@ namespace CollapseLauncher.Helper.Metadata
 
         // WARNING!!!
         // This feature is only available for Genshin and Star Rail.
-        public void SetVoiceLanguageID(int langID)
+        public void SetVoiceLanguageID(string localeId)
         {
             switch (GameType)
             {
                 case GameNameType.Genshin:
-                    SetVoiceLanguageID_Genshin(langID);
+                    int genshinId = localeId switch
+                                    {
+                                        "zh-cn" => 0,
+                                        "en-us" => 1,
+                                        "ja-jp" => 2,
+                                        "ko-kr" => 3,
+                                        _ => throw new
+                                            InvalidOperationException($"[SetVoiceLanguageID] Locale ID is unknown! {localeId}")
+                                    };
+                    SetVoiceLanguageID_Genshin(genshinId);
                     break;
                 case GameNameType.StarRail:
-                    SetVoiceLanguageID_StarRail(langID);
+                    int srId = GetStarRailVoiceLanguageByName(localeId.GetSplit(1, "-").ToString());
+                    SetVoiceLanguageID_StarRail(srId);
                     break;
             }
         }

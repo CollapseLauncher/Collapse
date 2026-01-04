@@ -346,7 +346,13 @@ namespace CollapseLauncher.Pages
         public bool IsMobileMode
         {
             get => Settings?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
-            set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
+            set
+            {
+                Settings.SettingsCollapseMisc.LaunchMobileMode = value;
+                Settings.GeneralData.LocalUILayoutPlatform =
+                    value ? LocalUiLayoutPlatform.Mobile : LocalUiLayoutPlatform.PC;
+            }
+            
         }
         #endregion
 
@@ -448,6 +454,12 @@ namespace CollapseLauncher.Pages
             // clamp for negative value when clearing the number box
             if ((int)sender.Value < 0)
                 sender.Value = 0;
+        }
+
+        public bool RunWithExplorerAsParent
+        {
+            get => Settings.SettingsCollapseMisc.RunWithExplorerAsParent;
+            set => Settings.SettingsCollapseMisc.RunWithExplorerAsParent = value;
         }
         #endregion
 

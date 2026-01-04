@@ -186,6 +186,12 @@ public enum AnisotropicSamplingOption
     x16
 }
 
+public enum LocalUiLayoutPlatform
+{
+    Mobile = 1,
+    PC = 2
+}
+
 public static class ServerName
 {
     public const string Europe   = "prod_gf_eu";

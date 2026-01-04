@@ -612,9 +612,9 @@
     "NetworkSettings_Proxy_PasswordHelp2": "[空]",
     "NetworkSettings_Proxy_PasswordHelp3": "如果您的代理不需要身份验证，请将此字段留空。",
 
-    "NetworkSettings_ProxyTest_Button": "测试代理可联通性",
-    "NetworkSettings_ProxyTest_ButtonChecking": "检查可联通性中……",
-    "NetworkSettings_ProxyTest_ButtonSuccess": "代理可联通性测试成功！",
+    "NetworkSettings_ProxyTest_Button": "测试代理可连通性",
+    "NetworkSettings_ProxyTest_ButtonChecking": "检查可连通性中……",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "代理可连通性测试成功！",
     "NetworkSettings_ProxyTest_ButtonFailed": "测试失败！代理无法访问",
 
     "NetworkSettings_Dns_Title": "自定义 DNS 设置",

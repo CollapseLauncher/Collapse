@@ -718,7 +718,7 @@ namespace CollapseLauncher.Pages
                                                CancellationToken.None);
 
                 resultStream = result.Stream;
-                using IRandomAccessStream stream = resultStream.AsRandomAccessStream(true);
+                IRandomAccessStream stream = resultStream.AsRandomAccessStream(true);
                 image.ImageOpened += ImageOnImageOpened;
 
                 await image.SetSourceAsync(stream);

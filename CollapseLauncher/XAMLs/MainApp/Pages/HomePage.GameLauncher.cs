@@ -108,14 +108,21 @@ public partial class HomePage
                     workingDir = NormalizePath(GameDirPath);
                 }
 
-                var pid = CreateProcessWithParent("explorer", exePath, additionalArguments, workingDir);
-                if (pid > 0)
+                if (CurrentGameProperty!.GameSettings?.SettingsCollapseMisc.RunWithExplorerAsParent ?? true)
                 {
-                    proc = Process.GetProcessById(pid);
+                    var pid = CreateProcessWithParent("explorer", exePath, additionalArguments, workingDir);
+                    if (pid > 0)
+                    {
+                        proc = Process.GetProcessById(pid);
+                    }
+                    else
+                    {
+                        LogWriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
+                    }
                 }
-                else
+                
+                if (proc == null)
                 {
-                    LogWriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
                     proc = new Process();
                     proc.StartInfo.FileName = exePath;
                     proc.StartInfo.Arguments = additionalArguments;
@@ -814,6 +821,7 @@ public partial class HomePage
                         if (!usePluginGameLaunchApi)
                             currentGameProcess = Process.GetProcessById(processId);
 
+                        Task playtimeTask = Task.CompletedTask;
                         try
                         {
                             // HACK: For some reason, the text still unchanged.
@@ -844,7 +852,7 @@ public partial class HomePage
                                     ? Task.CompletedTask
                                     : ((PluginPresetConfigWrapper)presetConfig).RunGameContext.WaitRunningGameAsync(x));
 
-                            _ = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
+                            playtimeTask = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
 
                             await ProcessAwaiter(token);
 
@@ -852,6 +860,7 @@ public partial class HomePage
                         }
                         finally
                         {
+                            await playtimeTask;
                             currentGameProcess?.Dispose();
                         }
                     }

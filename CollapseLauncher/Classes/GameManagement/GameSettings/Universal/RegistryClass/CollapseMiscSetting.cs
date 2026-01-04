@@ -133,6 +133,11 @@ namespace CollapseLauncher.GameSettings.Universal
         /// </summary>
         public bool IsPlayingRpc { get; set; } = true;
 
+        /// <summary>
+        /// Forces the game process to launch under Explorer to prevent logins from getting blocked<br/>
+        /// Must be disabled when using Steam Input and Overlay
+        /// </summary>
+        public bool RunWithExplorerAsParent { get; set; } = true;
         #endregion
 
         #region Methods
@@ -154,6 +159,8 @@ namespace CollapseLauncher.GameSettings.Universal
                     #endif
                     CollapseMiscSetting result = byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
                     result.ParentGameSettings = gameSettings;
+
+                    return result;
                 }
             }
             catch ( Exception ex )
