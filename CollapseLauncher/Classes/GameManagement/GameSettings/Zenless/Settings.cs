@@ -1,5 +1,6 @@
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Zenless.Context;
+using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using System;
@@ -82,6 +83,14 @@ namespace CollapseLauncher.GameSettings.Zenless
             {
                 Size screenSize = SettingsScreen.sizeRes;
                 parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
+            }
+            
+            //Enable MobileMode
+            if (SettingsCollapseMisc.LaunchMobileMode)
+            {
+                // Force save on every launch
+                GeneralData.LocalUILayoutPlatform = LocalUiLayoutPlatform.Mobile;
+                GeneralData.Save();
             }
 
             if (SettingsCollapseScreen.GameGraphicsAPI == 4)

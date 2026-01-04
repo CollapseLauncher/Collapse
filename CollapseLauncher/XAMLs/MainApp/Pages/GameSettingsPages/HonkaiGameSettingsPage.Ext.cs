@@ -662,6 +662,12 @@ namespace CollapseLauncher.Pages
             if ((int)sender.Value < 0)
                 sender.Value = 0;
         }
+
+        public bool RunWithExplorerAsParent
+        {
+            get => Settings.SettingsCollapseMisc.RunWithExplorerAsParent;
+            set => Settings.SettingsCollapseMisc.RunWithExplorerAsParent = value;
+        }
         #endregion
     }
 }

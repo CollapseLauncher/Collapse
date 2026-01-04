@@ -425,7 +425,11 @@
     "Advanced_GLC_PreLaunch_Exit": "ゲームが終了/停止した場合に実行中のプロセスを強制終了させる",
     "Advanced_GLC_PreLaunch_Delay": "ゲームの起動を遅らせる（ミリ秒）",
     "Advanced_GLC_PostExit_Title": "終了後コマンド",
-    "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する"
+    "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する",
+
+    "Advanced_RunWithExplorerAsParent_Title": "エクスプローラーを親プロセスとしてゲームを起動",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "Steam入力・Steamオーバーレイのために無効にする",
+    "Advanced_RunWithExplorerAsParent_Warning": "警告：無効にした場合、ゲームへのログインがブロックされる可能性があります！"
   },
 
   "_SettingsPage": {
@@ -1128,6 +1132,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 作成したショートカットはSteamの再起動後に表示されます。",
     "SteamShortcutCreationSuccessSubtitle6": " • Steamオーバーレイを使用するには、Steamを管理者として実行した上でCollapseを完全に閉じるか、ランチャー設定の「多重起動を許可する」を有効にする必要があります。",
     "SteamShortcutCreationSuccessSubtitle7": " • ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
+    "SteamShortcutCreationSuccessSubtitle8": "ゲームごとの設定から、「エクスプローラーを親プロセスとしてゲームを起動」を無効にする必要があります。",
     "SteamShortcutCreationFailureTitle": "Steamデータフォルダーが無効です",
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
     "SteamShortcutTitle": "Steamショートカット",

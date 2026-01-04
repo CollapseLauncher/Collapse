@@ -48,8 +48,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Protected Properties
 
-        private List<string> _sophonVOLanguageList      { get; } = [];
-        private bool         _isSophonDownloadCompleted { get; set; }
+        private HashSet<string> _sophonVOLanguageList      { get; } = [];
+        private bool            _isSophonDownloadCompleted { get; set; }
 
         private bool         _isSophonPreloadCompleted
         {
@@ -249,7 +249,7 @@ namespace CollapseLauncher.InstallManager.Base
                         List<SophonChunkManifestInfoPair> sophonInfoPairList = [];
 
                         // Get the info pair based on info provided above (for main game file)
-                        var sophonMainInfoPair = await
+                        SophonChunkManifestInfoPair? sophonMainInfoPair = await
                             SophonManifest.CreateSophonChunkManifestInfoPair(httpClient,
                                                                              requestedUrl,
                                                                              GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
@@ -262,89 +262,67 @@ namespace CollapseLauncher.InstallManager.Base
                         // Add the manifest to the pair list
                         sophonInfoPairList.Add(sophonMainInfoPair);
 
-                        List<string> voLanguageList =
+                        Dictionary<string, string> voLanguageDict =
                             GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonBuildData);
 
-                        // Get Audio Choices first.
-                        // If the fallbackFromUpdate flag is set, then don't show the dialog and instead
-                        // use the default language (ja-jp) as the fallback and read the existing audio_lang file
-                        List<int> addedVo = [];
-                        int setAsDefaultVo = GetSophonLocaleCodeIndex(
-                                              sophonMainInfoPair.OtherSophonBuildData,
-                                              "ja-jp"
-                                             );
+                        const string VOLanguageDefaultId = "ja-jp";
 
-                        if (voLanguageList.Count != 0)
+                        if (voLanguageDict.Count != 0)
                         {
-                            if (fallbackFromUpdate)
+                            // Now we only add VO list if the file actually exist.
+                            // We won't bother any misconfiguration on user side anymore.
+                            if (fallbackFromUpdate && File.Exists(_gameAudioLangListPathStatic))
                             {
-                                if (!File.Exists(_gameAudioLangListPathStatic))
+                                string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
+                                foreach (string voLang in voLangList)
                                 {
-                                    addedVo.Add(setAsDefaultVo);
-                                }
-                                else
-                                {
-                                    string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
-                                    foreach (string voLang in voLangList)
-                                    {
-                                        string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
-                                            voLang
-#if !DEBUG
+                                    string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
+                                         voLang
+                                     #if !DEBUG
                                         , false
-#endif
-                                            );
+                                     #endif
+                                        );
 
-                                        if (string.IsNullOrEmpty(voLocaleId))
-                                        {
-                                            continue;
-                                        }
-
-                                        int voLocaleIndex = GetSophonLocaleCodeIndex(
-                                             sophonMainInfoPair.OtherSophonBuildData,
-                                             voLocaleId
-                                            );
-                                        addedVo.Add(voLocaleIndex);
-                                    }
-
-                                    if (addedVo.Count == 0)
+                                    if (string.IsNullOrEmpty(voLocaleId))
                                     {
-                                        addedVo.Add(setAsDefaultVo);
+                                        continue;
                                     }
+
+                                    _sophonVOLanguageList.Add(voLocaleId);
+                                }
+
+                                if (_sophonVOLanguageList.Count == 0)
+                                {
+                                    _sophonVOLanguageList.Add(VOLanguageDefaultId);
                                 }
                             }
                             else
                             {
-                                (List<int>? addedVoTemp, setAsDefaultVo) =
-                                    await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
-                                     voLanguageList,
-                                     setAsDefaultVo);
+                                (HashSet<string>? addedVos, string? setAsDefaultVo) =
+                                    await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(voLanguageDict);
 
-                                if (addedVoTemp != null)
+                                if (addedVos == null || setAsDefaultVo == null)
                                 {
-                                    addedVo.AddRange(addedVoTemp);
+                                    throw new TaskCanceledException(); // Cancel entire operation
                                 }
+
+                                foreach (string addedVo in addedVos)
+                                {
+                                    _sophonVOLanguageList.Add(addedVo);
+                                }
+
+                                // Set the voice language ID to value given
+                                GameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
                             }
                         }
 
-                        if (addedVo == null || setAsDefaultVo < 0)
+                        foreach (string sophonVoLangLocaleId in _sophonVOLanguageList)
                         {
-                            throw new TaskCanceledException();
-                        }
-
-                        for (int i = 0; i < addedVo.Count; i++)
-                        {
-                            int    voLangIndex      = addedVo[i];
-                            string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                            _sophonVOLanguageList?.Add(voLangLocaleCode);
-
                             // Get the info pair based on info provided above (for the selected VO audio file)
                             SophonChunkManifestInfoPair sophonSelectedVoLang =
-                                sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                                sophonMainInfoPair.GetOtherManifestInfoPair(sophonVoLangLocaleId);
                             sophonInfoPairList.Add(sophonSelectedVoLang);
                         }
-
-                        // Set the voice language ID to value given
-                        GameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
 
                         // If the fallback is used from update, use the same display as All Size for Per File progress.
                         if (fallbackFromUpdate)
@@ -577,7 +555,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                              .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                              .Sum(x =>
                                                                   {
-                                                                      var firstTag = x.ChunkInfo;
+                                                                      SophonManifestChunkInfo? firstTag = x.ChunkInfo;
                                                                       return firstTag?.CompressedSize ?? 0;
                                                                   });
 
@@ -981,8 +959,18 @@ namespace CollapseLauncher.InstallManager.Base
                 return RunSophonAssetUpdateThread(client, asset, parallelOptions);
             }
 
+            // HACK: To avoid user unable to continue the download due to executable being downloaded completely,
+            //       append "_tempSophon" on it.
+            string filename = Path.GetFileName(assetName);
+            if (filename.StartsWith(GameVersionManager.GamePreset.GameExecutableName ?? "", StringComparison.OrdinalIgnoreCase))
+            {
+                filePath += "_tempSophon";
+            }
+
             // Get the target and temp file info
-            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
+            FileInfo existingFileInfo = new FileInfo(filePath)
+                                       .EnsureCreationOfDirectory()
+                                       .EnsureNoReadOnly();
 
             return asset.WriteToStreamAsync(client,
                                             assetSize => existingFileInfo.Open(new FileStreamOptions
@@ -1015,9 +1003,13 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the target and temp file info
             FileInfo existingFileInfo =
-                new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
+                new FileInfo(filePath)
+                   .EnsureCreationOfDirectory()
+                   .EnsureNoReadOnly(out bool isExistingFileInfoExist);
             FileInfo sophonFileInfo =
-                new FileInfo(filePath + "_tempSophon").EnsureNoReadOnly(out bool isSophonFileInfoExist);
+                new FileInfo(filePath + "_tempSophon")
+                   .EnsureCreationOfDirectory()
+                   .EnsureNoReadOnly(out bool isSophonFileInfoExist);
 
             // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
             if (!isExistingFileInfoExist || isSophonFileInfoExist
@@ -1299,12 +1291,11 @@ namespace CollapseLauncher.InstallManager.Base
             return Math.Max(0, index);
         }
 
-        protected virtual List<string> GetSophonLanguageDisplayDictFromVoicePackList(SophonManifestBuildData sophonData)
+        protected virtual Dictionary<string, string> GetSophonLanguageDisplayDictFromVoicePackList(SophonManifestBuildData sophonData)
         {
-            List<string> value = [];
-            for (var index = 0; index < sophonData.ManifestIdentityList.Count; index++)
+            Dictionary<string, string> value = new(StringComparer.OrdinalIgnoreCase);
+            foreach (SophonManifestBuildIdentity identity in sophonData.ManifestIdentityList)
             {
-                var identity = sophonData.ManifestIdentityList[index];
                 // Check the lang ID and add the translation of the language to the list
                 string localeCode = identity.MatchingField.ToLower();
                 if (!IsValidLocaleCode(localeCode))
@@ -1318,19 +1309,13 @@ namespace CollapseLauncher.InstallManager.Base
                     continue;
                 }
 
-                value.Add(languageDisplay);
+                value.Add(localeCode, languageDisplay);
             }
 
             return value;
         }
 
-        protected virtual void RearrangeSophonDataLocaleOrder(SophonManifestBuildData? sophonData)
-        {
-            // Rearrange the sophon data list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(sophonData?.ManifestIdentityList, x => x.MatchingField);
-        }
-
-        protected virtual void WriteAudioLangListSophon(List<string> sophonVOList)
+        protected virtual void WriteAudioLangListSophon(ICollection<string> sophonVOList)
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath))
@@ -1350,10 +1335,9 @@ namespace CollapseLauncher.InstallManager.Base
                 : [];
 
             // Try lookup if there is a new language list, then add it to the list
-            for (int index = 0; index < sophonVOList.Count; index++)
+            foreach (string packageLocaleCodeString in sophonVOList)
             {
-                var    packageLocaleCodeString = sophonVOList[index];
-                string langString              = GetLanguageStringByLocaleCode(packageLocaleCodeString);
+                string langString = GetLanguageStringByLocaleCode(packageLocaleCodeString);
                 if (!langList.Contains(langString, StringComparer.OrdinalIgnoreCase))
                 {
                     langList.Add(langString);
@@ -1361,11 +1345,11 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Create the audio lang list file
-            using var sw = new StreamWriter(_gameAudioLangListPathStatic,
-                                            new FileStreamOptions
-                                                { Mode = FileMode.Create, Access = FileAccess.Write });
+            using StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
+                                                     new FileStreamOptions
+                                                         { Mode = FileMode.Create, Access = FileAccess.Write });
             // Iterate the package list
-            foreach (var voIds in langList)
+            foreach (string voIds in langList)
                 // Write the language string as per ID
             {
                 sw.WriteLine(voIds);

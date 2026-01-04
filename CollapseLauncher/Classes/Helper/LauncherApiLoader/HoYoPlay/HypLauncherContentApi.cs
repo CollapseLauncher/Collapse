@@ -43,6 +43,7 @@ public class HypLauncherContentKind : HypApiIdentifiable
             field ??= News
                      .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)
                      .ToList();
+        private set;
     }
 
     [JsonIgnore]
@@ -53,6 +54,7 @@ public class HypLauncherContentKind : HypApiIdentifiable
             field ??= News
                      .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)
                      .ToList();
+        private set;
     }
 
     [JsonIgnore]
@@ -63,6 +65,14 @@ public class HypLauncherContentKind : HypApiIdentifiable
             field ??= News
                      .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_INFO)
                      .ToList();
+        private set;
+    }
+
+    public void ResetCachedNews()
+    {
+        NewsEventKind = null;
+        NewsAnnouncementKind = null;
+        NewsInformationKind = null;
     }
 }
 

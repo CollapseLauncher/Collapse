@@ -58,7 +58,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override string _gameAudioLangListPathStatic =>
             Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt");
 
-        private StarRailRepair _gameRepairManager { get; set; }
+        private StarRailRepairV2 _gameRepairManager { get; set; }
 
         #endregion
 
@@ -90,8 +90,8 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
 #nullable enable
-        protected override StarRailRepair GetGameRepairInstance(string? versionString) =>
-            new StarRailRepair(ParentUI,
+        protected override StarRailRepairV2 GetGameRepairInstance(string? versionString) =>
+            new StarRailRepairV2(ParentUI,
                     GameVersionManager,
                     GameSettings,
                     true,
@@ -115,7 +115,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(Token.Token);
+            await ApplyDeleteFileActionAsync(Token!.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)

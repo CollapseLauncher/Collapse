@@ -34,7 +34,7 @@ namespace CollapseLauncher
     {
         internal static GamePresetProperty Create(UIElement uiElementParent, ILauncherApi? launcherApis, string gameName, string gameRegion)
         {
-            var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
+            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
             if (gamePreset == null)
             {
                 throw new NullReferenceException($"Cannot find game with name: {gameName} and region: {gameRegion} on the currently loaded metadata config!");
@@ -53,30 +53,29 @@ namespace CollapseLauncher
                     property.GameVersion  = new GameTypeHonkaiVersion(launcherApis, gamePreset);
                     property.GameSettings = new HonkaiSettings(property.GameVersion);
                     property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion, property.GameSettings);
-                    // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
                     property.GameRepair   = new HonkaiRepairV2(uiElementParent, property.GameVersion, property.GameSettings);
                     property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameSettings);
                     break;
                 case GameNameType.StarRail:
                     property.GameVersion  = new GameTypeStarRailVersion(launcherApis, gamePreset);
                     property.GameSettings = new StarRailSettings(property.GameVersion);
-                    property.GameCache    = new StarRailCache(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion, property.GameSettings);
                     property.GameInstall  = new StarRailInstall(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameCache    = new StarRailCacheV2(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameRepair   = new StarRailRepairV2(uiElementParent, property.GameVersion, property.GameSettings);
                     break;
                 case GameNameType.Genshin:
-                    property.GameVersion = new GameTypeGenshinVersion(launcherApis, gamePreset);
+                    property.GameVersion  = new GameTypeGenshinVersion(launcherApis, gamePreset);
                     property.GameSettings = new GenshinSettings(property.GameVersion);
-                    property.GameCache = null;
-                    property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion, property.GameSettings, property.GameRepair);
+                    property.GameCache    = null;
+                    property.GameRepair   = new GenshinRepair(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameInstall  = new GenshinInstall(uiElementParent, property.GameVersion, property.GameSettings, property.GameRepair);
                     break;
                 case GameNameType.Zenless:
-                    property.GameVersion = new GameTypeZenlessVersion(launcherApis, gamePreset);
+                    property.GameVersion  = new GameTypeZenlessVersion(launcherApis, gamePreset);
                     property.GameSettings = new ZenlessSettings(property.GameVersion);
-                    property.GameCache = new ZenlessCache(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameRepair = new ZenlessRepair(uiElementParent, property.GameVersion, property.GameSettings);
-                    property.GameInstall = new ZenlessInstall(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameCache    = new ZenlessCache(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameRepair   = new ZenlessRepair(uiElementParent, property.GameVersion, property.GameSettings);
+                    property.GameInstall  = new ZenlessInstall(uiElementParent, property.GameVersion, property.GameSettings);
                     break;
                 case GameNameType.Plugin:
                     PluginPresetConfigWrapper pluginPresetConfig = (PluginPresetConfigWrapper)gamePreset;
