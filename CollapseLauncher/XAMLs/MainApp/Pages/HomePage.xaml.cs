@@ -433,18 +433,16 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        private bool _isCarouselInitialized = false;
-
         public void StartCarouselSlideshow()
             => ImageCarouselEventSlideshow.ResumeSlideshow();
 
         public void StopCarouselSlideshow()
             => ImageCarouselEventSlideshow.PauseSlideshow();
 
-        private async void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
             => ImageCarouselPipsPager.Opacity = .5d;
 
-        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
+        private void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
             => ImageCarouselPipsPager.Opacity = 1;
 
         private async void HideImageCarousel(bool hide)

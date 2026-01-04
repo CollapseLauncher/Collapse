@@ -143,7 +143,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind progressPrePerFileBar.Value, Mode=OneWay}" />
+                                                   Text="{x:Bind ProgressPrePerFileBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -156,7 +156,7 @@
                                                    Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
                                     </StackPanel>
                                 </Grid>
-                                <ProgressBar x:Name="progressPrePerFileBar"
+                                <ProgressBar x:Name="ProgressPrePerFileBar"
                                              Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
@@ -190,7 +190,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                                   Text="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -208,7 +208,7 @@
                                                    Text="-" />
                                     </StackPanel>
                                 </Grid>
-                                <ProgressBar x:Name="progressPreBar"
+                                <ProgressBar x:Name="ProgressPreBar"
                                              Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
@@ -281,7 +281,7 @@
                                         Orientation="Horizontal">
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
-                                           Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                           Text="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
                                            Text="%" />
@@ -315,9 +315,9 @@
                                      Margin="0,8,0,24"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Bottom"
-                                     IsIndeterminate="{x:Bind progressPreBar.IsIndeterminate, Mode=OneWay}"
-                                     Maximum="{x:Bind progressPreBar.Maximum, Mode=OneWay}"
-                                     Value="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                     IsIndeterminate="{x:Bind ProgressPreBar.IsIndeterminate, Mode=OneWay}"
+                                     Maximum="{x:Bind ProgressPreBar.Maximum, Mode=OneWay}"
+                                     Value="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                     </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
                           Margin="0,-8,0,16"
@@ -946,7 +946,7 @@
                                           Height="14"
                                           Margin="-5,-3"
                                           HorizontalAlignment="Center">
-                        <lottie:DownloadIcon />
+                        <lottie:DownloadIcon Foreground="{Binding ElementName=WpfPackageReinstallBtn, Path=Foreground}" />
                     </AnimatedVisualPlayer>
                 </c:NonFaultyGrid>
             </c:NonFaultyGrid>
@@ -1629,20 +1629,20 @@
                 <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
-                <Grid x:Name="progressRingShadow"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
+                <Grid x:Name="ProgressRingShadow"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
-                              IsIndeterminate="{x:Bind progressRing.IsIndeterminate, Mode=OneWay}"
-                              Maximum="{x:Bind progressRing.Maximum, Mode=OneWay}"
-                              Value="{x:Bind progressRing.Value, Mode=OneWay}" />
-                <Ellipse x:Name="progressRingBG"
+                              IsIndeterminate="{x:Bind ProgressRing.IsIndeterminate, Mode=OneWay}"
+                              Maximum="{x:Bind ProgressRing.Maximum, Mode=OneWay}"
+                              Value="{x:Bind ProgressRing.Value, Mode=OneWay}" />
+                <Ellipse x:Name="ProgressRingBG"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
-                <ProgressRing x:Name="progressRing"
+                <ProgressRing x:Name="ProgressRing"
                               Width="Auto"
                               Height="Auto"
                               Margin="-6"
@@ -1650,26 +1650,26 @@
                               IsIndeterminate="True"
                               Maximum="100"
                               Value="0" />
-                <Grid x:Name="progressPerFile"
+                <Grid x:Name="ProgressPerFile"
                       Margin="16"
                       Visibility="Visible">
                     <ProgressRing Width="Auto"
                                   Height="Auto"
                                   HorizontalAlignment="Stretch"
-                                  IsIndeterminate="{x:Bind progressRingPerFile.IsIndeterminate, Mode=OneWay}"
-                                  Maximum="{x:Bind progressRingPerFile.Maximum, Mode=OneWay}"
-                                  Value="{x:Bind progressRingPerFile.Value, Mode=OneWay}" />
+                                  IsIndeterminate="{x:Bind ProgressRingPerFile.IsIndeterminate, Mode=OneWay}"
+                                  Maximum="{x:Bind ProgressRingPerFile.Maximum, Mode=OneWay}"
+                                  Value="{x:Bind ProgressRingPerFile.Value, Mode=OneWay}" />
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
                           CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
                           Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,32" />
-                    <Ellipse x:Name="progressRingBG2"
+                    <Ellipse x:Name="ProgressRingBG2"
                              Margin="4"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch"
                              Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
-                    <ProgressRing x:Name="progressRingPerFile"
+                    <ProgressRing x:Name="ProgressRingPerFile"
                                   Width="Auto"
                                   Height="Auto"
                                   Margin="8"
@@ -1714,7 +1714,7 @@
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
-                               Text="{x:Bind progressRing.Value, Mode=OneWay}" />
+                               Text="{x:Bind ProgressRing.Value, Mode=OneWay}" />
                     <TextBlock Margin="-1,0,0,0"
                                FontWeight="Bold"
                                Text="%" />
@@ -2487,7 +2487,7 @@
                                     </Grid.RenderTransform>
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:StartGameIcon />
+                                        <lottie:StartGameIcon Foreground="{Binding ElementName=GamePlaceholderBtnPreRegister, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                                 <TextBlock Grid.Column="1"
@@ -2504,7 +2504,7 @@
                                       Padding="8,0">
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:StartGameIcon />
+                                        <lottie:StartGameIcon Foreground="{Binding ElementName=GamePlaceholderBtnPreRegister, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2547,7 +2547,7 @@
                                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
                                     <AnimatedVisualPlayer Height="26"
                                                           HorizontalAlignment="Right">
-                                        <lottie:DownloadIcon />
+                                        <lottie:DownloadIcon Foreground="{Binding ElementName=InstallGameBtn, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2582,7 +2582,7 @@
                                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:UpdateIcon />
+                                        <lottie:UpdateIcon Foreground="{Binding ElementName=UpdateGameBtn, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2616,7 +2616,7 @@
                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
                                 <AnimatedVisualPlayer Height="28"
                                                       HorizontalAlignment="Right">
-                                    <lottie:StartGameIcon />
+                                    <lottie:StartGameIcon Foreground="{Binding ElementName=StartGameBtn, Path=Foreground}" />
                                 </AnimatedVisualPlayer>
                             </Grid>
                             <FontIcon Grid.Column="1"
