@@ -393,6 +393,7 @@ namespace Hi3Helper.SentryHelper
             SentrySdk.AddBreadcrumb(GameInfo);
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
+            SentrySdk.AddBreadcrumb(AppConfig);
             
             if (PluginInfo != null)
                 SentrySdk.AddBreadcrumb(PluginInfo);

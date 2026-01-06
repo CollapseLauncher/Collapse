@@ -137,6 +137,38 @@ public static partial class SentryHelper
             }, "GameInfo");
 
 
+        [field: AllowNull, MaybeNull]
+        private static Breadcrumb AppConfig
+        {
+            get
+            {
+                field ??= new Breadcrumb("Collapse App Config", "app.config", new Dictionary<string, string>
+                {
+                    { "Proxy", ProxyBreadcrumb.IsUsingProxy ?? "" },
+                    { "Waifu2x", GetAppConfigValue("EnableWaifu2X") ? "enabled" : "disabled" },
+                    {
+                        "HttpCache",
+                        AppNetworkCacheEnabled
+                            ? "enabled" + (AppNetworkCacheAggressiveModeEnabled ? "+agg" : "")
+                            : "disabled"
+                    },
+                    { "AppThread", $"{AppCurrentDownloadThread},{AppCurrentThread}" },
+                    { "SophonThread", $"{GetAppConfigValue("SophonHttpConnInt")},{GetAppConfigValue("SophonCpuThread")}" },
+                    { "DownloadPreallocated", (IsUsePreallocatedDownloader) ? "enabled" : "disabled" },
+                    {
+                        "HttpOpts", 
+                        $"{(GetAppConfigValue("IsAllowHttpRedirections")? "Redirect" : "")}" +
+                        $"{(GetAppConfigValue("IsAllowHttpCookies") ? "Cookie" : "" )}" +
+                        $"{(GetAppConfigValue("IsAllowUntrustedCert") ? "Insecure" : "")}"
+                    },
+                    { "ExternalDNS", GetAppConfigValue("IsUseExternalDns") ? "enabled" : "disabled" }
+                }, "AppConfig");
+                return field;
+            }
+        }
+}
+
+#nullable disable
 public static class PluginListBreadcrumb
 {
     private static readonly ObservableCollection<(string Name, string Version, string StdVersion)> List = [];
@@ -156,5 +188,35 @@ public static class PluginListBreadcrumb
                                                                    item => $"{item.Version}-{item.StdVersion}"
                                                                    ),
                                                  "PluginInfo");
+    }
+}
+
+#nullable enable
+public static class ProxyBreadcrumb
+{
+    [field: AllowNull, MaybeNull]
+    public static string IsUsingProxy
+    {
+        get
+        {
+            field ??= string.Concat(
+                                  GetCollapseProxy() ? "cl" : "", 
+                                  GetSystemProxy()   ? "+sys" : "" 
+                                  );
+            return field;
+        }
+    }
+    
+    private static bool GetSystemProxy()
+    {
+        var sysProxy = (WebProxy?) WebRequest.DefaultWebProxy;
+        if (sysProxy == null) return false;
+
+        return !string.IsNullOrEmpty(sysProxy.Address?.AbsoluteUri);
+    }
+
+    private static bool GetCollapseProxy()
+    {
+        return GetAppConfigValue("IsUseProxy").ToBool() && !string.IsNullOrEmpty(GetAppConfigValue("HttpProxyUrl"));
     }
 }
