@@ -204,9 +204,18 @@ public static class ProxyBreadcrumb
     
     private static bool GetSystemProxy()
     {
-        using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Internet Settings");
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Internet Settings");
 
-        return (key?.GetValue("ProxyEnable") as int? ?? 0) == 1;
+            return (key?.GetValue("ProxyEnable") as int? ?? 0) == 1;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[CollapseSentryExtension::GetSystemProxy] Failure when grabbing system proxy settings! returning false...\r\n" +
+                                $"{ex}", LogType.Error, true);
+            return false;
+        }
     }
     
     private static bool GetCollapseProxy()
