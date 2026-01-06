@@ -195,7 +195,7 @@ public static class ProxyBreadcrumb
         get
         {
             field ??= string.Concat(
-                                  GetCollapseProxy() ? "cl" : "", 
+                                  GetCollapseProxy() ? $"cl({GetCollapseProxyType()}" : "", 
                                   GetSystemProxy()   ? "+sys" : "" 
                                   );
             return field;
@@ -225,5 +225,25 @@ public static class ProxyBreadcrumb
             return false;
 
         return !string.IsNullOrEmpty(GetAppConfigValue("HttpProxyUrl"));
+    }
+
+    private static string GetCollapseProxyType()
+    {
+        var cfg   = GetAppConfigValue("HttpProxyUrl").ToString();
+
+        if (string.IsNullOrEmpty(cfg)) return string.Empty;
+        try
+        {
+            var proxy = new Uri(cfg);
+
+            return proxy.Scheme;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[CollapseSentryExtension::GetCollapseProxyType] Failure when parsing proxy URL scheme! returning empty string..." +
+                                $"{ex}", LogType.Error, true);
+
+            return string.Empty;
+        }
     }
 }
