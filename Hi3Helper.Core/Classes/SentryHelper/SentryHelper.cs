@@ -506,6 +506,10 @@ namespace Hi3Helper.SentryHelper
                 { "CdnOption", AppCdnOption }
             }, "GameInfo");
 
+    #pragma warning disable CA2211
+        public static Breadcrumb? PluginInfo = null;
+    #pragma warning restore CA2211
+
         #endregion
 
         private static SentryId ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
@@ -514,6 +518,9 @@ namespace Hi3Helper.SentryHelper
             SentrySdk.AddBreadcrumb(GameInfo);
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
+            
+            if (PluginInfo != null)
+                SentrySdk.AddBreadcrumb(PluginInfo);
 
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
