@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -51,6 +53,7 @@ public partial class MainPage : Page
             FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
             FontIcon IconGameSettings = new FontIcon { Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { Glyph = "" };
+            FontIcon IconFilesCleanup = new FontIcon { Glyph = "" };
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
@@ -108,6 +111,10 @@ public partial class MainPage : Page
                                                                  .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
             }
+
+            NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                            { Icon = IconFilesCleanup, Tag = "filescleanup"}
+                                                        .BindNavigationViewItemText("_FileCleanupPage", "Title"));
 
             if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
@@ -246,13 +253,27 @@ public partial class MainPage : Page
         NavigateInnerSwitch(itemTag);
     }
 
-    private void NavigateInnerSwitch(string itemTag)
+    private async void NavigateInnerSwitch(string itemTag)
     {
         if (itemTag == PreviousTag) return;
         switch (itemTag)
         {
             case "launcher":
                 Navigate(typeof(HomePage), itemTag);
+                break;
+
+            case "filescleanup":
+                LoadingMessageHelper.ShowLoadingFrame();
+                // Initialize and get game state, then get the latest package info
+                LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
+                                                Lang._FileCleanupPage.LoadingSubtitle2);
+
+                if (CurrentGameProperty?.GameInstall != null)
+                    await CurrentGameProperty.GameInstall.CleanUpGameFiles();
+
+                // Manually reselect last item in toolbar as CleanUp is an overlay
+                NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
+                                                       .FirstOrDefault(x => x.Tag is string tag && tag == PreviousTag); ;
                 break;
 
             case "repair":
