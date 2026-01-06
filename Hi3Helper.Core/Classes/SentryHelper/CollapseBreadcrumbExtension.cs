@@ -209,14 +209,17 @@ public static class ProxyBreadcrumb
     
     private static bool GetSystemProxy()
     {
-        var sysProxy = (WebProxy?) WebRequest.DefaultWebProxy;
-        if (sysProxy == null) return false;
+        using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Internet Settings");
 
-        return !string.IsNullOrEmpty(sysProxy.Address?.AbsoluteUri);
+        return (key?.GetValue("ProxyEnable") as int? ?? 0) == 1;
     }
-
+    
     private static bool GetCollapseProxy()
     {
-        return GetAppConfigValue("IsUseProxy").ToBool() && !string.IsNullOrEmpty(GetAppConfigValue("HttpProxyUrl"));
+        var useProxy = GetAppConfigValue("IsUseProxy").ToBool();
+        if (!useProxy)
+            return false;
+
+        return !string.IsNullOrEmpty(GetAppConfigValue("HttpProxyUrl"));
     }
 }
