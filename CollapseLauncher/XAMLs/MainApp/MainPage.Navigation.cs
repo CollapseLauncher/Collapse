@@ -277,8 +277,7 @@ public partial class MainPage : Page
                 catch (Exception ex)
                 {
                     LoadingMessageHelper.HideLoadingFrame();
-                    LogWriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method! \r\n {ex}", LogType.Error, true);
-                    await SentryHelper.ExceptionHandlerAsync(ex);
+                    LogWriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method!\r\n{ex}", LogType.Error, true);
 
                     ErrorSender.SendException(ex);
                 }
