@@ -5,6 +5,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -268,12 +269,23 @@ public partial class MainPage : Page
                 LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
                                                 Lang._FileCleanupPage.LoadingSubtitle2);
 
-                if (CurrentGameProperty?.GameInstall != null)
-                    await CurrentGameProperty.GameInstall.CleanUpGameFiles();
+                try
+                {
+                    if (CurrentGameProperty?.GameInstall != null)
+                        await CurrentGameProperty.GameInstall.CleanUpGameFiles();
+                }
+                catch (Exception ex)
+                {
+                    LoadingMessageHelper.HideLoadingFrame();
+                    LogWriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method! \r\n {ex}", LogType.Error, true);
+                    await SentryHelper.ExceptionHandlerAsync(ex);
+
+                    ErrorSender.SendException(ex);
+                }
 
                 // Manually reselect last item in toolbar as CleanUp is an overlay
                 NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
-                                                       .FirstOrDefault(x => x.Tag is string tag && tag == PreviousTag); ;
+                                                       .FirstOrDefault(x => x.Tag is string tag && tag == PreviousTag);
                 break;
 
             case "repair":
