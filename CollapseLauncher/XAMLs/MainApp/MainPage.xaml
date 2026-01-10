@@ -24,6 +24,8 @@
                                 Stretch="UniformToFill"
                                 Tag="MediaPlayer" />
         </Grid>
+        <Grid x:Name="BackgroundPresenterGrid"
+              x:FieldModifier="internal"/>
         <Grid x:Name="BackgroundAcrylicMask"
               Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
               Opacity="0" />

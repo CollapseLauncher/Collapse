@@ -61,20 +61,18 @@ public partial class HomePage
                 collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
                 LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                              $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
-            }
 
-            await CarouselStopScroll();
-            await processAwaiter(CancellationToken.None);
+                double lastSlideshowDuration = ImageCarouselEventSlideshow.SlideshowDuration;
+                ImageCarouselEventSlideshow.SlideshowDuration = 0; // Stop slideshow duration completely
+                await processAwaiter(CancellationToken.None);
 
-            using (Process collapseProcess = Process.GetCurrentProcess())
-            {
                 collapseProcess.PriorityBoostEnabled = true;
                 collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
                 LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                              $"PriorityBoost is on, carousel is started", LogType.Default, true);
-            }
 
-            await CarouselRestartScroll();
+                ImageCarouselEventSlideshow.SlideshowDuration = lastSlideshowDuration;
+            }
         }
         catch (Exception ex)
         {

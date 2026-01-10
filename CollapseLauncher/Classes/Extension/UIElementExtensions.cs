@@ -36,7 +36,7 @@ namespace CollapseLauncher.Extension
         public string LocalePropertyName { get; init; }
     }
 
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
 #nullable enable
         /// <summary>
@@ -188,6 +188,20 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
+        internal static void BindProperty(this FrameworkElement element,
+                                          object?               source,
+                                          string                propertyName,
+                                          DependencyProperty    dependencyProperty,
+                                          BindingMode           bindingMode)
+        {
+            element.SetBinding(dependencyProperty, new Binding
+            {
+                Mode   = bindingMode,
+                Source = source,
+                Path   = new PropertyPath(propertyName)
+            });
+        }
+
         internal static void BindProperty<T>(
             this T              element,
             DependencyProperty  dependencyProperty,
@@ -293,11 +307,15 @@ namespace CollapseLauncher.Extension
             return contentPanel;
         }
 
-        internal static Grid       CreateGrid()                                                     => new();
-        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new() { Orientation = orientation };
+        internal static Grid CreateGrid() =>
+            CreateElementFromUIThread<Grid>();
 
-        internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
-            => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) =>
+            CreateElementFromUIThread<StackPanel>(x => x.Orientation = orientation);
+
+        internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements) =>
+            AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+
         internal static void AddElementToStackPanel(this Panel stackPanel, IEnumerable<FrameworkElement> elements)
         {
             foreach (FrameworkElement element in elements)
@@ -1039,29 +1057,6 @@ namespace CollapseLauncher.Extension
             where T : DependencyObject
             => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
 
-
-        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-
-        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetAllControlsCursorRecursive(HandCursor);
-        }
-
-        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetCursor(HandCursor);
-        }
-
         internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
         {
             if (sender is not UIElement element)
@@ -1198,6 +1193,23 @@ namespace CollapseLauncher.Extension
 
             // Return the result (whether if it's not found/as null, or any last grid)
             return lastGrid;
+        }
+
+        internal static T CreateElementFromUIThread<T>(Action<T>? setAttributeDelegate = null)
+            where T : UIElement, new()
+        {
+            T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>();
+            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
+            {
+                setAttributeDelegate?.Invoke(element);
+            }
+            else
+            {
+                DispatcherQueueExtensions.CurrentDispatcherQueue
+                                         .TryEnqueue(() => setAttributeDelegate?.Invoke(element));
+            }
+
+            return element;
         }
     }
 }

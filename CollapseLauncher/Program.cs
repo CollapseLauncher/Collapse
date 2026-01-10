@@ -118,8 +118,9 @@ namespace CollapseLauncher
                 Application.Start(pContext =>
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                    DispatcherQueueExtensions.CurrentDispatcherQueue = dispatcherQueue;
 
-                    DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                    DispatcherQueueSynchronizationContext context = new(dispatcherQueue);
                     SynchronizationContext.SetSynchronizationContext(context);
 
                     // ReSharper disable once ObjectCreationAsStatement

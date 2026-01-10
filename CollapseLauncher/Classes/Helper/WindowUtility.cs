@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -468,10 +469,10 @@ namespace CollapseLauncher.Helper
                         switch (wParam)
                         {
                             case 1 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowFocused();
+                                ImageBackgroundManager.Shared.SetWindowFocusedEvent();
                                 break;
                             case 0 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowUnfocused();
+                                ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
                                 break;
                         }
 
@@ -510,14 +511,14 @@ namespace CollapseLauncher.Helper
                                 }
                             case SC_MINIMIZE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                                    ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
+                                    InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowFocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                                    ImageBackgroundManager.Shared.SetWindowFocusedEvent();
+                                    InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                     break;
                                 }
                         }
@@ -528,12 +529,12 @@ namespace CollapseLauncher.Helper
                     {
                         if (wParam == 0)
                         {
-                            InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                            InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                         }
                         else
                         {
-                            MainPage.CurrentBackgroundHandler?.WindowFocused();
-                            InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                            ImageBackgroundManager.Shared.SetWindowFocusedEvent();
+                            InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                         }
                         break;
                     }

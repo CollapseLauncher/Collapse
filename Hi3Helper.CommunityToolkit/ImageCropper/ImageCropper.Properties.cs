@@ -31,7 +31,7 @@ public partial class ImageCropper
     private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var target = (ImageCropper)d;
-        if (e.NewValue is WriteableBitmap bitmap)
+        if (e.NewValue is BitmapSource bitmap)
         {
             if (bitmap.PixelWidth < target.MinCropSize.Width || bitmap.PixelHeight < target.MinCropSize.Height)
             {
@@ -89,9 +89,9 @@ public partial class ImageCropper
     /// <summary>
     ///  Gets or sets the source of the cropped image.
     /// </summary>
-    public WriteableBitmap? Source
+    public BitmapSource? Source
     {
-        get { return (WriteableBitmap)GetValue(SourceProperty); }
+        get { return (BitmapSource)GetValue(SourceProperty); }
         set { SetValue(SourceProperty, value); }
     }
     #nullable restore
@@ -170,7 +170,7 @@ public partial class ImageCropper
     /// Identifies the <see cref="Source"/> dependency property.
     /// </summary>
     public static readonly DependencyProperty SourceProperty =
-        DependencyProperty.Register(nameof(Source), typeof(WriteableBitmap), typeof(ImageCropper), new PropertyMetadata(null, OnSourceChanged));
+        DependencyProperty.Register(nameof(Source), typeof(BitmapSource), typeof(ImageCropper), new PropertyMetadata(null, OnSourceChanged));
 
     /// <summary>
     /// Identifies the <see cref="CropShape"/> dependency property.

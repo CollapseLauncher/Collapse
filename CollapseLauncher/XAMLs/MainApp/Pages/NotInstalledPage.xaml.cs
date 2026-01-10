@@ -4,7 +4,6 @@
     {
         public NotInstalledPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             InitializeComponent();
         }
     }

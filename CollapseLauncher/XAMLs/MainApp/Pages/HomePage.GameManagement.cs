@@ -1,6 +1,7 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -21,11 +22,10 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -269,10 +269,10 @@ public sealed partial class HomePage
                                         ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadPerSizeString, downloadPerSizeString);
                                         ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, installDownloadSpeedString);
                                         ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
-                                        progressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
-                                        progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
-                                        progressPreBar.IsIndeterminate = false;
-                                        progressPrePerFileBar.IsIndeterminate = false;
+                                        ProgressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
+                                        ProgressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
+                                        ProgressPreBar.IsIndeterminate = false;
+                                        ProgressPrePerFileBar.IsIndeterminate = false;
                                     });
     }
     #endregion
@@ -293,8 +293,8 @@ public sealed partial class HomePage
 
             HideImageCarousel(true);
 
-            progressRing.Value           = 0;
-            progressRing.IsIndeterminate = true;
+            ProgressRing.Value           = 0;
+            ProgressRing.IsIndeterminate = true;
             InstallGameBtn.Visibility    = Visibility.Collapsed;
             CancelDownloadBtn.Visibility = Visibility.Visible;
             ProgressTimeLeft.Visibility  = Visibility.Visible;
@@ -472,10 +472,10 @@ public sealed partial class HomePage
     private void GameInstall_StatusChanged_Inner(TotalPerFileStatus e)
     {
         ProgressStatusTitle.Text   = e.ActivityStatus;
-        progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+        ProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
 
-        progressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
-        progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+        ProgressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
+        ProgressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
 
         ProgressStatusIconDisk.Visibility = e.ActivityStatusInternet ? Visibility.Collapsed : Visibility.Visible;
         ProgressStatusIconInternet.Visibility = e.ActivityStatusInternet ? Visibility.Visible : Visibility.Collapsed;
@@ -491,8 +491,8 @@ public sealed partial class HomePage
 
     private void GameInstall_ProgressChanged_Inner(TotalPerFileProgress e)
     {
-        progressRing.Value = e.ProgressAllPercentage;
-        progressRingPerFile.Value = e.ProgressPerFilePercentage;
+        ProgressRing.Value = e.ProgressAllPercentage;
+        ProgressRingPerFile.Value = e.ProgressPerFilePercentage;
         ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
         ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressAllSpeed));
         ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
@@ -625,27 +625,28 @@ public sealed partial class HomePage
 
     private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-        if (string.IsNullOrEmpty(file)) return;
-
-        var currentMediaType = GetMediaType(file);
-            
-        if (currentMediaType == MediaType.StillImage)
+        if (m_mainPage == null)
         {
-            var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-            
-            if (croppedImage == null) return;
-            SetAlternativeImageStream(croppedImage);
+            return;
         }
+
+        string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+        if (string.IsNullOrEmpty(file)) return;
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)
         {
             CurrentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
             CurrentGameProperty.GameSettings.SaveBaseSettings();
         }
-        _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
-        BGPathDisplay.Text = Path.GetFileName(file);
+        ImageBackgroundManager manager = ImageBackgroundManager.Shared;
+        manager.CurrentCustomBackgroundImagePath = file;
+
+        await manager.Initialize(CurrentGameProperty!.GamePreset,
+                                 CurrentGameProperty!.GamePreset.GameLauncherApi?.LauncherGameBackground,
+                                 m_mainPage.BackgroundPresenterGrid,
+                                 true,
+                                 CancellationToken.None);
     }
 
     private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
@@ -806,8 +807,8 @@ public sealed partial class HomePage
 
         HideImageCarousel(true);
 
-        progressRing.Value           = 0;
-        progressRing.IsIndeterminate = true;
+        ProgressRing.Value           = 0;
+        ProgressRing.IsIndeterminate = true;
 
         InstallGameBtn.Visibility    = Visibility.Collapsed;
         UpdateGameBtn.Visibility     = Visibility.Collapsed;

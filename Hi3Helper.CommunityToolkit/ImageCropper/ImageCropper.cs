@@ -404,6 +404,12 @@ public partial class ImageCropper : Control
     }
 
     /// <summary>
+    /// Get current crop area and shape.
+    /// </summary>
+    /// <returns>Crop area and the shape of the image.</returns>
+    public (Rect Area, CropShape Shape) GetCropArea() => (_currentCroppedRect, CropShape);
+
+    /// <summary>
     /// Saves the cropped image to a stream with the specified format.
     /// </summary>
     /// <param name="stream">The target stream.</param>
@@ -417,13 +423,18 @@ public partial class ImageCropper : Control
             return;
         }
 
+        if (Source is not WriteableBitmap writeableBitmapSource)
+        {
+            throw new NotSupportedException("You must use WriteableBitmap as your Source to save the image directly to file stream.");
+        }
+
         if (keepRectangularOutput || CropShape == CropShape.Rectangular)
         {
-            await CropImageAsync(Source, stream, _currentCroppedRect, bitmapFileFormat);
+            await CropImageAsync(writeableBitmapSource, stream, _currentCroppedRect, bitmapFileFormat);
             return;
         }
 
-        await CropImageWithShapeAsync(Source, stream, _currentCroppedRect, bitmapFileFormat, CropShape);
+        await CropImageWithShapeAsync(writeableBitmapSource, stream, _currentCroppedRect, bitmapFileFormat, CropShape);
     }
 
     /// <summary>
