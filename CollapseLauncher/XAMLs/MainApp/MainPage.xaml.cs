@@ -67,11 +67,6 @@ namespace CollapseLauncher
         private int  CurrentGameRegion    = -1;
 
         internal static readonly List<string> PreviousTagString = [];
-
-#nullable enable
-        internal static BackgroundMediaUtility? CurrentBackgroundHandler;
-        private         BackgroundMediaUtility? _localBackgroundHandler;
-#nullable restore
         #endregion
 
         #region Main Routine
@@ -106,10 +101,6 @@ namespace CollapseLauncher
             AppDiscordPresence?.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            _localBackgroundHandler?.Dispose();
-            CurrentBackgroundHandler = null;
-            _localBackgroundHandler = null;
-
             Interlocked.Exchange(ref m_mainPage, null);
         }
 
@@ -163,9 +154,6 @@ namespace CollapseLauncher
 
         private async Task InitializeStartup()
         {
-            // Initialize the background image utility
-            await InitBackgroundHandler();
-
             Type Page = typeof(HomePage);
 
             bool isCacheUpdaterMode = m_appMode == AppMode.Hi3CacheUpdater;
@@ -206,12 +194,6 @@ namespace CollapseLauncher
             // invoking notifications
             _ = RunBackgroundCheck();
         }
-
-        private async Task InitBackgroundHandler()
-        {
-            CurrentBackgroundHandler ??= await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-            _localBackgroundHandler = CurrentBackgroundHandler;
-        }
         #endregion
 
         #region Invokers
@@ -244,7 +226,6 @@ namespace CollapseLauncher
 
         private static void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
-            BackgroundImgChanger.ToggleBackground(e.Hide);
             InvokeLoadingRegionPopup(!e.Hide, e.Title, e.Subtitle);
         }
 
@@ -421,8 +402,6 @@ namespace CollapseLauncher
             MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
             MainFrameChangerInvoker.FrameGoBackEvent += MainFrameChangerInvoker_FrameGoBackEvent;
             NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
-            BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
-            BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
@@ -437,8 +416,6 @@ namespace CollapseLauncher
             ErrorSenderInvoker.ExceptionEvent -= ErrorSenderInvoker_ExceptionEvent;
             MainFrameChangerInvoker.FrameEvent -= MainFrameChangerInvoker_FrameEvent;
             NotificationInvoker.EventInvoker -= NotificationInvoker_EventInvoker;
-            BackgroundImgChangerInvoker.ImgEvent -= CustomBackgroundChanger_Event;
-            BackgroundImgChangerInvoker.IsImageHide -= BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;

@@ -123,7 +123,6 @@ namespace CollapseLauncher
 
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion, token);
-                    _ = ChangeBackgroundImageAsRegionAsync();
                     Interlocked.Exchange(ref IsLoadRegionComplete, true);
 
                     LoadingMessageHelper.HideActionButton();
@@ -188,86 +187,6 @@ namespace CollapseLauncher
                 LauncherFrame.CacheSize = 0;
                 LauncherFrame.CacheSize = cacheSizeOld;
             });
-        }
-
-        private async Task DownloadBackgroundImage(CancellationToken token)
-        {
-            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
-            // Get and set the current path of the image
-            string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
-            string backgroundFileName = Path.GetFileName(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = Path.Combine(backgroundFolder, backgroundFileName);
-            SetAndSaveConfigValue("CurrentBackground", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-            await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
-        }
-
-        private async Task DownloadNonPluginBackgroundImage(string             backgroundFolder,
-                                                            GamePresetProperty currentProperty,
-                                                            CancellationToken  token)
-        {
-            // Check if the background folder exist
-            if (!Directory.Exists(backgroundFolder))
-                Directory.CreateDirectory(backgroundFolder);
-
-            var imgFileInfo =
-                new FileInfo(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-
-            // Start downloading the background image
-            var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
-            if (isDownloaded)
-            {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      this.ReloadPageTheme,
-                                                      false,
-                                                      false,
-                                                      true);
-                return;
-            }
-
-        #nullable enable
-            string? tempImage = null;
-            var lastBgCfg = "lastBg-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameName +
-                            "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
-
-            // Check if the last background image exist, then use that temporarily instead
-            var lastGameBackground = GetAppConfigValue(lastBgCfg).ToString();
-            if (!string.IsNullOrEmpty(lastGameBackground))
-            {
-                if (File.Exists(lastGameBackground))
-                {
-                    tempImage = lastGameBackground;
-                }
-            }
-
-            // If the file is not downloaded, use template image first, then download the image
-            GameNameType? currentGameType = currentProperty.GameVersion?.GameType;
-            tempImage ??= currentGameType switch
-                          {
-                              GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
-                              GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
-                              GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
-                              GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                              _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
-                          };
-            BackgroundImgChanger.ChangeBackground(tempImage,
-                                                  this.ReloadPageTheme,
-                                                  false,
-                                                  false,
-                                                  true);
-            if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
-                                                                       LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
-                                                                       imgFileInfo,
-                                                                       false,
-                                                                       token))
-            {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      this.ReloadPageTheme,
-                                                      false,
-                                                      true,
-                                                      true);
-                SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
-            }
-        #nullable restore
         }
 
         private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)

@@ -25,7 +25,6 @@ namespace CollapseLauncher.Pages
         private GamePresetProperty CurrentGameProperty { get; }
         public RepairPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GetCurrentGameProperty();
             InitializeComponent();
         }
@@ -254,7 +253,6 @@ namespace CollapseLauncher.Pages
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
-            BackgroundImgChanger.ToggleBackground(true);
             if (GameInstallationState
                 is GameInstallStateEnum.NotInstalled
                 or GameInstallStateEnum.NeedsUpdate

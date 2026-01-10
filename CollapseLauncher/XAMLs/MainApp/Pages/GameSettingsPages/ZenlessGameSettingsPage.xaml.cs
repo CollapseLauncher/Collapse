@@ -163,8 +163,6 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                BackgroundImgChanger.ToggleBackground(true);
-
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first

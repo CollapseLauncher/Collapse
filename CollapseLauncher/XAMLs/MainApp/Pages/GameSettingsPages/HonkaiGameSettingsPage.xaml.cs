@@ -138,7 +138,6 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                BackgroundImgChanger.ToggleBackground(true);
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
                 if (CurrentGameProperty.IsGameRunning)
                 {

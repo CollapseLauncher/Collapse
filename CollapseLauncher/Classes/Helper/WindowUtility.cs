@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -468,10 +469,10 @@ namespace CollapseLauncher.Helper
                         switch (wParam)
                         {
                             case 1 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowFocused();
+                                ImageBackgroundManager.Shared.SetWindowFocusedEvent();
                                 break;
                             case 0 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowUnfocused();
+                                ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
                                 break;
                         }
 
@@ -510,13 +511,13 @@ namespace CollapseLauncher.Helper
                                 }
                             case SC_MINIMIZE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowUnfocused();
+                                    ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
                                     InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowFocused();
+                                    ImageBackgroundManager.Shared.SetWindowFocusedEvent();
                                     InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                     break;
                                 }
@@ -532,7 +533,7 @@ namespace CollapseLauncher.Helper
                         }
                         else
                         {
-                            MainPage.CurrentBackgroundHandler?.WindowFocused();
+                            ImageBackgroundManager.Shared.SetWindowFocusedEvent();
                             InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                         }
                         break;

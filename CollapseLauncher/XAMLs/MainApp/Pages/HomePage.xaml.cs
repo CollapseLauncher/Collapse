@@ -160,8 +160,6 @@ namespace CollapseLauncher.Pages
 
                 InitializeComponent();
 
-                BackgroundImgChanger.ToggleBackground(false);
-
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
@@ -1055,7 +1053,6 @@ namespace CollapseLauncher.Pages
             Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
             storyboard.Children.Add(scaleYAnim);
 
-            MainPage.CurrentBackgroundHandler?.Dimm();
             HideImageEventImg(true);
 
             IsSidePanelCurrentlyScaledOut = true;
@@ -1074,7 +1071,6 @@ namespace CollapseLauncher.Pages
 
             if (!IsSidePanelCurrentlyScaledOut) return;
 
-            MainPage.CurrentBackgroundHandler?.Undimm();
             HideImageEventImg(false);
 
             var storyboard = new Storyboard();

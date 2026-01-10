@@ -4,6 +4,7 @@ using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
@@ -63,7 +64,6 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -174,10 +174,10 @@ namespace CollapseLauncher.Pages
 #endif
 
             AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
-                string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
-                string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
-            );
-            
+                                                     ImageLoaderHelper.SupportedImageFormats,
+                                                     ImageLoaderHelper.SupportedVideoFormats
+                                                    );
+
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
 
 #if !ENABLEUSERFEEDBACK
@@ -216,8 +216,6 @@ namespace CollapseLauncher.Pages
         
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            BackgroundImgChanger.ToggleBackground(true);
-            
             InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
@@ -297,10 +295,6 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                var stream = BackgroundMediaUtility.GetAlternativeImageStream();
-                if (stream != null)
-                    await stream.DisposeAsync();
-
                 (sender as Button).IsEnabled = false;
                 if (Directory.Exists(AppGameImgFolder))
                     Directory.Delete(AppGameImgFolder, true);
@@ -562,26 +556,14 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            var currentMediaType = BackgroundMediaUtility.GetMediaType(file);
+            PresetConfig presetConfig = LauncherMetadataHelper.CurrentMetadataConfig;
 
-            if (currentMediaType == MediaType.StillImage)
-            {
-                var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-
-                if (croppedImage == null) return;
-                BackgroundMediaUtility.SetAlternativeImageStream(croppedImage);
-            }
-
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
-            SetAndSaveConfigValue("CustomBGPath", file);
-            BGPathDisplay.Text = file;
-                
-            GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            bool               isUseRegionCustomBg = currentGameProperty.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
-            if (!isUseRegionCustomBg)
-            {
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
-            }
+            ImageBackgroundManager.Shared.GlobalCustomBackgroundImagePath = file;
+            await ImageBackgroundManager.Shared.Initialize(presetConfig,
+                                                           presetConfig.GameLauncherApi.LauncherGameBackground,
+                                                           m_mainPage.BackgroundPresenterGrid,
+                                                           true,
+                                                           CancellationToken.None);
         }
 
         private int _eggsAttempt = 1;
@@ -598,81 +580,6 @@ namespace CollapseLauncher.Pages
 #endregion
 
         #region Settings UI Backend
-        private bool IsBgCustom
-        {
-            get
-            {
-                bool isEnabled = GetAppConfigValue("UseCustomBG");
-                string bgPath = GetAppConfigValue("CustomBGPath");
-                LogWriteLine("Read " + isEnabled + " BG Path: " + bgPath + " from config", LogType.Scheme, true);
-                BGPathDisplay.Text = !string.IsNullOrEmpty(bgPath) ? bgPath : Lang._Misc.NotSelected;
-
-                if (isEnabled)
-                {
-                    AppBGCustomizer.Visibility = Visibility.Visible;
-                    AppBGCustomizerNote.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                }
-
-                BGSelector.IsEnabled = isEnabled;
-                return isEnabled;
-            }
-            set
-            {
-                SetAndSaveConfigValue("UseCustomBG", value);
-                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBg = currentGameProperty.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
-                if (!value)
-                {
-                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
-                    _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-
-                    ToggleCustomBgButtons();
-                }
-                else if (isUseRegionCustomBg)
-                {
-                    string currentRegionCustomBg = currentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
-                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
-                    _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-
-                    ToggleCustomBgButtons();
-                }
-                else
-                {
-                    var bgPath = GetAppConfigValue("CustomBGPath");
-                    if (string.IsNullOrEmpty(bgPath))
-                    {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
-                    }
-                    else
-                    {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = !File.Exists(bgPath) ? BackgroundMediaUtility.GetDefaultRegionBackgroundPath() : bgPath;
-                    }
-                    BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
-                }
-
-                if (value)
-                {
-                    BGPathDisplay.Text = GetAppConfigValue("CustomBGPath");
-                    AppBGCustomizer.Visibility = Visibility.Visible;
-                    AppBGCustomizerNote.Visibility = Visibility.Visible;
-                }
-
-                BGSelector.IsEnabled = value;
-
-                return;
-                void ToggleCustomBgButtons()
-                {
-                    AppBGCustomizer.Visibility = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
 
         private bool IsConsoleEnabled
         {
@@ -725,43 +632,6 @@ namespace CollapseLauncher.Pages
         {
             get => LauncherConfig.IsMultipleInstanceEnabled;
             set => LauncherConfig.IsMultipleInstanceEnabled = value;
-        }
-
-        private bool IsVideoBackgroundAudioMute
-        {
-            get => !GetAppConfigValue("BackgroundAudioIsMute");
-            set
-            {
-                if (!value)
-                    MainPage.CurrentBackgroundHandler?.Mute();
-                else
-                    MainPage.CurrentBackgroundHandler?.Unmute();
-            }
-        }
-
-        private double VideoBackgroundAudioVolume
-        {
-            get
-            {
-                double value = GetAppConfigValue("BackgroundAudioVolume");
-                switch (value)
-                {
-                    case < 0:
-                        MainPage.CurrentBackgroundHandler?.SetVolume(0d);
-                        break;
-                    case > 1:
-                        MainPage.CurrentBackgroundHandler?.SetVolume(1d);
-                        break;
-                }
-
-                return value * 100d;
-            }
-            set
-            {
-                if (value < 0) return;
-                double downValue = value / 100d;
-                MainPage.CurrentBackgroundHandler?.SetVolume(downValue);
-            }
         }
 
 #if !DISABLEDISCORD
@@ -841,24 +711,6 @@ namespace CollapseLauncher.Pages
             set
             {
                 EnableAcrylicEffect = value;
-
-                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.Media
-                 && value && !IsUseVideoBgDynamicColorUpdate)
-                    return;
-
-                App.ToggleBlurBackdrop(value);
-            }
-        }
-
-        private bool IsUseVideoBgDynamicColorUpdate
-        {
-            get => IsUseVideoBGDynamicColorUpdate;
-            set
-            {
-                IsUseVideoBGDynamicColorUpdate = value;
-                if (MediaType.StillImage == BackgroundMediaUtility.CurrentAppliedMediaType)
-                    return;
-
                 App.ToggleBlurBackdrop(value);
             }
         }
@@ -866,14 +718,7 @@ namespace CollapseLauncher.Pages
         private bool IsWaifu2XEnabled
         {
             get => ImageLoaderHelper.IsWaifu2XEnabled;
-            set
-            {
-                ImageLoaderHelper.IsWaifu2XEnabled = value;
-                if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, IsCustomBG);
-                else
-                    Bindings.Update();
-            }
+            set => ImageLoaderHelper.IsWaifu2XEnabled = value;
         }
 
         private string Waifu2XToolTip
@@ -1044,9 +889,9 @@ namespace CollapseLauncher.Pages
             string switchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, switchToVer);
             AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
-                string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
-                string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
-            );
+                                                     ImageLoaderHelper.SupportedImageFormats,
+                                                     ImageLoaderHelper.SupportedVideoFormats
+                                                    );
 
             string url = GetAppConfigValue("HttpProxyUrl");
             ValidateHttpProxyUrl(url);

@@ -122,9 +122,12 @@ public partial class ImageBackgroundManager
             "Honkai Impact 3rd" => PlaceholderBackgroundImageRelPath[1],
             "Honkai: Star Rail" => PlaceholderBackgroundImageRelPath[2],
             "Zenless Zone Zero" => PlaceholderBackgroundImageRelPath[3],
-            _ => PlaceholderBackgroundImageRelPath[Random.Shared.Next(0, PlaceholderBackgroundImageRelPath.Length - 1)]
+            _ => GetRandomPlaceholderImage()
         };
 
         return Path.Combine(LauncherConfig.AppExecutableDir, relPath);
     }
+
+    public static string GetRandomPlaceholderImage() =>
+        PlaceholderBackgroundImageRelPath[Random.Shared.Next(0, PlaceholderBackgroundImageRelPath.Length - 1)];
 }

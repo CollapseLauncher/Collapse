@@ -2,6 +2,7 @@ using CollapseLauncher.AnimatedVisuals.Lottie;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
@@ -485,59 +486,17 @@ namespace CollapseLauncher.Pages.OOBE
             if (senderSource == null) return;
 
             string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
-            string fileExt      = Path.GetExtension(selectedPath);
-            if (BackgroundMediaUtility.SupportedMediaPlayerExt.Contains(fileExt, StringComparer.OrdinalIgnoreCase))
-            {
-                await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable();
-
-                SetAppConfigValue("UseCustomBG",  true);
-                SetAppConfigValue("CustomBGPath", selectedPath);
-                return;
-            }
-
-            senderSource.IsEnabled = false;
             if (string.IsNullOrEmpty(selectedPath))
             {
-                senderSource.IsChecked = false;
-                await ReplaceBackgroundImage(Path.Combine(AppImagesFolder, "PageBackground", "StartupBackground2.png"),
-                                             IsAppThemeLight ? 0.2f : 0.175f, 0.5f);
-                SetAppConfigValue("UseCustomBG",  false);
-                SetAppConfigValue("CustomBGPath", "");
-
-                senderSource.IsEnabled = true;
+                ImageBackgroundManager.Shared.GlobalCustomBackgroundImagePath = null;
+                ImageBackgroundManager.Shared.GlobalIsEnableCustomImage       = false;
                 return;
             }
 
-            LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.SetProgressBarState();
-            LoadingMessageHelper.SetMessage(Lang._OOBEStartUpMenu.LoadingBackgroundImageTitle,
-                                            Lang._OOBEStartUpMenu.LoadingBackgroundImageSubtitle);
+            await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable();
 
-            try
-            {
-                var imageStream = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
-                if (imageStream != null)
-                {
-                    await ReplaceBackgroundImage(imageStream, 0.5f, IsAppThemeLight ? 0.2f : 0.175f);
-                    SetAppConfigValue("UseCustomBG",  true);
-                    SetAppConfigValue("CustomBGPath", selectedPath);
-                    await imageStream.DisposeAsync();
-                }
-                else
-                {
-                    senderSource.IsChecked = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Error has occurred while loading the image!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
-            finally
-            {
-                senderSource.IsEnabled = true;
-                LoadingMessageHelper.HideLoadingFrame();
-            }
+            ImageBackgroundManager.Shared.GlobalCustomBackgroundImagePath = selectedPath;
+            ImageBackgroundManager.Shared.GlobalIsEnableCustomImage       = true;
         }
 
         private async void CustomBackgroundCheckedClose(object? sender, RoutedEventArgs e)

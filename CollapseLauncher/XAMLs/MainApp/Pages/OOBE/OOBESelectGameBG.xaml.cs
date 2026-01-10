@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper.Background;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
@@ -110,9 +110,7 @@ namespace CollapseLauncher.Pages.OOBE
                                     GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
                                     GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
                                     GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
-                                    _ => isPlugin ?
-                                    await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), true, CancellationToken.None) :
-                                    BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                                    _ => ImageBackgroundManager.GetRandomPlaceholderImage()
                                 };
 
                 // TODO: Use FallbackCDNUtil to get the sprites

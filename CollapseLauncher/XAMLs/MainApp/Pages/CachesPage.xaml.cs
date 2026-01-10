@@ -25,7 +25,6 @@ namespace CollapseLauncher.Pages
 
         public CachesPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             InitializeComponent();
         }
@@ -246,7 +245,6 @@ namespace CollapseLauncher.Pages
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
-            BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
             if (GameInstallationState

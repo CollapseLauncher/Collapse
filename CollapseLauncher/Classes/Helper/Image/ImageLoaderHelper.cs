@@ -48,12 +48,12 @@ namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        private static readonly string SupportedImageFormats =
+        internal static readonly string SupportedImageFormats =
             string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExtensions.Select(x => $"*{x}")) + ";" +
             string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExternalCodecExtensions.Select(x => $"*{x}")) + ";" +
             string.Join(";", LayeredBackgroundImage.SupportedImageVectorExtensions.Select(x => $"*{x}"));
 
-        private static readonly string SupportedVideoFormats =
+        internal static readonly string SupportedVideoFormats =
             string.Join(";", LayeredBackgroundImage.SupportedVideoExtensions.Select(x => $"*{x}"));
 
         internal static readonly Dictionary<string, string> SupportedBackgroundFormats =
