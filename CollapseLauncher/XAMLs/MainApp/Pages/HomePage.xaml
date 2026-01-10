@@ -12,6 +12,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
+      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
@@ -45,7 +46,8 @@
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
+        <pages:CountSingleToVisibilityConverter x:Key="CountSingleToVisibilityConverter" />
+        <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
         <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
@@ -103,9 +105,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -220,9 +222,9 @@
                     </Grid>
                     <Grid x:Name="ProgressPreSophonStatusGrid"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
@@ -324,9 +326,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid x:Name="DownloadModeLabelPreload"
                               Padding="8,2"
                               HorizontalAlignment="Left"
@@ -451,9 +453,9 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </c:NonFaultyGrid.RowDefinitions>
-            <c:NonFaultyGrid.ChildrenTransitions>
+            <!--<c:NonFaultyGrid.ChildrenTransitions>
                 <ContentThemeTransition />
-            </c:NonFaultyGrid.ChildrenTransitions>
+            </c:NonFaultyGrid.ChildrenTransitions>-->
             <Grid x:Name="SocMedPanel"
                   Grid.Row="0"
                   Padding="4,4"
@@ -469,9 +471,9 @@
                                   TabFocusNavigation="Once"
                                   UseSystemFocusVisuals="True"
                                   XYFocusKeyboardNavigation="Enabled">
-                        <ItemsControl.ItemContainerTransitions>
+                        <!--<ItemsControl.ItemContainerTransitions>
                             <ContentThemeTransition />
-                        </ItemsControl.ItemContainerTransitions>
+                        </ItemsControl.ItemContainerTransitions>-->
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
@@ -951,6 +953,49 @@
                 </c:NonFaultyGrid>
             </c:NonFaultyGrid>
         </c:NonFaultyGrid>
+        <Grid x:Name="MultiBackgroundPipsPagerGrid"
+              Background="{ThemeResource SocMedPanelAcrylicBrush}"
+              Grid.Row="0"
+              Grid.RowSpan="2"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              MaxWidth="500"
+              Padding="10, 8"
+              CornerRadius="20"
+              Margin="0,0,50,0"
+              Visibility="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemsCount, Mode=OneWay, Converter={StaticResource CountSingleToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Margin="8,-2,4,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       FontWeight="Bold">
+                <Run Text="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
+                <Run Text="/" />
+                <Run Text="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemsCount, Mode=OneWay}" />
+            </TextBlock>
+            <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
+                                       Grid.Column="1"
+                                       DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
+                                       ItemsCount="{Binding ImageContextSources.Count, Mode=OneWay}"
+                                       ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       PreviousNavigationButtonMode="Visible"
+                                       NextNavigationButtonMode="Visible"
+                                       SelectionMode="Hover"
+                                       Orientation="Horizontal"
+                                       NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
+                                       NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
+                                       PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
+                                       SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}"/>
+        </Grid>
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
@@ -1027,7 +1072,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="2,-2,0,0"
+                        <TextBlock Margin="2,-1,0,0"
                                    VerticalAlignment="Center"
                                    FontSize="9"
                                    FontWeight="Bold"
@@ -1037,15 +1082,15 @@
                             <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}" />
                         </TextBlock>
                         <newpipspager:NewPipsPager Grid.Column="1"
-                                                   Margin="0,-1,0,0"
+                                                   Margin="0,0,0,0"
                                                    VerticalAlignment="Center"
                                                    ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
                                                    ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
                                                    NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"
-                                                   NextNavigationButtonMode="Visible"
+                                                   NextNavigationButtonMode="Hidden"
                                                    NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
                                                    PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
-                                                   PreviousNavigationButtonMode="Visible"
+                                                   PreviousNavigationButtonMode="Hidden"
                                                    SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
                     </Grid>
                 </Grid>
@@ -1307,13 +1352,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid>
-                <Grid.ChildrenTransitions>
+                <!--<Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>
+                </Grid.ChildrenTransitions>-->
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
@@ -1622,13 +1667,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid>
-                <Grid.ChildrenTransitions>
+                <!--<Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>
+                </Grid.ChildrenTransitions>-->
                 <Grid x:Name="ProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
@@ -2262,19 +2307,21 @@
                                 </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
-                                            Visibility="Visible">
+                                            Visibility="Visible"
+                                            DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared, Mode=OneWay}">
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
                                     <ToggleSwitch x:Name="UseCustomBGParamsSwitch"
-                                                  IsOn="{x:Bind UseCustomBGRegion, Mode=TwoWay}"
+                                                  IsOn="{Binding CurrentIsEnableCustomImage, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <Button x:Name="ChangeGameBGButton"
                                             Margin="0,8,0,8"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
+                                            Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                             Click="ChangeGameBGButton_Click"
                                             CornerRadius="14">
                                         <Button.Content>
@@ -2294,11 +2341,12 @@
                                         </Button.Content>
                                     </Button>
                                     <TextBlock x:Name="BGPathDisplay"
+                                               Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                                Width="{x:Bind CustomChangeBGParams.Width}"
                                                Margin="0,4"
                                                HorizontalAlignment="Stretch"
                                                VerticalAlignment="Center"
-                                               Text=""
+                                               Text="{Binding CurrentCustomBackgroundImagePath, Mode=OneWay}"
                                                TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"

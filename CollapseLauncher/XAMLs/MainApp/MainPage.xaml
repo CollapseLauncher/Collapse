@@ -7,7 +7,6 @@
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -25,6 +24,8 @@
                                 Stretch="UniformToFill"
                                 Tag="MediaPlayer" />
         </Grid>
+        <Grid x:Name="BackgroundPresenterGrid"
+              x:FieldModifier="internal"/>
         <Grid x:Name="BackgroundAcrylicMask"
               Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
               Opacity="0" />

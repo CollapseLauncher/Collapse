@@ -22,7 +22,7 @@ public partial class PanelSlideshow
 
     #region
 
-    private object? _lastItemsSource = null;
+    private object? _lastItemsSource;
 
     #endregion
 

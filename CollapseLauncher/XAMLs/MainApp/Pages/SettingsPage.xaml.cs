@@ -556,7 +556,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
             if (string.IsNullOrEmpty(file))
             {
                 return;
@@ -2529,7 +2529,7 @@ namespace CollapseLauncher.Pages
             {
                 asButton.IsEnabled = false;
                 CDNCacheUtil.PerformCacheGarbageCollection(CDNCacheUtil.CurrentCacheDir, true);
-                UrlToCachedImageSourceConverter.CacheManager.PerformCacheGarbageCollection(true);
+                UrlToCachedImagePathConverter.CacheManager.PerformCacheGarbageCollection(true);
             }
             catch (Exception ex)
             {

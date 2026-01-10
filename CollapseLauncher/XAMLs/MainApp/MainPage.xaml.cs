@@ -2,6 +2,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
@@ -85,6 +86,8 @@ namespace CollapseLauncher
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
+
+                ImageBackgroundManager.Shared.GlobalParallaxHoverSource = MainPageGrid;
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn, NotificationPanelClearAllGrid);

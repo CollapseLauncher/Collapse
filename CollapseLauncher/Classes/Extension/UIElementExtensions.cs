@@ -189,7 +189,7 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void BindProperty(this FrameworkElement element,
-                                          FrameworkElement      source,
+                                          object?               source,
                                           string                propertyName,
                                           DependencyProperty    dependencyProperty,
                                           BindingMode           bindingMode)
@@ -307,11 +307,15 @@ namespace CollapseLauncher.Extension
             return contentPanel;
         }
 
-        internal static Grid       CreateGrid()                                                     => new();
-        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new() { Orientation = orientation };
+        internal static Grid CreateGrid() =>
+            CreateElementFromUIThread<Grid>();
 
-        internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
-            => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) =>
+            CreateElementFromUIThread<StackPanel>(x => x.Orientation = orientation);
+
+        internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements) =>
+            AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+
         internal static void AddElementToStackPanel(this Panel stackPanel, IEnumerable<FrameworkElement> elements)
         {
             foreach (FrameworkElement element in elements)
@@ -1189,6 +1193,23 @@ namespace CollapseLauncher.Extension
 
             // Return the result (whether if it's not found/as null, or any last grid)
             return lastGrid;
+        }
+
+        internal static T CreateElementFromUIThread<T>(Action<T>? setAttributeDelegate = null)
+            where T : UIElement, new()
+        {
+            T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>();
+            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
+            {
+                setAttributeDelegate?.Invoke(element);
+            }
+            else
+            {
+                DispatcherQueueExtensions.CurrentDispatcherQueue
+                                         .TryEnqueue(() => setAttributeDelegate?.Invoke(element));
+            }
+
+            return element;
         }
     }
 }

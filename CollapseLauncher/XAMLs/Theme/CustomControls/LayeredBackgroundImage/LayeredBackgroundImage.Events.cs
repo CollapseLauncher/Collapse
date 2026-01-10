@@ -11,6 +11,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 
 public partial class LayeredBackgroundImage
 {
+    public event Action<LayeredBackgroundImage>? ImageLoaded;
+
     #region Fields
 
     private object? _lastPlaceholderSource;
@@ -140,7 +142,10 @@ public partial class LayeredBackgroundImage
         ParallaxGrid_RegisterPointerEvents();
         ParallaxGrid_OffsetReset();
 
-        _parallaxGrid.SizeChanged += ParallaxGrid_OnSizeChanged;
+        if (_parallaxGrid != null!)
+        {
+            _parallaxGrid.SizeChanged += ParallaxGrid_OnSizeChanged;
+        }
     }
 
     private void ParallaxGrid_UnregisterEffect()
@@ -148,7 +153,10 @@ public partial class LayeredBackgroundImage
         ParallaxGrid_UnregisterPointerEvents();
         ParallaxGrid_OffsetReset();
 
-        _parallaxGrid.SizeChanged -= ParallaxGrid_OnSizeChanged;
+        if (_parallaxGrid != null!)
+        {
+            _parallaxGrid.SizeChanged -= ParallaxGrid_OnSizeChanged;
+        }
     }
 
     private void ParallaxGrid_RegisterPointerEvents()
@@ -171,9 +179,12 @@ public partial class LayeredBackgroundImage
             _lastParallaxHoverSource.PointerExited  -= ParallaxGrid_OnPointerExited;
         }
 
-        eventSource.PointerMoved   -= ParallaxGrid_OnPointerMoved;
-        eventSource.PointerEntered -= ParallaxGrid_OnPointerEntered;
-        eventSource.PointerExited  -= ParallaxGrid_OnPointerExited;
+        if (eventSource != null!)
+        {
+            eventSource.PointerMoved   -= ParallaxGrid_OnPointerMoved;
+            eventSource.PointerEntered -= ParallaxGrid_OnPointerEntered;
+            eventSource.PointerExited  -= ParallaxGrid_OnPointerExited;
+        }
         return eventSource;
     }
 
@@ -253,6 +264,11 @@ public partial class LayeredBackgroundImage
         const string targetTranslation = "Translation";
         const string targetScale       = "Scale";
 
+        if (_parallaxGridCompositor == null!)
+        {
+            return;
+        }
+
         CompositionAnimationGroup? animGroup = _parallaxGridCompositor.CreateAnimationGroup();
 
         // Move
@@ -272,6 +288,12 @@ public partial class LayeredBackgroundImage
 
         _parallaxGridVisual.StartAnimationGroup(animGroup);
     }
+
+    #endregion
+
+    #region Local Events
+
+    private void NotifyImageLoaded() => ImageLoaded?.Invoke(this);
 
     #endregion
 }

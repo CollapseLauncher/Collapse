@@ -1,5 +1,6 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
@@ -33,14 +34,17 @@ namespace CollapseLauncher
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
     public sealed partial class MainPage
     {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static  string        RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
-        private         List<object>  LastMenuNavigationItem;
-        private         List<object>  LastFooterNavigationItem;
-        internal static string        PreviousTag = string.Empty;
+        private static string RegionToChangeName
+        {
+            get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}";
+        }
+
+        private         List<object> LastMenuNavigationItem;
+        private         List<object> LastFooterNavigationItem;
+        internal static string       PreviousTag = string.Empty;
 
         private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
 
@@ -53,7 +57,7 @@ namespace CollapseLauncher
             }
             RegionLoadingStatus.Add((gameName, gameRegion), false);
             
-            CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
+            CancellationTokenSourceWrapper tokenSource = new();
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
             bool runResult = await preset.GameLauncherApi
@@ -97,8 +101,7 @@ namespace CollapseLauncher
                     NavigationViewControl.IsSettingsVisible = true;
                     LastMenuNavigationItem.Clear();
                     LastFooterNavigationItem.Clear();
-                    if (m_arguments.StartGame != null)
-                        m_arguments.StartGame.Play = false;
+                    m_arguments.StartGame?.Play = false;
 
                     ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
                     ChangeRegionConfirmBtn.IsEnabled = true;
@@ -117,7 +120,7 @@ namespace CollapseLauncher
                         _ = SentryHelper.ExceptionHandlerAsync(new Exception("Double region loading detected!"));
                         return;
                     }
-                    
+
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion, token);
                     _ = ChangeBackgroundImageAsRegionAsync();
@@ -127,6 +130,10 @@ namespace CollapseLauncher
                     LoadingMessageHelper.HideLoadingFrame();
 
                     KeyboardShortcuts.CannotUseKbShortcuts = false; // Re-enable keyboard shortcuts after loading region
+                    _ = ImageBackgroundManager.Shared.Initialize(preset,
+                                                                 preset.GameLauncherApi.LauncherGameBackground,
+                                                                 presenterGrid: BackgroundPresenterGrid,
+                                                                 token: token);
                 }
                 catch (Exception ex)
                 {

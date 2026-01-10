@@ -1,6 +1,7 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -23,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
@@ -625,27 +627,28 @@ public sealed partial class HomePage
 
     private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-        if (string.IsNullOrEmpty(file)) return;
-
-        var currentMediaType = GetMediaType(file);
-            
-        if (currentMediaType == MediaType.StillImage)
+        if (m_mainPage == null)
         {
-            var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-            
-            if (croppedImage == null) return;
-            SetAlternativeImageStream(croppedImage);
+            return;
         }
+
+        string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+        if (string.IsNullOrEmpty(file)) return;
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)
         {
             CurrentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
             CurrentGameProperty.GameSettings.SaveBaseSettings();
         }
-        _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
-        BGPathDisplay.Text = Path.GetFileName(file);
+        ImageBackgroundManager manager = ImageBackgroundManager.Shared;
+        manager.CurrentCustomBackgroundImagePath = file;
+
+        await manager.Initialize(CurrentGameProperty!.GamePreset,
+                                 CurrentGameProperty!.GamePreset.GameLauncherApi?.LauncherGameBackground,
+                                 m_mainPage.BackgroundPresenterGrid,
+                                 true,
+                                 CancellationToken.None);
     }
 
     private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)

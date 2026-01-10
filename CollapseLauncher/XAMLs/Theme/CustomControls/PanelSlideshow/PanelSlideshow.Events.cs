@@ -6,9 +6,12 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using Velopack.Sources;
 using Windows.System;
 
 #nullable enable
@@ -43,7 +46,7 @@ public partial class PanelSlideshow
 
     private void ItemIndex_OnChange(int newIndex, int oldIndex)
     {
-        if (Items.Count == 0 || !IsLoaded)
+        if (Items.Count == 0 || !IsLoaded || _presenterGrid == null)
         {
             return;
         }
@@ -56,14 +59,18 @@ public partial class PanelSlideshow
         // Restart slideshow timer
         RestartTimer(SlideshowDuration);
 
-        IList<UIElement> elements = Items;
+        IList<UIElement> elements   = Items;
+        UIElement        newElement = elements[newIndex];
+        UIElement?       oldElement = _presenterGrid.Children.FirstOrDefault();
+
 
         try
         {
             // Just add to Grid if oldIndex is -1 (initialization on startup)
             if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
             {
-                firstElement.Transitions.Add(new PopupThemeTransition());
+                firstElement.Transitions.Add(new ContentThemeTransition());
+                _presenterGrid.Children.Clear();
                 _presenterGrid.Children.Add(firstElement);
                 return;
             }
@@ -86,11 +93,6 @@ public partial class PanelSlideshow
         }
         finally
         {
-            UIElement newElement = elements[newIndex];
-            UIElement? oldElement = oldIndex < 0 || oldIndex >= elements.Count
-                ? null
-                : elements[oldIndex];
-
             SetValue(ItemProperty, newElement);
             ItemChanged?.Invoke(this, new ChangedObjectItemArgs<UIElement>(oldElement, newElement));
             ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
@@ -137,7 +139,7 @@ public partial class PanelSlideshow
             return;
         }
 
-        ItemsSource_OnChange(thisPanel, thisPanel.ItemsSource);
+        thisPanel.ItemsSource_OnChange();
     }
 
     private static void ItemsSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -148,59 +150,137 @@ public partial class PanelSlideshow
             return;
         }
 
-        ItemsSource_OnChange(thisPanel, thisPanel.ItemsSource);
+        thisPanel.ItemsSource_OnChange();
     }
 
-    private static void ItemsSource_OnChange(PanelSlideshow thisElement, object? source)
+    private void ItemsSource_OnChange()
     {
-        if (thisElement._lastItemsSource == source)
+        object? itemSource = ItemsSource;
+
+        if (_lastItemsSource == itemSource)
         {
             return;
         }
 
-        thisElement.Items.Clear();
-        thisElement.Items = [];
+        if (_lastItemsSource is INotifyCollectionChanged lastNotifiableCollection)
+        {
+            lastNotifiableCollection.CollectionChanged -= NotifiableCollectionOnCollectionChanged;
+        }
+
+        if (itemSource is INotifyCollectionChanged notifiableCollection)
+        {
+            notifiableCollection.CollectionChanged += NotifiableCollectionOnCollectionChanged;
+        }
+
+        Items.Clear();
+        Items = [];
         try
         {
-            if (source == null)
-            {
-                return;
-            }
-
-            if (source is IEnumerable<UIElement> uiElements)
-            {
-                thisElement.Items.AddRange(uiElements);
-                return;
-            }
-
-            if (source is IEnumerable enumerable &&
-                thisElement.ItemTemplate is { } dataTemplate)
-            {
-                List<UIElement> batchedElement = [];
-                foreach (object context in enumerable)
-                {
-                    UIElement element = dataTemplate.GetElement(new ElementFactoryGetArgs
-                    {
-                        Data = context
-                    });
-
-                    if (element is FrameworkElement asFrameworkElement)
-                    {
-                        asFrameworkElement.DataContext = context;
-                    }
-
-                    // batchedElement.Add(element);
-                    thisElement.Items.Add(element);
-                }
-
-                return;
-            }
-
-            throw new InvalidOperationException("Cannot load items as ItemsSource or ItemTemplate was invalid.");
+            AddItemUsingDataTemplate(ItemTemplate, itemSource);
         }
         finally
         {
-            thisElement._lastItemsSource = source;
+            _lastItemsSource = itemSource;
+        }
+    }
+
+    private void NotifiableCollectionOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        NotifyCollectionChangedAction action = e.Action;
+    StartAction:
+        switch (action)
+        {
+            case NotifyCollectionChangedAction.Reset:
+                Items.Clear();
+                AddItemUsingDataTemplate(ItemTemplate, sender);
+                if (Items.Count > 0)
+                {
+                    ItemIndex_OnChange(ItemIndex, -1);
+                }
+                return;
+            case NotifyCollectionChangedAction.Add:
+                AddItemUsingDataTemplate(ItemTemplate, e.NewItems);
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                RemoveItemUsingDataTemplate(ItemTemplate, e.OldItems);
+                break;
+            case NotifyCollectionChangedAction.Move or NotifyCollectionChangedAction.Replace:
+                action = NotifyCollectionChangedAction.Reset;
+                goto StartAction;
+        }
+    }
+
+    private void AddItemUsingDataTemplate(object? itemTemplate, object? itemSource)
+    {
+        if (itemSource is IEnumerable<UIElement> uiElements)
+        {
+            Items.AddRange(uiElements);
+            return;
+        }
+
+        if (itemSource is not IEnumerable enumerable ||
+            itemTemplate is not DataTemplate dataTemplate)
+        {
+            throw new InvalidOperationException("Cannot load items as ItemsSource or ItemTemplate was invalid.");
+        }
+
+        foreach (object context in enumerable)
+        {
+            UIElement? element = dataTemplate.GetElement(new ElementFactoryGetArgs
+            {
+                Data = context
+            });
+
+            if (element == null)
+            {
+                continue;
+            }
+
+            if (element is FrameworkElement asFrameworkElement)
+            {
+                asFrameworkElement.DataContext = context;
+            }
+
+            // batchedElement.Add(element);
+            Items.Add(element);
+        }
+    }
+
+    private void RemoveItemUsingDataTemplate(object? itemTemplate, object? itemSource)
+    {
+        if (itemSource is IEnumerable<UIElement> uiElements)
+        {
+            foreach (UIElement element in uiElements)
+            {
+                Items.Remove(element);
+            }
+            return;
+        }
+
+        if (itemSource is not IEnumerable enumerable ||
+            itemTemplate is not DataTemplate dataTemplate)
+        {
+            throw new InvalidOperationException("Cannot load items as ItemsSource or ItemTemplate was invalid.");
+        }
+
+        foreach (object context in enumerable)
+        {
+            UIElement? element = dataTemplate.GetElement(new ElementFactoryGetArgs
+            {
+                Data = context
+            });
+
+            if (element == null)
+            {
+                continue;
+            }
+
+            if (element is FrameworkElement asFrameworkElement)
+            {
+                asFrameworkElement.DataContext = context;
+            }
+
+            Items.Remove(element);
         }
     }
 
@@ -337,7 +417,7 @@ public partial class PanelSlideshow
         if (ItemsSource != null &&
             ItemTemplate != null)
         {
-            ItemsSource_OnChange(this, ItemsSource);
+            ItemsSource_OnChange();
         }
 
         // Initialize element on the current index.

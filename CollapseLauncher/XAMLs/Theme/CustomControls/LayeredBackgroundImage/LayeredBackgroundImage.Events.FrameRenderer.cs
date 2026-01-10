@@ -7,6 +7,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Linq;
@@ -67,6 +68,11 @@ public partial class LayeredBackgroundImage
 
         void DrawFrame()
         {
+            if (_canvasSurfaceImageSourceNativePtr == nint.Zero)
+            {
+                return;
+            }
+
             try
             {
                 SwapChainPanelHelper.NativeSurfaceImageSource_BeginDrawUnsafe(_canvasSurfaceImageSourceNativePtr, in _canvasRenderArea, out nint surfacePpv);
@@ -98,7 +104,7 @@ public partial class LayeredBackgroundImage
 
         _videoPlayer = new MediaPlayer
         {
-            AutoPlay                  = false,
+            AutoPlay                  = true,
             IsLoopingEnabled          = true,
             IsVideoFrameServerEnabled = true,
             Volume                    = AudioVolume.GetClampedVolume(),
@@ -120,6 +126,8 @@ public partial class LayeredBackgroundImage
         {
             return;
         }
+
+        _videoPlayer.Pause();
 
         // Save last video player duration for later
         if (_videoPlayer.CanSeek)
@@ -160,10 +168,7 @@ public partial class LayeredBackgroundImage
                                                                                  CreateComInterfaceFlags.None,
                                                                                  true);
 
-        if (FindRenderImage() is { } image)
-        {
-            image.Source = _canvasSurfaceImageSource;
-        }
+        SetRenderImageSource(_canvasSurfaceImageSource);
     }
 
     private void DisposeRenderTarget()
@@ -174,10 +179,7 @@ public partial class LayeredBackgroundImage
         ComMarshal<ISurfaceImageSourceNativeWithD2D>.TryReleaseComObject(_canvasSurfaceImageSourceNative, out _);
 
         _canvasDevice?.Dispose();
-        if (FindRenderImage() is { } image)
-        {
-            image.Source = null;
-        }
+        SetRenderImageSource(null);
 
         _canvasSurfaceImageSourceNativePtr = nint.Zero;
 
@@ -187,9 +189,35 @@ public partial class LayeredBackgroundImage
         Interlocked.Exchange(ref _canvasSurfaceImageSource, null);
     }
 
-    private Image? FindRenderImage() => _backgroundGrid.Children
-                                                       .OfType<Image>()
-                                                       .LastOrDefault(x => x.Name == "VideoRenderFrame");
+    private void SetRenderImageSource(ImageSource? renderSource)
+    {
+        try
+        {
+            _backgroundGrid?
+               .DispatcherQueue?
+               .TryEnqueue(() =>
+                           {
+                               try
+                               {
+                                   Image? image = _backgroundGrid.Children
+                                                                 .OfType<Image>()
+                                                                 .LastOrDefault(x => x.Name == "VideoRenderFrame");
+                                   if (image != null)
+                                   {
+                                       image.Source = renderSource;
+                                   }
+                               }
+                               catch
+                               {
+                                   // ignored
+                               }
+                           });
+        }
+        catch
+        {
+            // ignored
+        }
+    }
 
     #endregion
 

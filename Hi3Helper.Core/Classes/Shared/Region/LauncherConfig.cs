@@ -644,9 +644,9 @@ namespace Hi3Helper.Shared.Region
 
             { "IsEnablePluginAutoUpdate", true },
 
-            // TEMPORARY
-            { "Enable20250827CrisisIntro", true },
-            { "Enable20250827CrisisIntroDialog", true }
+            // New Background Manager Parameters
+            { "globalIsBackgroundParallaxEffectEnabled", true },
+            { "globalBackgroundParallaxPixelShift", 8d }
         };
         #endregion
     }

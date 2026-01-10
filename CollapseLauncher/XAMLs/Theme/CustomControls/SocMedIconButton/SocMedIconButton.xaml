@@ -34,7 +34,7 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
+    <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
 
     <Style x:Key="SocialMediaButtonStyle"
            TargetType="Button">

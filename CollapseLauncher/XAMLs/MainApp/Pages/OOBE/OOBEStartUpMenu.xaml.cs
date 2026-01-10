@@ -484,7 +484,7 @@ namespace CollapseLauncher.Pages.OOBE
             CheckBox? senderSource = sender as CheckBox;
             if (senderSource == null) return;
 
-            string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
             string fileExt      = Path.GetExtension(selectedPath);
             if (BackgroundMediaUtility.SupportedMediaPlayerExt.Contains(fileExt, StringComparer.OrdinalIgnoreCase))
             {

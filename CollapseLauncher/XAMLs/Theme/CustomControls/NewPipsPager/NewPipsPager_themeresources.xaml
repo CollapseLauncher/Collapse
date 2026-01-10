@@ -604,8 +604,6 @@
         <Setter Property="FontSize" Value="16" />
     </Style>
 
-
-
     <Style x:Key="NewPipsPagerButtonBaseMiniStyle"
            TargetType="Button">
         <Setter Property="Template">
@@ -1137,4 +1135,537 @@
         <Setter Property="Content" Value="{StaticResource PipsPagerNextPageButtonGlyph}" />
         <Setter Property="FontSize" Value="12" />
     </Style>
+
+    <Style x:Key="NewPipsPagerButtonBaseMediumStyle"
+           TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid"
+                          Width="22"
+                          Height="22"
+                          CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                          DataContext="{TemplateBinding Content}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletFrontOpacityPressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonBulletBackOpacityPressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBackgroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBorderBrushDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonForegroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="BulletBack"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                                Opacity="{StaticResource PipsButtonBulletBackOpacityNormal}"
+                                RenderTransformOrigin=".5, .5">
+                            <Border.RenderTransform>
+                                <CompositeTransform x:Name="BulletBackScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletBackScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletBackScaleNormal}" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <Border x:Name="BulletFront"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                                Opacity="{StaticResource PipsButtonBulletFrontOpacityNormal}"
+                                RenderTransformOrigin=".5, .5">
+                            <Border.RenderTransform>
+                                <CompositeTransform x:Name="BulletFrontScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletFrontScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletFrontScaleNormal}" />
+                            </Border.RenderTransform>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="NewPipsPagerButtonBaseSelectedMediumStyle"
+           TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid"
+                          Width="22"
+                          Height="22"
+                          CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                          DataContext="{TemplateBinding Content}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScaleNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScalePointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFrontScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletFront"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletFrontOpacityPressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBackScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackScalePressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BulletBack"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonSelectedBulletBackOpacityPressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBackgroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBorderBrushDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonForegroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="BulletBack"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                                Opacity="{StaticResource PipsButtonBulletBackOpacityNormal}"
+                                RenderTransformOrigin=".5, .5">
+                            <Border.RenderTransform>
+                                <CompositeTransform x:Name="BulletBackScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletBackScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletBackScaleNormal}" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <Border x:Name="BulletFront"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{StaticResource PipsPagerCornerRadius}"
+                                Opacity="{StaticResource PipsButtonBulletFrontOpacityNormal}"
+                                RenderTransformOrigin=".5, .5">
+                            <Border.RenderTransform>
+                                <CompositeTransform x:Name="BulletFrontScaleTransform"
+                                                    ScaleX="{StaticResource PipsButtonBulletFrontScaleNormal}"
+                                                    ScaleY="{StaticResource PipsButtonBulletFrontScaleNormal}" />
+                            </Border.RenderTransform>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="NewPipsPagerNavigationButtonBaseMediumStyle"
+           TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource PipsPagerNavigationButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource PipsPagerNavigationButtonBorderThickness}" />
+        <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource PipsPagerNavigationButtonFontSize}" />
+        <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+        <Setter Property="FocusVisualMargin" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityNormal}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="1.3" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="1.3" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityPointerOver}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value=".8" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                       Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value=".8" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                  KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                  Value="{StaticResource PipsButtonNavigationButtonOpacityPressed}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBackgroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonBorderBrushDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content"
+                                                                       Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource PipsPagerNavigationButtonForegroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border Padding="{TemplateBinding Padding}"
+                                RenderTransformOrigin="0.5, 0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                            <FontIcon x:Name="Content"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      AutomationProperties.AccessibilityView="Raw"
+                                      FontFamily="{TemplateBinding FontFamily}"
+                                      FontSize="{TemplateBinding FontSize}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Glyph="{TemplateBinding Content}"
+                                      MirroredWhenRightToLeft="True"
+                                      Opacity="{StaticResource PipsButtonNavigationButtonOpacityNormal}" />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="NewPipsPagerPreviousPageButtonMediumStyle"
+           BasedOn="{StaticResource NewPipsPagerNavigationButtonBaseMediumStyle}"
+           TargetType="Button">
+        <Setter Property="Content" Value="{StaticResource PipsPagerPreviousPageButtonGlyph}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="NewPipsPagerNextPageButtonMediumStyle"
+           BasedOn="{StaticResource NewPipsPagerNavigationButtonBaseMediumStyle}"
+           TargetType="Button">
+        <Setter Property="Content" Value="{StaticResource PipsPagerNextPageButtonGlyph}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
 </ResourceDictionary>

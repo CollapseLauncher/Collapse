@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using Hi3Helper.Data;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -40,19 +41,18 @@ public partial class LayeredBackgroundImage
     /// The extensions list are taken from:<br/>
     /// https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types#jpeg_joint_photographic_experts_group_image
     /// </summary>
-    private static readonly HashSet<string> SupportedImageBitmapExtensions = new([
+    internal static readonly HashSet<string> SupportedImageBitmapExtensions = new([
         ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", // "image/jpeg"
         ".apng", ".png",                          // "image/apng" and "image/png"
         ".bmp",                                   // "image/bmp"
         ".gif",                                   // "image/gif"
         ".ico",                                   // "image/x-icon"
-        ".tif", ".tiff",                          // "image/tiff"
-        ".xbm"                                    // "image/xbm"
+        ".tif", ".tiff"                           // "image/tiff"
     ], StringComparer.OrdinalIgnoreCase);
     internal static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> SupportedImageBitmapExtensionsLookup =
         SupportedImageBitmapExtensions.GetAlternateLookup<ReadOnlySpan<char>>();
 
-    private static readonly HashSet<string> SupportedImageBitmapExternalCodecExtensions = new([
+    internal static readonly HashSet<string> SupportedImageBitmapExternalCodecExtensions = new([
         ".jxr",  // "image/jxr" (Requires additional codec)
         ".avif", // "image/avif" (Requires additional codec)
         ".webp"  // "image/webp" (Requires additional codec)
@@ -60,13 +60,13 @@ public partial class LayeredBackgroundImage
     internal static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> SupportedImageBitmapExternalCodecExtensionsLookup =
         SupportedImageBitmapExternalCodecExtensions.GetAlternateLookup<ReadOnlySpan<char>>();
 
-    private static readonly HashSet<string> SupportedImageVectorExtensions = new([
+    internal static readonly HashSet<string> SupportedImageVectorExtensions = new([
         ".svg" // "image/svg"
     ], StringComparer.OrdinalIgnoreCase);
     internal static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> SupportedImageVectorExtensionsLookup =
         SupportedImageVectorExtensions.GetAlternateLookup<ReadOnlySpan<char>>();
 
-    private static readonly HashSet<string> SupportedVideoExtensions = new([
+    internal static readonly HashSet<string> SupportedVideoExtensions = new([
         ".3gp", ".3gp2",                                                // "video/3gp"
         ".asf", ".wmv",                                                 // "video/wmv"
         ".avi",                                                         // "video/avi"
@@ -427,6 +427,7 @@ public partial class LayeredBackgroundImage
         if (parentGrid.Item1.Name.StartsWith("Background", StringComparison.OrdinalIgnoreCase) &&
             !Interlocked.Exchange(ref isPlaceholderHidden, true))
         {
+            parentGrid.Item2.NotifyImageLoaded();
             VisualStateManager.GoToState(parentGrid.Item2, StateNamePlaceholderStateHidden, true);
         }
 

@@ -241,6 +241,10 @@ public partial class NewPipsPager
         }
 
         NewPipsPager pager = (NewPipsPager)d;
+        if (!pager.IsLoaded)
+        {
+            return;
+        }
 
         // Update navigation buttons state
         UpdatePreviousButtonVisualState(pager);
