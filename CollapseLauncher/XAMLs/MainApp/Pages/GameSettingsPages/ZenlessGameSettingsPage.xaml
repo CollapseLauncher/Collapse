@@ -1,4 +1,4 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <!--  ReSharper disable Xaml.RedundantNamespaceAlias  -->
@@ -164,7 +164,7 @@
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
-                                                      IsEnabled="False"
+                                                      IsEnabled="True"
                                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}"
                                                       Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
@@ -217,11 +217,11 @@
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             </StackPanel>
                             <ToggleSwitch x:Name="ToggleSwitchUseDirectX12Api"
-                                          Visibility="Collapsed"
                                           Margin="4,0,0,8"
                                           IsOn="{x:Bind AdvancedGraphics_UseDirectX12Api, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}">
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                          Visibility="Visible">
                                 <ToggleSwitch.Header>
                                     <TextBlock>
                                         <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.AdvancedGraphics_UseDirectX12API}" />
@@ -576,9 +576,8 @@
                                     </CheckBox>
                                 </StackPanel>
                             </Grid>
-                            <MenuFlyoutSeparator Margin="8,16" Visibility="Collapsed" />
+                            <MenuFlyoutSeparator Margin="8,16" />
                             <StackPanel Orientation="Horizontal"
-                                        Visibility="Collapsed"
                                         Spacing="16">
                                 <TextBlock Margin="0,0,0,16"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -628,7 +627,7 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="0">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -641,7 +640,7 @@
                                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="1">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -658,7 +657,7 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="2">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -674,7 +673,7 @@
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Visibility="Collapsed">
+                                    <StackPanel Grid.Column="3">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -1006,6 +1005,17 @@
                         <TextBlock Margin="0,0,0,16"
                                    FontWeight="Semibold"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                        <TextBlock Margin="0,0,8,8"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Title}" />
+                        <ToggleSwitch Margin="0,0,0,0"
+                                      Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Subtitle}"
+                                      IsOn="{x:Bind RunWithExplorerAsParent, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <TextBlock Margin="0,0,8,8"
+                                   FontWeight="Semibold"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Warning}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Sophon;
+﻿using Hi3Helper.Data;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -6,13 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable InvertIf
 #pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.InstallManager.StarRail
 {
     internal sealed partial class StarRailInstall
     {
-        protected override async Task FilterSophonPatchAssetList(List<SophonPatchAsset> itemList, CancellationToken token)
+        public override async Task FilterAssetList<T>(
+            List<T>           itemList,
+            Func<T, string?>  itemPathSelector,
+            CancellationToken token)
         {
             string   blackListFilePath = Path.Combine(GamePath, @"StarRail_Data\Persistent\DownloadBlacklist.json");
             FileInfo fileInfo          = new(blackListFilePath);
@@ -35,7 +40,9 @@ namespace CollapseLauncher.InstallManager.StarRail
                     continue;
                 }
 
-                blackListAlt.Add(span);
+                // Normalize path
+                ConverterTool.NormalizePathInplaceNoTrim(span);
+                AddBothPersistentOrStreamingAssets(blackListAlt, span);
             }
 
             if (blackList.Count == 0)
@@ -46,17 +53,17 @@ namespace CollapseLauncher.InstallManager.StarRail
             SearchValues<string> searchValues =
                 SearchValues.Create(blackList.ToArray(), StringComparison.OrdinalIgnoreCase);
 
-            List<SophonPatchAsset> listFiltered = [];
-            foreach (SophonPatchAsset patchAsset in itemList)
+            List<T> listFiltered = [];
+            foreach (T patchAsset in itemList)
             {
-                if (patchAsset.TargetFilePath == null)
+                if (itemPathSelector(patchAsset) is not {} filePath)
                 {
                     listFiltered.Add(patchAsset);
                     continue;
                 }
 
-                string assetPath = Path.Combine(GamePath, patchAsset.TargetFilePath);
-                if (assetPath.AsSpan().ContainsAny(searchValues))
+                int indexOfAny = filePath.IndexOfAny(searchValues);
+                if (indexOfAny >= 0)
                 {
                     continue;
                 }
@@ -89,6 +96,34 @@ namespace CollapseLauncher.InstallManager.StarRail
                 }
 
                 return line[..endIndexOf];
+            }
+        }
+
+        private static void AddBothPersistentOrStreamingAssets(
+            HashSet<string>.AlternateLookup<ReadOnlySpan<char>> hashList,
+            ReadOnlySpan<char> filePath)
+        {
+            const string streamingAssetsSegment = @"StarRail_Data\StreamingAssets\";
+            const string persistentSegment      = @"StarRail_Data\Persistent\";
+
+            bool isContainStreamingAssets = filePath.Contains(streamingAssetsSegment, StringComparison.OrdinalIgnoreCase);
+            bool isContainPersistent      = filePath.Contains(persistentSegment, StringComparison.OrdinalIgnoreCase);
+
+            // Add original path
+            hashList.Add(filePath);
+
+            if (isContainStreamingAssets)
+            {
+                string persistentPath = persistentSegment
+                                        + filePath[streamingAssetsSegment.Length..].ToString();
+                hashList.Add(persistentPath);
+            }
+
+            if (isContainPersistent)
+            {
+                string streamingAssetsPath = streamingAssetsSegment
+                                           + filePath[persistentSegment.Length..].ToString();
+                hashList.Add(streamingAssetsPath);
             }
         }
     }

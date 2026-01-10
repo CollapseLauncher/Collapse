@@ -142,9 +142,7 @@ namespace CollapseLauncher.Helper.StreamUtility
 
             try
             {
-                if (directoryInfo is { Exists: false })
-                    directoryInfo.Create();
-
+                directoryInfo?.Create();
                 return filePath;
             }
             finally
@@ -325,7 +323,7 @@ namespace CollapseLauncher.Helper.StreamUtility
             {
                 foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
                 {
-                    DeleteEmptyDirectory(childDir);
+                    childDir.DeleteEmptyDirectory();
                 }
             }
 

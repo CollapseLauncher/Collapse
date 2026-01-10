@@ -425,7 +425,11 @@
     "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
     "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
-    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed",
+
+    "Advanced_RunWithExplorerAsParent_Title": "Launch Game with Explorer as Parent",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "Disable for compatibility with Steam Input and Overlay",
+    "Advanced_RunWithExplorerAsParent_Warning": "WARNING: Game logins might be blocked when disabled!"
   },
 
   "_SettingsPage": {
@@ -1128,6 +1132,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
     "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
+    "SteamShortcutCreationSuccessSubtitle8": "   Additionally, the \"Launch Game With Explorer As Parent\" option in the region's Advanced Settings must be disabled.",
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
     "SteamShortcutTitle": "Steam Shortcut",

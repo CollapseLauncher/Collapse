@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using DImage = System.Drawing.Image;
@@ -7,18 +9,17 @@ namespace CollapseLauncher.Classes.Helper.Image
 {
     internal static class ImageConverterHelper
     {
+        const int MaxIconSize = 256;
+
         public static Icon ConvertToIcon(DImage image)
         {
-            using var bmp32 = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
-
-            using (var g = Graphics.FromImage(bmp32))
-            {
-                g.DrawImage(image, new Rectangle(0, 0, bmp32.Width, bmp32.Height));
-            }
+            using var bitmap = ResizeToIconSize(image);
+            if (bitmap == null || bitmap.Width > MaxIconSize || bitmap.Height > MaxIconSize)
+                throw new Exception("Failed to resize image for icon conversion.");
 
             using (var stream = new MemoryStream())
             {
-                bmp32.Save(stream, ImageFormat.Png);
+                bitmap.Save(stream, ImageFormat.Png);
                 var bytes = stream.ToArray();
 
                 using var ms = new MemoryStream();
@@ -31,12 +32,9 @@ namespace CollapseLauncher.Classes.Helper.Image
                 bw.Write((ushort)1);     // Number of images
 
 
-                int width = image.Width >= 256 ? 0 : image.Width;
-                int height = image.Height >= 256 ? 0 : image.Height;
-
                 // ICONDIRENTRY (16 bytes)
-                bw.Write((byte)width);  // width
-                bw.Write((byte)height); // height
+                bw.Write((byte)bitmap.Width);  // width
+                bw.Write((byte)bitmap.Height); // height
                 bw.Write((byte)0);      // Color palette (0 = no palette)
                 bw.Write((byte)0);      // Reserved
                 bw.Write((ushort)0);    // Color planes
@@ -55,6 +53,33 @@ namespace CollapseLauncher.Classes.Helper.Image
 
                 return new Icon(ms);
             }
+        }
+
+        private static Bitmap ResizeToIconSize(DImage sourceImage)
+        {
+            if (sourceImage.Width == MaxIconSize && sourceImage.Height == MaxIconSize)
+                return new Bitmap(sourceImage);
+
+            float scaleFactor = Math.Min(
+                (float)MaxIconSize / sourceImage.Width,
+                (float)MaxIconSize / sourceImage.Height
+            );
+
+            int scaledWidth = (int)Math.Round(sourceImage.Width * scaleFactor);
+            int scaledHeight = (int)Math.Round(sourceImage.Height * scaleFactor);
+
+            var bitmap = new Bitmap(scaledWidth, scaledHeight, PixelFormat.Format32bppArgb);
+
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.DrawImage(sourceImage, 0, 0, scaledWidth, scaledHeight);
+            }
+
+            return bitmap;
         }
     }
 }

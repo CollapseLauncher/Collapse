@@ -205,11 +205,11 @@ namespace CollapseLauncher.GameSettings.Zenless
             set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageVoiceType", value);
         }
 
-        [JsonPropertyName("LocalUILayoutPlatform ")]
-        public int LocalUILayoutPlatform
+        [JsonPropertyName("LocalUILayoutPlatform")]
+        public LocalUiLayoutPlatform LocalUILayoutPlatform
         {
-            get => SettingsJsonNode.GetNodeValue("LocalUILayoutPlatform", 3);
-            set => SettingsJsonNode.SetNodeValue("LocalUILayoutPlatform", value);
+            get => SettingsJsonNode.GetNodeValueEnum("LocalUILayoutPlatform", LocalUiLayoutPlatform.PC);
+            set => SettingsJsonNode.SetNodeValueEnum("LocalUILayoutPlatform", value);
         }
 
         [JsonPropertyName("UILayoutManualSetRecordState")]
@@ -532,7 +532,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             set => _envGlobalIllumination?.SetDataEnum(value);
         }
 
-        // Key 8 VSync
+        // Key 106 Motion Blur
         private SystemSettingLocalData<int>? _vMotionBlur;
 
         /// <summary>

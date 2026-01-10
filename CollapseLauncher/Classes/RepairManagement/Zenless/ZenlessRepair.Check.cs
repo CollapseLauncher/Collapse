@@ -58,7 +58,7 @@ namespace CollapseLauncher
         private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, GamePath));
+            Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, asset.N[GamePath.Length..].AsSpan().Trim("\\/").ToString());
 
             // Increment current total count
             ProgressAllCountCurrent++;
