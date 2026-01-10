@@ -4,6 +4,7 @@
 .vs/*
 *.user
 packages/*
+msbuild.binlog
 
 CollapseLauncher/Deps/*
 CollapseLauncher/StaticLib/*.lib
