@@ -230,34 +230,13 @@ namespace CollapseLauncher.Pages
 
         private Size GetNativeDefaultResolution()
         {
-            const int maxAcceptedNativeW = 2560; // This is the maximum native resolution width that is accepted.
-                                                 // Tested on both 3840x2160 and 1920x1080 screen. The game keeps to only accept
-                                                 // the resolution where width <= 2560 as its default resolution.
-                                                 // In other scenario, if the screen has selection with width > 2569 but does
-                                                 // not have one with width == 2560, the game will keep to use the
-                                                 // resolution that has the width of 2560, like.... WTF?????
-                                                 // HOYOOOOOOO!!!!!!!
-
             // Get the list of available resolutions. Otherwise, throw an exception.
             List<Size> currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
             if (currentAcceptedRes.Count == 0)
                 throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
-            var maxAcceptedResW = currentAcceptedRes.Max(x => x.Width); // Find the maximum resolution width that can be accepted.
 
-            // If the max accepted resolution width is more than or equal to maxAcceptedNativeW,
-            // then clamp the resolution to the resolution that is equal to maxAcceptedNativeW.
-            if (maxAcceptedResW < maxAcceptedNativeW)
-            {
-                return currentAcceptedRes.LastOrDefault(x => x.Width == maxAcceptedResW);
-            }
-
-            var nativeAspRatio        = (double)SizeProp.Height / SizeProp.Width;
-            var nativeAspRationHeight = (int)(maxAcceptedNativeW * nativeAspRatio);
-
-            Size nativeRes = new Size(maxAcceptedNativeW, nativeAspRationHeight);
-            return nativeRes;
-
-            // Otherwise, get the last resolution which always be the maximum for other less than width: 2560 (for example: 1920x1080).
+            // Choose the maximium resolution
+            return currentAcceptedRes.MaxBy(x => (x.Width, x.Height));
         }
         
         private List<string> GetResPairs_Fullscreen(Size defaultResolution)
