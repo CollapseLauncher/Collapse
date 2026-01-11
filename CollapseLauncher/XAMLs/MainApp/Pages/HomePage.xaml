@@ -954,6 +954,7 @@
             </c:NonFaultyGrid>
         </c:NonFaultyGrid>
         <Grid x:Name="MultiBackgroundPipsPagerGrid"
+              DataContext="{x:Bind CurrentBackgroundManager}"
               Background="{ThemeResource SocMedPanelAcrylicBrush}"
               Grid.Row="0"
               Grid.RowSpan="2"
@@ -965,7 +966,7 @@
               Padding="10, 8"
               CornerRadius="20"
               Margin="0,0,50,0"
-              Visibility="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemsCount, Mode=OneWay, Converter={StaticResource CountSingleToVisibilityConverter}}">
+              Visibility="{Binding CurrentBackgroundCount, Converter={StaticResource CountSingleToVisibilityConverter}, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -976,14 +977,13 @@
                        VerticalAlignment="Center"
                        FontSize="12"
                        FontWeight="Bold">
-                <Run Text="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
+                <Run Text="{Binding CurrentSelectedBackgroundIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
                 <Run Text="/" />
-                <Run Text="{Binding ElementName=MultiBackgroundPipsPager, Path=ItemsCount, Mode=OneWay}" />
+                <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
             </TextBlock>
             <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
                                        Grid.Column="1"
-                                       DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
-                                       ItemsCount="{Binding ImageContextSources.Count, Mode=OneWay}"
+                                       ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
                                        ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"

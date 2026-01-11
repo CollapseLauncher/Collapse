@@ -25,7 +25,10 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 public partial class ImageBackgroundManager
     : NotifyPropertyChanged
 {
-    internal static readonly ImageBackgroundManager Shared = new();
+    internal static ImageBackgroundManager Shared
+    {
+        get;
+    } = new();
 
     #region Shared/Static Properties and Fields
 
@@ -182,6 +185,11 @@ public partial class ImageBackgroundManager
             OnPropertyChanged();
             LoadImageAtIndex(value, CancellationToken.None);
         }
+    }
+
+    public int CurrentBackgroundCount
+    {
+        get => ImageContextSources.Count;
     }
 
     /// <summary>

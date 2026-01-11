@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
@@ -294,6 +295,11 @@ namespace CollapseLauncher.Pages
             get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
+        }
+
+        private ImageBackgroundManager CurrentBackgroundManager
+        {
+            get => ImageBackgroundManager.Shared;
         }
     }
 }
