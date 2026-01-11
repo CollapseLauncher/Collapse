@@ -41,9 +41,9 @@ public partial class ImageBackgroundManager
     /// Otherwise, it will return the input paths.
     /// </summary>
     private static async Task<(string? ProcessedOverlayPath, string? ProcessedBackgroundPath, bool IsCancelResize)>
-        GetCroppedCustomImage(string? overlayUrlOrPath,
-                              string? backgroundUrlOrPath,
-                              bool performCropRequest,
+        GetCroppedCustomImage(string?           overlayUrlOrPath,
+                              string?           backgroundUrlOrPath,
+                              bool              performCropRequest,
                               CancellationToken token)
     {
         if ((string.IsNullOrEmpty(overlayUrlOrPath) &&

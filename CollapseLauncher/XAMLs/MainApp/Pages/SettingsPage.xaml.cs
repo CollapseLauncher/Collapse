@@ -551,19 +551,13 @@ namespace CollapseLauncher.Pages
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
-            if (string.IsNullOrEmpty(file))
+            if (string.IsNullOrEmpty(file) ||
+                string.IsNullOrWhiteSpace(file))
             {
                 return;
             }
 
-            PresetConfig presetConfig = LauncherMetadataHelper.CurrentMetadataConfig;
-
-            ImageBackgroundManager.Shared.GlobalCustomBackgroundImagePath = file;
-            await ImageBackgroundManager.Shared.Initialize(presetConfig,
-                                                           presetConfig.GameLauncherApi.LauncherGameBackground,
-                                                           m_mainPage.BackgroundPresenterGrid,
-                                                           true,
-                                                           CancellationToken.None);
+            await ImageBackgroundManager.Shared.SetGlobalCustomBackground(file, true);
         }
 
         private int _eggsAttempt = 1;

@@ -56,11 +56,7 @@ public partial class ImageBackgroundManager
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalIsEnableCustomImageConfigKey, value);
             OnPropertyChanged();
-            _ = Initialize(PresetConfig,
-                       CurrentBackgroundApi,
-                       PresenterGrid,
-                       false,
-                       CancellationToken.None);
+            _ = InitializeCore();
         }
     }
 
@@ -152,11 +148,7 @@ public partial class ImageBackgroundManager
         {
             LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableCustomImageConfigKey, value);
             OnPropertyChanged();
-            _ = Initialize(PresetConfig,
-                           CurrentBackgroundApi,
-                           PresenterGrid,
-                           false,
-                           CancellationToken.None);
+            _ = InitializeCore();
         }
     }
 
@@ -207,18 +199,16 @@ public partial class ImageBackgroundManager
     #endregion
 
     /// <summary>
-    /// Initialize background images of the current region. This method MUST be called everytime the region is loaded.
+    /// Initialize background images of for a region. This method MUST be called everytime the region is loaded.
     /// </summary>
     /// <param name="presetConfig">The preset config of the current game region.</param>
     /// <param name="backgroundApi">The background API implementation of the current game region.</param>
     /// <param name="presenterGrid">Presenter Grid which the element of the background will be shown on.</param>
-    /// <param name="performCropRequest">Whether to request the launcher to spawn crop dialog if (say) a new custom image is used.</param>
     /// <param name="token">Cancellation token to cancel asynchronous operations.</param>
     public async Task Initialize(PresetConfig?             presetConfig,
                                  HypLauncherBackgroundApi? backgroundApi,
                                  Grid?                     presenterGrid,
-                                 bool                      performCropRequest = false,
-                                 CancellationToken         token              = default)
+                                 CancellationToken         token = default)
     {
         ArgumentNullException.ThrowIfNull(presetConfig);
         ArgumentNullException.ThrowIfNull(presenterGrid);
@@ -230,75 +220,52 @@ public partial class ImageBackgroundManager
         PresetConfig         = presetConfig;
         PresenterGrid        = presenterGrid;
         CurrentBackgroundApi = backgroundApi;
-        bool isCancelProcess = false;
 
+        await InitializeCore(token);
+    }
+
+    private async Task InitializeCore(CancellationToken token = default)
+    {
+        if (PresetConfig == null)
+        {
+            throw new InvalidOperationException($"{nameof(PresetConfig)} is uninitialized!");
+        }
+
+        // -- Try to initialize custom image first
+        //    -- A. Check for per-region custom background
+        if (CurrentIsEnableCustomImage &&
+            await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, token))
+        {
+            return;
+        }
+
+        //   -- B. Check for global custom background
+        if (!CurrentIsEnableCustomImage &&
+            GlobalIsEnableCustomImage &&
+            await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, token))
+        {
+            return;
+        }
+
+        // -- If no custom background is used, then fallback to background provided by API or fallback background.
         List<LayeredImageBackgroundContext> imageContexts = [];
 
         try
         {
-            string? resultOverlayPath    = null;
-            string? resultBackgroundPath = null;
-
-            if (CurrentIsEnableCustomImage)
-            {
-                (resultOverlayPath, resultBackgroundPath, isCancelProcess) =
-                    await GetCroppedCustomImage(null,
-                                                CurrentCustomBackgroundImagePath,
-                                                performCropRequest,
-                                                token);
-
-                if (isCancelProcess)
-                {
-                    return;
-                }
-            }
-
-            if (GlobalIsEnableCustomImage &&
-                string.IsNullOrEmpty(resultOverlayPath) &&
-                string.IsNullOrEmpty(resultBackgroundPath))
-            {
-                (resultOverlayPath, resultBackgroundPath, isCancelProcess) =
-                    await GetCroppedCustomImage(null,
-                                                GlobalCustomBackgroundImagePath,
-                                                performCropRequest,
-                                                token);
-
-                if (isCancelProcess)
-                {
-                    return;
-                }
-            }
-
-            // If Current or Global custom image is enabled and
-            // image paths (either overlay or background) is existed,
-            // then use that custom path.
-            if ((CurrentIsEnableCustomImage || GlobalIsEnableCustomImage) &&
-                !string.IsNullOrEmpty(resultBackgroundPath))
-            {
-                imageContexts.Add(new LayeredImageBackgroundContext
-                {
-                    OriginBackgroundImagePath = CurrentCustomBackgroundImagePath ?? GlobalCustomBackgroundImagePath,
-                    OverlayImagePath          = resultOverlayPath,
-                    BackgroundImagePath       = resultBackgroundPath
-                });
-                return;
-            }
-
-            // Otherwise, add from launcher API's
-
             // -- Check 1: Add placeholder ones if the API is not implemented.
             if (CurrentBackgroundApi?.Data is not { GameContentList: { Count: > 0 } contextList })
             {
-                string bgPlaceholderPath = GetPlaceholderBackgroundImageFrom(presetConfig);
+                string bgPlaceholderPath = GetPlaceholderBackgroundImageFrom(PresetConfig);
                 imageContexts.Add(new LayeredImageBackgroundContext
                 {
                     OriginBackgroundImagePath = bgPlaceholderPath,
-                    BackgroundImagePath       = bgPlaceholderPath
+                    BackgroundImagePath = bgPlaceholderPath
                 });
                 return;
             }
 
             // -- Check 2: Use ones provided by the API
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (HypLauncherBackgroundContentKindData contextEntry in contextList.SelectMany(x => x.Backgrounds))
             {
                 string? overlayImagePath = contextEntry.BackgroundOverlay?.ImageUrl;
@@ -307,7 +274,7 @@ public partial class ImageBackgroundManager
 
                 imageContexts.Add(new LayeredImageBackgroundContext
                 {
-                    OverlayImagePath    = overlayImagePath,
+                    OverlayImagePath = overlayImagePath,
                     BackgroundImagePath = backgroundImagePath
                 });
             }
@@ -319,36 +286,106 @@ public partial class ImageBackgroundManager
         }
         finally
         {
-            if (!isCancelProcess)
+            UpdateContextListCore(imageContexts, token);
+        }
+    }
+
+    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest, CancellationToken token = default)
+    {
+        GlobalCustomBackgroundImagePath = imagePath;
+        // For global custom background, pass CurrentIsEnableCustomImage status so when it's set to true,
+        // this code will only perform cropping but not applying it.
+        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, token);
+    }
+
+    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest, CancellationToken token = default)
+    {
+        CurrentCustomBackgroundImagePath = imagePath;
+        // For current custom background, since we put the priority at the top.
+        // So if it's done performing cropping, apply the change no matter what's the status for global background.
+        return SetCustomBackgroundCore(imagePath, performCropRequest, true, token);
+    }
+
+    private async Task<bool> SetCustomBackgroundCore(string?           imagePath,
+                                                     bool              performCropRequest,
+                                                     bool              applyChanges,
+                                                     CancellationToken token)
+    {
+        try
+        {
+            // -- Return as cancelled if path is null
+            if (string.IsNullOrEmpty(imagePath))
             {
+                return false;
+            }
 
-                ImageContextSources.Clear(); // Flush list
-                ref IList<LayeredImageBackgroundContext>? backedList =
-                    ref ObservableCollectionExtension<LayeredImageBackgroundContext>
-                       .GetBackedCollectionList(ImageContextSources);
+            // -- Try to perform cropped or pass through processing
+            (_, string? resultBackgroundPath, bool isCancelProcess) =
+                await GetCroppedCustomImage(null,
+                                            imagePath,
+                                            performCropRequest,
+                                            token);
 
-                // If backed list is List<T>, then use .AddRange
-                if (backedList is List<LayeredImageBackgroundContext> backedListAsList)
-                {
-                    backedListAsList.AddRange(imageContexts);
+            // -- Do not process custom background if cancelled.
+            if (isCancelProcess)
+            {
+                return false;
+            }
 
-                    // Raise collection event.
-                    ObservableCollectionExtension<LayeredImageBackgroundContext>.RefreshAllEvents(ImageContextSources);
-                }
-                // Otherwise, add item one-by-one (might cause flicker on the UI Element that bind to it).
-                else
-                {
-                    foreach (LayeredImageBackgroundContext imageContext in imageContexts)
-                    {
-                        ImageContextSources.Add(imageContext);
-                    }
-                }
+            // -- If the change does not require to be applied, then
+            //    just ignore it. (Only perform cropping)
+            if (!applyChanges)
+            {
+                return true;
+            }
 
-                // Update index based on current image context list content.
-                OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
-                LoadImageAtIndex(CurrentSelectedBackgroundIndex, token);
+            // -- Apply background
+            LayeredImageBackgroundContext[] contexts = [new()
+            {
+                OriginBackgroundImagePath = imagePath,
+                BackgroundImagePath       = resultBackgroundPath
+            }];
+
+            UpdateContextListCore(contexts, token);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            SentryHelper.ExceptionHandler(ex);
+            // Yeet! we won't do any processing for this custom background.
+
+            return false;
+        }
+    }
+
+    private void UpdateContextListCore(IEnumerable<LayeredImageBackgroundContext> imageContexts, CancellationToken token)
+    {
+        ImageContextSources.Clear(); // Flush list
+        ref IList<LayeredImageBackgroundContext>? backedList =
+            ref ObservableCollectionExtension<LayeredImageBackgroundContext>
+               .GetBackedCollectionList(ImageContextSources);
+
+        // If backed list is List<T>, then use .AddRange
+        if (backedList is List<LayeredImageBackgroundContext> backedListAsList)
+        {
+            backedListAsList.AddRange(imageContexts);
+
+            // Raise collection event.
+            ObservableCollectionExtension<LayeredImageBackgroundContext>.RefreshAllEvents(ImageContextSources);
+        }
+        // Otherwise, add item one-by-one (might cause flicker on the UI Element that bind to it).
+        else
+        {
+            foreach (LayeredImageBackgroundContext imageContext in imageContexts)
+            {
+                ImageContextSources.Add(imageContext);
             }
         }
+
+        // Update index based on current image context list content.
+        OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
+        OnPropertyChanged(nameof(CurrentBackgroundCount));
+        LoadImageAtIndex(CurrentSelectedBackgroundIndex, token);
     }
 }
 

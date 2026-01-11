@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Threading;
 using Windows.Foundation;
 
@@ -195,45 +196,54 @@ public partial class NewPipsPager
     {
         ItemsRepeater? repeater = _pipsPagerItemsRepeater;
 
-        if (!_isTemplateLoaded ||
-            repeater?.ItemsSourceView == null)
-        {
-            return null;
-        }
-
-        int  childCount       = repeater.ItemsSourceView.Count;
-        bool isUpdateNewChild = newIndex >= 0 && newIndex < childCount;
-        bool isUpdateOldChild = oldIndex >= 0 && oldIndex < childCount;
-
-        if (ItemsCount == 0)
-        {
-            return null;
-        }
-
-        Button? newIndexPipButton = repeater.GetOrCreateElement(newIndex) as Button;
-        Button? oldIndexPipButton = repeater.TryGetElement(oldIndex) as Button;
-
         try
         {
-            if (isUpdateOldChild)
+            if (!_isTemplateLoaded ||
+                repeater?.ItemsSourceView == null)
             {
-                AssignPipButtonStyle(oldIndexPipButton, NormalPipButtonStyle);
+                return null;
             }
 
-            if (isUpdateNewChild)
+            int  childCount       = repeater.ItemsSourceView.Count;
+            bool isUpdateNewChild = newIndex >= 0 && newIndex < childCount;
+            bool isUpdateOldChild = oldIndex >= 0 && oldIndex < childCount;
+
+            if (ItemsCount == 0)
             {
-                return AssignPipButtonStyle(newIndexPipButton, SelectedPipButtonStyle);
+                return null;
             }
 
-            return newIndexPipButton;
+            Button? newIndexPipButton = repeater.GetOrCreateElement(newIndex) as Button;
+            Button? oldIndexPipButton = repeater.TryGetElement(oldIndex) as Button;
+
+            try
+            {
+                if (isUpdateOldChild)
+                {
+                    AssignPipButtonStyle(oldIndexPipButton, NormalPipButtonStyle);
+                }
+
+                if (isUpdateNewChild)
+                {
+                    return AssignPipButtonStyle(newIndexPipButton, SelectedPipButtonStyle);
+                }
+
+                return newIndexPipButton;
+            }
+            finally
+            {
+                if (newIndex != oldIndex)
+                {
+                    ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
+                }
+            }
         }
-        finally
+        catch
         {
-            if (newIndex != oldIndex)
-            {
-                ItemIndexChanged?.Invoke(this, new ChangedStructItemArgs<int>(oldIndex, newIndex));
-            }
+            // ignored
         }
+
+        return null;
     }
 
     private static Button? AssignPipButtonStyle(Button? button, Style? style)

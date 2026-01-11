@@ -1,7 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -23,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -631,7 +629,11 @@ public sealed partial class HomePage
         }
 
         string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
-        if (string.IsNullOrEmpty(file)) return;
+        if (string.IsNullOrEmpty(file) ||
+            string.IsNullOrWhiteSpace(file))
+        {
+            return;
+        }
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)
         {
@@ -639,14 +641,7 @@ public sealed partial class HomePage
             CurrentGameProperty.GameSettings.SaveBaseSettings();
         }
 
-        ImageBackgroundManager manager = ImageBackgroundManager.Shared;
-        manager.CurrentCustomBackgroundImagePath = file;
-
-        await manager.Initialize(CurrentGameProperty!.GamePreset,
-                                 CurrentGameProperty!.GamePreset.GameLauncherApi?.LauncherGameBackground,
-                                 m_mainPage.BackgroundPresenterGrid,
-                                 true,
-                                 CancellationToken.None);
+        await CurrentBackgroundManager.SetCurrentCustomBackground(file, true);
     }
 
     private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
