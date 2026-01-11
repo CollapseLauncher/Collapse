@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
@@ -166,7 +167,8 @@ namespace Hi3Helper.Shared.Region
 
         private static void InitScreenResSettings()
         {
-            foreach (var res in ScreenProp.EnumerateScreenSizes())
+            var sorted = ScreenProp.EnumerateScreenSizes().OrderByDescending(x => (x.Width, x.Height));
+            foreach (var res in sorted)
             {
                 ScreenResolutionsList.Add($"{res.Width}x{res.Height}");
             }
