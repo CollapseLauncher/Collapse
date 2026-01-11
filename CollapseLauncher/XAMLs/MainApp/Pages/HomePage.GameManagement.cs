@@ -641,7 +641,7 @@ public sealed partial class HomePage
             CurrentGameProperty.GameSettings.SaveBaseSettings();
         }
 
-        await CurrentBackgroundManager.SetCurrentCustomBackground(file, true);
+        await CurrentBackgroundManager.SetCurrentCustomBackground(file);
     }
 
     private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)

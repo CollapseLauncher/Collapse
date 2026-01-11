@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
@@ -234,7 +235,7 @@ public partial class ImageBackgroundManager
         // -- Try to initialize custom image first
         //    -- A. Check for per-region custom background
         if (CurrentIsEnableCustomImage &&
-            await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, token))
+            await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
         {
             return;
         }
@@ -242,7 +243,7 @@ public partial class ImageBackgroundManager
         //   -- B. Check for global custom background
         if (!CurrentIsEnableCustomImage &&
             GlobalIsEnableCustomImage &&
-            await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, token))
+            await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
         {
             return;
         }
@@ -286,29 +287,30 @@ public partial class ImageBackgroundManager
         }
         finally
         {
-            UpdateContextListCore(imageContexts, token);
+            UpdateContextListCore(token, false, imageContexts);
         }
     }
 
-    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest, CancellationToken token = default)
+    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
     {
         GlobalCustomBackgroundImagePath = imagePath;
         // For global custom background, pass CurrentIsEnableCustomImage status so when it's set to true,
         // this code will only perform cropping but not applying it.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, skipPreviousContextCheck, token);
     }
 
-    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest, CancellationToken token = default)
+    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
     {
         CurrentCustomBackgroundImagePath = imagePath;
         // For current custom background, since we put the priority at the top.
         // So if it's done performing cropping, apply the change no matter what's the status for global background.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, true, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, true, skipPreviousContextCheck, token);
     }
 
     private async Task<bool> SetCustomBackgroundCore(string?           imagePath,
                                                      bool              performCropRequest,
                                                      bool              applyChanges,
+                                                     bool              skipPreviousContextCheck,
                                                      CancellationToken token)
     {
         try
@@ -340,13 +342,13 @@ public partial class ImageBackgroundManager
             }
 
             // -- Apply background
-            LayeredImageBackgroundContext[] contexts = [new()
+            LayeredImageBackgroundContext context = new()
             {
                 OriginBackgroundImagePath = imagePath,
                 BackgroundImagePath       = resultBackgroundPath
-            }];
+            };
 
-            UpdateContextListCore(contexts, token);
+            UpdateContextListCore(token, skipPreviousContextCheck, context);
             return true;
         }
         catch (Exception ex)
@@ -358,8 +360,33 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private void UpdateContextListCore(IEnumerable<LayeredImageBackgroundContext> imageContexts, CancellationToken token)
+#pragma warning disable CA1068
+    private void UpdateContextListCore(
+        CancellationToken                          token,
+        bool                                       skipPreviousContextCheck,
+        IEnumerable<LayeredImageBackgroundContext> imageContexts)
     {
+        if (imageContexts is List<LayeredImageBackgroundContext> asList)
+        {
+            UpdateContextListCore(token, skipPreviousContextCheck, CollectionsMarshal.AsSpan(asList));
+            return;
+        }
+
+        UpdateContextListCore(token, skipPreviousContextCheck, imageContexts.ToArray());
+    }
+
+    private void UpdateContextListCore(
+        CancellationToken                                  token,
+        bool                                               skipPreviousContextCheck,
+        params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
+    {
+        // Do not update if the previous contexts are equal
+        if (!skipPreviousContextCheck &&
+            IsContextEqual(imageContexts))
+        {
+            return;
+        }
+
         ImageContextSources.Clear(); // Flush list
         ref IList<LayeredImageBackgroundContext>? backedList =
             ref ObservableCollectionExtension<LayeredImageBackgroundContext>
@@ -387,49 +414,75 @@ public partial class ImageBackgroundManager
         OnPropertyChanged(nameof(CurrentBackgroundCount));
         LoadImageAtIndex(CurrentSelectedBackgroundIndex, token);
     }
+#pragma warning restore CA1068
+
+    private bool IsContextEqual(ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
+    {
+        if (ImageContextSources.Count != imageContexts.Length)
+        {
+            return false;
+        }
+
+        HashSet<int> currentContextHashes =
+            ImageContextSources
+               .Select(x => x.GetHashCode())
+               .ToHashSet();
+        foreach (LayeredImageBackgroundContext imageContext in imageContexts)
+        {
+            if (!currentContextHashes.Contains(imageContext.GetHashCode()))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 [GeneratedBindableCustomProperty]
-public partial class LayeredImageBackgroundContext
-    : NotifyPropertyChanged
+public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEquatable<LayeredImageBackgroundContext>
 {
     public string? OriginOverlayImagePath
     {
         get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
+        init;
     }
 
     public string? OriginBackgroundImagePath
     {
         get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
+        init;
     }
 
     public string? OverlayImagePath
     {
         get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
+        init;
     }
 
     public string? BackgroundImagePath
     {
         get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
+        init;
     }
+
+    public bool Equals(LayeredImageBackgroundContext? other) => other?.GetHashCode() == GetHashCode();
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(obj, this))
+        {
+            return true;
+        }
+
+        if (obj is not LayeredImageBackgroundContext other)
+        {
+            return false;
+        }
+
+        return Equals(other);
+    }
+
+    public override int GetHashCode() =>
+        HashCode.Combine(OriginOverlayImagePath, OriginBackgroundImagePath, OverlayImagePath, BackgroundImagePath);
 }

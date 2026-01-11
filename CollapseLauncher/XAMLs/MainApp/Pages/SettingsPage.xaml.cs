@@ -557,7 +557,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            await ImageBackgroundManager.Shared.SetGlobalCustomBackground(file, true);
+            await ImageBackgroundManager.Shared.SetGlobalCustomBackground(file);
         }
 
         private int _eggsAttempt = 1;
