@@ -161,7 +161,11 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_RegisterPointerEvents()
     {
-        UIElement eventSource = ParallaxGrid_UnregisterPointerEvents();
+        UIElement? eventSource = ParallaxGrid_UnregisterPointerEvents();
+        if (eventSource == null)
+        {
+            return;
+        }
 
         eventSource.PointerMoved   += ParallaxGrid_OnPointerMoved;
         eventSource.PointerEntered += ParallaxGrid_OnPointerEntered;
@@ -169,9 +173,9 @@ public partial class LayeredBackgroundImage
         _lastParallaxHoverSource   =  eventSource;
     }
 
-    private UIElement ParallaxGrid_UnregisterPointerEvents()
+    private UIElement? ParallaxGrid_UnregisterPointerEvents()
     {
-        UIElement eventSource = ParallaxHoverSource ?? _parallaxGrid;
+        UIElement? eventSource = ParallaxHoverSource ?? _parallaxGrid;
         if (_lastParallaxHoverSource != null)
         {
             _lastParallaxHoverSource.PointerMoved   -= ParallaxGrid_OnPointerMoved;
@@ -179,12 +183,14 @@ public partial class LayeredBackgroundImage
             _lastParallaxHoverSource.PointerExited  -= ParallaxGrid_OnPointerExited;
         }
 
-        if (eventSource != null!)
+        if (eventSource == null!)
         {
-            eventSource.PointerMoved   -= ParallaxGrid_OnPointerMoved;
-            eventSource.PointerEntered -= ParallaxGrid_OnPointerEntered;
-            eventSource.PointerExited  -= ParallaxGrid_OnPointerExited;
+            return null;
         }
+
+        eventSource.PointerMoved   -= ParallaxGrid_OnPointerMoved;
+        eventSource.PointerEntered -= ParallaxGrid_OnPointerEntered;
+        eventSource.PointerExited  -= ParallaxGrid_OnPointerExited;
         return eventSource;
     }
 
@@ -207,7 +213,10 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OnPointerExited(object sender, PointerRoutedEventArgs e)
     {
-        ParallaxGrid_OffsetReset();
+        if (ParallaxResetOnUnfocused)
+        {
+            ParallaxGrid_OffsetReset();
+        }
     }
 
     private void ParallaxGrid_OnPointerEntered(object sender, PointerRoutedEventArgs e)

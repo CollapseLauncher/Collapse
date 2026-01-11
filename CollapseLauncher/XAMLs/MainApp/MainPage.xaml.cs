@@ -67,6 +67,9 @@ namespace CollapseLauncher
         private int  CurrentGameRegion    = -1;
 
         internal static readonly List<string> PreviousTagString = [];
+
+        internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset, true));
+
         #endregion
 
         #region Main Routine

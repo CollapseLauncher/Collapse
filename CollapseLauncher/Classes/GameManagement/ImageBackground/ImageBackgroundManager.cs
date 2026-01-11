@@ -57,7 +57,7 @@ public partial class ImageBackgroundManager
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalIsEnableCustomImageConfigKey, value);
             OnPropertyChanged();
-            _ = InitializeCore();
+            InitializeCore();
         }
     }
 
@@ -149,7 +149,7 @@ public partial class ImageBackgroundManager
         {
             LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableCustomImageConfigKey, value);
             OnPropertyChanged();
-            _ = InitializeCore();
+            InitializeCore();
         }
     }
 
@@ -206,10 +206,10 @@ public partial class ImageBackgroundManager
     /// <param name="backgroundApi">The background API implementation of the current game region.</param>
     /// <param name="presenterGrid">Presenter Grid which the element of the background will be shown on.</param>
     /// <param name="token">Cancellation token to cancel asynchronous operations.</param>
-    public async Task Initialize(PresetConfig?             presetConfig,
-                                 HypLauncherBackgroundApi? backgroundApi,
-                                 Grid?                     presenterGrid,
-                                 CancellationToken         token = default)
+    public void Initialize(PresetConfig?             presetConfig,
+                           HypLauncherBackgroundApi? backgroundApi,
+                           Grid?                     presenterGrid,
+                           CancellationToken         token = default)
     {
         ArgumentNullException.ThrowIfNull(presetConfig);
         ArgumentNullException.ThrowIfNull(presenterGrid);
@@ -222,72 +222,85 @@ public partial class ImageBackgroundManager
         PresenterGrid        = presenterGrid;
         CurrentBackgroundApi = backgroundApi;
 
-        await InitializeCore(token);
+        InitializeCore(token);
     }
 
-    private async Task InitializeCore(CancellationToken token = default)
+    private void InitializeCore(CancellationToken token = default)
     {
-        if (PresetConfig == null)
+        new Thread(Impl)
         {
-            throw new InvalidOperationException($"{nameof(PresetConfig)} is uninitialized!");
-        }
+            IsBackground = true,
+        }.Start();
 
-        // -- Try to initialize custom image first
-        //    -- A. Check for per-region custom background
-        if (CurrentIsEnableCustomImage &&
-            await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
+        return;
+
+        async void Impl()
         {
-            return;
-        }
-
-        //   -- B. Check for global custom background
-        if (!CurrentIsEnableCustomImage &&
-            GlobalIsEnableCustomImage &&
-            await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
-        {
-            return;
-        }
-
-        // -- If no custom background is used, then fallback to background provided by API or fallback background.
-        List<LayeredImageBackgroundContext> imageContexts = [];
-
-        try
-        {
-            // -- Check 1: Add placeholder ones if the API is not implemented.
-            if (CurrentBackgroundApi?.Data is not { GameContentList: { Count: > 0 } contextList })
+            try
             {
-                string bgPlaceholderPath = GetPlaceholderBackgroundImageFrom(PresetConfig);
-                imageContexts.Add(new LayeredImageBackgroundContext
+                if (PresetConfig == null)
                 {
-                    OriginBackgroundImagePath = bgPlaceholderPath,
-                    BackgroundImagePath = bgPlaceholderPath
-                });
-                return;
-            }
+                    throw new InvalidOperationException($"{nameof(PresetConfig)} is uninitialized!");
+                }
 
-            // -- Check 2: Use ones provided by the API
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (HypLauncherBackgroundContentKindData contextEntry in contextList.SelectMany(x => x.Backgrounds))
+                // -- Try to initialize custom image first
+                //    -- A. Check for per-region custom background
+                if (CurrentIsEnableCustomImage &&
+                    await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
+                {
+                    return;
+                }
+
+                //   -- B. Check for global custom background
+                if (!CurrentIsEnableCustomImage &&
+                    GlobalIsEnableCustomImage &&
+                    await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
+                {
+                    return;
+                }
+
+                // -- If no custom background is used, then fallback to background provided by API or fallback background.
+                List<LayeredImageBackgroundContext> imageContexts = [];
+
+                try
+                {
+                    // -- Check 1: Add placeholder ones if the API is not implemented.
+                    if (CurrentBackgroundApi?.Data is not { GameContentList: { Count: > 0 } contextList })
+                    {
+                        string bgPlaceholderPath = GetPlaceholderBackgroundImageFrom(PresetConfig);
+                        imageContexts.Add(new LayeredImageBackgroundContext
+                        {
+                            OriginBackgroundImagePath = bgPlaceholderPath,
+                            BackgroundImagePath = bgPlaceholderPath
+                        });
+                        return;
+                    }
+
+                    // -- Check 2: Use ones provided by the API
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    foreach (HypLauncherBackgroundContentKindData contextEntry in contextList.SelectMany(x => x.Backgrounds))
+                    {
+                        string? overlayImagePath = contextEntry.BackgroundOverlay?.ImageUrl;
+                        string? backgroundImagePath = contextEntry.BackgroundVideo?.ImageUrl ??
+                                                      contextEntry.BackgroundImage?.ImageUrl;
+
+                        imageContexts.Add(new LayeredImageBackgroundContext
+                        {
+                            OverlayImagePath = overlayImagePath,
+                            BackgroundImagePath = backgroundImagePath
+                        });
+                    }
+                }
+                finally
+                {
+                    UpdateContextListCore(token, false, imageContexts);
+                }
+            }
+            catch (Exception ex)
             {
-                string? overlayImagePath = contextEntry.BackgroundOverlay?.ImageUrl;
-                string? backgroundImagePath = contextEntry.BackgroundVideo?.ImageUrl ??
-                                              contextEntry.BackgroundImage?.ImageUrl;
-
-                imageContexts.Add(new LayeredImageBackgroundContext
-                {
-                    OverlayImagePath = overlayImagePath,
-                    BackgroundImagePath = backgroundImagePath
-                });
+                SentryHelper.ExceptionHandler(ex);
+                // ignore
             }
-        }
-        catch (Exception ex)
-        {
-            SentryHelper.ExceptionHandler(ex);
-            // ignore
-        }
-        finally
-        {
-            UpdateContextListCore(token, false, imageContexts);
         }
     }
 

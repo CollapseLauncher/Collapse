@@ -129,10 +129,10 @@ namespace CollapseLauncher
                     LoadingMessageHelper.HideLoadingFrame();
 
                     KeyboardShortcuts.CannotUseKbShortcuts = false; // Re-enable keyboard shortcuts after loading region
-                    _ = ImageBackgroundManager.Shared.Initialize(preset,
-                                                                 preset.GameLauncherApi.LauncherGameBackground,
-                                                                 presenterGrid: BackgroundPresenterGrid,
-                                                                 token: token);
+                    ImageBackgroundManager.Shared.Initialize(preset,
+                                                             preset.GameLauncherApi.LauncherGameBackground,
+                                                             presenterGrid: BackgroundPresenterGrid,
+                                                             token: token);
                 }
                 catch (Exception ex)
                 {

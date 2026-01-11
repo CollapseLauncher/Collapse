@@ -24,6 +24,13 @@ public partial class ImageBackgroundManager
         @"Assets\Images\PageBackground\default_zzz.webp",
     ];
 
+    private static readonly string[] PlaceholderBackgroundImagePngRelPath = [
+        @"Assets\Images\GamePoster\poster_genshin.png",
+        @"Assets\Images\GamePoster\poster_honkai.png",
+        @"Assets\Images\GamePoster\poster_starrail.png",
+        @"Assets\Images\GamePoster\poster_zzz.png",
+    ];
+
     #endregion
 
     private static Task<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
@@ -114,20 +121,30 @@ public partial class ImageBackgroundManager
         return downloadedFilePath.Exists;
     }
 
-    private static string GetPlaceholderBackgroundImageFrom(PresetConfig presetConfig)
+    internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig, bool usePngVersion = false)
     {
-        string relPath = presetConfig.GameName switch
+        string[] source = usePngVersion
+            ? PlaceholderBackgroundImagePngRelPath
+            : PlaceholderBackgroundImageRelPath;
+
+        string relPath = presetConfig?.GameName switch
         {
-            "Genshin Impact" => PlaceholderBackgroundImageRelPath[0],
-            "Honkai Impact 3rd" => PlaceholderBackgroundImageRelPath[1],
-            "Honkai: Star Rail" => PlaceholderBackgroundImageRelPath[2],
-            "Zenless Zone Zero" => PlaceholderBackgroundImageRelPath[3],
-            _ => GetRandomPlaceholderImage()
+            "Genshin Impact" => source[0],
+            "Honkai Impact 3rd" => source[1],
+            "Honkai: Star Rail" => source[2],
+            "Zenless Zone Zero" => source[3],
+            _ => GetRandomPlaceholderImage(usePngVersion)
         };
 
         return Path.Combine(LauncherConfig.AppExecutableDir, relPath);
     }
 
-    public static string GetRandomPlaceholderImage() =>
-        PlaceholderBackgroundImageRelPath[Random.Shared.Next(0, PlaceholderBackgroundImageRelPath.Length - 1)];
+    public static string GetRandomPlaceholderImage(bool usePngVersion = false)
+    {
+        string[] source = usePngVersion
+            ? PlaceholderBackgroundImagePngRelPath
+            : PlaceholderBackgroundImageRelPath;
+
+        return source[Random.Shared.Next(0, source.Length - 1)];
+    }
 }

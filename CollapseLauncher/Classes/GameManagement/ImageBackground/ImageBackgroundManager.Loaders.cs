@@ -97,9 +97,10 @@ public partial class ImageBackgroundManager
     {
         LayeredBackgroundImage layerElement = new()
         {
-            BackgroundSource = backgroundFilePath,
-            ForegroundSource = overlayFilePath,
-            Tag              = context
+            BackgroundSource         = backgroundFilePath,
+            ForegroundSource         = overlayFilePath,
+            Tag                      = context,
+            ParallaxResetOnUnfocused = false
         };
 
         layerElement.BindProperty(this,

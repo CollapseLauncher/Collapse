@@ -51,6 +51,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(ParallaxHoverSourceProperty, value);
     }
 
+    public bool ParallaxResetOnUnfocused
+    {
+        get => (bool)GetValue(ParallaxResetOnUnfocusedProperty);
+        set => SetValue(ParallaxResetOnUnfocusedProperty, value);
+    }
+
     public object? PlaceholderSource
     {
         get => (object?)GetValue(PlaceholderSourceProperty);
@@ -174,6 +180,12 @@ public partial class LayeredBackgroundImage
                                     typeof(UIElement),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(null!, ParallaxHover_OnChange));
+
+    public static readonly DependencyProperty ParallaxResetOnUnfocusedProperty =
+        DependencyProperty.Register(nameof(ParallaxResetOnUnfocused),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(true));
 
     public static readonly DependencyProperty PlaceholderSourceProperty =
         DependencyProperty.Register(nameof(PlaceholderSource),
