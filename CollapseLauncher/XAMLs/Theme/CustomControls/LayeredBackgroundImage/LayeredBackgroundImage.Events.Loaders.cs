@@ -101,7 +101,6 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._placeholderGrid;
         element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
-                                            e.OldValue,
                                             nameof(PlaceholderStretch),
                                             nameof(PlaceholderHorizontalAlignment),
                                             nameof(PlaceholderVerticalAlignment),
@@ -120,7 +119,6 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._backgroundGrid;
         element.LoadFromSourceAsyncDetached(BackgroundSourceProperty,
-                                            e.OldValue,
                                             nameof(BackgroundStretch),
                                             nameof(BackgroundHorizontalAlignment),
                                             nameof(BackgroundVerticalAlignment),
@@ -139,7 +137,6 @@ public partial class LayeredBackgroundImage
 
         Grid grid = element._foregroundGrid;
         element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
-                                            e.OldValue,
                                             nameof(ForegroundStretch),
                                             nameof(ForegroundHorizontalAlignment),
                                             nameof(ForegroundVerticalAlignment),
@@ -153,14 +150,13 @@ public partial class LayeredBackgroundImage
     #region
 
     private void LoadFromSourceAsyncDetached(
-        DependencyProperty     sourceProperty,
-        object?                lastSource,
-        string                 stretchProperty,
-        string                 horizontalAlignmentProperty,
-        string                 verticalAlignmentProperty,
-        Grid                   grid,
-        bool                   canReceiveVideo,
-        ref    MediaSourceType lastMediaType)
+        DependencyProperty  sourceProperty,
+        string              stretchProperty,
+        string              horizontalAlignmentProperty,
+        string              verticalAlignmentProperty,
+        Grid                grid,
+        bool                canReceiveVideo,
+        ref MediaSourceType lastMediaType)
     {
         try
         {
@@ -211,7 +207,6 @@ public partial class LayeredBackgroundImage
                     if (mediaType == MediaSourceType.Video &&
                         canReceiveVideo &&
                         await LoadVideoFromSourceAsync(source,
-                                                       lastSource,
                                                        this))
                     {
                     }
@@ -287,11 +282,8 @@ public partial class LayeredBackgroundImage
 
     private static async Task<bool> LoadVideoFromSourceAsync(
         object?                source,
-        object?                lastSource,
         LayeredBackgroundImage instance)
     {
-        bool isLastStreamSame = IsSourceKindEquals(source, lastSource);
-
         if (instance.MediaCacheHandler is { } cacheHandler)
         {
             MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
@@ -345,13 +337,34 @@ public partial class LayeredBackgroundImage
         }
 
         // Seek to last position if source was the same
-        if (isLastStreamSame &&
-            instance._videoPlayer.CanSeek)
+        if (instance._videoPlayer.CanSeek &&
+            TryGetSourceHashCode(source, out int lastSourceHashCode) && 
+            SharedLastMediaPosition.TryRemove(lastSourceHashCode, out TimeSpan lastPosition))
         {
-            instance._videoPlayer.Position = instance._lastVideoPlayerPosition;
+            instance._videoPlayer.Position = lastPosition;
         }
 
         return true;
+    }
+
+    private static bool TryGetSourceHashCode(object? obj, out int hashCode)
+    {
+        Unsafe.SkipInit(out hashCode);
+
+        switch (obj)
+        {
+            case Uri asUri:
+                hashCode = asUri.AbsolutePath.GetHashCode();
+                return true;
+            case string asString:
+                hashCode = asString.GetHashCode();
+                return true;
+            case FileStream asStream:
+                hashCode = asStream.Name.GetHashCode();
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void InitializeVideoFrameOnMediaOpened(MediaPlayer sender, object args)

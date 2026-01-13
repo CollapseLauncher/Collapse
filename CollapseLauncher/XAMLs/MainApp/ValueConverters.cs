@@ -12,9 +12,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.IO;
 using System.Net.Http;
+using System.Numerics;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
 
@@ -664,5 +666,157 @@ namespace CollapseLauncher.Pages
         {
             throw new NotImplementedException();
         }
+    }
+
+    public partial class StringIsNullOrEmptyToBooleanConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString &&
+                !string.IsNullOrEmpty(asString))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseStringIsNullOrEmptyToBooleanConverter : StringIsNullOrEmptyToBooleanConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+            => !(bool)base.Convert(value, targetType, parameter, language);
+    }
+
+    public partial class IsNumberEqualToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double number          = value.TryGetDouble();
+            double parameterNumber = parameter.TryGetDouble();
+
+            if (double.IsNaN(number) &&
+                double.IsNaN(parameterNumber))
+            {
+                return true;
+            }
+
+            double absTolerance = Math.Abs(number - parameterNumber);
+            return absTolerance < 1;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double parameterValue = parameter.TryGetDouble();
+            return GetDoubleValueTo(parameterValue, targetType);
+
+            static object GetDoubleValueTo(double value, Type targetType)
+            {
+                if (targetType == typeof(byte))
+                {
+                    return value.TryGetInteger<double, byte>();
+                }
+
+                if (targetType == typeof(sbyte))
+                {
+                    return value.TryGetInteger<double, sbyte>();
+                }
+
+                if (targetType == typeof(ushort))
+                {
+                    return value.TryGetInteger<double, ushort>();
+                }
+
+                if (targetType == typeof(short))
+                {
+                    return value.TryGetInteger<double, short>();
+                }
+
+                if (targetType == typeof(uint))
+                {
+                    return value.TryGetInteger<double, uint>();
+                }
+
+                if (targetType == typeof(int))
+                {
+                    return value.TryGetInteger<double, int>();
+                }
+
+                if (targetType == typeof(ulong))
+                {
+                    return value.TryGetInteger<double, ulong>();
+                }
+
+                if (targetType == typeof(long))
+                {
+                    return value.TryGetInteger<double, long>();
+                }
+
+                if (targetType == typeof(float))
+                {
+                    return (float)value;
+                }
+
+                return value;
+            }
+        }
+    }
+
+    public partial class IsContainsAnyNumbersToBooleanConverter : IValueConverter
+    {
+        private const           string             SeparatorsStr = ",}-/\\#;";
+        private static readonly SearchValues<char> Separators    = SearchValues.Create(SeparatorsStr);
+
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (parameter is not string asStringToSplit)
+            {
+                return false;
+            }
+
+            ReadOnlySpan<char> stringSpan      = asStringToSplit;
+            int                entriesCountMin = stringSpan.CountAny(Separators) + 1;
+
+            Span<Range> entriesSpan = stackalloc Range[entriesCountMin];
+            int entriesCount = stringSpan.SplitAny(entriesSpan,
+                                                   SeparatorsStr,
+                                                   StringSplitOptions.RemoveEmptyEntries |
+                                                   StringSplitOptions.TrimEntries);
+
+            if (entriesCount == 0)
+            {
+                return false;
+            }
+
+            Span<double> entries = stackalloc double[entriesCount];
+            for (int i = 0; i < entriesCount; i++)
+            {
+                if (!double.TryParse(stringSpan[entriesSpan[i]], out double result))
+                {
+                    return false;
+                }
+
+                entries[i] = result;
+            }
+
+            return entries.Contains(valueAsDouble);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseIsContainsAnyNumbersToBooleanConverter : IsContainsAnyNumbersToBooleanConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+            => !(bool)base.Convert(value, targetType, parameter, language);
     }
 }

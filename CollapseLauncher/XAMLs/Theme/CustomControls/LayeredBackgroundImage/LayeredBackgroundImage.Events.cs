@@ -49,7 +49,6 @@ public partial class LayeredBackgroundImage
             !IsSourceKindEquals(_lastPlaceholderSource, PlaceholderSource))
         {
             LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
-                                        _lastPlaceholderSource,
                                         nameof(PlaceholderStretch),
                                         nameof(PlaceholderHorizontalAlignment),
                                         nameof(PlaceholderVerticalAlignment),
@@ -62,7 +61,6 @@ public partial class LayeredBackgroundImage
         if (!IsSourceKindEquals(_lastBackgroundSource, BackgroundSource))
         {
             LoadFromSourceAsyncDetached(BackgroundSourceProperty,
-                                        _lastBackgroundSource,
                                         nameof(BackgroundStretch),
                                         nameof(BackgroundHorizontalAlignment),
                                         nameof(BackgroundVerticalAlignment),
@@ -76,7 +74,6 @@ public partial class LayeredBackgroundImage
         if (!IsSourceKindEquals(_lastForegroundSource, ForegroundSource))
         {
             LoadFromSourceAsyncDetached(ForegroundSourceProperty,
-                                        _lastForegroundSource,
                                         nameof(ForegroundStretch),
                                         nameof(ForegroundHorizontalAlignment),
                                         nameof(ForegroundVerticalAlignment),

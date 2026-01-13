@@ -45,6 +45,11 @@ public partial class ImageBackgroundManager
                 return;
             }
 
+            // -- Notify changes on context menu properties
+            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() =>
+                                                                            OnPropertyChanged(nameof(
+                                                                                CurrentSelectedBackgroundHasOverlayImage)));
+
             // -- Get context and invalidate previous CTS
             LayeredImageBackgroundContext context = ImageContextSources[index];
             if (Interlocked.Exchange(ref _imageLoadingTokenSource,
@@ -121,6 +126,16 @@ public partial class ImageBackgroundManager
         layerElement.BindProperty(this,
                                   nameof(GlobalBackgroundParallaxPixelShift),
                                   LayeredBackgroundImage.ParallaxVerticalShiftProperty,
+                                  BindingMode.OneWay);
+
+        layerElement.BindProperty(this, 
+                                  nameof(GlobalBackgroundAudioEnabled),
+                                  LayeredBackgroundImage.IsAudioEnabledProperty,
+                                  BindingMode.OneWay);
+
+        layerElement.BindProperty(this,
+                                  nameof(GlobalBackgroundAudioVolume),
+                                  LayeredBackgroundImage.AudioVolumeProperty,
                                   BindingMode.OneWay);
 
         layerElement.Transitions.Add(new PopupThemeTransition());

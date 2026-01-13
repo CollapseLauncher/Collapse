@@ -180,6 +180,20 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public LayeredImageBackgroundContext? CurrentSelectedBackgroundContext
+    {
+        get
+        {
+            int index = CurrentSelectedBackgroundIndex;
+            return index > ImageContextSources.Count - 1 ||
+                   index < 0
+                ? null
+                : ImageContextSources[CurrentSelectedBackgroundIndex];
+        }
+    }
+
+    public bool CurrentSelectedBackgroundHasOverlayImage => !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginOverlayImagePath);
+
     public int CurrentBackgroundCount
     {
         get => ImageContextSources.Count;
@@ -271,7 +285,7 @@ public partial class ImageBackgroundManager
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
                             OriginBackgroundImagePath = bgPlaceholderPath,
-                            BackgroundImagePath = bgPlaceholderPath
+                            BackgroundImagePath       = bgPlaceholderPath
                         });
                         return;
                     }
@@ -286,8 +300,10 @@ public partial class ImageBackgroundManager
 
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
-                            OverlayImagePath = overlayImagePath,
-                            BackgroundImagePath = backgroundImagePath
+                            OriginOverlayImagePath    = overlayImagePath,
+                            OriginBackgroundImagePath = backgroundImagePath,
+                            OverlayImagePath          = overlayImagePath,
+                            BackgroundImagePath       = backgroundImagePath
                         });
                     }
                 }

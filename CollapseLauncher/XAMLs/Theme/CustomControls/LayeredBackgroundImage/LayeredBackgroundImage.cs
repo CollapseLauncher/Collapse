@@ -18,7 +18,6 @@ public partial class LayeredBackgroundImage : Control
         Loaded   -= LayeredBackgroundImage_OnLoaded;
         Unloaded -= LayeredBackgroundImage_OnUnloaded;
 
-        DisposeRenderTarget();
         DisposeVideoPlayer();
     }
 }

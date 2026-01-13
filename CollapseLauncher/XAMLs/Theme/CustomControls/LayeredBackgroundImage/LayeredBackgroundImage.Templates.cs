@@ -1,14 +1,8 @@
 ﻿using CollapseLauncher.Extension;
-using Hi3Helper.Win32.Native.Interfaces.DXGI;
-using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
-using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System.Threading;
-using Windows.Media.Playback;
-using CanvasRect = Hi3Helper.Win32.Native.Structs.Rect;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
@@ -28,26 +22,13 @@ public partial class LayeredBackgroundImage
 
     #region Fields
 
-    private Grid _parallaxGrid = null!;
+    private Grid _parallaxGrid    = null!;
     private Grid _placeholderGrid = null!;
-    private Grid _backgroundGrid = null!;
-    private Grid _foregroundGrid = null!;
+    private Grid _backgroundGrid  = null!;
+    private Grid _foregroundGrid  = null!;
 
-    private Visual _parallaxGridVisual = null!;
+    private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;
-
-    private D3DDeviceContext? _canvasD3DDeviceContext;
-    private ISurfaceImageSourceNativeWithD2D? _canvasSurfaceImageSourceNative;
-    private nint _canvasSurfaceImageSourceNativePtr = nint.Zero;
-    private SurfaceImageSource? _canvasSurfaceImageSource;
-
-    private CanvasDevice? _canvasDevice = null!;
-    private int _canvasWidth;
-    private int _canvasHeight;
-    private CanvasRect _canvasRenderArea;
-
-    private MediaPlayer _videoPlayer = null!;
-    private nint _videoPlayerPtr = nint.Zero;
 
     private bool _isTemplateLoaded;
 
