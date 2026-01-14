@@ -54,6 +54,8 @@
         <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
         <pages:IsNumberEqualToBooleanConverter x:Key="IsNumberEqualToBooleanConverter" />
         <pages:InverseIsContainsAnyNumbersToBooleanConverter x:Key="InverseIsContainsAnyNumbersToBooleanConverter" />
+        <pages:TimeSpanToTimeStampStringConverter x:Key="TimeSpanToTimeStampStringConverter" />
+        <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
@@ -74,20 +76,31 @@
             </MenuFlyoutItem>
             <MenuFlyoutSubItem Text="Copy to Clipboard"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                <MenuFlyoutSubItem.Resources>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBoth">Both</backgroundManager:FrameToCopyType>
+                </MenuFlyoutSubItem.Resources>
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE8C8;"/>
                 </MenuFlyoutSubItem.Icon>
                 <MenuFlyoutItem Text="Copy Overlay Only"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
                                 ToolTipService.ToolTip="Copy only the bitmap of the overlay layer."
-                                ToolTipService.Placement="Left"/>
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"/>
                 <MenuFlyoutItem Text="Copy Background Only"
                                 ToolTipService.ToolTip="Copy only the bitmap of the background layer."
-                                ToolTipService.Placement="Left"/>
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"/>
                 <MenuFlyoutItem Text="Copy Merged"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
                                 ToolTipService.ToolTip="Merge and copy both overlay and background layer into one bitmap."
-                                ToolTipService.Placement="Left"/>
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBoth}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSubItem Text="Copy URL/Path to Clipboard"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
@@ -1046,7 +1059,6 @@
             </c:NonFaultyGrid>
         </c:NonFaultyGrid>
         <Grid x:Name="MultiBackgroundPipsPagerGridHoverArea"
-              DataContext="{x:Bind CurrentBackgroundManager}"
               Grid.Row="0"
               Grid.RowSpan="2"
               Grid.Column="0"
@@ -1062,83 +1074,127 @@
               PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited"
               Shadow="{StaticResource SharedShadow}">
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
-                        Background="{ThemeResource AcrylicComboBoxBackground}"
-                        MaxWidth="500"
-                        Padding="10, 8"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        CornerRadius="20"
-                        Orientation="Horizontal"
+                        DataContext="{x:Bind CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
+                        Loaded="MultiBackgroundPipsPagerGrid_OnLoaded"
                         RenderTransformOrigin=".5, .5"
-                        Opacity=".01"
-                        Spacing="8">
+                        Opacity="1"
+                        Orientation="Vertical"
+                        Spacing="16">
                 <StackPanel.RenderTransform>
                     <TranslateTransform x:Name="MultiBackgroundPipsPagerGridTranslateTransform"/>
                 </StackPanel.RenderTransform>
-                <TextBlock Margin="8,-2,0,0"
+                <StackPanel Background="{ThemeResource AcrylicComboBoxBackground}"
+                            MaxWidth="500"
+                            Padding="10, 8"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            CornerRadius="20"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock Margin="8,-2,0,0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            FontSize="12"
                            FontWeight="Bold">
-                    <Run Text="{Binding CurrentSelectedBackgroundIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
-                    <Run Text="/" />
-                    <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
-                </TextBlock>
-                <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
-                                       ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
-                                       ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       PreviousNavigationButtonMode="Visible"
-                                       NextNavigationButtonMode="Visible"
-                                       Orientation="Horizontal"
-                                       NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
-                                       NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
-                                       PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
-                                       SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}"/>
-                <AppBarSeparator BorderThickness="2"
-                                 Margin="0, -4"/>
-                <StackPanel Orientation="Horizontal"
-                            Margin="-4, -2">
-                    <Button VerticalAlignment="Stretch"
-                            CornerRadius="14"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}">
-                        <Grid ColumnSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <FontIcon Grid.Column="0"
-                                      Glyph="&#xE74E;"
-                                      FontSize="14"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="Save"
-                                       FontSize="12"
-                                       FontWeight="Semibold"/>
-                        </Grid>
-                    </Button>
-                    <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
-                            VerticalAlignment="Stretch"
-                            CornerRadius="14"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Padding="8, 4"
-                            Margin="0,0,0,0"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}"
-                            Flyout="{StaticResource BackgroundContextMenuFlyout}">
-                        <AnimatedIcon Width="16"
-                                      Height="16"
-                                      RenderTransformOrigin=".5, .5">
-                            <AnimatedIcon.RenderTransform>
-                                <RotateTransform Angle="-90"/>
-                            </AnimatedIcon.RenderTransform>
-                            <AnimatedIcon.Source>
-                                <animatedvisuals:AnimatedChevronDownSmallVisualSource/>
-                            </AnimatedIcon.Source>
-                        </AnimatedIcon>
-                    </Button>
+                        <Run Text="{Binding CurrentSelectedBackgroundIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
+                        <Run Text="/" />
+                        <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
+                    </TextBlock>
+                    <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
+                                               ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
+                                               ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               PreviousNavigationButtonMode="Visible"
+                                               NextNavigationButtonMode="Visible"
+                                               Orientation="Horizontal"
+                                               NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
+                                               NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
+                                               PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
+                                               SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}"/>
+                    <AppBarSeparator BorderThickness="2"
+                                     Margin="0, -4"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="-4, -2">
+                        <Button VerticalAlignment="Stretch"
+                                CornerRadius="14"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}">
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Grid.Column="0"
+                                          Glyph="&#xE74E;"
+                                          FontSize="14"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="Save"
+                                           FontSize="12"
+                                           FontWeight="Semibold"/>
+                            </Grid>
+                        </Button>
+                        <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="14"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Padding="8, 4"
+                                Margin="0,0,0,0"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                Flyout="{StaticResource BackgroundContextMenuFlyout}">
+                            <AnimatedIcon Width="16"
+                                          Height="16"
+                                          RenderTransformOrigin=".5, .5">
+                                <AnimatedIcon.RenderTransform>
+                                    <RotateTransform Angle="-90"/>
+                                </AnimatedIcon.RenderTransform>
+                                <AnimatedIcon.Source>
+                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource/>
+                                </AnimatedIcon.Source>
+                            </AnimatedIcon>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
+                <Grid Background="{ThemeResource AcrylicComboBoxBackground}"
+                      DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                      MinWidth="380"
+                      Padding="16, 8"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      CornerRadius="8"
+                      ColumnSpacing="16"
+                      Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="32"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               FontSize="12"
+                               Margin="0,-2,0,0"
+                               FontWeight="Medium"/>
+                    <Slider Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            StepFrequency="10"
+                            Minimum="0"
+                            Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                            Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                            Margin="0,-8"
+                            Padding="0"
+                            IsThumbToolTipEnabled="False"/>
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               FontSize="12"
+                               Margin="0,-2,0,0"
+                               FontWeight="Medium"/>
+                </Grid>
             </StackPanel>
         </Grid>
         <Grid x:Name="SidePanel"

@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces.Class;
+using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -190,6 +191,11 @@ public partial class ImageBackgroundManager
                 ? null
                 : ImageContextSources[CurrentSelectedBackgroundIndex];
         }
+    }
+
+    public LayeredBackgroundImage? CurrentBackgroundElement
+    {
+        get => PresenterGrid?.Children.LastOrDefault() as LayeredBackgroundImage;
     }
 
     public bool CurrentSelectedBackgroundHasOverlayImage => !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginOverlayImagePath);

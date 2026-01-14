@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Extension;
 using Hi3Helper.Data;
-using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -27,7 +26,7 @@ public partial class LayeredBackgroundImage
 {
     #region Enums
 
-    private enum MediaSourceType
+    internal enum MediaSourceType
     {
         Unknown,
         Image,
@@ -341,7 +340,7 @@ public partial class LayeredBackgroundImage
             TryGetSourceHashCode(source, out int lastSourceHashCode) && 
             SharedLastMediaPosition.TryRemove(lastSourceHashCode, out TimeSpan lastPosition))
         {
-            instance._videoPlayer.Position = lastPosition;
+            instance.MediaDurationPosition = lastPosition;
         }
 
         return true;
@@ -374,6 +373,10 @@ public partial class LayeredBackgroundImage
 
         void Impl()
         {
+            // Update Media Duration and Update Binding to it.
+            SetValue(MediaDurationProperty, sender.NaturalDuration);
+            SetValue(IsCurrentMediaSeekableProperty, sender.CanSeek);
+
             // Create instance
             Image image = new()
             {

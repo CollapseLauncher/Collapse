@@ -141,6 +141,9 @@ public partial class ImageBackgroundManager
         layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
+
+        // Notify current displayed element change
+        OnPropertyChanged(nameof(CurrentBackgroundElement));
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)

@@ -819,4 +819,67 @@ namespace CollapseLauncher.Pages
         public override object Convert(object value, Type targetType, object parameter, string language)
             => !(bool)base.Convert(value, targetType, parameter, language);
     }
+
+    public partial class TimeSpanToTimeStampStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (parameter is not string format)
+            {
+                throw new
+                    InvalidOperationException("ConverterParameter must be in form of valid format string for TimeSpan.ToString()");
+            }
+
+            int        len              = (int)BitOperations.RoundUpToPowerOf2((uint)format.Length * 2);
+            Span<char> charFormatBuffer = stackalloc char[len];
+
+            if (value is not TimeSpan asTimeSpan)
+            {
+                double asDoubleMilliseconds = value.TryGetDouble();
+                if (!double.IsFinite(asDoubleMilliseconds))
+                {
+                    throw new InvalidOperationException("Value must be in forms of number and finite!");
+                }
+
+                asTimeSpan = TimeSpan.FromMilliseconds(asDoubleMilliseconds);
+            }
+
+            if (!asTimeSpan.TryFormat(charFormatBuffer, out int bytesWritten, format))
+            {
+                throw new
+                    InvalidOperationException("Cannot format the TimeSpan as either the format string or value might be invalid");
+            }
+
+            return new string(charFormatBuffer[..bytesWritten]);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public partial class TimeSpanToNumberMillisecondsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not TimeSpan asTimeSpan)
+            {
+                throw new InvalidOperationException("Type of the value must be a TimeSpan!");
+            }
+
+            double asValue = asTimeSpan.TotalMilliseconds;
+            return asValue.GetDoubleValueTo(targetType);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (!double.IsFinite(valueAsDouble))
+            {
+                throw new InvalidOperationException("Cannot get actual finite number");
+            }
+
+            return TimeSpan.FromMilliseconds(valueAsDouble);
+        }
+    }
 }

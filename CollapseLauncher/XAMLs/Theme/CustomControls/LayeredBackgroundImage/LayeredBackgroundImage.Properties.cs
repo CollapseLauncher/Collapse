@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
@@ -127,6 +128,22 @@ public partial class LayeredBackgroundImage
     {
         get => (VerticalAlignment)GetValue(ForegroundVerticalAlignmentProperty);
         set => SetValue(ForegroundVerticalAlignmentProperty, value);
+    }
+
+    public TimeSpan MediaDurationPosition
+    {
+        get => (TimeSpan)GetValue(MediaDurationPositionProperty);
+        set => SetValue(MediaDurationPositionProperty, value);
+    }
+
+    public TimeSpan MediaDuration
+    {
+        get => (TimeSpan)GetValue(MediaDurationProperty);
+    }
+
+    public bool IsCurrentMediaSeekable
+    {
+        get => (bool)GetValue(IsCurrentMediaSeekableProperty);
     }
 
     #endregion
@@ -258,6 +275,24 @@ public partial class LayeredBackgroundImage
                                     typeof(VerticalAlignment),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(VerticalAlignment.Center));
+
+    public static readonly DependencyProperty MediaDurationPositionProperty =
+        DependencyProperty.Register(nameof(MediaDurationPosition),
+                                    typeof(TimeSpan),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(TimeSpan.Zero, MediaDurationPosition_OnChanged));
+
+    public static readonly DependencyProperty MediaDurationProperty =
+        DependencyProperty.Register(nameof(MediaDuration),
+                                    typeof(TimeSpan),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(TimeSpan.Zero));
+
+    public static readonly DependencyProperty IsCurrentMediaSeekableProperty =
+        DependencyProperty.Register(nameof(IsCurrentMediaSeekable),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(false));
 
     #endregion
 }

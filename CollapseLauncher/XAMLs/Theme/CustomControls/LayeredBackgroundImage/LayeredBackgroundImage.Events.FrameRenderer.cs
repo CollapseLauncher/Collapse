@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
@@ -46,10 +47,10 @@ public partial class LayeredBackgroundImage
 
     private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
 
-    private CanvasDevice? _canvasDevice;
-    private CanvasBitmap? _canvasRenderTarget;
-    private nint          _canvasRenderTargetNativePtr;
-    private nint          _canvasRenderTargetAsSurfacePtr;
+    private CanvasDevice?       _canvasDevice;
+    private CanvasRenderTarget? _canvasRenderTarget;
+    private nint                _canvasRenderTargetNativePtr;
+    private nint                _canvasRenderTargetAsSurfacePtr;
 
     private volatile int _isBlockVideoFrameDraw = 1;
     private          int _isVideoFrameDrawInProgress;
@@ -63,6 +64,7 @@ public partial class LayeredBackgroundImage
 
     private MediaPlayer _videoPlayer    = null!;
     private nint        _videoPlayerPtr = nint.Zero;
+    private Timer?      _videoPlayerDurationTimerThread;
 
     #endregion
 
@@ -70,35 +72,60 @@ public partial class LayeredBackgroundImage
 
     private void VideoPlayer_VideoFrameAvailable(MediaPlayer sender, object args)
     {
-        if (_isBlockVideoFrameDraw == 1 ||
-            _canvasImageSourceNativePtr == nint.Zero ||
-            _canvasRenderTargetNativePtr == nint.Zero ||
-            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
+        try
         {
+            if (_isBlockVideoFrameDraw == 1 ||
+                _canvasImageSourceNativePtr == nint.Zero ||
+                _canvasRenderTargetNativePtr == nint.Zero ||
+                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
+            {
+            #if DEBUG
+                Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
+            #endif
+                return;
+            }
+
+            SwapChainPanelHelper.MediaPlayer_CopyFrameToVideoSurfaceUnsafe(_videoPlayerPtr,
+                                                                           _canvasRenderTargetAsSurfacePtr);
+            DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
             return;
+
+            void DrawFrame()
+            {
+                try
+                {
+                    SwapChainPanelHelper
+                       .NativeSurfaceImageSource_BeginDrawEndDrawUnsafe(_canvasImageSourceNativePtr,
+                                                                        _canvasRenderTargetNativePtr,
+                                                                        in _canvasRenderSize);
+                }
+                // Device lost error. If happened, reinitialize render target
+                catch (COMException comEx) when ((uint)comEx.HResult == 0x887A0005u)
+                {
+                    CanvasDevice_OnDeviceLost(null, null);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailable|UIThread] {ex}",
+                                        LogType.Error,
+                                        true);
+                }
+                finally
+                {
+                    Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
+                }
+            }
         }
-
-        SwapChainPanelHelper.MediaPlayer_CopyFrameToVideoSurfaceUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
-        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
-        return;
-
-        void DrawFrame()
+        // Device lost error. If happened, reinitialize render target
+        catch (COMException comEx) when ((uint)comEx.HResult == 0x887A0005u)
         {
-            try
-            {
-                SwapChainPanelHelper
-                   .NativeSurfaceImageSource_BeginDrawEndDrawUnsafe(_canvasImageSourceNativePtr,
-                                                                    _canvasRenderTargetNativePtr,
-                                                                    in _canvasRenderSize);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            finally
-            {
-                Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
-            }
+            DispatcherQueue.TryEnqueue(() => CanvasDevice_OnDeviceLost(null, null));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailable|OtherThread] {ex}",
+                                LogType.Error,
+                                true);
         }
     }
 
@@ -171,9 +198,12 @@ public partial class LayeredBackgroundImage
 
     private void InitializeRenderTarget()
     {
+        _isBlockVideoFrameDraw = 1; // Block frame drawing routine
         DisposeRenderTarget(); // Always ensure the previous render target has been disposed
 
-        _canvasDevice = CanvasDevice.GetSharedDevice();
+        _videoPlayerDurationTimerThread = new Timer(UpdateMediaDurationTickView, this, TimeSpan.Zero, TimeSpan.FromSeconds(.5));
+
+        _canvasDevice = new CanvasDevice();
         _canvasRenderTarget = new CanvasRenderTarget(_canvasDevice,
                                                      _canvasWidth,
                                                      _canvasHeight,
@@ -183,6 +213,8 @@ public partial class LayeredBackgroundImage
                                                    _canvasWidth,
                                                    _canvasHeight,
                                                    96f);
+
+        _canvasDevice.DeviceLost += CanvasDevice_OnDeviceLost;
 
         _canvasRenderTargetAsSurfacePtr = MarshalInterface<IDirect3DSurface>.FromManaged(_canvasRenderTarget);
         _canvasRenderTargetNativePtr    = MarshalInterface<ICanvasImage>.FromManaged(_canvasRenderTarget);
@@ -200,12 +232,19 @@ public partial class LayeredBackgroundImage
         Marshal.Release(ppvICanvasImageSource);
 
         SetRenderImageSource(_canvasImageSource);
+        _isBlockVideoFrameDraw = 0; // Unblock frame drawing routine
     }
 
     private void DisposeRenderTarget()
     {
         SetRenderImageSource(null);
 
+        if (_canvasDevice != null)
+        {
+            _canvasDevice.DeviceLost -= CanvasDevice_OnDeviceLost;
+        }
+
+        _videoPlayerDurationTimerThread?.Dispose();
         _canvasRenderTarget?.Dispose();
         _canvasDevice?.Dispose();
 
@@ -218,6 +257,40 @@ public partial class LayeredBackgroundImage
 
         Interlocked.Exchange(ref _canvasImageSourceNativePtr, nint.Zero);
         Interlocked.Exchange(ref _canvasImageSource,          null);
+    }
+
+    private void CanvasDevice_OnDeviceLost(CanvasDevice? sender, object? args)
+    {
+        Logger.LogWriteLine("[LayeredBackgroundImage::CanvasDevice_OnDeviceLost] Render device has been lost! Re-initialize render device and textures...",
+                            LogType.Warning,
+                            true);
+        InitializeRenderTarget();
+
+        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
+        Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
+    }
+
+    private static void UpdateMediaDurationTickView(object? state)
+    {
+        LayeredBackgroundImage thisInstance = (LayeredBackgroundImage)state!;
+        if (thisInstance._videoPlayer == null!)
+        {
+            return;
+        }
+
+        if (thisInstance.DispatcherQueue.HasThreadAccess)
+        {
+            Impl();
+            return;
+        }
+
+        thisInstance.DispatcherQueue.TryEnqueue(Impl);
+        return;
+
+        void Impl()
+        {
+            thisInstance.SetValue(MediaDurationPositionProperty, thisInstance._videoPlayer.Position);
+        }
     }
 
     private void SetRenderImageSource(ImageSource? renderSource)
@@ -264,6 +337,22 @@ public partial class LayeredBackgroundImage
 
     #region Video Player Events
 
+    public CanvasRenderTarget? LockCanvasRenderTarget()
+    {
+        if (_canvasRenderTarget == null)
+        {
+            return null;
+        }
+
+        _isBlockVideoFrameDraw = 1;
+        return _canvasRenderTarget;
+    }
+
+    public void UnlockCanvasRenderTarget()
+    {
+        _isBlockVideoFrameDraw = 0;
+    }
+
     private static void IsAudioEnabled_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
@@ -287,6 +376,17 @@ public partial class LayeredBackgroundImage
         videoPlayer.Volume = volume.GetClampedVolume();
     }
 
+    private static void MediaDurationPosition_OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
+
+        if (instance._videoPlayer != null! &&
+            e.NewValue is TimeSpan value)
+        {
+            instance._videoPlayer.Position = value;
+        }
+    }
+
     public void Play()
     {
         try
@@ -296,7 +396,6 @@ public partial class LayeredBackgroundImage
                 InitializeRenderTarget();
                 _videoPlayer.VideoFrameAvailable += VideoPlayer_VideoFrameAvailable;
                 _videoPlayer.Play();
-                _isBlockVideoFrameDraw = 0;
             }
             else if (_lastBackgroundSourceType == MediaSourceType.Video &&
                      BackgroundSource != null)

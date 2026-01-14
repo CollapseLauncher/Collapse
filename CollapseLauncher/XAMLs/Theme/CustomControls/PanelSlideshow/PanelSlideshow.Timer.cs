@@ -1,6 +1,9 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Timer = System.Timers.Timer;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow;
@@ -16,37 +19,47 @@ public partial class PanelSlideshow
 
     #region Methods
 
-    private async void RestartTimer(double newDuration, double countIntervalMs = 100d, int delayBeforeStartMs = 1000)
+    private void RestartTimer(double newDuration, double countIntervalMs = 100d, int delayBeforeStartMs = 1000)
     {
-        try
+        if (!IsLoaded || newDuration == 0)
         {
-            using (_atomicLock.EnterScope())
-            {
-                _mTimer = newDuration;
+            DisposeAndDeregisterTimer();
+            return;
+        }
 
-                if (!IsLoaded || newDuration == 0)
+        new Thread(Impl)
+        {
+            IsBackground = true
+        }.Start();
+        return;
+
+        async void Impl()
+        {
+            try
+            {
+                using (_atomicLock.EnterScope())
                 {
+                    _mTimer = newDuration;
+
                     DisposeAndDeregisterTimer();
-                    return;
+
+                    _timer         =  new Timer(countIntervalMs);
+                    _timer.Elapsed += Timer_Elapsed;
                 }
 
-                DisposeAndDeregisterTimer();
+                await Task.Delay(delayBeforeStartMs);
 
-                _timer         =  new Timer(countIntervalMs);
-                _timer.Elapsed += Timer_Elapsed;
+                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
+                                           () => VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true));
+                if (!_isMouseHover && _timer != null)
+                {
+                    _timer.Start();
+                }
             }
-
-            await Task.Delay(delayBeforeStartMs);
-
-            VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
-            if (!_isMouseHover && _timer != null)
+            catch
             {
-                _timer.Start();
+                // ignored
             }
-        }
-        catch
-        {
-            // ignored
         }
     }
 
@@ -68,7 +81,8 @@ public partial class PanelSlideshow
         }
         else
         {
-            DispatcherQueue.TryEnqueue(() => _countdownProgressBar.Value = 0);
+            DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
+                                       () => _countdownProgressBar.Value = 0);
         }
 
         _timer?.Stop();
@@ -84,20 +98,32 @@ public partial class PanelSlideshow
         }
 
         double interval = thisTimer.Interval / 1000d;
-        if (DispatcherQueue.HasThreadAccess)
-        {
-            Impl();
-        }
-        else
-        {
-            DispatcherQueue.TryEnqueue(Impl);
-        }
+        PerformIntervalDecrement();
         return;
 
         // ReSharper disable once AsyncVoidMethod
-        async void Impl()
+        void PerformIntervalDecrement()
         {
-            _countdownProgressBar.Value += interval;
+            try
+            {
+                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
+                                           () =>
+                                           {
+                                               try
+                                               {
+                                                   _countdownProgressBar.Value += interval;
+                                               }
+                                               catch
+                                               {
+                                                   // ignored
+                                               }
+                                           });
+            }
+            catch
+            {
+                // ignored
+            }
+
             _mTimer -= interval;
             if (!(_mTimer < 0))
             {
@@ -105,9 +131,30 @@ public partial class PanelSlideshow
             }
 
             thisTimer.Stop();
-            VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
-            await Task.Delay(500);
-            ItemIndex++;
+
+            try
+            {
+                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
+                                           async void () =>
+                                           {
+                                               try
+                                               {
+                                                   VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut,
+                                                                                    true);
+                                                   await Task.Delay(500);
+
+                                                   ItemIndex++;
+                                               }
+                                               catch
+                                               {
+                                                   // ignored
+                                               }
+                                           });
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 
