@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using Microsoft.UI.Xaml.Controls;
 // ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages
@@ -8,6 +9,10 @@ namespace CollapseLauncher.Pages
         public UnavailablePage()
         {
             InitializeComponent();
+
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
     }
 }

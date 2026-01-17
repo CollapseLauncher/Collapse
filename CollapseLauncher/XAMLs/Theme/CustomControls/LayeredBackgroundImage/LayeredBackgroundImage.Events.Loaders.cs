@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using Hi3Helper.Data;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -317,7 +318,7 @@ public partial class LayeredBackgroundImage
             // Assign media source
             if (sourceStream != null)
             {
-                IRandomAccessStream? sourceStreamRandom = sourceStream.AsRandomAccessStream();
+                IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
                 instance._videoPlayer.SetStreamSource(sourceStreamRandom);
             }
             else if (sourceUri != null)
@@ -417,8 +418,11 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        parentGrid.Item2.Play();
         Image_ImageOpened(sender, e);
+        if (parentGrid.Item2.IsVideoAutoplay)
+        {
+            parentGrid.Item2.Play();
+        }
     }
 
     private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
@@ -466,12 +470,9 @@ public partial class LayeredBackgroundImage
             return MediaSourceType.Image;
         }
 
-        if (SupportedVideoExtensionsLookup.Contains(extension))
-        {
-            return MediaSourceType.Video;
-        }
-
-        return MediaSourceType.Unknown;
+        return SupportedVideoExtensionsLookup.Contains(extension)
+            ? MediaSourceType.Video
+            : MediaSourceType.Unknown;
     }
 
     // Returns true if the media source is supported. Otherwise, false and return a null string path.

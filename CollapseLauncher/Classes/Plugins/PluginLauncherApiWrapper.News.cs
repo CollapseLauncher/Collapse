@@ -1,13 +1,10 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+﻿using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 #pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
@@ -16,14 +13,13 @@ namespace CollapseLauncher.Plugins;
 
 internal sealed partial class PluginLauncherApiWrapper
 {
-    private async Task ConvertNewsAndCarouselEntries(HypLauncherContentApi contentApi,
-                                                     CancellationToken     token)
+    private void ConvertNewsAndCarouselEntries(HypLauncherContentApi contentApi)
     {
         contentApi.Data         ??= new HypLauncherContentData();
         contentApi.Data.Content ??= new HypLauncherContentKind();
 
-        var newsList     = contentApi.Data.Content.News;
-        var carouselList = contentApi.Data.Content.Carousel;
+        List<HypLauncherMediaContentData>    newsList     = contentApi.Data.Content.News;
+        List<HypLauncherCarouselContentData> carouselList = contentApi.Data.Content.Carousel;
 
         newsList.Clear();
         contentApi.Data.Content.ResetCachedNews();
@@ -38,7 +34,7 @@ internal sealed partial class PluginLauncherApiWrapper
         using PluginDisposableMemory<LauncherCarouselEntry> carouselEntry = PluginDisposableMemoryExtension.ToManagedSpan<LauncherCarouselEntry>(_pluginNewsApi.GetCarouselEntries);
         if (!carouselEntry.IsEmpty)
         {
-            await ConvertCarouselEntriesInner(carouselList, carouselEntry, token);
+            ConvertCarouselEntriesInner(carouselList, carouselEntry);
         }
     }
 
@@ -85,12 +81,9 @@ internal sealed partial class PluginLauncherApiWrapper
         }
     }
 
-    private async ValueTask ConvertCarouselEntriesInner(List<HypLauncherCarouselContentData>          contentList,
-                                                        PluginDisposableMemory<LauncherCarouselEntry> entrySpan,
-                                                        CancellationToken                             token)
+    private static void ConvertCarouselEntriesInner(List<HypLauncherCarouselContentData>          contentList,
+                                                    PluginDisposableMemory<LauncherCarouselEntry> entrySpan)
     {
-        string spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
-
         int count = entrySpan.Length;
         if (count == 0)
         {
@@ -102,7 +95,7 @@ internal sealed partial class PluginLauncherApiWrapper
             using LauncherCarouselEntry entry = entrySpan[i];
 
             string? imageUrl  = entry.ImageUrl;
-            string? imagePath = await CopyOverUrlData(_plugin, _pluginNewsApi, spriteFolder, imageUrl, token);
+            string? imagePath = ImageLoaderHelper.CopyToLocalIfBase64(imageUrl);
             if (string.IsNullOrEmpty(imagePath))
             {
                 continue;

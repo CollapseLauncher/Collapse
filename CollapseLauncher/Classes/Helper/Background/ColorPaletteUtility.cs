@@ -7,12 +7,17 @@ using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using PhotoSauce.MagicScaler;
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Hashing;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static Hi3Helper.Logger;
@@ -34,39 +39,41 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class ColorPaletteUtility
     {
-        internal static async Task ApplyAccentColor<T>(T                   page,
-                                                       IRandomAccessStream stream,
-                                                       string              filePath,
-                                                       bool                isImageLoadForFirstTime,
-                                                       bool                isContinuousGeneration)
-            where T : FrameworkElement
+        internal static async Task ApplyAccentColor(FrameworkElement element,
+                                                    Stream           stream,
+                                                    string           filePath,
+                                                    bool             isImageLoadForFirstTime,
+                                                    bool             isContinuousGeneration)
         {
-            using Bitmap bitmapAccentColor = await Task.Run(() => ImageLoaderHelper.Stream2Bitmap(stream));
+            stream.Position = 0;
+            ImageFileInfo           fileInfo  = ImageFileInfo.Load(stream);
+            ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
 
-            BitmapData? bitmapData = null;
+            stream.Position = 0;
+
+            int bitmapChannelCount = frameInfo.HasAlpha ? 4 : 3;
+            int bufferSize = frameInfo.Width * frameInfo.Height * bitmapChannelCount;
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+
             try
             {
-                int bitmapChannelCount = bitmapAccentColor.PixelFormat switch
-                                         {
-                                             PixelFormat.Format32bppRgb => 4,
-                                             PixelFormat.Format32bppArgb => 4,
-                                             PixelFormat.Format24bppRgb => 3,
-                                             _ => throw new NotSupportedException(
-                                              $"Pixel format of the image: {bitmapAccentColor.PixelFormat} is unsupported!")
-                                         };
+                using MemoryStream   bufferStream = new(buffer);
+                ProcessImageSettings settings     = new();
 
-                bitmapData = bitmapAccentColor.LockBits(new Rectangle(new Point(), bitmapAccentColor.Size),
-                                                        ImageLockMode.ReadOnly, bitmapAccentColor.PixelFormat);
+                MagicImageProcessor.ProcessImage(stream, bufferStream, ProcessImageSettings.Default);
 
-                BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
+                Span<byte> bufferSpan = buffer.AsSpan(54, (int)bufferStream.Position - 54); // 54 is the size of BMP header
+
+                BitmapInputStruct bitmapInputStruct = new()
                 {
-                    Buffer  = bitmapData.Scan0,
-                    Width   = bitmapData.Width,
-                    Height  = bitmapData.Height,
+                    Buffer  = AsPointer(bufferSpan),
+                    Width   = frameInfo.Width,
+                    Height  = frameInfo.Height,
                     Channel = bitmapChannelCount
                 };
 
-                await ApplyAccentColor(page,
+                await ApplyAccentColor(element,
                                        bitmapInputStruct,
                                        filePath,
                                        isImageLoadForFirstTime,
@@ -74,11 +81,12 @@ namespace CollapseLauncher.Helper.Background
             }
             finally
             {
-                if (bitmapData != null)
-                {
-                    bitmapAccentColor.UnlockBits(bitmapData);
-                }
+                ArrayPool<byte>.Shared.Return(buffer);
             }
+
+            return;
+
+            static unsafe nint AsPointer(Span<byte> span) => (nint)Unsafe.AsPointer(ref MemoryMarshal.AsRef<byte>(span));
         }
 
         internal static async Task ApplyAccentColor<T>(T                 page,

@@ -69,7 +69,6 @@
                           VerticalAlignment="Bottom"
                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                           CornerRadius="4"
-                          Shadow="{ThemeResource FatSliderThumbShadow}"
                           Translation="0,0,8">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,4,0"
@@ -127,7 +126,6 @@
                           VerticalAlignment="Bottom"
                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                           CornerRadius="4"
-                          Shadow="{ThemeResource FatSliderThumbShadow}"
                           Translation="0,0,8">
                         <TextBlock VerticalAlignment="Center"
                                    FontSize="12"

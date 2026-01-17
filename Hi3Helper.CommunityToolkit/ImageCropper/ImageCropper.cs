@@ -359,32 +359,33 @@ public partial class ImageCropper : Control
     /// <inheritdoc/>
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (Source == null || Source.PixelWidth == 0 || Source.PixelHeight == 0)
+        BitmapSource?   asBitmapSource   = Source as BitmapSource;
+        SvgImageSource? asSvgImageSource = Source as SvgImageSource;
+
+        double imageSourceWidth  = asBitmapSource?.PixelWidth  ?? asSvgImageSource?.RasterizePixelWidth  ?? 0;
+        double imageSourceHeight = asBitmapSource?.PixelHeight ?? asSvgImageSource?.RasterizePixelHeight ?? 0;
+
+        if (imageSourceWidth == 0 || imageSourceHeight == 0)
         {
             return base.MeasureOverride(availableSize);
         }
 
-        if (double.IsInfinity(availableSize.Width) || double.IsInfinity(availableSize.Height))
+        if (!double.IsFinite(availableSize.Width) && double.IsFinite(availableSize.Height))
         {
-            if (!double.IsInfinity(availableSize.Width))
-            {
-                availableSize.Height = availableSize.Width / Source.PixelWidth * Source.PixelHeight;
-            }
-            else if (!double.IsInfinity(availableSize.Height))
-            {
-                availableSize.Width = availableSize.Height / Source.PixelHeight * Source.PixelWidth;
-            }
-            else
-            {
-                availableSize.Width = Source.PixelWidth;
-                availableSize.Height = Source.PixelHeight;
-            }
-
-            base.MeasureOverride(availableSize);
-            return availableSize;
+            availableSize.Width = availableSize.Height / imageSourceWidth * imageSourceHeight;
+        }
+        else if (!double.IsFinite(availableSize.Height) && double.IsFinite(availableSize.Width))
+        {
+            availableSize.Height = availableSize.Width / imageSourceHeight * imageSourceWidth;
+        }
+        else
+        {
+            availableSize.Width  = imageSourceWidth;
+            availableSize.Height = imageSourceHeight;
         }
 
-        return base.MeasureOverride(availableSize);
+        base.MeasureOverride(availableSize);
+        return availableSize;
     }
 
     /// <summary>

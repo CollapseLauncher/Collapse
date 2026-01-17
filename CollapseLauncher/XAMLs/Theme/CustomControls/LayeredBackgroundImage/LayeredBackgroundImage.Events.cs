@@ -44,6 +44,9 @@ public partial class LayeredBackgroundImage
         Interlocked.Exchange(ref _isLoaded, true);
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
+        ElevateView_ToggleEnable(IsBackgroundElevated);
+        ElevateGrid_OnUpdateCenterPoint();
+        IsBackgroundElevated_OnChanged();
 
         if (!_isPlaceholderHidden &&
             !IsSourceKindEquals(_lastPlaceholderSource, PlaceholderSource))
@@ -90,6 +93,7 @@ public partial class LayeredBackgroundImage
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         Interlocked.Exchange(ref _isLoaded, false);
+
         ParallaxGrid_UnregisterEffect();
         _lastParallaxHoverSource = null;
 
@@ -223,15 +227,16 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OffsetReset()
     {
-        ParallaxGrid_StartAnimation(Vector3.Zero, Vector3.One, 250d);
+        StartElementElevateAnimation(_parallaxGridCompositor,
+                                    _parallaxGridVisual,
+                                    Vector3.Zero,
+                                    Vector3.One,
+                                    250d);
     }
 
     private void ParallaxGrid_OnPointerMoved(object sender, PointerRoutedEventArgs e)
     {
         FrameworkElement element = (FrameworkElement)sender;
-
-        double offsetX = ParallaxHorizontalShift;
-        double offsetY = ParallaxVerticalShift;
 
         // Move
         Point  pos = e.GetCurrentPoint(element).Position;
@@ -245,12 +250,36 @@ public partial class LayeredBackgroundImage
         double nx = pos.X / w * 2d - 1d;
         double ny = pos.Y / h * 2d - 1d;
 
-        // Move opposite to pointer
-        float tx = (float)(-nx * offsetX);
-        float ty = (float)(-ny * offsetY);
+        double offsetX = ParallaxHorizontalShift;
+        double offsetY = ParallaxVerticalShift;
+
+        StartElementOffsetAnimation(_parallaxGridCompositor,
+                                    _parallaxGridVisual,
+                                    _parallaxGrid,
+                                    offsetX,
+                                    offsetY,
+                                    nx,
+                                    ny,
+                                    40);
+    }
+
+    private static void StartElementOffsetAnimation(
+        Compositor                 compositor,
+        Visual                     visual,
+        UIElement                  element,
+        double                     offsetX,
+        double                     offsetY,
+        double                     centerPointX,
+        double                     centerPointY,
+        double                     durationMs,
+        CompositionEasingFunction? easingFunction = null)
+    {
+        // Move opposite to center point
+        float tx = (float)(-centerPointX * offsetX);
+        float ty = (float)(-centerPointY * offsetY);
 
         // Scale with x2 as it counts with each side of axis (Left, Right) (Top, Bottom)
-        Vector2 size    = _parallaxGrid.ActualSize;
+        Vector2 size    = element.ActualSize;
         double  sizeToX = size.X + Math.Abs(offsetX) * 2;
         double  sizeToY = size.Y + Math.Abs(offsetY) * 2;
 
@@ -260,39 +289,48 @@ public partial class LayeredBackgroundImage
         // Gets the stronger axis
         float factorScale = (float)Math.Max(addScaleX, addScaleY);
 
-        ParallaxGrid_StartAnimation(Vector3.Zero with { X = tx, Y = ty },
-                                    Vector3.One with { X = factorScale, Y = factorScale },
-                                    40);
+        StartElementElevateAnimation(compositor,
+                                     visual,
+                                     Vector3.Zero with { X = tx, Y = ty },
+                                     Vector3.One with { X = factorScale, Y = factorScale },
+                                     durationMs,
+                                     easingFunction);
     }
 
-    private void ParallaxGrid_StartAnimation(Vector3 offset, Vector3 scale, double duration)
+    private static void StartElementElevateAnimation(
+        Compositor                 compositor,
+        Visual                     visual,
+        Vector3                    offset,
+        Vector3                    scale,
+        double                     duration,
+        CompositionEasingFunction? easingFunction = null)
     {
         const string targetTranslation = "Translation";
         const string targetScale       = "Scale";
 
-        if (_parallaxGridCompositor == null!)
+        if (compositor == null!)
         {
             return;
         }
 
-        CompositionAnimationGroup? animGroup = _parallaxGridCompositor.CreateAnimationGroup();
+        CompositionAnimationGroup? animGroup = compositor.CreateAnimationGroup();
 
         // Move
-        Vector3KeyFrameAnimation? anim = _parallaxGridCompositor.CreateVector3KeyFrameAnimation();
+        Vector3KeyFrameAnimation? anim = compositor.CreateVector3KeyFrameAnimation();
         anim.Duration = TimeSpan.FromMilliseconds(duration);
-        anim.InsertKeyFrame(1f, offset);
+        anim.InsertKeyFrame(1f, offset, easingFunction);
         anim.Target = targetTranslation;
 
         // Scale
-        Vector3KeyFrameAnimation? scaleAnim = _parallaxGridCompositor.CreateVector3KeyFrameAnimation();
+        Vector3KeyFrameAnimation? scaleAnim = compositor.CreateVector3KeyFrameAnimation();
         scaleAnim.Duration = TimeSpan.FromMilliseconds(duration);
-        scaleAnim.InsertKeyFrame(1f, scale);
+        scaleAnim.InsertKeyFrame(1f, scale, easingFunction);
         scaleAnim.Target = targetScale;
 
         animGroup.Add(anim);
         animGroup.Add(scaleAnim);
 
-        _parallaxGridVisual.StartAnimationGroup(animGroup);
+        visual.StartAnimationGroup(animGroup);
     }
 
     #endregion
@@ -300,6 +338,94 @@ public partial class LayeredBackgroundImage
     #region Local Events
 
     private void NotifyImageLoaded() => ImageLoaded?.Invoke(this);
+
+    #endregion
+
+    #region Background Elevation
+
+    private static void IsBackgroundElevated_OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+        ((LayeredBackgroundImage)d).IsBackgroundElevated_OnChanged();
+
+    private void IsBackgroundElevated_OnChanged()
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        ElevateView_ToggleEnable(IsBackgroundElevated);
+    }
+
+    private void ElevateView_ToggleEnable(bool isEnable)
+    {
+        try
+        {
+            if (isEnable)
+            {
+                ElevateGrid_RegisterEffect();
+                return;
+            }
+
+            ElevateGrid_UnregisterEffect();
+        }
+        finally
+        {
+            ElevateGrid_UpdateElevationSize(isEnable);
+        }
+    }
+
+    private void ElevateGrid_RegisterEffect()
+    {
+        if (_elevateGrid != null!)
+        {
+            _elevateGrid.SizeChanged += ElevateGrid_OnSizeChanged;
+        }
+    }
+
+    private void ElevateGrid_UnregisterEffect()
+    {
+        if (_parallaxGrid != null!)
+        {
+            _parallaxGrid.SizeChanged -= ElevateGrid_OnSizeChanged;
+        }
+    }
+
+    private void ElevateGrid_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        ElevateGrid_OnUpdateCenterPoint();
+    }
+
+    private void ElevateGrid_OnUpdateCenterPoint()
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        _elevateGridVisual.CenterPoint = new Vector3((float)_elevateGrid.RenderSize.Width / 2,
+                                                     (float)_elevateGrid.RenderSize.Height / 2,
+                                                     0);
+
+        ElevateGrid_UpdateElevationSize(IsBackgroundElevated);
+    }
+
+    private void ElevateGrid_UpdateElevationSize(bool enable)
+    {
+        double elevationOffset = enable
+            ? BackgroundElevationPixels
+            : 0d;
+
+        StartElementOffsetAnimation(_elevateGridCompositor,
+                                    _elevateGridVisual,
+                                    _elevateGrid,
+                                    elevationOffset,
+                                    elevationOffset,
+                                    0d,
+                                    0d,
+                                    500d,
+                                    CompositionEasingFunction.CreateCircleEasingFunction(_elevateGridCompositor,
+                                         CompositionEasingFunctionMode.Out));
+    }
 
     #endregion
 }

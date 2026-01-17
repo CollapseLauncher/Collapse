@@ -38,6 +38,7 @@
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/PanelSlideshow/PanelSlideshow_themeresources.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/PanelSlideshow/PanelSlideshow.xaml" />
 
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/LayeredBackgroundImage/LayeredBackgroundImage_themeresources.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/LayeredBackgroundImage/LayeredBackgroundImage.xaml" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
@@ -77,11 +78,6 @@
                                              Color="#000000" />
                             <SolidColorBrush x:Key="WindowBackground"
                                              Color="#242424" />
-                            <!--  TitleBar brushes  -->
-                            <LinearGradientBrush x:Key="BackgroundOverlayTitleBarBrush" StartPoint="0,1" EndPoint="0,0">
-                                <GradientStop Offset="0" Color="#00000000" />
-                                <GradientStop Offset="1" Color="#66000000" />
-                            </LinearGradientBrush>
                             <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#ffd52a</ui:Color>
                             <SolidColorBrush x:Key="DialogTitleBrush"
@@ -114,11 +110,6 @@
                                           FallbackColor="#EE303030"
                                           TintColor="#222222"
                                           TintLuminosityOpacity="0.75"
-                                          TintOpacity="0.0" />
-                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush"
-                                          FallbackColor="#EE222222"
-                                          TintColor="#222222"
-                                          TintLuminosityOpacity="0.7"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="PageBackgroundAcrylicBrush"
                                           FallbackColor="#E1222222"
@@ -443,11 +434,6 @@
                                              Color="#FFFFFF" />
                             <SolidColorBrush x:Key="WindowBackground"
                                              Color="#ECECEC" />
-                            <!--  TitleBar brushes  -->
-                            <LinearGradientBrush x:Key="BackgroundOverlayTitleBarBrush" StartPoint="0,1" EndPoint="0,0">
-                                <GradientStop Offset="0" Color="#00FFFFFF" />
-                                <GradientStop Offset="1" Color="#44FFFFFF" />
-                            </LinearGradientBrush>
                             <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#693758</ui:Color>
                             <SolidColorBrush x:Key="DialogTitleBrush"
@@ -481,11 +467,6 @@
                                           TintColor="#FFFFFF"
                                           TintLuminosityOpacity="0.8"
                                           TintOpacity="0" />
-                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush"
-                                          FallbackColor="#E0EEEEEE"
-                                          TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.9"
-                                          TintOpacity="0.4" />
                             <AcrylicBrush x:Key="PageBackgroundAcrylicBrush"
                                           FallbackColor="#FFEEEEEE"
                                           TintColor="#FFFFFF"

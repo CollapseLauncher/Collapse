@@ -220,7 +220,34 @@
     "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified.",
 
     "InstallFolderRootTitle": "Drive Root Provided!",
-    "InstallFolderRootSubtitle": "Cannot install game to the root of your drive! Please make a new folder and try again."
+    "InstallFolderRootSubtitle": "Cannot install game to the root of your drive! Please make a new folder and try again.",
+
+    "BgContextMenu_SaveCurrentBtn": "Save",
+    "BgContextMenu_SaveCurrentBgText": "Save Current Image Files",
+    "BgContextMenu_SaveCurrentBgTooltip": "Save the files of both current overlay (if available) and background image/video layer.",
+    "BgContextMenu_SaveAllBgText": "Save All Images Files",
+    "BgContextMenu_SaveAllBgTooltip": "Save all available background files of both overlay (if available) and background image/video layer.",
+    "BgContextMenu_CopyFrameToClipboardParentText": "Copy Current Frame to Clipboard",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "Copy Overlay Frame Only",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Copy only the overlay layer bitmap frame into clipboard.",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Copy Background Frame Only",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Copy only the background layer bitmap frame into clipboard.",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "Copy Merged",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Merge and copy both overlay and background layer bitmap frame into clipboard.",
+    "BgContextMenu_CopyUrlToClipboardParentText": "Copy URL/Path to Clipboard",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "Copy Overlay URL/Path",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "Copy only the URL/Path of the overlay layer.",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "Copy Background URL/Path",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Copy only the URL/Path of the background layer.",
+    "BgContextMenu_EnableAudioText": "Enable Audio on Video",
+    "BgContextMenu_EnableAudioTooltip": "Enables audio while playing video background.",
+    "BgContextMenu_EnableParallaxText": "Enable Parallax Effect",
+    "BgContextMenu_EnableParallaxTooltip": "Enables parallax effect on background while hovering around launcher area.",
+    "BgContextMenu_ParallaxPixelShiftParentText": "Parallax Pixels Shift",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "Custom",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "Sets the custom amount of pixels to be shifted.",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "Save current background to a folder",
+    "BgContextMenu_FolderSelectSaveAllBg": "Save all available backgrounds to a folder"
   },
 
   "_GameRepairPage": {
@@ -1209,7 +1236,9 @@
     "PostInstallBehaviour_EnumStartGame": "Start Game",
     "PostInstallBehaviour_EnumHibernate": "Hibernate",
     "PostInstallBehaviour_EnumRestart": "Restart Computer",
-    "PostInstallBehaviour_EnumShutdown": "Shutdown Computer"
+    "PostInstallBehaviour_EnumShutdown": "Shutdown Computer",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Custom Parallax Pixels (Min: {0}px, Max: {1}px)"
   },
 
   "_FileMigrationProcess": {

@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Loading;
@@ -14,6 +15,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -1163,6 +1165,33 @@ namespace CollapseLauncher.Dialogs
                                                            ContentDialogTheme.Warning);
 
             return result;
+        }
+
+        public static Task<ContentDialogResult> Dialog_SelectCustomBackgroundParallaxPixels()
+        {
+            NumberBox numberBox = new()
+            {
+                MinWidth                = 200,
+                Maximum                 = 128,
+                Minimum                 = 2,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                SmallChange             = 2,
+                LargeChange             = 8,
+                HorizontalAlignment     = HorizontalAlignment.Center
+            };
+
+            numberBox.BindProperty(ImageBackgroundManager.Shared,
+                                   nameof(ImageBackgroundManager.Shared.GlobalBackgroundParallaxPixelShift),
+                                   NumberBox.ValueProperty,
+                                   BindingMode.TwoWay);
+
+
+            return SpawnDialog(string.Format(Lang._Dialogs.BgContextMenu_ParallaxPixelShiftCustomDialogTitle,
+                                             numberBox.Minimum,
+                                             numberBox.Maximum),
+                               numberBox,
+                               null,
+                               Lang._Misc.Okay);
         }
 
         // ReSharper disable once AsyncVoidMethod

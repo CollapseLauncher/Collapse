@@ -2,6 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -27,6 +28,10 @@ namespace CollapseLauncher.Pages
         {
             CurrentGameProperty = GetCurrentGameProperty();
             InitializeComponent();
+
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
 
         private void StartGameCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)

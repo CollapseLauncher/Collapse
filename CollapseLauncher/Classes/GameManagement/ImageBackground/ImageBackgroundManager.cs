@@ -34,12 +34,12 @@ public partial class ImageBackgroundManager
 
     #region Shared/Static Properties and Fields
 
-    private const string GlobalCustomBackgroundConfigKey                  = "globalBg";
-    private const string GlobalIsEnableCustomImageConfigKey               = "globalIsCustomImageEnabled";
-    private const string GlobalIsBackgroundParallaxEffectEnabledConfigKey = "globalIsBackgroundParallaxEffectEnabled";
-    private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "globalBackgroundParallaxPixelShift";
-    private const string GlobalBackgroundAudioVolumeConfigKey             = "globalBackgroundAudioVolume";
-    private const string GlobalBackgroundAudioEnabledConfigKey            = "globalBackgroundAudioEnabled";
+    private const string GlobalCustomBackgroundConfigKey                  = "GlobalBg";
+    private const string GlobalIsEnableCustomImageConfigKey               = "GlobalIsCustomImageEnabled";
+    private const string GlobalIsBackgroundParallaxEffectEnabledConfigKey = "GlobalIsBackgroundParallaxEffectEnabled";
+    private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "GlobalBackgroundParallaxPixelShift";
+    private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
+    private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
 
     public string? GlobalCustomBackgroundImagePath
     {
@@ -118,6 +118,36 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalBackgroundAudioEnabledConfigKey, value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsBackgroundElevated
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double ForegroundOpacity
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = 1d;
+
+    public double SmokeOpacity
+    {
+        get;
+        set
+        {
+            field = value;
             OnPropertyChanged();
         }
     }
@@ -234,9 +264,9 @@ public partial class ImageBackgroundManager
         ArgumentNullException.ThrowIfNull(presetConfig);
         ArgumentNullException.ThrowIfNull(presenterGrid);
 
-        CurrentCustomBackgroundConfigKey = $"lastCustomBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentSelectedBackgroundIndexKey = $"lastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentIsEnableCustomImageConfigKey = $"lastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentCustomBackgroundConfigKey    = $"LastCustomBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentSelectedBackgroundIndexKey   = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentIsEnableCustomImageConfigKey = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
         PresenterGrid        = presenterGrid;
@@ -446,6 +476,7 @@ public partial class ImageBackgroundManager
 
         // Update index based on current image context list content.
         OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
+        OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
         OnPropertyChanged(nameof(CurrentBackgroundCount));
         LoadImageAtIndex(CurrentSelectedBackgroundIndex, token);
     }

@@ -10,6 +10,7 @@ using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -74,7 +75,7 @@ public partial class ImageBackgroundManager
                 ? (null, default)
                 : await GetNativeOrDecodedImagePath(overlayUrlOrPath, token);
 
-            (string decodedBackgroundPath, _) =
+            (string decodedBackgroundPath, ImageExternalCodecType backgroundCodecType) =
                 await GetNativeOrDecodedImagePath(backgroundUrlOrPath, token);
 
             // -- Create path of image to Uri
@@ -108,6 +109,7 @@ public partial class ImageBackgroundManager
                                                           cropper,
                                                           parentGrid,
                                                           dialog,
+                                                          backgroundCodecType == ImageExternalCodecType.Svg,
                                                           token));
 
             ContentDialogResult dialogResult = await dialog.QueueAndSpawnDialog();
@@ -173,6 +175,7 @@ public partial class ImageBackgroundManager
                                                         ImageCropper         imageCropper,
                                                         Grid                 parentGrid,
                                                         ContentDialogOverlay dialogOverlay,
+                                                        bool                 isSvg,
                                                         CancellationToken    token = default)
     {
         try
@@ -209,20 +212,25 @@ public partial class ImageBackgroundManager
                                parentGrid.AddElementToGridRowColumn(loadingMsgPanel);
                            });
 
-            WriteableBitmap bitmap = new(1, 1);
-            await using (Stream fileStream = await OpenStreamFromFileOrUrl(filePath, token))
+            ImageSource source;
+            if (isSvg)
             {
-                using (IRandomAccessStream randomStream = fileStream.AsRandomAccessStream())
-                {
-                    await bitmap.SetSourceAsync(randomStream);
-                }
+                source = new SvgImageSource(filePath);
+            }
+            else
+            {
+                WriteableBitmap           bitmap       = new(1, 1);
+                await using Stream        fileStream   = await OpenStreamFromFileOrUrl(filePath, token);
+                using IRandomAccessStream randomStream = fileStream.AsRandomAccessStream(true);
+                await bitmap.SetSourceAsync(randomStream);
+                source = bitmap;
             }
 
             DispatcherQueueExtensions
                .CurrentDispatcherQueue
                .TryEnqueue(() =>
                            {
-                               imageCropper.Source = bitmap;
+                               imageCropper.Source = source;
 
                                GC.WaitForPendingFinalizers();
                                GC.WaitForFullGCComplete();
@@ -339,7 +347,7 @@ public partial class ImageBackgroundManager
     {
         // Check the extension type. If the type is native or a video file, then just return the original path.
         if (await TryGetImageCodecType(filePath, token) is var codecType &&
-            codecType == ImageExternalCodecType.Default)
+            codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
         {
             return (filePath, codecType);
         }

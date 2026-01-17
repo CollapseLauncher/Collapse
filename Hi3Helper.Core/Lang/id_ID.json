@@ -219,7 +219,34 @@
     "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi.",
 
     "InstallFolderRootTitle": "Tidak Bisa Memilih Drive Root!",
-    "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi."
+    "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi.",
+
+    "BgContextMenu_SaveCurrentBtn": "Simpan",
+    "BgContextMenu_SaveCurrentBgText": "Simpan File Gambar Saat Ini",
+    "BgContextMenu_SaveCurrentBgTooltip": "Simpan file gambar saat ini untuk layer background maupun overlay (apabila ada).",
+    "BgContextMenu_SaveAllBgText": "Simpan Semua File Gambar",
+    "BgContextMenu_SaveAllBgTooltip": "Simpan semua file gambar untuk layer background maupun overlay (apabila ada).",
+    "BgContextMenu_CopyFrameToClipboardParentText": "Salin Frame ke Clipboard",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "Salin Frame Overlay Saja",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Salin frame layer bitmap ke clipboard untuk overlay saja.",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Salin Frame Background Saja",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Salin frame layer bitmap ke clipboard untuk background saja.",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "Salin Keduanya",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Gabung dan salin kedua frame layer bitmap dari overlay dan background ke clipboard.",
+    "BgContextMenu_CopyUrlToClipboardParentText": "Salin URL/Path ke Clipboard",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "Salin URL/Path Overlay Saja",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "Salin URL/Path ke clipboard untuk layer overlay saja.",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "Salin URL/Path Background Saja",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Salin URL/Path ke clipboard untuk layer background saja.",
+    "BgContextMenu_EnableAudioText": "Nyalakan Suara pada Video",
+    "BgContextMenu_EnableAudioTooltip": "Menyalakan audio saat memutar background video (apabila ada).",
+    "BgContextMenu_EnableParallaxText": "Nyalakan Efek Parallax",
+    "BgContextMenu_EnableParallaxTooltip": "Menyalakan efek parallax pada background saat kursor di atas area launcher.",
+    "BgContextMenu_ParallaxPixelShiftParentText": "Sisiran Pixel untuk Parallax",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "Kustom",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "Gunakan jumlah pixel kustom untuk parallax.",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "Simpan background saat ini ke folder",
+    "BgContextMenu_FolderSelectSaveAllBg": "Simpan semua background ke folder"
   },
 
   "_GameRepairPage": {
@@ -1192,7 +1219,9 @@
 
     "LauncherRestartTitle": "Merestart Collapse Launcher",
     "LauncherRestartSubtitle1": "Kamu akan merestart launcher ini. Pastikan untuk tutup atau batalkan aktivitas yang berjalan sebelum merestart launchermu.",
-    "LauncherRestartSubtitle2": "Yakin mau merestart launcher?"
+    "LauncherRestartSubtitle2": "Yakin mau merestart launcher?",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Pilih Jumlah Pixel untuk Efek Parallax (Min: {0}px, Maks: {1}px)"
   },
 
   "_FileMigrationProcess": {

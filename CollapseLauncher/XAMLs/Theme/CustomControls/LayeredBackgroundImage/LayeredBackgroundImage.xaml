@@ -2,9 +2,12 @@
 <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:extension="using:CollapseLauncher.Extension"
                     xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage">
 
     <Style TargetType="layeredBackgroundImage:LayeredBackgroundImage">
+        <Setter Property="SmokeBackground" Value="{ThemeResource LayeredBackgroundImageSmokeBackground}"/>
+        <Setter Property="SmokeOpacity" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="layeredBackgroundImage:LayeredBackgroundImage">
@@ -31,16 +34,37 @@
                         <Grid x:Name="PlaceholderGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch" />
-                        <Grid x:Name="ParallaxGrid"
+                        <Grid x:Name="ElevateGrid"
+                              extension:UIElementExtensions.IsTranslationEnabled="True"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
-                            <Grid x:Name="BackgroundGrid"
+                            <Grid x:Name="ParallaxGrid"
+                                  extension:UIElementExtensions.IsTranslationEnabled="True"
                                   HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch" />
+                                  VerticalAlignment="Stretch">
+                                <Grid x:Name="BackgroundGrid"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch" />
+                            </Grid>
                         </Grid>
                         <Grid x:Name="ForegroundGrid"
                               HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch" />
+                              VerticalAlignment="Stretch"
+                              Opacity="{TemplateBinding ForegroundOpacity}">
+                            <Grid.OpacityTransition>
+                                <ScalarTransition Duration="0:0:0.3"/>
+                            </Grid.OpacityTransition>
+                        </Grid>
+                        <Grid x:Name="SmokeGrid"
+                              Background="{TemplateBinding SmokeBackground}"
+                              Opacity="{TemplateBinding SmokeOpacity}">
+                            <Grid.OpacityTransition>
+                                <ScalarTransition Duration="0:0:0.3"/>
+                            </Grid.OpacityTransition>
+                            <Grid.BackgroundTransition>
+                                <BrushTransition Duration="0:0:0.2"/>
+                            </Grid.BackgroundTransition>
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

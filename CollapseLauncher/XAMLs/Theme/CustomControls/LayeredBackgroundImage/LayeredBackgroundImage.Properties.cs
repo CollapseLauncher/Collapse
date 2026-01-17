@@ -16,6 +16,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(MediaCacheHandlerProperty, value);
     }
 
+    public bool IsVideoAutoplay
+    {
+        get => (bool)GetValue(IsVideoAutoplayProperty);
+        set => SetValue(IsVideoAutoplayProperty, value);
+    }
+
     public bool IsAudioEnabled
     {
         get => (bool)GetValue(IsAudioEnabledProperty);
@@ -130,6 +136,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(ForegroundVerticalAlignmentProperty, value);
     }
 
+    public double ForegroundOpacity
+    {
+        get => (double)GetValue(ForegroundOpacityProperty);
+        set => SetValue(ForegroundOpacityProperty, value);
+    }
+
     public TimeSpan MediaDurationPosition
     {
         get => (TimeSpan)GetValue(MediaDurationPositionProperty);
@@ -144,6 +156,30 @@ public partial class LayeredBackgroundImage
     public bool IsCurrentMediaSeekable
     {
         get => (bool)GetValue(IsCurrentMediaSeekableProperty);
+    }
+
+    public double BackgroundElevationPixels
+    {
+        get => (double)GetValue(BackgroundElevationPixelsProperty);
+        set => SetValue(BackgroundElevationPixelsProperty, value);
+    }
+
+    public bool IsBackgroundElevated
+    {
+        get => (bool)GetValue(IsBackgroundElevatedProperty);
+        set => SetValue(IsBackgroundElevatedProperty, value);
+    }
+
+    public Brush SmokeBackground
+    {
+        get => (Brush)GetValue(SmokeBackgroundProperty);
+        set => SetValue(SmokeBackgroundProperty, value);
+    }
+
+    public double SmokeOpacity
+    {
+        get => (double)GetValue(SmokeOpacityProperty);
+        set => SetValue(SmokeOpacityProperty, value);
     }
 
     #endregion
@@ -167,6 +203,12 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(false, IsAudioEnabled_OnChange));
+
+    public static readonly DependencyProperty IsVideoAutoplayProperty =
+        DependencyProperty.Register(nameof(IsVideoAutoplay),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(true));
 
     public static readonly DependencyProperty AudioVolumeProperty =
         DependencyProperty.Register(nameof(AudioVolume),
@@ -276,6 +318,12 @@ public partial class LayeredBackgroundImage
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(VerticalAlignment.Center));
 
+    public static readonly DependencyProperty ForegroundOpacityProperty =
+        DependencyProperty.Register(nameof(ForegroundOpacity),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(1d));
+
     public static readonly DependencyProperty MediaDurationPositionProperty =
         DependencyProperty.Register(nameof(MediaDurationPosition),
                                     typeof(TimeSpan),
@@ -293,6 +341,30 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(false));
+
+    public static readonly DependencyProperty BackgroundElevationPixelsProperty =
+        DependencyProperty.Register(nameof(BackgroundElevationPixels),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(32d));
+
+    public static readonly DependencyProperty IsBackgroundElevatedProperty =
+        DependencyProperty.Register(nameof(IsBackgroundElevated),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(false, IsBackgroundElevated_OnChanged));
+
+    public static readonly DependencyProperty SmokeBackgroundProperty =
+        DependencyProperty.Register(nameof(SmokeBackground),
+                                    typeof(Brush),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(null!));
+
+    public static readonly DependencyProperty SmokeOpacityProperty =
+        DependencyProperty.Register(nameof(SmokeOpacity),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(0d));
 
     #endregion
 }

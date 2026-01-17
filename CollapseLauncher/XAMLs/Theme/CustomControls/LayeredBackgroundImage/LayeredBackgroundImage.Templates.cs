@@ -15,6 +15,7 @@ public partial class LayeredBackgroundImage
     private const string TemplateNamePlaceholderGrid = "PlaceholderGrid";
     private const string TemplateNameBackgroundGrid  = "BackgroundGrid";
     private const string TemplateNameForegroundGrid  = "ForegroundGrid";
+    private const string TemplateNameElevateGrid     = "ElevateGrid";
 
     private const string StateNamePlaceholderStateHidden = "PlaceholderStateHidden";
 
@@ -26,9 +27,13 @@ public partial class LayeredBackgroundImage
     private Grid _placeholderGrid = null!;
     private Grid _backgroundGrid  = null!;
     private Grid _foregroundGrid  = null!;
+    private Grid _elevateGrid     = null!;
 
     private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;
+
+    private Visual     _elevateGridVisual     = null!;
+    private Compositor _elevateGridCompositor = null!;
 
     private bool _isTemplateLoaded;
 
@@ -42,11 +47,13 @@ public partial class LayeredBackgroundImage
         _placeholderGrid = this.GetTemplateChild<Grid>(TemplateNamePlaceholderGrid);
         _backgroundGrid  = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
         _foregroundGrid  = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
-
-        ElementCompositionPreview.SetIsTranslationEnabled(_parallaxGrid, true);
+        _elevateGrid     = this.GetTemplateChild<Grid>(TemplateNameElevateGrid);
 
         _parallaxGridVisual     = ElementCompositionPreview.GetElementVisual(_parallaxGrid);
         _parallaxGridCompositor = _parallaxGridVisual.Compositor;
+
+        _elevateGridVisual     = ElementCompositionPreview.GetElementVisual(_elevateGrid);
+        _elevateGridCompositor = _elevateGridVisual.Compositor;
 
         Interlocked.Exchange(ref _isTemplateLoaded, true);
 

@@ -221,7 +221,7 @@ namespace CollapseLauncher.Helper.Image
                 XamlRoot               = (WindowUtility.CurrentWindow as MainWindow)?.Content.XamlRoot
             };
 
-            ImageBackgroundManager.LoadImageCropperDetached(new Uri(filePath), imageCropper, parentGrid, dialogOverlay);
+            ImageBackgroundManager.LoadImageCropperDetached(new Uri(filePath), imageCropper, parentGrid, dialogOverlay, false);
 
             ContentDialogResult dialogResult = await dialogOverlay.QueueAndSpawnDialog();
             if (dialogResult == ContentDialogResult.Secondary) return null;
@@ -385,7 +385,7 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
         {
-            var ret = new BitmapImage();
+            BitmapImage ret = new BitmapImage();
             image!.Seek(0);
             await ret.SetSourceAsync(image);
             return ret;
@@ -760,7 +760,7 @@ namespace CollapseLauncher.Helper.Image
             ReadOnlySpan<char> urlAsSpan = url;
 
             dirPath ??= Path.GetTempPath();
-            byte[] fileNameHash = HashUtility<XxHash128>.Shared.GetHashFromString(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+            byte[] fileNameHash = HashUtility<XxHash128>.Shared.GetHashFromString(urlAsSpan.Length > 128 ? urlAsSpan[..^128] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 128)]);
             string fileNameBase = HexTool.BytesToHexUnsafe(fileNameHash)!;
             string filePath = Path.Combine(dirPath, fileNameBase);
 
@@ -805,13 +805,13 @@ namespace CollapseLauncher.Helper.Image
                 ArrayPool<byte>.Shared.Return(decodedBuffer);
             }
 
-            unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
+            static unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
             {
                 ref byte dataRef = ref MemoryMarshal.AsRef<byte>(buffer);
                 return new UnmanagedMemoryStream((byte*)Unsafe.AsPointer(ref dataRef), buffer.Length);
             }
 
-            bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            static bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
             {
                 if (Base64Url.TryDecodeFromChars(chars, buffer, out dataDecoded))
                 {

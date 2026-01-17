@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
@@ -9,6 +9,7 @@ using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 
@@ -47,173 +48,194 @@ internal static class LayeredBackgroundImageExtensions
         return new HttpClient(handler, false);
     }
 
-    extension(Image image)
+    internal static async ValueTask<bool> LoadImageAsync(
+        this Image             image,
+        Uri?                   sourceFromPath,
+        Stream?                sourceFromStream,
+        LayeredBackgroundImage instance,
+        IPixelTransform?       pixelTransform = null)
     {
-        internal async ValueTask<bool> LoadImageAsync(Uri?                   sourceFromPath,
-                                                      Stream?                sourceFromStream,
-                                                      LayeredBackgroundImage instance,
-                                                      IPixelTransform?       pixelTransform = null)
+        IMediaCacheHandler? cacheHandler = instance.MediaCacheHandler;
+        bool isDisposeStream = sourceFromStream == null;
+        bool forceUseInternalDecoder = false;
+
+        // Try get cached source from cache handler
+        if (cacheHandler != null)
         {
-            IMediaCacheHandler? cacheHandler    = instance.MediaCacheHandler;
-            bool                isDisposeStream = sourceFromStream == null;
+            object? source = sourceFromPath;
+            source ??= sourceFromStream;
+            MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
 
-            if (cacheHandler != null)
+            forceUseInternalDecoder = cacheResult.ForceUseInternalDecoder;
+            isDisposeStream = cacheResult.DisposeStream;
+
+            if (cacheResult.CachedSource is Uri sourceAsPath)
             {
-                object? source = sourceFromPath;
-                source ??= sourceFromStream;
-                MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
-
-                if (cacheResult == null!)
-                {
-                    return false;
-                }
-
-                Uri? cachedUrlSource = cacheResult.CachedSource as Uri;
-                Stream? cachedStreamSource = null;
-
-                if (cacheResult.CachedSource is string asString)
-                {
-                    cachedUrlSource = asString.GetStringAsUri();
-                }
-
-                if (cacheResult.CachedSource is Stream asStream)
-                {
-                    cachedStreamSource = asStream;
-                }
-
-                isDisposeStream = cacheResult.DisposeStream;
-
-                if (cacheResult.ForceUseInternalDecoder &&
-                    await image.LoadImageWithInternalDecoderAsync(sourceFromPath,
-                                                                  sourceFromStream,
-                                                                  true,
-                                                                  isDisposeStream))
-                {
-                    return true;
-                }
-
-                sourceFromPath   = cachedUrlSource;
-                sourceFromStream = cachedStreamSource;
+                sourceFromPath = sourceAsPath;
+                sourceFromStream = null;
             }
-
-            if (pixelTransform == null &&
-                await image.LoadImageWithInternalDecoderAsync(sourceFromPath,
-                                                              sourceFromStream))
+            else if (cacheResult.CachedSource is Stream sourceAsStream)
             {
-                return true;
+                sourceFromPath = null;
+                sourceFromStream = sourceAsStream;
             }
-
-            Stream? sourceStream = sourceFromStream ?? await TryGetStreamFromPathAsync(sourceFromPath);
-            if (sourceStream is not { CanSeek: true, CanRead: true })
+            else
             {
                 return false;
-            }
-
-            try
-            {
-                string temporaryFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-                await using FileStream decodedBitmapStream =
-                    File.Open(temporaryFilePath,
-                              new FileStreamOptions
-                              {
-                                  Mode    = FileMode.Create,
-                                  Access  = FileAccess.ReadWrite,
-                                  Share   = FileShare.ReadWrite,
-                                  Options = FileOptions.DeleteOnClose
-                              });
-
-                await Task.Run(() =>
-                {
-                    using ProcessingPipeline pipeline =
-                        MagicImageProcessor.BuildPipeline(sourceStream, ProcessImageSettings.Default);
-
-                    // For adding Waifu2X transform support later.
-                    if (pixelTransform != null)
-                    {
-                        pipeline.AddTransform(pixelTransform);
-                    }
-
-                    pipeline.WriteOutput(decodedBitmapStream);
-                });
-                using IRandomAccessStream randomStream = decodedBitmapStream.AsRandomAccessStream();
-
-                decodedBitmapStream.Position = 0;
-                BitmapImage bitmapImage = new();
-                image.Source = bitmapImage;
-
-                await bitmapImage.SetSourceAsync(randomStream);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return false;
-            }
-            finally
-            {
-                if (isDisposeStream)
-                {
-                    await sourceStream.DisposeAsync();
-                }
             }
         }
 
-        private async ValueTask<bool> LoadImageWithInternalDecoderAsync(Uri?    sourceFromPath,
-                                                                        Stream? sourceFromStream,
-                                                                        bool    force         = false,
-                                                                        bool    disposeStream = false)
+        try
         {
-            string? filePath = sourceFromPath?.AbsolutePath;
-            filePath ??= (sourceFromStream as FileStream)?.Name;
-
-            if (string.IsNullOrEmpty(filePath))
+            if (sourceFromPath != null)
             {
-                return false;
+                return await image.LoadImageFromUriPathSourceAsync(sourceFromPath,
+                                                                   forceUseInternalDecoder,
+                                                                   pixelTransform);
             }
 
-            string extension = Path.GetExtension(filePath);
-            if (!force &&
-                LayeredBackgroundImage.SupportedImageBitmapExternalCodecExtensionsLookup
-                                      .Contains(extension))
+            if (sourceFromStream != null)
             {
-                return false;
+                return await image.LoadImageFromStreamSourceAsync(sourceFromStream,
+                                                                  forceUseInternalDecoder,
+                                                                  pixelTransform);
             }
 
-            Stream? sourceStream = sourceFromStream ?? await TryGetStreamFromPathAsync(sourceFromPath);
-            if (sourceStream is not { CanSeek: true, CanRead: true })
+            return false;
+        }
+        finally
+        {
+            if (isDisposeStream && sourceFromStream != null)
             {
-                return false;
-            }
-
-            try
-            {
-                IRandomAccessStream randomStream = sourceStream.AsRandomAccessStream();
-                BitmapImage bitmapImage = new();
-                image.Source = bitmapImage;
-
-                await bitmapImage.SetSourceAsync(randomStream);
-                if (disposeStream)
-                {
-                    randomStream.Dispose();
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return false;
-            }
-            finally
-            {
-                if (disposeStream)
-                {
-                    await sourceStream.DisposeAsync();
-                }
+                await sourceFromStream.DisposeAsync();
             }
         }
     }
 
-    private static async Task<Stream?> TryGetStreamFromPathAsync(Uri? url, long? minLengthRequested = null)
+    private static async ValueTask<bool> LoadImageFromUriPathSourceAsync(
+        this Image       image,
+        Uri              sourceFromPath,
+        bool             forceUseInternalDecoder,
+        IPixelTransform? pixelTransform = null)
+    {
+        string extension = Path.GetExtension(sourceFromPath.ToString());
+        bool isInternalFormat = LayeredBackgroundImage
+                               .SupportedImageBitmapExtensionsLookup
+                               .Contains(extension);
+        bool isSvgFormat = LayeredBackgroundImage
+                          .SupportedImageVectorExtensionsLookup
+                          .Contains(extension);
+
+        if ((forceUseInternalDecoder ||
+             isInternalFormat ||
+             isSvgFormat) && pixelTransform == null)
+        {
+            if (isSvgFormat)
+            {
+                image.Source = new SvgImageSource(sourceFromPath);
+                return true;
+            }
+
+            image.Source = new BitmapImage(sourceFromPath);
+            return true;
+        }
+
+        await using FileStream? fileStream = await TryGetStreamFromPathAsync(sourceFromPath);
+        if (fileStream == null)
+        {
+            return false;
+        }
+
+        // Borrow loading process from stream source loader.
+        // We gonna ignore internal decoder enforcement here because, uh... idk.
+        return await image
+           .LoadImageFromStreamSourceAsync(fileStream,
+                                           false,
+                                           pixelTransform);
+    }
+
+    private static async ValueTask<bool> LoadImageFromStreamSourceAsync(
+        this Image       image,
+        Stream           sourceFromStream,
+        bool             forceUseInternalDecoder,
+        IPixelTransform? pixelTransform = null)
+    {
+        (Stream? stream, bool isTemporaryStream) =
+            await sourceFromStream.GetNativeOrCopiedStreamIfNotSeekable(CancellationToken.None);
+
+        if (stream == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            // Reset position
+            stream.Position = 0;
+
+            // Guess codec type
+            ImageExternalCodecType codecType = await stream.GuessImageFormatFromStreamAsync();
+            if (codecType == ImageExternalCodecType.NotSupported)
+            {
+                return false;
+            }
+
+            // Reset position after format guessing
+            stream.Position = 0;
+
+            if ((forceUseInternalDecoder ||
+                codecType == ImageExternalCodecType.Default) &&
+                pixelTransform != null)
+            {
+                using IRandomAccessStream sourceRandomStream = stream.AsRandomAccessStream(true);
+                BitmapImage               bitmapImage        = new();
+                await bitmapImage.SetSourceAsync(sourceRandomStream);
+                image.Source = bitmapImage;
+                return true;
+            }
+
+            if (codecType == ImageExternalCodecType.Svg)
+            {
+                using IRandomAccessStream sourceRandomStream = stream.AsRandomAccessStream(true);
+                SvgImageSource            svgImageSource     = new();
+                svgImageSource.SetSourceAsync(sourceRandomStream);
+                image.Source = svgImageSource;
+                return true;
+            }
+
+            // Use MagicScaler for external codec types
+            await using FileStream tempStream = CreateTemporaryStream();
+            await Task.Run(() =>
+            {
+                ProcessImageSettings settings = new();
+                settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+
+                using ProcessingPipeline pipeline = MagicImageProcessor.BuildPipeline(stream, settings);
+                if (pixelTransform != null)
+                {
+                    pipeline.AddTransform(pixelTransform);
+                }
+
+                pipeline.WriteOutput(tempStream);
+            });
+
+            tempStream.Position = 0;
+            using IRandomAccessStream tempRandomStream = tempStream.AsRandomAccessStream(true);
+            BitmapImage               tempBitmapImage  = new();
+            await tempBitmapImage.SetSourceAsync(tempRandomStream);
+            image.Source = tempBitmapImage;
+            return true;
+        }
+        finally
+        {
+            if (isTemporaryStream)
+            {
+                await stream.DisposeAsync();
+            }
+        }
+    }
+
+    private static async Task<FileStream?> TryGetStreamFromPathAsync(Uri? url)
     {
         if (url == null)
         {
@@ -225,8 +247,7 @@ internal static class LayeredBackgroundImageExtensions
             return File.Open(url.LocalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        if (await GetFileLengthFromUrl(Client, url) is var fileLength &&
-            fileLength == 0)
+        if (await GetFileLengthFromUrl(Client, url) is 0)
         {
             return null;
         }
@@ -243,31 +264,17 @@ internal static class LayeredBackgroundImageExtensions
             return null;
         }
 
-        minLengthRequested ??= fileLength;
-
+        FileStream tempStream = url.CreateTemporaryStreamFromUrl();
         try
         {
-            int                writtenLength   = (int)minLengthRequested;
-            byte[]             requestedBuffer = GC.AllocateUninitializedArray<byte>(writtenLength);
-            await using Stream networkStream   = await responseMessage.Content.ReadAsStreamAsync();
-
-            Memory<byte> buffer = requestedBuffer;
-            while (writtenLength > 0)
-            {
-                int read = await networkStream.ReadAsync(buffer);
-                if (read == 0)
-                {
-                    break;
-                }
-                writtenLength -= read;
-                buffer        = buffer[read..];
-            }
-
-            return new MemoryStream(requestedBuffer);
+            await using Stream networkStream = await responseMessage.Content.ReadAsStreamAsync();
+            await networkStream.CopyToAsync(tempStream);
+            return tempStream;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
+            await tempStream.DisposeAsync();
         }
 
         return null;
@@ -298,5 +305,59 @@ internal static class LayeredBackgroundImageExtensions
         }
 
         return Math.Clamp(thisVolume, 0, 100d) / 100d;
+    }
+
+    private static async ValueTask<(Stream? Stream, bool IsTemporaryStream)>
+        GetNativeOrCopiedStreamIfNotSeekable<T>(
+        this T            stream,
+        CancellationToken token)
+        where T : Stream
+    {
+        // If it's seekable, then just return it
+        if (stream.CanSeek)
+        {
+            return (stream, false);
+        }
+
+        // Copy over
+        FileStream tempStream = CreateTemporaryStream();
+        try
+        {
+            await stream.CopyToAsync(tempStream, token);
+            return (tempStream, true);
+        }
+        catch
+        {
+            await tempStream.DisposeAsync();
+            return (null, false);
+        }
+    }
+
+    private static FileStream CreateTemporaryStreamFromUrl(this Uri url)
+    {
+        string extension = Path.GetExtension(url.AbsolutePath);
+        string path      = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + extension);
+
+        return File.Open(path,
+                         new FileStreamOptions
+                         {
+                             Mode    = FileMode.Create,
+                             Access  = FileAccess.ReadWrite,
+                             Share   = FileShare.ReadWrite,
+                             Options = FileOptions.DeleteOnClose
+                         });
+    }
+
+    private static FileStream CreateTemporaryStream()
+    {
+        string path = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+        return File.Open(path,
+                         new FileStreamOptions
+                         {
+                             Mode    = FileMode.Create,
+                             Access  = FileAccess.ReadWrite,
+                             Share   = FileShare.ReadWrite,
+                             Options = FileOptions.DeleteOnClose
+                         });
     }
 }

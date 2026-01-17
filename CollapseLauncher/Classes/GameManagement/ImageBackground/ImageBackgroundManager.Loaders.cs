@@ -102,10 +102,11 @@ public partial class ImageBackgroundManager
     {
         LayeredBackgroundImage layerElement = new()
         {
-            BackgroundSource         = backgroundFilePath,
-            ForegroundSource         = overlayFilePath,
-            Tag                      = context,
-            ParallaxResetOnUnfocused = false
+            BackgroundSource          = backgroundFilePath,
+            ForegroundSource          = overlayFilePath,
+            Tag                       = context,
+            ParallaxResetOnUnfocused  = false,
+            BackgroundElevationPixels = 64d
         };
 
         layerElement.BindProperty(this,
@@ -136,6 +137,21 @@ public partial class ImageBackgroundManager
         layerElement.BindProperty(this,
                                   nameof(GlobalBackgroundAudioVolume),
                                   LayeredBackgroundImage.AudioVolumeProperty,
+                                  BindingMode.OneWay);
+
+        layerElement.BindProperty(this,
+                                  nameof(IsBackgroundElevated),
+                                  LayeredBackgroundImage.IsBackgroundElevatedProperty,
+                                  BindingMode.OneWay);
+
+        layerElement.BindProperty(this,
+                                  nameof(ForegroundOpacity),
+                                  LayeredBackgroundImage.ForegroundOpacityProperty,
+                                  BindingMode.OneWay);
+
+        layerElement.BindProperty(this,
+                                  nameof(SmokeOpacity),
+                                  LayeredBackgroundImage.SmokeOpacityProperty,
                                   BindingMode.OneWay);
 
         layerElement.Transitions.Add(new PopupThemeTransition());

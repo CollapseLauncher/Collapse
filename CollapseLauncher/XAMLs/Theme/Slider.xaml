@@ -437,7 +437,6 @@
                                                       Background="White"
                                                       CornerRadius="{ThemeResource FatSliderThumbCornerRadius}"
                                                       RenderTransformOrigin="0.5, 0.5"
-                                                      Shadow="{ThemeResource FatSliderThumbShadow}"
                                                       Translation="0,0,16">
                                                     <Grid.RenderTransform>
                                                         <CompositeTransform />
@@ -709,7 +708,6 @@
                                            Fill="{TemplateBinding Foreground}"
                                            RadiusX="{ThemeResource FatSliderTrackForegroundCornerRadiusX}"
                                            RadiusY="{ThemeResource FatSliderTrackForegroundCornerRadiusY}"
-                                           Shadow="{ThemeResource FatSliderThumbShadow}"
                                            Translation="0,0,8" />
                                 <TickBar x:Name="TopTickBar"
                                          Grid.Row="0"

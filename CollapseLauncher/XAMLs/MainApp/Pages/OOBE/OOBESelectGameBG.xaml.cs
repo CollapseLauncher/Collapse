@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -123,7 +124,7 @@ namespace CollapseLauncher.Pages.OOBE
                     return IsSuccess = false;
                 }
 
-                using IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream();
+                using IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream(true);
                 _gameLogoBitmapImage                        = await ImageLoaderHelper.Stream2BitmapImage(fs2);
                 (_gamePosterBitmap, _gamePosterBitmapImage) = await ImageLoaderHelper.GetResizedBitmapNew(_gamePosterPath);
             }

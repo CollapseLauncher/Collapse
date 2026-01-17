@@ -32,6 +32,8 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Hi3Helper.SentryHelper;
+using CollapseLauncher.GameManagement.ImageBackground;
+
 
 
 #if !DISABLEDISCORD
@@ -84,6 +86,10 @@ namespace CollapseLauncher.Pages
 #nullable restore
 
                 LoadPage();
+
+                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
             }
             catch (Exception ex)
             {

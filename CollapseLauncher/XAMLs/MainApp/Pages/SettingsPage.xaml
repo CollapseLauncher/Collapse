@@ -75,7 +75,6 @@
                                                       VerticalAlignment="Center"
                                                       Background="{ThemeResource NewAccentButtonBackground}"
                                                       CornerRadius="8"
-                                                      Shadow="{ThemeResource SharedShadow}"
                                                       Translation="0,0,12">
                                                     <TextBlock Margin="6,2"
                                                                HorizontalAlignment="Center"
@@ -611,7 +610,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1368,7 +1366,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1423,7 +1420,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkNewPreallocDownloaderToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -3180,7 +3176,6 @@
               HorizontalAlignment="{x:Bind SettingsSearchBoxGrid.HorizontalAlignment, Mode=OneWay}"
               VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment, Mode=OneWay}"
               CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius, Mode=OneWay}"
-              Shadow="{StaticResource SharedShadow}"
               Translation="0,0,8" />
         <Grid x:Name="SettingsSearchBoxGrid"
               Width="380"
@@ -3224,7 +3219,6 @@
                 <Grid Grid.Column="1"
                       Grid.ColumnSpan="2"
                       CornerRadius="4"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16" />
                 <Button x:Name="SettingsSearchHighlightPreviousBtn"
                         Grid.Column="1"

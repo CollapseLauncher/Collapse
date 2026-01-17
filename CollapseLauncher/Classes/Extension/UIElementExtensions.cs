@@ -953,6 +953,7 @@ namespace CollapseLauncher.Extension
         internal static void ApplyDropShadow(this FrameworkElement element, Color? shadowColor = null,
             double blurRadius = 10, double opacity = 0.25, bool isMasked = true, Vector3? offset = null)
         {
+            return;
             var shadowPanel = element.FindDescendant("ShadowGrid");
             if (shadowPanel == null)
             {

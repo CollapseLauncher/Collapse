@@ -1,7 +1,7 @@
 ﻿// ReSharper disable IdentifierTypo
 #pragma warning disable IDE0130
 
-namespace CollapseLauncher.GameManagement.ImageBackground;
+namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 
 public enum ImageExternalCodecType
 {
@@ -9,6 +9,7 @@ public enum ImageExternalCodecType
     Jxr,
     Avif,
     Heic,
+    Svg,
     Default      = 0,
     NotSupported = -1
 }

@@ -7,7 +7,6 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
@@ -15,7 +14,6 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
-using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -122,7 +120,8 @@ namespace CollapseLauncher.Pages
             if (DialogMethodNames.Count > 0)
                 SelectedDialogMethodName = DialogMethodNames[0];
 #endif
-    
+
+            Loaded += SettingsPage_Loaded;
             InitializeComponent();
 
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
@@ -191,6 +190,13 @@ namespace CollapseLauncher.Pages
                              DispatcherQueue.TryEnqueue(Bindings.Update);
                          }
                      });
+        }
+
+        private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
 
         private string GitVersionIndicator_Builder()

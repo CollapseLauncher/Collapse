@@ -155,7 +155,7 @@ namespace CollapseLauncher.Pages
                 // HACK: Fix random crash by manually load the XAML part
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                PageToken = new CancellationTokenSourceWrapper();
+                PageToken           = new CancellationTokenSourceWrapper();
 
                 InitializeComponent();
 
@@ -171,8 +171,9 @@ namespace CollapseLauncher.Pages
                 {
                     PlaytimeDbSyncToggle.IsEnabled = false;
                 }
-                
-                if (!DbConfig.DbEnabled || !(CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false))
+
+                if (!DbConfig.DbEnabled ||
+                    !(CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false))
                     SyncDbPlaytimeBtn.IsEnabled = false;
 
                 TryLoadEventPanelImage();
@@ -187,10 +188,10 @@ namespace CollapseLauncher.Pages
                     // ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
 
-                    ShowEventsPanelToggle.IsEnabled = true;
-                    ScaleUpEventsPanelToggle.IsEnabled = true;
-                    PostPanel.Visibility = Visibility.Visible;
-                    PostPanel.Translation += Shadow48;
+                    ShowEventsPanelToggle.IsEnabled    =  true;
+                    ScaleUpEventsPanelToggle.IsEnabled =  true;
+                    PostPanel.Visibility               =  Visibility.Visible;
+                    PostPanel.Translation              += Shadow48;
                 }
 
                 InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
@@ -212,16 +213,16 @@ namespace CollapseLauncher.Pages
                     UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
                 }
 
-#if !DISABLEDISCORD
+            #if !DISABLEDISCORD
                 AppDiscordPresence?.SetActivity(ActivityType.Idle);
-#endif
+            #endif
 
                 if (IsGameStatusComingSoon || IsGameStatusPreRegister)
                 {
-                    LauncherBtn.Visibility = Visibility.Collapsed;
+                    LauncherBtn.Visibility                      = Visibility.Collapsed;
                     LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
 
-                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
+                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility   = Visibility.Visible;
                     if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
 
                     return;
@@ -303,6 +304,7 @@ namespace CollapseLauncher.Pages
                         {
                             CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
+
                         UpdateGameDialog(null, null);
                         break;
                     case GameInstallStateEnum.NotInstalled:
@@ -311,6 +313,7 @@ namespace CollapseLauncher.Pages
                         {
                             CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
+
                         InstallGameDialog(null, null);
                         break;
                 }
@@ -318,12 +321,19 @@ namespace CollapseLauncher.Pages
             catch (ArgumentNullException ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error,
+                             true);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+            finally
+            {
+                CurrentBackgroundManager.IsBackgroundElevated = false;
+                CurrentBackgroundManager.ForegroundOpacity    = 1d;
+                CurrentBackgroundManager.SmokeOpacity         = 0d;
             }
         }
 
@@ -1021,6 +1031,9 @@ namespace CollapseLauncher.Pages
             if (IsSidePanelCurrentlyScaledOut) return;
             if (!IsPointerInsideSidePanel) return;
 
+            CurrentBackgroundManager.IsBackgroundElevated = true;
+            CurrentBackgroundManager.ForegroundOpacity    = 0d;
+
             var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
             var storyboard = new Storyboard();
             var transform  = (CompositeTransform)elementPanel.RenderTransform;
@@ -1069,6 +1082,9 @@ namespace CollapseLauncher.Pages
             }
 
             if (!IsSidePanelCurrentlyScaledOut) return;
+
+            CurrentBackgroundManager.IsBackgroundElevated = false;
+            CurrentBackgroundManager.ForegroundOpacity    = 1d;
 
             HideImageEventImg(false);
 

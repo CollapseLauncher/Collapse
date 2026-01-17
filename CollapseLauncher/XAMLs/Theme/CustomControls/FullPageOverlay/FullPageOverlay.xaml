@@ -200,7 +200,6 @@
                                                   Background="{TemplateBinding ContentBackground}"
                                                   Content="{TemplateBinding Content}"
                                                   CornerRadius="{TemplateBinding CornerRadius}"
-                                                  Shadow="{StaticResource SharedShadow}"
                                                   Translation="0,0,64" />
 
                                 <Grid x:Name="OverlayTitleGrid"
@@ -211,7 +210,6 @@
                                       Background="{ThemeResource AccentAAFillColorDefaultBrush}"
                                       ColumnSpacing="8"
                                       CornerRadius="8"
-                                      Shadow="{ThemeResource SharedShadow}"
                                       Translation="0,0,32">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -239,7 +237,6 @@
                                       VerticalAlignment="Top"
                                       Background="{ThemeResource WindowCaptionBackgroundAcrylicLight}"
                                       CornerRadius="8"
-                                      Shadow="{ThemeResource SharedShadow}"
                                       Translation="0,0,32"
                                       Visibility="{TemplateBinding CloseButtonVisibility}">
                                     <Grid.RenderTransform>

@@ -4,6 +4,7 @@ using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.Structs;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Dispatching;
@@ -211,7 +212,7 @@ public static class ClipboardUtility
             sourceCanvasTarget.GetPixelBytes(windowsBuffer);
 
             using MemoryStream        pngBufferStream       = new(bufferPng);
-            using IRandomAccessStream pngBufferRandomStream = pngBufferStream.AsRandomAccessStream();
+            using IRandomAccessStream pngBufferRandomStream = pngBufferStream.AsRandomAccessStream(true);
             await sourceCanvasTarget.SaveAsync(pngBufferRandomStream, CanvasBitmapFileFormat.Png);
 
             // Dispose the source canvas

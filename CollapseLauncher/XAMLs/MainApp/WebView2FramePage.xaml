@@ -15,7 +15,6 @@
     <Grid x:Name="WebView2Panel"
           Background="{ThemeResource WebView2GridBackground}"
           Canvas.ZIndex="8"
-          Shadow="{ThemeResource SharedShadow}"
           Visibility="Collapsed">
         <Grid.RowDefinitions>
             <RowDefinition Height="36" />

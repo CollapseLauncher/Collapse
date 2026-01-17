@@ -21,32 +21,18 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:media="using:CommunityToolkit.WinUI.Media"
       xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
-      xmlns:s="using:CommunityToolkit.WinUI"
       CacheMode="BitmapCache"
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Key="SharedShadow" />
-        <media:AttachedCardShadow x:Key="SocMedButtonAttachedShadow"
-                                  BlurRadius="0"
-                                  CornerRadius="13"
-                                  Opacity="0"
-                                  Offset="0, 0, 0" />
-        <s:AttachedDropShadow x:Key="SharedDropShadow"
-                              BlurRadius="16"
-                              CastTo="{x:Bind ImageEventImgShadow}"
-                              Opacity="0.3"
-                              Offset="0,4,0" />
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <pages:CountSingleToVisibilityConverter x:Key="CountSingleToVisibilityConverter" />
         <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
@@ -60,21 +46,25 @@
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
                     ShouldConstrainToRootBounds="False">
-            <MenuFlyoutItem Text="Save Current Image"
-                            ToolTipService.ToolTip="Save both overlay (if available) and background image/video layer into files of your current background."
-                            ToolTipService.Placement="Left">
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
+                            ToolTipService.Placement="Left"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="True">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE74E;"/>
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-            <MenuFlyoutItem Text="Save All Images"
-                            ToolTipService.ToolTip="Save both overlay (if available) and background image/video layer into files of all available backgrounds."
-                            ToolTipService.Placement="Left">
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}"
+                            ToolTipService.Placement="Left"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="False">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE78C;"/>
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-            <MenuFlyoutSubItem Text="Copy to Clipboard"
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Resources>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
@@ -82,43 +72,47 @@
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBoth">Both</backgroundManager:FrameToCopyType>
                 </MenuFlyoutSubItem.Resources>
                 <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xE8C8;"/>
+                    <FontIcon Glyph="&#xE77F;"/>
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem Text="Copy Overlay Only"
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="Copy only the bitmap of the overlay layer."
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"/>
-                <MenuFlyoutItem Text="Copy Background Only"
-                                ToolTipService.ToolTip="Copy only the bitmap of the background layer."
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"/>
-                <MenuFlyoutItem Text="Copy Merged"
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="Merge and copy both overlay and background layer into one bitmap."
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardBoth}"/>
             </MenuFlyoutSubItem>
-            <MenuFlyoutSubItem Text="Copy URL/Path to Clipboard"
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xE62F;"/>
+                    <FontIcon Glyph="&#xE630;"/>
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem Text="Copy Overlay URL/Path"
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="Copy only the URL/Path of the overlay layer."
-                                ToolTipService.Placement="Left"/>
-                <MenuFlyoutItem Text="Copy Background URL/Path"
-                                ToolTipService.ToolTip="Copy only the URL/Path of the background layer."
-                                ToolTipService.Placement="Left"/>
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginOverlayImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16, 8"/>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                                  Text="Enable Audio on Video"
-                                  ToolTipService.ToolTip="Enables audio while playing video background."
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
                                   IsChecked="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}">
                 <ToggleMenuFlyoutItem.Icon>
@@ -127,25 +121,24 @@
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
-                                  Text="Enable Parallax Effect"
-                                  ToolTipService.ToolTip="Enables parallax effect on background while hovering around launcher area."
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE7B3;"/>
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <MenuFlyoutSubItem Text="Parallax Pixels Shift"
-                               ToolTipService.ToolTip="Adjusts the amount of pixels to be shifted both horizontally and vertically."
-                               ToolTipService.Placement="Left"
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <RadioMenuFlyoutItem Text="2px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="4px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="8px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <MenuFlyoutSeparator/>
-                <RadioMenuFlyoutItem Text="Custom"
-                                     ToolTipService.ToolTip="Sets the custom amount of pixels to be shifted."
+                <RadioMenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
-                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"/>
+                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                                     Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"/>
             </MenuFlyoutSubItem>
         </MenuFlyout>
     </Page.Resources>
@@ -184,7 +177,6 @@
             <Grid x:Name="ImageEventImgShadow" />
             <Image x:Name="ImageEventImg"
                    extension:UIElementExtensions.CursorType="Hand"
-                   s:Effects.Shadow="{ThemeResource SharedDropShadow}"
                    PointerPressed="ClickImageEventSpriteLink" />
         </Grid>
         <InfoBar x:Name="PreloadDialogBox"
@@ -201,8 +193,7 @@
                  IsClosable="True"
                  IsOpen="False"
                  Opacity="0"
-                 Severity="Informational"
-                 Shadow="{ThemeResource SharedShadow}">
+                 Severity="Informational">
             <InfoBar.Content>
                 <StackPanel Margin="0,-4,38,0"
                             Orientation="Vertical">
@@ -440,7 +431,6 @@
                               VerticalAlignment="Top"
                               Background="{ThemeResource AccentColorBrush}"
                               CornerRadius="8"
-                              Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,16"
                               Visibility="Collapsed">
                             <TextBlock x:Name="DownloadModeLabelPreloadText"
@@ -456,7 +446,6 @@
                                 HorizontalContentAlignment="Stretch"
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
-                                Shadow="{ThemeResource SharedShadow}"
                                 Style="{ThemeResource AcrylicButtonStyle}"
                                 Translation="0,0,8"
                                 Visibility="Visible">
@@ -486,7 +475,6 @@
                                 HorizontalContentAlignment="Stretch"
                                 Click="PredownloadDialog"
                                 CornerRadius="16"
-                                Shadow="{ThemeResource SharedShadow}"
                                 Style="{ThemeResource AcrylicButtonStyle}"
                                 Translation="0,0,8"
                                 Visibility="Collapsed">
@@ -520,7 +508,6 @@
                         HorizontalContentAlignment="Stretch"
                         Click="PredownloadDialog"
                         CornerRadius="16"
-                        Shadow="{ThemeResource SharedShadow}"
                         Style="{ThemeResource AcrylicSemiButtonStyle}"
                         Translation="0,0,8"
                         Visibility="Visible">
@@ -566,7 +553,6 @@
                   Padding="4,4"
                   Background="{ThemeResource SocMedPanelAcrylicBrush}"
                   CornerRadius="16"
-                  Shadow="{ThemeResource SharedShadow}"
                   Translation="0,0,32">
                 <ScrollViewer x:Name="SocMedPanelScrollView"
                               CanContentRenderOutsideBounds="True"
@@ -589,7 +575,6 @@
                                         Margin="4,4"
                                         Padding="8"
                                         extension:UIElementExtensions.CursorType="Hand"
-                                        s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
                                         BorderThickness="0"
                                         Click="OpenSocMedLink"
                                         Content="{Binding}"
@@ -618,7 +603,6 @@
                                                     <Grid Margin="0,0,0,8"
                                                           Background="White"
                                                           CornerRadius="5"
-                                                          Shadow="{ThemeResource SharedShadow}"
                                                           Translation="0,0,16">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition />
@@ -658,7 +642,6 @@
                                                                         CornerRadius="5"
                                                                         PointerEntered="ElementScaleOutHoveredPointerEntered"
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
-                                                                        Shadow="{ThemeResource SharedShadow}"
                                                                         Style="{ThemeResource AcrylicSemiButtonStyle}"
                                                                         Tag="{Binding ClickLink}"
                                                                         Translation="0,0,8">
@@ -1043,7 +1026,6 @@
                                  VerticalAlignment="Top"
                                  Background="Orange"
                                  CornerRadius="10"
-                                 Shadow="{ThemeResource SharedShadow}"
                                  Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                     <c:NonFaultyGrid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -1071,8 +1053,7 @@
               Padding="0, 18, 0, 0"
               Background="Transparent"
               PointerEntered="MultiBackgroundPipsPagerGridHoverArea_OnPointerEntered"
-              PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited"
-              Shadow="{StaticResource SharedShadow}">
+              PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited">
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
                         DataContext="{x:Bind CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
@@ -1120,7 +1101,10 @@
                         <Button VerticalAlignment="Stretch"
                                 CornerRadius="14"
                                 extension:UIElementExtensions.CursorType="Hand"
-                                Style="{ThemeResource TransparentDefaultButtonStyle}">
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
+                                Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                                CommandParameter="True">
                             <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -1130,7 +1114,7 @@
                                           Glyph="&#xE74E;"
                                           FontSize="14"/>
                                 <TextBlock Grid.Column="1"
-                                           Text="Save"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBtn, Mode=OneWay}"
                                            FontSize="12"
                                            FontWeight="Semibold"/>
                             </Grid>
@@ -1166,34 +1150,91 @@
                       ColumnSpacing="16"
                       Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="32"/>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
+                    <Button Grid.Column="0"
+                            Margin="-10, -10, -8, -10"
+                            Padding="4"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                        <FontIcon Glyph="&#xE768;"
+                                  FontSize="12"/>
+                    </Button>
+                    <TextBlock Grid.Column="1"
                                Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
                                FontSize="12"
                                Margin="0,-2,0,0"
                                FontWeight="Medium"/>
-                    <Slider Grid.Column="1"
+                    <Slider Grid.Column="2"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             StepFrequency="10"
                             Minimum="0"
                             Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                             Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
-                            Margin="0,-8"
+                            Margin="-4,-8"
                             Padding="0"
                             IsThumbToolTipEnabled="False"/>
-                    <TextBlock Grid.Column="2"
+                    <TextBlock Grid.Column="3"
                                Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"
                                FontSize="12"
                                Margin="0,-2,0,0"
                                FontWeight="Medium"/>
+                    <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
+                            Grid.Column="4"
+                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                            Margin="-8, -10, -10, -10"
+                            Padding="4"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                        <Grid>
+                            <FontIcon Glyph="&#xE74F;"
+                                      FontSize="14"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                            <FontIcon Glyph="&#xE767;"
+                                      FontSize="14"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                        </Grid>
+                        <Button.Flyout>
+                            <Flyout Placement="TopEdgeAlignedRight">
+                                <Grid ColumnSpacing="8"
+                                      Margin="-4, -12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0"
+                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                            Padding="4"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                            extension:UIElementExtensions.CursorType="Hand"
+                                            Click="MultiBackgroundPipsPagerGridAudioToggleBtn_OnClick">
+                                        <Grid>
+                                            <FontIcon Glyph="&#xE74F;"
+                                                      FontSize="14"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                                            <FontIcon Glyph="&#xE767;"
+                                                      FontSize="14"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                                        </Grid>
+                                    </Button>
+                                    <Slider Grid.Column="1"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            Width="100"
+                                            Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}"/>
+                                </Grid>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -1206,7 +1247,6 @@
               CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
-              Shadow="{ThemeResource SharedShadow}"
               Translation="0,0,32"
               Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
             <Grid.RenderTransform>
@@ -1232,7 +1272,6 @@
                                                    NextButtonVerticalAlignment="Center"
                                                    PreviousButtonMargin="-16"
                                                    PreviousButtonVerticalAlignment="Center"
-                                                   Shadow="{ThemeResource SharedShadow}"
                                                    SlideshowDuration="10">
                         <panelslideshow:PanelSlideshow.ItemTransition>
                             <PaneThemeTransition Edge="Left" />
@@ -1264,7 +1303,6 @@
                           ColumnSpacing="4"
                           CornerRadius="8"
                           Opacity="0.5"
-                          Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,16">
                         <Grid.OpacityTransition>
                             <ScalarTransition Duration="0:0:.2" />
@@ -1551,7 +1589,6 @@
               Margin="0,0,0,48"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center"
-              Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
             <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
@@ -1562,7 +1599,6 @@
                 </Grid.ChildrenTransitions>-->
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
@@ -1613,7 +1649,6 @@
                       Background="{ThemeResource AccentColorBrush}"
                       ColumnSpacing="6"
                       CornerRadius="4"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -1685,7 +1720,6 @@
                             Background="{ThemeResource AccentColorBrush}"
                             CornerRadius="4"
                             Orientation="Horizontal"
-                            Shadow="{ThemeResource SharedShadow}"
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
@@ -1740,7 +1774,6 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressInformationButton)}"
-                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -1840,7 +1873,6 @@
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressSettingsButton)}"
-                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -1866,7 +1898,6 @@
               Margin="0,0,0,48"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
-              Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
             <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
@@ -1877,7 +1908,6 @@
                 </Grid.ChildrenTransitions>-->
                 <Grid x:Name="ProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
@@ -1908,7 +1938,6 @@
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
                           CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
-                          Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,32" />
                     <Ellipse x:Name="ProgressRingBG2"
                              Margin="4"
@@ -1933,7 +1962,6 @@
                       Background="{ThemeResource AccentColorBrush}"
                       ColumnSpacing="6"
                       CornerRadius="4"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -1971,7 +1999,6 @@
                             Background="{ThemeResource AccentColorBrush}"
                             CornerRadius="4"
                             Orientation="Horizontal"
-                            Shadow="{ThemeResource SharedShadow}"
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
@@ -2021,7 +2048,6 @@
                       HorizontalAlignment="Center"
                       Background="{ThemeResource AccentColorBrush}"
                       CornerRadius="8"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16"
                       Visibility="Collapsed">
                     <TextBlock x:Name="DownloadModeLabelText"
@@ -2039,7 +2065,6 @@
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressSettingsButton)}"
-                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -2071,7 +2096,6 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
-                    Shadow="{ThemeResource SharedShadow}"
                     Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
@@ -2235,8 +2259,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}"
-                    Shadow="{ThemeResource SharedShadow}">
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch">
@@ -2689,7 +2712,6 @@
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,32"
                       Visibility="Collapsed">
                     <Button x:Name="GamePlaceholderBtnComingSoon"
@@ -2768,7 +2790,6 @@
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,32">
                     <Button x:Name="InstallGameBtn"
                             HorizontalAlignment="Stretch"
@@ -2940,7 +2961,6 @@
                     Click="ForceUpdatePlaytimeButton_Click"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
                     PointerExited="HidePlaytimeStatsFlyout"
-                    Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"
                     Translation="0,0,32">
                 <ToolTipService.ToolTip>

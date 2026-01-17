@@ -50,7 +50,14 @@ public partial class PanelSlideshow
                 await Task.Delay(delayBeforeStartMs);
 
                 DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
-                                           () => VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true));
+                                           () =>
+                                           {
+                                               if (IsLoaded)
+                                                   VisualStateManager.GoToState(this,
+                                                                                    StateNameCountdownProgressBarFadeIn,
+                                                                                    true);
+                                           });
+
                 if (!_isMouseHover && _timer != null)
                 {
                     _timer.Start();
