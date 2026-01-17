@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI;
 using WinRT;
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
@@ -153,6 +154,13 @@ public partial class ImageBackgroundManager
     }
 
     #endregion
+
+    #region Shared/Static Events
+
+    internal event Action<Color>? ColorAccentChanged;
+
+    #endregion
+
 
     #region This Instance Properties
 

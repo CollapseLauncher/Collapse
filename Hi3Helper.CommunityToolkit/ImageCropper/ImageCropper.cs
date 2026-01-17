@@ -365,27 +365,32 @@ public partial class ImageCropper : Control
         double imageSourceWidth  = asBitmapSource?.PixelWidth  ?? asSvgImageSource?.RasterizePixelWidth  ?? 0;
         double imageSourceHeight = asBitmapSource?.PixelHeight ?? asSvgImageSource?.RasterizePixelHeight ?? 0;
 
-        if (imageSourceWidth == 0 || imageSourceHeight == 0)
+        if (Source == null || imageSourceWidth == 0 || imageSourceHeight == 0)
         {
             return base.MeasureOverride(availableSize);
         }
 
-        if (!double.IsFinite(availableSize.Width) && double.IsFinite(availableSize.Height))
+        if (double.IsInfinity(availableSize.Width) || double.IsInfinity(availableSize.Height))
         {
-            availableSize.Width = availableSize.Height / imageSourceWidth * imageSourceHeight;
-        }
-        else if (!double.IsFinite(availableSize.Height) && double.IsFinite(availableSize.Width))
-        {
-            availableSize.Height = availableSize.Width / imageSourceHeight * imageSourceWidth;
-        }
-        else
-        {
-            availableSize.Width  = imageSourceWidth;
-            availableSize.Height = imageSourceHeight;
+            if (!double.IsInfinity(availableSize.Width))
+            {
+                availableSize.Height = availableSize.Width / imageSourceWidth * imageSourceHeight;
+            }
+            else if (!double.IsInfinity(availableSize.Height))
+            {
+                availableSize.Width = availableSize.Height / imageSourceHeight * imageSourceWidth;
+            }
+            else
+            {
+                availableSize.Width  = imageSourceWidth;
+                availableSize.Height = imageSourceHeight;
+            }
+
+            base.MeasureOverride(availableSize);
+            return availableSize;
         }
 
-        base.MeasureOverride(availableSize);
-        return availableSize;
+        return base.MeasureOverride(availableSize);
     }
 
     /// <summary>

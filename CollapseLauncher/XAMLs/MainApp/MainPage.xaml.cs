@@ -35,6 +35,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
+using Windows.UI;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
@@ -86,6 +87,7 @@ namespace CollapseLauncher
                 Loaded += StartRoutine;
 
                 ImageBackgroundManager.Shared.GlobalParallaxHoverSource = MainPageGrid;
+                ImageBackgroundManager.Shared.ColorAccentChanged += SharedOnColorAccentChanged;
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn, NotificationPanelClearAllGrid);
@@ -95,6 +97,13 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void SharedOnColorAccentChanged(Color color)
+        {
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

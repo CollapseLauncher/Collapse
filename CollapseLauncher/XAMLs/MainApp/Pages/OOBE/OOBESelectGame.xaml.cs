@@ -172,6 +172,7 @@ namespace CollapseLauncher.Pages.OOBE
                         bitmapData = _gamePosterBitmap.LockBits(new Rectangle(new Point(), _gamePosterBitmap.Size),
                                                                 ImageLockMode.ReadOnly, _gamePosterBitmap.PixelFormat);
 
+                        /*
                         BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
                         {
                             Buffer  = bitmapData.Scan0,
@@ -179,10 +180,11 @@ namespace CollapseLauncher.Pages.OOBE
                             Height  = bitmapData.Height,
                             Channel = bitmapChannelCount
                         };
+                        */
 
                         if (isSuccess)
                         {
-                            await ColorPaletteUtility.ApplyAccentColor(this, bitmapInputStruct, _gamePosterPath);
+                            // await ColorPaletteUtility.ApplyAccentColor(this, bitmapInputStruct, _gamePosterPath);
                         }
                     }
                     finally

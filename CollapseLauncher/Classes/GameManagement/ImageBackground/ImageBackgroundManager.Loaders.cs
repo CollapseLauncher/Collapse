@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI;
 
 // ReSharper disable CheckNamespace
 
@@ -85,6 +87,12 @@ public partial class ImageBackgroundManager
             }
 
             token.ThrowIfCancellationRequested();
+
+            // -- Read Color Accent information from current background context.
+            new Thread(GetMediaAccentColor)
+            {
+                IsBackground = true
+            }.Start(downloadedBackgroundUri);
 
             // -- Use UI thread and load image layer
             DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri, downloadedBackgroundUri, context));
@@ -232,5 +240,16 @@ public partial class ImageBackgroundManager
             pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper._waifu2X));
             pipeline.WriteOutput(outputFileStream);
         }
+    }
+
+    private async void GetMediaAccentColor(object? context)
+    {
+        if (context is not Uri { IsFile: true } asUri)
+        {
+            return;
+        }
+
+        Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri);
+        ColorAccentChanged?.Invoke(color);
     }
 }
