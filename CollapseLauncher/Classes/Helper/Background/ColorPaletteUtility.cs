@@ -182,7 +182,9 @@ internal static class ColorPaletteUtility
                .Contains(extension))
             {
                 StorageFile          storageFile = await StorageFile.GetFileFromPathAsync(filePath);
-                StorageItemThumbnail thumbnail   = await storageFile.GetThumbnailAsync(ThumbnailMode.VideosView);
+                StorageItemThumbnail thumbnail   = await storageFile
+                   .GetThumbnailAsync(ThumbnailMode.VideosView,
+                                      1600); // Max it can get
                 return thumbnail;
             }
 
