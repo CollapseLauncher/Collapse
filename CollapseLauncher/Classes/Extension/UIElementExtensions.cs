@@ -1199,7 +1199,7 @@ namespace CollapseLauncher.Extension
         internal static T CreateElementFromUIThread<T>(Action<T>? setAttributeDelegate = null)
             where T : UIElement, new()
         {
-            T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>();
+            T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>().Result;
             if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
             {
                 setAttributeDelegate?.Invoke(element);

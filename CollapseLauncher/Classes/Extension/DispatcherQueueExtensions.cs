@@ -1,5 +1,6 @@
 using Microsoft.UI.Dispatching;
 using System;
+using System.Threading.Tasks;
 
 #nullable enable
 namespace CollapseLauncher.Extension
@@ -31,23 +32,30 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        public static T CreateObjectFromUIThread<T>()
+        public static Task<T> CreateObjectFromUIThread<T>()
             where T : class, new()
         {
             if (CurrentDispatcherQueue.HasThreadAccessSafe())
             {
-                return new T();
+                return Task.FromResult(new T());
             }
 
-            T? obj = null;
-            CurrentDispatcherQueue.TryEnqueue(() => obj = new T());
+            TaskCompletionSource<T> tcs = new();
+            Impl();
 
-            if (obj == null)
+            return tcs.Task;
+
+            void Impl()
             {
-                throw new NullReferenceException("Object unexpectedly cannot be created.");
+                try
+                {
+                    CurrentDispatcherQueue.TryEnqueue(() => tcs.SetResult(new T()));
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
             }
-
-            return obj;
         }
     }
 }
