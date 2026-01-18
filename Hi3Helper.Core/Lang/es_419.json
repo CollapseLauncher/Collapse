@@ -425,7 +425,11 @@
     "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
     "Advanced_GLC_PreLaunch_Delay": "Retrasar Inicio del Juego (ms)",
     "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
-    "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego"
+    "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego",
+
+    "Advanced_RunWithExplorerAsParent_Title": "Iniciar Juego con Explorer como Proceso Principal",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "Desactivar para compatibilidad con Steam Input y Overlay",
+    "Advanced_RunWithExplorerAsParent_Warning": "ADVERTENCIA: ¡Los inicios de sesión pueden bloquearse cuando se desactiva!"
   },
 
   "_SettingsPage": {
@@ -1128,6 +1132,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
+    "SteamShortcutCreationSuccessSubtitle8": " Adicionalmente, la opción \"Iniciar Juego con Explorer como Proceso Principal\" en los ajustes avanzados debe estar desactivada.",
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
     "SteamShortcutTitle": "Acceso directo de Steam",
