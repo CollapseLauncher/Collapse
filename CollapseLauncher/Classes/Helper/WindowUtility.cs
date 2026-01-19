@@ -1,5 +1,4 @@
-﻿#nullable enable
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using H.NotifyIcon.Core;
 using Hi3Helper;
@@ -41,6 +40,7 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 
+#nullable enable
 namespace CollapseLauncher.Helper
 {
     internal enum WindowBackdropKind
@@ -56,6 +56,7 @@ namespace CollapseLauncher.Helper
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
 
+        private static nint _winEventHookPtr;
         private static nint _oldMainWndProcPtr;
         private static nint _oldDesktopSiteBridgeWndProcPtr;
 
@@ -207,6 +208,14 @@ namespace CollapseLauncher.Helper
                 return defaultDpiValue;
 
             }
+        }
+        
+        // Do not manually change this value.
+        // This will be updated by the WindowEventHook handler.
+        internal static double CurrentWindowMonitorRefreshRate
+        {
+            get;
+            set;
         }
 
         internal static double CurrentWindowMonitorScaleFactor
@@ -407,6 +416,10 @@ namespace CollapseLauncher.Helper
             // Install WndProc callback
             _oldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
 
+            // Install WinEventHook callback
+            _winEventHookPtr = InstallWinEventHookCallback(CurrentWindowPtr, MainWinEventHook);
+            CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(CurrentWindowPtr);
+
             // Install Drag Area Change monitor
             InstallDragAreaChangeMonitor();
 
@@ -442,7 +455,40 @@ namespace CollapseLauncher.Helper
 
         #endregion
 
+        #region WinEventHook Handler
+
+        private static nint InstallWinEventHookCallback(nint hwnd, WinEventDelegate winEventDelegate)
+        {
+            const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
+            const uint WINEVENT_OUTOFCONTEXT = 0x0000;
+
+            return PInvoke.SetWinEventHook(EVENT_SYSTEM_MOVESIZEEND,
+                                           EVENT_SYSTEM_MOVESIZEEND,
+                                           nint.Zero,
+                                           winEventDelegate,
+                                           (uint)Environment.ProcessId,
+                                           0,
+                                           WINEVENT_OUTOFCONTEXT);
+        }
+
+        private static void MainWinEventHook(nint hook,
+                                             uint evt,
+                                             nint hwnd,
+                                             int idObject,
+                                             int idChild,
+                                             uint thread,
+                                             uint time)
+        {
+            if (hwnd == CurrentWindowPtr)
+            {
+                CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(hwnd);
+            }
+        }
+
+        #endregion
+
         #region WndProc Handler
+
         private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
         {
             // Install WndProc hook
