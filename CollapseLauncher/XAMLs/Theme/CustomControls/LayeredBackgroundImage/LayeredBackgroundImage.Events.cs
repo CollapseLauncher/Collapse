@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Composition;
+﻿using CollapseLauncher.Helper;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
@@ -227,11 +228,11 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OffsetReset()
     {
-        StartElementElevateAnimation(_parallaxGridCompositor,
-                                    _parallaxGridVisual,
-                                    Vector3.Zero,
-                                    Vector3.One,
-                                    250d);
+        StartElementElevateEasingAnimation(_parallaxGridCompositor,
+                                           _parallaxGridVisual,
+                                           Vector3.Zero,
+                                           Vector3.One,
+                                           250d);
     }
 
     private void ParallaxGrid_OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -253,6 +254,9 @@ public partial class LayeredBackgroundImage
         double offsetX = ParallaxHorizontalShift;
         double offsetY = ParallaxVerticalShift;
 
+        bool isHighRefreshRate = WindowUtility.CurrentWindowMonitorRefreshRate > 75000 / 1001;
+        double dur = isHighRefreshRate ? 40 : 10;
+
         StartElementOffsetAnimation(_parallaxGridCompositor,
                                     _parallaxGridVisual,
                                     _parallaxGrid,
@@ -260,7 +264,8 @@ public partial class LayeredBackgroundImage
                                     offsetY,
                                     nx,
                                     ny,
-                                    40);
+                                    dur,
+                                    !isHighRefreshRate);
     }
 
     private static void StartElementOffsetAnimation(
@@ -272,6 +277,7 @@ public partial class LayeredBackgroundImage
         double                     centerPointX,
         double                     centerPointY,
         double                     durationMs,
+        bool                       useSpring = true,
         CompositionEasingFunction? easingFunction = null)
     {
         // Move opposite to center point
@@ -289,15 +295,26 @@ public partial class LayeredBackgroundImage
         // Gets the stronger axis
         float factorScale = (float)Math.Max(addScaleX, addScaleY);
 
-        StartElementElevateAnimation(compositor,
-                                     visual,
-                                     Vector3.Zero with { X = tx, Y = ty },
-                                     Vector3.One with { X = factorScale, Y = factorScale },
-                                     durationMs,
-                                     easingFunction);
+        if (useSpring)
+        {
+            StartElementElevateSpringAnimation(compositor,
+                                               visual,
+                                               Vector3.Zero with { X = tx, Y = ty },
+                                               Vector3.One with { X = factorScale, Y = factorScale },
+                                               durationMs,
+                                               easingFunction);
+            return;
+        }
+
+        StartElementElevateEasingAnimation(compositor,
+                                           visual,
+                                           Vector3.Zero with { X = tx, Y = ty },
+                                           Vector3.One with { X = factorScale, Y = factorScale },
+                                           durationMs,
+                                           easingFunction);
     }
 
-    private static void StartElementElevateAnimation(
+    private static void StartElementElevateEasingAnimation(
         Compositor                 compositor,
         Visual                     visual,
         Vector3                    offset,
@@ -326,6 +343,46 @@ public partial class LayeredBackgroundImage
         scaleAnim.Duration = TimeSpan.FromMilliseconds(duration);
         scaleAnim.InsertKeyFrame(1f, scale, easingFunction);
         scaleAnim.Target = targetScale;
+
+        animGroup.Add(anim);
+        animGroup.Add(scaleAnim);
+
+        visual.StartAnimationGroup(animGroup);
+    }
+
+    private static void StartElementElevateSpringAnimation(
+        Compositor                 compositor,
+        Visual                     visual,
+        Vector3                    offset,
+        Vector3                    scale,
+        double                     duration,
+        CompositionEasingFunction? easingFunction = null)
+    {
+        const string targetTranslation = "Translation";
+        const string targetScale = "Scale";
+
+        if (compositor == null!)
+        {
+            return;
+        }
+
+        CompositionAnimationGroup? animGroup = compositor.CreateAnimationGroup();
+
+        // Move
+        SpringVector3NaturalMotionAnimation? anim = compositor.CreateSpringVector3Animation();
+        anim.Period = TimeSpan.FromMilliseconds(duration);
+        anim.FinalValue = offset;
+        anim.DampingRatio = 1f;
+        anim.Target = targetTranslation;
+        anim.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+
+        // Scale
+        SpringVector3NaturalMotionAnimation? scaleAnim = compositor.CreateSpringVector3Animation();
+        scaleAnim.Period = TimeSpan.FromMilliseconds(duration);
+        scaleAnim.FinalValue = scale;
+        scaleAnim.DampingRatio = 1f;
+        scaleAnim.Target = targetScale;
+        scaleAnim.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
 
         animGroup.Add(anim);
         animGroup.Add(scaleAnim);
@@ -423,6 +480,7 @@ public partial class LayeredBackgroundImage
                                     0d,
                                     0d,
                                     500d,
+                                    false,
                                     CompositionEasingFunction.CreateCircleEasingFunction(_elevateGridCompositor,
                                          CompositionEasingFunctionMode.Out));
     }
