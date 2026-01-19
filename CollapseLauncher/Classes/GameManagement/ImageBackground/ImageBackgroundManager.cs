@@ -504,8 +504,7 @@ public partial class ImageBackgroundManager
                .ToHashSet();
         foreach (LayeredImageBackgroundContext imageContext in imageContexts)
         {
-            if (!currentContextHashes.Contains(imageContext.GetHashCode()) &&
-                !imageContext.ForceReload)
+            if (!currentContextHashes.Contains(imageContext.GetHashCode()))
             {
                 return false;
             }
