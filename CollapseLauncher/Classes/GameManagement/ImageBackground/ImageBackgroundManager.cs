@@ -418,7 +418,8 @@ public partial class ImageBackgroundManager
             LayeredImageBackgroundContext context = new()
             {
                 OriginBackgroundImagePath = imagePath,
-                BackgroundImagePath       = resultBackgroundPath
+                BackgroundImagePath       = resultBackgroundPath,
+                ForceReload               = true // Request force reload (skip cache)
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
@@ -503,7 +504,8 @@ public partial class ImageBackgroundManager
                .ToHashSet();
         foreach (LayeredImageBackgroundContext imageContext in imageContexts)
         {
-            if (!currentContextHashes.Contains(imageContext.GetHashCode()))
+            if (!currentContextHashes.Contains(imageContext.GetHashCode()) &&
+                !imageContext.ForceReload)
             {
                 return false;
             }
@@ -540,6 +542,12 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
         init;
     }
 
+    public bool ForceReload
+    {
+        get;
+        init;
+    }
+
     public bool Equals(LayeredImageBackgroundContext? other) => other?.GetHashCode() == GetHashCode();
 
     public override bool Equals(object? obj)
@@ -558,5 +566,5 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     }
 
     public override int GetHashCode() =>
-        HashCode.Combine(OriginOverlayImagePath, OriginBackgroundImagePath, OverlayImagePath, BackgroundImagePath);
+        HashCode.Combine(OriginOverlayImagePath, OriginBackgroundImagePath, OverlayImagePath, BackgroundImagePath, ForceReload);
 }

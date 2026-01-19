@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Win32.WinRT.WindowsStream;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
@@ -53,11 +54,12 @@ internal static class LayeredBackgroundImageExtensions
         Uri?                   sourceFromPath,
         Stream?                sourceFromStream,
         LayeredBackgroundImage instance,
+        DependencyProperty     useCacheProperty,
         IPixelTransform?       pixelTransform = null)
     {
-        IMediaCacheHandler? cacheHandler = instance.MediaCacheHandler;
-        bool isDisposeStream = sourceFromStream == null;
-        bool forceUseInternalDecoder = false;
+        IMediaCacheHandler? cacheHandler            = instance.MediaCacheHandler;
+        bool                isDisposeStream         = sourceFromStream == null;
+        bool                forceUseInternalDecoder = false;
 
         // Try get cached source from cache handler
         if (cacheHandler != null)
@@ -67,16 +69,16 @@ internal static class LayeredBackgroundImageExtensions
             MediaCacheResult cacheResult = await cacheHandler.LoadCachedSource(source);
 
             forceUseInternalDecoder = cacheResult.ForceUseInternalDecoder;
-            isDisposeStream = cacheResult.DisposeStream;
+            isDisposeStream         = cacheResult.DisposeStream;
 
             if (cacheResult.CachedSource is Uri sourceAsPath)
             {
-                sourceFromPath = sourceAsPath;
+                sourceFromPath   = sourceAsPath;
                 sourceFromStream = null;
             }
             else if (cacheResult.CachedSource is Stream sourceAsStream)
             {
-                sourceFromPath = null;
+                sourceFromPath   = null;
                 sourceFromStream = sourceAsStream;
             }
             else
@@ -91,6 +93,8 @@ internal static class LayeredBackgroundImageExtensions
             {
                 return await image.LoadImageFromUriPathSourceAsync(sourceFromPath,
                                                                    forceUseInternalDecoder,
+                                                                   instance,
+                                                                   useCacheProperty,
                                                                    pixelTransform);
             }
 
@@ -98,6 +102,8 @@ internal static class LayeredBackgroundImageExtensions
             {
                 return await image.LoadImageFromStreamSourceAsync(sourceFromStream,
                                                                   forceUseInternalDecoder,
+                                                                  instance,
+                                                                  useCacheProperty,
                                                                   pixelTransform);
             }
 
@@ -113,10 +119,12 @@ internal static class LayeredBackgroundImageExtensions
     }
 
     private static async ValueTask<bool> LoadImageFromUriPathSourceAsync(
-        this Image       image,
-        Uri              sourceFromPath,
-        bool             forceUseInternalDecoder,
-        IPixelTransform? pixelTransform = null)
+        this Image             image,
+        Uri                    sourceFromPath,
+        bool                   forceUseInternalDecoder,
+        LayeredBackgroundImage instance,
+        DependencyProperty     useCacheProperty,
+        IPixelTransform?       pixelTransform = null)
     {
         string extension = Path.GetExtension(sourceFromPath.ToString());
         bool isInternalFormat = LayeredBackgroundImage
@@ -136,7 +144,12 @@ internal static class LayeredBackgroundImageExtensions
                 return true;
             }
 
-            image.Source = new BitmapImage(sourceFromPath);
+            image.Source = new BitmapImage(sourceFromPath)
+            {
+                CreateOptions = (bool)instance.GetValue(useCacheProperty)
+                    ? BitmapCreateOptions.None
+                    : BitmapCreateOptions.IgnoreImageCache
+            };
             return true;
         }
 
@@ -151,14 +164,18 @@ internal static class LayeredBackgroundImageExtensions
         return await image
            .LoadImageFromStreamSourceAsync(fileStream,
                                            false,
+                                           instance,
+                                           useCacheProperty,
                                            pixelTransform);
     }
 
     private static async ValueTask<bool> LoadImageFromStreamSourceAsync(
-        this Image       image,
-        Stream           sourceFromStream,
-        bool             forceUseInternalDecoder,
-        IPixelTransform? pixelTransform = null)
+        this Image             image,
+        Stream                 sourceFromStream,
+        bool                   forceUseInternalDecoder,
+        LayeredBackgroundImage instance,
+        DependencyProperty     useCacheProperty,
+        IPixelTransform?       pixelTransform = null)
     {
         (Stream? stream, bool isTemporaryStream) =
             await sourceFromStream.GetNativeOrCopiedStreamIfNotSeekable(CancellationToken.None);
@@ -188,7 +205,12 @@ internal static class LayeredBackgroundImageExtensions
                 pixelTransform != null)
             {
                 using IRandomAccessStream sourceRandomStream = stream.AsRandomAccessStream(true);
-                BitmapImage               bitmapImage        = new();
+                BitmapImage bitmapImage = new()
+                {
+                    CreateOptions = (bool)instance.GetValue(useCacheProperty)
+                        ? BitmapCreateOptions.None
+                        : BitmapCreateOptions.IgnoreImageCache
+                };
                 await bitmapImage.SetSourceAsync(sourceRandomStream);
                 image.Source = bitmapImage;
                 return true;
@@ -221,7 +243,12 @@ internal static class LayeredBackgroundImageExtensions
 
             tempStream.Position = 0;
             using IRandomAccessStream tempRandomStream = tempStream.AsRandomAccessStream(true);
-            BitmapImage               tempBitmapImage  = new();
+            BitmapImage tempBitmapImage = new()
+            {
+                CreateOptions = (bool)instance.GetValue(useCacheProperty)
+                    ? BitmapCreateOptions.None
+                    : BitmapCreateOptions.IgnoreImageCache
+            };
             await tempBitmapImage.SetSourceAsync(tempRandomStream);
             image.Source = tempBitmapImage;
             return true;

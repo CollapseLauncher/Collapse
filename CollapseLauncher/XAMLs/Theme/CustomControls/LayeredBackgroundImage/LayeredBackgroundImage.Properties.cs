@@ -182,6 +182,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(SmokeOpacityProperty, value);
     }
 
+    public bool UseImageCache
+    {
+        get => (bool)GetValue(UseImageCacheProperty);
+        set => SetValue(UseImageCacheProperty, value);
+    }
+
     #endregion
 
     #region Fields
@@ -365,6 +371,12 @@ public partial class LayeredBackgroundImage
                                     typeof(double),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(0d));
+
+    public static readonly DependencyProperty UseImageCacheProperty =
+        DependencyProperty.Register(nameof(UseImageCache),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(true));
 
     #endregion
 }

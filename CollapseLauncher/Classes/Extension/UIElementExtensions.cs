@@ -192,13 +192,15 @@ namespace CollapseLauncher.Extension
                                           object?               source,
                                           string                propertyName,
                                           DependencyProperty    dependencyProperty,
-                                          BindingMode           bindingMode)
+                                          BindingMode           bindingMode,
+                                          IValueConverter?      converter = null)
         {
             element.SetBinding(dependencyProperty, new Binding
             {
-                Mode   = bindingMode,
-                Source = source,
-                Path   = new PropertyPath(propertyName)
+                Mode      = bindingMode,
+                Source    = source,
+                Path      = new PropertyPath(propertyName),
+                Converter = converter
             });
         }
 

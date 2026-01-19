@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -28,6 +29,8 @@ public partial class ImageBackgroundManager
     #region Fields
 
     private CancellationTokenSource? _imageLoadingTokenSource;
+
+    private static IValueConverter BoolInvertConverter => field ??= new InverseBooleanConverter();
 
     #endregion
 
@@ -161,6 +164,12 @@ public partial class ImageBackgroundManager
                                   nameof(SmokeOpacity),
                                   LayeredBackgroundImage.SmokeOpacityProperty,
                                   BindingMode.OneWay);
+
+        layerElement.BindProperty(context,
+                                  nameof(context.ForceReload),
+                                  LayeredBackgroundImage.UseImageCacheProperty,
+                                  BindingMode.OneWay,
+                                  BoolInvertConverter);
 
         layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded += LayerElementOnLoaded;

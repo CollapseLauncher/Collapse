@@ -267,7 +267,7 @@ public partial class LayeredBackgroundImage
                 return false;
             }
 
-            return await image.LoadImageAsync(sourceUri, sourceStream, instance);
+            return await image.LoadImageAsync(sourceUri, sourceStream, instance, UseImageCacheProperty);
         }
         catch (Exception e)
         {
