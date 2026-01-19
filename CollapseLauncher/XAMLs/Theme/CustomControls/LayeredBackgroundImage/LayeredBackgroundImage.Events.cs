@@ -86,9 +86,6 @@ public partial class LayeredBackgroundImage
                                         ref _lastForegroundSourceType);
             _lastForegroundSource = ForegroundSource;
         }
-
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     private void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
@@ -97,9 +94,6 @@ public partial class LayeredBackgroundImage
 
         ParallaxGrid_UnregisterEffect();
         _lastParallaxHoverSource = null;
-
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     #endregion
