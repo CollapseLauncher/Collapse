@@ -145,10 +145,6 @@ public partial class LayeredBackgroundImage
                                             ref element._lastForegroundSourceType);
     }
 
-    #endregion
-
-    #region
-
     private void LoadFromSourceAsyncDetached(
         DependencyProperty  sourceProperty,
         string              stretchProperty,
