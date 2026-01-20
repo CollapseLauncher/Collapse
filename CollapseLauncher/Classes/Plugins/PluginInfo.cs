@@ -5,6 +5,7 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
@@ -229,7 +230,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
 
-            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
+            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Info, true);
+            PluginListBreadcrumb.Add(Name, Version.ToString(), StandardVersion.ToString());
 
             PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
             for (int i = 0; i < presetConfigCount; i++)
