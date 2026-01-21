@@ -2770,7 +2770,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
@@ -2782,14 +2781,6 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        Text="-" />
-                            <TextBlock x:Name="PlaytimeToolTipIcon"
-                                       Grid.Column="2"
-                                       Margin="0,0,-4,0"
-                                       VerticalAlignment="Center"
-                                       FontFamily="{ThemeResource FontAwesomeSolid}"
-                                       FontSize="18"
-                                       Opacity="0.25"
-                                       Text="&#xf05a;" />
                         </Grid>
                     </Grid>
                 </Button.Content>
