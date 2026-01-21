@@ -139,6 +139,13 @@
     "PauseCancelDownloadBtn": "Pause/Cancel",
     "PauseCancelBtn": "Pause/Cancel",
     "DownloadBtn": "Download Game",
+    "StartGameTooltip": "Start Game: v{0}",
+    "InstallGameTooltip": "Install Game: v{0}",
+    "UpdateGameTooltip": "Update Game: v{0} -> v{1}",
+    "InstallSdkTooltip": "Install SDK: v{0}",
+    "UpdateSdkUpdateTooltip": "Update SDK: v{0} -> v{1}",
+    "InstallPluginTooltip": "Install Plugin: {0} v{1}",
+    "UpdatePluginTooltip": "Update Plugin: {0} v{1} -> v{2}",
 
     "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
     "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",

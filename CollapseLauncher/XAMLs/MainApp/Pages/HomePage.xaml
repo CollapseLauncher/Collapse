@@ -2491,7 +2491,8 @@
                             HorizontalContentAlignment="Stretch"
                             Click="InstallGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                            Style="{ThemeResource NewAccentButtonStyle}">
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}">
                         <Button.Content>
                             <Grid Margin="8,0">
                                 <Grid.ColumnDefinitions>
@@ -2525,6 +2526,7 @@
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
                             Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">
@@ -2560,6 +2562,7 @@
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
                             Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind StartTooltipText}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
@@ -2625,6 +2628,7 @@
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
                             Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>

@@ -39,6 +39,13 @@ namespace Hi3Helper
                 public string PauseCancelDownloadBtn { get; set; } = LangFallback?._HomePage.PauseCancelDownloadBtn;
                 public string PauseCancelBtn { get; set; } = LangFallback?._HomePage.PauseCancelBtn;
                 public string DownloadBtn { get; set; } = LangFallback?._HomePage.DownloadBtn;
+                public string StartGameTooltip { get; set; } = LangFallback?._HomePage.StartGameTooltip;
+                public string InstallGameTooltip { get; set; } = LangFallback?._HomePage.InstallGameTooltip;
+                public string UpdateGameTooltip { get; set; } = LangFallback?._HomePage.UpdateGameTooltip;
+                public string InstallSdkTooltip { get; set; } = LangFallback?._HomePage.InstallSdkTooltip;
+                public string UpdateSdkTooltip { get; set; } = LangFallback?._HomePage.UpdateSdkTooltip;
+                public string InstallPluginTooltip { get; set; } = LangFallback?._HomePage.InstallPluginTooltip;
+                public string UpdatePluginTooltip { get; set; } = LangFallback?._HomePage.UpdatePluginTooltip;
                 public string GameStatusPlaceholderComingSoonBtn { get; set; } = LangFallback?._HomePage.GameStatusPlaceholderComingSoonBtn;
                 public string GameStatusPlaceholderPreRegisterBtn { get; set; } = LangFallback?._HomePage.GameStatusPlaceholderPreRegisterBtn;
                 public string GameSettingsBtn { get; set; } = LangFallback?._HomePage.GameSettingsBtn;
