@@ -33,7 +33,7 @@ namespace CollapseLauncher.Extension
         }
 
         public static Task<T> CreateObjectFromUIThread<T>()
-            where T : class, new()
+            where T : new()
         {
             if (CurrentDispatcherQueue.HasThreadAccessSafe())
             {
