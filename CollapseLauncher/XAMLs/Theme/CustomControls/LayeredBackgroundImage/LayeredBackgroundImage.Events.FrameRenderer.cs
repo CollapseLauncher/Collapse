@@ -30,7 +30,7 @@ public partial class LayeredBackgroundImage
     #region Properties
 
     // ReSharper disable once InconsistentNaming
-    private static ref readonly Guid IMediaPlayer_IID
+    private static ref readonly Guid IMediaPlayer5_IID
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -226,7 +226,7 @@ public partial class LayeredBackgroundImage
             };
 
             ComMarshal<MediaPlayer>.TryGetComInterfaceReference(_videoPlayer,
-                                                                in IMediaPlayer_IID,
+                                                                in IMediaPlayer5_IID,
                                                                 out _videoPlayerPtr,
                                                                 out _,
                                                                 requireQueryInterface: true);
@@ -262,15 +262,13 @@ public partial class LayeredBackgroundImage
                 _ = SharedLastMediaPosition.TryAdd(sourceHashCode, _videoPlayer.Position);
             }
 
+            _videoPlayer.Dispose();
+
             nint videoPlayerPpv = Interlocked.Exchange(ref _videoPlayerPtr, nint.Zero);
             if (videoPlayerPpv != nint.Zero) Marshal.Release(videoPlayerPpv);
 
-            _videoPlayer.Dispose();
-
-            MediaPlayer oldObj = Interlocked.Exchange(ref _videoPlayer!, null);
-            ComMarshal<MediaPlayer>.TryReleaseComObject(oldObj, out _);
-
             DisposeRenderTarget();
+            Interlocked.Exchange(ref _videoPlayer, null!);
         }
         catch (Exception ex)
         {
@@ -322,32 +320,23 @@ public partial class LayeredBackgroundImage
             _canvasDevice.DeviceLost += CanvasDevice_OnDeviceLost;
 
             Interlocked.Exchange(ref UseSafeFrameRenderer, false); // Try to use unsafe frame renderer first
-            Interlocked.Exchange(ref _canvasRenderTargetAsSurfacePtr, MarshalInterface<IDirect3DSurface>.FromManaged(_canvasRenderTarget));
 
-            if (!ComMarshal<CanvasImageSource>
+            if (!ComMarshal<IDirect3DSurface>
+                   .TryGetComInterfaceReference(_canvasRenderTarget,
+                                                out _canvasRenderTargetAsSurfacePtr,
+                                                out Exception? ex,
+                                                requireQueryInterface: true) ||
+                !ComMarshal<CanvasImageSource>
                    .TryGetComInterfaceReference(_canvasImageSource,
-                                                out nint ppvICanvasImageSource1,
-                                                out Exception? ex) ||
+                                                out _canvasImageSourceNativePtr,
+                                                out ex) ||
                 !ComMarshal<CanvasRenderTarget>
                    .TryGetComInterfaceReference(_canvasRenderTarget,
-                                                out nint ppvICanvasBitmap1,
+                                                out _canvasRenderTargetNativePtr,
                                                 out ex))
             {
                 throw ex;
             }
-
-            // Cast (query) explicitly from pointer into ICanvasImageSource (due to it being protected).
-            Marshal.QueryInterface(ppvICanvasImageSource1, new Guid("3C35E87A-E881-4F44-B0D1-551413AEC66D"), out nint ppvICanvasImageSource2);
-            Marshal.Release(ppvICanvasImageSource1);
-
-            // Cast (query) explicitly from pointer of ICanvasImage into ICanvasBitmap (due to ICanvasBitmap being protected).
-            // We preferred to use ICanvasBitmap instead of ICanvasImage is because Win2D uses the shortest path for it.
-            // https://github.com/microsoft/Win2D/blob/65e90b29055de64b02e7f2a3d3f042b7fa36326c/winrt/lib/drawing/CanvasDrawingSession.cpp#L458
-            Marshal.QueryInterface(ppvICanvasBitmap1, new Guid("C57532ED-709E-4AC2-86BE-A1EC3A7FA8FE"), out nint ppvICanvasBitmap2);
-            Marshal.Release(ppvICanvasBitmap1);
-
-            Interlocked.Exchange(ref _canvasImageSourceNativePtr, ppvICanvasImageSource2);
-            Interlocked.Exchange(ref _canvasRenderTargetNativePtr, ppvICanvasBitmap2);
 
             unsafe
             {
@@ -404,16 +393,16 @@ public partial class LayeredBackgroundImage
                 _canvasDevice.DeviceLost -= CanvasDevice_OnDeviceLost;
             }
 
+            if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(_canvasRenderTargetAsSurfacePtr);
+            if (_canvasRenderTargetNativePtr != nint.Zero) Marshal.Release(_canvasRenderTargetNativePtr);
+            if (_canvasImageSourceNativePtr != nint.Zero) Marshal.Release(_canvasImageSourceNativePtr);
+
             _videoPlayerDurationTimerThread?.Dispose();
             _canvasRenderTarget?.Dispose();
             _canvasDevice?.Dispose();
 
-            ComMarshal<CanvasBitmap>.TryReleaseComObject(_canvasRenderTarget, out _);
-            ComMarshal<CanvasDevice>.TryReleaseComObject(_canvasDevice, out _);
-
-            if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(_canvasRenderTargetAsSurfacePtr);
-            if (_canvasRenderTargetNativePtr != nint.Zero) Marshal.Release(_canvasRenderTargetNativePtr);
-            if (_canvasImageSourceNativePtr != nint.Zero) Marshal.Release(_canvasImageSourceNativePtr);
+            // ComMarshal<CanvasBitmap>.TryReleaseComObject(_canvasRenderTarget, out _);
+            // ComMarshal<CanvasDevice>.TryReleaseComObject(_canvasDevice, out _);
 
             Interlocked.Exchange(ref _canvasImageSourceNativePtr, nint.Zero);
             Interlocked.Exchange(ref _canvasImageSource,          null);
@@ -646,12 +635,19 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    public void Pause()
+    public void Pause(bool unloadElement = true)
     {
         try
         {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
-            StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d), 0, 500d, 10d, true, onAfterAction: Impl);
+            if (unloadElement)
+            {
+                Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+                StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d), 0, 500d, 10d, true, onAfterAction: Impl);
+            }
+            else
+            {
+
+            }
             return;
 
             void Impl()

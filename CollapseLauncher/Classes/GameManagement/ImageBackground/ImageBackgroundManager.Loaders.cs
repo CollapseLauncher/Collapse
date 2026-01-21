@@ -91,6 +91,12 @@ public partial class ImageBackgroundManager
 
             token.ThrowIfCancellationRequested();
 
+            // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
+            if (!await CheckCodecOrSpawnDialog(downloadedBackgroundUri))
+            {
+                return;
+            }
+
             // -- Read Color Accent information from current background context.
             new Thread(GetMediaAccentColor)
             {

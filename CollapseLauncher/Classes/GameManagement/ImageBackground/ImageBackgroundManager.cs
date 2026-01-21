@@ -161,7 +161,6 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-
     #region This Instance Properties
 
     private string                    CurrentCustomBackgroundConfigKey    { get; set; } = "";
