@@ -42,9 +42,6 @@ public partial class LayeredBackgroundImage
 
     private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
         Interlocked.Exchange(ref _isLoaded, true);
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
