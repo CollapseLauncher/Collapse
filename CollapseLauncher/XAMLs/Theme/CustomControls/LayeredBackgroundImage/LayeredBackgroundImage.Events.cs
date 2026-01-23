@@ -217,7 +217,7 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OnPointerEntered(object sender, PointerRoutedEventArgs e)
     {
-        ParallaxGrid_OnPointerMoved(sender, e);
+        ParallaxGrid_OnPointerMovedCore(sender, e, true);
     }
 
     private void ParallaxGrid_OffsetReset()
@@ -232,10 +232,18 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OnPointerMoved(object sender, PointerRoutedEventArgs e)
     {
+        ParallaxGrid_OnPointerMovedCore(sender, e);
+    }
+
+    private void ParallaxGrid_OnPointerMovedCore(
+        object                 sender,
+        PointerRoutedEventArgs args,
+        bool                   isUseResetAnimation = false)
+    {
         FrameworkElement element = (FrameworkElement)sender;
 
         // Move
-        Point  pos = e.GetCurrentPoint(element).Position;
+        Point  pos = args.GetCurrentPoint(element).Position;
         double w   = element.ActualWidth;
         double h   = element.ActualHeight;
 
@@ -258,8 +266,9 @@ public partial class LayeredBackgroundImage
                                     offsetY,
                                     nx,
                                     ny,
-                                    deltaMs,
-                                    easingFunction: _parallaxEasingFunction);
+                                    isUseResetAnimation ? 250d : deltaMs,
+                                    easingFunction: _parallaxEasingFunction,
+                                    useAnimatedOffset: isUseResetAnimation);
     }
 
     private static void StartElementOffsetAnimation(
@@ -271,8 +280,8 @@ public partial class LayeredBackgroundImage
         double                     centerPointX,
         double                     centerPointY,
         double                     durationMs,
-        bool                       useSpring = true,
-        CompositionEasingFunction? easingFunction = null)
+        CompositionEasingFunction? easingFunction    = null,
+        bool                       useAnimatedOffset = true)
     {
         // Move opposite to center point
         float tx = (float)(-centerPointX * offsetX);
@@ -289,23 +298,13 @@ public partial class LayeredBackgroundImage
         // Gets the stronger axis
         float factorScale = (float)Math.Max(addScaleX, addScaleY);
 
-        if (useSpring)
-        {
-            StartElementElevateSpringAnimation(compositor,
-                                               visual,
-                                               Vector3.Zero with { X = tx, Y = ty },
-                                               Vector3.One with { X = factorScale, Y = factorScale },
-                                               durationMs,
-                                               easingFunction);
-            return;
-        }
-
         StartElementElevateEasingAnimation(compositor,
                                            visual,
                                            Vector3.Zero with { X = tx, Y = ty },
                                            Vector3.One with { X = factorScale, Y = factorScale },
                                            durationMs,
-                                           easingFunction);
+                                           easingFunction,
+                                           useAnimatedOffset);
     }
 
     private static void StartElementElevateEasingAnimation(
@@ -314,9 +313,10 @@ public partial class LayeredBackgroundImage
         Vector3                    offset,
         Vector3                    scale,
         double                     duration,
-        CompositionEasingFunction? easingFunction = null)
+        CompositionEasingFunction? easingFunction    = null,
+        bool                       useAnimatedOffset = true)
     {
-        const string targetTranslation = "Translation";
+        const string targetTranslation = "Offset";
         const string targetScale       = "Scale";
 
         if (compositor == null!)
@@ -324,15 +324,20 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        // Move
-        Vector3KeyFrameAnimation anim = CreateVector3Keyframe(offset, targetTranslation);
-
         // Scale
         Vector3KeyFrameAnimation scaleAnim = CreateVector3Keyframe(scale, targetScale);
+        visual.StartAnimation(targetScale, scaleAnim);
 
-        visual.StartAnimation(targetTranslation, anim);
-        visual.StartAnimation(targetScale,       scaleAnim);
+        if (useAnimatedOffset)
+        {
+            // Move
+            Vector3KeyFrameAnimation offsetAnim = CreateVector3Keyframe(offset, targetTranslation);
+            visual.StartAnimation(targetTranslation, offsetAnim);
+            return;
+        }
 
+        // Directly set visual offset
+        visual.Offset = offset;
         return;
 
         Vector3KeyFrameAnimation CreateVector3Keyframe(
@@ -346,46 +351,6 @@ public partial class LayeredBackgroundImage
 
             return keyframe;
         }
-    }
-
-    private static void StartElementElevateSpringAnimation(
-        Compositor                 compositor,
-        Visual                     visual,
-        Vector3                    offset,
-        Vector3                    scale,
-        double                     duration,
-        CompositionEasingFunction? easingFunction = null)
-    {
-        const string targetTranslation = "Translation";
-        const string targetScale = "Scale";
-
-        if (compositor == null!)
-        {
-            return;
-        }
-
-        CompositionAnimationGroup? animGroup = compositor.CreateAnimationGroup();
-
-        // Move
-        SpringVector3NaturalMotionAnimation? anim = compositor.CreateSpringVector3Animation();
-        anim.Period        = TimeSpan.FromMilliseconds(duration);
-        anim.FinalValue    = offset;
-        anim.DampingRatio  = 1f;
-        anim.Target        = targetTranslation;
-        anim.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
-
-        // Scale
-        SpringVector3NaturalMotionAnimation? scaleAnim = compositor.CreateSpringVector3Animation();
-        scaleAnim.Period        = TimeSpan.FromMilliseconds(duration);
-        scaleAnim.FinalValue    = scale;
-        scaleAnim.DampingRatio  = 1f;
-        scaleAnim.Target        = targetScale;
-        scaleAnim.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
-
-        animGroup.Add(anim);
-        animGroup.Add(scaleAnim);
-
-        visual.StartAnimationGroup(animGroup);
     }
 
     #endregion
@@ -478,7 +443,6 @@ public partial class LayeredBackgroundImage
                                     0d,
                                     0d,
                                     500d,
-                                    false,
                                     _elevateEasingFunction);
     }
 
