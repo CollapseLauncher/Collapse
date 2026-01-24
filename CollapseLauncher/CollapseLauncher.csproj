@@ -31,8 +31,8 @@
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
         <!-- Analyzers Settings -->
-        <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
-        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <EnableAOTAnalyzer>false</EnableAOTAnalyzer>
+        <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <!-- Other Settings -->

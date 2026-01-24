@@ -252,6 +252,8 @@ namespace CollapseLauncher
             {
                 PInvoke.SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
             }
+            
+            StartControllerLoop();
         }
 
         private static bool ConsoleCtrlHandler(uint dwCtrlType)

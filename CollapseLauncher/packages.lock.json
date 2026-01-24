@@ -129,12 +129,6 @@
           "Microsoft.WindowsAppSDK": "1.6.241114003"
         }
       },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[10.0.1, )",
-        "resolved": "10.0.1",
-        "contentHash": "ISahzLHsHY7vrwqr2p1YWZ+gsxoBRtH7gWRDK8fDUst9pp2He0GiesaqEfeX0V8QMCJM3eNEHGGpnIcPjFo2NQ=="
-      },
       "Microsoft.NETCore.Targets": {
         "type": "Direct",
         "requested": "[6.0.0-preview.4.21253.7, )",
