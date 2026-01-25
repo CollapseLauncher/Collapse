@@ -95,7 +95,7 @@
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xE630;"/>
+                    <FontIcon Glyph="&#xE77F;"/>
                 </MenuFlyoutSubItem.Icon>
                 <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
@@ -1073,7 +1073,7 @@
                             CornerRadius="20"
                             Orientation="Horizontal"
                             Spacing="8">
-                    <TextBlock Margin="8,-2,0,0"
+                    <TextBlock Margin="8,0,0,0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            FontSize="12"
@@ -1112,11 +1112,14 @@
                                 </Grid.ColumnDefinitions>
                                 <FontIcon Grid.Column="0"
                                           Glyph="&#xE74E;"
-                                          FontSize="14"/>
+                                          FontSize="13"
+                                          VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBtn, Mode=OneWay}"
                                            FontSize="12"
-                                           FontWeight="Semibold"/>
+                                           Margin="0,1,0,0"
+                                           FontWeight="Semibold"
+                                           VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
                         <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
@@ -1157,19 +1160,27 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
+                            DataContext="{x:Bind CurrentBackgroundManager.CurrentBackgroundElement, Mode=OneWay}"
                             Margin="-10, -10, -8, -10"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
+                            Click="BackgroundVideoPlayToggle_OnClick"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
-                        <FontIcon Glyph="&#xE768;"
-                                  FontSize="12"/>
+                        <Grid>
+                            <FontIcon Glyph="&#xE768;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
+                                      FontSize="12"/>
+                            <FontIcon Glyph="&#xE769;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
+                                      FontSize="12"/>
+                        </Grid>
                     </Button>
                     <TextBlock Grid.Column="1"
                                Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
                                FontSize="12"
-                               Margin="0,-2,0,0"
+                               Margin="0,0,0,0"
                                FontWeight="Medium"/>
                     <Slider Grid.Column="2"
                             HorizontalAlignment="Stretch"
@@ -1186,7 +1197,7 @@
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"
                                FontSize="12"
-                               Margin="0,-2,0,0"
+                               Margin="0,0,0,0"
                                FontWeight="Medium"/>
                     <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
                             Grid.Column="4"
@@ -1206,7 +1217,7 @@
                         <Button.Flyout>
                             <Flyout Placement="TopEdgeAlignedRight">
                                 <Grid ColumnSpacing="8"
-                                      Margin="-4, -12">
+                                      Margin="-8, -12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>

@@ -261,7 +261,7 @@ namespace CollapseLauncher.Extension
             TButtonBase Impl()
             {
                 Grid contentPanel = CreateIconTextGrid(text, iconGlyph, iconFontFamily, iconSize, textSize, textWeight);
-                TButtonBase buttonReturn = new TButtonBase();
+                TButtonBase buttonReturn = new();
 
                 buttonReturn.CornerRadius = cornerRadius ?? AttachRoundedKindCornerRadius(buttonReturn);
                 buttonReturn.Content      = contentPanel;
@@ -317,11 +317,38 @@ namespace CollapseLauncher.Extension
             return contentPanel;
         }
 
+#nullable enable
+        internal static TextBlock CreateTextBlock(string?      text           = null,
+                                                  double       fontSize       = 14d,
+                                                  FontWeight?  fontWeight     = null,
+                                                  string?      fontFamilyName = null,
+                                                  TextWrapping textWrapping   = TextWrapping.WrapWholeWords,
+                                                  TextTrimming textTrimming   = TextTrimming.CharacterEllipsis,
+                                                  TextAlignment textAlignment = TextAlignment.Left)
+        {
+            TextBlock textBlock = Create<TextBlock>(x =>
+            {
+                x.Text          = text;
+                x.FontSize      = fontSize;
+                x.FontWeight    = fontWeight ?? FontWeights.Normal;
+                x.TextWrapping  = textWrapping;
+                x.TextTrimming  = textTrimming;
+                x.TextAlignment = textAlignment;
+                if (fontFamilyName != null)
+                {
+                    x.FontFamily = new FontFamily(fontFamilyName);
+                }
+            });
+
+            return textBlock;
+        }
+#nullable restore
+
         internal static Grid CreateGrid() =>
-            CreateElementFromUIThread<Grid>();
+            Create<Grid>();
 
         internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) =>
-            CreateElementFromUIThread<StackPanel>(x => x.Orientation = orientation);
+            Create<StackPanel>(x => x.Orientation = orientation);
 
         internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
         {
@@ -488,13 +515,27 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d, double opacity = 1d)
+        internal static TextBlock AddTextBlockLine(
+            this TextBlock textBlock,
+            string         message,
+            bool           appendSpaceAtEnd,
+            FontWeight?    weight   = null,
+            double         size     = 14d,
+            double         opacity  = 1d)
         {
-            message += ' ';
+            if (appendSpaceAtEnd)
+            {
+                message += ' ';
+            }
             return textBlock.AddTextBlockLine(message, weight, size, opacity);
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d, double opacity = 1d)
+        internal static TextBlock AddTextBlockLine(
+            this TextBlock textBlock,
+            string         message,
+            FontWeight?    weight   = null,
+            double         size     = 14d,
+            double         opacity  = 1d)
         {
             return RunFunctionReturnFromUIThread(Impl);
 
@@ -854,21 +895,27 @@ namespace CollapseLauncher.Extension
         internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
             where TGrid : Grid
         {
-            foreach (GridLength t in gridSlices)
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
             {
-                if (isColumn)
-                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = t });
-                else
-                    grid.RowDefinitions.Add(new RowDefinition { Height = t });
+                foreach (GridLength t in gridSlices)
+                {
+                    if (isColumn)
+                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = t });
+                    else
+                        grid.RowDefinitions.Add(new RowDefinition { Height = t });
+                }
             }
         }
 
         internal static void SetVisibility<TElement>(this TElement element, Visibility visibility)
-            where TElement : UIElement => element.Visibility = visibility;
+            where TElement : UIElement => RunFunctionFromUIThread(() => element.Visibility = visibility);
         internal static void SetTag<TElement>(this TElement element, object tag)
-            where TElement : FrameworkElement => element.Tag = tag;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Tag = tag);
         internal static void SetDataContext<TElement>(this TElement element, object dataContext)
-            where TElement : FrameworkElement => element.DataContext = dataContext;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.DataContext = dataContext);
 
         internal static void SetCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement => SetCornerRadius(element, uniform, uniform, uniform, uniform, kind);
@@ -886,18 +933,18 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void SetRowSpacing<TGrid>(this TGrid element, double rowSpacing)
-            where TGrid : Grid => element.RowSpacing = rowSpacing;
+            where TGrid : Grid => RunFunctionFromUIThread(() => element.RowSpacing = rowSpacing);
         internal static void SetColumnSpacing<TGrid>(this TGrid element, double columnSpacing)
-            where TGrid : Grid => element.ColumnSpacing = columnSpacing;
+            where TGrid : Grid => RunFunctionFromUIThread(() => element.ColumnSpacing = columnSpacing);
 
         internal static void SetMinWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => element.MinWidth = width;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinWidth = width);
         internal static void SetMinHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => element.MinHeight = height;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinHeight = height);
         internal static void SetWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => element.Width = width;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Width = width);
         internal static void SetHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => element.Height = height;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Height = height);
 
         internal static void SetPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement => SetPadding(element, uniform, uniform, uniform, uniform);
@@ -908,25 +955,31 @@ namespace CollapseLauncher.Extension
         internal static void SetPadding<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
-            if (element == null) return;
+            RunFunctionFromUIThread(Impl);
+            return;
 
-            switch (element)
+            void Impl()
             {
-                case Control control:
-                    control.Padding = thickness;
-                    break;
-                case Border border:
-                    border.Padding = thickness;
-                    break;
-                case Grid grid:
-                    grid.Padding = thickness;
-                    break;
-                case StackPanel stackPanel:
-                    stackPanel.Padding = thickness;
-                    break;
-                case TextBlock textBlock:
-                    textBlock.Padding = thickness;
-                    break;
+                if (element == null) return;
+
+                switch (element)
+                {
+                    case Control control:
+                        control.Padding = thickness;
+                        break;
+                    case Border border:
+                        border.Padding = thickness;
+                        break;
+                    case Grid grid:
+                        grid.Padding = thickness;
+                        break;
+                    case StackPanel stackPanel:
+                        stackPanel.Padding = thickness;
+                        break;
+                    case TextBlock textBlock:
+                        textBlock.Padding = thickness;
+                        break;
+                }
             }
         }
 
@@ -1295,7 +1348,7 @@ namespace CollapseLauncher.Extension
             return lastGrid;
         }
 
-        internal static T CreateElementFromUIThread<T>(Action<T>? setAttributeDelegate = null)
+        internal static T Create<T>(Action<T>? setAttributeDelegate = null)
             where T : new()
         {
             T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>().Result;

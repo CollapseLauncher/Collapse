@@ -39,6 +39,7 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -56,7 +57,6 @@ namespace CollapseLauncher.Helper
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
 
-        private static nint _winEventHookPtr;
         private static nint _oldMainWndProcPtr;
         private static nint _oldDesktopSiteBridgeWndProcPtr;
 
@@ -65,43 +65,19 @@ namespace CollapseLauncher.Helper
 
         internal static Window? CurrentWindow { get; private set; }
 
-        internal static nint CurrentWindowPtr
-        {
-            get => WindowNative.GetWindowHandle(CurrentWindow);
-        }
+        internal static nint CurrentWindowPtr => WindowNative.GetWindowHandle(CurrentWindow);
 
-        internal static WindowId? CurrentWindowId
-        {
-            get => Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
-        }
+        internal static WindowId? CurrentWindowId => Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
 
-        internal static AppWindow? CurrentAppWindow
-        {
-            get => CurrentWindowId.HasValue ? AppWindow.GetFromWindowId(CurrentWindowId.Value) : null;
-        }
+        internal static AppWindow? CurrentAppWindow => CurrentWindowId.HasValue ? AppWindow.GetFromWindowId(CurrentWindowId.Value) : null;
 
-        internal static InputNonClientPointerSource? CurrentInputNonClientPointerSource
-        {
-            get => CurrentWindowId.HasValue ? InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value) : null;
-        }
+        internal static InputNonClientPointerSource? CurrentInputNonClientPointerSource => CurrentWindowId.HasValue ? InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value) : null;
 
-        internal static OverlappedPresenter? CurrentOverlappedPresenter
-        {
-            get => CurrentAppWindow?.Presenter as OverlappedPresenter;
-        }
+        internal static OverlappedPresenter? CurrentOverlappedPresenter => CurrentAppWindow?.Presenter as OverlappedPresenter;
 
-        internal static DispatcherQueue? CurrentDispatcherQueue
-        {
-            get => CurrentWindow?.DispatcherQueue;
-        }
+        internal static DispatcherQueue? CurrentDispatcherQueue => CurrentWindow?.DispatcherQueue;
 
-        internal static DisplayArea? CurrentWindowDisplayArea
-        {
-            get
-            {
-                return !CurrentWindowId.HasValue ? null : DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
-            }
-        }
+        internal static DisplayArea? CurrentWindowDisplayArea => !CurrentWindowId.HasValue ? null : DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
 
         internal static DisplayInformation? CurrentWindowDisplayInformation
         {
@@ -417,8 +393,8 @@ namespace CollapseLauncher.Helper
             _oldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
 
             // Install WinEventHook callback
-            _winEventHookPtr = InstallWinEventHookCallback(CurrentWindowPtr, MainWinEventHook);
-            CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(CurrentWindowPtr);
+            InstallWinEventHookCallback(MainWinEventHook);
+            CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(CurrentWindowPtr, out _);
 
             // Install Drag Area Change monitor
             InstallDragAreaChangeMonitor();
@@ -457,18 +433,18 @@ namespace CollapseLauncher.Helper
 
         #region WinEventHook Handler
 
-        private static nint InstallWinEventHookCallback(nint hwnd, WinEventDelegate winEventDelegate)
+        private static void InstallWinEventHookCallback(WinEventDelegate winEventDelegate)
         {
             const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
             const uint WINEVENT_OUTOFCONTEXT = 0x0000;
 
-            return PInvoke.SetWinEventHook(EVENT_SYSTEM_MOVESIZEEND,
-                                           EVENT_SYSTEM_MOVESIZEEND,
-                                           nint.Zero,
-                                           winEventDelegate,
-                                           (uint)Environment.ProcessId,
-                                           0,
-                                           WINEVENT_OUTOFCONTEXT);
+            PInvoke.SetWinEventHook(EVENT_SYSTEM_MOVESIZEEND,
+                                    EVENT_SYSTEM_MOVESIZEEND,
+                                    nint.Zero,
+                                    winEventDelegate,
+                                    (uint)Environment.ProcessId,
+                                    0,
+                                    WINEVENT_OUTOFCONTEXT);
         }
 
         private static void MainWinEventHook(nint hook,
@@ -481,7 +457,12 @@ namespace CollapseLauncher.Helper
         {
             if (hwnd == CurrentWindowPtr)
             {
-                CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(hwnd);
+                CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(hwnd, out string? monitorPath);
+#if DEBUG
+                Logger.LogWriteLine($"[WindowUtility::MainWinEventHook] Current Window Refresh Rate is: {CurrentWindowMonitorRefreshRate}hz at Monitor: {monitorPath}",
+                                    LogType.Debug,
+                                    true);
+#endif
             }
         }
 

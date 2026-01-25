@@ -121,6 +121,7 @@ public partial class ImageBackgroundManager
         {
             BackgroundSource          = backgroundFilePath,
             ForegroundSource          = overlayFilePath,
+            UseFfmpegDecoder          = IsUseFfmpeg,
             Tag                       = context,
             ParallaxResetOnUnfocused  = false,
             BackgroundElevationPixels = 64d

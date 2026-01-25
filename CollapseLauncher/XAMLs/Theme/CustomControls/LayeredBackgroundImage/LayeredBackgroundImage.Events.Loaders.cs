@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using FFmpegInteropX;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Xaml;
@@ -176,8 +177,8 @@ public partial class LayeredBackgroundImage
 
             if (lastMediaType == MediaSourceType.Video)
             {
-                // Pause and Invalidate Video Player
-                Pause();
+                // Dispose and Invalidate Video Player
+                DisposeAndPauseVideoView();
             }
 
             InnerLoadDetached();
@@ -202,8 +203,7 @@ public partial class LayeredBackgroundImage
 
                     if (mediaType == MediaSourceType.Video &&
                         canReceiveVideo &&
-                        await LoadVideoFromSourceAsync(source,
-                                                       this))
+                        await LoadVideoFromSourceAsync(source, this))
                     {
                     }
                 }
@@ -311,15 +311,38 @@ public partial class LayeredBackgroundImage
             // Set-ups Video Player upfront
             instance.InitializeVideoPlayer();
 
+            bool useFfmpeg = instance.UseFfmpegDecoder;
+
             // Assign media source
             if (sourceStream != null)
             {
                 IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
-                instance._videoPlayer.SetStreamSource(sourceStreamRandom);
+                if (useFfmpeg)
+                {
+                    instance._videoFfmpegMediaSource = await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom);
+                    instance._videoPlayer.SetMediaSource(instance._videoFfmpegMediaSource.GetMediaStreamSource());
+                }
+                else
+                {
+                    instance._videoPlayer.SetStreamSource(sourceStreamRandom);
+                }
             }
             else if (sourceUri != null)
             {
-                instance._videoPlayer.SetUriSource(sourceUri);
+                if (useFfmpeg)
+                {
+                    string sourceUriStr = sourceUri.IsFile ? sourceUri.LocalPath : sourceUri.ToString();
+                    instance._videoFfmpegMediaSource = sourceUri.IsFile
+                        ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr)
+                        : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr);
+
+                    instance._videoFfmpegMediaSource.Configuration.Video.MaxDecoderThreads = (uint)Environment.ProcessorCount;
+                    instance._videoFfmpegMediaSource.OpenWithMediaPlayerAsync(instance._videoPlayer);
+                }
+                else
+                {
+                    instance._videoPlayer.SetUriSource(sourceUri);
+                }
             }
             else
             {
@@ -330,14 +353,6 @@ public partial class LayeredBackgroundImage
         {
             Console.WriteLine(e);
             return false;
-        }
-
-        // Seek to last position if source was the same
-        if (instance._videoPlayer.CanSeek &&
-            TryGetSourceHashCode(source, out int lastSourceHashCode) && 
-            SharedLastMediaPosition.TryRemove(lastSourceHashCode, out TimeSpan lastPosition))
-        {
-            instance.MediaDurationPosition = lastPosition;
         }
 
         return true;
@@ -417,7 +432,7 @@ public partial class LayeredBackgroundImage
         Image_ImageOpened(sender, e);
         if (parentGrid.Item2.IsVideoAutoplay)
         {
-            parentGrid.Item2.Play();
+            parentGrid.Item2.InitializeAndPlayVideoView();
         }
     }
 
@@ -428,7 +443,7 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        parentGrid.Item2.Pause();
+        parentGrid.Item2.DisposeAndPauseVideoView();
     }
 
     private static void Image_ImageOpened(object sender, RoutedEventArgs e)

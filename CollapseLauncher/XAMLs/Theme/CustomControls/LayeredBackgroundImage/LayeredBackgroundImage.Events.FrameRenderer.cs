@@ -1,7 +1,6 @@
-﻿using CollapseLauncher.Helper;
+﻿using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -16,9 +15,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Foundation;
-using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Media.Playback;
-using WinRT;
+
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable AccessToModifiedClosure
 
@@ -59,7 +57,6 @@ public partial class LayeredBackgroundImage
 
     private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
 
-    private CanvasDevice?       _canvasDevice;
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;
     private nint                _canvasRenderTargetAsSurfacePtr;
@@ -68,8 +65,8 @@ public partial class LayeredBackgroundImage
     private int _isBlockVideoFrameDraw = 1;
     private int _isVideoFrameDrawInProgress;
 
-    private CanvasImageSource?  _canvasImageSource;
-    private nint                _canvasImageSourceNativePtr = nint.Zero;
+    private CanvasVirtualImageSource? _canvasImageSource;
+    private nint                      _canvasImageSourceNativePtr = nint.Zero;
 
     private int  _canvasWidth;
     private int  _canvasHeight;
@@ -79,6 +76,7 @@ public partial class LayeredBackgroundImage
     private nint                     _videoPlayerPtr = nint.Zero;
     private Timer?                   _videoPlayerDurationTimerThread;
     private CancellationTokenSource? _videoPlayerFadeCts;
+    private FFmpegMediaSource?       _videoFfmpegMediaSource;
 
     #endregion
 
@@ -86,6 +84,7 @@ public partial class LayeredBackgroundImage
 
     private unsafe void VideoPlayer_VideoFrameAvailableUnsafe(MediaPlayer sender, object args)
     {
+        nint drawingSessionPpv = nint.Zero;
         try
         {
             if (_isBlockVideoFrameDraw == 1 ||
@@ -93,34 +92,47 @@ public partial class LayeredBackgroundImage
                 _canvasRenderTargetNativePtr == nint.Zero ||
                 Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
             {
-            #if DEBUG
+#if DEBUG
                 Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
-            #endif
+#endif
                 return;
             }
 
-            SwapChainPanelHelper.MediaPlayer_CopyFrameToVideoSurfaceUnsafe(_videoPlayerPtr,
-                                                                           _canvasRenderTargetAsSurfacePtr,
-                                                                           in _canvasRenderSize);
-            DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
-            return;
-
+            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr, in _canvasRenderSize);
+            drawingSessionPpv = SwapChainPanelHelper
+               .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
+                                        _canvasRenderTargetNativePtr,
+                                        _functionTableBeginDraw,
+                                        _functionTableDrawImage,
+                                        in _canvasRenderSize);
+        }
+        // Device lost error. If happened, reinitialize render target
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+        {
+            DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableUnsafe|OtherThread] {ex}",
+                                LogType.Error,
+                                true);
+        }
+        finally
+        {
+            if (drawingSessionPpv != nint.Zero)
+            {
+                DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
+            }
             void DrawFrame()
             {
                 try
                 {
-                    SwapChainPanelHelper
-                       .NativeSurfaceImageSource_BeginDrawEndDrawUnsafe(_canvasImageSourceNativePtr,
-                                                                        _canvasRenderTargetNativePtr,
-                                                                        _functionTableBeginDraw,
-                                                                        _functionTableDrawImage,
-                                                                        _functionTableDispose,
-                                                                        in _canvasRenderSize);
+                    SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, _functionTableDispose);
                 }
                 // Device lost error. If happened, reinitialize render target
                 catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
                 {
-                    CanvasDevice_OnDeviceLost(null, null);
+                    CanvasDevice_OnDeviceLost();
                 }
                 catch (Exception ex)
                 {
@@ -130,25 +142,16 @@ public partial class LayeredBackgroundImage
                 }
                 finally
                 {
-                    Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
+                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
                 }
             }
-        }
-        // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
-        {
-            DispatcherQueue.TryEnqueue(() => CanvasDevice_OnDeviceLost(null, null));
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableUnsafe|OtherThread] {ex}",
-                                LogType.Error,
-                                true);
         }
     }
 
     private void VideoPlayer_VideoFrameAvailableSafe(MediaPlayer sender, object args)
     {
+        CanvasDrawingSession? ds = null;
+
         try
         {
             if (_isBlockVideoFrameDraw == 1 ||
@@ -156,28 +159,41 @@ public partial class LayeredBackgroundImage
                 _canvasRenderTarget == null! ||
                 Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
             {
-            #if DEBUG
+#if DEBUG
                 Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
-            #endif
+#endif
                 return;
             }
 
             _videoPlayer.CopyFrameToVideoSurface(_canvasRenderTarget);
+            ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
+            ds?.DrawImage(_canvasRenderTarget);
+        }
+        // Device lost error. If happened, reinitialize render target
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+        {
+            DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|OtherThread] {ex}",
+                                LogType.Error,
+                                true);
+        }
+        finally
+        {
             DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
-            return;
 
             void DrawFrame()
             {
                 try
                 {
-                    using CanvasDrawingSession? ds =
-                        _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
-                    ds?.DrawImage(_canvasRenderTarget);
+                    ds?.Dispose();
                 }
                 // Device lost error. If happened, reinitialize render target
                 catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
                 {
-                    CanvasDevice_OnDeviceLost(null, null);
+                    CanvasDevice_OnDeviceLost();
                 }
                 catch (Exception ex)
                 {
@@ -187,244 +203,15 @@ public partial class LayeredBackgroundImage
                 }
                 finally
                 {
-                    Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
+                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
                 }
             }
-        }
-        // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
-        {
-            DispatcherQueue.TryEnqueue(() => CanvasDevice_OnDeviceLost(null, null));
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|OtherThread] {ex}",
-                                LogType.Error,
-                                true);
         }
     }
 
     #endregion
 
-    #region Video Frame Initialization / Disposal
-
-    private void InitializeVideoPlayer()
-    {
-        try
-        {
-            if (_videoPlayer != null!)
-            {
-                return;
-            }
-
-            _videoPlayer = new MediaPlayer
-            {
-                IsLoopingEnabled          = true,
-                IsVideoFrameServerEnabled = true,
-                Volume                    = AudioVolume.GetClampedVolume(),
-                IsMuted                   = !IsAudioEnabled
-            };
-
-            ComMarshal<MediaPlayer>.TryGetComInterfaceReference(_videoPlayer,
-                                                                in IMediaPlayer5_IID,
-                                                                out _videoPlayerPtr,
-                                                                out _,
-                                                                requireQueryInterface: true);
-            _videoPlayer.MediaOpened += InitializeVideoFrameOnMediaOpened;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeVideoPlayer] {ex}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void DisposeVideoPlayer()
-    {
-        try
-        {
-            if (_videoPlayer == null!)
-            {
-                return;
-            }
-
-            _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
-                ? VideoPlayer_VideoFrameAvailableUnsafe
-                : VideoPlayer_VideoFrameAvailableSafe;
-
-            _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-            _videoPlayer.Pause();
-
-            // Save last video player duration for later
-            if (_videoPlayer.CanSeek && TryGetSourceHashCode(BackgroundSource, out int sourceHashCode))
-            {
-                _ = SharedLastMediaPosition.TryAdd(sourceHashCode, _videoPlayer.Position);
-            }
-
-            _videoPlayer.Dispose();
-
-            nint videoPlayerPpv = Interlocked.Exchange(ref _videoPlayerPtr, nint.Zero);
-            if (videoPlayerPpv != nint.Zero) Marshal.Release(videoPlayerPpv);
-
-            DisposeRenderTarget();
-            Interlocked.Exchange(ref _videoPlayer, null!);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeVideoPlayer] {ex}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void InitializeRenderTargetSize(MediaPlaybackSession playbackSession)
-    {
-        try
-        {
-            double currentCanvasWidth  = playbackSession.NaturalVideoWidth;
-            double currentCanvasHeight = playbackSession.NaturalVideoHeight;
-
-            _canvasWidth      = (int)(currentCanvasWidth * WindowUtility.CurrentWindowMonitorScaleFactor);
-            _canvasHeight     = (int)(currentCanvasHeight * WindowUtility.CurrentWindowMonitorScaleFactor);
-            _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeVideoPlayer] {ex}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void InitializeRenderTarget()
-    {
-        try
-        {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
-            DisposeRenderTarget(); // Always ensure the previous render target has been disposed
-
-            _videoPlayerDurationTimerThread = new Timer(UpdateMediaDurationTickView, this, TimeSpan.Zero, TimeSpan.FromSeconds(.5));
-
-            _canvasDevice = new CanvasDevice();
-            _canvasRenderTarget = new CanvasRenderTarget(_canvasDevice,
-                                                         _canvasWidth,
-                                                         _canvasHeight,
-                                                         96f);
-
-            _canvasImageSource = new CanvasImageSource(_canvasDevice,
-                                                       _canvasWidth,
-                                                       _canvasHeight,
-                                                       96f);
-
-            _canvasDevice.DeviceLost += CanvasDevice_OnDeviceLost;
-
-            Interlocked.Exchange(ref UseSafeFrameRenderer, false); // Try to use unsafe frame renderer first
-
-            if (!ComMarshal<IDirect3DSurface>
-                   .TryGetComInterfaceReference(_canvasRenderTarget,
-                                                out _canvasRenderTargetAsSurfacePtr,
-                                                out Exception? ex,
-                                                requireQueryInterface: true) ||
-                !ComMarshal<CanvasImageSource>
-                   .TryGetComInterfaceReference(_canvasImageSource,
-                                                out _canvasImageSourceNativePtr,
-                                                out ex) ||
-                !ComMarshal<CanvasRenderTarget>
-                   .TryGetComInterfaceReference(_canvasRenderTarget,
-                                                out _canvasRenderTargetNativePtr,
-                                                out ex))
-            {
-                throw ex;
-            }
-
-            unsafe
-            {
-                try
-                {
-                    if (_functionTableBeginDraw == null ||
-                        _functionTableDrawImage == null ||
-                        _functionTableDispose == null)
-                    {
-                        SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
-                                                                                   _canvasRenderTargetNativePtr,
-                                                                                   out _functionTableBeginDraw,
-                                                                                   out _functionTableDrawImage,
-                                                                                   out _functionTableDispose,
-                                                                                   in _canvasRenderSize);
-                    }
-                }
-                // Use WinRT's COM Invocation instead of using direct call on Windows 10 which
-                // sometimes causing AccessViolationException error on getting CanvasDrawingSession.DrawImage's VTable address.
-                // 
-                // TODO: Find a correct VTable for CanvasDrawingSession.DrawImage on Windows 10.
-                catch (Exception e)
-                {
-                    Interlocked.Exchange(ref UseSafeFrameRenderer, true); // Fallback
-
-                    _functionTableBeginDraw = null;
-                    _functionTableDrawImage = null;
-                    _functionTableDispose = null;
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
-                                        LogType.Error,
-                                        true);
-                }
-            }
-
-            SetRenderImageSource(_canvasImageSource);
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Unblock frame drawing routine
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void DisposeRenderTarget()
-    {
-        try
-        {
-            SetRenderImageSource(null);
-
-            if (_canvasDevice != null)
-            {
-                _canvasDevice.DeviceLost -= CanvasDevice_OnDeviceLost;
-            }
-
-            if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(_canvasRenderTargetAsSurfacePtr);
-            if (_canvasRenderTargetNativePtr != nint.Zero) Marshal.Release(_canvasRenderTargetNativePtr);
-            if (_canvasImageSourceNativePtr != nint.Zero) Marshal.Release(_canvasImageSourceNativePtr);
-
-            _videoPlayerDurationTimerThread?.Dispose();
-            _canvasRenderTarget?.Dispose();
-            _canvasDevice?.Dispose();
-
-            // ComMarshal<CanvasBitmap>.TryReleaseComObject(_canvasRenderTarget, out _);
-            // ComMarshal<CanvasDevice>.TryReleaseComObject(_canvasDevice, out _);
-
-            Interlocked.Exchange(ref _canvasImageSourceNativePtr, nint.Zero);
-            Interlocked.Exchange(ref _canvasImageSource,          null);
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeRenderTarget] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void CanvasDevice_OnDeviceLost(CanvasDevice? sender, object? args)
-    {
-        Logger.LogWriteLine("[LayeredBackgroundImage::CanvasDevice_OnDeviceLost] Render device has been lost! Re-initialize render device and textures...",
-                            LogType.Warning,
-                            true);
-        InitializeRenderTarget();
-
-        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
-        Volatile.Write(ref _isVideoFrameDrawInProgress, 0);
-    }
+    #region Video Duration and Frame Setter
 
     private static void UpdateMediaDurationTickView(object? state)
     {
@@ -449,12 +236,10 @@ public partial class LayeredBackgroundImage
             {
                 try
                 {
-                    TimeSpan pos = TimeSpan.Zero;
                     if (thisInstance._videoPlayer != null!)
                     {
-                        pos = thisInstance._videoPlayer.Position;
+                        thisInstance.SetValue(MediaDurationPositionProperty, thisInstance._videoPlayer.Position);
                     }
-                    thisInstance.SetValue(MediaDurationPositionProperty, pos);
                 }
                 catch
                 {
@@ -573,36 +358,41 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private static void MediaDurationPosition_OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    public void InitializeAndPlayVideoView(Action?           actionOnPlay             = null,
+                                           bool              blockIfAlreadyPlayed     = false,
+                                           bool              reinitializeImageSource  = true,
+                                           double            volumeFadeDurationMs   = 1000d,
+                                           double            volumeFadeResolutionMs = 10d,
+                                           CancellationToken token                    = default)
     {
         try
         {
-            LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
-
-            if (instance._videoPlayer != null! &&
-                e.NewValue is TimeSpan value)
+            if (blockIfAlreadyPlayed &&
+                _videoPlayer != null! &&
+                _videoPlayer.CurrentState is MediaPlayerState.Playing)
             {
-                instance._videoPlayer.Position = value;
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::MediaDurationPosition_OnChanged] {ex}",
-                                LogType.Error,
-                                true);
-        }
-    }
 
-    public void Play()
-    {
-        try
-        {
             if (_videoPlayer != null!)
             {
+                // Seek to last position if source was the same
+                if (_videoPlayer.CanSeek &&
+                    TryGetSourceHashCode(BackgroundSource, out int lastSourceHashCode) &&
+                    SharedLastMediaPosition.TryGetValue(lastSourceHashCode, out TimeSpan lastPosition))
+                {
+                    _videoPlayer.Position = lastPosition;
+                }
+
                 _videoPlayer.Volume = 0;
                 _videoPlayer.Play();
 
-                StartVideoPlayerVolumeFade(Math.Max(0, _videoPlayer.Volume * 100d), AudioVolume, 1000d, 10d);
+                SetValue(IsVideoPlayProperty, true);
+                StartVideoPlayerVolumeFade(Math.Max(0, _videoPlayer.Volume * 100d),
+                                           AudioVolume,
+                                           volumeFadeDurationMs,
+                                           volumeFadeResolutionMs,
+                                           coopToken: token);
                 InitializeRenderTarget();
 
                 _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
@@ -621,33 +411,55 @@ public partial class LayeredBackgroundImage
                                             true,
                                             ref _lastBackgroundSourceType);
             }
+            actionOnPlay?.Invoke();
         }
         catch (Exception e)
         {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::Play] FATAL: {e}",
+            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeAndPlayVideoView] FATAL: {e}",
                                 LogType.Error,
                                 true);
         }
-        finally
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-        }
     }
 
-    public void Pause(bool unloadElement = true)
+    public void DisposeAndPauseVideoView(Action?           actionOnPause            = null,
+                                         Action?           actionAfterPause         = null,
+                                         bool              blockIfAlreadyPaused     = false,
+                                         bool              disposeRenderImageSource = true,
+                                         double            volumeFadeDurationMs     = 500d,
+                                         double            volumeFadeResolutionMs   = 10d,
+                                         CancellationToken token                    = default)
     {
         try
         {
-            if (unloadElement)
+            token.Register(() =>
             {
-                Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
-                StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d), 0, 500d, 10d, true, onAfterAction: Impl);
-            }
-            else
-            {
+                Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
+            });
 
+            if (blockIfAlreadyPaused &&
+                _videoPlayer != null! &&
+                _videoPlayer.CurrentState is MediaPlayerState.Paused)
+            {
+                return;
             }
+
+            if (_videoPlayer == null!)
+            {
+                return;
+            }
+
+            // Set events
+            DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
+            actionOnPause?.Invoke();
+
+            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+            StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d),
+                                       0,
+                                       volumeFadeDurationMs,
+                                       volumeFadeResolutionMs,
+                                       true,
+                                       onAfterAction: Impl,
+                                       coopToken: token);
             return;
 
             void Impl()
@@ -656,12 +468,16 @@ public partial class LayeredBackgroundImage
                 {
                     if (_videoPlayer != null!)
                     {
-                        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, DisposeVideoPlayer);
+                        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
+                                                   {
+                                                       DisposeVideoPlayer(disposeRenderImageSource);
+                                                       actionAfterPause?.Invoke();
+                                                   });
                     }
                 }
                 catch (Exception e)
                 {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::Pause|UIThread] FATAL: {e}",
+                    Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeAndPauseVideoView|UIThread] FATAL: {e}",
                                         LogType.Error,
                                         true);
                 }
@@ -674,25 +490,44 @@ public partial class LayeredBackgroundImage
         }
         catch (Exception e)
         {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::Pause|OtherThread] FATAL: {e}",
+            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeAndPauseVideoView|OtherThread] FATAL: {e}",
                                 LogType.Error,
                                 true);
         }
     }
 
-    private void StartVideoPlayerVolumeFade(double fromValue, double toValue, double durationMs, double resolutionMs, bool fadeOut = false, Action? onAfterAction = null)
+    private void StartVideoPlayerVolumeFade(double            fromValue,
+                                            double            toValue,
+                                            double            durationMs,
+                                            double            resolutionMs,
+                                            bool              fadeOut       = false,
+                                            Action?           onAfterAction = null,
+                                            CancellationToken coopToken     = default)
     {
-        new Thread(() => StartVideoPlayerVolumeFadeCore(fromValue, toValue, durationMs, resolutionMs, fadeOut, onAfterAction))
+        new Thread(() => 
+                       StartVideoPlayerVolumeFadeCore(fromValue,
+                                                      toValue,
+                                                      durationMs,
+                                                      resolutionMs,
+                                                      fadeOut,
+                                                      onAfterAction,
+                                                      coopToken))
         {
             IsBackground = true
         }.Start();
     }
 
-    private void StartVideoPlayerVolumeFadeCore(double fromValue, double toValue, double durationMs, double resolutionMs, bool fadeOut, Action? onAfterAction)
+    private void StartVideoPlayerVolumeFadeCore(double            fromValue,
+                                                double            toValue,
+                                                double            durationMs,
+                                                double            resolutionMs,
+                                                bool              fadeOut       = false,
+                                                Action?           onAfterAction = null,
+                                                CancellationToken coopToken     = default)
     {
         try
         {
-            CancellationTokenSource? prevCts = Interlocked.Exchange(ref _videoPlayerFadeCts, new CancellationTokenSource());
+            CancellationTokenSource? prevCts = Interlocked.Exchange(ref _videoPlayerFadeCts, CancellationTokenSource.CreateLinkedTokenSource(coopToken));
             prevCts?.Cancel();
             prevCts?.Dispose();
 
@@ -765,6 +600,5 @@ public partial class LayeredBackgroundImage
                                 true);
         }
     }
-#endregion
-
+    #endregion
 }

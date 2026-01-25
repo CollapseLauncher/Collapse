@@ -1,24 +1,40 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using Hi3Helper;
-using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.GameManagement.ImageBackground;
 
+#region File Exclusive Fields
+file static class Fields
+{
+    public const string DllNameAvcodec    = "avcodec-61.dll";
+    public const string DllNameAvdevice   = "avdevice-61.dll";
+    public const string DllNameAvfilter   = "avfilter-10.dll";
+    public const string DllNameAvformat   = "avformat-61.dll";
+    public const string DllNameAvutil     = "avutil-59.dll";
+    public const string DllNameSwresample = "swresample-5.dll";
+    public const string DllNameSwscale    = "swscale-8.dll";
+}
+#endregion
+
 public partial class ImageBackgroundManager
 {
+    #region Codec Checks
+
     private static async Task<bool> CheckCodecOrSpawnDialog(Uri? fileUri)
     {
         // -- Cancel if null
@@ -32,7 +48,7 @@ public partial class ImageBackgroundManager
         // -- Check for supported extension first
         if (!IsMediaFileExtensionSupported(filePath))
         {
-            await SpawnMediaExtensionNotSupportedDialog(filePath);
+            await SimpleDialogs.Dialog_SpawnMediaExtensionNotSupportedDialog(filePath);
             return false;
         }
 
@@ -44,7 +60,7 @@ public partial class ImageBackgroundManager
                 return true;
             }
 
-            await SpawnImageNotSupportedDialog(filePath);
+            await SimpleDialogs.Dialog_SpawnImageNotSupportedDialog(filePath);
             return false;
         }
 
@@ -56,147 +72,147 @@ public partial class ImageBackgroundManager
                                                         out bool canPlayAudio,
                                                         out Guid videoCodecGuid,
                                                         out Guid audioCodecGuid) ||
-                IsFfmpegAvailable())
+                IsUseFfmpeg)
             {
                 return true;
             }
 
-            return await SpawnVideoNotSupportedDialog(filePath,
-                                                      canPlayVideo,
-                                                      canPlayAudio,
-                                                      videoCodecGuid,
-                                                      audioCodecGuid);
+            return await SimpleDialogs
+               .Dialog_SpawnVideoNotSupportedDialog(filePath,
+                                                    canPlayVideo,
+                                                    canPlayAudio,
+                                                    videoCodecGuid,
+                                                    audioCodecGuid);
         }
 
         return true;
     }
 
-    private static async Task SpawnMediaExtensionNotSupportedDialog(string filePath)
+    #endregion
+
+    internal static bool IsFfmpegAvailable(string checkOnDirectory,
+                                           [NotNullWhen(false)]
+                                           out Exception? exception)
     {
-        TextBlock textBlock = UIElementExtensions.CreateElementFromUIThread<TextBlock>(x =>
-                                                  {
-                                                      x.TextWrapping = TextWrapping.WrapWholeWords;
-                                                  })
-                                                 .AddTextBlockLine("Sorry but the file extension for the following background image/video file is not supported.")
-                                                 .AddTextBlockNewLine(2)
-                                                 .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath));
-        await SimpleDialogs.SpawnDialog("Background File is not Supported",
-                                        textBlock,
-                                  null,
-                                  Locale.Lang._Misc.OkaySad,
-                                        defaultButton: ContentDialogButton.Close,
-                                        dialogTheme: ContentDialogTheme.Error);
+        checkOnDirectory = FileUtility.GetFullyQualifiedPath(checkOnDirectory);
+
+        string dllPathAvcodec    = Path.Combine(checkOnDirectory, Fields.DllNameAvcodec);
+        string dllPathAvdevice   = Path.Combine(checkOnDirectory, Fields.DllNameAvdevice);
+        string dllPathAvfilter   = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
+        string dllPathAvformat   = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
+        string dllPathAvutil     = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
+        string dllPathSwresample = Path.Combine(checkOnDirectory, Fields.DllNameSwresample);
+        string dllPathSwscale    = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
+
+        return FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvcodec,    out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvdevice,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil,     out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwresample, out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
     }
 
-    private static async Task SpawnImageNotSupportedDialog(string filePath)
+    internal static string[] GetFfmpegRequiredDllFilenames() =>
+    [
+        Fields.DllNameAvcodec,
+        Fields.DllNameAvdevice,
+        Fields.DllNameAvfilter,
+        Fields.DllNameAvformat,
+        Fields.DllNameAvutil,
+        Fields.DllNameSwresample,
+        Fields.DllNameSwscale
+    ];
+
+    internal static string? FindFfmpegInstallFolder(string checkOnDirectory)
     {
-        TextBlock textBlock = UIElementExtensions.CreateElementFromUIThread<TextBlock>(x =>
-                                                  {
-                                                      x.TextWrapping = TextWrapping.WrapWholeWords;
-                                                  })
-                                                 .AddTextBlockLine("Sorry but the following background image file is not supported by internal Windows Imaging Component (WIC) decoder. Make sure you have installed the decoder from Microsoft Store.")
-                                                 .AddTextBlockNewLine(2)
-                                                 .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath));
-        await SimpleDialogs.SpawnDialog("Image Background File is not Supported",
-                                        textBlock,
-                                        null,
-                                        Locale.Lang._Misc.OkaySad,
-                                        defaultButton: ContentDialogButton.Close,
-                                        dialogTheme: ContentDialogTheme.Error);
-    }
-
-    private static async Task<bool> SpawnVideoNotSupportedDialog(string filePath,
-                                                                 bool   canPlayVideo,
-                                                                 bool   canPlayAudio,
-                                                                 Guid   videoCodecGuid,
-                                                                 Guid   audioCodecGuid)
-    {
-        WindowsCodecHelper.TryGetFourCCString(in videoCodecGuid,
-                                              out string? videoCodecString);
-
-        videoCodecString ??= "Unknown";
-
-        string useInternalMfLocale = "Install Codecs from Microsoft Store";
-        string useFfmpegLocale     = "Install & Use FFmpeg Decoder";
-
-        TextBlock textBlock = UIElementExtensions.CreateElementFromUIThread<TextBlock>(x =>
-                                                  {
-                                                      x.TextWrapping = TextWrapping.WrapWholeWords;
-                                                  })
-                                                 .AddTextBlockLine("We have detected that the video background cannot be played due to missing decoder with details below:")
-                                                 .AddTextBlockNewLine(2)
-                                                 .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath), size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine()
-                                                 .AddTextBlockLine(string.Format("Video Codec FourCC: {0}", videoCodecString), size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine()
-                                                 .AddTextBlockLine(string.Format("Video Codec GUID: {0}", videoCodecGuid), size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine()
-                                                 .AddTextBlockLine(string.Format("Audio Codec GUID: {0}", audioCodecGuid), size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine()
-                                                 .AddTextBlockLine(string.Format("Can Play Video/Audio?: (Video: {0} | Audio: {1})", canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine(2)
-                                                 .AddTextBlockLine(string.Format("We suggest you to install required video/audio codecs from Microsoft Store by clicking \"{0}\" or use FFmpeg by clicking \"{1}\" button below.", useInternalMfLocale, useFfmpegLocale))
-                                                 .AddTextBlockNewLine(2)
-                                                 .AddTextBlockLine("Note:", size: 11, weight: FontWeights.Bold)
-                                                 .AddTextBlockNewLine()
-                                                 .AddTextBlockLine("We heavily recommend you to use FFmpeg as it broadly supports wide range of video/audio codecs and HW Decoding capability (depends on your hardware).", size: 11);
-
-        StackPanel panel = UIElementExtensions.CreateStackPanel();
-        panel.AddElementToStackPanel(textBlock);
-
-        Button buttonIconCopyDetails = UIElementExtensions.CreateButtonWithIcon<Button>("Copy Details", textSize: 12d, textWeight: FontWeights.Bold)
-                                                          .WithHorizontalAlignment(HorizontalAlignment.Left)
-                                                          .WithMargin(0, 16, 0, 0);
-        panel.AddElementToStackPanel(buttonIconCopyDetails);
-        buttonIconCopyDetails.Click += ButtonIconCopyDetailsOnClick;
-        buttonIconCopyDetails.Unloaded += ButtonIconCopyDetailsOnUnloaded;
-
-        ContentDialogResult result = await SimpleDialogs
-           .SpawnDialog("Video Background Codec is not Supported",
-                        panel,
-                        null,
-                        Locale.Lang._Misc.Close,
-                        useFfmpegLocale,
-                        useInternalMfLocale,
-                        defaultButton: ContentDialogButton.Primary,
-                        dialogTheme: ContentDialogTheme.Error);
-
-        switch (result)
+        try
         {
-            case ContentDialogResult.Primary:
-                return await SpawnFfmpegInstallDialog();
-            case ContentDialogResult.Secondary:
-                return await SpawnMediaFoundationCodecInstallDialog();
-            case ContentDialogResult.None:
-            default:
+            if (IsFfmpegAvailable(checkOnDirectory, out _))
+            {
+                return checkOnDirectory;
+            }
+
+            foreach (string dirPath in FileUtility.EnumerateDirectoryRecursive(checkOnDirectory))
+            {
+                if (IsFfmpegAvailable(dirPath, out _))
+                {
+                    return dirPath;
+                }
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return null;
+    }
+
+    public static bool TryLinkFfmpegLibrary(
+        string sourceDir,
+        string targetDir,
+        [NotNullWhen(false)]
+        out Exception? exception)
+    {
+        sourceDir = FileUtility.GetFullyQualifiedPath(sourceDir);
+        targetDir = FileUtility.GetFullyQualifiedPath(targetDir);
+
+        if (!Directory.Exists(sourceDir) ||
+            !Directory.Exists(targetDir))
+        {
+            exception = new DirectoryNotFoundException("Source or Target directory for symbolic link creation not found.");
+            return false;
+        }
+
+        string dllPathAvcodec    = Path.Combine(sourceDir, Fields.DllNameAvcodec);
+        string dllPathAvdevice   = Path.Combine(sourceDir, Fields.DllNameAvdevice);
+        string dllPathAvfilter   = Path.Combine(sourceDir, Fields.DllNameAvfilter);
+        string dllPathAvformat   = Path.Combine(sourceDir, Fields.DllNameAvformat);
+        string dllPathAvutil     = Path.Combine(sourceDir, Fields.DllNameAvutil);
+        string dllPathSwresample = Path.Combine(sourceDir, Fields.DllNameSwresample);
+        string dllPathSwscale    = Path.Combine(sourceDir, Fields.DllNameSwscale);
+
+        return CreateSymbolLink(dllPathAvcodec,    targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvdevice,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvfilter,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvformat,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvutil,     targetDir, out exception) &&
+               CreateSymbolLink(dllPathSwresample, targetDir, out exception) &&
+               CreateSymbolLink(dllPathSwscale,    targetDir, out exception);
+
+        static bool CreateSymbolLink(string         filePath,
+                                     string         targetDirectory,
+                                     [NotNullWhen(false)]
+                                     out Exception? exception)
+        {
+            Unsafe.SkipInit(out exception);
+
+            FileInfo fileInfo = new(filePath);
+            if (!fileInfo.Exists)
+            {
+                exception = new FileNotFoundException("Source file for symbolic link creation not found.", filePath);
                 return false;
-        }
+            }
 
-        void ButtonIconCopyDetailsOnClick(object sender, RoutedEventArgs e)
-        {
-            string detailStrings = $"""
-                                    File Path/URL: {filePath}
-                                    
-                                    Video Codec FourCC Type: {videoCodecString}
-                                    Video Codec GUID: {videoCodecGuid}
-                                    Can Play Video Codec: {canPlayVideo}
-                                    
-                                    Audio Codec GUID: {audioCodecGuid}
-                                    Can Play Audio Codec: {canPlayAudio}
-                                    """;
-            Clipboard.CopyStringToClipboard(detailStrings);
-        }
+            try
+            {
+                string   targetPath    = Path.Combine(targetDirectory, fileInfo.Name);
+                FileInfo targetSymLink = new(targetPath);
+                if (targetSymLink.Exists)
+                {
+                    targetSymLink.TryDeleteFile();
+                }
 
-        void ButtonIconCopyDetailsOnUnloaded(object sender, RoutedEventArgs e)
-        {
-            buttonIconCopyDetails.Click    -= ButtonIconCopyDetailsOnClick;
-            buttonIconCopyDetails.Unloaded -= ButtonIconCopyDetailsOnUnloaded;
+                targetSymLink.CreateAsSymbolicLink(filePath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                exception = e;
+                return false;
+            }
         }
-    }
-
-    internal static bool IsFfmpegAvailable()
-    {
-        return false;
     }
 
     private static bool IsMediaFileExtensionSupported(ReadOnlySpan<char> filePath)
@@ -217,15 +233,5 @@ public partial class ImageBackgroundManager
     {
         ReadOnlySpan<char> extension = Path.GetExtension(filePath);
         return LayeredBackgroundImage.SupportedVideoExtensionsLookup.Contains(extension);
-    }
-
-    internal static async Task<bool> SpawnMediaFoundationCodecInstallDialog()
-    {
-        return true;
-    }
-
-    internal static async Task<bool> SpawnFfmpegInstallDialog()
-    {
-        return true;
     }
 }

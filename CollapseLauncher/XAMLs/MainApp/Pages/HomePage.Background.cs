@@ -3,6 +3,7 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
+using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -335,6 +336,23 @@ public sealed partial class HomePage
     {
         CurrentBackgroundManager.GlobalBackgroundAudioEnabled = !CurrentBackgroundManager.GlobalBackgroundAudioEnabled;
     }
-    
+
+    private void BackgroundVideoPlayToggle_OnClick(object sender, RoutedEventArgs e)
+    {
+        LayeredBackgroundImage? element = CurrentBackgroundManager.CurrentBackgroundElement;
+        if (element == null)
+        {
+            return;
+        }
+
+        if (element.IsVideoPlay)
+        {
+            CurrentBackgroundManager.Pause();
+            return;
+        }
+
+        CurrentBackgroundManager.Play();
+    }
+
     #endregion
 }

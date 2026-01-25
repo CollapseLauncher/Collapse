@@ -22,6 +22,17 @@ public partial class LayeredBackgroundImage
         set => SetValue(IsVideoAutoplayProperty, value);
     }
 
+    public bool IsVideoPlay
+    {
+        get => (bool)GetValue(IsVideoPlayProperty);
+    }
+
+    public bool UseFfmpegDecoder
+    {
+        get => (bool)GetValue(UseFfmpegDecoderProperty);
+        set => SetValue(UseFfmpegDecoderProperty, value);
+    }
+
     public bool IsAudioEnabled
     {
         get => (bool)GetValue(IsAudioEnabledProperty);
@@ -215,6 +226,18 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
+
+    public static readonly DependencyProperty IsVideoPlayProperty =
+        DependencyProperty.Register(nameof(IsVideoPlay),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(true));
+
+    public static readonly DependencyProperty UseFfmpegDecoderProperty =
+        DependencyProperty.Register(nameof(UseFfmpegDecoder),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty AudioVolumeProperty =
         DependencyProperty.Register(nameof(AudioVolume),

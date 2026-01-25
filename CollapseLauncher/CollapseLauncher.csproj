@@ -254,6 +254,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="FFmpegInteropX" Version="2.0.117-uwp9" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
@@ -320,7 +321,7 @@
 
     <ItemGroup>
 
-        <Content Include="Misc\InstallMediaPack.cmd">
+        <Content Include="Misc\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
 
@@ -459,8 +460,8 @@
         <Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
     </Target>
 
-    <Target Name="PostBuild" AfterTargets="Build">
-        <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+    <Target Name="PostBuild-RemoveFiles" AfterTargets="PostBuildEvent">
+        <Exec Command="del /s $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-61.dll $(ProjectDir)$(OutDir)av*-59.dll $(ProjectDir)$(OutDir)av*-10.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
     </Target>
@@ -469,8 +470,8 @@
         <Exec Command="&quot;$(ProjectDir)StaticLib\7za.exe&quot; x &quot;$(ProjectDir)StaticLib\StaticLib.7z.001&quot; -o&quot;$(ProjectDir)StaticLib\&quot; -y" />
     </Target>
     
-    <Target Name="PostBuild" AfterTargets="Publish">
-        <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+    <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
+        <Exec Command="del /s $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-61.dll $(PublishDir)av*-59.dll $(PublishDir)av*-10.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
@@ -478,7 +479,7 @@
         <RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="Publish">
+    <Target Name="PostPublish-RemoveFiles" AfterTargets="Publish">
         <!-- Region: Libsql.Client -->
         <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'" />
 

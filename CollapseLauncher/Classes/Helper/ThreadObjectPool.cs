@@ -7,39 +7,38 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Helper;
 
-internal class ThreadObjectPool<T> : IDisposable where T : class
+internal partial class ThreadObjectPool<T> : IDisposable where T : class
 {
-    private ConcurrentQueue<T> Items = new();
-    private SemaphoreSlim Semaphore;
+    private ConcurrentQueue<T> _items = new();
+    private SemaphoreSlim _semaphore;
     private Func<object?> _factory;
 
-    private int _countUsed;
-    private readonly int _capacity;
+    private          int  _countUsed;
     private readonly bool _isDisposeObjects;
-    private bool _isDisposed;
+    private          bool _isDisposed;
 
     internal ThreadObjectPool(Func<T> factory, int capacity = 0, bool isDisposeObjects = true)
     {
-        _capacity = capacity == 0 ? Environment.ProcessorCount : capacity;
-        _factory = factory;
+        capacity          = capacity == 0 ? Environment.ProcessorCount : capacity;
+        _factory          = factory;
         _isDisposeObjects = isDisposeObjects;
-        Semaphore = new SemaphoreSlim(_capacity, _capacity);
+        _semaphore        = new SemaphoreSlim(capacity, capacity);
     }
 
     internal ThreadObjectPool(Task<T> factoryAsync, int capacity = 0, bool isDisposeObjects = true)
     {
-        _capacity = capacity == 0 ? Environment.ProcessorCount : capacity;
-        _factory = () => factoryAsync;
+        capacity          = capacity == 0 ? Environment.ProcessorCount : capacity;
+        _factory          = () => factoryAsync;
         _isDisposeObjects = isDisposeObjects;
-        Semaphore = new SemaphoreSlim(_capacity, _capacity);
+        _semaphore        = new SemaphoreSlim(capacity, capacity);
     }
 
     internal async Task<T> GetOrCreateObjectAsync(CancellationToken token = default)
     {
-        await Semaphore.WaitAsync(token);
+        await _semaphore.WaitAsync(token);
         Interlocked.Increment(ref _countUsed);
 
-        if (Items.TryDequeue(out T? pooled))
+        if (_items.TryDequeue(out T? pooled))
             return pooled;
 
         if (_factory is Func<Task<T>> asyncFactory)
@@ -50,10 +49,10 @@ internal class ThreadObjectPool<T> : IDisposable where T : class
 
     internal T GetOrCreateObject()
     {
-        Semaphore.Wait();
+        _semaphore.Wait();
         Interlocked.Increment(ref _countUsed);
 
-        if (Items.TryDequeue(out T? pooled))
+        if (_items.TryDequeue(out T? pooled))
             return pooled;
 
         if (_factory is Func<Task<T>> asyncFactory)
@@ -64,9 +63,9 @@ internal class ThreadObjectPool<T> : IDisposable where T : class
 
     internal void Return(T item)
     {
-        Items.Enqueue(item);
+        _items.Enqueue(item);
         Interlocked.Decrement(ref _countUsed);
-        Semaphore.Release();
+        _semaphore.Release();
     }
 
     public void Dispose()
@@ -76,7 +75,7 @@ internal class ThreadObjectPool<T> : IDisposable where T : class
             return;
         }
 
-        Semaphore.Dispose();
+        _semaphore.Dispose();
 
         try
         {
@@ -85,7 +84,7 @@ internal class ThreadObjectPool<T> : IDisposable where T : class
                 return;
             }
 
-            foreach (IDisposable item in Items.OfType<IDisposable>())
+            foreach (IDisposable item in _items.OfType<IDisposable>())
             {
                 item.Dispose();
             }
@@ -93,10 +92,10 @@ internal class ThreadObjectPool<T> : IDisposable where T : class
         finally
         {
             _isDisposed = true;
-            Items.Clear();
+            _items.Clear();
             _factory = null!;
-            Items = null!;
-            Semaphore = null!;
+            _items = null!;
+            _semaphore = null!;
         }
     }
 }

@@ -88,13 +88,13 @@ public partial class ImageBackgroundManager
 
             // -- Create elements, load image and spawn the dialog box.
             Grid parentGrid = UIElementExtensions
-               .CreateElementFromUIThread<Grid>(SetParentGridProperties);
+               .Create<Grid>(SetParentGridProperties);
 
             ContentDialogOverlay dialog = UIElementExtensions
-               .CreateElementFromUIThread<ContentDialogOverlay>(SetDialogProperties);
+               .Create<ContentDialogOverlay>(SetDialogProperties);
 
             ImageCropper cropper = UIElementExtensions
-               .CreateElementFromUIThread<ImageCropper>(SetImageCropperProperties);
+               .Create<ImageCropper>(SetImageCropperProperties);
 
             // -- Register to close dialog if cancellation is triggered outside the event.
             token.Register(() => dialog.Hide());
@@ -182,7 +182,7 @@ public partial class ImageBackgroundManager
         {
             StackPanel loadingMsgPanel =
                 UIElementExtensions
-                   .CreateElementFromUIThread<StackPanel>(x =>
+                   .Create<StackPanel>(x =>
                                                           {
                                                               x.Orientation         = Orientation.Horizontal;
                                                               x.HorizontalAlignment = HorizontalAlignment.Center;

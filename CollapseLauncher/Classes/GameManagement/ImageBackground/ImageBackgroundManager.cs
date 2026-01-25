@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -12,6 +13,7 @@ using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -33,6 +35,47 @@ public partial class ImageBackgroundManager
         get;
     } = new();
 
+    #region Static Constructor
+
+    static ImageBackgroundManager()
+    {
+        string  curDir              = Directory.GetCurrentDirectory();
+        bool    isFfmpegAvailable   = IsFfmpegAvailable(curDir, out Exception? exception);
+        string? customFfmpegDirPath = CustomFfmpegPath;
+
+        try
+        {
+            if (isFfmpegAvailable ||
+                string.IsNullOrEmpty(customFfmpegDirPath))
+            {
+                return;
+            }
+
+            // -- If custom Ffmpeg path is set but Ffmpeg is not available,
+            //    Try to resolve the symbolic link path again.
+
+            // -- Check for custom Ffmpeg path availability first. If not available, skip.
+            if (!IsFfmpegAvailable(customFfmpegDirPath, out exception))
+            {
+                return;
+            }
+
+            // -- Re-link Ffmpeg symbolic link
+            TryLinkFfmpegLibrary(customFfmpegDirPath, curDir, out exception);
+        }
+        finally
+        {
+            if (exception != null)
+            {
+                Logger.LogWriteLine($"[StaticCtor::ImageBackgroundManager] {exception}",
+                                    LogType.Error,
+                                    true);
+            }
+        }
+    }
+
+    #endregion
+
     #region Shared/Static Properties and Fields
 
     private const string GlobalCustomBackgroundConfigKey                  = "GlobalBg";
@@ -41,6 +84,18 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "GlobalBackgroundParallaxPixelShift";
     private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
+    private const string GlobalFfmpegCustomPathConfigKey                  = "GlobalFfmpegCustomPath";
+
+    public static bool IsUseFfmpeg => IsFfmpegAvailable(Directory.GetCurrentDirectory(), out _);
+
+    public static string? CustomFfmpegPath
+    {
+        get => LauncherConfig.GetAppConfigValue(GlobalFfmpegCustomPathConfigKey);
+        set
+        {
+            LauncherConfig.SetAndSaveConfigValue(GlobalFfmpegCustomPathConfigKey, value);
+        }
+    }
 
     public string? GlobalCustomBackgroundImagePath
     {
