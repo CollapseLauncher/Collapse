@@ -139,6 +139,13 @@
     "PauseCancelDownloadBtn": "一時停止/キャンセル",
     "PauseCancelBtn": "一時停止/キャンセル",
     "DownloadBtn": "ダウンロード",
+    "StartGameTooltip": "ゲーム開始：バージョン{0}",
+    "InstallGameTooltip": "ゲームをインストール：バージョン{0}",
+    "UpdateGameTooltip": "ゲームをアップデート：バージョン{0} → {1}",
+    "InstallSdkTooltip": "SDKをインストール：バージョン{0}",
+    "UpdateSdkUpdateTooltip": "SDKをアップデート：バージョン{0} → {1}",
+    "InstallPluginTooltip": "プラグインをインストール： {0} バージョン{1}",
+    "UpdatePluginTooltip": "プラグインをアップデート： {0} バージョン{1} → {2}",
 
     "GameStatusPlaceholderComingSoonBtn": "乞うご期待",
     "GameStatusPlaceholderPreRegisterBtn": "今すぐ事前登録！",
