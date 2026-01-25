@@ -220,7 +220,34 @@
     "GameStateInvalidFixed_Subtitle4": "\"メニューから実行してください。",
 
     "InstallFolderRootTitle": "ドライブのルートフォルダーが選択されています！",
-    "InstallFolderRootSubtitle": "ゲームをドライブのルートフォルダーにインストールすることはできません！新しいフォルダーを作成してから再度お試しください。"
+    "InstallFolderRootSubtitle": "ゲームをドライブのルートフォルダーにインストールすることはできません！新しいフォルダーを作成してから再度お試しください。",
+
+    "BgContextMenu_SaveCurrentBtn": "保存",
+    "BgContextMenu_SaveCurrentBgText": "今の背景をファイルに保存",
+    "BgContextMenu_SaveCurrentBgTooltip": "今の背景画像・動画と（可能な場合は）テロップ単品の両方を保存します。",
+    "BgContextMenu_SaveAllBgText": "全ての背景を保存",
+    "BgContextMenu_SaveAllBgTooltip": "今選べる全ての背景画像・動画と（可能な場合は）テロップ単品の両方を保存します。",
+    "BgContextMenu_CopyFrameToClipboardParentText": "今のフレームをクリップボードにコピー",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "テロップだけコピー",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "テロップのビットマップフレームのみをクリップボードにコピーします。",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "背景のフレームだけコピー",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "背景画像・動画のビットマップフレームのみをクリップボードにコピーします。",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "結合してコピー",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "背景画像・動画のフレームとテロップを結合してクリップボードにコピーします。",
+    "BgContextMenu_CopyUrlToClipboardParentText": "URL/パスをクリップボードにコピー",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "テロップのURL/パスだけコピー",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "テロップのURL/パスのみをクリップボードにコピーします。",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "背景のURL/パスだけコピー",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "背景画像・動画のURL/パスのみをクリップボードにコピーします。",
+    "BgContextMenu_EnableAudioText": "背景動画の音声ON",
+    "BgContextMenu_EnableAudioTooltip": "背景動画の音声を有効にします。",
+    "BgContextMenu_EnableParallaxText": "視差エフェクトON",
+    "BgContextMenu_EnableParallaxTooltip": "背景画像・動画の上でマウスを動かしたときの視差エフェクトを有効にします。",
+    "BgContextMenu_ParallaxPixelShiftParentText": "視差エフェクトのピクセル数",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "カスタム",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "視差エフェクトで動くピクセル数を設定します。",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "今の背景をフォルダーに保存",
+    "BgContextMenu_FolderSelectSaveAllBg": "今選べる全ての背景をフォルダーに保存"
   },
 
   "_GameRepairPage": {
@@ -1209,7 +1236,9 @@
     "PostInstallBehaviour_EnumStartGame": "ゲームを起動",
     "PostInstallBehaviour_EnumHibernate": "スリープ",
     "PostInstallBehaviour_EnumRestart": "PCを再起動",
-    "PostInstallBehaviour_EnumShutdown": "PCをシャットダウン"
+    "PostInstallBehaviour_EnumShutdown": "PCをシャットダウン",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "視差エフェクトのピクセル数（最小：{0}px、最大： {1}px）"
   },
 
   "_FileMigrationProcess": {
