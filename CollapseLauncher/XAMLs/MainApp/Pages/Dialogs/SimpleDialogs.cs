@@ -1574,8 +1574,8 @@ namespace CollapseLauncher.Dialogs
             {
                 foundFfmpegDir = null;
 
-                using CancellationTokenSourceWrapper tokenSource = new();
-                WindowsCodecInstaller codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
+                using CancellationTokenSourceWrapper tokenSource    = new();
+                FFmpegCodecInstaller                 codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
                 if (!await Dialog_SpawnCodecDownloadInstallDialog("Installing FFmpeg", codecInstaller, tokenSource))
                 {
                     goto StartOver;
