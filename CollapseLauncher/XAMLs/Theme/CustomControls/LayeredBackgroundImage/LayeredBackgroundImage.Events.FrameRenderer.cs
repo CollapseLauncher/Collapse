@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Foundation;
 using Windows.Media.Playback;
+// ReSharper disable CommentTypo
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable AccessToModifiedClosure
@@ -98,7 +99,8 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr, in _canvasRenderSize);
+            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr,
+                                                            in _canvasRenderSize);
             drawingSessionPpv = SwapChainPanelHelper
                .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
                                         _canvasRenderTargetNativePtr,
@@ -110,6 +112,11 @@ public partial class LayeredBackgroundImage
         catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
         {
             DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
+        }
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
+        {
+            // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
+            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
         }
         catch (Exception ex)
         {
@@ -133,6 +140,11 @@ public partial class LayeredBackgroundImage
                 catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
                 {
                     CanvasDevice_OnDeviceLost();
+                }
+                catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
+                {
+                    // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
+                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
                 }
                 catch (Exception ex)
                 {
@@ -183,28 +195,30 @@ public partial class LayeredBackgroundImage
         finally
         {
             DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
+        }
 
-            void DrawFrame()
+        return;
+
+        void DrawFrame()
+        {
+            try
             {
-                try
-                {
-                    ds?.Dispose();
-                }
-                // Device lost error. If happened, reinitialize render target
-                catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
-                {
-                    CanvasDevice_OnDeviceLost();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|UIThread] {ex}",
-                                        LogType.Error,
-                                        true);
-                }
-                finally
-                {
-                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-                }
+                ds?.Dispose();
+            }
+            // Device lost error. If happened, reinitialize render target
+            catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+            {
+                CanvasDevice_OnDeviceLost();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|UIThread] {ex}",
+                                    LogType.Error,
+                                    true);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
         }
     }
