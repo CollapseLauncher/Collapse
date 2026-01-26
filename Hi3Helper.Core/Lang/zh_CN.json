@@ -139,6 +139,13 @@
     "PauseCancelDownloadBtn": "暂停/取消",
     "PauseCancelBtn": "暂停/取消",
     "DownloadBtn": "下载游戏",
+    "StartGameTooltip": "开始游戏：v{0}",
+    "InstallGameTooltip": "安装游戏：v{0}",
+    "UpdateGameTooltip": "更新游戏：v{0} -> v{1}",
+    "InstallSdkTooltip": "安装 SDK：v{0}",
+    "UpdateSdkUpdateTooltip": "更新 SDK：v{0} -> v{1}",
+    "InstallPluginTooltip": "安装插件：{0} v{1}",
+    "UpdatePluginTooltip": "更新插件：{0} v{1} -> v{2}",
 
     "GameStatusPlaceholderComingSoonBtn": "即将推出",
     "GameStatusPlaceholderPreRegisterBtn": "立即预注册！",

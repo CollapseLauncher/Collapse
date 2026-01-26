@@ -4,9 +4,12 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -224,7 +227,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
                 CurrentGameProperty?.GameSettings?.SaveBaseSettings();
                 SyncDbPlaytimeBtn.IsEnabled = value;
-                
+
                 // Run DbSync if toggle is changed to enable
                 if (value) CurrentGameProperty?.GamePlaytime?.CheckDb();
             }
@@ -300,6 +303,91 @@ namespace CollapseLauncher.Pages
         private ImageBackgroundManager CurrentBackgroundManager
         {
             get => ImageBackgroundManager.Shared;
+        }
+
+        internal string? StartTooltipText
+        {
+            get
+            {
+                if (CurrentGameProperty.GameVersion == null)
+                    return null;
+
+                var installed = CurrentGameProperty.GameVersion.GetGameExistingVersion();
+                if (installed is null)
+                    return null;
+                return string.Format(Locale.Lang._HomePage.StartGameTooltip, installed);
+            }
+        }
+
+        internal string? InstallUpdateTooltipText
+        {
+            get
+            {
+                if (CurrentGameProperty.GameVersion == null)
+                    return null;
+
+                var state = Task.Run(async () => await CurrentGameProperty.GameVersion.GetGameState()).GetAwaiter().GetResult();
+                switch (state)
+                {
+                    case GameInstallStateEnum.NotInstalled:
+                    {
+                        var remote = CurrentGameProperty.GameVersion.GetGameVersionApi();
+                        return string.Format(Locale.Lang._HomePage.InstallGameTooltip, remote);
+                    }
+                    case GameInstallStateEnum.NeedsUpdate:
+                    {
+                        var installed = CurrentGameProperty.GameVersion.GetGameExistingVersion();
+                        var remote = CurrentGameProperty.GameVersion.GetGameVersionApi();
+                        if (remote is null || installed == remote)
+                            return null;
+
+                        if (installed is null)
+                            return string.Format(Locale.Lang._HomePage.InstallGameTooltip, remote);
+
+                        return string.Format(Locale.Lang._HomePage.UpdateGameTooltip, installed, remote);
+                    }
+                    case GameInstallStateEnum.InstalledHavePlugin:
+                    {
+                        var tooltip = new StringBuilder();
+
+                        // SDK
+                        {
+                            var installed = CurrentGameProperty.GameVersion.GetSdkVersionInstalled();
+                            var remote = CurrentGameProperty.GameVersion.GetSdkVersionApi();
+                            if (remote is not null && installed != remote)
+                            {
+                                if (installed is null)
+                                    tooltip.Append(string.Format(Locale.Lang._HomePage.InstallSdkTooltip, remote));
+                                else
+                                    tooltip.Append(string.Format(Locale.Lang._HomePage.UpdateSdkTooltip, installed, remote));
+                            }
+                        }
+
+                        // Plugin
+                        {
+                            var installedDict = CurrentGameProperty.GameVersion.GetPluginVersionsInstalled();
+                            var mismatchList = CurrentGameProperty.GameVersion.GetMismatchPlugin();
+                            foreach (var mismatch in mismatchList)
+                            {
+                                if (tooltip.Length != 0)
+                                    tooltip.Append('\n');
+
+                                var remote = mismatch.Version;
+                                if (!installedDict.TryGetValue(mismatch.PluginId!, out var installed))
+                                    tooltip.Append(string.Format(Locale.Lang._HomePage.InstallPluginTooltip, mismatch.PluginId, remote));
+                                else
+                                    tooltip.Append(string.Format(Locale.Lang._HomePage.UpdatePluginTooltip, mismatch.PluginId, installed, remote));
+                            }
+                        }
+
+                        if (tooltip.Length == 0)
+                            return null;
+                        return tooltip.ToString();
+                    }
+                    default:
+                        return null;
+                }
+            }
         }
     }
 }

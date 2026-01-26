@@ -2817,7 +2817,8 @@
                             HorizontalContentAlignment="Stretch"
                             Click="InstallGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                            Style="{ThemeResource NewAccentButtonStyle}">
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}">
                         <Button.Content>
                             <Grid Margin="8,0">
                                 <Grid.ColumnDefinitions>
@@ -2851,6 +2852,7 @@
                             Click="UpdateGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">
@@ -2886,6 +2888,7 @@
                             Click="StartGame"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind StartTooltipText}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
@@ -2951,6 +2954,7 @@
                             extension:UIElementExtensions.CursorType="Hand"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
                             Style="{ThemeResource NewAccentButtonStyle}"
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
@@ -3091,7 +3095,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
@@ -3103,14 +3106,6 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        Text="-" />
-                            <TextBlock x:Name="PlaytimeToolTipIcon"
-                                       Grid.Column="2"
-                                       Margin="0,0,-4,0"
-                                       VerticalAlignment="Center"
-                                       FontFamily="{ThemeResource FontAwesomeSolid}"
-                                       FontSize="18"
-                                       Opacity="0.25"
-                                       Text="&#xf05a;" />
                         </Grid>
                     </Grid>
                 </Button.Content>

@@ -1,13 +1,10 @@
 using Hi3Helper.Shared.Region;
-using Microsoft.Win32;
 using Sentry;
 using Sentry.Protocol;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -385,127 +382,9 @@ namespace Hi3Helper.SentryHelper
         public static bool   CurrentGameHasDelta   { get; set; }
         public static bool   CurrentGameIsPlugin   { get; set; }
 
-        private static int CpuThreadsTotal => Environment.ProcessorCount;
-
-        private static string CpuName
-        {
-            get
-            {
-                try
-                {
-                    string cpuName;
-                    string    env = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "Unknown CPU";
-                    object? reg =
-                        Registry.GetValue(@"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\SYSTEM\CentralProcessor\0",
-                                          "ProcessorNameString", null);
-                    if (reg != null)
-                    {
-                        cpuName = reg.ToString() ?? env;
-                        cpuName = cpuName.Trim();
-                    }
-                    else cpuName = env;
-
-                    return cpuName;
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine("Failed when trying to get CPU Name!\r\n" + ex, LogType.Error, true);
-                    return "Unknown CPU";
-                }
-            }
-        }
-
-        private static List<(string GpuName, string DriverVersion)> GetGpuInfo
-        {
-            get
-            {
-                List<(string GpuName, string DriverVersion)> gpuInfoList = [];
-                try
-                {
-                    using RegistryKey? baseKey =
-                        Registry.LocalMachine
-                                .OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\");
-                    if (baseKey != null)
-                    {
-                        foreach (string subKeyName in baseKey.GetSubKeyNames())
-                        {
-                            if (!int.TryParse(subKeyName, out int subKeyInt) || subKeyInt < 0 || subKeyInt > 9999)
-                                continue;
-
-                            string? gpuName       = "Unknown GPU";
-                            string? driverVersion = "Unknown Driver Version";
-                            try
-                            {
-                                using RegistryKey? subKey = baseKey.OpenSubKey(subKeyName);
-                                if (subKey == null) continue;
-
-                                gpuName       = subKey.GetValue("DriverDesc") as string;
-                                driverVersion = subKey.GetValue("DriverVersion") as string;
-                                if (!string.IsNullOrEmpty(gpuName) && !string.IsNullOrEmpty(driverVersion))
-                                {
-                                    gpuInfoList.Add((subKeyName + gpuName, driverVersion));
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                gpuInfoList.Add((subKeyName + gpuName, driverVersion)!);
-                                throw;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine($"Failed to retrieve GPU info from registry: {ex.Message}", LogType.Error,
-                                        true);
-                }
-
-                return gpuInfoList;
-            }
-        }
-
-        private static Breadcrumb? _buildInfo;
-
-        private static Breadcrumb BuildInfo =>
-            _buildInfo ??= new Breadcrumb("Build Info", "commit", new Dictionary<string, string>
-            {
-                { "Branch", AppBuildBranch },
-                { "Commit", AppBuildCommit },
-                { "Repository", AppBuildRepo },
-                { "IsPreview", IsPreview.ToString() }
-            }, "BuildInfo");
-
-        private static Breadcrumb? _cpuInfo;
-
-        private static Breadcrumb CpuInfo =>
-            _cpuInfo ??= new Breadcrumb("CPU Info", "system.cpu", new Dictionary<string, string>
-            {
-                { "CPU Name", CpuName },
-                { "Total Thread", CpuThreadsTotal.ToString() }
-            }, "CPUInfo");
-
-        private static Breadcrumb? _gpuInfo;
-
-        private static Breadcrumb GpuInfo =>
-            _gpuInfo ??= new Breadcrumb("GPU Info", "system.gpu",
-                                        GetGpuInfo.ToDictionary(item => item.GpuName,
-                                                                item => item.DriverVersion),
-                                        "GPUInfo");
-
-        private static Breadcrumb GameInfo =>
-            new("Current Loaded Game Info", "game", new Dictionary<string, string>
-            {
-                { "Category", CurrentGameCategory },
-                { "Region", CurrentGameRegion },
-                { "Installed", CurrentGameInstalled.ToString() },
-                { "Updated", CurrentGameUpdated.ToString() },
-                { "HasPreload", CurrentGameHasPreload.ToString() },
-                { "HasDelta", CurrentGameHasDelta.ToString() },
-                { "IsGameFromPlugin", CurrentGameIsPlugin.ToString() },
-                { "Location", CurrentGameLocation },
-                { "CdnOption", AppCdnOption }
-            }, "GameInfo");
-
+    #pragma warning disable CA2211
+        public static Breadcrumb? PluginInfo = null;
+    #pragma warning restore CA2211
         #endregion
 
         private static SentryId ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
@@ -514,6 +393,10 @@ namespace Hi3Helper.SentryHelper
             SentrySdk.AddBreadcrumb(GameInfo);
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
+            SentrySdk.AddBreadcrumb(AppConfig);
+            
+            if (PluginInfo != null)
+                SentrySdk.AddBreadcrumb(PluginInfo);
 
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 

@@ -115,6 +115,31 @@ namespace CollapseLauncher.Interfaces
         GameVersion? GetGameExistingVersion();
 
         /// <summary>
+        /// Returns the SDK version of the game as provided by miHoYo's API.
+        /// </summary>
+        /// <returns>The SDK version of the game</returns>
+        GameVersion? GetSdkVersionApi();
+
+        /// <summary>
+        /// Returns the SDK version of the game installed.<br/>
+        /// It will return a <c>null</c> if the game SDK doesn't installed.
+        /// </summary>
+        /// <returns>The SDK version of the game installed</returns>
+        GameVersion? GetSdkVersionInstalled();
+
+        /// <summary>
+        /// Returns the plugin versions of the game installed.
+        /// </summary>
+        /// <returns>The plugin versions of the game installed</returns>
+        Dictionary<string, GameVersion> GetPluginVersionsInstalled();
+
+        /// <summary>
+        /// Returns the difference between current version of the game plugin and the version provided by the miHoYo API.
+        /// </summary>
+        /// <returns>The difference between current version of the game plugin and the version provided by the miHoYo API</returns>
+        List<HypPluginPackageInfo> GetMismatchPlugin();
+
+        /// <summary>
         /// Checks if the game version is installed or matches the version provided from miHoYo's API.
         /// </summary>
         bool IsGameVersionMatch();
