@@ -76,6 +76,12 @@ public partial class ImageBackgroundManager
 
     #endregion
 
+    #region Shared/Static Events
+
+    internal event Action<Color>? ColorAccentChanged;
+
+    #endregion
+
     #region Shared/Static Properties and Fields
 
     private const string GlobalCustomBackgroundConfigKey                  = "GlobalBg";
@@ -85,16 +91,14 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
     private const string GlobalFfmpegCustomPathConfigKey                  = "GlobalFfmpegCustomPath";
+    private const string GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey  = "GlobalKeepPlayVideoWhenWindowUnfocused";
 
     public static bool IsUseFfmpeg => IsFfmpegAvailable(Directory.GetCurrentDirectory(), out _);
 
     public static string? CustomFfmpegPath
     {
         get => LauncherConfig.GetAppConfigValue(GlobalFfmpegCustomPathConfigKey);
-        set
-        {
-            LauncherConfig.SetAndSaveConfigValue(GlobalFfmpegCustomPathConfigKey, value);
-        }
+        set => LauncherConfig.SetAndSaveConfigValue(GlobalFfmpegCustomPathConfigKey, value);
     }
 
     public string? GlobalCustomBackgroundImagePath
@@ -178,6 +182,16 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public bool GlobalKeepPlayVideoWhenWindowUnfocused
+    {
+        get => LauncherConfig.GetAppConfigValue(GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey);
+        set
+        {
+            LauncherConfig.SetAndSaveConfigValue(GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey, value);
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsBackgroundElevated
     {
         get;
@@ -207,12 +221,6 @@ public partial class ImageBackgroundManager
             OnPropertyChanged();
         }
     }
-
-    #endregion
-
-    #region Shared/Static Events
-
-    internal event Action<Color>? ColorAccentChanged;
 
     #endregion
 

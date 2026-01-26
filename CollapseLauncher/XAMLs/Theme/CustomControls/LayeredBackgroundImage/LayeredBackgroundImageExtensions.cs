@@ -1,4 +1,7 @@
-﻿using Hi3Helper.Win32.WinRT.WindowsStream;
+﻿using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.WinRT.WindowsStream;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -153,7 +156,7 @@ internal static class LayeredBackgroundImageExtensions
             return true;
         }
 
-        await using FileStream? fileStream = await TryGetStreamFromPathAsync(sourceFromPath);
+        await using FileStream? fileStream = await TryGetStreamFromPathAsync(sourceFromPath, instance.MediaSourceCacheDir);
         if (fileStream == null)
         {
             return false;
@@ -225,33 +228,70 @@ internal static class LayeredBackgroundImageExtensions
                 return true;
             }
 
-            // Use MagicScaler for external codec types
-            await using FileStream tempStream = CreateTemporaryStream();
-            await Task.Run(() =>
-            {
-                ProcessImageSettings settings = new();
-                settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+            FileStream? tempStream = null;
 
-                using ProcessingPipeline pipeline = MagicImageProcessor.BuildPipeline(stream, settings);
-                if (pixelTransform != null)
+            try
+            {
+                string? userDefinedCacheDir = instance.MediaSourceCacheDir;
+                bool    requireConversion   = true;
+
+                if (!string.IsNullOrEmpty(userDefinedCacheDir) && stream is FileStream sourceAsFileStream)
                 {
-                    pipeline.AddTransform(pixelTransform);
+                    Directory.CreateDirectory(userDefinedCacheDir);
+
+                    string cachedFilename = $"decoded_{Path.GetFileNameWithoutExtension(sourceAsFileStream.Name)}.png";
+                    string decodedFilepath = Path.Combine(userDefinedCacheDir, cachedFilename);
+                    FileInfo decodedFileInfo = new(decodedFilepath);
+
+                    if (decodedFileInfo is { Exists: true, Length: > 256 })
+                    {
+                        requireConversion = false;
+                    }
+
+                    tempStream = decodedFileInfo.Open(FileMode.OpenOrCreate,
+                                                      FileAccess.ReadWrite,
+                                                      FileShare.ReadWrite);
                 }
 
-                pipeline.WriteOutput(tempStream);
-            });
+                tempStream ??= CreateTemporaryStream();
 
-            tempStream.Position = 0;
-            using IRandomAccessStream tempRandomStream = tempStream.AsRandomAccessStream(true);
-            BitmapImage tempBitmapImage = new()
+                if (requireConversion)
+                {
+                    // Use MagicScaler for external codec types
+                    await Task.Run(() =>
+                                   {
+                                       ProcessImageSettings settings = new();
+                                       settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+
+                                       using ProcessingPipeline pipeline = MagicImageProcessor.BuildPipeline(stream, settings);
+                                       if (pixelTransform != null)
+                                       {
+                                           pipeline.AddTransform(pixelTransform);
+                                       }
+
+                                       pipeline.WriteOutput(tempStream);
+                                   });
+                }
+
+                tempStream.Position = 0;
+                using IRandomAccessStream tempRandomStream = tempStream.AsRandomAccessStream(true);
+                BitmapImage tempBitmapImage = new()
+                {
+                    CreateOptions = (bool)instance.GetValue(useCacheProperty)
+                        ? BitmapCreateOptions.None
+                        : BitmapCreateOptions.IgnoreImageCache
+                };
+                await tempBitmapImage.SetSourceAsync(tempRandomStream);
+                image.Source = tempBitmapImage;
+                return true;
+            }
+            finally
             {
-                CreateOptions = (bool)instance.GetValue(useCacheProperty)
-                    ? BitmapCreateOptions.None
-                    : BitmapCreateOptions.IgnoreImageCache
-            };
-            await tempBitmapImage.SetSourceAsync(tempRandomStream);
-            image.Source = tempBitmapImage;
-            return true;
+                if (tempStream != null)
+                {
+                    await tempStream.DisposeAsync();
+                }
+            }
         }
         finally
         {
@@ -262,7 +302,7 @@ internal static class LayeredBackgroundImageExtensions
         }
     }
 
-    private static async Task<FileStream?> TryGetStreamFromPathAsync(Uri? url)
+    private static async Task<FileStream?> TryGetStreamFromPathAsync(Uri? url, string? userDefinedTempDir)
     {
         if (url == null)
         {
@@ -274,7 +314,8 @@ internal static class LayeredBackgroundImageExtensions
             return File.Open(url.LocalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        if (await GetFileLengthFromUrl(Client, url) is 0)
+        if (await GetFileLengthFromUrl(Client, url) is var fileLength &&
+            fileLength == 0)
         {
             return null;
         }
@@ -291,9 +332,16 @@ internal static class LayeredBackgroundImageExtensions
             return null;
         }
 
-        FileStream tempStream = url.CreateTemporaryStreamFromUrl();
+        FileStream tempStream = url.CreateTemporaryStreamFromUrl(userDefinedTempDir);
+        if (tempStream.Length == fileLength)
+        {
+            return tempStream;
+        }
+
         try
         {
+            tempStream.SetLength(0); // Reset length.
+
             await using Stream networkStream = await responseMessage.Content.ReadAsStreamAsync();
             await networkStream.CopyToAsync(tempStream);
             return tempStream;
@@ -360,18 +408,29 @@ internal static class LayeredBackgroundImageExtensions
         }
     }
 
-    private static FileStream CreateTemporaryStreamFromUrl(this Uri url)
+    private static FileStream CreateTemporaryStreamFromUrl(this Uri url, string? userDefinedTempDir)
     {
-        string extension = Path.GetExtension(url.AbsolutePath);
-        string path      = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + extension);
+        string path;
+        if (string.IsNullOrEmpty(userDefinedTempDir))
+        {
+            string extension = Path.GetExtension(url.AbsolutePath);
+            path = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + extension);
+        }
+        else
+        {
+            Directory.CreateDirectory(userDefinedTempDir);
+            path = Path.Combine(userDefinedTempDir, Path.GetFileName(url.AbsolutePath));
+        }
 
         return File.Open(path,
                          new FileStreamOptions
                          {
-                             Mode    = FileMode.Create,
-                             Access  = FileAccess.ReadWrite,
-                             Share   = FileShare.ReadWrite,
-                             Options = FileOptions.DeleteOnClose
+                             Mode   = FileMode.Create,
+                             Access = FileAccess.ReadWrite,
+                             Share  = FileShare.ReadWrite,
+                             Options = string.IsNullOrEmpty(userDefinedTempDir) ?
+                                 FileOptions.None :
+                                 FileOptions.DeleteOnClose
                          });
     }
 
@@ -386,5 +445,24 @@ internal static class LayeredBackgroundImageExtensions
                              Share   = FileShare.ReadWrite,
                              Options = FileOptions.DeleteOnClose
                          });
+    }
+
+    internal static async Task WaitUntilWindowIsRestored(this LayeredBackgroundImage element)
+    {
+        WindowId windowId     = element.GetElementWindowId();
+        nint     windowHandle = Win32Interop.GetWindowFromWindowId(windowId);
+
+        await Task.Delay(250); // Artificially wait until window is active
+        if (!PInvoke.IsWindowVisible(windowHandle))
+        {
+            await Task.Delay(250); // Artificially wait until window is active
+        }
+    }
+
+    internal static WindowId GetElementWindowId(this LayeredBackgroundImage element)
+    {
+        XamlRoot root     = element.XamlRoot;
+        WindowId windowId = root.ContentIslandEnvironment.AppWindowId;
+        return windowId;
     }
 }

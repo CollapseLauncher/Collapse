@@ -20,7 +20,8 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
-            <layeredBackgroundImage:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"/>
+            <layeredBackgroundImage:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
+                                                           MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}"/>
         </Grid>
         <Border x:Name="NavViewPaneBackground"
                 Width="48"

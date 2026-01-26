@@ -127,14 +127,15 @@ public partial class ImageBackgroundManager
             ? PlaceholderBackgroundImagePngRelPath
             : PlaceholderBackgroundImageRelPath;
 
-        string relPath = presetConfig?.GameName switch
-        {
-            "Genshin Impact" => source[0],
-            "Honkai Impact 3rd" => source[1],
-            "Honkai: Star Rail" => source[2],
-            "Zenless Zone Zero" => source[3],
-            _ => GetRandomPlaceholderImage(usePngVersion)
-        };
+        string relPath = presetConfig?.GameName ??
+                         LauncherConfig.GetAppConfigValue("GameCategory").Value switch
+                         {
+                             "Genshin Impact" => source[0],
+                             "Honkai Impact 3rd" => source[1],
+                             "Honkai: Star Rail" => source[2],
+                             "Zenless Zone Zero" => source[3],
+                             _ => GetRandomPlaceholderImage(usePngVersion)
+                         };
 
         return Path.Combine(LauncherConfig.AppExecutableDir, relPath);
     }

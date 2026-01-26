@@ -199,6 +199,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(UseImageCacheProperty, value);
     }
 
+    public string? MediaSourceCacheDir
+    {
+        get => (string?)GetValue(MediaSourceCacheDirProperty);
+        set => SetValue(MediaSourceCacheDirProperty, value);
+    }
+
     #endregion
 
     #region Fields
@@ -400,6 +406,12 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
+
+    public static readonly DependencyProperty MediaSourceCacheDirProperty =
+        DependencyProperty.Register(nameof(MediaSourceCacheDir),
+                                    typeof(string),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(null!));
 
     #endregion
 }

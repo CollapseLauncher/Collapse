@@ -1,6 +1,9 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper;
 using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 #nullable enable
@@ -46,6 +49,182 @@ public partial class LayeredBackgroundImage
                                  volumeFadeResolutionMs: 10d,
                                  disposeRenderImageSource: false, // Do not dispose Image Source
                                  token: _videoPlayerPlayPauseCts.Token);
+    }
+
+    #endregion
+
+    #region Fade In/Out Audio Control
+
+    public void FadeInAudio(double            volumeFadeDurationMs   = 500d,
+                            double            volumeFadeResolutionMs = 10d, 
+                            CancellationToken coopToken              = default)
+    {
+        if (_videoPlayer == null!)
+        {
+            return;
+        }
+
+        StartVideoPlayerVolumeFade(Math.Max(0, _videoPlayer.Volume * 100d),
+                                   AudioVolume,
+                                   volumeFadeDurationMs,
+                                   volumeFadeResolutionMs,
+                                   coopToken: coopToken);
+    }
+
+    public void FadeOutAudio(Action?           actionAfterPause       = null,
+                             double            volumeFadeDurationMs   = 500d,
+                             double            volumeFadeResolutionMs = 10d,
+                             CancellationToken coopToken              = default)
+    {
+        if (_videoPlayer == null!)
+        {
+            return;
+        }
+
+        StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d),
+                                   0,
+                                   volumeFadeDurationMs,
+                                   volumeFadeResolutionMs,
+                                   true,
+                                   onAfterAction: actionAfterPause,
+                                   coopToken: coopToken);
+    }
+
+    private void StartVideoPlayerVolumeFade(double fromValue,
+                                            double toValue,
+                                            double durationMs,
+                                            double resolutionMs,
+                                            bool fadeOut = false,
+                                            Action? onAfterAction = null,
+                                            CancellationToken coopToken = default)
+    {
+        new Thread(() =>
+                       StartVideoPlayerVolumeFadeCore(fromValue,
+                                                      toValue,
+                                                      durationMs,
+                                                      resolutionMs,
+                                                      fadeOut,
+                                                      onAfterAction,
+                                                      coopToken))
+        {
+            IsBackground = true
+        }.Start();
+    }
+
+    public double ActualVolume
+    {
+        get => (double)GetValue(ActualVolumeProperty);
+        set => SetValue(ActualVolumeProperty, value);
+    }
+
+    public static readonly DependencyProperty ActualVolumeProperty =
+        DependencyProperty.Register(nameof(ActualVolume),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(0d, SetAudioVolumeBridge));
+
+    private static void SetAudioVolumeBridge(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)d;
+        if (instance._videoPlayer == null!)
+        {
+            return;
+        }
+
+        UIElementExtensions.RunFunctionFromUIThread(() => instance._videoPlayer.Volume = (double)e.NewValue);
+    }
+
+    private void StartVideoPlayerVolumeFadeCore(double fromValue,
+                                                double toValue,
+                                                double durationMs,
+                                                double resolutionMs,
+                                                bool fadeOut = false,
+                                                Action? onAfterAction = null,
+                                                CancellationToken coopToken = default)
+    {
+        try
+        {
+            CancellationTokenSource  currentCts = CancellationTokenSource.CreateLinkedTokenSource(coopToken);
+            CancellationTokenSource? prevCts    = Interlocked.Exchange(ref _videoPlayerFadeCts, currentCts);
+            prevCts?.Cancel();
+            prevCts?.Dispose();
+
+            CancellationToken currentToken = currentCts.Token;
+
+            fromValue /= 100d;
+            toValue /= 100d;
+
+            double timeDelta = resolutionMs / durationMs;
+            double step = Math.Max(fromValue, toValue) * timeDelta;
+            step = fadeOut ? -step : step;
+
+            Unsafe.SkipInit(out Timer timer); // HACK: Ignore Error CS0165
+            timer = new Timer(Impl, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(resolutionMs));
+
+            return;
+
+            [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+            void Impl(object? state)
+            {
+                try
+                {
+                    // ReSharper disable once AccessToModifiedClosure
+                    if (timer == null! ||
+                        currentToken.IsCancellationRequested)
+                    {
+                        timer?.Dispose();
+                        onAfterAction?.Invoke();
+                        return;
+                    }
+
+                    durationMs -= resolutionMs;
+                    fromValue += step;
+                    if (durationMs < 0)
+                    {
+                        if (_videoPlayer != null!)
+                        {
+                            TrySetVolume(toValue);
+                        }
+                        timer.Dispose();
+                        onAfterAction?.Invoke();
+                        return;
+                    }
+
+                    if (_videoPlayer != null!)
+                    {
+                        TrySetVolume(fromValue);
+                    }
+                }
+                catch (Exception e)
+                {
+                    timer.Dispose();
+                    onAfterAction?.Invoke();
+                    Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore::Impl] {e}",
+                                        LogType.Error,
+                                        true);
+                }
+            }
+
+            void TrySetVolume(double value)
+            {
+                try
+                {
+                    _videoPlayer.Volume = value;
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore::TrySetVolume] {e}",
+                                        LogType.Error,
+                                        true);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore] {e}",
+                                LogType.Error,
+                                true);
+        }
     }
 
     #endregion

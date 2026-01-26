@@ -27,19 +27,20 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            _videoPlayer = new MediaPlayer
+            MediaPlayer player = new()
             {
                 IsLoopingEnabled          = true,
                 IsVideoFrameServerEnabled = true,
                 Volume                    = AudioVolume.GetClampedVolume(),
                 IsMuted                   = !IsAudioEnabled
             };
+            Interlocked.Exchange(ref _videoPlayer, player);
 
-            _videoPlayer.MediaOpened += InitializeVideoFrameOnMediaOpened;
+            player.MediaOpened += InitializeVideoFrameOnMediaOpened;
 
             if (!UseSafeFrameRenderer)
             {
-                ((IWinRTObject)_videoPlayer).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
+                ((IWinRTObject)player).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
             }
         }
         catch (Exception ex)
@@ -157,6 +158,11 @@ public partial class LayeredBackgroundImage
             if (_videoPlayer == null!)
             {
                 return;
+            }
+
+            if (_videoPlayer.CurrentState == MediaPlayerState.Playing)
+            {
+                Interlocked.Exchange(ref _isPreviouslyPlayed, true);
             }
 
             _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer

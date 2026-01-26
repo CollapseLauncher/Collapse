@@ -131,6 +131,8 @@ namespace Hi3Helper
                 public string BgContextMenu_CopyUrlToClipboardBackgroundTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip;
                 public string BgContextMenu_EnableAudioText { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableAudioText;
                 public string BgContextMenu_EnableAudioTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableAudioTooltip;
+                public string BgContextMenu_KeepPlayVideoOnUnfocusText { get; set; } = LangFallback?._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText;
+                public string BgContextMenu_KeepPlayVideoOnUnfocusTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip;
                 public string BgContextMenu_EnableParallaxText { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableParallaxText;
                 public string BgContextMenu_EnableParallaxTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableParallaxTooltip;
                 public string BgContextMenu_ParallaxPixelShiftParentText { get; set; } = LangFallback?._HomePage.BgContextMenu_ParallaxPixelShiftParentText;

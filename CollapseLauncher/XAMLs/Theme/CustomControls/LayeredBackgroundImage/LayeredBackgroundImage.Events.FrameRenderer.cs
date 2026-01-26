@@ -372,12 +372,12 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    public void InitializeAndPlayVideoView(Action?           actionOnPlay             = null,
-                                           bool              blockIfAlreadyPlayed     = false,
-                                           bool              reinitializeImageSource  = true,
-                                           double            volumeFadeDurationMs   = 1000d,
-                                           double            volumeFadeResolutionMs = 10d,
-                                           CancellationToken token                    = default)
+    public void InitializeAndPlayVideoView(Action?           actionOnPlay            = null,
+                                           bool              blockIfAlreadyPlayed    = false,
+                                           bool              reinitializeImageSource = true,
+                                           double            volumeFadeDurationMs    = 1000d,
+                                           double            volumeFadeResolutionMs  = 10d,
+                                           CancellationToken token                   = default)
     {
         try
         {
@@ -402,11 +402,7 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.Play();
 
                 SetValue(IsVideoPlayProperty, true);
-                StartVideoPlayerVolumeFade(Math.Max(0, _videoPlayer.Volume * 100d),
-                                           AudioVolume,
-                                           volumeFadeDurationMs,
-                                           volumeFadeResolutionMs,
-                                           coopToken: token);
+                FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
                 InitializeRenderTarget();
 
                 _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
@@ -467,20 +463,14 @@ public partial class LayeredBackgroundImage
             actionOnPause?.Invoke();
 
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
-            StartVideoPlayerVolumeFade(Math.Min(AudioVolume, _videoPlayer.Volume * 100d),
-                                       0,
-                                       volumeFadeDurationMs,
-                                       volumeFadeResolutionMs,
-                                       true,
-                                       onAfterAction: Impl,
-                                       coopToken: token);
+            FadeOutAudio(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
             void Impl()
             {
                 try
                 {
-                    if (_videoPlayer != null!)
+                    if (_videoPlayer != null! && DispatcherQueue != null!)
                     {
                         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                                    {
@@ -505,111 +495,6 @@ public partial class LayeredBackgroundImage
         catch (Exception e)
         {
             Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeAndPauseVideoView|OtherThread] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    private void StartVideoPlayerVolumeFade(double            fromValue,
-                                            double            toValue,
-                                            double            durationMs,
-                                            double            resolutionMs,
-                                            bool              fadeOut       = false,
-                                            Action?           onAfterAction = null,
-                                            CancellationToken coopToken     = default)
-    {
-        new Thread(() => 
-                       StartVideoPlayerVolumeFadeCore(fromValue,
-                                                      toValue,
-                                                      durationMs,
-                                                      resolutionMs,
-                                                      fadeOut,
-                                                      onAfterAction,
-                                                      coopToken))
-        {
-            IsBackground = true
-        }.Start();
-    }
-
-    private void StartVideoPlayerVolumeFadeCore(double            fromValue,
-                                                double            toValue,
-                                                double            durationMs,
-                                                double            resolutionMs,
-                                                bool              fadeOut       = false,
-                                                Action?           onAfterAction = null,
-                                                CancellationToken coopToken     = default)
-    {
-        try
-        {
-            CancellationTokenSource? prevCts = Interlocked.Exchange(ref _videoPlayerFadeCts, CancellationTokenSource.CreateLinkedTokenSource(coopToken));
-            prevCts?.Cancel();
-            prevCts?.Dispose();
-
-            fromValue /= 100d;
-            toValue   /= 100d;
-
-            double timeDelta = resolutionMs / durationMs;
-            double step      = Math.Max(fromValue, toValue) * timeDelta;
-            step = fadeOut ? -step : step;
-
-            Unsafe.SkipInit(out Timer timer); // HACK: Ignore Error CS0165
-            timer = new Timer(Impl, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(resolutionMs));
-
-            return;
-
-            void Impl(object? state)
-            {
-                try
-                {
-                    if (timer == null ||
-                        _videoPlayerFadeCts.Token.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
-                    durationMs -= resolutionMs;
-                    fromValue  += step;
-                    if (durationMs < 0)
-                    {
-                        if (_videoPlayer != null!)
-                        {
-                            TrySetVolume(toValue);
-                        }
-                        timer.Dispose();
-                        onAfterAction?.Invoke();
-                        return;
-                    }
-
-                    if (_videoPlayer != null!)
-                    {
-                        TrySetVolume(fromValue);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore::Impl] {e}",
-                                        LogType.Error,
-                                        true);
-                }
-            }
-
-            void TrySetVolume(double value)
-            {
-                try
-                {
-                    _videoPlayer.Volume = value;
-                }
-                catch (Exception e)
-                {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore::TrySetVolume] {e}",
-                                        LogType.Error,
-                                        true);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore] {e}",
                                 LogType.Error,
                                 true);
         }

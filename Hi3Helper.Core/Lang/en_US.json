@@ -241,6 +241,8 @@
     "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Copy only the URL/Path of the background layer.",
     "BgContextMenu_EnableAudioText": "Enable Audio on Video",
     "BgContextMenu_EnableAudioTooltip": "Enables audio while playing video background.",
+    "BgContextMenu_KeepPlayVideoOnUnfocusText": "Keep Play Video When Unfocused",
+    "BgContextMenu_KeepPlayVideoOnUnfocusTooltip": "Keep play video background with muted audio even if the window is unfocused. When disabled, the video background will be completely paused.",
     "BgContextMenu_EnableParallaxText": "Enable Parallax Effect",
     "BgContextMenu_EnableParallaxTooltip": "Enables parallax effect on background while hovering around launcher area.",
     "BgContextMenu_ParallaxPixelShiftParentText": "Parallax Pixels Shift",

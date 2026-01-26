@@ -240,6 +240,8 @@
     "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Salin URL/Path ke clipboard untuk layer background saja.",
     "BgContextMenu_EnableAudioText": "Nyalakan Suara pada Video",
     "BgContextMenu_EnableAudioTooltip": "Menyalakan audio saat memutar background video (apabila ada).",
+    "BgContextMenu_KeepPlayVideoOnUnfocusText": "Tetap Putar Video Saat Unfocus",
+    "BgContextMenu_KeepPlayVideoOnUnfocusTooltip": "Tetap putar background video dengan audio yang dimatikan walaupun window sedang dalam status \"unfocus\". Saat opsi ini dimatikan, video background akan di-pause.",
     "BgContextMenu_EnableParallaxText": "Nyalakan Efek Parallax",
     "BgContextMenu_EnableParallaxTooltip": "Menyalakan efek parallax pada background saat kursor di atas area launcher.",
     "BgContextMenu_ParallaxPixelShiftParentText": "Sisiran Pixel untuk Parallax",

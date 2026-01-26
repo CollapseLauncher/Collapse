@@ -2,6 +2,7 @@
 using FFmpegInteropX;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.WinRT.WindowsStream;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -87,6 +88,7 @@ public partial class LayeredBackgroundImage
     #region Fields
 
     private bool _isLoaded = true;
+    private bool _isPreviouslyPlayed;
 
     #endregion
 
@@ -311,7 +313,16 @@ public partial class LayeredBackgroundImage
             // Set-ups Video Player upfront
             instance.InitializeVideoPlayer();
 
-            bool useFfmpeg = instance.UseFfmpegDecoder;
+            bool        useFfmpeg = instance.UseFfmpegDecoder;
+            MediaPlayer player    = instance._videoPlayer;
+
+            MediaSourceConfig ffmpegConfig = new()
+            {
+                Video =
+                {
+                    MaxDecoderThreads = (uint)Environment.ProcessorCount
+                }
+            };
 
             // Assign media source
             if (sourceStream != null)
@@ -319,25 +330,64 @@ public partial class LayeredBackgroundImage
                 IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
                 if (useFfmpeg)
                 {
-                    instance._videoFfmpegMediaSource = await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom);
-                    instance._videoPlayer.SetMediaSource(instance._videoFfmpegMediaSource.GetMediaStreamSource());
+                StartLoadStreamFfmpeg:
+                    WindowId windowId = instance.GetElementWindowId();
+                    FFmpegMediaSource ffmpegMediaSource =
+                        await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom, ffmpegConfig, windowId.Value);
+
+                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
+                    instance._videoFfmpegMediaSource = ffmpegMediaSource;
+
+                    // HACK:
+                    // Sometimes the media source isn't ready when the window just get restored from minimized state,
+                    // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
+                    // until it's ready.
+                    if (!ffmpegMediaSource.PlaybackItem.Source.IsOpen)
+                    {
+                        await Task.Delay(100);
+                        ffmpegMediaSource.Dispose();
+
+                        // Avoid double event assignment once the media is fully loaded.
+                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
+                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+                        goto StartLoadStreamFfmpeg;
+                    }
                 }
                 else
                 {
-                    instance._videoPlayer.SetStreamSource(sourceStreamRandom);
+                    player.SetStreamSource(sourceStreamRandom);
                 }
             }
             else if (sourceUri != null)
             {
                 if (useFfmpeg)
                 {
+                StartLoadUrlFfmpeg:
+                    WindowId windowId = instance.GetElementWindowId();
                     string sourceUriStr = sourceUri.IsFile ? sourceUri.LocalPath : sourceUri.ToString();
-                    instance._videoFfmpegMediaSource = sourceUri.IsFile
-                        ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr)
-                        : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr);
+                    FFmpegMediaSource ffmpegMediaSource = sourceUri.IsFile
+                        ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr, ffmpegConfig, windowId.Value)
+                        : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr, ffmpegConfig, windowId.Value);
 
-                    instance._videoFfmpegMediaSource.Configuration.Video.MaxDecoderThreads = (uint)Environment.ProcessorCount;
-                    instance._videoFfmpegMediaSource.OpenWithMediaPlayerAsync(instance._videoPlayer);
+                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
+                    instance._videoFfmpegMediaSource = ffmpegMediaSource;
+
+                    // HACK:
+                    // Sometimes the media source isn't ready when the window just get restored from minimized state,
+                    // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
+                    // until it's ready.
+                    if (!ffmpegMediaSource.PlaybackItem.Source.IsOpen)
+                    {
+                        await Task.Delay(100);
+                        ffmpegMediaSource.Dispose();
+
+                        // Avoid double event assignment once the media is fully loaded.
+                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
+                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+                        goto StartLoadUrlFfmpeg;
+                    }
                 }
                 else
                 {

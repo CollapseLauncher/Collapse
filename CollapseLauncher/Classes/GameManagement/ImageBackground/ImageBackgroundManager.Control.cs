@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -13,13 +10,31 @@ public partial class ImageBackgroundManager
 
     public void SetWindowFocusedEvent()
     {
-        Play(false);
+        if (GlobalKeepPlayVideoWhenWindowUnfocused)
+        {
+            CurrentBackgroundElement?.FadeInAudio();
+        }
+        else
+        {
+            Play(false);
+        }
     }
 
     public void SetWindowUnfocusedEvent()
     {
-        Pause(false);
+        if (GlobalKeepPlayVideoWhenWindowUnfocused)
+        {
+            CurrentBackgroundElement?.FadeOutAudio();
+        }
+        else
+        {
+            Pause(false);
+        }
     }
+
+    public void SetWindowMinimizeEvent() => Pause(false);
+
+    public void SetWindowRestoreEvent() => Play(false);
 
     public void Play(bool isUserRequest = true)
     {

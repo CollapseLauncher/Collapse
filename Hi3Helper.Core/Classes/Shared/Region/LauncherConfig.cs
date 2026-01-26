@@ -647,8 +647,9 @@ namespace Hi3Helper.Shared.Region
             { "IsEnablePluginAutoUpdate", true },
 
             // New Background Manager Parameters
-            { "globalIsBackgroundParallaxEffectEnabled", true },
-            { "globalBackgroundParallaxPixelShift", 8d }
+            { "GlobalIsBackgroundParallaxEffectEnabled", false },
+            { "GlobalBackgroundParallaxPixelShift", 8d },
+            { "GlobalKeepPlayVideoWhenWindowUnfocused", false }
         };
         #endregion
     }

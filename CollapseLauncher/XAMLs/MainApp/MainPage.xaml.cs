@@ -16,6 +16,7 @@ using Hi3Helper;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -69,7 +70,8 @@ namespace CollapseLauncher
 
         internal static readonly List<string> PreviousTagString = [];
 
-        internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset, true));
+        internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
+        internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
 
         #endregion
 

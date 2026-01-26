@@ -538,13 +538,13 @@ namespace CollapseLauncher.Helper
                                 }
                             case SC_MINIMIZE:
                                 {
-                                    ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
+                                    ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
                                     InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
-                                    ImageBackgroundManager.Shared.SetWindowFocusedEvent();
+                                    ImageBackgroundManager.Shared.SetWindowRestoreEvent();
                                     InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                     break;
                                 }
@@ -560,7 +560,6 @@ namespace CollapseLauncher.Helper
                         }
                         else
                         {
-                            ImageBackgroundManager.Shared.SetWindowFocusedEvent();
                             InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                         }
                         break;

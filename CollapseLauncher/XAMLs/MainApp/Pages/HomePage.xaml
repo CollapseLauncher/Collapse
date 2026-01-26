@@ -120,6 +120,15 @@
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                  IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
+                                  ToolTipService.Placement="Left">
+                <ToggleMenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE786;"/>
+                </ToggleMenuFlyoutItem.Icon>
+            </ToggleMenuFlyoutItem>
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
