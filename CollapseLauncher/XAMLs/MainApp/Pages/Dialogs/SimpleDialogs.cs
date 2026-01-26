@@ -1323,10 +1323,10 @@ namespace CollapseLauncher.Dialogs
         public static async Task Dialog_SpawnMediaExtensionNotSupportedDialog(string filePath)
         {
             TextBlock textBlock = CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine("Sorry but the file extension for the following background image/video file is not supported.")
+                                               .AddTextBlockLine(Lang._Dialogs.Media_ExtNotSupported1)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath));
-            await SpawnDialog("Background File is not Supported",
+                                               .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
+            await SpawnDialog(Lang._Dialogs.Media_ExtNotSupportedTitle,
                               textBlock,
                               null,
                               Lang._Misc.OkaySad,
@@ -1337,15 +1337,15 @@ namespace CollapseLauncher.Dialogs
         public static async Task Dialog_SpawnImageNotSupportedDialog(string filePath)
         {
             TextBlock textBlock = CollapseUIExt.CreateTextBlock();
-            textBlock.AddTextBlockLine("Sorry but the following background image file is not supported by internal Windows Imaging Component (WIC) decoder. Make sure you have installed the decoder from Microsoft Store.")
+            textBlock.AddTextBlockLine(Lang._Dialogs.Media_ImageWICNotSupported1)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath));
-            await SpawnDialog("Image Background File is not Supported",
-                                            textBlock,
-                                            null,
-                                            Lang._Misc.OkaySad,
-                                            defaultButton: ContentDialogButton.Close,
-                                            dialogTheme: ContentDialogTheme.Error);
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
+            await SpawnDialog(Lang._Dialogs.Media_ImageWICNotSupportedTitle,
+                              textBlock,
+                              null,
+                              Lang._Misc.OkaySad,
+                              defaultButton: ContentDialogButton.Close,
+                              dialogTheme: ContentDialogTheme.Error);
         }
 
         public static async Task<bool> Dialog_SpawnVideoNotSupportedDialog(
@@ -1358,49 +1358,49 @@ namespace CollapseLauncher.Dialogs
             WindowsCodecHelper.TryGetFourCCString(in videoCodecGuid,
                                                   out string? videoCodecString);
 
-            videoCodecString ??= "Unknown";
+            videoCodecString ??= Lang._Dialogs.Media_VideoMFNotSupportedFormatTypeUnknown;
 
-            string useInternalMfLocale = "Install Codecs from Microsoft Store";
-            string useFfmpegLocale = "Install & Use FFmpeg Decoder";
+            string useInternalMfLocale = Lang._Dialogs.Media_VideoMFNotSupportedInstallMFCodecsBtn;
+            string useFfmpegLocale     = Lang._Dialogs.Media_VideoMFNotSupportedInstallFFmpegBtn;
 
             TextBlock textBlock = CollapseUIExt.CreateTextBlock();
 
-            textBlock.AddTextBlockLine("We have detected that the video background cannot be played due to missing decoder with details below:")
+            textBlock.AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported1)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format("File Path/URL: {0}", filePath), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format("Video Codec FourCC: {0}", videoCodecString), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported2, videoCodecString), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format("Video Codec GUID: {0}", videoCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported3, videoCodecGuid), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format("Audio Codec GUID: {0}", audioCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported4, audioCodecGuid), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format("Can Play Video/Audio?: (Video: {0} | Audio: {1})", canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported5, canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format("We suggest you to install required video/audio codecs from Microsoft Store by clicking \"{0}\" or use FFmpeg by clicking \"{1}\" button below.", useInternalMfLocale, useFfmpegLocale))
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported6, useInternalMfLocale, useFfmpegLocale))
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine("Note:", size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported7, size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine("We strongly recommend you to use FFmpeg as it broadly supports wide range of video/audio codecs and HW Decoding capability (depends on your hardware).", size: 11);
+                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported8, size: 11);
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(textBlock);
 
-            Button buttonIconCopyDetails = CollapseUIExt.CreateButtonWithIcon<Button>("Copy Details", textSize: 12d, textWeight: FontWeights.Bold)
+            Button buttonIconCopyDetails = CollapseUIExt.CreateButtonWithIcon<Button>(Lang._Dialogs.Media_VideoMFNotSupportedCopyDetailsBtn, textSize: 12d, textWeight: FontWeights.Bold)
                                                         .WithHorizontalAlignment(HorizontalAlignment.Left)
                                                         .WithMargin(0, 16, 0, 0);
             panel.AddElementToStackPanel(buttonIconCopyDetails);
             buttonIconCopyDetails.Click += ButtonIconCopyDetailsOnClick;
             buttonIconCopyDetails.Unloaded += ButtonIconCopyDetailsOnUnloaded;
 
-            ContentDialogResult result = await SpawnDialog("Video Background Codec is not Supported",
-                            panel,
-                            null,
-                            Lang._Misc.Close,
-                            useFfmpegLocale,
-                            useInternalMfLocale,
-                            defaultButton: ContentDialogButton.Primary,
-                            dialogTheme: ContentDialogTheme.Error);
+            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.Media_VideoMFNotSupportedTitle,
+                                                           panel,
+                                                           null,
+                                                           Lang._Misc.Close,
+                                                           useFfmpegLocale,
+                                                           useInternalMfLocale,
+                                                           defaultButton: ContentDialogButton.Primary,
+                                                           dialogTheme: ContentDialogTheme.Error);
 
             switch (result)
             {
@@ -1437,23 +1437,23 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<bool> Dialog_SpawnMediaFoundationCodecInstallDialog()
         {
-            string dialogConfirmInstall = "Download & Install Decoder";
+            string dialogConfirmInstall = Lang._Dialogs.Media_VideoMFCodecPrepareInstallBtn;
 
         StartOver:
             ContentDialogResult result =
-                await SpawnDialog(string.Format("Preparing {0} Decoder", "Windows Media Foundation"),
+                await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecPrepareTitle,
                                   CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine("Collapse Launcher requires additional Windows Media Foundation decoder to play background videos or other media. This process might trigger false detection by your anti-virus as we uses powershell to invoke these additional codecs installation, so please disable your anti-virus for a brief moment.")
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare1)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine("These additional codecs only includes support for limited video / audio formats, including:")
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare2)
                                                .AddTextBlockNewLine()
-                                               .AddTextBlockLine("    • VP9, AV1 (for Video)", FontWeights.Bold)
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare3, FontWeights.Bold)
                                                .AddTextBlockNewLine()
-                                               .AddTextBlockLine("    • Vorbis, Opus (for Audio)", FontWeights.Bold)
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare4, FontWeights.Bold)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine("You may require to restart your computer manually once the installation is completed. Click on \"")
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare5)
                                                .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
-                                               .AddTextBlockLine("\" to proceed."),
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare6),
                                   primaryText: dialogConfirmInstall,
                                   closeText: Lang._Misc.Cancel,
                                   defaultButton: ContentDialogButton.Primary,
@@ -1469,16 +1469,16 @@ namespace CollapseLauncher.Dialogs
 #pragma warning restore IDE0063
             {
                 WindowsCodecInstaller codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
-                if (!await Dialog_SpawnCodecDownloadInstallDialog("Installing Windows Media Foundation Codecs",
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoMFCodecInstallingTitle,
                                                                   codecInstaller, tokenSource))
                 {
                     goto StartOver;
                 }
             }
 
-            await SpawnDialog("Windows Media Foundation Codecs has been Installed!",
+            await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecInstalledTitle,
                               CollapseUIExt.CreateTextBlock()
-                                           .AddTextBlockLine("Windows Media Foundation Codecs has been installed successfully. Please manually restart your computer to make the codecs work."),
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecInstalled1),
                               closeText: Lang._Misc.OkayHappy,
                               dialogTheme: ContentDialogTheme.Success);
 
@@ -1487,20 +1487,20 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<bool> Dialog_SpawnFfmpegInstallDialog()
         {
-            string dialogConfirmInstall        = "Download & Install FFmpeg";
-            string dialogLocateExistingInstall = "Locate & Use Existing Install";
+            string dialogConfirmInstall        = Lang._Dialogs.Media_VideoFFmpegCodecPrepareInstallBtn;
+            string dialogLocateExistingInstall = Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateBtn;
 
         StartOver:
             ContentDialogResult result =
-            await SpawnDialog(string.Format("Preparing {0} Decoder", "FFmpeg"),
+            await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareTitle,
                               CollapseUIExt.CreateTextBlock()
-                                           .AddTextBlockLine("Collapse Launcher requires FFmpeg to play background videos or other media. You can either download or use your existing installation.")
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare1)
                                            .AddTextBlockNewLine(2)
-                                           .AddTextBlockLine("To continue, Click on\"")
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare2)
                                            .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
-                                           .AddTextBlockLine("\" to download and install a fresh installation of FFmpeg or Click on \"")
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare3)
                                            .AddTextBlockLine(dialogLocateExistingInstall, FontWeights.Bold)
-                                           .AddTextBlockLine("\" to locate a folder containing FFmpeg installation."),
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare4),
                                   primaryText: dialogConfirmInstall,
                                   secondaryText: dialogLocateExistingInstall,
                                   closeText: Lang._Misc.Cancel,
@@ -1515,7 +1515,7 @@ namespace CollapseLauncher.Dialogs
             string? foundFfmpegDir = null;
             if (result == ContentDialogResult.Secondary)
             {
-                string? ffmpegDir = await FileDialogNative.GetFolderPicker("Select your existing FFmpeg installation folder");
+                string ffmpegDir = await FileDialogNative.GetFolderPicker(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateDialog);
                 if (string.IsNullOrEmpty(ffmpegDir))
                 {
                     goto StartOver;
@@ -1524,24 +1524,24 @@ namespace CollapseLauncher.Dialogs
                 foundFfmpegDir = ImageBackgroundManager.FindFfmpegInstallFolder(ffmpegDir);
                 if (string.IsNullOrEmpty(foundFfmpegDir))
                 {
-                    await SpawnDialog("Cannot Find Existing FFmpeg Installation",
+                    await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
                                       CollapseUIExt.CreateTextBlock()
-                                                   .AddTextBlockLine("Collapse Launcher cannot find an existing installation of FFmpeg in this directory:")
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed1)
                                                    .AddTextBlockNewLine(2)
                                                    .AddTextBlockLine(ffmpegDir, FontWeights.Bold, 12)
                                                    .AddTextBlockNewLine(2)
-                                                   .AddTextBlockLine("Note:", FontWeights.Bold, 12)
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed2, FontWeights.Bold, 12)
                                                    .AddTextBlockNewLine()
-                                                   .AddTextBlockLine("Make sure you have these following .dll files:", true, size: 12)
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed3, true, size: 12)
                                                    .AddTextBlockLine(string.Join(", ", ImageBackgroundManager.GetFfmpegRequiredDllFilenames()), FontWeights.Bold, 12),
                                       closeText: Lang._Misc.Okay,
                                       dialogTheme: ContentDialogTheme.Error);
                     goto StartOver;
                 }
 
-                await SpawnDialog("Existing FFmpeg Installation is Detected!",
+                await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccessTitle,
                                   CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine("We've found an existing FFmpeg installation on this directory:")
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccess1)
                                                .AddTextBlockNewLine(2)
                                                .AddTextBlockLine(foundFfmpegDir, FontWeights.Bold, 12),
                                   closeText: Lang._Misc.OkayHappy,
@@ -1576,7 +1576,7 @@ namespace CollapseLauncher.Dialogs
 
                 using CancellationTokenSourceWrapper tokenSource    = new();
                 FFmpegCodecInstaller                 codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
-                if (!await Dialog_SpawnCodecDownloadInstallDialog("Installing FFmpeg", codecInstaller, tokenSource))
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoFFmpegCodecInstallingTitle, codecInstaller, tokenSource))
                 {
                     goto StartOver;
                 }
@@ -1778,7 +1778,7 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock preambleTitle = CollapseUIExt.Create<TextBlock>(x =>
                 {
-                    x.Text                    = "Preamble";
+                    x.Text                    = Lang._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
                     x.FontSize                = 28;
                     x.HorizontalAlignment     = HorizontalAlignment.Center;
                     x.HorizontalTextAlignment = TextAlignment.Center;
@@ -1789,14 +1789,14 @@ namespace CollapseLauncher.Dialogs
                                                       .WithMargin(0, 0, 0, 16)
                                                       .WithHorizontalAlignment(HorizontalAlignment.Center);
                 preambleText
-                   .AddTextBlockLine("Collapse Launcher utilizes the following library to enable one or more of its feature.", true, size: 12)
-                   .AddTextBlockLine("We are respecting the owner(s) of the following library and hence, following any rules mentioned within this agreement.", size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble1, true, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble2, size: 12)
                    .AddTextBlockNewLine(2)
-                   .AddTextBlockLine("Click on \"",                    size: 12)
-                   .AddTextBlockLine(Lang._Misc.IAcceptAgreement,      FontWeights.Bold, size: 12)
-                   .AddTextBlockLine("\" to continue or \"",           size: 12)
-                   .AddTextBlockLine(Lang._Misc.IDoNotAcceptAgreement, FontWeights.Bold, size: 12)
-                   .AddTextBlockLine("\" to cancel.",                  size: 12);
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble3, size: 12)
+                   .AddTextBlockLine(Lang._Misc.IAcceptAgreement,                          FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble4, size: 12)
+                   .AddTextBlockLine(Lang._Misc.IDoNotAcceptAgreement,                     FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble5, size: 12);
                 panel.AddElementToStackPanel(preambleText);
 
                 string dialogTitle =
