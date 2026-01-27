@@ -369,12 +369,6 @@ public partial class LayeredBackgroundImage
                     if (!(ffmpegMediaSource.PlaybackItem?.Source.IsOpen ?? true))
                     {
                         await Task.Delay(100);
-                        ffmpegMediaSource.Dispose();
-
-                        // Avoid double event assignment once the media is fully loaded.
-                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
 
                         if (loadFfmpegRetry <= 0)
                         {
@@ -398,20 +392,22 @@ public partial class LayeredBackgroundImage
                     if (isError) sourceStreamRandom?.Dispose();
                 }
             }
-
-            // Assign media source using Media Foundation.
-            if (sourceStream != null)
-            {
-                IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
-                player.SetStreamSource(sourceStreamRandom);
-            }
-            else if (sourceUri != null)
-            {
-                instance._videoPlayer.SetUriSource(sourceUri);
-            }
             else
             {
-                return false;
+                // Assign media source using Media Foundation.
+                if (sourceStream != null)
+                {
+                    IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
+                    player.SetStreamSource(sourceStreamRandom);
+                }
+                else if (sourceUri != null)
+                {
+                    instance._videoPlayer.SetUriSource(sourceUri);
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
         catch (Exception e)
