@@ -13,9 +13,9 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Svg;
 using PhotoSauce.MagicScaler;
 using System;
-using System.Buffers;
 using System.IO;
 using System.IO.Hashing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -33,6 +33,30 @@ namespace CollapseLauncher.Helper.Background;
 
 internal static class ColorPaletteUtility
 {
+    private static          byte[]? _sharedBuffer;
+    private static readonly Lock    SharedBufferLock = new();
+
+    private static byte[] GetSharedBufferOrResizeTo(int size)
+    {
+        using (SharedBufferLock.EnterScope())
+        {
+            size = (int)BitOperations.RoundUpToPowerOf2((uint)size);
+
+            if (_sharedBuffer != null && _sharedBuffer.Length >= size) return _sharedBuffer;
+
+            if (_sharedBuffer == null)
+            {
+                _sharedBuffer = GC.AllocateUninitializedArray<byte>(size);
+                return _sharedBuffer;
+            }
+
+            byte[] newBuffer = GC.AllocateUninitializedArray<byte>(size);
+            Array.Copy(_sharedBuffer, newBuffer, _sharedBuffer.Length);
+            _sharedBuffer = newBuffer;
+            return _sharedBuffer;
+        }
+    }
+
     public static async Task<Color> GetMediaAccentColorFromAsync(
         Uri               uri,
         CancellationToken token = default)
@@ -78,26 +102,19 @@ internal static class ColorPaletteUtility
             sourceStream.Seek(0, SeekOrigin.Begin);
 
             // -- Process palette
-            int                channels   = frameInfo.HasAlpha ? 4 : 3;
-            byte[]             tempBuffer = ArrayPool<byte>.Shared.Rent(frameInfo.Width * frameInfo.Height * channels);
-            using MemoryStream tempStream = new(tempBuffer);
-            try
-            {
-                ProcessImageSettings settings = new();
-                settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
-                MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
+            int                  channels   = frameInfo.HasAlpha ? 4 : 3;
+            byte[]               tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
+            using MemoryStream   tempStream = new(tempBuffer);
+            ProcessImageSettings settings   = new();
+            settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
+            MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
 
-                Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
-                Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
-                ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+            Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
+            Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
+            ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
 
-                File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
-                return colorArray;
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(tempBuffer);
-            }
+            File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
+            return colorArray;
         }
     }
 
