@@ -209,6 +209,8 @@ public partial class LayeredBackgroundImage
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
+
+            Interlocked.Exchange(ref _isVideoInitialized, 0);
         }
     }
 

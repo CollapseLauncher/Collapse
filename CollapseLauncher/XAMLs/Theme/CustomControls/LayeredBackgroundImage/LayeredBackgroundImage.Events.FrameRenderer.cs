@@ -65,6 +65,7 @@ public partial class LayeredBackgroundImage
 
     private int _isBlockVideoFrameDraw = 1;
     private int _isVideoFrameDrawInProgress;
+    private int _isVideoInitialized = 0;
 
     private CanvasVirtualImageSource? _canvasImageSource;
     private nint                      _canvasImageSourceNativePtr = nint.Zero;
@@ -373,7 +374,6 @@ public partial class LayeredBackgroundImage
     }
 
     public void InitializeAndPlayVideoView(Action?           actionOnPlay            = null,
-                                           bool              blockIfAlreadyPlayed    = false,
                                            bool              reinitializeImageSource = true,
                                            double            volumeFadeDurationMs    = 1000d,
                                            double            volumeFadeResolutionMs  = 10d,
@@ -381,15 +381,16 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            if (blockIfAlreadyPlayed &&
-                _videoPlayer != null! &&
-                _videoPlayer.CurrentState is MediaPlayerState.Playing)
-            {
-                return;
-            }
-
             if (_videoPlayer != null!)
             {
+                // To avoid double call by .Play(), if video is already played/initialized, then ignore.
+                if (Interlocked.Exchange(ref _isVideoInitialized, 1) == 1)
+                {
+                    return;
+                }
+
+                InitializeRenderTarget();
+
                 // Seek to last position if source was the same
                 if (_videoPlayer.CanSeek &&
                     TryGetSourceHashCode(BackgroundSource, out int lastSourceHashCode) &&
@@ -400,14 +401,12 @@ public partial class LayeredBackgroundImage
 
                 _videoPlayer.Volume = 0;
                 _videoPlayer.Play();
-
-                SetValue(IsVideoPlayProperty, true);
-                FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
-                InitializeRenderTarget();
-
                 _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
                     ? VideoPlayer_VideoFrameAvailableUnsafe
                     : VideoPlayer_VideoFrameAvailableSafe;
+                SetValue(IsVideoPlayProperty, true);
+
+                FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
             }
             else if (_lastBackgroundSourceType == MediaSourceType.Video &&
                      BackgroundSource != null)

@@ -14,6 +14,7 @@ public partial class LayeredBackgroundImage
     #region Fields
 
     private CancellationTokenSource? _videoPlayerPlayPauseCts;
+    private int                      _isVideoCurrentlyPlaying;
 
     #endregion
 
@@ -21,12 +22,16 @@ public partial class LayeredBackgroundImage
 
     public void Play()
     {
+        if (Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 1) == 1)
+        {
+            return;
+        }
+
         CancellationTokenSource? lastCts = Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
         lastCts?.Cancel();
         lastCts?.Dispose();
 
-        InitializeAndPlayVideoView(blockIfAlreadyPlayed: true,
-                                   volumeFadeDurationMs: 150d,
+        InitializeAndPlayVideoView(volumeFadeDurationMs: 150d,
                                    volumeFadeResolutionMs: 10d,
                                    token: _videoPlayerPlayPauseCts.Token);
     }
@@ -39,6 +44,8 @@ public partial class LayeredBackgroundImage
         {
             return;
         }
+
+        Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 0);
 
         CancellationTokenSource? lastCts = Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
         lastCts?.Cancel();
