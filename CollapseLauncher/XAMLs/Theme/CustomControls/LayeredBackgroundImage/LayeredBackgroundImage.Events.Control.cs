@@ -20,9 +20,9 @@ public partial class LayeredBackgroundImage
 
     #region Play and Pause Control
 
-    public void Play()
+    public void Play(bool forcePlay = false)
     {
-        if (Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 1) == 1)
+        if (Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 1) == 1 && !forcePlay)
         {
             return;
         }
@@ -38,14 +38,14 @@ public partial class LayeredBackgroundImage
 
     public void Pause()
     {
+        Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 0);
+
         if (!IsLoaded ||
             _videoPlayer == null! ||
             !_videoPlayer.CanPause)
         {
             return;
         }
-
-        Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 0);
 
         CancellationTokenSource? lastCts = Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
         lastCts?.Cancel();

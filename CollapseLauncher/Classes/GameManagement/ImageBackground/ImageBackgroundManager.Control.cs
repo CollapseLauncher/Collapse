@@ -45,7 +45,7 @@ public partial class ImageBackgroundManager
         }
 
         Interlocked.Exchange(ref _isPausedByUser, false);
-        CurrentBackgroundElement?.Play();
+        CurrentBackgroundElement?.Play(isUserRequest);
     }
 
     public void Pause(bool isUserRequest = true)

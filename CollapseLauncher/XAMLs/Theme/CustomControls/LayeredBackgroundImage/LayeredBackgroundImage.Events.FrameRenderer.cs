@@ -457,6 +457,11 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
+            // Unsubscribe early to avoid wasted skipped frames.
+            _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
+                ? VideoPlayer_VideoFrameAvailableUnsafe
+                : VideoPlayer_VideoFrameAvailableSafe;
+
             // Set events
             DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionOnPause?.Invoke();

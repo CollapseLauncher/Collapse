@@ -89,7 +89,6 @@ public partial class LayeredBackgroundImage
     #region Fields
 
     private bool _isLoaded = true;
-    private bool _isPreviouslyPlayed;
 
     #endregion
 
@@ -359,16 +358,24 @@ public partial class LayeredBackgroundImage
                         return false;
                     }
 
-                    ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
+                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
                     Interlocked.Exchange(ref instance._videoFfmpegMediaSource, ffmpegMediaSource);
 
                     // HACK:
                     // Sometimes the media source isn't ready when the window just get restored from minimized state,
                     // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
                     // until it's ready.
-                    if (!(ffmpegMediaSource.PlaybackItem?.Source.IsOpen ?? true))
+                    if (!(ffmpegMediaSource.PlaybackItem?.Source.IsOpen ?? false))
                     {
-                        await Task.Delay(100);
+                        await Task.Delay(150);
+
+                        // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
+                        Interlocked.Exchange(ref instance._isVideoInitialized, 0);
+                        player.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
+                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+
+                        ffmpegMediaSource.Dispose();
 
                         if (loadFfmpegRetry <= 0)
                         {

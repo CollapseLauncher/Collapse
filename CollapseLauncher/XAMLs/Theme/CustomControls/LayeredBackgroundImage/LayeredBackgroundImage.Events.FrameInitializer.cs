@@ -169,15 +169,6 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            if (_videoPlayer.CurrentState == MediaPlayerState.Playing)
-            {
-                Interlocked.Exchange(ref _isPreviouslyPlayed, true);
-            }
-
-            _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
-                ? VideoPlayer_VideoFrameAvailableUnsafe
-                : VideoPlayer_VideoFrameAvailableSafe;
-
             _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
             _videoPlayer.Pause();
 
