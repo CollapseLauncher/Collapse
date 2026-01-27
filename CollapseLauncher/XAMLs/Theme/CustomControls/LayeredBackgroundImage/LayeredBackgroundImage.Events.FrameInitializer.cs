@@ -58,9 +58,18 @@ public partial class LayeredBackgroundImage
             double currentCanvasWidth = playbackSession.NaturalVideoWidth;
             double currentCanvasHeight = playbackSession.NaturalVideoHeight;
 
-            _canvasWidth = (int)(currentCanvasWidth * WindowUtility.CurrentWindowMonitorScaleFactor);
-            _canvasHeight = (int)(currentCanvasHeight * WindowUtility.CurrentWindowMonitorScaleFactor);
+            _canvasWidth      = (int)currentCanvasWidth;
+            _canvasHeight     = (int)currentCanvasHeight;
             _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
+
+            // In some occasion, MediaPlayer reportedly 0x0px size which causes E_INVALIDARG while rendering frame
+            // if FFmpeg source is used. So, use size reported by FFmpeg instead.
+            if (_canvasRenderSize == default && _videoFfmpegMediaSource != null)
+            {
+                _canvasWidth      = _videoFfmpegMediaSource.CurrentVideoStream.PixelWidth;
+                _canvasHeight     = _videoFfmpegMediaSource.CurrentVideoStream.PixelHeight;
+                _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
+            }
         }
         catch (Exception ex)
         {

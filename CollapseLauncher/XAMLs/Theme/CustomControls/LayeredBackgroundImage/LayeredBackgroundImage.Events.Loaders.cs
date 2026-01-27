@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using FFmpegInteropX;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI;
@@ -316,83 +317,97 @@ public partial class LayeredBackgroundImage
             bool        useFfmpeg = instance.UseFfmpegDecoder;
             MediaPlayer player    = instance._videoPlayer;
 
-            MediaSourceConfig ffmpegConfig = new()
+            // Assign media source using FFmpeg.
+            if (useFfmpeg)
             {
-                Video =
+                IRandomAccessStream? sourceStreamRandom = null;
+                bool                 isError            = false;
+                try
                 {
-                    MaxDecoderThreads = (uint)Environment.ProcessorCount
-                }
-            };
+                    MediaSourceConfig ffmpegConfig = new()
+                    {
+                        Video =
+                        {
+                            MaxDecoderThreads = (uint)Environment.ProcessorCount
+                        }
+                    };
 
-            // Assign media source
+                    int loadFfmpegRetry = 5;
+                LoadFfmpeg:
+                    FFmpegMediaSource? ffmpegMediaSource = null;
+                    WindowId           windowId          = instance.GetElementWindowId();
+
+                    if (sourceStream != null)
+                    {
+                        sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
+                        ffmpegMediaSource =
+                            await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom, ffmpegConfig,
+                                                                          windowId.Value);
+                    }
+                    else if (sourceUri != null)
+                    {
+                        string sourceUriStr = sourceUri.IsFile ? sourceUri.LocalPath : sourceUri.ToString();
+                        ffmpegMediaSource = sourceUri.IsFile
+                            ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr, ffmpegConfig, windowId.Value)
+                            : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr, ffmpegConfig, windowId.Value);
+                    }
+
+                    // Yeet
+                    if (ffmpegMediaSource == null)
+                    {
+                        isError = true;
+                        return false;
+                    }
+
+                    ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
+                    Interlocked.Exchange(ref instance._videoFfmpegMediaSource, ffmpegMediaSource);
+
+                    // HACK:
+                    // Sometimes the media source isn't ready when the window just get restored from minimized state,
+                    // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
+                    // until it's ready.
+                    if (!(ffmpegMediaSource.PlaybackItem?.Source.IsOpen ?? true))
+                    {
+                        await Task.Delay(100);
+                        ffmpegMediaSource.Dispose();
+
+                        // Avoid double event assignment once the media is fully loaded.
+                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
+                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+
+                        if (loadFfmpegRetry <= 0)
+                        {
+                            isError = true;
+                            return false;
+                        }
+
+                        --loadFfmpegRetry;
+                        goto LoadFfmpeg;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isError = true;
+                    Logger.LogWriteLine($"Cannot load media source with FFmpeg due to an error: {ex}",
+                                        LogType.Error,
+                                        true);
+                }
+                finally
+                {
+                    if (isError) sourceStreamRandom?.Dispose();
+                }
+            }
+
+            // Assign media source using Media Foundation.
             if (sourceStream != null)
             {
                 IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
-                if (useFfmpeg)
-                {
-                StartLoadStreamFfmpeg:
-                    WindowId windowId = instance.GetElementWindowId();
-                    FFmpegMediaSource ffmpegMediaSource =
-                        await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom, ffmpegConfig, windowId.Value);
-
-                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
-                    instance._videoFfmpegMediaSource = ffmpegMediaSource;
-
-                    // HACK:
-                    // Sometimes the media source isn't ready when the window just get restored from minimized state,
-                    // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
-                    // until it's ready.
-                    if (!ffmpegMediaSource.PlaybackItem.Source.IsOpen)
-                    {
-                        await Task.Delay(100);
-                        ffmpegMediaSource.Dispose();
-
-                        // Avoid double event assignment once the media is fully loaded.
-                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
-                        goto StartLoadStreamFfmpeg;
-                    }
-                }
-                else
-                {
-                    player.SetStreamSource(sourceStreamRandom);
-                }
+                player.SetStreamSource(sourceStreamRandom);
             }
             else if (sourceUri != null)
             {
-                if (useFfmpeg)
-                {
-                StartLoadUrlFfmpeg:
-                    WindowId windowId = instance.GetElementWindowId();
-                    string sourceUriStr = sourceUri.IsFile ? sourceUri.LocalPath : sourceUri.ToString();
-                    FFmpegMediaSource ffmpegMediaSource = sourceUri.IsFile
-                        ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr, ffmpegConfig, windowId.Value)
-                        : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr, ffmpegConfig, windowId.Value);
-
-                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
-                    instance._videoFfmpegMediaSource = ffmpegMediaSource;
-
-                    // HACK:
-                    // Sometimes the media source isn't ready when the window just get restored from minimized state,
-                    // which causing media to stale and gets MediaPlayer.CurrentState to Closed. So, wait and reinitialize
-                    // until it's ready.
-                    if (!ffmpegMediaSource.PlaybackItem.Source.IsOpen)
-                    {
-                        await Task.Delay(100);
-                        ffmpegMediaSource.Dispose();
-
-                        // Avoid double event assignment once the media is fully loaded.
-                        instance._videoPlayer.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
-                        goto StartLoadUrlFfmpeg;
-                    }
-                }
-                else
-                {
-                    instance._videoPlayer.SetUriSource(sourceUri);
-                }
+                instance._videoPlayer.SetUriSource(sourceUri);
             }
             else
             {
