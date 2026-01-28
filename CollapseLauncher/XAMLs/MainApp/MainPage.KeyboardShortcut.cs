@@ -39,7 +39,7 @@ using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAccelerator
 
 public partial class MainPage : Page
 {
-    private readonly string ExplorerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+    public static readonly string ExplorerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
     
     private void InitKeyboardShortcuts()
     {

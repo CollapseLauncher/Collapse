@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -20,6 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.UI;
 using Windows.UI.Text;
 using WinRT;
@@ -36,7 +39,7 @@ namespace CollapseLauncher.Extension
         public string LocalePropertyName { get; init; }
     }
 
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
 #nullable enable
         /// <summary>
@@ -188,6 +191,22 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
+        internal static void BindProperty(this FrameworkElement element,
+                                          object?               source,
+                                          string                propertyName,
+                                          DependencyProperty    dependencyProperty,
+                                          BindingMode           bindingMode,
+                                          IValueConverter?      converter = null)
+        {
+            element.SetBinding(dependencyProperty, new Binding
+            {
+                Mode      = bindingMode,
+                Source    = source,
+                Path      = new PropertyPath(propertyName),
+                Converter = converter
+            });
+        }
+
         internal static void BindProperty<T>(
             this T              element,
             DependencyProperty  dependencyProperty,
@@ -237,13 +256,18 @@ namespace CollapseLauncher.Extension
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
         {
-            Grid contentPanel = CreateIconTextGrid(text, iconGlyph, iconFontFamily, iconSize, textSize, textWeight);
-            TButtonBase buttonReturn = new TButtonBase();
+            return RunFunctionReturnFromUIThread(Impl);
 
-            buttonReturn.CornerRadius = cornerRadius ?? AttachRoundedKindCornerRadius(buttonReturn);
-            buttonReturn.Content      = contentPanel;
-            buttonReturn.Style        = GetApplicationResource<Style>(buttonStyle);
-            return buttonReturn;
+            TButtonBase Impl()
+            {
+                Grid contentPanel = CreateIconTextGrid(text, iconGlyph, iconFontFamily, iconSize, textSize, textWeight);
+                TButtonBase buttonReturn = new();
+
+                buttonReturn.CornerRadius = cornerRadius ?? AttachRoundedKindCornerRadius(buttonReturn);
+                buttonReturn.Content      = contentPanel;
+                buttonReturn.Style        = GetApplicationResource<Style>(buttonStyle);
+                return buttonReturn;
+            }
         }
 
         internal static Grid CreateIconTextGrid(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
@@ -293,124 +317,252 @@ namespace CollapseLauncher.Extension
             return contentPanel;
         }
 
-        internal static Grid       CreateGrid()                                                     => new();
-        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new() { Orientation = orientation };
+#nullable enable
+        internal static TextBlock CreateTextBlock(string?      text           = null,
+                                                  double       fontSize       = 14d,
+                                                  FontWeight?  fontWeight     = null,
+                                                  string?      fontFamilyName = null,
+                                                  TextWrapping textWrapping   = TextWrapping.WrapWholeWords,
+                                                  TextTrimming textTrimming   = TextTrimming.CharacterEllipsis,
+                                                  TextAlignment textAlignment = TextAlignment.Left)
+        {
+            TextBlock textBlock = Create<TextBlock>(x =>
+            {
+                x.Text          = text;
+                x.FontSize      = fontSize;
+                x.FontWeight    = fontWeight ?? FontWeights.Normal;
+                x.TextWrapping  = textWrapping;
+                x.TextTrimming  = textTrimming;
+                x.TextAlignment = textAlignment;
+                if (fontFamilyName != null)
+                {
+                    x.FontFamily = new FontFamily(fontFamilyName);
+                }
+            });
+
+            return textBlock;
+        }
+#nullable restore
+
+        internal static Grid CreateGrid() =>
+            Create<Grid>();
+
+        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) =>
+            Create<StackPanel>(x => x.Orientation = orientation);
 
         internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
-            => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+        {
+            foreach (FrameworkElement element in elements)
+                RunFunctionFromUIThread(() => Impl(element));
+            return;
+
+            void Impl(FrameworkElement element)
+            {
+                stackPanel.Children.Add(element);
+            }
+        }
+
         internal static void AddElementToStackPanel(this Panel stackPanel, IEnumerable<FrameworkElement> elements)
         {
             foreach (FrameworkElement element in elements)
-                stackPanel.Children.Add(element);
+                stackPanel.AddElementToStackPanel(element);
         }
+
         internal static TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
             where TElement : FrameworkElement
         {
-            stackPanel.Children.Add(element);
-            return element;
+            return RunFunctionReturnFromUIThread(Impl);
+
+            TElement Impl()
+            {
+                stackPanel.Children.Add(element);
+                return element;
+            }
         }
 
         internal static void AddGridColumns(this Grid grid, params GridLength[] columnWidths)
         {
-            if (columnWidths.Length == 0)
-                throw new ArgumentException("\"columnWidth\" cannot be empty!");
+            RunFunctionFromUIThread(Impl);
+            return;
 
-            foreach (var t in columnWidths)
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = t
-                });
+            void Impl()
+            {
+                if (columnWidths.Length == 0)
+                    throw new ArgumentException("\"columnWidth\" cannot be empty!");
+
+                foreach (var t in columnWidths)
+                    grid.ColumnDefinitions.Add(new ColumnDefinition
+                    {
+                        Width = t
+                    });
+            }
         }
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
         {
-            for (; count > 0; count--) grid.ColumnDefinitions.Add(new ColumnDefinition
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
             {
-                Width = columnWidth ?? GridLength.Auto
-            });
+                for (; count > 0; count--) grid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = columnWidth ?? GridLength.Auto
+                });
+            }
         }
 
         internal static void AddGridRows(this Grid grid, int count, GridLength? columnHeight = null)
         {
-            for (; count > 0; count--) grid.RowDefinitions.Add(new RowDefinition
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
             {
-                Height = columnHeight ?? GridLength.Auto
-            });
+                for (; count > 0; count--) grid.RowDefinitions.Add(new RowDefinition
+                {
+                    Height = columnHeight ?? GridLength.Auto
+                });
+            }
         }
 
         internal static TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex = 0, int columnIndex = 0, int rowSpan = 0, int columnSpan = 0)
             where TElement : FrameworkElement
         {
-            grid.Children.Add(element);
-            SetElementGridRowPosition(element, rowIndex, rowSpan);
-            SetElementGridColumnPosition(element, columnIndex, columnSpan);
-            return element;
+            return RunFunctionReturnFromUIThread(Impl);
+
+            TElement Impl()
+            {
+                grid.Children.Add(element);
+                SetElementGridRowPosition(element, rowIndex, rowSpan);
+                SetElementGridColumnPosition(element, columnIndex, columnSpan);
+                return element;
+            }
         }
+
         internal static TElement AddElementToGridRow<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            grid.Children.Add(element);
-            SetElementGridRowPosition(element, index, span);
-            return element;
+            return RunFunctionReturnFromUIThread(Impl);
+
+            TElement Impl()
+            {
+                grid.Children.Add(element);
+                SetElementGridRowPosition(element, index, span);
+                return element;
+            }
         }
+
         internal static TElement AddElementToGridColumn<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            grid.Children.Add(element);
-            SetElementGridColumnPosition(element, index, span);
-            return element;
+            return RunFunctionReturnFromUIThread(Impl);
+
+            TElement Impl()
+            {
+                grid.Children.Add(element);
+                SetElementGridColumnPosition(element, index, span);
+                return element;
+            }
         }
 
         internal static void ClearChildren<TElement>(this TElement element)
             where TElement : Panel
         {
-            if (element == null) return;
-            element.Children.Clear();
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
+            {
+                if (element == null) return;
+                element.Children.Clear();
+            }
         }
 
         internal static void SetElementGridRowPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            Grid.SetRow(element, index);
-            if (span > 0) Grid.SetRowSpan(element, span);
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
+            {
+                Grid.SetRow(element, index);
+                if (span > 0) Grid.SetRowSpan(element, span);
+            }
         }
         internal static void SetElementGridColumnPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            Grid.SetColumn(element, index);
-            if (span > 0) Grid.SetColumnSpan(element, span);
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
+            {
+                Grid.SetColumn(element, index);
+                if (span > 0) Grid.SetColumnSpan(element, span);
+            }
         }
 
         internal static TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
         {
-            while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
-            return textBlock;
+            return RunFunctionReturnFromUIThread(Impl);
+
+            TextBlock Impl()
+            {
+                while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
+                return textBlock;
+            }
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d, double opacity = 1d)
+        internal static TextBlock AddTextBlockLine(
+            this TextBlock textBlock,
+            string         message,
+            bool           appendSpaceAtEnd,
+            FontWeight?    weight   = null,
+            double         size     = 14d,
+            double         opacity  = 1d)
         {
-            message += ' ';
+            if (appendSpaceAtEnd)
+            {
+                message += ' ';
+            }
             return textBlock.AddTextBlockLine(message, weight, size, opacity);
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d, double opacity = 1d)
+        internal static TextBlock AddTextBlockLine(
+            this TextBlock textBlock,
+            string         message,
+            FontWeight?    weight   = null,
+            double         size     = 14d,
+            double         opacity  = 1d)
         {
-            weight ??= FontWeights.Normal;
-            Run run = new Run { Text = message, FontWeight = weight.Value, FontSize = size };
+            return RunFunctionReturnFromUIThread(Impl);
 
-            if (opacity < 1d)
+            TextBlock Impl()
             {
-                SolidColorBrush brush       = GetApplicationResource<SolidColorBrush>("DefaultTextForegroundThemeBrush");
-                SolidColorBrush opaqueBrush = new SolidColorBrush(brush.Color)
+                weight ??= FontWeights.Normal;
+                Run run = new()
                 {
-                    Opacity = opacity
+                    Text       = message,
+                    FontWeight = weight.Value,
+                    FontSize   = size
                 };
-                run.Foreground      = opaqueBrush;
+
+                if (opacity < 1d)
+                {
+                    SolidColorBrush brush = GetApplicationResource<SolidColorBrush>("DefaultTextForegroundThemeBrush");
+                    SolidColorBrush opaqueBrush = new(brush.Color)
+                    {
+                        Opacity = opacity
+                    };
+                    run.Foreground = opaqueBrush;
+                }
+
+                textBlock.Inlines.Add(run);
+
+                return textBlock;
             }
-
-            textBlock.Inlines.Add(run);
-
-            return textBlock;
         }
 
         [field: AllowNull, MaybeNull]
@@ -743,21 +895,27 @@ namespace CollapseLauncher.Extension
         internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
             where TGrid : Grid
         {
-            foreach (GridLength t in gridSlices)
+            RunFunctionFromUIThread(Impl);
+            return;
+
+            void Impl()
             {
-                if (isColumn)
-                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = t });
-                else
-                    grid.RowDefinitions.Add(new RowDefinition { Height = t });
+                foreach (GridLength t in gridSlices)
+                {
+                    if (isColumn)
+                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = t });
+                    else
+                        grid.RowDefinitions.Add(new RowDefinition { Height = t });
+                }
             }
         }
 
         internal static void SetVisibility<TElement>(this TElement element, Visibility visibility)
-            where TElement : UIElement => element.Visibility = visibility;
+            where TElement : UIElement => RunFunctionFromUIThread(() => element.Visibility = visibility);
         internal static void SetTag<TElement>(this TElement element, object tag)
-            where TElement : FrameworkElement => element.Tag = tag;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Tag = tag);
         internal static void SetDataContext<TElement>(this TElement element, object dataContext)
-            where TElement : FrameworkElement => element.DataContext = dataContext;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.DataContext = dataContext);
 
         internal static void SetCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement => SetCornerRadius(element, uniform, uniform, uniform, uniform, kind);
@@ -775,18 +933,18 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void SetRowSpacing<TGrid>(this TGrid element, double rowSpacing)
-            where TGrid : Grid => element.RowSpacing = rowSpacing;
+            where TGrid : Grid => RunFunctionFromUIThread(() => element.RowSpacing = rowSpacing);
         internal static void SetColumnSpacing<TGrid>(this TGrid element, double columnSpacing)
-            where TGrid : Grid => element.ColumnSpacing = columnSpacing;
+            where TGrid : Grid => RunFunctionFromUIThread(() => element.ColumnSpacing = columnSpacing);
 
         internal static void SetMinWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => element.MinWidth = width;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinWidth = width);
         internal static void SetMinHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => element.MinHeight = height;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinHeight = height);
         internal static void SetWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => element.Width = width;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Width = width);
         internal static void SetHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => element.Height = height;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Height = height);
 
         internal static void SetPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement => SetPadding(element, uniform, uniform, uniform, uniform);
@@ -797,25 +955,31 @@ namespace CollapseLauncher.Extension
         internal static void SetPadding<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
-            if (element == null) return;
+            RunFunctionFromUIThread(Impl);
+            return;
 
-            switch (element)
+            void Impl()
             {
-                case Control control:
-                    control.Padding = thickness;
-                    break;
-                case Border border:
-                    border.Padding = thickness;
-                    break;
-                case Grid grid:
-                    grid.Padding = thickness;
-                    break;
-                case StackPanel stackPanel:
-                    stackPanel.Padding = thickness;
-                    break;
-                case TextBlock textBlock:
-                    textBlock.Padding = thickness;
-                    break;
+                if (element == null) return;
+
+                switch (element)
+                {
+                    case Control control:
+                        control.Padding = thickness;
+                        break;
+                    case Border border:
+                        border.Padding = thickness;
+                        break;
+                    case Grid grid:
+                        grid.Padding = thickness;
+                        break;
+                    case StackPanel stackPanel:
+                        stackPanel.Padding = thickness;
+                        break;
+                    case TextBlock textBlock:
+                        textBlock.Padding = thickness;
+                        break;
+                }
             }
         }
 
@@ -896,45 +1060,52 @@ namespace CollapseLauncher.Extension
         internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement => SetMargin(element, horizontal, vertical, horizontal, vertical);
         internal static void SetMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
-            where TElement : FrameworkElement => element.SetMargin(new Thickness(left, top, right, bottom));
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.SetMargin(new Thickness(left, top, right, bottom)));
         internal static void SetMargin<TElement>(this TElement element, Thickness thickness)
-            where TElement : FrameworkElement => element.Margin = thickness;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Margin = thickness);
 
         internal static void SetButtonFlyout<TButton>(this TButton button, FlyoutBase flyout)
-            where TButton : Button => button.Flyout = flyout;
+            where TButton : Button => RunFunctionFromUIThread(() => button.Flyout = flyout);
 
         internal static void SetHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
-            where TElement : Control => element.HorizontalContentAlignment = alignment;
+            where TElement : Control => RunFunctionFromUIThread(() => element.HorizontalContentAlignment = alignment);
         internal static void SetVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
-            where TElement : Control => element.VerticalContentAlignment = alignment;
+            where TElement : Control => RunFunctionFromUIThread(() => element.VerticalContentAlignment = alignment);
 
         internal static void SetHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
-            where TElement : FrameworkElement => element.HorizontalAlignment = alignment;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.HorizontalAlignment = alignment);
         internal static void SetVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
-            where TElement : FrameworkElement => element.VerticalAlignment = alignment;
+            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.VerticalAlignment = alignment);
 
         private static void InnerSetCornerRadius<TElement>(TElement element, CornerRadius cornerRadius)
             where TElement : FrameworkElement
         {
-            if (element == null) return;
+            RunFunctionFromUIThread(Impl);
+            return;
 
-            switch (element)
+            void Impl()
             {
-                case Control control:
-                    control.CornerRadius = cornerRadius;
-                    break;
-                case StackPanel stackPanel:
-                    stackPanel.CornerRadius = cornerRadius;
-                    break;
-                case Grid grid:
-                    grid.CornerRadius = cornerRadius;
-                    break;
+                if (element == null) return;
+
+                switch (element)
+                {
+                    case Control control:
+                        control.CornerRadius = cornerRadius;
+                        break;
+                    case StackPanel stackPanel:
+                        stackPanel.CornerRadius = cornerRadius;
+                        break;
+                    case Grid grid:
+                        grid.CornerRadius = cornerRadius;
+                        break;
+                }
             }
         }
 
         internal static void ApplyDropShadow(this FrameworkElement element, Color? shadowColor = null,
             double blurRadius = 10, double opacity = 0.25, bool isMasked = true, Vector3? offset = null)
         {
+            return;
             var shadowPanel = element.FindDescendant("ShadowGrid");
             if (shadowPanel == null)
             {
@@ -1038,29 +1209,6 @@ namespace CollapseLauncher.Extension
         public static T? GetDependencyObjectFromPointer<T>(this nint ptr)
             where T : DependencyObject
             => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
-
-
-        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-
-        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetAllControlsCursorRecursive(HandCursor);
-        }
-
-        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not UIElement element)
-            {
-                return;
-            }
-
-            element.SetCursor(HandCursor);
-        }
 
         internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
         {
@@ -1198,6 +1346,58 @@ namespace CollapseLauncher.Extension
 
             // Return the result (whether if it's not found/as null, or any last grid)
             return lastGrid;
+        }
+
+        internal static T Create<T>(Action<T>? setAttributeDelegate = null)
+            where T : new()
+        {
+            T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>().Result;
+            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
+            {
+                setAttributeDelegate?.Invoke(element);
+            }
+            else
+            {
+                DispatcherQueueExtensions.CurrentDispatcherQueue
+                                         .TryEnqueue(() => setAttributeDelegate?.Invoke(element));
+            }
+
+            return element;
+        }
+
+        internal static void RunFunctionFromUIThread(DispatcherQueueHandler action)
+        {
+            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
+            {
+                action();
+                return;
+            }
+
+            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(action);
+        }
+
+        internal static T RunFunctionReturnFromUIThread<T>(Func<T> func)
+        {
+            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
+            {
+                return func();
+            }
+
+            TaskCompletionSource<T> tcs = new();
+            DispatcherQueueExtensions.CurrentDispatcherQueue
+                                     .TryEnqueue(() =>
+                                                 {
+                                                     try
+                                                     {
+                                                         tcs.SetResult(func());
+                                                     }
+                                                     catch (Exception ex)
+                                                     {
+                                                         tcs.SetException(ex);
+                                                     }
+                                                 });
+
+            return tcs.Task.Result;
         }
     }
 }

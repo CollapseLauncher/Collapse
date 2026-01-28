@@ -710,8 +710,7 @@
                           Margin="{ThemeResource NavigationViewItemButtonMargin}"
                           Background="{TemplateBinding Background}"
                           Control.IsTemplateFocusTarget="True"
-                          CornerRadius="{TemplateBinding CornerRadius}"
-                          Shadow="{StaticResource NavigationViewItemShadow}">
+                          CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid.BackgroundTransition>
                             <BrushTransition Duration="0:0:0.083" />
                         </Grid.BackgroundTransition>
