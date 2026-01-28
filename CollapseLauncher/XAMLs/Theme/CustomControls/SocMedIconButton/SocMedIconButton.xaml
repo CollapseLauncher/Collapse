@@ -236,45 +236,25 @@
 
                         <animations:Explicit.Animations>
                             <animations:AnimationSet x:Name="SocMedIconPointerEntered">
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                      To="0, 5, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                       To="0"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                          To="10"
-                                                                          Duration="0:0:.25" />
-
                                 <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                      To="0, 5, 0"
+                                                                      To="0, 2, 0"
                                                                       Duration="0:0:.25" />
                                 <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
                                                                        To=".5"
                                                                        Duration="0:0:.25" />
                                 <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                          To="10"
+                                                                          To="5"
                                                                           Duration="0:0:.25" />
                             </animations:AnimationSet>
                             <animations:AnimationSet x:Name="SocMedIconPointerExited">
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                      To="0, 2, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                       To=".25"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                          To="4"
-                                                                          Duration="0:0:.25" />
-
                                 <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                      To="0, 2, 0"
+                                                                      To="0, 0, 0"
                                                                       Duration="0:0:.25" />
                                 <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
                                                                        To="0"
                                                                        Duration="0:0:.25" />
                                 <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                          To="4"
+                                                                          To="0"
                                                                           Duration="0:0:.25" />
                             </animations:AnimationSet>
                         </animations:Explicit.Animations>
@@ -302,15 +282,7 @@
                                 <imageex:ImageEx x:Name="Icon"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}">
-                                    <s:Effects.Shadow>
-                                        <s:AttachedDropShadow x:Name="IconShadow"
-                                                              BlurRadius="4"
-                                                              CastTo="{Binding ElementName=SocMedPanelShadowCaster}"
-                                                              Opacity=".25"
-                                                              Offset="0, 2, 0" />
-                                    </s:Effects.Shadow>
-                                </imageex:ImageEx>
+                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"/>
                                 <imageex:ImageEx x:Name="IconHover"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
