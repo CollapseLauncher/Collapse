@@ -497,9 +497,11 @@ namespace CollapseLauncher.Helper
                         {
                             case 1 when lParam == 0:
                                 ImageBackgroundManager.Shared.SetWindowFocusedEvent();
+                                InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                 break;
                             case 0 when lParam == 0:
                                 ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
+                                InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                 break;
                         }
 
