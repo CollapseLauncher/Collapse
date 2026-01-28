@@ -141,6 +141,7 @@
                     HorizontalAlignment="Right"
                     x:FieldModifier="internal"
                     CornerRadius="{x:Bind uiextension:UIElementExtensions.AttachRoundedKindCornerRadius(LoadingStatusActionButton)}"
+                    Shadow="{StaticResource SharedThemeShadow}"
                     Style="{ThemeResource AccentButtonStyle}"
                     Translation="0,0,16"
                     Visibility="Collapsed">
@@ -178,6 +179,7 @@
                       Margin="8,8"
                       HorizontalAlignment="Right"
                       CornerRadius="8"
+                      Shadow="{StaticResource CaptionButtonShadow}"
                       Translation="0,0,16" />
                 <Grid Margin="8,8"
                       HorizontalAlignment="Right"

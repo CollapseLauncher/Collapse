@@ -33,6 +33,7 @@
                 BorderThickness="0"
                 CornerRadius="0,8,8,0"
                 Opacity="0"
+                Shadow="{ThemeResource SharedShadow}"
                 Translation="-48,0,0" />
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
@@ -102,6 +103,7 @@
                         </Grid.ColumnDefinitions>
                         <Grid x:Name="ComboBoxGameGridShadow"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGridShadow)}"
+                              Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
                         <Grid x:Name="ComboBoxGameGrid"
                               Grid.Column="0"
@@ -134,6 +136,7 @@
                               Grid.Column="1"
                               Margin="8,0,0,0"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGridShadow)}"
+                              Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
                         <Grid x:Name="ChangeGameBtnGrid"
                               Grid.Column="1"
@@ -307,6 +310,7 @@
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               Click="ToggleNotificationPanelBtnClick"
+                              Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource AcrylicToggleButtonStyle}">
                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                               FontSize="18"
@@ -335,6 +339,7 @@
                 Click="GridBG_Icon_Click"
                 PointerEntered="GridBG_Icon_PointerEntered"
                 PointerExited="GridBG_Icon_PointerExited"
+                Shadow="{ThemeResource SharedShadow}"
                 Style="{ThemeResource AcrylicButtonStyle}"
                 Translation="0,0,8">
             <Button.Transitions>
@@ -420,6 +425,7 @@
               Margin="0,48,-700,0"
               HorizontalAlignment="Right"
               Background="{ThemeResource NotificationPanelBrush}"
+              Shadow="{ThemeResource SharedShadow}"
               CornerRadius="8,0,0,8">
             <Grid.RowDefinitions>
                 <RowDefinition />

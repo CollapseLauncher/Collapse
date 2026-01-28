@@ -202,6 +202,7 @@
                  IsClosable="True"
                  IsOpen="False"
                  Opacity="0"
+                 Shadow="{ThemeResource SharedShadow}"
                  Severity="Informational">
             <InfoBar.Content>
                 <StackPanel Margin="0,-4,38,0"
@@ -210,9 +211,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -327,9 +328,9 @@
                     </Grid>
                     <Grid x:Name="ProgressPreSophonStatusGrid"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
@@ -431,15 +432,16 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid x:Name="DownloadModeLabelPreload"
                               Padding="8,2"
                               HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Background="{ThemeResource AccentColorBrush}"
                               CornerRadius="8"
+                              Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,16"
                               Visibility="Collapsed">
                             <TextBlock x:Name="DownloadModeLabelPreloadText"
@@ -456,6 +458,7 @@
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
                                 Style="{ThemeResource AcrylicButtonStyle}"
+                                Shadow="{ThemeResource SharedShadow}"
                                 Translation="0,0,8"
                                 Visibility="Visible">
                             <Button.Content>
@@ -484,6 +487,7 @@
                                 HorizontalContentAlignment="Stretch"
                                 Click="PredownloadDialog"
                                 CornerRadius="16"
+                                Shadow="{ThemeResource SharedShadow}"
                                 Style="{ThemeResource AcrylicButtonStyle}"
                                 Translation="0,0,8"
                                 Visibility="Collapsed">
@@ -517,6 +521,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="PredownloadDialog"
                         CornerRadius="16"
+                        Shadow="{ThemeResource SharedShadow}"
                         Style="{ThemeResource AcrylicSemiButtonStyle}"
                         Translation="0,0,8"
                         Visibility="Visible">
@@ -554,14 +559,15 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </c:NonFaultyGrid.RowDefinitions>
-            <!--<c:NonFaultyGrid.ChildrenTransitions>
+            <c:NonFaultyGrid.ChildrenTransitions>
                 <ContentThemeTransition />
-            </c:NonFaultyGrid.ChildrenTransitions>-->
+            </c:NonFaultyGrid.ChildrenTransitions>
             <Grid x:Name="SocMedPanel"
                   Grid.Row="0"
                   Padding="4,4"
                   Background="{ThemeResource SocMedPanelAcrylicBrush}"
                   CornerRadius="16"
+                  Shadow="{ThemeResource SharedShadow}"
                   Translation="0,0,32">
                 <ScrollViewer x:Name="SocMedPanelScrollView"
                               CanContentRenderOutsideBounds="True"
@@ -571,9 +577,9 @@
                                   TabFocusNavigation="Once"
                                   UseSystemFocusVisuals="True"
                                   XYFocusKeyboardNavigation="Enabled">
-                        <!--<ItemsControl.ItemContainerTransitions>
+                        <ItemsControl.ItemContainerTransitions>
                             <ContentThemeTransition />
-                        </ItemsControl.ItemContainerTransitions>-->
+                        </ItemsControl.ItemContainerTransitions>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
@@ -612,6 +618,7 @@
                                                     <Grid Margin="0,0,0,8"
                                                           Background="White"
                                                           CornerRadius="5"
+                                                          Shadow="{ThemeResource SharedShadow}"
                                                           Translation="0,0,16">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition />
@@ -651,6 +658,7 @@
                                                                         CornerRadius="5"
                                                                         PointerEntered="ElementScaleOutHoveredPointerEntered"
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
+                                                                        Shadow="{ThemeResource SharedShadow}"
                                                                         Style="{ThemeResource AcrylicSemiButtonStyle}"
                                                                         Tag="{Binding ClickLink}"
                                                                         Translation="0,0,8">
@@ -1035,6 +1043,7 @@
                                  VerticalAlignment="Top"
                                  Background="Orange"
                                  CornerRadius="10"
+                                 Shadow="{ThemeResource SharedShadow}"
                                  Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                     <c:NonFaultyGrid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -1267,6 +1276,7 @@
               CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
+              Shadow="{ThemeResource SharedShadow}"
               Translation="0,0,32"
               Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
             <Grid.RenderTransform>
@@ -1323,6 +1333,7 @@
                           ColumnSpacing="4"
                           CornerRadius="8"
                           Opacity="0.5"
+                          Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,16">
                         <Grid.OpacityTransition>
                             <ScalarTransition Duration="0:0:.2" />
@@ -1609,16 +1620,18 @@
               Margin="0,0,0,48"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center"
+              Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid>
-                <!--<Grid.ChildrenTransitions>
+                <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>-->
+                </Grid.ChildrenTransitions>
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
@@ -1669,6 +1682,7 @@
                       Background="{ThemeResource AccentColorBrush}"
                       ColumnSpacing="6"
                       CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -1740,6 +1754,7 @@
                             Background="{ThemeResource AccentColorBrush}"
                             CornerRadius="4"
                             Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
@@ -1794,6 +1809,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressInformationButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -1893,6 +1909,7 @@
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressSettingsButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -1918,16 +1935,18 @@
               Margin="0,0,0,48"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
+              Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid>
-                <!--<Grid.ChildrenTransitions>
+                <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>-->
+                </Grid.ChildrenTransitions>
                 <Grid x:Name="ProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
@@ -1958,6 +1977,7 @@
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
                           CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
+                          Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,32" />
                     <Ellipse x:Name="ProgressRingBG2"
                              Margin="4"
@@ -1982,6 +2002,7 @@
                       Background="{ThemeResource AccentColorBrush}"
                       ColumnSpacing="6"
                       CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -2019,6 +2040,7 @@
                             Background="{ThemeResource AccentColorBrush}"
                             CornerRadius="4"
                             Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
@@ -2068,6 +2090,7 @@
                       HorizontalAlignment="Center"
                       Background="{ThemeResource AccentColorBrush}"
                       CornerRadius="8"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16"
                       Visibility="Collapsed">
                     <TextBlock x:Name="DownloadModeLabelText"
@@ -2085,6 +2108,7 @@
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressSettingsButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
@@ -2116,6 +2140,7 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
+                    Shadow="{ThemeResource SharedShadow}"
                     Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
@@ -2279,6 +2304,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
+                    Shadow="{ThemeResource SharedShadow}"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
@@ -2732,6 +2758,7 @@
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,32"
                       Visibility="Collapsed">
                     <Button x:Name="GamePlaceholderBtnComingSoon"
@@ -2810,6 +2837,7 @@
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
+                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,32">
                     <Button x:Name="InstallGameBtn"
                             HorizontalAlignment="Stretch"
@@ -2985,6 +3013,7 @@
                     Click="ForceUpdatePlaytimeButton_Click"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
                     PointerExited="HidePlaytimeStatsFlyout"
+                    Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"
                     Translation="0,0,32">
                 <ToolTipService.ToolTip>
