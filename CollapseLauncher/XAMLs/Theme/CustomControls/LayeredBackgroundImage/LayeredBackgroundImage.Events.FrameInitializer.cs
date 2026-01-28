@@ -89,15 +89,16 @@ public partial class LayeredBackgroundImage
             _videoPlayerDurationTimerThread =
                 new Timer(UpdateMediaDurationTickView, this, TimeSpan.Zero, TimeSpan.FromSeconds(.5));
 
-            _canvasImageSource ??= new CanvasVirtualImageSource(CanvasDevice.GetSharedDevice(),
+            _canvasDevice ??= CanvasDevice.GetSharedDevice();
+            _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
                                                                 _canvasWidth,
                                                                 _canvasHeight,
                                                                 96f);
 
-            _canvasRenderTarget ??= new CanvasRenderTarget(_canvasImageSource,
-                                                         _canvasWidth,
-                                                         _canvasHeight,
-                                                         96f);
+            _canvasRenderTarget ??= new CanvasRenderTarget(_canvasDevice,
+                                                           _canvasWidth,
+                                                           _canvasHeight,
+                                                           96f);
 
             Interlocked.Exchange(ref UseSafeFrameRenderer, false);
             if (UseSafeFrameRenderer)

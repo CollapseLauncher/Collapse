@@ -65,8 +65,9 @@ public partial class LayeredBackgroundImage
 
     private int _isBlockVideoFrameDraw = 1;
     private int _isVideoFrameDrawInProgress;
-    private int _isVideoInitialized = 0;
+    private int _isVideoInitialized;
 
+    private CanvasDevice?             _canvasDevice;
     private CanvasVirtualImageSource? _canvasImageSource;
     private nint                      _canvasImageSourceNativePtr = nint.Zero;
 
