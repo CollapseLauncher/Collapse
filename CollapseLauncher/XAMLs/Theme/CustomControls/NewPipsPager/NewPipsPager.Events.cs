@@ -365,13 +365,11 @@ public partial class NewPipsPager
     {
         double pipsButtonSize = 0d;
 
-        if (_pipsPagerItemsRepeater.TryGetElement(0) is UIElement button)
-        {
-            var desiredSize = button.ActualSize;
-            pipsButtonSize = orientation == Orientation.Horizontal
-                ? desiredSize.X
-                : desiredSize.Y;
-        }
+        if (_pipsPagerItemsRepeater.TryGetElement(0) is not { } button) return pipsButtonSize;
+        Vector2 desiredSize = button.ActualSize;
+        pipsButtonSize = orientation == Orientation.Horizontal
+            ? desiredSize.X
+            : desiredSize.Y;
 
         return pipsButtonSize;
     }

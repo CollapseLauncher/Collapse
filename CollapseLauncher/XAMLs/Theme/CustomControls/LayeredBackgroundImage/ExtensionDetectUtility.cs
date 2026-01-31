@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 

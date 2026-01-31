@@ -18,6 +18,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+// ReSharper disable CommentTypo
 
 // ReSharper disable CheckNamespace
 

@@ -443,7 +443,7 @@ public partial class LayeredBackgroundImage
             else if (BackgroundSource != null)
             {
                 // Try loading last media
-                BackgroundSource_UseNormal(this, true);
+                BackgroundSource_UseNormal(this);
                 _lastBackgroundSource = BackgroundSource;
             }
             actionOnPlay?.Invoke();

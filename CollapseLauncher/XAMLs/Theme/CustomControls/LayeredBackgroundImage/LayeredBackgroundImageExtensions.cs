@@ -1,7 +1,6 @@
 ﻿using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -445,18 +444,6 @@ internal static class LayeredBackgroundImageExtensions
                              Share   = FileShare.ReadWrite,
                              Options = FileOptions.DeleteOnClose
                          });
-    }
-
-    internal static async Task WaitUntilWindowIsRestored(this LayeredBackgroundImage element)
-    {
-        WindowId windowId     = element.GetElementWindowId();
-        nint     windowHandle = Win32Interop.GetWindowFromWindowId(windowId);
-
-        await Task.Delay(250); // Artificially wait until window is active
-        if (!PInvoke.IsWindowVisible(windowHandle))
-        {
-            await Task.Delay(250); // Artificially wait until window is active
-        }
     }
 
     internal static WindowId GetElementWindowId(this LayeredBackgroundImage element)

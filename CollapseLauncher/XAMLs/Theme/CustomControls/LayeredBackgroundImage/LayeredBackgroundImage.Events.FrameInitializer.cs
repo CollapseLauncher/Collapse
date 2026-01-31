@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Media.Playback;
 using WinRT;
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;

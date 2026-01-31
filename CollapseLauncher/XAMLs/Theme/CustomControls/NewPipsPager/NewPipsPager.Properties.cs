@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using System.Threading;
 using Windows.Foundation;
 
@@ -194,12 +193,16 @@ public partial class NewPipsPager
 
     private Button? UpdateSelectedPipStyle(int newIndex, int oldIndex)
     {
-        ItemsRepeater? repeater = _pipsPagerItemsRepeater;
+        ItemsRepeater repeater = _pipsPagerItemsRepeater;
+        if (repeater == null!)
+        {
+            return null;
+        }
 
         try
         {
             if (!_isTemplateLoaded ||
-                repeater?.ItemsSourceView == null)
+                repeater.ItemsSourceView == null)
             {
                 return null;
             }
@@ -257,17 +260,6 @@ public partial class NewPipsPager
         button.UpdateLayout();
         VisualStateManager.GoToState(button, PipButtonStateNormal, true);
         return button;
-    }
-
-    private static Style? TryGetStyle(string styleName)
-    {
-        if (Application.Current.Resources.TryGetValue(styleName, out object styleObj) &&
-            styleObj is Style asStyle)
-        {
-            return asStyle;
-        }
-
-        return null;
     }
 
     private static void PreviousNavigationButtonMode_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)

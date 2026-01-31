@@ -146,7 +146,7 @@ public partial class LayeredBackgroundImage
         element.IsUseStaticBackgroundUsed = true;
     }
 
-    private static void BackgroundSource_UseNormal(LayeredBackgroundImage element, bool tryRestoreForeground = false)
+    private static void BackgroundSource_UseNormal(LayeredBackgroundImage element)
     {
         Grid grid = element._backgroundGrid;
         element.LoadFromSourceAsyncDetached(BackgroundSourceProperty,

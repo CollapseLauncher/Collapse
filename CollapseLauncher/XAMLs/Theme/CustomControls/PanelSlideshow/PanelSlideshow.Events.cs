@@ -6,12 +6,10 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using Velopack.Sources;
 using Windows.System;
 
 #nullable enable
@@ -46,7 +44,7 @@ public partial class PanelSlideshow
 
     private void ItemIndex_OnChange(int newIndex, int oldIndex)
     {
-        if (Items.Count == 0 || !IsLoaded || _presenterGrid == null)
+        if (Items.Count == 0 || !IsLoaded || _presenterGrid == null!)
         {
             return;
         }
@@ -393,10 +391,12 @@ public partial class PanelSlideshow
 
     private void PanelSlideshow_Unloaded(object sender, RoutedEventArgs e)
     {
-        _presenterGrid?.Children.Clear();
-
-        _presenterGrid?.Loaded -= PanelSlideshow_Loaded;
-        _presenterGrid?.Unloaded -= PanelSlideshow_Unloaded;
+        if (_presenterGrid != null!)
+        {
+            _presenterGrid.Children.Clear();
+            _presenterGrid.Loaded   -= PanelSlideshow_Loaded;
+            _presenterGrid.Unloaded -= PanelSlideshow_Unloaded;
+        }
 
         PointerEntered -= PanelSlideshow_PointerEntered;
         PointerExited -= PanelSlideshow_PointerExited;
@@ -404,8 +404,8 @@ public partial class PanelSlideshow
         KeyDown -= PanelSlideshow_KeyDown;
         PointerWheelChanged -= PanelSlideshow_OnPointerWheelChanged;
 
-        _previousButton?.Click -= PreviousButton_OnClick;
-        _nextButton?.Click -= NextButton_OnClick;
+        if (_previousButton != null!) _previousButton.Click -= PreviousButton_OnClick;
+        if (_nextButton != null!) _nextButton.Click -= NextButton_OnClick;
 
         // Deregister timer
         DisposeAndDeregisterTimer();
@@ -429,8 +429,8 @@ public partial class PanelSlideshow
         KeyDown += PanelSlideshow_KeyDown;
         PointerWheelChanged += PanelSlideshow_OnPointerWheelChanged;
 
-        _previousButton?.Click += PreviousButton_OnClick;
-        _nextButton?.Click += NextButton_OnClick;
+        if (_previousButton != null!) _previousButton.Click += PreviousButton_OnClick;
+        if (_nextButton != null!) _nextButton.Click         += NextButton_OnClick;
     }
 
     #endregion

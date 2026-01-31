@@ -12,7 +12,8 @@ public partial class PanelSlideshow : Control
 
     ~PanelSlideshow()
     {
-        _presenterGrid?.Loaded -= PanelSlideshow_Loaded;
-        _presenterGrid?.Unloaded -= PanelSlideshow_Unloaded;
+        if (_presenterGrid == null!) return;
+        _presenterGrid.Loaded   -= PanelSlideshow_Loaded;
+        _presenterGrid.Unloaded -= PanelSlideshow_Unloaded;
     }
 }
