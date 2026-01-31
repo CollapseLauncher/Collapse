@@ -51,6 +51,11 @@ public partial class LayeredBackgroundImage
         lastCts?.Cancel();
         lastCts?.Dispose();
 
+        if (CanUseStaticBackground)
+        {
+            BackgroundSource_UseStatic(this);
+        }
+
         DisposeAndPauseVideoView(blockIfAlreadyPaused: true,
                                  volumeFadeDurationMs: 150d,
                                  volumeFadeResolutionMs: 10d,

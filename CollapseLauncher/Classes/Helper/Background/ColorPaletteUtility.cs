@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using ColorThiefDotNet;
+using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
@@ -59,6 +60,7 @@ internal static class ColorPaletteUtility
 
     public static async Task<Color> GetMediaAccentColorFromAsync(
         Uri               uri,
+        bool              useFfmpegForVideo,
         CancellationToken token = default)
     {
         // -- Ignore if file doesn't exist or not a file URI
@@ -83,7 +85,7 @@ internal static class ColorPaletteUtility
         cachedPaletteFileInfo.Directory?.Create();
 
         // -- Get source stream
-        object? sourceStreamObj = await GetMediaFrameStream(filePath, token);
+        object? sourceStreamObj = await GetMediaFrameStream(filePath, useFfmpegForVideo, token);
 
         return await Task.Factory.StartNew(Impl, TaskCreationOptions.DenyChildAttach);
 
@@ -189,6 +191,7 @@ internal static class ColorPaletteUtility
 
     private static async Task<object?> GetMediaFrameStream(
         string            filePath,
+        bool              useFfmpegForVideo,
         CancellationToken token = default)
     {
         try
@@ -198,6 +201,20 @@ internal static class ColorPaletteUtility
                .SupportedVideoExtensionsLookup
                .Contains(extension))
             {
+                if (useFfmpegForVideo)
+                {
+                    using FrameGrabber? ffmpegFrameGrabber = await FrameGrabber.CreateFromFileAsync(filePath);
+                    TimeSpan ffmpegFrameDuration = ffmpegFrameGrabber.Duration / 2;
+                    using VideoFrame? ffmpegFrame = await ffmpegFrameGrabber.ExtractVideoFrameAsync(ffmpegFrameDuration);
+
+                    MemoryStream ffmpegFrameExtracted = new();
+                    IRandomAccessStream ffmpegFrameStream = ffmpegFrameExtracted.AsRandomAccessStream(true);
+                    await ffmpegFrame.EncodeAsPngAsync(ffmpegFrameStream);
+
+                    ffmpegFrameExtracted.Seek(0, SeekOrigin.Begin);
+                    return ffmpegFrameExtracted;
+                }
+
                 StorageFile          storageFile = await StorageFile.GetFileFromPathAsync(filePath);
                 StorageItemThumbnail thumbnail   = await storageFile
                    .GetThumbnailAsync(ThumbnailMode.VideosView,

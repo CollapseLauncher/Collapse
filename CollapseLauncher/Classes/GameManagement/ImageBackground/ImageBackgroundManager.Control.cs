@@ -1,4 +1,7 @@
-﻿using System.Threading;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using System.Threading;
+// ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -44,6 +47,14 @@ public partial class ImageBackgroundManager
             return;
         }
 
+        if (isUserRequest)
+        {
+            CurrentIsEnableBackgroundAutoPlay = true;
+        }
+
+        // Force to restore autoplay status to true.
+        CurrentBackgroundElement?.SetValue(LayeredBackgroundImage.IsVideoAutoplayProperty, true);
+
         Interlocked.Exchange(ref _isPausedByUser, false);
         CurrentBackgroundElement?.Play(isUserRequest);
     }
@@ -53,6 +64,7 @@ public partial class ImageBackgroundManager
         if (isUserRequest)
         {
             Interlocked.Exchange(ref _isPausedByUser, true);
+            CurrentIsEnableBackgroundAutoPlay = false;
         }
 
         CurrentBackgroundElement?.Pause();

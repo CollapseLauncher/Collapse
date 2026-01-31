@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -31,6 +33,8 @@ public partial class ImageBackgroundManager
     private CancellationTokenSource? _imageLoadingTokenSource;
 
     private static IValueConverter BoolInvertConverter => field ??= new InverseBooleanConverter();
+
+    private static IValueConverter MediaAutoplayWindowOverrideConverter => field ??= new MediaAutoplayWindowOverrideConverter();
 
     #endregion
 
@@ -51,9 +55,9 @@ public partial class ImageBackgroundManager
             }
 
             // -- Notify changes on context menu properties
-            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() =>
-                                                                            OnPropertyChanged(nameof(
-                                                                                CurrentSelectedBackgroundHasOverlayImage)));
+            DispatcherQueueExtensions
+               .CurrentDispatcherQueue
+               .TryEnqueue(() => OnPropertyChanged(nameof(CurrentSelectedBackgroundHasOverlayImage)));
 
             // -- Get context and invalidate previous CTS
             LayeredImageBackgroundContext context = ImageContextSources[index];
@@ -79,6 +83,13 @@ public partial class ImageBackgroundManager
                 throw new InvalidOperationException($"URI/Path of the background image is malformed! {context.BackgroundImagePath}");
             }
 
+            Unsafe.SkipInit(out Uri? backgroundStaticImageUri);
+            if (context.BackgroundImageStaticPath != null &&
+                !Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out backgroundStaticImageUri))
+            {
+                throw new InvalidOperationException($"URI/Path of the background image is malformed! {context.BackgroundImageStaticPath}");
+            }
+
             Uri? downloadedBackgroundUri = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
             (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token);
 
@@ -89,10 +100,26 @@ public partial class ImageBackgroundManager
                 downloadedBackgroundUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
             }
 
+            Unsafe.SkipInit(out Uri? downloadedBackgroundStaticUri);
+            if (backgroundStaticImageUri != null)
+            {
+                downloadedBackgroundStaticUri = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token);
+                (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token);
+            }
+
+            // -- Get upscaled image file if Waifu2X is enabled
+            if (GlobalIsWaifu2XEnabled)
+            {
+                downloadedOverlayUri = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token);
+                downloadedBackgroundUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
+                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token);
+            }
+
             token.ThrowIfCancellationRequested();
 
             // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
-            if (!await CheckCodecOrSpawnDialog(downloadedBackgroundUri))
+            (bool isSupported, bool isVideo) = await CheckCodecOrSpawnDialog(downloadedBackgroundUri);
+            if (!isSupported)
             {
                 return;
             }
@@ -101,10 +128,16 @@ public partial class ImageBackgroundManager
             new Thread(GetMediaAccentColor)
             {
                 IsBackground = true
-            }.Start(downloadedBackgroundUri);
+            }.Start((downloadedBackgroundUri, IsUseFfmpeg));
 
             // -- Use UI thread and load image layer
-            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri, downloadedBackgroundUri, context));
+            DispatcherQueueExtensions
+               .CurrentDispatcherQueue
+               .TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri,
+                                                 downloadedBackgroundUri,
+                                                 downloadedBackgroundStaticUri,
+                                                 isVideo,
+                                                 context));
         }
         catch (Exception ex)
         {
@@ -115,17 +148,36 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private void SpawnImageLayer(Uri? overlayFilePath, Uri? backgroundFilePath, LayeredImageBackgroundContext context)
+    private void SpawnImageLayer(Uri? overlayFilePath,
+                                 Uri? backgroundFilePath,
+                                 Uri? backgroundStaticFilePath,
+                                 bool isVideo,
+                                 LayeredImageBackgroundContext context)
     {
         LayeredBackgroundImage layerElement = new()
         {
             BackgroundSource          = backgroundFilePath,
+            BackgroundStaticSource    = backgroundStaticFilePath,
             ForegroundSource          = overlayFilePath,
             UseFfmpegDecoder          = IsUseFfmpeg,
             Tag                       = context,
             ParallaxResetOnUnfocused  = false,
             BackgroundElevationPixels = 64d
         };
+
+        if (!CurrentIsEnableCustomImage &&
+            !GlobalIsEnableCustomImage)
+        {
+            layerElement.BindProperty(this,
+                                      nameof(CurrentIsEnableBackgroundAutoPlay),
+                                      LayeredBackgroundImage.IsVideoAutoplayProperty,
+                                      BindingMode.OneWay,
+                                      MediaAutoplayWindowOverrideConverter);
+        }
+        else
+        {
+            layerElement.IsVideoAutoplay = WindowUtility.CurrentWindowIsVisible;
+        }
 
         layerElement.BindProperty(this,
                                   nameof(GlobalParallaxHoverSource),
@@ -182,6 +234,8 @@ public partial class ImageBackgroundManager
         layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
 
+        layerElement.Tag = isVideo;
+
         // Notify current displayed element change
         OnPropertyChanged(nameof(CurrentBackgroundElement));
     }
@@ -194,6 +248,15 @@ public partial class ImageBackgroundManager
             PresenterGrid?.Children.Remove(element);
         }
 
+        if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
+        {
+            Play(false);
+        }
+
+        if (layerElement.Tag is bool isDisplayControl)
+        {
+            CurrentBackgroundIsSeekable = isDisplayControl;
+        }
         layerElement.ImageLoaded -= LayerElementOnLoaded;
     }
 
@@ -260,12 +323,22 @@ public partial class ImageBackgroundManager
 
     private async void GetMediaAccentColor(object? context)
     {
-        if (context is not Uri { IsFile: true } asUri)
+        try
         {
-            return;
-        }
+            if (context is not (Uri asUri, bool useFfmpegForVideo))
+            {
+                return;
+            }
 
-        Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri);
-        ColorAccentChanged?.Invoke(color);
+            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo);
+            ColorAccentChanged?.Invoke(color);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"An error has occurred while trying to get media accent color! {ex}",
+                                LogType.Error,
+                                true);
+            SentryHelper.ExceptionHandler(ex);
+        }
     }
 }

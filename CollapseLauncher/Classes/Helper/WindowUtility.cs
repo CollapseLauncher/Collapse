@@ -148,6 +148,16 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        internal static bool CurrentWindowIsVisible
+        {
+            get
+            {
+                WS_STYLE windowStyle = PInvoke.GetWindowLong(CurrentWindowPtr, GWL_INDEX.GWL_STYLE);
+                bool     isHide      = windowStyle.HasFlag(WS_STYLE.WS_MINIMIZE);
+                return !isHide;
+            }
+        }
+
         internal static nint CurrentWindowMonitorPtr
         {
             get

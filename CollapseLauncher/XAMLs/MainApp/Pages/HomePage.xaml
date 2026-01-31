@@ -1162,14 +1162,13 @@
                     </StackPanel>
                 </StackPanel>
                 <Grid Background="{ThemeResource AcrylicComboBoxBackground}"
-                      DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                       MinWidth="380"
                       Padding="16, 8"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Stretch"
                       CornerRadius="8"
                       ColumnSpacing="16"
-                      Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                      Visibility="{Binding CurrentBackgroundIsSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="32"/>
@@ -1178,7 +1177,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
-                            DataContext="{x:Bind CurrentBackgroundManager.CurrentBackgroundElement, Mode=OneWay}"
+                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                             Margin="-10, -10, -8, -10"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
@@ -1194,6 +1193,7 @@
                         </Grid>
                     </Button>
                     <TextBlock Grid.Column="1"
+                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                                Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
@@ -1205,12 +1205,14 @@
                             VerticalAlignment="Center"
                             StepFrequency="10"
                             Minimum="0"
+                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                             Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                             Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                             Margin="-4,-8"
                             Padding="0"
                             IsThumbToolTipEnabled="False"/>
                     <TextBlock Grid.Column="3"
+                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                                Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"

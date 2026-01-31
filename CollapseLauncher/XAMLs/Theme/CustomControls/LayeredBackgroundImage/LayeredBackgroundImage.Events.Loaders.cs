@@ -30,7 +30,7 @@ public partial class LayeredBackgroundImage
 {
     #region Enums
 
-    internal enum MediaSourceType
+    private enum MediaSourceType
     {
         Unknown,
         Image,
@@ -120,6 +120,34 @@ public partial class LayeredBackgroundImage
             return;
         }
 
+        // If the element can be used on initial load change (with autoplay off) or static source is changed while previous static background is used,
+        // then load static background source.
+        if (element is { CanUseStaticBackground: true, IsVideoPlay: true } or { CanUseStaticBackground: true, IsUseStaticBackgroundUsed: true })
+        {
+            BackgroundSource_UseStatic(element);
+            return;
+        }
+
+        BackgroundSource_UseNormal(element);
+    }
+
+    private static void BackgroundSource_UseStatic(LayeredBackgroundImage element)
+    {
+        Grid grid = element._backgroundGrid;
+
+        element.LoadFromSourceAsyncDetached(BackgroundStaticSourceProperty,
+                                            nameof(BackgroundStretch),
+                                            nameof(BackgroundHorizontalAlignment),
+                                            nameof(BackgroundVerticalAlignment),
+                                            grid,
+                                            false,
+                                            ref element._lastBackgroundStaticSourceType);
+
+        element.IsUseStaticBackgroundUsed = true;
+    }
+
+    private static void BackgroundSource_UseNormal(LayeredBackgroundImage element, bool tryRestoreForeground = false)
+    {
         Grid grid = element._backgroundGrid;
         element.LoadFromSourceAsyncDetached(BackgroundSourceProperty,
                                             nameof(BackgroundStretch),
@@ -128,6 +156,8 @@ public partial class LayeredBackgroundImage
                                             grid,
                                             true,
                                             ref element._lastBackgroundSourceType);
+
+        element.IsUseStaticBackgroundUsed = false;
     }
 
     private static void ForegroundSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -155,11 +185,16 @@ public partial class LayeredBackgroundImage
         string              verticalAlignmentProperty,
         Grid                grid,
         bool                canReceiveVideo,
-        ref MediaSourceType lastMediaType)
+        ref MediaSourceType lastMediaType,
+        bool                isForceNotLoad = false)
     {
         try
         {
             object? source = GetValue(sourceProperty);
+            if (isForceNotLoad)
+            {
+                source = null;
+            }
 
             if (source is null)
             {
@@ -237,6 +272,9 @@ public partial class LayeredBackgroundImage
         {
             // Create instance
             Image image = new();
+
+            // Update property state
+            instance.SetValue(IsVideoPlayProperty, false);
 
             // Bind property
             image.BindProperty(instance, stretchProperty,             Image.StretchProperty,       BindingMode.OneWay);
@@ -595,5 +633,5 @@ public partial class LayeredBackgroundImage
         }
     }
 
-#endregion
+    #endregion
 }

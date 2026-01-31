@@ -18,10 +18,12 @@ public partial class LayeredBackgroundImage
 
     private object? _lastPlaceholderSource;
     private object? _lastBackgroundSource;
+    private object? _lastBackgroundStaticSource;
     private object? _lastForegroundSource;
 
     private MediaSourceType _lastPlaceholderSourceType;
     private MediaSourceType _lastBackgroundSourceType;
+    private MediaSourceType _lastBackgroundStaticSourceType;
     private MediaSourceType _lastForegroundSourceType;
 
     private bool _isPlaceholderHidden;
@@ -62,16 +64,21 @@ public partial class LayeredBackgroundImage
             _lastPlaceholderSource = PlaceholderSource;
         }
 
-        if (!IsSourceKindEquals(_lastBackgroundSource, BackgroundSource))
+        if (CanUseStaticBackground && !IsVideoAutoplay)
         {
-            LoadFromSourceAsyncDetached(BackgroundSourceProperty,
-                                        nameof(BackgroundStretch),
-                                        nameof(BackgroundHorizontalAlignment),
-                                        nameof(BackgroundVerticalAlignment),
-                                        _backgroundGrid,
-                                        true,
-                                        ref _lastBackgroundSourceType);
-            _lastBackgroundSource = BackgroundSource;
+            if (!IsSourceKindEquals(_lastBackgroundStaticSource, BackgroundStaticSource))
+            {
+                BackgroundSource_UseStatic(this);
+                _lastBackgroundStaticSource = BackgroundStaticSource;
+            }
+        }
+        else
+        {
+            if (!IsSourceKindEquals(_lastBackgroundSource, BackgroundSource))
+            {
+                BackgroundSource_UseNormal(this);
+                _lastBackgroundSource = BackgroundSource;
+            }
         }
 
         // ReSharper disable once InvertIf

@@ -22,10 +22,7 @@ public partial class LayeredBackgroundImage
         set => SetValue(IsVideoAutoplayProperty, value);
     }
 
-    public bool IsVideoPlay
-    {
-        get => (bool)GetValue(IsVideoPlayProperty);
-    }
+    public bool IsVideoPlay => (bool)GetValue(IsVideoPlayProperty);
 
     public bool UseFfmpegDecoder
     {
@@ -105,6 +102,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(BackgroundSourceProperty, value);
     }
 
+    public object? BackgroundStaticSource
+    {
+        get => (object?)GetValue(BackgroundStaticSourceProperty);
+        set => SetValue(BackgroundStaticSourceProperty, value);
+    }
+
     public Stretch BackgroundStretch
     {
         get => (Stretch)GetValue(BackgroundStretchProperty);
@@ -159,15 +162,9 @@ public partial class LayeredBackgroundImage
         set => SetValue(MediaDurationPositionProperty, value);
     }
 
-    public TimeSpan MediaDuration
-    {
-        get => (TimeSpan)GetValue(MediaDurationProperty);
-    }
+    public TimeSpan MediaDuration => (TimeSpan)GetValue(MediaDurationProperty);
 
-    public bool IsCurrentMediaSeekable
-    {
-        get => (bool)GetValue(IsCurrentMediaSeekableProperty);
-    }
+    public bool IsCurrentMediaSeekable => (bool)GetValue(IsCurrentMediaSeekableProperty);
 
     public double BackgroundElevationPixels
     {
@@ -205,6 +202,14 @@ public partial class LayeredBackgroundImage
         set => SetValue(MediaSourceCacheDirProperty, value);
     }
 
+    private bool CanUseStaticBackground => BackgroundStaticSource is not null;
+
+    private bool IsUseStaticBackgroundUsed
+    {
+        get;
+        set;
+    }
+
     #endregion
 
     #region Fields
@@ -237,7 +242,7 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(IsVideoPlay),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(true));
+                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty UseFfmpegDecoderProperty =
         DependencyProperty.Register(nameof(UseFfmpegDecoder),
@@ -307,6 +312,12 @@ public partial class LayeredBackgroundImage
 
     public static readonly DependencyProperty BackgroundSourceProperty =
         DependencyProperty.Register(nameof(BackgroundSource),
+                                    typeof(object),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(null!, BackgroundSource_OnChange));
+
+    public static readonly DependencyProperty BackgroundStaticSourceProperty =
+        DependencyProperty.Register(nameof(BackgroundStaticSource),
                                     typeof(object),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(null!, BackgroundSource_OnChange));

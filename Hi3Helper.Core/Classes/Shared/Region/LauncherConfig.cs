@@ -649,7 +649,7 @@ namespace Hi3Helper.Shared.Region
             // New Background Manager Parameters
             { "GlobalIsBackgroundParallaxEffectEnabled", false },
             { "GlobalBackgroundParallaxPixelShift", 8d },
-            { "GlobalKeepPlayVideoWhenWindowUnfocused", false }
+            { "GlobalKeepPlayVideoWhenWindowUnfocused", true }
         };
         #endregion
     }

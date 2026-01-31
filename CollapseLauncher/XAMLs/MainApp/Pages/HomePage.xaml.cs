@@ -441,10 +441,10 @@ namespace CollapseLauncher.Pages
 
         #region Carousel
         public void StartCarouselSlideshow()
-            => ImageCarouselEventSlideshow.ResumeSlideshow();
+            => ImageCarouselEventSlideshow?.ResumeSlideshow();
 
         public void StopCarouselSlideshow()
-            => ImageCarouselEventSlideshow.PauseSlideshow();
+            => ImageCarouselEventSlideshow?.PauseSlideshow();
 
         private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
             => ImageCarouselPipsPager.Opacity = .5d;

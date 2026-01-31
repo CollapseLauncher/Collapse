@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using Hi3Helper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
@@ -16,7 +17,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Graphics.DirectX;
 using Windows.Storage.Streams;
 
 // ReSharper disable CheckNamespace
@@ -39,9 +39,22 @@ public static class ClipboardUtility
                 return;
             }
 
+            bool hasBackground = frameToCopyType.HasFlag(FrameToCopyType.Background);
+            bool hasForeground = frameToCopyType.HasFlag(FrameToCopyType.Foreground);
+            bool hasBoth       = frameToCopyType == FrameToCopyType.Both;
+
             // Try to get video frame buffer first (if the background is video).
-            CanvasRenderTarget? backgroundCanvas = frameToCopyType.HasFlag(FrameToCopyType.Background)
-                ? instance.CurrentBackgroundElement?.LockCanvasRenderTarget()
+            LayeredBackgroundImage? currentElement = instance.CurrentBackgroundElement;
+            bool isStaticBackgroundShowing = currentElement is { BackgroundStaticSource: not null, IsVideoPlay: false };
+
+            string? usedBackgroundPath = isStaticBackgroundShowing
+                ? instance.CurrentSelectedBackgroundContext?
+                   .OriginBackgroundStaticImagePath
+                : instance.CurrentSelectedBackgroundContext?
+                   .OriginBackgroundImagePath;
+
+            CanvasRenderTarget? backgroundCanvas = hasBackground
+                ? isStaticBackgroundShowing ? null : currentElement?.LockCanvasRenderTarget()
                 : null;
 
             ICanvasResourceCreator? canvasDevice = backgroundCanvas;
@@ -58,10 +71,9 @@ public static class ClipboardUtility
             }
 
             // If it's still null (which most likely an image), get the canvas.
-            backgroundCanvas ??= frameToCopyType.HasFlag(FrameToCopyType.Background)
+            backgroundCanvas ??= hasBackground
                 ? await GetImageCanvasTargetBuffer(canvasDevice,
-                                                   instance.CurrentSelectedBackgroundContext?
-                                                      .OriginBackgroundImagePath)
+                                                   usedBackgroundPath)
                 : await GetImageCanvasTargetBuffer(canvasDevice,
                                                    instance.CurrentSelectedBackgroundContext?
                                                       .OriginOverlayImagePath);
@@ -73,8 +85,7 @@ public static class ClipboardUtility
             }
 
             // Get foreground canvas if available.
-            CanvasRenderTarget? foregroundCanvas =
-                frameToCopyType == FrameToCopyType.Both && frameToCopyType.HasFlag(FrameToCopyType.Foreground)
+            CanvasRenderTarget? foregroundCanvas = hasBoth && hasForeground
                     ? await GetImageCanvasTargetBuffer(canvasDevice,
                                                        instance.CurrentSelectedBackgroundContext?
                                                           .OriginOverlayImagePath)
@@ -141,10 +152,12 @@ public static class ClipboardUtility
         using CanvasBitmap bitmap = sourceUri.IsFile ?
             await CanvasBitmap.LoadAsync(canvasDevice,
                                          sourceUri.LocalPath,
-                                         96f, CanvasAlphaMode.Premultiplied) :
+                                         96f,
+                                         CanvasAlphaMode.Premultiplied) :
             await CanvasBitmap.LoadAsync(canvasDevice,
                                          sourceUri,
-                                         96f, CanvasAlphaMode.Premultiplied);
+                                         96f,
+                                         CanvasAlphaMode.Premultiplied);
 
         // Load to render target
         return await Task.Run(() =>
@@ -193,9 +206,6 @@ public static class ClipboardUtility
         // TODO: Add a way to assign the color size and channels based on CanvasRenderTarget.Format
         const int colorSizePerChannel = 1; // 8-bit / 1 byte per color
         const int channels = 4;
-
-        DirectXPixelFormat format    = sourceCanvasTarget.Format;
-        CanvasAlphaMode    alphaMode = sourceCanvasTarget.AlphaMode;
 
         int width  = (int)sourceCanvasTarget.SizeInPixels.Width;
         int height = (int)sourceCanvasTarget.SizeInPixels.Height;

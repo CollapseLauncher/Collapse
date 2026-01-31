@@ -209,6 +209,17 @@ public sealed partial class HomePage
             return;
         }
 
+        LayeredBackgroundImage?        currentElement = ImageBackgroundManager.Shared.CurrentBackgroundElement;
+        LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
+        bool isUseStaticBackground = !(currentElement?.IsVideoPlay ?? true) &&
+                                     currentElement.BackgroundStaticSource != null;
+
+        if (isUseStaticBackground &&
+            !Uri.TryCreate(currentContext?.OriginBackgroundStaticImagePath, UriKind.Absolute, out sourceUri))
+        {
+            return;
+        }
+
         if (sourceUri == null)
         {
             return;

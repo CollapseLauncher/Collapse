@@ -1,10 +1,7 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
-using Hi3Helper;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -35,12 +32,12 @@ public partial class ImageBackgroundManager
 {
     #region Codec Checks
 
-    private static async Task<bool> CheckCodecOrSpawnDialog(Uri? fileUri)
+    private static async Task<(bool IsSupported, bool IsVideo)> CheckCodecOrSpawnDialog(Uri? fileUri)
     {
         // -- Cancel if null
         if (fileUri == null)
         {
-            return false;
+            return (false, false);
         }
 
         string filePath = fileUri.IsFile ? fileUri.LocalPath : fileUri.ToString();
@@ -49,7 +46,7 @@ public partial class ImageBackgroundManager
         if (!IsMediaFileExtensionSupported(filePath))
         {
             await SimpleDialogs.Dialog_SpawnMediaExtensionNotSupportedDialog(filePath);
-            return false;
+            return (false, false);
         }
 
         // -- Check for supported image codec
@@ -57,35 +54,30 @@ public partial class ImageBackgroundManager
         {
             if (WindowsCodecHelper.IsFileSupportedImage(filePath))
             {
-                return true;
+                return (true, false);
             }
 
             await SimpleDialogs.Dialog_SpawnImageNotSupportedDialog(filePath);
-            return false;
+            return (false, false);
         }
 
         // -- Check for supported video codec
-        if (IsVideoMediaFileExtensionSupported(filePath))
+        if (WindowsCodecHelper.IsFileSupportedVideo(filePath,
+                                                    out bool canPlayVideo,
+                                                    out bool canPlayAudio,
+                                                    out Guid videoCodecGuid,
+                                                    out Guid audioCodecGuid) ||
+            IsUseFfmpeg)
         {
-            if (WindowsCodecHelper.IsFileSupportedVideo(filePath,
-                                                        out bool canPlayVideo,
-                                                        out bool canPlayAudio,
-                                                        out Guid videoCodecGuid,
-                                                        out Guid audioCodecGuid) ||
-                IsUseFfmpeg)
-            {
-                return true;
-            }
-
-            return await SimpleDialogs
-               .Dialog_SpawnVideoNotSupportedDialog(filePath,
-                                                    canPlayVideo,
-                                                    canPlayAudio,
-                                                    videoCodecGuid,
-                                                    audioCodecGuid);
+            return (true, true);
         }
 
-        return true;
+        return (await SimpleDialogs
+                   .Dialog_SpawnVideoNotSupportedDialog(filePath,
+                                                        canPlayVideo,
+                                                        canPlayAudio,
+                                                        videoCodecGuid,
+                                                        audioCodecGuid), true);
     }
 
     #endregion

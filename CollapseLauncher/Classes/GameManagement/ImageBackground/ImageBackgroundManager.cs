@@ -226,12 +226,13 @@ public partial class ImageBackgroundManager
 
     #region This Instance Properties
 
-    private string                    CurrentCustomBackgroundConfigKey    { get; set; } = "";
-    private string                    CurrentIsEnableCustomImageConfigKey { get; set; } = "";
-    private string                    CurrentSelectedBackgroundIndexKey   { get; set; } = "";
-    private HypLauncherBackgroundApi? CurrentBackgroundApi                { get; set; }
-    private Grid?                     PresenterGrid                       { get; set; }
-    private PresetConfig?             PresetConfig                        { get; set; }
+    private string                    CurrentCustomBackgroundConfigKey     { get; set; } = "";
+    private string                    CurrentIsEnableCustomImageConfigKey  { get; set; } = "";
+    private string                    CurrentSelectedBackgroundIndexKey    { get; set; } = "";
+    private string                    CurrentIsEnableBackgroundAutoPlayKey { get; set; } = "";
+    private HypLauncherBackgroundApi? CurrentBackgroundApi                 { get; set; }
+    private Grid?                     PresenterGrid                        { get; set; }
+    private PresetConfig?             PresetConfig                         { get; set; }
 
     public string? CurrentCustomBackgroundImagePath
     {
@@ -251,6 +252,16 @@ public partial class ImageBackgroundManager
             LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableCustomImageConfigKey, value);
             OnPropertyChanged();
             InitializeCore();
+        }
+    }
+
+    public bool CurrentIsEnableBackgroundAutoPlay
+    {
+        get => LauncherConfig.GetAppConfigValue(CurrentIsEnableBackgroundAutoPlayKey).ToBoolNullable() ?? true;
+        set
+        {
+            LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableBackgroundAutoPlayKey, value);
+            OnPropertyChanged();
         }
     }
 
@@ -293,16 +304,20 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public LayeredBackgroundImage? CurrentBackgroundElement
-    {
-        get => PresenterGrid?.Children.LastOrDefault() as LayeredBackgroundImage;
-    }
+    public LayeredBackgroundImage? CurrentBackgroundElement => PresenterGrid?.Children.LastOrDefault() as LayeredBackgroundImage;
 
     public bool CurrentSelectedBackgroundHasOverlayImage => !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginOverlayImagePath);
 
-    public int CurrentBackgroundCount
+    public int CurrentBackgroundCount => ImageContextSources.Count;
+
+    public bool CurrentBackgroundIsSeekable
     {
-        get => ImageContextSources.Count;
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     /// <summary>
@@ -334,9 +349,10 @@ public partial class ImageBackgroundManager
         ArgumentNullException.ThrowIfNull(presetConfig);
         ArgumentNullException.ThrowIfNull(presenterGrid);
 
-        CurrentCustomBackgroundConfigKey    = $"LastCustomBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentSelectedBackgroundIndexKey   = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentIsEnableCustomImageConfigKey = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentCustomBackgroundConfigKey     = $"LastCustomBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentSelectedBackgroundIndexKey    = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentIsEnableCustomImageConfigKey  = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentIsEnableBackgroundAutoPlayKey = $"LastIsEnableBackgroundAutoPlay-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
         PresenterGrid        = presenterGrid;
@@ -403,13 +419,16 @@ public partial class ImageBackgroundManager
                         string? overlayImagePath = contextEntry.BackgroundOverlay?.ImageUrl;
                         string? backgroundImagePath = contextEntry.BackgroundVideo?.ImageUrl ??
                                                       contextEntry.BackgroundImage?.ImageUrl;
+                        string? backgroundImageStaticPath = contextEntry.BackgroundImage?.ImageUrl;
 
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
-                            OriginOverlayImagePath    = overlayImagePath,
-                            OriginBackgroundImagePath = backgroundImagePath,
-                            OverlayImagePath          = overlayImagePath,
-                            BackgroundImagePath       = backgroundImagePath
+                            OriginOverlayImagePath          = overlayImagePath,
+                            OriginBackgroundImagePath       = backgroundImagePath,
+                            OriginBackgroundStaticImagePath = backgroundImageStaticPath,
+                            OverlayImagePath                = overlayImagePath,
+                            BackgroundImagePath             = backgroundImagePath,
+                            BackgroundImageStaticPath       = backgroundImageStaticPath
                         });
                     }
                 }
@@ -591,6 +610,12 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
         init;
     }
 
+    public string? OriginBackgroundStaticImagePath
+    {
+        get;
+        init;
+    }
+
     public string? OverlayImagePath
     {
         get;
@@ -598,6 +623,12 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     }
 
     public string? BackgroundImagePath
+    {
+        get;
+        init;
+    }
+
+    public string? BackgroundImageStaticPath
     {
         get;
         init;

@@ -80,6 +80,7 @@ public partial class LayeredBackgroundImage
     private Timer?                   _videoPlayerDurationTimerThread;
     private CancellationTokenSource? _videoPlayerFadeCts;
     private FFmpegMediaSource?       _videoFfmpegMediaSource;
+    private long                     _videoToSkipFrames;
 
     #endregion
 
@@ -90,6 +91,11 @@ public partial class LayeredBackgroundImage
         nint drawingSessionPpv = nint.Zero;
         try
         {
+            if (Interlocked.Decrement(ref _videoToSkipFrames) > 0)
+            {
+                return;
+            }
+
             if (_isBlockVideoFrameDraw == 1 ||
                 _canvasImageSourceNativePtr == nint.Zero ||
                 _canvasRenderTargetNativePtr == nint.Zero ||
@@ -164,10 +170,15 @@ public partial class LayeredBackgroundImage
 
     private void VideoPlayer_VideoFrameAvailableSafe(MediaPlayer sender, object args)
     {
-        CanvasDrawingSession? ds = null;
+        Unsafe.SkipInit(out CanvasDrawingSession? ds);
 
         try
         {
+            if (Interlocked.Decrement(ref _videoToSkipFrames) > 0)
+            {
+                return;
+            }
+
             if (_isBlockVideoFrameDraw == 1 ||
                 _canvasImageSource == null! ||
                 _canvasRenderTarget == null! ||
@@ -400,6 +411,26 @@ public partial class LayeredBackgroundImage
                     _videoPlayer.Position = lastPosition;
                 }
 
+                // INTENTIONAL: Skipping a blank frame after initialization.
+                try
+                {
+                    if (UseFfmpegDecoder)
+                    {
+                        // Use a half second for FFmpeg as it took slightly longer.
+                        double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream.FramesPerSecond ?? 0;
+                        ffmpegSessionFrameRate *= .5d;
+                        Interlocked.Exchange(ref _videoToSkipFrames, (long)Math.Round(ffmpegSessionFrameRate));
+                    }
+                    else
+                    {
+                        Interlocked.Exchange(ref _videoToSkipFrames, 2);
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+
                 _videoPlayer.Volume = 0;
                 _videoPlayer.Play();
                 _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
@@ -409,17 +440,11 @@ public partial class LayeredBackgroundImage
 
                 FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
             }
-            else if (_lastBackgroundSourceType == MediaSourceType.Video &&
-                     BackgroundSource != null)
+            else if (BackgroundSource != null)
             {
                 // Try loading last media
-                LoadFromSourceAsyncDetached(BackgroundSourceProperty,
-                                            nameof(BackgroundStretch),
-                                            nameof(BackgroundHorizontalAlignment),
-                                            nameof(BackgroundVerticalAlignment),
-                                            _backgroundGrid,
-                                            true,
-                                            ref _lastBackgroundSourceType);
+                BackgroundSource_UseNormal(this, true);
+                _lastBackgroundSource = BackgroundSource;
             }
             actionOnPlay?.Invoke();
         }
