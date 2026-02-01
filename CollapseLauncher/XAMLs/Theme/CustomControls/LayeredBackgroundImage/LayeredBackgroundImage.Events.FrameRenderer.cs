@@ -427,11 +427,11 @@ public partial class LayeredBackgroundImage
                     {
                         // ignored
                     }
-                }
 
-                _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
-                    ? VideoPlayer_VideoFrameAvailableUnsafe
-                    : VideoPlayer_VideoFrameAvailableSafe;
+                    _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
+                        ? VideoPlayer_VideoFrameAvailableUnsafe
+                        : VideoPlayer_VideoFrameAvailableSafe;
+                }
 
                 PlayVideoView(volumeFadeDurationMs, volumeFadeResolutionMs, token);
             }
@@ -476,10 +476,13 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            // Unsubscribe early to avoid wasted skipped frames.
-            _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
-                ? VideoPlayer_VideoFrameAvailableUnsafe
-                : VideoPlayer_VideoFrameAvailableSafe;
+            if (disposeVideoPlayer)
+            {
+                // Unsubscribe early to avoid wasted skipped frames.
+                _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
+                    ? VideoPlayer_VideoFrameAvailableUnsafe
+                    : VideoPlayer_VideoFrameAvailableSafe;
+            }
 
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
