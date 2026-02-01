@@ -14,18 +14,24 @@ public partial class LayeredBackgroundImage
     #region Fields
 
     private CancellationTokenSource? _videoPlayerPlayPauseCts;
-    private int                      _isVideoCurrentlyPlaying;
+    private enum VideoState
+    {
+        Paused,
+        RequestedPlay,
+        Playing,
+        RequestedPause,
+    }
+    private VideoState _videoState;
 
     #endregion
 
     #region Play and Pause Control
 
-    public void Play(bool forcePlay = false)
+    public void Play()
     {
-        if (Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 1) == 1 && !forcePlay)
-        {
+        if (Interlocked.CompareExchange(ref _videoState, VideoState.RequestedPlay, VideoState.Paused) !=
+            VideoState.Paused)
             return;
-        }
 
         CancellationTokenSource? lastCts = Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
         lastCts?.Cancel();
@@ -34,20 +40,26 @@ public partial class LayeredBackgroundImage
         InitializeAndPlayVideoView(volumeFadeDurationMs: 150d,
                                    volumeFadeResolutionMs: 10d,
                                    token: _videoPlayerPlayPauseCts.Token);
+
+        Interlocked.Exchange(ref _videoState, VideoState.Playing);
     }
 
     public void Pause()
     {
-        Interlocked.Exchange(ref _isVideoCurrentlyPlaying, 0);
+        if (Interlocked.CompareExchange(ref _videoState, VideoState.RequestedPause, VideoState.Playing) !=
+            VideoState.Playing)
+            return;
 
         if (!IsLoaded ||
             _videoPlayer == null! ||
             !_videoPlayer.CanPause)
         {
+            Paused();
             return;
         }
 
-        CancellationTokenSource? lastCts = Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
+        CancellationTokenSource? lastCts =
+            Interlocked.Exchange(ref _videoPlayerPlayPauseCts, new CancellationTokenSource());
         lastCts?.Cancel();
         lastCts?.Dispose();
 
@@ -56,11 +68,17 @@ public partial class LayeredBackgroundImage
             BackgroundSource_UseStatic(this);
         }
 
-        DisposeAndPauseVideoView(blockIfAlreadyPaused: true,
+        DisposeAndPauseVideoView(actionAfterPause: Paused,
                                  volumeFadeDurationMs: 150d,
                                  volumeFadeResolutionMs: 10d,
                                  disposeRenderImageSource: false, // Do not dispose Image Source
                                  token: _videoPlayerPlayPauseCts.Token);
+        return;
+
+        void Paused()
+        {
+            Interlocked.Exchange(ref _videoState, VideoState.Paused);
+        }
     }
 
     #endregion

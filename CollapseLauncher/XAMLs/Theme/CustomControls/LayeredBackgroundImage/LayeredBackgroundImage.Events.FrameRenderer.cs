@@ -471,15 +471,13 @@ public partial class LayeredBackgroundImage
                 Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
             });
 
-            if (blockIfAlreadyPaused &&
-                _videoPlayer != null! &&
-                _videoPlayer.CurrentState is MediaPlayerState.Paused)
-            {
-                return;
-            }
+            // Set events
+            DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
+            actionOnPause?.Invoke();
 
             if (_videoPlayer == null!)
             {
+                actionAfterPause?.Invoke();
                 return;
             }
 
@@ -487,10 +485,6 @@ public partial class LayeredBackgroundImage
             _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
                 ? VideoPlayer_VideoFrameAvailableUnsafe
                 : VideoPlayer_VideoFrameAvailableSafe;
-
-            // Set events
-            DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
-            actionOnPause?.Invoke();
 
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
             FadeOutAudio(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
@@ -505,7 +499,6 @@ public partial class LayeredBackgroundImage
                         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                                    {
                                                        DisposeVideoPlayer(disposeRenderImageSource);
-                                                       actionAfterPause?.Invoke();
                                                    });
                     }
                 }
@@ -517,6 +510,10 @@ public partial class LayeredBackgroundImage
                 }
                 finally
                 {
+                    DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, () =>
+                                                {
+                                                    actionAfterPause?.Invoke();
+                                                });
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                 }

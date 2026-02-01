@@ -56,7 +56,7 @@ public partial class ImageBackgroundManager
         CurrentBackgroundElement?.SetValue(LayeredBackgroundImage.IsVideoAutoplayProperty, true);
 
         Interlocked.Exchange(ref _isPausedByUser, false);
-        CurrentBackgroundElement?.Play(isUserRequest);
+        CurrentBackgroundElement?.Play();
     }
 
     public void Pause(bool isUserRequest = true)
