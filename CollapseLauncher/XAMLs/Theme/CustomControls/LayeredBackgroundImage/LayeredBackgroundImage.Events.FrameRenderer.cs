@@ -395,50 +395,45 @@ public partial class LayeredBackgroundImage
         {
             if (_videoPlayer != null!)
             {
-                // To avoid double call by .Play(), if video is already played/initialized, then ignore.
-                if (Interlocked.Exchange(ref _isVideoInitialized, 1) == 1)
+                // Only initialize once.
+                if (Interlocked.Exchange(ref _isVideoInitialized, 1) == 0)
                 {
-                    return;
-                }
+                    InitializeRenderTarget();
 
-                InitializeRenderTarget();
-
-                // Seek to last position if source was the same
-                if (_videoPlayer.CanSeek &&
-                    TryGetSourceHashCode(BackgroundSource, out int lastSourceHashCode) &&
-                    SharedLastMediaPosition.TryGetValue(lastSourceHashCode, out TimeSpan lastPosition))
-                {
-                    _videoPlayer.Position = lastPosition;
-                }
-
-                // INTENTIONAL: Skipping a blank frame after initialization.
-                try
-                {
-                    if (UseFfmpegDecoder)
+                    // Seek to last position if source was the same
+                    if (_videoPlayer.CanSeek &&
+                        TryGetSourceHashCode(BackgroundSource, out int lastSourceHashCode) &&
+                        SharedLastMediaPosition.TryGetValue(lastSourceHashCode, out TimeSpan lastPosition))
                     {
-                        // Use a half second for FFmpeg as it took slightly longer.
-                        double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream.FramesPerSecond ?? 0;
-                        ffmpegSessionFrameRate *= .5d;
-                        Interlocked.Exchange(ref _videoToSkipFrames, (long)Math.Round(ffmpegSessionFrameRate));
+                        _videoPlayer.Position = lastPosition;
                     }
-                    else
+
+                    // INTENTIONAL: Skipping a blank frame after initialization.
+                    try
                     {
-                        Interlocked.Exchange(ref _videoToSkipFrames, 2);
+                        if (UseFfmpegDecoder)
+                        {
+                            // Use a half second for FFmpeg as it took slightly longer.
+                            double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream.FramesPerSecond ?? 0;
+                            ffmpegSessionFrameRate *= .5d;
+                            Interlocked.Exchange(ref _videoToSkipFrames, (long)Math.Round(ffmpegSessionFrameRate));
+                        }
+                        else
+                        {
+                            Interlocked.Exchange(ref _videoToSkipFrames, 2);
+                        }
                     }
-                }
-                catch
-                {
-                    // ignored
+                    catch
+                    {
+                        // ignored
+                    }
                 }
 
-                _videoPlayer.Volume = 0;
-                _videoPlayer.Play();
                 _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
                     ? VideoPlayer_VideoFrameAvailableUnsafe
                     : VideoPlayer_VideoFrameAvailableSafe;
-                SetValue(IsVideoPlayProperty, true);
 
-                FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
+                PlayVideoView(volumeFadeDurationMs, volumeFadeResolutionMs, token);
             }
             else if (BackgroundSource != null)
             {
@@ -458,7 +453,7 @@ public partial class LayeredBackgroundImage
 
     public void DisposeAndPauseVideoView(Action?           actionOnPause            = null,
                                          Action?           actionAfterPause         = null,
-                                         bool              blockIfAlreadyPaused     = false,
+                                         bool              disposeVideoPlayer       = true,
                                          bool              disposeRenderImageSource = true,
                                          double            volumeFadeDurationMs     = 500d,
                                          double            volumeFadeResolutionMs   = 10d,
@@ -487,7 +482,7 @@ public partial class LayeredBackgroundImage
                 : VideoPlayer_VideoFrameAvailableSafe;
 
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
-            FadeOutAudio(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
+            PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
             void Impl()
@@ -498,7 +493,8 @@ public partial class LayeredBackgroundImage
                     {
                         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                                    {
-                                                       DisposeVideoPlayer(disposeRenderImageSource);
+                                                       if (disposeVideoPlayer)
+                                                           DisposeVideoPlayer(disposeRenderImageSource);
                                                    });
                     }
                 }
@@ -526,5 +522,28 @@ public partial class LayeredBackgroundImage
                                 true);
         }
     }
+
+    private void PlayVideoView(double            volumeFadeDurationMs   = 1000d,
+                               double            volumeFadeResolutionMs = 10d,
+                               CancellationToken token                  = default)
+    {
+        _videoPlayer.Volume = 0;
+        _videoPlayer.Play();
+        SetValue(IsVideoPlayProperty, true);
+
+        FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
+    }
+
+    private void PauseVideoView(Action?           actionAfterPause       = null,
+                                double            volumeFadeDurationMs   = 1000d,
+                                double            volumeFadeResolutionMs = 10d,
+                                CancellationToken token                  = default)
+    {
+        _videoPlayer.Pause();
+        SetValue(IsVideoPlayProperty, false);
+
+        FadeOutAudio(actionAfterPause, volumeFadeDurationMs, volumeFadeResolutionMs, token);
+    }
+
     #endregion
 }

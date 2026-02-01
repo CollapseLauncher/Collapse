@@ -71,6 +71,7 @@ public partial class LayeredBackgroundImage
         DisposeAndPauseVideoView(actionAfterPause: Paused,
                                  volumeFadeDurationMs: 150d,
                                  volumeFadeResolutionMs: 10d,
+                                 disposeVideoPlayer: CanUseStaticBackground,
                                  disposeRenderImageSource: false, // Do not dispose Image Source
                                  token: _videoPlayerPlayPauseCts.Token);
         return;
