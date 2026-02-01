@@ -194,6 +194,20 @@ public sealed partial class HomePage
         animGroup.Add(opacityAnim);
 
         visual.StartAnimationGroup(animGroup);
+
+        // Hit test
+        if (show)
+        {
+            _ = Task.Run(async () =>
+                         {
+                             await Task.Delay(TimeSpan.FromMilliseconds(duration));
+                             grid.DispatcherQueue.TryEnqueue(() => grid.IsHitTestVisible = true);
+                         });
+        }
+        else
+        {
+            grid.IsHitTestVisible = false;
+        }
     }
     #endregion
 
