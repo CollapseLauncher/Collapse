@@ -78,6 +78,16 @@
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
+      "FFmpegInteropX": {
+        "type": "Direct",
+        "requested": "[2.0.117-uwp9, )",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "uZqP/GOIOSzdE80d9DcFBp2R6e5ydo7sJae1qejU1Fma62xLZPfb2jYz25ez4AvGOuntjSqnJlfA/d+4KKKB8Q==",
+        "dependencies": {
+          "FFmpegInteropX.Desktop.FFmpeg": "7.0.100-pre3",
+          "FFmpegInteropX.Desktop.Lib": "2.0.117-uwp9"
+        }
+      },
       "GitInfo": {
         "type": "Direct",
         "requested": "[3.6.0, )",
@@ -282,6 +292,22 @@
         "dependencies": {
           "CommunityToolkit.WinUI.Helpers": "8.2.251219",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
+        }
+      },
+      "FFmpegInteropX.Desktop.FFmpeg": {
+        "type": "Transitive",
+        "resolved": "7.0.100-pre3",
+        "contentHash": "WDtjAYMMlbG9pU+WTtmfPeDMy24vCngAauzH/C9TnBHCS+EAS1Ziz7D5OrCxSSvgUVdd1QaDzQI+z4z4qYVzdQ==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
+        }
+      },
+      "FFmpegInteropX.Desktop.Lib": {
+        "type": "Transitive",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "jTBLJqo4pS9bCVX1NIud8xQalrOTbvcsQb/5QuoNZma2slhiTIfmfJs6GRcPzPCdWZ7soQeXw45dCMbJbtqsMw==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
         }
       },
       "Google.Protobuf": {
@@ -631,6 +657,22 @@
         "contentHash": "0AyuhMpynCdCq84dh0wU/Kjuxzo3GkYny5Z1l2JlWTHD2muUlE3Akqa1CtEPj0lif9o/KHnYwhmIWnP0ZctF4g==",
         "dependencies": {
           "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "FFmpegInteropX.Desktop.FFmpeg": {
+        "type": "Transitive",
+        "resolved": "7.0.100-pre3",
+        "contentHash": "WDtjAYMMlbG9pU+WTtmfPeDMy24vCngAauzH/C9TnBHCS+EAS1Ziz7D5OrCxSSvgUVdd1QaDzQI+z4z4qYVzdQ==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
+        }
+      },
+      "FFmpegInteropX.Desktop.Lib": {
+        "type": "Transitive",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "jTBLJqo4pS9bCVX1NIud8xQalrOTbvcsQb/5QuoNZma2slhiTIfmfJs6GRcPzPCdWZ7soQeXw45dCMbJbtqsMw==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
         }
       },
       "Microsoft.Win32.SystemEvents": {
