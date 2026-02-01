@@ -119,7 +119,6 @@ namespace Hi3Helper
                 public string InstallFolderRootTitle { get; set; } = LangFallback?._HomePage.InstallFolderRootTitle;
                 public string InstallFolderRootSubtitle { get; set; } = LangFallback?._HomePage.InstallFolderRootSubtitle;
 
-                public string BgContextMenu_SaveCurrentBtn { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveCurrentBtn;
                 public string BgContextMenu_SaveCurrentBgText { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveCurrentBgText;
                 public string BgContextMenu_SaveCurrentBgTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveCurrentBgTooltip;
                 public string BgContextMenu_SaveAllBgText { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveAllBgText;

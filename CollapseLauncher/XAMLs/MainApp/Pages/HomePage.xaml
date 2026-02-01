@@ -1116,30 +1116,6 @@
                                      Margin="0, -4"/>
                     <StackPanel Orientation="Horizontal"
                                 Margin="-4, -2">
-                        <Button VerticalAlignment="Stretch"
-                                CornerRadius="14"
-                                extension:UIElementExtensions.CursorType="Hand"
-                                Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
-                                Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
-                                CommandParameter="True">
-                            <Grid ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0"
-                                          Glyph="&#xE74E;"
-                                          FontSize="13"
-                                          VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBtn, Mode=OneWay}"
-                                           FontSize="12"
-                                           Margin="0,1,0,0"
-                                           FontWeight="Semibold"
-                                           VerticalAlignment="Center"/>
-                            </Grid>
-                        </Button>
                         <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
                                 VerticalAlignment="Stretch"
                                 CornerRadius="14"

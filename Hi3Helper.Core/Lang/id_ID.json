@@ -221,7 +221,6 @@
     "InstallFolderRootTitle": "Tidak Bisa Memilih Drive Root!",
     "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi.",
 
-    "BgContextMenu_SaveCurrentBtn": "Simpan",
     "BgContextMenu_SaveCurrentBgText": "Simpan File Gambar Saat Ini",
     "BgContextMenu_SaveCurrentBgTooltip": "Simpan file gambar saat ini untuk layer background maupun overlay (apabila ada).",
     "BgContextMenu_SaveAllBgText": "Simpan Semua File Gambar",

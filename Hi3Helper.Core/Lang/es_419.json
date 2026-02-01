@@ -229,7 +229,6 @@
     "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
     "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo.",
 
-    "BgContextMenu_SaveCurrentBtn": "Guardar",
     "BgContextMenu_SaveCurrentBgText": "Guardar Imagen Actual",
     "BgContextMenu_SaveCurrentBgTooltip": "Guardar los archivos tanto del overlay actual (si está disponible) como la imagen/vídeo de fondo.",
     "BgContextMenu_SaveAllBgText": "Guardar Todas Las Imágenes",

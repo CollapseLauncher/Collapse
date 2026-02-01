@@ -229,7 +229,6 @@
     "InstallFolderRootTitle": "ドライブのルートフォルダーが選択されています！",
     "InstallFolderRootSubtitle": "ゲームをドライブのルートフォルダーにインストールすることはできません！新しいフォルダーを作成してから再度お試しください。",
 
-    "BgContextMenu_SaveCurrentBtn": "保存",
     "BgContextMenu_SaveCurrentBgText": "今の背景をファイルに保存",
     "BgContextMenu_SaveCurrentBgTooltip": "今の背景画像・動画と（可能な場合は）テロップ単品の両方を保存します。",
     "BgContextMenu_SaveAllBgText": "全ての背景を保存",

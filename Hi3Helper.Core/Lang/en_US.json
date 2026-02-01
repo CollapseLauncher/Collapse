@@ -229,7 +229,6 @@
     "InstallFolderRootTitle": "Drive Root Provided!",
     "InstallFolderRootSubtitle": "Cannot install game to the root of your drive! Please make a new folder and try again.",
 
-    "BgContextMenu_SaveCurrentBtn": "Save",
     "BgContextMenu_SaveCurrentBgText": "Save Current Image Files",
     "BgContextMenu_SaveCurrentBgTooltip": "Save the files of both current overlay (if available) and background image/video layer.",
     "BgContextMenu_SaveAllBgText": "Save All Images Files",
