@@ -129,7 +129,8 @@ namespace Hi3Helper.SentryHelper
 
         #region Initializer/Releaser
 
-        public static bool IsPreview { get; set; }
+        public static bool IsPreview     { get; set; }
+        public static bool IsInitialized { get; set; }
         
         private static IDisposable? _sentryInstance;
 
@@ -166,6 +167,7 @@ namespace Hi3Helper.SentryHelper
                                              IpAddress = null
                                          };
                                      });
+            IsInitialized = true;
         }
 
         /// <summary>
@@ -189,6 +191,7 @@ namespace Hi3Helper.SentryHelper
                              }
                              finally
                              {
+                                 IsInitialized = false;
                                  _sentryInstance?.Dispose();
                                  _sentryInstance = null;
                              }
