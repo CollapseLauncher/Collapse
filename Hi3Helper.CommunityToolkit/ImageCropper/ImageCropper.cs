@@ -365,6 +365,9 @@ public partial class ImageCropper : Control
         double imageSourceWidth  = asBitmapSource?.PixelWidth  ?? asSvgImageSource?.RasterizePixelWidth  ?? 0;
         double imageSourceHeight = asBitmapSource?.PixelHeight ?? asSvgImageSource?.RasterizePixelHeight ?? 0;
 
+        if (double.IsInfinity(imageSourceWidth)) imageSourceWidth   = 128d;
+        if (double.IsInfinity(imageSourceHeight)) imageSourceHeight = 128d;
+
         if (Source == null || imageSourceWidth == 0 || imageSourceHeight == 0)
         {
             return base.MeasureOverride(availableSize);

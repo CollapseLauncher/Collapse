@@ -30,6 +30,9 @@ public partial class ImageCropper
             double pixelHeight = asBitmap?.PixelHeight ?? asSvg?.RasterizePixelHeight ?? 0;
 #nullable restore
 
+            if (double.IsInfinity(pixelWidth)) pixelWidth   = 0d;
+            if (double.IsInfinity(pixelHeight)) pixelHeight = 0d;
+
             _restrictedCropRect = new Rect(0, 0, pixelWidth, pixelHeight);
             if (IsValidRect(_restrictedCropRect))
             {
