@@ -414,7 +414,7 @@ public partial class LayeredBackgroundImage
                         if (UseFfmpegDecoder)
                         {
                             // Use a half second for FFmpeg as it took slightly longer.
-                            double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream.FramesPerSecond ?? 0;
+                            double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream?.FramesPerSecond ?? 0;
                             ffmpegSessionFrameRate *= .5d;
                             Interlocked.Exchange(ref _videoToSkipFrames, (long)Math.Round(ffmpegSessionFrameRate));
                         }
