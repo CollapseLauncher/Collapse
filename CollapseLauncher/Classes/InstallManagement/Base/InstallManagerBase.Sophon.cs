@@ -873,18 +873,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
 
-                ConcurrentDictionary<SophonAsset, byte> processingAsset = new();
-
                 // Set the delegate function for the download action
                 async ValueTask Action(HttpClient localHttpClient, SophonAsset asset)
                 {
-                    if (!processingAsset.TryAdd(asset, 0))
-                    {
-                        Logger.LogWriteLine($"Found duplicate operation for {asset.AssetName}! Skipping...",
-                                            LogType.Warning, true);
-                        return;
-                    }
-
                     if (isPreloadMode)
                     {
                         // If preload mode, then only download the chunks
@@ -902,11 +893,12 @@ namespace CollapseLauncher.InstallManager.Base
                     await asset.WriteUpdateAsync(localHttpClient, gamePath, gamePath, chunkPath, canDeleteChunks,
                                                  parallelChunksOptions, UpdateSophonFileTotalProgress,
                                                  UpdateSophonFileDownloadProgress, UpdateSophonDownloadStatus);
-                    processingAsset.Remove(asset, out _);
                 }
 
                 // Enumerate in parallel and process the assets
-                await Parallel.ForEachAsync(sophonUpdateAssetList.Where(x => !x.IsDirectory),
+                await Parallel.ForEachAsync(sophonUpdateAssetList
+                                           .Where(x => !x.IsDirectory)
+                                           .ToHashSet(),
                                             parallelOptions,
                                             (asset, _) => Action(httpClient, asset));
 
