@@ -115,6 +115,9 @@ namespace CollapseLauncher
             AppDiscordPresence?.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
+
+            // Reset image background manager context before reloading.
+            ImageBackgroundManager.Shared.ResetContexts();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)

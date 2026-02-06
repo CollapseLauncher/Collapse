@@ -332,6 +332,8 @@ public partial class ImageBackgroundManager
         get;
     } = [];
 
+    private int _previousContextHash;
+
     #endregion
 
     /// <summary>
@@ -407,7 +409,7 @@ public partial class ImageBackgroundManager
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
                             OriginBackgroundImagePath = bgPlaceholderPath,
-                            BackgroundImagePath       = bgPlaceholderPath
+                            BackgroundImagePath = bgPlaceholderPath
                         });
                         return;
                     }
@@ -423,18 +425,23 @@ public partial class ImageBackgroundManager
 
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
-                            OriginOverlayImagePath          = overlayImagePath,
-                            OriginBackgroundImagePath       = backgroundImagePath,
+                            OriginOverlayImagePath = overlayImagePath,
+                            OriginBackgroundImagePath = backgroundImagePath,
                             OriginBackgroundStaticImagePath = backgroundImageStaticPath,
-                            OverlayImagePath                = overlayImagePath,
-                            BackgroundImagePath             = backgroundImagePath,
-                            BackgroundImageStaticPath       = backgroundImageStaticPath
+                            OverlayImagePath = overlayImagePath,
+                            BackgroundImagePath = backgroundImagePath,
+                            BackgroundImageStaticPath = backgroundImageStaticPath
                         });
                     }
                 }
                 finally
                 {
-                    UpdateContextListCore(token, false, imageContexts);
+                    DispatcherQueueExtensions
+                       .CurrentDispatcherQueue
+                       .TryEnqueue(() =>
+                                   {
+                                       UpdateContextListCore(token, false, imageContexts);
+                                   });
                 }
             }
             catch (Exception ex)
@@ -536,8 +543,9 @@ public partial class ImageBackgroundManager
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
         // Do not update if the previous contexts are equal
-        if (!skipPreviousContextCheck &&
-            IsContextEqual(imageContexts))
+        if ((!skipPreviousContextCheck &&
+            IsContextEqual(imageContexts)) ||
+            imageContexts.IsEmpty)
         {
             return;
         }
@@ -579,19 +587,20 @@ public partial class ImageBackgroundManager
             return false;
         }
 
-        HashSet<int> currentContextHashes =
-            ImageContextSources
-               .Select(x => x.GetHashCode())
-               .ToHashSet();
-        foreach (LayeredImageBackgroundContext imageContext in imageContexts)
+        HashCode hashCode = default;
+        foreach (LayeredImageBackgroundContext context in imageContexts)
         {
-            if (!currentContextHashes.Contains(imageContext.GetHashCode()))
-            {
-                return false;
-            }
+            hashCode.Add(context);
         }
 
-        return true;
+        int hashCodeRes = hashCode.ToHashCode();
+        return Interlocked.Exchange(ref _previousContextHash, hashCodeRes) == hashCodeRes;
+    }
+
+    public void ResetContexts()
+    {
+        Interlocked.Exchange(ref _previousContextHash, 0);
+        ImageContextSources.Clear();
     }
 }
 
@@ -649,14 +658,16 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
             return true;
         }
 
-        if (obj is not LayeredImageBackgroundContext other)
-        {
-            return false;
-        }
-
-        return Equals(other);
+        return obj is LayeredImageBackgroundContext other &&
+               Equals(other);
     }
 
     public override int GetHashCode() =>
-        HashCode.Combine(OriginOverlayImagePath, OriginBackgroundImagePath, OverlayImagePath, BackgroundImagePath, ForceReload);
+        HashCode.Combine(OriginOverlayImagePath,
+                         OriginBackgroundImagePath,
+                         OriginBackgroundStaticImagePath,
+                         OverlayImagePath,
+                         BackgroundImagePath,
+                         BackgroundImageStaticPath,
+                         ForceReload);
 }
