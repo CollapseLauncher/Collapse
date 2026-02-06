@@ -83,7 +83,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}");
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}");
                 InitializeComponent();
-                m_mainPage                             =  this;
+                Interlocked.Exchange(ref m_mainPage, this);
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
@@ -115,7 +115,6 @@ namespace CollapseLauncher
             AppDiscordPresence?.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            Interlocked.Exchange(ref m_mainPage, null);
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)

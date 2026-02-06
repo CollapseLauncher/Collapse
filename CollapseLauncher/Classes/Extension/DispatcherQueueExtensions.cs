@@ -3,58 +3,101 @@ using System;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace CollapseLauncher.Extension
+namespace CollapseLauncher.Extension;
+
+public static class DispatcherQueueExtensions
 {
-    public static class DispatcherQueueExtensions
+    static DispatcherQueueExtensions()
     {
-        static DispatcherQueueExtensions()
+        CurrentDispatcherQueue ??= DispatcherQueue.GetForCurrentThread();
+    }
+
+    public static DispatcherQueue CurrentDispatcherQueue
+    {
+        get;
+        set;
+    }
+
+    public static bool HasThreadAccessSafe()
+        => CurrentDispatcherQueue.HasThreadAccessSafe();
+
+    public static bool HasThreadAccessSafe(this DispatcherQueue? queue)
+    {
+        if (queue == null) return false;
+
+        try
         {
-            CurrentDispatcherQueue ??= DispatcherQueue.GetForCurrentThread();
+            return queue.HasThreadAccess;
+        }
+        catch (ObjectDisposedException)
+        {
+            return false; // Return false if an exception occurs
+        }
+    }
+
+    public static Task<T> CreateObjectFromUIThread<T>()
+        where T : new()
+    {
+        if (CurrentDispatcherQueue.HasThreadAccessSafe())
+        {
+            return Task.FromResult(new T());
         }
 
-        public static DispatcherQueue CurrentDispatcherQueue
-        {
-            get;
-            set;
-        }
+        TaskCompletionSource<T> tcs = new();
+        Impl();
 
-        public static bool HasThreadAccessSafe(this DispatcherQueue? queue)
-        {
-            if (queue == null) return false;
+        return tcs.Task;
 
+        void Impl()
+        {
             try
             {
-                return queue.HasThreadAccess;
+                CurrentDispatcherQueue.TryEnqueue(() => tcs.SetResult(new T()));
             }
-            catch (ObjectDisposedException)
+            catch (Exception e)
             {
-                return false; // Return false if an exception occurs
+                tcs.SetException(e);
             }
         }
+    }
 
-        public static Task<T> CreateObjectFromUIThread<T>()
-            where T : new()
+    public static void TryEnqueue(DispatcherQueueHandler action)
+        => TryEnqueue(DispatcherQueuePriority.Normal, action);
+
+    public static void TryEnqueue(DispatcherQueuePriority priority, DispatcherQueueHandler action)
+    {
+        if (HasThreadAccessSafe())
         {
-            if (CurrentDispatcherQueue.HasThreadAccessSafe())
+            action();
+        }
+
+        CurrentDispatcherQueue.TryEnqueue(priority, action);
+    }
+
+    public static T TryEnqueue<T>(Func<T> retAction)
+        => TryEnqueue(DispatcherQueuePriority.Normal, retAction);
+
+    public static T TryEnqueue<T>(DispatcherQueuePriority priority, Func<T> retAction)
+    {
+        if (HasThreadAccessSafe())
+        {
+            return retAction();
+        }
+
+        TaskCompletionSource<T> tcs = new();
+        CurrentDispatcherQueue.TryEnqueue(priority, Impl);
+
+        return tcs.Task.Result;
+
+        void Impl()
+        {
+            try
             {
-                return Task.FromResult(new T());
+                tcs.SetResult(retAction());
             }
-
-            TaskCompletionSource<T> tcs = new();
-            Impl();
-
-            return tcs.Task;
-
-            void Impl()
+            catch (Exception e)
             {
-                try
-                {
-                    CurrentDispatcherQueue.TryEnqueue(() => tcs.SetResult(new T()));
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
+                tcs.SetException(e);
             }
         }
     }
