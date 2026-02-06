@@ -10,16 +10,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Dispatching;
 using System;
-using System.Buffers;
 using System.IO;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Graphics.DirectX;
+using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Storage.Streams;
 // ReSharper disable CommentTypo
-
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -195,95 +196,188 @@ public static class ClipboardUtility
         DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => ds.Dispose());
     }
 
+    private static double GetBitmapBitSize(DirectXPixelFormat pixelFormat)
+    {
+        const string r4Chan  = "R4";
+        const string r8Chan  = "R8";
+        const string r10Chan = "R10";
+        const string r16Chan = "R16";
+        const string r24Chan = "R24";
+        const string r32Chan = "R32";
+
+        ReadOnlySpan<char> enumStr = GetPixelFormatString(pixelFormat);
+        
+        int  bitSize = 8;
+        bool isSkip  = enumStr.IndexOf(r8Chan, StringComparison.Ordinal) > 0;
+
+        if (!isSkip && enumStr.IndexOf(r4Chan, StringComparison.Ordinal) > 0)
+        {
+            isSkip  = true;
+            bitSize = 4;
+        }
+
+        if (!isSkip && enumStr.IndexOf(r10Chan, StringComparison.Ordinal) > 0)
+        {
+            isSkip  = true;
+            bitSize = 10;
+        }
+
+        if (!isSkip && enumStr.IndexOf(r16Chan, StringComparison.Ordinal) > 0)
+        {
+            isSkip  = true;
+            bitSize = 16;
+        }
+
+        if (!isSkip && enumStr.IndexOf(r24Chan, StringComparison.Ordinal) > 0)
+        {
+            isSkip  = true;
+            bitSize = 24;
+        }
+
+        // ReSharper disable once InvertIf
+        if (!isSkip && enumStr.IndexOf(r32Chan, StringComparison.Ordinal) > 0)
+        {
+            isSkip  = true;
+            bitSize = 32;
+        }
+
+        return !isSkip
+            ? throw new InvalidOperationException($"Pixel format enum {pixelFormat} is not supported!")
+            : bitSize;
+    }
+
+    private static ReadOnlySpan<char> GetPixelFormatString(DirectXPixelFormat pixelFormat)
+    {
+        if (pixelFormat == DirectXPixelFormat.Unknown)
+        {
+            throw new InvalidOperationException("Unknown pixel format is not supported!");
+        }
+
+        string? enumS = Enum.GetName(pixelFormat);
+        return string.IsNullOrEmpty(enumS)
+            ? throw new InvalidOperationException($"Pixel format enum {pixelFormat} is not supported!")
+            : enumS;
+    }
+
+    private static int GetBitmapChannelCount(DirectXPixelFormat pixelFormat)
+    {
+        ReadOnlySpan<char> enumStr = GetPixelFormatString(pixelFormat);
+
+        int indexOfAlphaSign = enumStr.IndexOf('A');
+        int channelNum       = 3;
+        if (indexOfAlphaSign != -1 &&
+            enumStr.Length > indexOfAlphaSign &&
+            int.TryParse(enumStr.Slice(indexOfAlphaSign + 1, 1), out _))
+        {
+            channelNum = 4;
+        }
+
+        return channelNum;
+    }
+
+    private static int GetBitmapStrideSize(Direct3DSurfaceDescription desc)
+    {
+        DirectXPixelFormat pixelFormat = desc.Format;
+        double             bitSize     = GetBitmapBitSize(pixelFormat);
+        int                channelNum  = GetBitmapChannelCount(pixelFormat);
+
+        double stride = desc.Width * desc.Height * channelNum * (bitSize / 8d);
+        return (int)Math.Round(stride);
+    }
+
+    private static async Task<int> WriteCanvasTargetBufferType(
+        CanvasRenderTarget     sourceCanvasTarget,
+        byte[]                 buffer,
+        CanvasBitmapFileFormat format)
+    {
+        using MemoryStream        bufferStream       = new(buffer);
+        using IRandomAccessStream bufferRandomStream = bufferStream.AsRandomAccessStream(true);
+        await sourceCanvasTarget.SaveAsync(bufferRandomStream, format, 1f);
+
+        return (int)bufferStream.Position;
+    }
+
     private static async Task CopyCanvasTargetBufferToClipboard(CanvasRenderTarget? sourceCanvasTarget)
     {
-        const uint biBitfields = 3;
         if (sourceCanvasTarget == null)
         {
             return;
         }
 
-        // BGRA
-        // TODO: Add a way to assign the color size and channels based on CanvasRenderTarget.Format
-        const int colorSizePerChannel = 1; // 8-bit / 1 byte per color
-        const int channels = 4;
-
-        int width  = (int)sourceCanvasTarget.SizeInPixels.Width;
-        int height = (int)sourceCanvasTarget.SizeInPixels.Height;
-        int stride = width * height * channels * colorSizePerChannel;
-
-        bool isClipboardOpened = false;
-
-        int    sizeOfHeader = Marshal.SizeOf<BITMAPV5HEADER>();
-        byte[] buffer       = ArrayPool<byte>.Shared.Rent(stride + sizeOfHeader);
-        byte[] bufferPng    = ArrayPool<byte>.Shared.Rent(stride + sizeOfHeader);
+        bool isClipboardOpened = true;
         try
         {
-            IBuffer windowsBuffer = buffer.AsBuffer(sizeOfHeader, stride, buffer.Length - sizeOfHeader);
-            sourceCanvasTarget.GetPixelBytes(windowsBuffer);
+            ILogger logger = ILoggerHelper.GetILogger("ClipboardUtility::CopyCanvasTargetBufferToClipboard");
 
-            using MemoryStream        pngBufferStream       = new(bufferPng);
-            using IRandomAccessStream pngBufferRandomStream = pngBufferStream.AsRandomAccessStream(true);
-            await sourceCanvasTarget.SaveAsync(pngBufferRandomStream, CanvasBitmapFileFormat.Png);
-
-            // Dispose the source canvas
-            sourceCanvasTarget.Dispose();
-
-            // Prepare BITMAPV5HEADER
-            Span<byte> headerSpan = buffer.AsSpan(0, sizeOfHeader);
-            headerSpan.Clear();
-            ref BITMAPV5HEADER header = ref AsRef<BITMAPV5HEADER>(headerSpan);
-
-            header.bV5Size        = (uint)sizeOfHeader;
-            header.bV5Width       = width;
-            header.bV5Height      = -height;
-            header.bV5Planes      = 1;
-            header.bV5BitCount    = 32;
-            header.bV5Compression = biBitfields;
-            header.bV5SizeImage   = (uint)stride;
-            header.bV5RedMask     = 0x00FF0000;
-            header.bV5GreenMask   = 0x0000FF00;
-            header.bV5BlueMask    = 0x000000FF;
-            header.bV5AlphaMask   = 0xFF000000;
-            header.bV5CSType      = 0x73524742; // 'sRGB'
+            Direct3DSurfaceDescription desc          = sourceCanvasTarget.Description;
+            int                        bmpHeaderSize = Marshal.SizeOf<BITMAPV5HEADER>();
+            int                        strideSize    = GetBitmapStrideSize(desc);
+            int                        bufferSize    = strideSize + bmpHeaderSize;
+            int                        maxBufferSize = (int)BitOperations.RoundUpToPowerOf2((uint)bufferSize);
+            byte[]                     buffer        = GC.AllocateUninitializedArray<byte>(maxBufferSize);
 
             // Try open the Clipboard
             if (!PInvoke.OpenClipboard(nint.Zero))
             {
-                Logger.LogWriteLine($"[ClipboardUtility::CopyCanvasTargetBufferToClipboard] Cannot open the clipboard! Error: {Win32Error.GetLastWin32ErrorMessage()}",
-                                    LogType.Error,
-                                    true);
+                isClipboardOpened = false;
+                logger.LogError("[ClipboardUtility::CopyCanvasTargetBufferToClipboard] Cannot open the clipboard! Error: {}", Win32Error.GetLastWin32ErrorMessage());
                 return;
             }
 
             // Make sure to empty the clipboard before setting and allocate the content
             if (!PInvoke.EmptyClipboard())
             {
-                Logger.LogWriteLine($"[ClipboardUtility::CopyCanvasTargetBufferToClipboard] Cannot clear the previous clipboard! Error: {Win32Error.GetLastWin32ErrorMessage()}",
-                                    LogType.Error,
-                                    true);
-                return;
+                logger.LogError("[ClipboardUtility::CopyCanvasTargetBufferToClipboard] Cannot clear the clipboard! Error: {}", Win32Error.GetLastWin32ErrorMessage());
             }
 
-            isClipboardOpened = true;
+            // Write and load the "load" ( ͡° ͜ʖ ͡°)
+            // -- Copy as PNG
+            StandardClipboardFormats pngFormat = (StandardClipboardFormats)PInvoke.RegisterClipboardFormat("PNG");
+            int writtenPng = await WriteCanvasTargetBufferType(sourceCanvasTarget, buffer, CanvasBitmapFileFormat.Png);
+            await Task.Run(() => Clipboard.CopyDataToClipboard(buffer.AsSpan(0, writtenPng), pngFormat, logger));
 
-            // Load the "load" ( ͡° ͜ʖ ͡°)
-            ILogger logger = ILoggerHelper.GetILogger("ClipboardUtility::CopyCanvasTargetBufferToClipboard");
-            Clipboard.CopyDataToClipboard(buffer.AsSpan(0, sizeOfHeader + stride), StandardClipboardFormats.CF_DIBV5, logger); // Copy as BMP for fallback
-            Clipboard.CopyDataToClipboard(bufferPng.AsSpan(0, (int)pngBufferStream.Position), StandardClipboardFormats.CF_PNG, logger);   // Copy as PNG
+            // -- Copy as BMP
+            // Prepare BITMAPV5HEADER
+            Span<byte> headerSpan = buffer.AsSpan(0, bmpHeaderSize);
+            headerSpan.Clear();
+            ref BITMAPV5HEADER header = ref AsRef<BITMAPV5HEADER>(headerSpan);
+
+            int    bmpChannelCount  = GetBitmapChannelCount(desc.Format);
+            double bmpBitPerChannel = GetBitmapBitSize(desc.Format);
+            ushort bmpBitCount      = (ushort)(bmpBitPerChannel * bmpChannelCount);
+
+            header.bV5Size        = (uint)bmpHeaderSize;
+            header.bV5Width       = desc.Width;
+            header.bV5Height      = -desc.Height;
+            header.bV5Planes      = 1;
+            header.bV5BitCount    = bmpBitCount;
+            header.bV5Compression = 3;
+            header.bV5SizeImage   = (uint)strideSize;
+            header.bV5RedMask     = 0x00FF0000;
+            header.bV5GreenMask   = 0x0000FF00;
+            header.bV5BlueMask    = 0x000000FF;
+            header.bV5AlphaMask   = 0xFF000000;
+            header.bV5CSType      = 0x73524742; // 'sRGB'
+
+            await Task.Run(ImplWriteBmp);
+            void ImplWriteBmp()
+            {
+                IBuffer windowsBuffer = buffer.AsBuffer(bmpHeaderSize, strideSize, buffer.Length - bmpHeaderSize);
+                sourceCanvasTarget.GetPixelBytes(windowsBuffer);
+                Clipboard.CopyDataToClipboard(buffer.AsSpan(0, bufferSize), StandardClipboardFormats.CF_DIBV5, logger);
+            }
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer);
-            ArrayPool<byte>.Shared.Return(bufferPng);
-
             if (isClipboardOpened)
             {
                 // Close the clipboard
                 PInvoke.CloseClipboard();
             }
+
+            // Dispose the source canvas
+            sourceCanvasTarget.Dispose();
         }
     }
-
     private static unsafe ref T AsRef<T>(Span<byte> span) => ref Unsafe.AsRef<T>(Unsafe.AsPointer(ref MemoryMarshal.AsRef<byte>(span)));
 }
