@@ -254,7 +254,7 @@ public partial class MainPage : Page
         NavigateInnerSwitch(itemTag);
     }
 
-    private async void NavigateInnerSwitch(string itemTag)
+    public async void NavigateInnerSwitch(string itemTag)
     {
         if (itemTag == PreviousTag) return;
         switch (itemTag)

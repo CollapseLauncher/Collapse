@@ -5,7 +5,10 @@ using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using System;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
 using static Hi3Helper.Win32.ManagedTools.Controller;
 using static Hi3Helper.Win32.ManagedTools.Keyboard;
 
@@ -51,6 +54,8 @@ public sealed partial class MainWindow
 
     private void HandleButtons(XInputButtons input, bool pressed)
     {
+        if (!Helper.WindowUtility.IsCurrentWindowInFocus()) return; // Do not process input when window is not in focus.
+
         foreach (var buttons in _buttonValues)
         {
             if ((buttons & input) == 0)
@@ -99,10 +104,9 @@ public sealed partial class MainWindow
             KeyboardUp(vk);
     }
 
-    private bool _isWoken;
     private void MoveFocus(FocusNavigationDirection direction)
     {
-        if (!_isWoken) EnsureInitialFocus();
+        Task.Run(EnsureInitialFocus);
         
         var root = Content as DependencyObject;
 
@@ -119,44 +123,88 @@ public sealed partial class MainWindow
                                   });
     }
 
-    private void EnsureInitialFocus()
+    private async Task EnsureInitialFocus()
     {
-        FocusManager.TryMoveFocus(FocusNavigationDirection.Next,
-                                  new FindNextElementOptions
-                                  {
-                                      SearchRoot = Content
-                                  });
-        _isWoken = true;
+        var focused = FocusManager.GetFocusedElement(InnerLauncherConfig.m_mainPage.XamlRoot);
+        if (focused != null)
+            return;
+
+        var root = Content as DependencyObject;
+        if (root == null)
+            return;
+
+        await FocusManager.TryFocusAsync(
+            root,
+            FocusState.Programmatic);
+
+        return;
     }
+
     private void LoseFocus()
     {
         var root = Content as DependencyObject;
         
         if (root == null)
         {
-            Logger.LogWriteLine("[MainWindow.Controller::MoveFocus] root is empty!");
+            Logger.LogWriteLine("[MainWindow.Controller::LoseFocus] root is empty!");
             return;
         }
 
-        var obj = FocusManager.GetFocusedElement();
+        var obj = FocusManager.GetFocusedElement(InnerLauncherConfig.m_mainPage.XamlRoot) as DependencyObject;
         if (obj == null)
         {
-            Logger.LogWriteLine("[MainWindow.Controller::MoveFocus] obj is empty!");
+            Logger.LogWriteLine("[MainWindow.Controller::LoseFocus] obj is empty!");
             return;
         }
 
-        Logger.LogWriteLine($"[MainWindow.Controller::LoseFocus] trying to exit from {obj.GetType().Name}");
-        switch (obj)
-        {
-            case FlyoutBase flyout:
-                flyout.Hide();
-                break;
-            
-            
-            
-        }
+        CollapseFirstClosable(obj);
     }
 
+    private void CollapseFirstClosable(DependencyObject start)
+    {
+        var current = start;
+
+        while (current != null)
+        {
+            Logger.LogWriteLine(
+                $"[Controller::LoseFocus] checking {current.GetType().Name}");
+
+            switch (current)
+            {
+                case FlyoutBase flyout:
+                    flyout.Hide();
+                    return;
+
+                case FlyoutPresenter presenter:
+                    var flyoutInner = presenter.Parent;
+                    if (flyoutInner is Popup)
+                    {
+                        (flyoutInner as Popup).IsOpen = false;
+                    }
+                    return;
+
+                case Popup popup:
+                    popup.IsOpen = false;
+                    return;
+
+                case ContentDialog dialog:
+                    dialog.Hide();
+                    return;
+
+                case ComboBoxItem cbi:
+                    _comboBoxTracker?.IsDropDownOpen = false;
+                    _comboBoxTracker = null;
+                    return;
+            }
+
+            current = VisualTreeHelper.GetParent(current);
+        }
+
+        Logger.LogWriteLine(
+            "[Controller::LoseFocus] no collapsable parent found");
+    }
+
+    private ComboBox? _comboBoxTracker;
     private void InvokeFocusedElement()
     {
         if (InnerLauncherConfig.m_mainPage == null!)
@@ -164,6 +212,7 @@ public sealed partial class MainWindow
             return;
         }
         var focusedElement = FocusManager.GetFocusedElement(InnerLauncherConfig.m_mainPage.XamlRoot);
+        Logger.LogWriteLine($"[MainWindow.Controller::InvokeFocusedElement] Got {focusedElement.GetType().Name} element!");
         switch (focusedElement)
         {
             case Button button:
@@ -173,18 +222,39 @@ public sealed partial class MainWindow
             case ToggleButton toggle:
                 toggle.IsChecked = !toggle.IsChecked;
                 break;
-            
-            case Control control:
-                control.Focus(FocusState.Programmatic);
+
+            case ComboBox comboBox:
+                comboBox.IsDropDownOpen = true;
+                _comboBoxTracker = comboBox;
                 break;
-            
+
+            case ComboBoxItem comboBoxItem:
+                _comboBoxTracker.SelectedItem = comboBoxItem.DataContext;
+                _comboBoxTracker.IsDropDownOpen = false;
+                _comboBoxTracker = null;
+                break;
+
             case NavigationViewItem nvi:
-                nvi.
+                InnerLauncherConfig.m_mainPage.NavigateInnerSwitch(nvi.Tag.ToString());
+                break;
             
             default:
-                KeyboardDown(KeyboardButtons.Enter);
-                KeyboardUp(KeyboardButtons.Enter);
+                InvokeParents(focusedElement as DependencyObject);
                 break;
+        }
+    }
+
+    private void InvokeParents(DependencyObject start)
+    {
+        var current = start;
+
+        while (current != null)
+        {
+            Logger.LogWriteLine($"[MainWindow.Controller::InvokeFocusedElement] Checking parent, got {current.GetType().Name}");
+
+
+
+            current = VisualTreeHelper.GetParent(current);
         }
     }
 }
