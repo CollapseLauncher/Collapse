@@ -104,23 +104,30 @@ public sealed partial class MainWindow
             KeyboardUp(vk);
     }
 
+    private static bool IsBadFocusTarget(object obj) =>
+        obj is ScrollViewer
+        or ScrollContentPresenter
+        or ItemsPresenter
+        or Panel
+        or Border;
+
     private void MoveFocus(FocusNavigationDirection direction)
     {
         Task.Run(EnsureInitialFocus);
         
         var root = Content as DependencyObject;
+        if (root == null) return;
 
-        if (root == null)
+        for (int i = 0; i < 50; i++) // yes, 50 retries sometime is needed for getting out of stuck focus...
         {
-            Logger.LogWriteLine("[MainWindow.Controller::MoveFocus] root is empty!");
-            return;
+            FocusManager.TryMoveFocus(direction,
+                new FindNextElementOptions { SearchRoot = root });
+
+            var focused = FocusManager.GetFocusedElement(InnerLauncherConfig.m_mainPage.XamlRoot);
+
+            if (focused == null || !IsBadFocusTarget(focused))
+                return;
         }
-        
-        FocusManager.TryMoveFocus(direction,
-                                  new FindNextElementOptions
-                                  {
-                                      SearchRoot = root
-                                  });
     }
 
     private async Task EnsureInitialFocus()
