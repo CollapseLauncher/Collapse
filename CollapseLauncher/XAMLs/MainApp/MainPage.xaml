@@ -45,6 +45,7 @@
                 Shadow="{ThemeResource SharedShadow}"
                 Translation="-48,0,0" />
         <NavigationView x:Name="NavigationViewControl"
+                        x:FieldModifier="internal"
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
                         IsBackButtonVisible="Visible"

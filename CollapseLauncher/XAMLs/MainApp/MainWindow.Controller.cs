@@ -235,7 +235,12 @@ public sealed partial class MainWindow
                 break;
 
             case NavigationViewItem nvi:
-                InnerLauncherConfig.m_mainPage.NavigateInnerSwitch(nvi.Tag.ToString());
+                var nviTag = nvi.Tag.ToString();
+                if (!string.IsNullOrEmpty(nviTag))
+                {
+                    InnerLauncherConfig.m_mainPage.NavigationViewControl.SelectedItem = nvi;
+                    InnerLauncherConfig.m_mainPage.NavigateInnerSwitch(nviTag);
+                }
                 break;
             
             default:
