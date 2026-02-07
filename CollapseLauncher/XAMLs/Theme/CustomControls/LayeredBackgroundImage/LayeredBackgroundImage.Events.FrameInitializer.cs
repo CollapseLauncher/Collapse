@@ -165,24 +165,22 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            if (_videoPlayer == null!)
+            if (_videoPlayer != null!)
             {
-                return;
-            }
+                _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
+                _videoPlayer.Pause();
 
-            _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-            _videoPlayer.Pause();
+                // Save last video player duration for later
+                if (_videoPlayer.CanSeek && TryGetSourceHashCode(BackgroundSource, out int sourceHashCode))
+                {
+                    TimeSpan pos = _videoPlayer.Position;
+                    _ = SharedLastMediaPosition.AddOrUpdate(sourceHashCode, _ => pos, (_, _) => pos);
+                }
 
-            // Save last video player duration for later
-            if (_videoPlayer.CanSeek && TryGetSourceHashCode(BackgroundSource, out int sourceHashCode))
-            {
-                TimeSpan pos = _videoPlayer.Position;
-                _ = SharedLastMediaPosition.AddOrUpdate(sourceHashCode, _ => pos, (_, _) => pos);
-            }
-
-            if (!UseSafeFrameRenderer)
-            {
-                NullifyMediaPlayerNativePointers();
+                if (!UseSafeFrameRenderer)
+                {
+                    NullifyMediaPlayerNativePointers();
+                }
             }
 
             // ReSharper disable once ConstantConditionalAccessQualifier
