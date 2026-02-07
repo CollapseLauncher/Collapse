@@ -1,4 +1,5 @@
-﻿using FFmpegInteropX;
+﻿using CollapseLauncher.Extension;
+using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
@@ -542,10 +543,15 @@ public partial class LayeredBackgroundImage
                                 double            volumeFadeResolutionMs = 10d,
                                 CancellationToken token                  = default)
     {
-        _videoPlayer.Pause();
-        SetValue(IsVideoPlayProperty, false);
+        FadeOutAudio(ActionAfterPauseInject, volumeFadeDurationMs, volumeFadeResolutionMs, token);
+        return;
 
-        FadeOutAudio(actionAfterPause, volumeFadeDurationMs, volumeFadeResolutionMs, token);
+        void ActionAfterPauseInject()
+        {
+            _videoPlayer.Pause();
+            DispatcherQueueExtensions.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
+            actionAfterPause?.Invoke();
+        }
     }
 
     #endregion
