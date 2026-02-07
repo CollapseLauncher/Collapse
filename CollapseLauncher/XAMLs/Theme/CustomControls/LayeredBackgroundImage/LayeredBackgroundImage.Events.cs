@@ -27,6 +27,7 @@ public partial class LayeredBackgroundImage
     private MediaSourceType _lastForegroundSourceType;
 
     private bool _isPlaceholderHidden;
+    private int  _isFirstLoadNotified;
 
     #endregion
 
@@ -364,7 +365,15 @@ public partial class LayeredBackgroundImage
 
     #region Local Events
 
-    private void NotifyImageLoaded() => ImageLoaded?.Invoke(this);
+    private void NotifyImageLoaded()
+    {
+        if (Interlocked.Exchange(ref _isFirstLoadNotified, 1) == 0)
+        {
+            ImageLoaded?.Invoke(this);
+        }
+    }
+
+
 
     #endregion
 

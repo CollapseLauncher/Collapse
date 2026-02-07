@@ -564,8 +564,15 @@ public partial class LayeredBackgroundImage
         if (parentGrid.Item1.Name.StartsWith("Background", StringComparison.OrdinalIgnoreCase) &&
             !Interlocked.Exchange(ref isPlaceholderHidden, true))
         {
-            parentGrid.Item2.NotifyImageLoaded();
             VisualStateManager.GoToState(parentGrid.Item2, StateNamePlaceholderStateHidden, true);
+
+            // Only notify early if background is an image or if autoplay is not enabled
+            if (parentGrid.Item2._lastBackgroundSourceType == MediaSourceType.Image ||
+                parentGrid.Item2._lastBackgroundStaticSourceType == MediaSourceType.Image ||
+                !(bool)parentGrid.Item2.GetValue(IsVideoAutoplayProperty))
+            {
+                parentGrid.Item2.NotifyImageLoaded();
+            }
         }
 
         // HACK: Tells the Grid to temporarily detach all UIElement children

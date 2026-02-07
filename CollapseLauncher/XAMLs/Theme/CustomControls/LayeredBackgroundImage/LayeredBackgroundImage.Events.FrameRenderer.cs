@@ -438,13 +438,21 @@ public partial class LayeredBackgroundImage
                     {
                         // ignored
                     }
+                }
 
+                PlayVideoView(ActionVideoAfterPlay,
+                              volumeFadeDurationMs,
+                              volumeFadeResolutionMs,
+                              token);
+
+                void ActionVideoAfterPlay()
+                {
                     _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
                         ? VideoPlayer_VideoFrameAvailableUnsafe
                         : VideoPlayer_VideoFrameAvailableSafe;
-                }
 
-                PlayVideoView(volumeFadeDurationMs, volumeFadeResolutionMs, token);
+                    NotifyImageLoaded();
+                }
             }
             else if (BackgroundSource != null)
             {
@@ -537,13 +545,16 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private void PlayVideoView(double            volumeFadeDurationMs   = 1000d,
+    private void PlayVideoView(Action?           actionAfterPause       = null,
+                               double            volumeFadeDurationMs   = 1000d,
                                double            volumeFadeResolutionMs = 10d,
                                CancellationToken token                  = default)
     {
         _videoPlayer.Volume = 0;
         _videoPlayer.Play();
         SetValue(IsVideoPlayProperty, true);
+
+        actionAfterPause?.Invoke();
 
         FadeInAudio(volumeFadeDurationMs, volumeFadeResolutionMs, token);
     }
