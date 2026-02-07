@@ -5,6 +5,8 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable StringLiteralTypo
@@ -53,8 +55,17 @@ public partial class ImageBackgroundManager
                 : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
+        // Find stamp file. Try read the metadata in it and just use locally cached files if matches.
+        if (TryGetDownloadedFile(uri,
+                                 out FileInfo downloadedFilePath,
+                                 out FileInfo downloadStampFilePath,
+                                 out UrlStatus status))
+        {
+            return downloadedFilePath.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
         HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
-        UrlStatus status = await sharedClient.GetCachedUrlStatus(uri, token);
+        status = await sharedClient.GetCachedUrlStatus(uri, token);
         status.EnsureSuccessStatusCode();
 
         if (status.FileSize == 0)
@@ -62,16 +73,12 @@ public partial class ImageBackgroundManager
             throw new HttpRequestException($"File URL is reachable but it returns 0 bytes. {uri}");
         }
 
-        if (TryGetDownloadedFile(uri, out FileInfo downloadedFilePath) &&
-            downloadedFilePath.Length == status.FileSize)
-        {
-            return downloadedFilePath.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        }
-
         downloadedFilePath = downloadedFilePath
                             .EnsureCreationOfDirectory()
-                            .EnsureNoReadOnly()
-                            .StripAlternateDataStream();
+                            .EnsureNoReadOnly();
+        downloadStampFilePath = downloadStampFilePath
+                               .EnsureCreationOfDirectory()
+                               .EnsureNoReadOnly();
 
         FileStream downloadedFileStream =
             downloadedFilePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -81,8 +88,15 @@ public partial class ImageBackgroundManager
         await using Stream responseStream = await responseMessage.Content.ReadAsStreamAsync(token);
         await responseStream.CopyToAsync(downloadedFileStream, token);
 
+        // Write stamp for future cache metadata
+        ReadOnlySpan<byte> stampData = AsSpan(in status);
+        File.WriteAllBytes(downloadStampFilePath.FullName, stampData);
+
         downloadedFileStream.Position = 0;
         return downloadedFileStream;
+
+        static unsafe ReadOnlySpan<byte> AsSpan<T>(in T data)
+            where T : unmanaged => new(Unsafe.AsPointer(in data), sizeof(T));
     }
 
     private static async Task<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
@@ -111,14 +125,44 @@ public partial class ImageBackgroundManager
         return File.Exists(decodedFilePath);
     }
 
-    private static bool TryGetDownloadedFile(Uri          filePath,
-                                             out FileInfo downloadedFilePath)
+    private static bool TryGetDownloadedFile(Uri           filePath,
+                                             out FileInfo  downloadedFilePath,
+                                             out FileInfo  downloadStampFilePath,
+                                             out UrlStatus urlStatusStamp)
     {
         string imageDirPath   = LauncherConfig.AppGameImgFolder;
         string fileHashedName = $"{Path.GetFileName(filePath.AbsolutePath)}";
+        string fileStampName  = $"{Path.GetFileName(filePath.AbsolutePath)}.downloadedStamp";
 
-        downloadedFilePath = new FileInfo(Path.Combine(imageDirPath, fileHashedName));
-        return downloadedFilePath.Exists;
+        downloadedFilePath    = new FileInfo(Path.Combine(imageDirPath, fileHashedName));
+        downloadStampFilePath = new FileInfo(Path.Combine(imageDirPath, fileStampName));
+        urlStatusStamp        = default;
+
+        return downloadStampFilePath.Exists &&
+               downloadedFilePath.Exists &&
+               TryReadDownloadStampFile(downloadStampFilePath, out urlStatusStamp) &&
+               downloadedFilePath.Length == urlStatusStamp.FileSize;
+    }
+
+    private static unsafe bool TryReadDownloadStampFile(
+        FileInfo      downloadStampFilePath,
+        out UrlStatus urlStatusStamp)
+    {
+        urlStatusStamp = default;
+
+        if (!downloadStampFilePath.Exists)
+        {
+            return false;
+        }
+
+        byte[] fileStampData = File.ReadAllBytes(downloadStampFilePath.FullName);
+        if (fileStampData.Length != sizeof(UrlStatus))
+        {
+            return false;
+        }
+
+        urlStatusStamp = MemoryMarshal.Read<UrlStatus>(fileStampData);
+        return true;
     }
 
     internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig, bool usePngVersion = false)
