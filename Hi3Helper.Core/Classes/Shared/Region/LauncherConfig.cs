@@ -646,9 +646,11 @@ namespace Hi3Helper.Shared.Region
 
             { "IsEnablePluginAutoUpdate", true },
 
-            // TEMPORARY
-            { "Enable20250827CrisisIntro", true },
-            { "Enable20250827CrisisIntroDialog", true }
+            // New Background Manager Parameters
+            { "GlobalIsBackgroundParallaxEffectEnabled", false },
+            { "GlobalBackgroundParallaxPixelShift", 8d },
+            { "GlobalKeepPlayVideoWhenWindowUnfocused", true },
+            { "GlobalBackgroundAudioVolume", 50d }
         };
         #endregion
     }

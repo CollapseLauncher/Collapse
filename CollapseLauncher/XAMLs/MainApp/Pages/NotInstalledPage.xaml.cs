@@ -1,11 +1,16 @@
-﻿namespace CollapseLauncher.Pages
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+
+namespace CollapseLauncher.Pages
 {
     public sealed partial class NotInstalledPage
     {
         public NotInstalledPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             InitializeComponent();
+
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
     }
 }

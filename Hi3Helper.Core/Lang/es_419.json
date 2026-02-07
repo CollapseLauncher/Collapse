@@ -227,7 +227,33 @@
     "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados.",
 
     "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
-    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo."
+    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo.",
+
+    "BgContextMenu_SaveCurrentBgText": "Guardar Imagen Actual",
+    "BgContextMenu_SaveCurrentBgTooltip": "Guardar los archivos tanto del overlay actual (si está disponible) como la imagen/vídeo de fondo.",
+    "BgContextMenu_SaveAllBgText": "Guardar Todas Las Imágenes",
+    "BgContextMenu_SaveAllBgTooltip": "Guardar todos los archivos de fondo disponibles tanto del overlay (si está disponible) como de la capa de imagen/vídeo de fondo.",
+    "BgContextMenu_CopyFrameToClipboardParentText": "Copiar Fotograma actual al portapapeles",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "Copiar Solo Fotograma el Overlay",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Copiar solo el Fotograma de la capa del bitmap al portapapeles.",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Copiar Solo Fotograma del Fondo",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Copiar al portapapeles solo el fotograma del bitmap de la capa del fondo.",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "Copiar Combinado",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Combinar y copiar al portapapeles el fotograma del bitmap del overlay y la capa de fondo.",
+    "BgContextMenu_CopyUrlToClipboardParentText": "Copiar URL/Ruta al portapapeles",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "Copiar URL/ruta del Overlay",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "Copiar solo el URL/ruta de la capa del Overlay.",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "Copiar URL/ruta del Fondo",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Copiar solo el URL/ruta de la capa del Fondo.",
+    "BgContextMenu_EnableAudioText": "Habilitar audio de vídeo",
+    "BgContextMenu_EnableAudioTooltip": "Habilita el audio mientras se reproduce el vídeo de fondo.",
+    "BgContextMenu_EnableParallaxText": "Habilitar efecto de paralaje",
+    "BgContextMenu_EnableParallaxTooltip": "Habilita el efecto de paralaje en el fondo al pasar el cursor por el launcher.",
+    "BgContextMenu_ParallaxPixelShiftParentText": "Desplazamiento de píxeles del paralaje",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "Personalizada",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "Establece la cantidad de píxeles que se van a desplazar.",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "Guardar Fondo actual a una carpeta",
+    "BgContextMenu_FolderSelectSaveAllBg": "Guarda todos los fondos actuales a una carpeta"
   },
 
   "_GameRepairPage": {
@@ -1216,7 +1242,9 @@
     "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
     "PostInstallBehaviour_EnumHibernate": "Hibernar",
     "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
-    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo"
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Establecer píxeles para paralaje (Mín: {0}px, Máx: {1}px)"
   },
 
   "_FileMigrationProcess": {

@@ -332,53 +332,53 @@ public partial class MainPage : Page
 
         NotificationData?.CurrentShowMsgIds.Add(MsgId);
 
-        DispatcherQueue?.TryEnqueue(() =>
-                                    {
-                                        StackPanel OtherContentContainer = UIElementExtensions.CreateStackPanel().WithMargin(0d, -4d, 0d, 8d);
+        DispatcherQueueExtensions.TryEnqueue(() =>
+        {
+            StackPanel OtherContentContainer = UIElementExtensions.CreateStackPanel().WithMargin(0d, -4d, 0d, 8d);
 
-                                        InfoBar Notification = new InfoBar
-                                                               {
-                                                                   Title         = Title,
-                                                                   Message       = TextContent,
-                                                                   Severity      = NotifSeverity2InfoBarSeverity(Severity),
-                                                                   IsClosable    = IsClosable,
-                                                                   IsIconVisible = true,
-                                                                   Shadow        = SharedShadow,
-                                                                   IsOpen        = true
-                                                               }
-                                                              .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
-                                                              .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
+            InfoBar Notification = new InfoBar
+                                   {
+                                       Title         = Title,
+                                       Message       = TextContent,
+                                       Severity      = NotifSeverity2InfoBarSeverity(Severity),
+                                       IsClosable    = IsClosable,
+                                       IsIconVisible = true,
+                                       Shadow        = SharedShadow,
+                                       IsOpen        = true
+                                   }
+                                  .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
+                                  .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
 
-                                        Notification.Translation += Shadow32;
+            Notification.Translation += Shadow32;
 
-                                        if (OtherContent != null)
-                                            OtherContentContainer.AddElementToStackPanel(OtherContent);
+            if (OtherContent != null)
+                OtherContentContainer.AddElementToStackPanel(OtherContent);
 
-                                        if (Disposable)
-                                        {
-                                            CheckBox NeverAskNotif = new CheckBox
-                                            {
-                                                Content = new TextBlock { Text = Lang._MainPage.NotifNeverAsk, FontWeight = FontWeights.Medium },
-                                                Tag = $"{MsgId},{IsAppNotif}"
-                                            };
-                                            NeverAskNotif.Checked   += NeverAskNotif_Checked;
-                                            NeverAskNotif.Unchecked += NeverAskNotif_Unchecked;
-                                            OtherContentContainer.AddElementToStackPanel(NeverAskNotif);
-                                        }
+            if (Disposable)
+            {
+                CheckBox NeverAskNotif = new()
+                {
+                    Content = new TextBlock { Text = Lang._MainPage.NotifNeverAsk, FontWeight = FontWeights.Medium },
+                    Tag = $"{MsgId},{IsAppNotif}"
+                };
+                NeverAskNotif.Checked   += NeverAskNotif_Checked;
+                NeverAskNotif.Unchecked += NeverAskNotif_Unchecked;
+                OtherContentContainer.AddElementToStackPanel(NeverAskNotif);
+            }
 
-                                        if (Disposable || OtherContent != null)
-                                            Notification.Content = OtherContentContainer;
+            if (Disposable || OtherContent != null)
+                Notification.Content = OtherContentContainer;
 
-                                        Notification.Tag              =  MsgId;
-                                        Notification.CloseButtonClick += CloseClickHandler;
+            Notification.Tag              =  MsgId;
+            Notification.CloseButtonClick += CloseClickHandler;
 
-                                        SpawnNotificationoUI(MsgId, Notification);
+            SpawnNotificationoUI(MsgId, Notification);
 
-                                        if (ForceShowNotificationPanel && !IsNotificationPanelShow)
-                                        {
-                                            _ = this.ForceShowNotificationPanel();
-                                        }
-                                    });
+            if (ForceShowNotificationPanel && !IsNotificationPanelShow)
+            {
+                _ = this.ForceShowNotificationPanel();
+            }
+        });
     }
 
     private void SpawnNotificationoUI(int tagID, InfoBar Notification)

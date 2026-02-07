@@ -1,10 +1,8 @@
 ﻿using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
-using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,10 +23,6 @@ namespace CollapseLauncher
         private bool                    IsFileTransfer    { get; }
         private CancellationTokenSource TokenSource       { get; }
         private bool                    IsSameOutputDrive { get; set; }
-
-#nullable enable
-        private DispatcherQueue? DispatcherQueue => field ??= WindowUtility.CurrentDispatcherQueue;
-#nullable restore
 
         private long _currentSizeMoved;
         private long _currentFileCountMoved;

@@ -32,8 +32,8 @@ namespace CollapseLauncher
                 return;
             }
 
-            WindowUtility.CurrentDispatcherQueue?
-                .TryEnqueue(() => AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle));
+            DispatcherQueueExtensions.TryEnqueue(() => AttachEventToNotification(hashID, activity, activityTitle,
+                                                     activitySubtitle));
             BackgroundActivities.Add(hashID, activity);
         #if DEBUG
             Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);

@@ -1,31 +1,43 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.WinRT.WindowsCodec;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
+using DispatcherQueueExtensions = CollapseLauncher.Extension.DispatcherQueueExtensions;
 
+// ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable IdentifierTypo
@@ -1063,20 +1075,21 @@ namespace CollapseLauncher.Dialogs
                                                        GridLength.Auto)
                                              .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star));
 
-                _ = rootGrid.AddElementToGridRowColumn(new TextBlock
+                _ = rootGrid.AddElementToGridRowColumn(CollapseUIExt.Create<TextBlock>(x =>
+                                                       {
+                                                           x.Text         = subtitle;
+                                                           x.TextWrapping = TextWrapping.Wrap;
+                                                           x.FontWeight   = FontWeights.Medium;
+                                                       }), 0, 0, 0, 2);
+                _ = rootGrid.AddElementToGridRowColumn(CollapseUIExt.Create<TextBox>(x =>
                 {
-                    Text         = subtitle,
-                    TextWrapping = TextWrapping.Wrap,
-                    FontWeight   = FontWeights.Medium
-                }, 0, 0, 0, 2);
-                _ = rootGrid.AddElementToGridRowColumn(new TextBox
-                             {
-                                 IsReadOnly    = true,
-                                 TextWrapping  = TextWrapping.Wrap,
-                                 MaxHeight     = 300,
-                                 AcceptsReturn = true,
-                                 Text          = exceptionContent
-                             }, 1, 0, 0, 2).WithMargin(0d, 8d)
+                    x.IsReadOnly    = true;
+                    x.TextWrapping  = TextWrapping.Wrap;
+                    x.MaxHeight     = 300;
+                    x.AcceptsReturn = true;
+                    x.Text = exceptionContent;
+                }), 1, 0, 0, 2)
+                            .WithMargin(0d, 8d)
                             .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                             .WithVerticalAlignment(VerticalAlignment.Stretch);
 
@@ -1105,12 +1118,15 @@ namespace CollapseLauncher.Dialogs
                     ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
                     2, 1);
 
-                if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
+                DispatcherQueueExtensions.TryEnqueue(() =>
                 {
-                    submitFeedbackButton.IsEnabled = false;
-                }
+                    if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
+                    {
+                        submitFeedbackButton.IsEnabled = false;
+                    }
 
-                submitFeedbackButton.Click += SubmitFeedbackButton_Click;
+                    submitFeedbackButton.Click += SubmitFeedbackButton_Click;
+                });
                 // TODO: Change button content after feedback is submitted
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
@@ -1137,10 +1153,13 @@ namespace CollapseLauncher.Dialogs
             }
             finally
             {
-                if (copyButton != null)
+                DispatcherQueueExtensions.TryEnqueue(() =>
                 {
-                    copyButton.Click -= CopyTextToClipboard;
-                }
+                    if (copyButton != null)
+                    {
+                        copyButton.Click -= CopyTextToClipboard;
+                    }
+                });
             }
         }
 
@@ -1163,6 +1182,33 @@ namespace CollapseLauncher.Dialogs
                                                            ContentDialogTheme.Warning);
 
             return result;
+        }
+
+        public static Task<ContentDialogResult> Dialog_SelectCustomBackgroundParallaxPixels(ImageBackgroundManager instanceSource)
+        {
+            NumberBox numberBox = new()
+            {
+                MinWidth                = 200,
+                Maximum                 = 128,
+                Minimum                 = 2,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                SmallChange             = 2,
+                LargeChange             = 8,
+                HorizontalAlignment     = HorizontalAlignment.Center
+            };
+
+            numberBox.BindProperty(instanceSource,
+                                   nameof(ImageBackgroundManager.GlobalBackgroundParallaxPixelShift),
+                                   NumberBox.ValueProperty,
+                                   BindingMode.TwoWay);
+
+
+            return SpawnDialog(string.Format(Lang._Dialogs.BgContextMenu_ParallaxPixelShiftCustomDialogTitle,
+                                             numberBox.Minimum,
+                                             numberBox.Maximum),
+                               numberBox,
+                               null,
+                               Lang._Misc.Okay);
         }
 
         // ReSharper disable once AsyncVoidMethod
@@ -1194,13 +1240,13 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
                 
-                var feedbackLoadingTitle = Lang._Misc.Feedback;
+                string? feedbackLoadingTitle = Lang._Misc.Feedback;
 
                 LoadingMessageHelper.Initialize();
                 LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
                 LoadingMessageHelper.ShowLoadingFrame();
                 
-                var parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
+                UserFeedbackTemplate.UserFeedbackTemplateResult? parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
                 if (parsedFeedback == null)
                 {
                     Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
@@ -1271,6 +1317,584 @@ namespace CollapseLauncher.Dialogs
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
+
+        #region Background Image Dialogs
+
+        public static async Task Dialog_SpawnMediaExtensionNotSupportedDialog(string filePath)
+        {
+            TextBlock textBlock = CollapseUIExt.CreateTextBlock()
+                                               .AddTextBlockLine(Lang._Dialogs.Media_ExtNotSupported1)
+                                               .AddTextBlockNewLine(2)
+                                               .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
+            await SpawnDialog(Lang._Dialogs.Media_ExtNotSupportedTitle,
+                              textBlock,
+                              null,
+                              Lang._Misc.OkaySad,
+                              defaultButton: ContentDialogButton.Close,
+                              dialogTheme: ContentDialogTheme.Error);
+        }
+
+        public static async Task Dialog_SpawnImageNotSupportedDialog(string filePath)
+        {
+            TextBlock textBlock = CollapseUIExt.CreateTextBlock();
+            textBlock.AddTextBlockLine(Lang._Dialogs.Media_ImageWICNotSupported1)
+                     .AddTextBlockNewLine(2)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
+            await SpawnDialog(Lang._Dialogs.Media_ImageWICNotSupportedTitle,
+                              textBlock,
+                              null,
+                              Lang._Misc.OkaySad,
+                              defaultButton: ContentDialogButton.Close,
+                              dialogTheme: ContentDialogTheme.Error);
+        }
+
+        public static async Task<bool> Dialog_SpawnVideoNotSupportedDialog(
+            string filePath,
+            bool   canPlayVideo,
+            bool   canPlayAudio,
+            Guid   videoCodecGuid,
+            Guid   audioCodecGuid)
+        {
+            WindowsCodecHelper.TryGetFourCCString(in videoCodecGuid,
+                                                  out string? videoCodecString);
+
+            videoCodecString ??= Lang._Dialogs.Media_VideoMFNotSupportedFormatTypeUnknown;
+
+            string useInternalMfLocale = Lang._Dialogs.Media_VideoMFNotSupportedInstallMFCodecsBtn;
+            string useFfmpegLocale     = Lang._Dialogs.Media_VideoMFNotSupportedInstallFFmpegBtn;
+
+            TextBlock textBlock = CollapseUIExt.CreateTextBlock();
+
+            textBlock.AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported1)
+                     .AddTextBlockNewLine(2)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine()
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported2, videoCodecString), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine()
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported3, videoCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine()
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported4, audioCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine()
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported5, canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine(2)
+                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported6, useInternalMfLocale, useFfmpegLocale))
+                     .AddTextBlockNewLine(2)
+                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported7, size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockNewLine()
+                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported8, size: 11);
+
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
+            panel.AddElementToStackPanel(textBlock);
+
+            Button buttonIconCopyDetails = CollapseUIExt.CreateButtonWithIcon<Button>(Lang._Dialogs.Media_VideoMFNotSupportedCopyDetailsBtn, textSize: 12d, textWeight: FontWeights.Bold)
+                                                        .WithHorizontalAlignment(HorizontalAlignment.Left)
+                                                        .WithMargin(0, 16, 0, 0);
+            panel.AddElementToStackPanel(buttonIconCopyDetails);
+            buttonIconCopyDetails.Click += ButtonIconCopyDetailsOnClick;
+            buttonIconCopyDetails.Unloaded += ButtonIconCopyDetailsOnUnloaded;
+
+            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.Media_VideoMFNotSupportedTitle,
+                                                           panel,
+                                                           null,
+                                                           Lang._Misc.Close,
+                                                           useFfmpegLocale,
+                                                           useInternalMfLocale,
+                                                           defaultButton: ContentDialogButton.Primary,
+                                                           dialogTheme: ContentDialogTheme.Error);
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    return await Dialog_SpawnFfmpegInstallDialog();
+                case ContentDialogResult.Secondary:
+                    return await Dialog_SpawnMediaFoundationCodecInstallDialog();
+                case ContentDialogResult.None:
+                default:
+                    return false;
+            }
+
+            void ButtonIconCopyDetailsOnClick(object sender, RoutedEventArgs e)
+            {
+                string detailStrings = $"""
+                                    File Path/URL: {filePath}
+                                    
+                                    Video Codec FourCC Type: {videoCodecString}
+                                    Video Codec GUID: {videoCodecGuid}
+                                    Can Play Video Codec: {canPlayVideo}
+                                    
+                                    Audio Codec GUID: {audioCodecGuid}
+                                    Can Play Audio Codec: {canPlayAudio}
+                                    """;
+                Clipboard.CopyStringToClipboard(detailStrings);
+            }
+
+            void ButtonIconCopyDetailsOnUnloaded(object sender, RoutedEventArgs e)
+            {
+                buttonIconCopyDetails.Click -= ButtonIconCopyDetailsOnClick;
+                buttonIconCopyDetails.Unloaded -= ButtonIconCopyDetailsOnUnloaded;
+            }
+        }
+
+        internal static async Task<bool> Dialog_SpawnMediaFoundationCodecInstallDialog()
+        {
+            string dialogConfirmInstall = Lang._Dialogs.Media_VideoMFCodecPrepareInstallBtn;
+
+        StartOver:
+            ContentDialogResult result =
+                await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecPrepareTitle,
+                                  CollapseUIExt.CreateTextBlock()
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare1)
+                                               .AddTextBlockNewLine(2)
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare2)
+                                               .AddTextBlockNewLine()
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare3, FontWeights.Bold)
+                                               .AddTextBlockNewLine()
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare4, FontWeights.Bold)
+                                               .AddTextBlockNewLine(2)
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare5)
+                                               .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare6),
+                                  primaryText: dialogConfirmInstall,
+                                  closeText: Lang._Misc.Cancel,
+                                  defaultButton: ContentDialogButton.Primary,
+                                  dialogTheme: ContentDialogTheme.Warning);
+
+            if (result == ContentDialogResult.None)
+            {
+                return false;
+            }
+
+#pragma warning disable IDE0063
+            using (CancellationTokenSourceWrapper tokenSource = new())
+#pragma warning restore IDE0063
+            {
+                WindowsCodecInstaller codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoMFCodecInstallingTitle,
+                                                                  codecInstaller, tokenSource))
+                {
+                    goto StartOver;
+                }
+            }
+
+            await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecInstalledTitle,
+                              CollapseUIExt.CreateTextBlock()
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecInstalled1),
+                              closeText: Lang._Misc.OkayHappy,
+                              dialogTheme: ContentDialogTheme.Success);
+
+            return true;
+        }
+
+        internal static async Task<bool> Dialog_SpawnFfmpegInstallDialog()
+        {
+            string dialogConfirmInstall        = Lang._Dialogs.Media_VideoFFmpegCodecPrepareInstallBtn;
+            string dialogLocateExistingInstall = Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateBtn;
+
+        StartOver:
+            ContentDialogResult result =
+            await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareTitle,
+                              CollapseUIExt.CreateTextBlock()
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare1)
+                                           .AddTextBlockNewLine(2)
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare2)
+                                           .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare3)
+                                           .AddTextBlockLine(dialogLocateExistingInstall, FontWeights.Bold)
+                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare4),
+                                  primaryText: dialogConfirmInstall,
+                                  secondaryText: dialogLocateExistingInstall,
+                                  closeText: Lang._Misc.Cancel,
+                                  defaultButton: ContentDialogButton.Primary,
+                                  dialogTheme: ContentDialogTheme.Warning);
+
+            if (result == ContentDialogResult.None)
+            {
+                return false;
+            }
+
+            string? foundFfmpegDir = null;
+            if (result == ContentDialogResult.Secondary)
+            {
+                string ffmpegDir = await FileDialogNative.GetFolderPicker(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateDialog);
+                if (string.IsNullOrEmpty(ffmpegDir))
+                {
+                    goto StartOver;
+                }
+
+                foundFfmpegDir = ImageBackgroundManager.FindFfmpegInstallFolder(ffmpegDir);
+                if (string.IsNullOrEmpty(foundFfmpegDir))
+                {
+                    await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
+                                      CollapseUIExt.CreateTextBlock()
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed1)
+                                                   .AddTextBlockNewLine(2)
+                                                   .AddTextBlockLine(ffmpegDir, FontWeights.Bold, 12)
+                                                   .AddTextBlockNewLine(2)
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed2, FontWeights.Bold, 12)
+                                                   .AddTextBlockNewLine()
+                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed3, true, size: 12)
+                                                   .AddTextBlockLine(string.Join(", ", ImageBackgroundManager.GetFfmpegRequiredDllFilenames()), FontWeights.Bold, 12),
+                                      closeText: Lang._Misc.Okay,
+                                      dialogTheme: ContentDialogTheme.Error);
+                    goto StartOver;
+                }
+
+                await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccessTitle,
+                                  CollapseUIExt.CreateTextBlock()
+                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccess1)
+                                               .AddTextBlockNewLine(2)
+                                               .AddTextBlockLine(foundFfmpegDir, FontWeights.Bold, 12),
+                                  closeText: Lang._Misc.OkayHappy,
+                                  dialogTheme: ContentDialogTheme.Success);
+            }
+
+
+            if (!await Dialog_SpawnLicenseAgreementDialog(Path.Combine(Directory.GetCurrentDirectory(), @"Assets\Licenses\FFmpeg"),
+                                                          Path.Combine(Directory.GetCurrentDirectory(), @"Assets\Licenses\FFmpegInteropX")))
+            {
+                goto StartOver;
+            }
+
+            if (!string.IsNullOrEmpty(foundFfmpegDir))
+            {
+                if (!ImageBackgroundManager.TryLinkFfmpegLibrary(foundFfmpegDir,
+                                                                 Directory.GetCurrentDirectory(),
+                                                                 out Exception? ex))
+                {
+                    ErrorSender.SendException(ex);
+                    SentryHelper.ExceptionHandler(ex);
+                    Logger.LogWriteLine($"An error has occurred while trying to link FFmpeg library: {ex}",
+                                        LogType.Error,
+                                        true);
+                    return false;
+                }
+            }
+
+            if (result == ContentDialogResult.Primary)
+            {
+                foundFfmpegDir = null;
+
+                using CancellationTokenSourceWrapper tokenSource    = new();
+                FFmpegCodecInstaller                 codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoFFmpegCodecInstallingTitle, codecInstaller, tokenSource))
+                {
+                    goto StartOver;
+                }
+            }
+
+            ImageBackgroundManager.CustomFfmpegPath = foundFfmpegDir;
+            return true;
+        }
+
+        internal static async Task<bool> Dialog_SpawnCodecDownloadInstallDialog(
+            string                         title,
+            ICodecExtensionInstaller       installer,
+            CancellationTokenSourceWrapper tokenSource)
+        {
+            ProgressBase codecInstaller = (installer as ProgressBase)!;
+
+            Grid grid = CollapseUIExt.CreateGrid()
+                                     .WithColumns(default,
+                                                  new GridLength(1, GridUnitType.Auto))
+                                     .WithRows(default,
+                                               default,
+                                               default)
+                                     .WithHorizontalAlignment(HorizontalAlignment.Stretch);
+
+            DispatcherQueueExtensions.TryEnqueue(CreateElement);
+
+            ContentDialogCollapse dialog = CollapseUIExt
+               .Create<ContentDialogCollapse>(x =>
+                                              {
+                                                  x.Title                  = title;
+                                                  x.IsPrimaryButtonEnabled = false;
+                                                  x.CloseButtonText        = Lang._Misc.Cancel;
+                                                  x.DefaultButton          = ContentDialogButton.Close;
+                                                  x.Content                = grid;
+                                              });
+
+            TaskCompletionSource tcsDialog = new();
+            _ = StartInstaller(tcsDialog, tokenSource.Token);
+
+            // ReSharper disable once AsyncVoidLambda
+            _ = DispatcherQueueExtensions.TryEnqueue(async () =>
+            {
+                try
+                {
+                    await dialog.QueueAndSpawnDialog();
+                    // ReSharper disable once AccessToDisposedClosure
+                    await tokenSource.CancelAsync();
+                }
+                catch
+                {
+                    // ignored
+                }
+            });
+
+            try
+            {
+                await tcsDialog.Task;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (Exception e)
+            {
+                SentryHelper.ExceptionHandler(e);
+                ErrorSender.SendException(e);
+                Logger.LogWriteLine($"An error occurred while trying to install FFmpeg package: {e}",
+                                    LogType.Error,
+                                    true);
+                return false;
+            }
+
+            return true;
+
+            void CreateElement()
+            {
+                // -- Installer Status
+                TextBlock installerStatus = new()
+                {
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    Width        = 480d,
+                    Margin       = new Thickness(0, 0, 0, 8)
+                };
+                installerStatus.BindProperty(codecInstaller.Status,
+                                             nameof(codecInstaller.Status.ActivityAll),
+                                             TextBlock.TextProperty,
+                                             BindingMode.OneWay);
+                grid.Children.Add(installerStatus);
+
+                Grid.SetRow(installerStatus, 0);
+                Grid.SetColumn(installerStatus, 0);
+                Grid.SetColumnSpan(installerStatus, 2);
+
+                // -- Installer Progress Bar
+                ProgressBar installerProgressBar = new()
+                {
+                    Maximum = 100d,
+                    Width   = 480d
+                };
+                installerProgressBar.BindProperty(codecInstaller.Progress,
+                                                  nameof(codecInstaller.Progress.ProgressAllPercentage),
+                                                  RangeBase.ValueProperty,
+                                                  BindingMode.OneWay);
+                grid.Children.Add(installerProgressBar);
+
+                Grid.SetRow(installerProgressBar, 2);
+                Grid.SetColumn(installerProgressBar, 0);
+                Grid.SetColumnSpan(installerProgressBar, 2);
+
+                // -- Installer Text Left Indicator
+                TextBlock textBlockLeftIndicator = new()
+                {
+                    Text                    = "- / -",
+                    HorizontalTextAlignment = TextAlignment.Left,
+                    HorizontalAlignment     = HorizontalAlignment.Left,
+                    FontSize                = 12,
+                    FontWeight              = FontWeights.Bold,
+                    Margin                  = new Thickness(0, 0, 0, 8)
+                };
+                codecInstaller.ProgressChanged += LeftInstallerOnProgressChanged;
+                grid.Children.Add(textBlockLeftIndicator);
+
+                Grid.SetRow(textBlockLeftIndicator, 1);
+                Grid.SetColumn(textBlockLeftIndicator, 0);
+
+                // -- Installer Text Right Indicator
+                TextBlock textBlockRightIndicator = new()
+                {
+                    Text                    = "(N/A) -%",
+                    HorizontalTextAlignment = TextAlignment.Right,
+                    HorizontalAlignment     = HorizontalAlignment.Right,
+                    FontSize                = 12,
+                    FontWeight              = FontWeights.Bold,
+                    Margin                  = new Thickness(0, 0, 0, 8)
+                };
+                codecInstaller.ProgressChanged += RightInstallerOnProgressChanged;
+                grid.Children.Add(textBlockRightIndicator);
+
+                Grid.SetRow(textBlockRightIndicator, 1);
+                Grid.SetColumn(textBlockRightIndicator, 1);
+
+                return;
+
+                void LeftInstallerOnProgressChanged(object? sender, TotalPerFileProgress e)
+                {
+                    DispatcherQueueExtensions.TryEnqueue(() =>
+                    {
+                        textBlockLeftIndicator.Text = $"{SummarizeSizeSimple(e.ProgressAllSizeCurrent)} / {SummarizeSizeSimple(e.ProgressAllSizeTotal)}";
+                    });
+                }
+
+                void RightInstallerOnProgressChanged(object? sender, TotalPerFileProgress e)
+                {
+                    DispatcherQueueExtensions.TryEnqueue(() =>
+                    {
+                        textBlockRightIndicator.Text = $"({string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressAllSpeed))}) {e.ProgressAllPercentage}%";
+                    });
+                }
+            }
+
+            async Task StartInstaller(TaskCompletionSource tcs, CancellationToken token = default)
+            {
+                try
+                {
+                    await installer.Start();
+                    tcs.SetResult();
+                }
+                catch (OperationCanceledException)
+                {
+                    tcs.SetCanceled(token);
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+                finally
+                {
+                    HideDialog();
+                }
+            }
+
+            void HideDialog() => DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(dialog.Hide);
+        }
+
+        internal static async Task<bool> Dialog_SpawnLicenseAgreementDialog(params string[] licenseDirsToView)
+        {
+            string[] availableLicenseFiles = licenseDirsToView.SelectMany(EnumerateLicenses)
+                                                              .ToArray();
+
+            foreach ((int index, string licenseFile) in availableLicenseFiles.Index())
+            {
+                string directory        = Path.GetDirectoryName(licenseFile)!;
+                string ownerName        = Path.GetFileName(directory);
+                string licenseFileName  = Path.GetFileNameWithoutExtension(licenseFile);
+                string licenseName      = licenseFileName.GetSplit(1, '_').ToString();
+                string homepageFilePath = Path.Combine(directory, "Homepage");
+
+                StackPanel panel = CollapseUIExt.CreateStackPanel();
+
+                TextBlock preambleTitle = CollapseUIExt.Create<TextBlock>(x =>
+                {
+                    x.Text                    = Lang._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
+                    x.FontSize                = 28;
+                    x.HorizontalAlignment     = HorizontalAlignment.Center;
+                    x.HorizontalTextAlignment = TextAlignment.Center;
+                    x.Margin                  = new Thickness(0, 0, 0, 16);
+                });
+                panel.AddElementToStackPanel(preambleTitle);
+                TextBlock preambleText = CollapseUIExt.CreateTextBlock(fontSize: 12, fontFamilyName: "Consolas", textAlignment: TextAlignment.Center)
+                                                      .WithMargin(0, 0, 0, 16)
+                                                      .WithHorizontalAlignment(HorizontalAlignment.Center);
+                preambleText
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble1, true, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble2, size: 12)
+                   .AddTextBlockNewLine(2)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble3, size: 12)
+                   .AddTextBlockLine(Lang._Misc.IAcceptAgreement,                          FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble4, size: 12)
+                   .AddTextBlockLine(Lang._Misc.IDoNotAcceptAgreement,                     FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble5, size: 12);
+                panel.AddElementToStackPanel(preambleText);
+
+                string dialogTitle =
+                    $"[{index + 1}/{availableLicenseFiles.Length}] {Lang._OOBEAgreementMenu.AgreementTitle} {ownerName}";
+
+                TextBlock contentTitle = CollapseUIExt.Create<TextBlock>(x =>
+                {
+                    x.Text                    = ownerName;
+                    x.FontSize                = 28;
+                    x.HorizontalAlignment     = HorizontalAlignment.Center;
+                    x.HorizontalTextAlignment = TextAlignment.Center;
+                });
+                panel.AddElementToStackPanel(contentTitle);
+
+                TextBlock contentSubtitle = CollapseUIExt.Create<TextBlock>(x =>
+                {
+                    x.Text                    = licenseName;
+                    x.FontSize                = 18;
+                    x.FontWeight              = FontWeights.Bold;
+                    x.HorizontalAlignment     = HorizontalAlignment.Center;
+                    x.HorizontalTextAlignment = TextAlignment.Center;
+                });
+                panel.AddElementToStackPanel(contentSubtitle);
+
+                if (File.Exists(homepageFilePath))
+                {
+                    string[] homepageUrls = await File.ReadAllLinesAsync(homepageFilePath);
+                    foreach (string homepageUrl in homepageUrls.Where(x => !string.IsNullOrEmpty(x) && !string.IsNullOrWhiteSpace(x)))
+                    {
+                        TextBlock homepageTextBlock = CollapseUIExt.Create<TextBlock>(x =>
+                        {
+                            DispatcherQueueExtensions.TryEnqueue(() =>
+                            {
+                                Hyperlink homepageHyperlink = new();
+                                homepageHyperlink.Click += HomepageHyperlinkOnClick;
+
+                                homepageHyperlink.Inlines.Add(new Run { Text = homepageUrl });
+                                x.Inlines.Add(homepageHyperlink);
+                                x.HorizontalAlignment = HorizontalAlignment.Center;
+                                x.HorizontalTextAlignment = TextAlignment.Center;
+
+                                return;
+
+                                void HomepageHyperlinkOnClick(Hyperlink sender, HyperlinkClickEventArgs args)
+                                {
+                                    using Process? proc = Process.Start(new ProcessStartInfo
+                                    {
+                                        FileName        = homepageUrl,
+                                        UseShellExecute = true
+                                    });
+                                }
+                            });
+                        });
+
+                        panel.AddElementToStackPanel(homepageTextBlock);
+                    }
+                }
+
+                string licenseContent = await File.ReadAllTextAsync(licenseFile);
+                TextBlock licenseTextBox = CollapseUIExt.Create<TextBlock>(x =>
+                {
+                    x.Text                    = licenseContent;
+                    x.FontFamily              = new FontFamily("Consolas");
+                    x.Margin                  = new Thickness(0, 16, 0, 0);
+                    x.HorizontalAlignment     = HorizontalAlignment.Center;
+                    x.HorizontalTextAlignment = TextAlignment.Left;
+                    x.FontSize                = 12;
+                });
+                panel.AddElementToStackPanel(licenseTextBox);
+
+                ContentDialogResult result = await
+                    SpawnDialog(dialogTitle,
+                                panel,
+                                closeText: Lang._Misc.IDoNotAcceptAgreement,
+                                primaryText: Lang._Misc.IAcceptAgreement,
+                                defaultButton: ContentDialogButton.Primary,
+                                dialogTheme: ContentDialogTheme.Informational);
+                if (result == ContentDialogResult.None)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+
+            static IEnumerable<string> EnumerateLicenses(string directoryPath)
+            {
+                foreach (string licensePath in Directory
+                                              .EnumerateFiles(directoryPath,
+                                                              "LICENSE_*.txt",
+                                                              SearchOption.TopDirectoryOnly))
+                {
+                    yield return licensePath;
+                }
+            }
+        }
+
+        #endregion
 
         #region Shortcut Creator Dialogs
 

@@ -1,14 +1,12 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
@@ -16,17 +14,17 @@ namespace CollapseLauncher.Plugins;
 
 internal sealed partial class PluginLauncherApiWrapper
 {
-    private async Task ConvertBackgroundImageEntries(HypLauncherBackgroundList newsData, CancellationToken token)
+    private void ConvertBackgroundImageEntries(HypLauncherBackgroundList newsData)
     {
-        // TODO: Handle image sequence format with logo overlay (example: Wuthering Waves)
-        string  backgroundFolder     = Path.Combine(LauncherConfig.AppGameImgFolder, "bg");
-        string? firstImageSpritePath = null;
-        string? firstImageSpriteUrl  = null;
-
-        using PluginDisposableMemory<LauncherPathEntry> backgroundEntries = PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
+        using PluginDisposableMemory<LauncherPathEntry> backgroundEntries =
+            PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
+        using PluginDisposableMemory<LauncherPathEntry> overlayEntries =
+            PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetLogoOverlayEntries);
         int count = backgroundEntries.Length;
 
         newsData.GameContentList.Clear();
+        HypLauncherBackgroundContentList content = new();
+        newsData.GameContentList.Add(content);
         if (count == 0)
         {
             return;
@@ -34,68 +32,67 @@ internal sealed partial class PluginLauncherApiWrapper
 
         for (int i = 0; i < count; i++)
         {
-            using LauncherPathEntry entry = backgroundEntries[i];
-            string?                 url   = entry.Path;
-            if (string.IsNullOrEmpty(url))
+            if (!TryGetEntryAtIndex(backgroundEntries, i, out LauncherPathEntry backgroundEntry))
             {
                 continue;
             }
 
-            string    fileName        = Path.GetFileNameWithoutExtension(url) + $"_{i}" + Path.GetExtension(url);
-            string    spriteLocalPath = Path.Combine(backgroundFolder, fileName);
-            FileInfo  fileInfo        = new(spriteLocalPath);
-            fileInfo.Directory?.Create();
+            TryGetEntryAtIndex(overlayEntries, i, out LauncherPathEntry overlayEntry);
 
-            // Check if the background download is completed
-            if (IsFileDownloadCompleted(fileInfo))
-            {
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue;
-            }
-
-            // Use local file as its url and do Copy Over instead.
-            if (url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
-            {
-                // Remove "file://" prefix and normalize the path
-                string localUrl = url.AsSpan()[7..].TrimStart("/\\").ToString().NormalizePath();
-
-                if (string.IsNullOrEmpty(localUrl) || !File.Exists(localUrl))
+            using (backgroundEntry)
+                using (overlayEntry)
                 {
-                    continue; // Skip if the file does not exist
+                    string? backgroundUrl = backgroundEntry.Path;
+                    string? overlayUrl    = overlayEntry.Path;
+
+                    if (string.IsNullOrEmpty(backgroundUrl))
+                    {
+                        continue;
+                    }
+
+                    backgroundUrl = ImageLoaderHelper.CopyToLocalIfBase64(backgroundUrl);
+                    overlayUrl    = ImageLoaderHelper.CopyToLocalIfBase64(overlayUrl);
+
+                    HypLauncherMediaContentData backgroundData = new()
+                    {
+                        ImageUrl = backgroundUrl
+                    };
+
+                    HypLauncherMediaContentData? overlayData = string.IsNullOrEmpty(overlayUrl)
+                        ? null
+                        : new HypLauncherMediaContentData
+                        {
+                            ImageUrl = overlayUrl
+                        };
+
+                    ReadOnlySpan<char> backgroundExt = Path.GetExtension(backgroundUrl);
+                    bool isBackgroundVideo = LayeredBackgroundImage
+                                            .SupportedVideoExtensionsLookup
+                                            .Contains(backgroundExt);
+
+                    content.Backgrounds.Add(new HypLauncherBackgroundContentKindData
+                    {
+                        BackgroundImage   = isBackgroundVideo ? null : backgroundData,
+                        BackgroundVideo   = isBackgroundVideo ? backgroundData : null,
+                        BackgroundOverlay = overlayData
+                    });
                 }
+        }
+    }
 
-                await using FileStream fromFileStream = new(localUrl, FileMode.Open, FileAccess.Read, FileShare.Read);
-                await using FileStream destCopyOver   = fileInfo.Create();
+    private static bool TryGetEntryAtIndex(
+        PluginDisposableMemory<LauncherPathEntry> entries,
+        int                                       index,
+        out LauncherPathEntry                     entry)
+    {
+        Unsafe.SkipInit(out entry);
+        bool isAvailable = !entries.IsEmpty && entries.Length > index;
 
-                await fromFileStream.CopyToAsync(destCopyOver, 64 << 10, token).ConfigureAwait(false);
-
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue; // Skip further processing for local files
-            }
-
-            // Start the download
-            Guid                   cancelTokenPass = _plugin.RegisterCancelToken(token);
-            await using FileStream destDownload    = fileInfo.Create();
-            _pluginMediaApi.DownloadAssetAsync(entry,
-                                               destDownload.SafeFileHandle.DangerousGetHandle(),
-                                               null,
-                                               in cancelTokenPass,
-                                               out nint asyncDownloadAssetResult);
-            await asyncDownloadAssetResult.AsTask();
-
-            SaveFileStamp(fileInfo, destDownload.Length);
-
-            firstImageSpriteUrl  ??= url;
-            firstImageSpritePath ??= spriteLocalPath;
+        if (isAvailable)
+        {
+            entry = entries[index];
         }
 
-        // Set props
-        _pluginMediaApi.GetBackgroundSpriteFps(out float fps);
-        GameBackgroundImg           = firstImageSpriteUrl ?? string.Empty;
-        GameBackgroundImgLocal      = firstImageSpritePath;
-        GameBackgroundSequenceCount = count;
-        GameBackgroundSequenceFps   = fps;
+        return isAvailable;
     }
 }

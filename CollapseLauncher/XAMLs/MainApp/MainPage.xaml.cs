@@ -2,6 +2,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
@@ -15,6 +16,7 @@ using Hi3Helper;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -34,6 +36,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
+using Windows.UI;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
@@ -67,10 +70,9 @@ namespace CollapseLauncher
 
         internal static readonly List<string> PreviousTagString = [];
 
-#nullable enable
-        internal static BackgroundMediaUtility? CurrentBackgroundHandler;
-        private         BackgroundMediaUtility? _localBackgroundHandler;
-#nullable restore
+        internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
+        internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
+
         #endregion
 
         #region Main Routine
@@ -81,10 +83,13 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}");
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}");
                 InitializeComponent();
-                m_mainPage                             =  this;
+                Interlocked.Exchange(ref m_mainPage, this);
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
+
+                ImageBackgroundManager.Shared.GlobalParallaxHoverSource = MainPageGrid;
+                ImageBackgroundManager.Shared.ColorAccentChanged += SharedOnColorAccentChanged;
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn, NotificationPanelClearAllGrid);
@@ -96,6 +101,13 @@ namespace CollapseLauncher
             }
         }
 
+        private void SharedOnColorAccentChanged(Color color)
+        {
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+        }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
@@ -103,11 +115,9 @@ namespace CollapseLauncher
             AppDiscordPresence?.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            _localBackgroundHandler?.Dispose();
-            CurrentBackgroundHandler = null;
-            _localBackgroundHandler = null;
 
-            Interlocked.Exchange(ref m_mainPage, null);
+            // Reset image background manager context before reloading.
+            ImageBackgroundManager.Shared.ResetContexts();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -160,9 +170,6 @@ namespace CollapseLauncher
 
         private async Task InitializeStartup()
         {
-            // Initialize the background image utility
-            await InitBackgroundHandler();
-
             Type Page = typeof(HomePage);
 
             bool isCacheUpdaterMode = m_appMode == AppMode.Hi3CacheUpdater;
@@ -203,12 +210,6 @@ namespace CollapseLauncher
             // invoking notifications
             _ = RunBackgroundCheck();
         }
-
-        private async Task InitBackgroundHandler()
-        {
-            CurrentBackgroundHandler ??= await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-            _localBackgroundHandler = CurrentBackgroundHandler;
-        }
         #endregion
 
         #region Invokers
@@ -241,7 +242,6 @@ namespace CollapseLauncher
 
         private static void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
-            BackgroundImgChanger.ToggleBackground(e.Hide);
             InvokeLoadingRegionPopup(!e.Hide, e.Title, e.Subtitle);
         }
 
@@ -418,8 +418,6 @@ namespace CollapseLauncher
             MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
             MainFrameChangerInvoker.FrameGoBackEvent += MainFrameChangerInvoker_FrameGoBackEvent;
             NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
-            BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
-            BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
@@ -434,8 +432,6 @@ namespace CollapseLauncher
             ErrorSenderInvoker.ExceptionEvent -= ErrorSenderInvoker_ExceptionEvent;
             MainFrameChangerInvoker.FrameEvent -= MainFrameChangerInvoker_FrameEvent;
             NotificationInvoker.EventInvoker -= NotificationInvoker_EventInvoker;
-            BackgroundImgChangerInvoker.ImgEvent -= CustomBackgroundChanger_Event;
-            BackgroundImgChangerInvoker.IsImageHide -= BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;

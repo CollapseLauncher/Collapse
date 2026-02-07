@@ -57,7 +57,7 @@ namespace CollapseLauncher
             {
                 using (CriticalOpLock.EnterScope())
                 {
-                    var lastValue = field;
+                    bool lastValue = field;
                     field = value;
                     
                     if (value)
@@ -130,11 +130,9 @@ namespace CollapseLauncher
                     IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
 
                     IntroSequenceToggle.Visibility = Visibility.Visible;
-                    IntroAnimation.Visibility = Visibility.Visible;
-                    IntroAnimation.PlaybackRate = 1.5d;
-                    await Task.Delay(500);
+                    IntroAnimation.Visibility      = Visibility.Visible;
+                    IntroAnimation.PlaybackRate    = 1.5d;
                     await IntroAnimation.PlayAsync(0, 600d / 600d, false);
-                    IntroAnimation.Stop();
                 }
                 IntroAnimation.Source = null;
                 GC.Collect();
@@ -377,8 +375,7 @@ namespace CollapseLauncher
             Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
             double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
 
-            return new RectInt32(
-                                 _X: (int)Math.Round(bounds.X * scaleFactor),
+            return new RectInt32(_X: (int)Math.Round(bounds.X * scaleFactor),
                                  _Y: (int)Math.Round(bounds.Y * scaleFactor),
                                  _Width: (int)Math.Round(bounds.Width * scaleFactor),
                                  _Height: (int)Math.Round(bounds.Height * scaleFactor)
