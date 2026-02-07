@@ -11,7 +11,6 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Dispatching;
 using System;
 using System.IO;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -304,7 +303,8 @@ public static class ClipboardUtility
             return;
         }
 
-        bool isClipboardOpened = true;
+        bool    isClipboardOpened = true;
+        byte[]? buffer            = null;
         try
         {
             ILogger logger = ILoggerHelper.GetILogger("ClipboardUtility::CopyCanvasTargetBufferToClipboard");
@@ -313,8 +313,7 @@ public static class ClipboardUtility
             int                        bmpHeaderSize = Marshal.SizeOf<BITMAPV5HEADER>();
             int                        strideSize    = GetBitmapStrideSize(desc);
             int                        bufferSize    = strideSize + bmpHeaderSize;
-            int                        maxBufferSize = (int)BitOperations.RoundUpToPowerOf2((uint)bufferSize);
-            byte[]                     buffer        = GC.AllocateUninitializedArray<byte>(maxBufferSize);
+            buffer = BigArrayPool<byte>.Shared.Rent(bufferSize);
 
             // Try open the Clipboard
             if (!PInvoke.OpenClipboard(nint.Zero))
@@ -373,6 +372,11 @@ public static class ClipboardUtility
             {
                 // Close the clipboard
                 PInvoke.CloseClipboard();
+            }
+
+            if (buffer != null)
+            {
+                BigArrayPool<byte>.Shared.Return(buffer);
             }
 
             // Dispose the source canvas
