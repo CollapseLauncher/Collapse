@@ -105,18 +105,6 @@ public sealed partial class HomePage
         ToggleMultiBackgroundPipsPagerGridHoverState(MultiBackgroundPipsPagerGrid, false);
     }
 
-    // ReSharper disable once AsyncVoidMethod
-    private async void MultiBackgroundPipsPagerGrid_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        await Task.Delay(1000);
-        if (IsInMultiBackgroundPipsPagerGridHoverArea())
-        {
-            return;
-        }
-
-        ToggleMultiBackgroundPipsPagerGridHoverState(MultiBackgroundPipsPagerGrid, false);
-    }
-
     private bool IsInMultiBackgroundPipsPagerGridHoverArea(PointerRoutedEventArgs? args = null)
     {
         Vector2 gridSize = MultiBackgroundPipsPagerGrid.ActualSize;
@@ -158,6 +146,8 @@ public sealed partial class HomePage
         grid.Tag = show;
         Visual visual = ElementCompositionPreview.GetElementVisual(grid);
         Compositor compositor = visual.Compositor;
+        grid.Opacity   = 1f; // Trigger this bihhh to appear on the visual first since its own .Opacity and Visual.Opacity don't match.
+        visual.Opacity = show ? 0f : 1f;
 
         double duration = 200d;
 
@@ -169,7 +159,10 @@ public sealed partial class HomePage
         float scaleTo = show ? 1f : 0.90f;
         Vector3KeyFrameAnimation scaleAnim = compositor.CreateVector3KeyFrameAnimation();
         scaleAnim.Duration = TimeSpan.FromMilliseconds(duration);
-        scaleAnim.InsertKeyFrame(0f, new Vector3(scaleFrom), function);
+        if (visual.Scale.Y >= 1f)
+        {
+            scaleAnim.InsertKeyFrame(0f, new Vector3(scaleFrom), function);
+        }
         scaleAnim.InsertKeyFrame(1f, new Vector3(scaleTo), function);
         scaleAnim.Target = "Scale";
 
@@ -178,14 +171,16 @@ public sealed partial class HomePage
         float xOffsetTo = (float)grid.ActualWidth * (1f - scaleTo) / 2f;
         Vector3KeyFrameAnimation translateAnim = compositor.CreateVector3KeyFrameAnimation();
         translateAnim.Duration = scaleAnim.Duration;
-        translateAnim.InsertKeyFrame(0f, new Vector3(xOffsetFrom, !show ? -grid.Translation.Y : -((float)grid.ActualHeight / 2), 0), function);
+        if (visual.Offset.Y == 0)
+        {
+            translateAnim.InsertKeyFrame(0f, new Vector3(xOffsetFrom, !show ? -grid.Translation.Y : -((float)grid.ActualHeight / 2), 0), function);
+        }
         translateAnim.InsertKeyFrame(1f, new Vector3(xOffsetTo, show ? -grid.Translation.Y : -((float)grid.ActualHeight / 2), 0), function);
         translateAnim.Target = "Translation";
 
         // Opacity
         ScalarKeyFrameAnimation opacityAnim = compositor.CreateScalarKeyFrameAnimation();
         opacityAnim.Duration = scaleAnim.Duration;
-        opacityAnim.InsertKeyFrame(0f, !show ? 1f : 0f, function);
         opacityAnim.InsertKeyFrame(1f, show ? 1f : 0f, function);
         opacityAnim.Target = "Opacity";
 

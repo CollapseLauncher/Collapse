@@ -1075,9 +1075,8 @@
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
                         DataContext="{x:Bind CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
-                        Loaded="MultiBackgroundPipsPagerGrid_OnLoaded"
                         RenderTransformOrigin=".5, .5"
-                        Opacity="1"
+                        Opacity="0"
                         Orientation="Vertical"
                         Spacing="16">
                 <StackPanel.RenderTransform>
