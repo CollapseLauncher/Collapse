@@ -609,18 +609,15 @@ namespace CollapseLauncher.Pages
 
         public object? Convert(object? value, Type targetType, object parameter, string language)
         {
-            Uri? sourceAsUri = value as Uri;
+            Uri?    sourceAsUri    = value as Uri;
+            string? sourceAsString = value as string;
 
-            if (sourceAsUri == null &&
-                value is string sourceAsString &&
-                !Uri.TryCreate(sourceAsString, UriKind.RelativeOrAbsolute, out sourceAsUri))
+            if ((sourceAsUri == null &&
+                !string.IsNullOrEmpty(sourceAsString) &&
+                !Uri.TryCreate(sourceAsString, UriKind.Absolute, out sourceAsUri)) ||
+                sourceAsUri == null)
             {
-                return null;
-            }
-
-            if (sourceAsUri == null)
-            {
-                return null;
+                return value;
             }
 
             // Return if it's already a local path
