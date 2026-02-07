@@ -83,6 +83,8 @@ public partial class LayeredBackgroundImage
     private FFmpegMediaSource?       _videoFfmpegMediaSource;
     private long                     _videoToSkipFrames;
 
+    private int _isFirstInitSkipFrame = 1;
+
     #endregion
 
     #region Video Frame Drawing
@@ -417,11 +419,19 @@ public partial class LayeredBackgroundImage
                             // Use a half second for FFmpeg as it took slightly longer.
                             double ffmpegSessionFrameRate = _videoFfmpegMediaSource?.CurrentVideoStream?.FramesPerSecond ?? 0;
                             ffmpegSessionFrameRate *= .5d;
+
+                            // Avoid longer frame skipping on first init. Override it by just two
+                            if (Interlocked.Exchange(ref _isFirstInitSkipFrame, 0) == 1 &&
+                                ffmpegSessionFrameRate > 1)
+                            {
+                                ffmpegSessionFrameRate = 1;
+                            }
+
                             Interlocked.Exchange(ref _videoToSkipFrames, (long)Math.Round(ffmpegSessionFrameRate));
                         }
                         else
                         {
-                            Interlocked.Exchange(ref _videoToSkipFrames, 2);
+                            Interlocked.Exchange(ref _videoToSkipFrames, 1);
                         }
                     }
                     catch
