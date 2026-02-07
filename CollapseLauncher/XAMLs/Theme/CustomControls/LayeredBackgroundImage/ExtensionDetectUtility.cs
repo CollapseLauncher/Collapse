@@ -39,9 +39,9 @@ public static class ExtensionDetectUtility
     private static ImageExternalCodecType IsHeaderInternalCodecImage(scoped Span<byte> buffer)
     {
         // Checks for JPEG
-        ReadOnlySpan<byte> jpegSig1 = [0xFF, 0xD8, 0xFF];
-        var jpegSigJfif = "JFIF"u8;
-        var jpegSigExif = "Exif"u8;
+        ReadOnlySpan<byte> jpegSig1    = [0xFF, 0xD8, 0xFF];
+        ReadOnlySpan<byte> jpegSigJfif = "JFIF"u8;
+        ReadOnlySpan<byte> jpegSigExif = "Exif"u8;
 
         bool isJpeg = buffer.StartsWith(jpegSig1) && (buffer[6..].StartsWith(jpegSigJfif) || buffer[6..].StartsWith(jpegSigExif));
         if (isJpeg)
@@ -59,7 +59,7 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for BMP
-        var bmpSig = "BM"u8;
+        ReadOnlySpan<byte> bmpSig = "BM"u8;
 
         bool isBmp = buffer.StartsWith(bmpSig);
         if (isBmp)
@@ -68,8 +68,8 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for GIF
-        var gifSig1 = "GIF87a"u8;
-        var gifSig2 = "GIF89a"u8;
+        ReadOnlySpan<byte> gifSig1 = "GIF87a"u8;
+        ReadOnlySpan<byte> gifSig2 = "GIF89a"u8;
 
         bool isGif = buffer.StartsWith(gifSig1) || buffer.StartsWith(gifSig2);
         if (isGif)
@@ -78,8 +78,8 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for TIFF
-        var tiffSig1 = "II*\0"u8; // Little-endian
-        var tiffSig2 = "MM\0*"u8; // Big-endian
+        ReadOnlySpan<byte> tiffSig1 = "II*\0"u8; // Little-endian
+        ReadOnlySpan<byte> tiffSig2 = "MM\0*"u8; // Big-endian
 
         bool isTiff = buffer.StartsWith(tiffSig1) || buffer.StartsWith(tiffSig2);
         if (isTiff)
@@ -97,14 +97,11 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for SVG
-        var svgSig = "<svg"u8;
-        bool isSvg = buffer.IndexOf(svgSig) >= 0;
-        if (isSvg)
-        {
-            return ImageExternalCodecType.Svg;
-        }
-
-        return ImageExternalCodecType.NotSupported;
+        ReadOnlySpan<byte> svgSig = "<svg"u8;
+        bool           isSvg  = buffer.IndexOf(svgSig) >= 0;
+        return isSvg
+            ? ImageExternalCodecType.Svg
+            : ImageExternalCodecType.NotSupported;
     }
 
     private static ImageExternalCodecType IsHeaderExternalCodecImage(scoped Span<byte> buffer)
@@ -130,11 +127,8 @@ public static class ExtensionDetectUtility
 
         // Checks for JXR
         ReadOnlySpan<byte> jxrSig = [0x49, 0x49, 0xBC, 0x01, 0x08, 0x00, 0x00, 0x00];
-        if (buffer.StartsWith(jxrSig))
-        {
-            return ImageExternalCodecType.Jxr;
-        }
-
-        return ImageExternalCodecType.NotSupported;
+        return buffer.StartsWith(jxrSig)
+            ? ImageExternalCodecType.Jxr
+            : ImageExternalCodecType.NotSupported;
     }
 }

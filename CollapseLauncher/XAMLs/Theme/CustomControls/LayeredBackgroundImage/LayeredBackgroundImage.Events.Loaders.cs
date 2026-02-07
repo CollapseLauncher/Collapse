@@ -536,11 +536,10 @@ public partial class LayeredBackgroundImage
         }
 
         Image_ImageOpened(sender, e);
-        if (parentGrid.Item2.IsVideoAutoplay)
-        {
-            Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
-            parentGrid.Item2.InitializeAndPlayVideoView();
-        }
+        if (!parentGrid.Item2.IsVideoAutoplay) return;
+
+        Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
+        parentGrid.Item2.InitializeAndPlayVideoView();
     }
 
     private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
