@@ -71,29 +71,6 @@ public partial class LayeredBackgroundImage
         DisposeAndPauseVideoView(actionAfterPause: Paused,
                                  volumeFadeDurationMs: 150d,
                                  volumeFadeResolutionMs: 10d,
-                                 // Note by @neon-nyan:
-                                 //
-                                 // Video Player is expected to be disposed on pause (yes, it looked ugly when it started for the first time).
-                                 // This is intended because I don't want to waste our user's 800 MB VRAM just to stupidly allocating
-                                 // it on Video Player for nothing.
-                                 //
-                                 // If only MicroSLOP wanted to do their own job properly by deallocating their unmanaged memory for certain
-                                 // amount of standby time (if they ever think of it), I would be fine to not disposing the Video Player.
-                                 //
-                                 // I COMPLETELY DISAGREE with keeping it NOT disposable, unless we have our own way to make the Video Player
-                                 // deallocate their VRAM allocation when standby.
-                                 //
-                                 // I'm sorry for ranting on this comment but considering this is already nearly 2 months in the works.
-                                 // It's just so frustrating to get this nearly ready to be shipped, only to find something is changed and
-                                 // it broke things. I can't make any other decision unless it's other thing we might consider for future plan.
-                                 // Unless if you guys wanted to fix every single line of these codes, I would be VERY HAPPY to see it.
-                                 //
-                                 // Now, I just want to be very honest with you guys.
-                                 // If only I don't have a severe depression due to tragedy on my real life, I wouldn't be overthinking this
-                                 // and this PR already ruined not only my overall work time, but also my own sanity and mental health.
-                                 // (And yeah, this is what severe depression will do to you guys. Wish you won't have the same fate as mine)
-                                 // 
-                                 // Once again, sorry for ranting a bit and, Thank you for hearing this.
                                  // disposeVideoPlayer: CanUseStaticBackground,
                                  disposeRenderImageSource: false, // Do not dispose Image Source
                                  token: _videoPlayerPlayPauseCts.Token);
