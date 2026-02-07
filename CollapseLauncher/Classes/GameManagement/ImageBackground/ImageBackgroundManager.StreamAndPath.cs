@@ -155,13 +155,16 @@ public partial class ImageBackgroundManager
             return false;
         }
 
-        byte[] fileStampData = File.ReadAllBytes(downloadStampFilePath.FullName);
-        if (fileStampData.Length != sizeof(UrlStatus))
+        scoped Span<byte> buffer = stackalloc byte[sizeof(UrlStatus)];
+        using FileStream  stream = downloadStampFilePath.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        int               read   = stream.ReadAtLeast(buffer, buffer.Length, false);
+
+        if (read != sizeof(UrlStatus))
         {
             return false;
         }
 
-        urlStatusStamp = MemoryMarshal.Read<UrlStatus>(fileStampData);
+        urlStatusStamp = MemoryMarshal.Read<UrlStatus>(buffer);
         return true;
     }
 
