@@ -357,9 +357,19 @@ public partial class ImageBackgroundManager
         CurrentIsEnableBackgroundAutoPlayKey = $"LastIsEnableBackgroundAutoPlay-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
-        PresenterGrid        = presenterGrid;
         CurrentBackgroundApi = backgroundApi;
 
+        Initialize(presenterGrid, token);
+    }
+
+    /// <summary>
+    /// Initialize background images for non-region scenario or initializing core functions.
+    /// </summary>
+    /// <param name="presenterGrid">Presenter Grid which the element of the background will be shown on.</param>
+    /// <param name="token">Cancellation token to cancel asynchronous operations.</param>
+    public void Initialize(Grid? presenterGrid, CancellationToken token = default)
+    {
+        PresenterGrid = presenterGrid;
         InitializeCore(token);
     }
 
@@ -376,11 +386,6 @@ public partial class ImageBackgroundManager
         {
             try
             {
-                if (PresetConfig == null)
-                {
-                    throw new InvalidOperationException($"{nameof(PresetConfig)} is uninitialized!");
-                }
-
                 // -- Try to initialize custom image first
                 //    -- A. Check for per-region custom background
                 if (CurrentIsEnableCustomImage &&
@@ -439,9 +444,9 @@ public partial class ImageBackgroundManager
                     DispatcherQueueExtensions
                        .CurrentDispatcherQueue
                        .TryEnqueue(() =>
-                                   {
-                                       UpdateContextListCore(token, false, imageContexts);
-                                   });
+                       {
+                           UpdateContextListCore(token, false, imageContexts);
+                       });
                 }
             }
             catch (Exception ex)

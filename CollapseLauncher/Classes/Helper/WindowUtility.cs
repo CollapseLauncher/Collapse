@@ -75,8 +75,6 @@ namespace CollapseLauncher.Helper
 
         internal static OverlappedPresenter? CurrentOverlappedPresenter => CurrentAppWindow?.Presenter as OverlappedPresenter;
 
-        internal static DispatcherQueue? CurrentDispatcherQueue => CurrentWindow?.DispatcherQueue;
-
         internal static DisplayArea? CurrentWindowDisplayArea => !CurrentWindowId.HasValue ? null : DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
 
         internal static DisplayInformation? CurrentWindowDisplayInformation

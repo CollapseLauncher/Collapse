@@ -1118,7 +1118,7 @@ namespace CollapseLauncher.Dialogs
                     ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
                     2, 1);
 
-                CollapseUIExt.RunFunctionFromUIThread(() =>
+                DispatcherQueueExtensions.TryEnqueue(() =>
                 {
                     if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
                     {
@@ -1153,7 +1153,7 @@ namespace CollapseLauncher.Dialogs
             }
             finally
             {
-                CollapseUIExt.RunFunctionFromUIThread(() =>
+                DispatcherQueueExtensions.TryEnqueue(() =>
                 {
                     if (copyButton != null)
                     {
@@ -1184,7 +1184,7 @@ namespace CollapseLauncher.Dialogs
             return result;
         }
 
-        public static Task<ContentDialogResult> Dialog_SelectCustomBackgroundParallaxPixels()
+        public static Task<ContentDialogResult> Dialog_SelectCustomBackgroundParallaxPixels(ImageBackgroundManager instanceSource)
         {
             NumberBox numberBox = new()
             {
@@ -1197,8 +1197,8 @@ namespace CollapseLauncher.Dialogs
                 HorizontalAlignment     = HorizontalAlignment.Center
             };
 
-            numberBox.BindProperty(ImageBackgroundManager.Shared,
-                                   nameof(ImageBackgroundManager.Shared.GlobalBackgroundParallaxPixelShift),
+            numberBox.BindProperty(instanceSource,
+                                   nameof(ImageBackgroundManager.GlobalBackgroundParallaxPixelShift),
                                    NumberBox.ValueProperty,
                                    BindingMode.TwoWay);
 
@@ -1601,7 +1601,7 @@ namespace CollapseLauncher.Dialogs
                                                default)
                                      .WithHorizontalAlignment(HorizontalAlignment.Stretch);
 
-            CollapseUIExt.RunFunctionFromUIThread(CreateElement);
+            DispatcherQueueExtensions.TryEnqueue(CreateElement);
 
             ContentDialogCollapse dialog = CollapseUIExt
                .Create<ContentDialogCollapse>(x =>
@@ -1617,19 +1617,19 @@ namespace CollapseLauncher.Dialogs
             _ = StartInstaller(tcsDialog, tokenSource.Token);
 
             // ReSharper disable once AsyncVoidLambda
-            CollapseUIExt.RunFunctionFromUIThread(async () =>
-                                                  {
-                                                      try
-                                                      {
-                                                          await dialog.QueueAndSpawnDialog();
-                                                          // ReSharper disable once AccessToDisposedClosure
-                                                          await tokenSource.CancelAsync();
-                                                      }
-                                                      catch
-                                                      {
-                                                          // ignored
-                                                      }
-                                                  });
+            _ = DispatcherQueueExtensions.TryEnqueue(async () =>
+            {
+                try
+                {
+                    await dialog.QueueAndSpawnDialog();
+                    // ReSharper disable once AccessToDisposedClosure
+                    await tokenSource.CancelAsync();
+                }
+                catch
+                {
+                    // ignored
+                }
+            });
 
             try
             {
@@ -1722,18 +1722,18 @@ namespace CollapseLauncher.Dialogs
 
                 void LeftInstallerOnProgressChanged(object? sender, TotalPerFileProgress e)
                 {
-                    CollapseUIExt.RunFunctionFromUIThread(() =>
-                                                          {
-                                                              textBlockLeftIndicator.Text = $"{SummarizeSizeSimple(e.ProgressAllSizeCurrent)} / {SummarizeSizeSimple(e.ProgressAllSizeTotal)}";
-                                                          });
+                    DispatcherQueueExtensions.TryEnqueue(() =>
+                    {
+                        textBlockLeftIndicator.Text = $"{SummarizeSizeSimple(e.ProgressAllSizeCurrent)} / {SummarizeSizeSimple(e.ProgressAllSizeTotal)}";
+                    });
                 }
 
                 void RightInstallerOnProgressChanged(object? sender, TotalPerFileProgress e)
                 {
-                    CollapseUIExt.RunFunctionFromUIThread(() =>
-                                                          {
-                                                              textBlockRightIndicator.Text = $"({string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressAllSpeed))}) {e.ProgressAllPercentage}%";
-                                                          });
+                    DispatcherQueueExtensions.TryEnqueue(() =>
+                    {
+                        textBlockRightIndicator.Text = $"({string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressAllSpeed))}) {e.ProgressAllPercentage}%";
+                    });
                 }
             }
 
@@ -1828,7 +1828,7 @@ namespace CollapseLauncher.Dialogs
                     {
                         TextBlock homepageTextBlock = CollapseUIExt.Create<TextBlock>(x =>
                         {
-                            CollapseUIExt.RunFunctionFromUIThread(() =>
+                            DispatcherQueueExtensions.TryEnqueue(() =>
                             {
                                 Hyperlink homepageHyperlink = new();
                                 homepageHyperlink.Click += HomepageHyperlinkOnClick;

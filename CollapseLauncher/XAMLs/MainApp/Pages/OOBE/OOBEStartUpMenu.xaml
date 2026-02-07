@@ -10,19 +10,25 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:ui="using:CommunityToolkit.WinUI"
+      xmlns:pages="using:CollapseLauncher.Pages"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
-    <Grid>
+    <Grid x:Name="ParentGrid">
+        <Grid.Resources>
+            <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
+            <pages:BackgroundParallaxPixelToComboBoxIndexConverter x:Key="BackgroundParallaxPixelToComboBoxIndexConverter" />
+        </Grid.Resources>
         <AnimatedVisualPlayer x:Name="WelcomeLogoIntro"
                               Width="Auto"
                               HorizontalAlignment="Stretch"
                               AutoPlay="False" />
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
+            <Grid x:Name="BackgroundGrid" Opacity="0.25"/>
             <Image x:Name="ContainerBackgroundImage"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -45,7 +51,7 @@
                 <StackPanel x:Name="CollapseLogoContainer"
                             HorizontalAlignment="Left"
                             Orientation="Horizontal">
-                    <Image x:Name="GridBG_IconImg"
+                    <Image x:Name="GridBGIconImg"
                            Width="160"
                            Margin="0,0,0,0"
                            Opacity="0.8"
@@ -66,6 +72,7 @@
                       HorizontalAlignment="Right"
                       VerticalAlignment="Stretch">
                     <Button x:Name="PrevPageButton"
+                            extension:UIElementExtensions.CursorType="Hand"
                             VerticalAlignment="Top"
                             Click="PrevPageButton_Click"
                             Opacity="0"
@@ -119,9 +126,9 @@
                               VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Left"
                                 VerticalAlignment="Center">
-                        <StackPanel.Transitions>
+                        <!--<StackPanel.Transitions>
                             <EntranceThemeTransition />
-                        </StackPanel.Transitions>
+                        </StackPanel.Transitions>-->
                         <TextBlock Margin="0,0,0,16"
                                    FontSize="32"
                                    Foreground="{ThemeResource SystemAccentColor}"
@@ -154,14 +161,14 @@
                                        TextTrimming="Clip"
                                        TextWrapping="Wrap" />
                             <Button Click="ChooseFolder"
+                                    extension:UIElementExtensions.CursorType="Hand"
                                     CornerRadius="16"
                                     Style="{ThemeResource AccentButtonStyle}">
                                 <StackPanel Margin="8,0"
                                             Orientation="Horizontal">
                                     <FontIcon Margin="0,0,8,0"
-                                              FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="14"
-                                              Glyph="&#xf07b;" />
+                                              Glyph="&#xE8D5;" />
                                     <TextBlock FontWeight="Medium"
                                                Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}"
                                                TextWrapping="Wrap" />
@@ -170,65 +177,84 @@
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
-                <ScrollViewer x:Name="CustomizationContainer"
-                              Grid.Row="1"
-                              Grid.Column="0"
-                              Grid.ColumnSpan="2"
-                              Margin="0,-48,0,24"
-                              Visibility="Collapsed">
-                    <StackPanel x:Name="SettingsCardContainer">
-                        <TextBlock Margin="0,0,0,16"
-                                   FontSize="32"
-                                   Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationTitle}" />
-                        <controls:SettingsCard x:Name="SettingsCardItemLanguage"
+                <Grid Grid.Row="1"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      x:Name="CustomizationContainer"
+                      VerticalAlignment="Center"
+                      Visibility="Collapsed"
+                      Margin="0,-48,0,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0"
+                               Margin="0,0,0,16"
+                               FontSize="24"
+                               Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationTitle}"/>
+                    <ScrollViewer Grid.Row="1"
+                                  CornerRadius="8">
+                        <StackPanel x:Name="SettingsCardContainer"
+                                    CornerRadius="8">
+                            <controls:SettingsCard x:Name="SettingsCardItemLanguage"
                                                Margin="0,2"
                                                Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageDescription}"
-                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader}"
-                                               HeaderIcon="{ui:FontIcon Glyph=&#xf57d;}">
-                            <ComboBox x:Name="SelectLang"
-                                      ItemsSource="{x:Bind LangList}"
-                                      MaxDropDownHeight="200"
-                                      SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
-                                      SelectionChanged="FixComboBoxSize" />
-                        </controls:SettingsCard>
-                        <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader}">
+                                <controls:SettingsCard.HeaderIcon>
+                                    <FontIcon Glyph="&#xE774;"/>
+                                </controls:SettingsCard.HeaderIcon>
+                                <ComboBox x:Name="SelectLang"
+                                          extension:UIElementExtensions.CursorType="Hand"
+                                          ItemsSource="{x:Bind LangList}"
+                                          MaxDropDownHeight="200"
+                                          SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
+                                          SelectionChanged="FixComboBoxSize" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
                                                Margin="0,2"
                                                Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeDescription}"
-                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}"
-                                               HeaderIcon="{ui:FontIcon Glyph=&#xf2d2;}">
-                            <ComboBox x:Name="SelectWindowSize"
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}">
+                                <controls:SettingsCard.HeaderIcon>
+                                    <FontIcon Glyph="&#xE944;"/>
+                                </controls:SettingsCard.HeaderIcon>
+                                <ComboBox x:Name="SelectWindowSize"
+                                          extension:UIElementExtensions.CursorType="Hand"
                                       SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
                                       SelectionChanged="FixComboBoxSize">
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" />
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" />
-                            </ComboBox>
-                        </controls:SettingsCard>
-                        <controls:SettingsCard x:Name="SettingsCardItemPreferredCDN"
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" />
+                                </ComboBox>
+                            </controls:SettingsCard>
+                            <controls:SettingsCard x:Name="SettingsCardItemPreferredCDN"
                                                Margin="0,2"
                                                Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsCDNDescription}"
-                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsCDNHeader}"
-                                               HeaderIcon="{ui:FontIcon Glyph=&#xf6ff;}">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Margin="0,0,0,0"
-                                        Click="RefreshCDNCheckButtonClick"
-                                        Style="{ThemeResource TransparentDefaultButtonStyle}">
-                                    <Button.Content>
-                                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="12"
-                                                  Glyph="&#xf021;" />
-                                    </Button.Content>
-                                </Button>
-                                <Button Margin="0,0,8,0"
-                                        Style="{ThemeResource TransparentDefaultButtonStyle}">
-                                    <Button.Content>
-                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                  FontSize="12"
-                                                  Glyph="&#x3f;" />
-                                    </Button.Content>
-                                    <Button.Flyout>
-                                        <Flyout>
-                                            <StackPanel MaxWidth="380">
-                                                <TextBlock TextWrapping="WrapWholeWords">
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsCDNHeader}">
+                                <controls:SettingsCard.HeaderIcon>
+                                    <FontIcon Glyph="&#xEC05;"/>
+                                </controls:SettingsCard.HeaderIcon>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Margin="0,0,4,0"
+                                            Padding="6"
+                                            extension:UIElementExtensions.CursorType="Hand"
+                                            Click="RefreshCDNCheckButtonClick"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                                        <Button.Content>
+                                            <FontIcon FontSize="12"
+                                                  Glyph="&#xE895;" />
+                                        </Button.Content>
+                                    </Button>
+                                    <Button Margin="0,0,8,0"
+                                            Padding="6"
+                                            extension:UIElementExtensions.CursorType="Hand"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                                        <Button.Content>
+                                            <FontIcon FontSize="12"
+                                                  Glyph="&#xE897;" />
+                                        </Button.Content>
+                                        <Button.Flyout>
+                                            <Flyout>
+                                                <StackPanel MaxWidth="380">
+                                                    <TextBlock TextWrapping="WrapWholeWords">
                                                     <Run FontSize="20"
                                                          FontWeight="Bold"
                                                          Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}" />
@@ -239,75 +265,144 @@
                                                          Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}" />
                                                     <Run FontSize="12"
                                                          Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}" />
-                                                </TextBlock>
-                                                <TextBlock MaxWidth="380"
+                                                    </TextBlock>
+                                                    <TextBlock MaxWidth="380"
                                                            Margin="0,8,0,0"
                                                            TextWrapping="Wrap">
                                                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}" />
                                                     <Run FontWeight="Bold"
                                                          Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}" />
                                                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}" />
-                                                </TextBlock>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}" />
-                                                <TextBlock Margin="0,12,0,0"
+                                                    </TextBlock>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}" />
+                                                    <TextBlock Margin="0,12,0,0"
                                                            FontSize="20"
                                                            FontWeight="Bold"
                                                            Text="{x:Bind helper:Locale.Lang._StartupPage.CDNsAvailable}" />
-                                                <ItemsControl MaxWidth="380"
+                                                    <ItemsControl MaxWidth="380"
                                                               Margin="0,0,0,-8"
                                                               ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate x:DataType="innerConfig:CDNURLProperty">
-                                                            <StackPanel Margin="0,8">
-                                                                <TextBlock FontSize="16"
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                                                <StackPanel Margin="0,8">
+                                                                    <TextBlock FontSize="16"
                                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                                            Text="{x:Bind Name}" />
-                                                                <TextBlock Text="{x:Bind Description}"
+                                                                    <TextBlock Text="{x:Bind Description}"
                                                                            TextWrapping="Wrap" />
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                        </Flyout>
-                                    </Button.Flyout>
-                                </Button>
-                                <ComboBox x:Name="SelectCDN"
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                    <ComboBox x:Name="SelectCDN"
+                                              extension:UIElementExtensions.CursorType="Hand"
                                           SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}"
                                           SelectionChanged="FixComboBoxSize" />
-                            </StackPanel>
-                        </controls:SettingsCard>
-                        <controls:SettingsExpander x:Name="SettingsCardItemTheme"
+                                </StackPanel>
+                            </controls:SettingsCard>
+                            <controls:SettingsExpander x:Name="SettingsCardItemTheme"
+                                                       IsExpanded="True"
                                                    Margin="0,2"
                                                    Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleDescription}"
-                                                   Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleHeader}"
-                                                   HeaderIcon="{ui:FontIcon Glyph=&#xf53f;}">
-                            <controls:SettingsExpander.Items>
-                                <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription}"
-                                                       Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader}">
-                                    <ComboBox x:Name="SettingsAppThemeCombobox"
+                                                   Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleHeader}">
+                                <controls:SettingsExpander.HeaderIcon>
+                                    <FontIcon Glyph="&#xE790;"/>
+                                </controls:SettingsExpander.HeaderIcon>
+                                <controls:SettingsExpander.Items>
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription}"
+                                                           Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader}">
+                                        <controls:SettingsCard.HeaderIcon>
+                                            <FontIcon Glyph="&#xE7A1;"/>
+                                        </controls:SettingsCard.HeaderIcon>
+                                        <ComboBox x:Name="SettingsAppThemeCombobox"
+                                                  extension:UIElementExtensions.CursorType="Hand"
                                               SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}"
                                               SelectionChanged="FixComboBoxSize">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}" />
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}" />
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}" />
-                                    </ComboBox>
-                                </controls:SettingsCard>
-                                <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription}"
-                                                       Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader}">
-                                    <CheckBox Checked="CustomBackgroundCheckedOpen"
-                                              Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                              Unchecked="CustomBackgroundCheckedClose" />
-                                </controls:SettingsCard>
-                            </controls:SettingsExpander.Items>
-                        </controls:SettingsExpander>
-                    </StackPanel>
-                </ScrollViewer>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}" />
+                                        </ComboBox>
+                                    </controls:SettingsCard>
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription}"
+                                                           Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader}">
+                                        <controls:SettingsCard.HeaderIcon>
+                                            <FontIcon Glyph="&#xE8B9;"/>
+                                        </controls:SettingsCard.HeaderIcon>
+                                        <CheckBox Checked="CustomBackgroundCheckedOpen"
+                                                  extension:UIElementExtensions.CursorType="Hand"
+                                              Unchecked="CustomBackgroundCheckedClose"
+                                              DataContext="{x:Bind OOBEBackgroundManager}"
+                                              IsChecked="{Binding GlobalIsEnableCustomImage, Mode=TwoWay}"
+                                              Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" />
+                                    </controls:SettingsCard>
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip}"
+                                                           Header="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText}">
+                                        <controls:SettingsCard.HeaderIcon>
+                                            <FontIcon Glyph="&#xE8D6;"/>
+                                        </controls:SettingsCard.HeaderIcon>
+                                        <StackPanel Orientation="Horizontal"
+                                                Spacing="16">
+                                            <Slider Width="150"
+                                                    extension:UIElementExtensions.CursorType="Hand"
+                                                DataContext="{x:Bind OOBEBackgroundManager}"
+                                                Visibility="{Binding ElementName=BackgroundAudioToggle, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
+                                                Maximum="100"
+                                                Minimum="0"
+                                                Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}"
+                                                VerticalAlignment="Center"/>
+                                            <ToggleSwitch DataContext="{x:Bind OOBEBackgroundManager}"
+                                                          extension:UIElementExtensions.CursorType="Hand"
+                                                      IsOn="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
+                                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                      VerticalAlignment="Center"
+                                                      x:Name="BackgroundAudioToggle"/>
+                                        </StackPanel>
+                                    </controls:SettingsCard>
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip}"
+                                                           Header="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText}">
+                                        <controls:SettingsCard.HeaderIcon>
+                                            <FontIcon Glyph="&#xE7B3;"/>
+                                        </controls:SettingsCard.HeaderIcon>
+                                        <StackPanel Orientation="Horizontal"
+                                                Spacing="16">
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText}"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{Binding ElementName=BackgroundParallaxEffectToggle, Path=IsOn, Mode=OneWay}"
+                                                   FontSize="12"/>
+                                            <ComboBox DataContext="{x:Bind OOBEBackgroundManager}"
+                                                      extension:UIElementExtensions.CursorType="Hand"
+                                                  Visibility="{Binding ElementName=BackgroundParallaxEffectToggle, Path=IsOn, Mode=OneWay}"
+                                                  SelectedIndex="{Binding GlobalBackgroundParallaxPixelShift, Mode=OneWay, Converter={StaticResource BackgroundParallaxPixelToComboBoxIndexConverter}}"
+                                                  SelectionChanged="SelectAnyParallaxPixelAmount_OnSelectionChanged">
+                                                <ComboBoxItem Content="2px"/>
+                                                <ComboBoxItem Content="4px"/>
+                                                <ComboBoxItem Content="8px"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"/>
+                                            </ComboBox>
+                                            <ToggleSwitch DataContext="{x:Bind OOBEBackgroundManager}"
+                                                          extension:UIElementExtensions.CursorType="Hand"
+                                                      IsOn="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
+                                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                      x:Name="BackgroundParallaxEffectToggle" />
+                                        </StackPanel>
+                                    </controls:SettingsCard>
+                                </controls:SettingsExpander.Items>
+                            </controls:SettingsExpander>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
                 <Button x:Name="NextPageButton"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Grid.Row="2"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
-                        Margin="0,0,0,0"
+                        Margin="0,0,0,-16"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Click="NextPageButton_Click"

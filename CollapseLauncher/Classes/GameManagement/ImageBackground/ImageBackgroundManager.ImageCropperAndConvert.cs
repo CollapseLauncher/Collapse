@@ -252,9 +252,7 @@ public partial class ImageBackgroundManager
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex);
-            DispatcherQueueExtensions
-               .CurrentDispatcherQueue
-               .TryEnqueue(dialogOverlay.Hide);
+            DispatcherQueueExtensions.TryEnqueue(dialogOverlay.Hide);
         }
     }
 

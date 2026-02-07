@@ -182,16 +182,16 @@ namespace CollapseLauncher.Helper.Image
 
     internal static class ColorHelper
     {
-        internal static WColor GetDarkColor(this WColor baseColor)
+        internal static WColor GetDarkColor(this WColor baseColor, float concentrate = .3f)
         {
             HlsColor color = HlsColor.CreateFromWindowsColor(baseColor);
-            return color.Darker(0.3f).ToWColor();
+            return color.Darker(concentrate).ToWColor();
         }
 
-        internal static WColor GetLightColor(this WColor baseColor)
+        internal static WColor GetLightColor(this WColor baseColor, float concentrate = 1f)
         {
             HlsColor color = HlsColor.CreateFromWindowsColor(baseColor);
-            return color.Lighter(1f).ToWColor();
+            return color.Lighter(concentrate).ToWColor();
         }
 
         internal static WColor SetSaturation(this WColor baseColor, double saturation)

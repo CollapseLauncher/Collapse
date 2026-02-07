@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -21,8 +20,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Windows.UI;
 using Windows.UI.Text;
 using WinRT;
@@ -256,7 +253,7 @@ namespace CollapseLauncher.Extension
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TButtonBase Impl()
             {
@@ -353,7 +350,7 @@ namespace CollapseLauncher.Extension
         internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
         {
             foreach (FrameworkElement element in elements)
-                RunFunctionFromUIThread(() => Impl(element));
+                DispatcherQueueExtensions.TryEnqueue(() => Impl(element));
             return;
 
             void Impl(FrameworkElement element)
@@ -371,7 +368,7 @@ namespace CollapseLauncher.Extension
         internal static TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
             where TElement : FrameworkElement
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TElement Impl()
             {
@@ -382,7 +379,7 @@ namespace CollapseLauncher.Extension
 
         internal static void AddGridColumns(this Grid grid, params GridLength[] columnWidths)
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -400,7 +397,7 @@ namespace CollapseLauncher.Extension
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -414,7 +411,7 @@ namespace CollapseLauncher.Extension
 
         internal static void AddGridRows(this Grid grid, int count, GridLength? columnHeight = null)
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -429,7 +426,7 @@ namespace CollapseLauncher.Extension
         internal static TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex = 0, int columnIndex = 0, int rowSpan = 0, int columnSpan = 0)
             where TElement : FrameworkElement
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TElement Impl()
             {
@@ -443,7 +440,7 @@ namespace CollapseLauncher.Extension
         internal static TElement AddElementToGridRow<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TElement Impl()
             {
@@ -456,7 +453,7 @@ namespace CollapseLauncher.Extension
         internal static TElement AddElementToGridColumn<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TElement Impl()
             {
@@ -469,7 +466,7 @@ namespace CollapseLauncher.Extension
         internal static void ClearChildren<TElement>(this TElement element)
             where TElement : Panel
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -482,7 +479,7 @@ namespace CollapseLauncher.Extension
         internal static void SetElementGridRowPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -494,7 +491,7 @@ namespace CollapseLauncher.Extension
         internal static void SetElementGridColumnPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -506,7 +503,7 @@ namespace CollapseLauncher.Extension
 
         internal static TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TextBlock Impl()
             {
@@ -537,7 +534,7 @@ namespace CollapseLauncher.Extension
             double         size     = 14d,
             double         opacity  = 1d)
         {
-            return RunFunctionReturnFromUIThread(Impl);
+            return DispatcherQueueExtensions.TryEnqueue(Impl);
 
             TextBlock Impl()
             {
@@ -895,7 +892,7 @@ namespace CollapseLauncher.Extension
         internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
             where TGrid : Grid
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -911,11 +908,11 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void SetVisibility<TElement>(this TElement element, Visibility visibility)
-            where TElement : UIElement => RunFunctionFromUIThread(() => element.Visibility = visibility);
+            where TElement : UIElement => DispatcherQueueExtensions.TryEnqueue(() => element.Visibility = visibility);
         internal static void SetTag<TElement>(this TElement element, object tag)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Tag = tag);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.Tag = tag);
         internal static void SetDataContext<TElement>(this TElement element, object dataContext)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.DataContext = dataContext);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.DataContext = dataContext);
 
         internal static void SetCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement => SetCornerRadius(element, uniform, uniform, uniform, uniform, kind);
@@ -933,18 +930,18 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void SetRowSpacing<TGrid>(this TGrid element, double rowSpacing)
-            where TGrid : Grid => RunFunctionFromUIThread(() => element.RowSpacing = rowSpacing);
+            where TGrid : Grid => DispatcherQueueExtensions.TryEnqueue(() => element.RowSpacing = rowSpacing);
         internal static void SetColumnSpacing<TGrid>(this TGrid element, double columnSpacing)
-            where TGrid : Grid => RunFunctionFromUIThread(() => element.ColumnSpacing = columnSpacing);
+            where TGrid : Grid => DispatcherQueueExtensions.TryEnqueue(() => element.ColumnSpacing = columnSpacing);
 
         internal static void SetMinWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinWidth = width);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.MinWidth = width);
         internal static void SetMinHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.MinHeight = height);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.MinHeight = height);
         internal static void SetWidth<TElement>(this TElement element, double width)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Width = width);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.Width = width);
         internal static void SetHeight<TElement>(this TElement element, double height)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Height = height);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.Height = height);
 
         internal static void SetPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement => SetPadding(element, uniform, uniform, uniform, uniform);
@@ -955,7 +952,7 @@ namespace CollapseLauncher.Extension
         internal static void SetPadding<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -1060,27 +1057,27 @@ namespace CollapseLauncher.Extension
         internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement => SetMargin(element, horizontal, vertical, horizontal, vertical);
         internal static void SetMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.SetMargin(new Thickness(left, top, right, bottom)));
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.SetMargin(new Thickness(left, top, right, bottom)));
         internal static void SetMargin<TElement>(this TElement element, Thickness thickness)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.Margin = thickness);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.Margin = thickness);
 
         internal static void SetButtonFlyout<TButton>(this TButton button, FlyoutBase flyout)
-            where TButton : Button => RunFunctionFromUIThread(() => button.Flyout = flyout);
+            where TButton : Button => DispatcherQueueExtensions.TryEnqueue(() => button.Flyout = flyout);
 
         internal static void SetHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
-            where TElement : Control => RunFunctionFromUIThread(() => element.HorizontalContentAlignment = alignment);
+            where TElement : Control => DispatcherQueueExtensions.TryEnqueue(() => element.HorizontalContentAlignment = alignment);
         internal static void SetVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
-            where TElement : Control => RunFunctionFromUIThread(() => element.VerticalContentAlignment = alignment);
+            where TElement : Control => DispatcherQueueExtensions.TryEnqueue(() => element.VerticalContentAlignment = alignment);
 
         internal static void SetHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.HorizontalAlignment = alignment);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.HorizontalAlignment = alignment);
         internal static void SetVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
-            where TElement : FrameworkElement => RunFunctionFromUIThread(() => element.VerticalAlignment = alignment);
+            where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.VerticalAlignment = alignment);
 
         private static void InnerSetCornerRadius<TElement>(TElement element, CornerRadius cornerRadius)
             where TElement : FrameworkElement
         {
-            RunFunctionFromUIThread(Impl);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
             return;
 
             void Impl()
@@ -1351,52 +1348,9 @@ namespace CollapseLauncher.Extension
             where T : new()
         {
             T element = DispatcherQueueExtensions.CreateObjectFromUIThread<T>().Result;
-            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
-            {
-                setAttributeDelegate?.Invoke(element);
-            }
-            else
-            {
-                DispatcherQueueExtensions.CurrentDispatcherQueue
-                                         .TryEnqueue(() => setAttributeDelegate?.Invoke(element));
-            }
+            DispatcherQueueExtensions.TryEnqueue(() => setAttributeDelegate?.Invoke(element));
 
             return element;
-        }
-
-        internal static void RunFunctionFromUIThread(DispatcherQueueHandler action)
-        {
-            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
-            {
-                action();
-                return;
-            }
-
-            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(action);
-        }
-
-        internal static T RunFunctionReturnFromUIThread<T>(Func<T> func)
-        {
-            if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccessSafe())
-            {
-                return func();
-            }
-
-            TaskCompletionSource<T> tcs = new();
-            DispatcherQueueExtensions.CurrentDispatcherQueue
-                                     .TryEnqueue(() =>
-                                                 {
-                                                     try
-                                                     {
-                                                         tcs.SetResult(func());
-                                                     }
-                                                     catch (Exception ex)
-                                                     {
-                                                         tcs.SetException(ex);
-                                                     }
-                                                 });
-
-            return tcs.Task.Result;
         }
     }
 }

@@ -162,7 +162,7 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        UIElementExtensions.RunFunctionFromUIThread(() => instance._videoPlayer.Volume = (double)e.NewValue);
+        DispatcherQueueExtensions.TryEnqueue(() => instance._videoPlayer.Volume = (double)e.NewValue);
     }
 
     private void StartVideoPlayerVolumeFadeCore(double fromValue,

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.Threading;
@@ -17,11 +18,11 @@ namespace CollapseLauncher
             _currentFileCountMoved,
             _totalFileCount);
 
-            DispatcherQueue?.TryEnqueue(() =>
-                                        {
-                                            uiRef.FileCountIndicatorSubtitle.Text = fileCountProcessedString;
-                                            uiRef.PathActivitySubtitle.Text       = currentPathProcessed;
-                                        });
+            DispatcherQueueExtensions.TryEnqueue(() =>
+            {
+                uiRef.FileCountIndicatorSubtitle.Text = fileCountProcessedString;
+                uiRef.PathActivitySubtitle.Text       = currentPathProcessed;
+            });
         }
 
         private async void UpdateSizeProcessed(FileMigrationProcessUIRef uiRef, long currentRead)
@@ -38,18 +39,18 @@ namespace CollapseLauncher
 
             lock (uiRef.ProgressBarIndicator)
             {
-                DispatcherQueue?.TryEnqueue(() =>
-                                            {
-                                                string speedString = string.Format(Locale.Lang!._Misc!.SpeedPerSec!, ConverterTool.SummarizeSizeSimple(speed));
-                                                string sizeProgressString = string.Format(Locale.Lang._Misc.PerFromTo!,
-                                                    ConverterTool.SummarizeSizeSimple(_currentSizeMoved),
-                                                    ConverterTool.SummarizeSizeSimple(_totalFileSize));
+                DispatcherQueueExtensions.TryEnqueue(() =>
+                {
+                    string speedString = string.Format(Locale.Lang!._Misc!.SpeedPerSec!, ConverterTool.SummarizeSizeSimple(speed));
+                    string sizeProgressString = string.Format(Locale.Lang._Misc.PerFromTo!,
+                        ConverterTool.SummarizeSizeSimple(_currentSizeMoved),
+                        ConverterTool.SummarizeSizeSimple(_totalFileSize));
 
-                                                uiRef.SpeedIndicatorSubtitle.Text          = speedString;
-                                                uiRef.FileSizeIndicatorSubtitle.Text       = sizeProgressString;
-                                                uiRef.ProgressBarIndicator.Value           = percentage;
-                                                uiRef.ProgressBarIndicator.IsIndeterminate = false;
-                                            });
+                    uiRef.SpeedIndicatorSubtitle.Text          = speedString;
+                    uiRef.FileSizeIndicatorSubtitle.Text       = sizeProgressString;
+                    uiRef.ProgressBarIndicator.Value           = percentage;
+                    uiRef.ProgressBarIndicator.IsIndeterminate = false;
+                });
             }
         }
 

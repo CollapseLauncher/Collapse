@@ -251,11 +251,11 @@ public sealed partial class HomePage
     }
 
     public ICommand BackgroundImageContextMenuSetCustomParallaxPixelsCommand { get; } = new RelayCommand(OnBackgroundImageContextMenuSetCustomParallaxPixelsCommand);
-    private static async void OnBackgroundImageContextMenuSetCustomParallaxPixelsCommand()
+    internal static async void OnBackgroundImageContextMenuSetCustomParallaxPixelsCommand()
     {
         try
         {
-            await SimpleDialogs.Dialog_SelectCustomBackgroundParallaxPixels();
+            await SimpleDialogs.Dialog_SelectCustomBackgroundParallaxPixels(ImageBackgroundManager.Shared);
         }
         catch
         {

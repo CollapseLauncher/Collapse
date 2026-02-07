@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
@@ -10,9 +11,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Notifications;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
@@ -22,6 +22,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.Pages.OOBE
@@ -154,44 +155,15 @@ namespace CollapseLauncher.Pages.OOBE
                     BarBGLoading.Visibility      = Visibility.Visible;
                     BarBGLoading.IsIndeterminate = true;
                     FadeBackground(1, 0.25);
+
                     PresetConfig? gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedCategory, SelectedRegion);
-                    bool          isSuccess  = await TryLoadGameDetails(gameConfig);
-
-                    BitmapData? bitmapData = null;
-
-                    try
+                    if (await TryLoadGameDetails(gameConfig))
                     {
-                        int bitmapChannelCount = _gamePosterBitmap.PixelFormat switch
-                                                 {
-                                                     PixelFormat.Format32bppRgb => 4,
-                                                     PixelFormat.Format32bppArgb => 4,
-                                                     PixelFormat.Format24bppRgb => 3,
-                                                     _ => throw new NotSupportedException($"Pixel format of the image: {_gamePosterBitmap.PixelFormat} is unsupported!")
-                                                 };
-
-                        bitmapData = _gamePosterBitmap.LockBits(new Rectangle(new Point(), _gamePosterBitmap.Size),
-                                                                ImageLockMode.ReadOnly, _gamePosterBitmap.PixelFormat);
-
-                        /*
-                        BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
+                        if (IsLoadDescription &&
+                            Uri.TryCreate(_gamePosterPath, UriKind.Absolute, out Uri? posterPath))
                         {
-                            Buffer  = bitmapData.Scan0,
-                            Width   = bitmapData.Width,
-                            Height  = bitmapData.Height,
-                            Channel = bitmapChannelCount
-                        };
-                        */
-
-                        if (isSuccess)
-                        {
-                            // await ColorPaletteUtility.ApplyAccentColor(this, bitmapInputStruct, _gamePosterPath);
-                        }
-                    }
-                    finally
-                    {
-                        if (bitmapData != null)
-                        {
-                            _gamePosterBitmap.UnlockBits(bitmapData);
+                            Color paletteColor = await ColorPaletteUtility.GetMediaAccentColorFromAsync(posterPath, false);
+                            this.ChangeAccentColor(paletteColor);
                         }
                     }
 
@@ -203,8 +175,7 @@ namespace CollapseLauncher.Pages.OOBE
                     FadeBackground(0.25, 1);
                     BarBGLoading.IsIndeterminate = false;
                     BarBGLoading.Visibility      = Visibility.Collapsed;
-
-                    _lastSelectedCategory = SelectedCategory;
+                    _lastSelectedCategory        = SelectedCategory;
 
                     return;
                 }

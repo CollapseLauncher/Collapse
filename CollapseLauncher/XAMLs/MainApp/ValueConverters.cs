@@ -900,4 +900,24 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+
+    public partial class BackgroundParallaxPixelToComboBoxIndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            int amount = (int)value.TryGetDouble();
+            return amount switch
+            {
+                2 => 0,
+                4 => 1,
+                8 => 2,
+                _ => 3
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

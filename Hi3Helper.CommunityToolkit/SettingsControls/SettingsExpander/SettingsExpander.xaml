@@ -89,8 +89,8 @@
                                        Style="{StaticResource SettingsExpanderExpanderStyle}">
                             <muxc:Expander.Header>
                                 <local:SettingsCard Padding="{StaticResource SettingsExpanderHeaderPadding}"
-                                                    VerticalAlignment="Center"
                                                     Background="Transparent"
+                                                    VerticalAlignment="Center"
                                                     BorderThickness="0"
                                                     Content="{TemplateBinding Content}"
                                                     Description="{TemplateBinding Description}"

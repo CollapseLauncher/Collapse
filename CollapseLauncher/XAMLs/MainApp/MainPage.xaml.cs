@@ -103,9 +103,9 @@ namespace CollapseLauncher
 
         private void SharedOnColorAccentChanged(Color color)
         {
-            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
-            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
-            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color, color, color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

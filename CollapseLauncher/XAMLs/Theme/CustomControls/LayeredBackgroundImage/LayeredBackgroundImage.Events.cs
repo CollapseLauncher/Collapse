@@ -43,14 +43,24 @@ public partial class LayeredBackgroundImage
         return left == right;
     }
 
-    private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
+    private void ApplyPropertySettings()
     {
-        Interlocked.Exchange(ref _isLoaded, true);
         ParallaxView_ToggleEnable(IsParallaxEnabled);
         ParallaxGrid_OnUpdateCenterPoint();
         ElevateView_ToggleEnable(IsBackgroundElevated);
         ElevateGrid_OnUpdateCenterPoint();
         IsBackgroundElevated_OnChanged();
+    }
+
+    private void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (!_isTemplateLoaded)
+        {
+            return;
+        }
+
+        Interlocked.Exchange(ref _isLoaded, true);
+        ApplyPropertySettings();
 
         if (!_isPlaceholderHidden &&
             !IsSourceKindEquals(_lastPlaceholderSource, PlaceholderSource))
@@ -205,7 +215,7 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_OnUpdateCenterPoint()
     {
-        if (!IsLoaded)
+        if (!IsLoaded || _parallaxGridVisual == null!)
         {
             return;
         }
@@ -394,6 +404,11 @@ public partial class LayeredBackgroundImage
 
     private void ElevateView_ToggleEnable(bool isEnable)
     {
+        if (_elevateGrid == null!)
+        {
+            return;
+        }
+
         try
         {
             if (isEnable)
@@ -433,7 +448,7 @@ public partial class LayeredBackgroundImage
 
     private void ElevateGrid_OnUpdateCenterPoint()
     {
-        if (!IsLoaded)
+        if (!IsLoaded || _elevateGrid == null!)
         {
             return;
         }

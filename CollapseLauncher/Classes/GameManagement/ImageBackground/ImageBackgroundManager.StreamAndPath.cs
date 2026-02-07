@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -37,12 +38,9 @@ public partial class ImageBackgroundManager
 
     private static Task<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
     {
-        if (!Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri))
-        {
-            throw new InvalidOperationException($"File path or URL is misformed! {filePath}");
-        }
-
-        return OpenStreamFromFileOrUrl(uri, token);
+        return !Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri)
+            ? throw new InvalidOperationException($"File path or URL is misformed! {filePath}")
+            : OpenStreamFromFileOrUrl(uri, token);
     }
 
     private static async Task<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
@@ -99,10 +97,18 @@ public partial class ImageBackgroundManager
             where T : unmanaged => new(Unsafe.AsPointer(in data), sizeof(T));
     }
 
-    private static async Task<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
+    internal static async Task<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
     {
         await using FileStream stream = await OpenStreamFromFileOrUrl(uri, token);
         return new Uri(stream.Name);
+    }
+
+    internal static async Task<string> GetLocalOrDownloadedFilePath(string path, CancellationToken token)
+    {
+        Uri uri = await GetLocalOrDownloadedFilePath(new Uri(path), token);
+        return uri.IsFile
+            ? uri.LocalPath
+            : uri.ToString();
     }
 
     private static bool TryGetCroppedImageFilePath(string filePath,
