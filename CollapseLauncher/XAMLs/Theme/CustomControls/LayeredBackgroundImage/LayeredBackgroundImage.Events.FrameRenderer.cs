@@ -18,7 +18,6 @@ using System.Threading;
 using Windows.Foundation;
 using Windows.Media.Playback;
 // ReSharper disable CommentTypo
-
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable AccessToModifiedClosure
 
@@ -110,7 +109,8 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr,
+            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr,
+                                                            _canvasRenderTargetAsSurfacePtr,
                                                             in _canvasRenderSize);
             drawingSessionPpv = SwapChainPanelHelper
                .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
