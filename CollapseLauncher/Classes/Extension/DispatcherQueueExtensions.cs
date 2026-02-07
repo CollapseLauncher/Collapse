@@ -69,6 +69,7 @@ public static class DispatcherQueueExtensions
         if (HasThreadAccessSafe())
         {
             action();
+            return;
         }
 
         CurrentDispatcherQueue.TryEnqueue(priority, action);
