@@ -70,41 +70,35 @@ public partial class ImageBackgroundManager
 
             token = _imageLoadingTokenSource.Token;
 
-            Uri? downloadedOverlayUri = null;
-            // -- Download overlay and background files.
+            // -- Download overlay.
+            Unsafe.SkipInit(out Uri? downloadedOverlayUri);
             if (Uri.TryCreate(context.OverlayImagePath, UriKind.Absolute, out Uri? overlayImageUri))
             {
                 downloadedOverlayUri      = await GetLocalOrDownloadedFilePath(overlayImageUri, token);
                 (downloadedOverlayUri, _) = await GetNativeOrDecodedImagePath(downloadedOverlayUri, token);
             }
 
-            if (!Uri.TryCreate(context.BackgroundImagePath, UriKind.Absolute, out Uri? backgroundImageUri))
+            // -- Download background.
+            Unsafe.SkipInit(out Uri? downloadedBackgroundUri);
+            if (Uri.TryCreate(context.BackgroundImagePath, UriKind.Absolute, out Uri? backgroundImageUri))
             {
-                throw new InvalidOperationException($"URI/Path of the background image is malformed! {context.BackgroundImagePath}");
+                downloadedBackgroundUri = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
+                (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token);
             }
 
-            Unsafe.SkipInit(out Uri? backgroundStaticImageUri);
-            if (context.BackgroundImageStaticPath != null &&
-                !Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out backgroundStaticImageUri))
-            {
-                throw new InvalidOperationException($"URI/Path of the background image is malformed! {context.BackgroundImageStaticPath}");
-            }
-
-            Uri? downloadedBackgroundUri = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
-            (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token);
-
-            // -- Get upscaled image file if Waifu2X is enabled
-            if (GlobalIsWaifu2XEnabled)
-            {
-                downloadedOverlayUri    = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri,    token);
-                downloadedBackgroundUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
-            }
-
+            // -- Download static background.
             Unsafe.SkipInit(out Uri? downloadedBackgroundStaticUri);
-            if (backgroundStaticImageUri != null)
+            if (Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out Uri? backgroundStaticImageUri))
             {
                 downloadedBackgroundStaticUri = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token);
                 (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token);
+            }
+
+            // Try to use static bg URL if normal bg is not available.
+            downloadedBackgroundUri ??= downloadedBackgroundStaticUri;
+            if (downloadedBackgroundUri == null) // If no background file is available, return.
+            {
+                return;
             }
 
             // -- Get upscaled image file if Waifu2X is enabled
