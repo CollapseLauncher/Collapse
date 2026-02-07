@@ -25,9 +25,9 @@
                               AutoPlay="False" />
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid x:Name="BackgroundGrid" Opacity="0.25"/>
             <Image x:Name="ContainerBackgroundImage"
                    HorizontalAlignment="Center"
@@ -126,9 +126,9 @@
                               VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Left"
                                 VerticalAlignment="Center">
-                        <!--<StackPanel.Transitions>
+                        <StackPanel.Transitions>
                             <EntranceThemeTransition />
-                        </StackPanel.Transitions>-->
+                        </StackPanel.Transitions>
                         <TextBlock Margin="0,0,0,16"
                                    FontSize="32"
                                    Foreground="{ThemeResource SystemAccentColor}"
