@@ -247,6 +247,62 @@ namespace Hi3Helper
                 public string PostInstallBehaviour_EnumHibernate { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumHibernate;
                 public string PostInstallBehaviour_EnumRestart { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumRestart;
                 public string PostInstallBehaviour_EnumShutdown { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumShutdown;
+
+                public string BgContextMenu_ParallaxPixelShiftCustomDialogTitle { get; set; } = LangFallback?._Dialogs.BgContextMenu_ParallaxPixelShiftCustomDialogTitle;
+
+                public string Media_ExtNotSupported1 { get; set; } = LangFallback?._Dialogs.Media_ExtNotSupported1;
+                public string Media_ExtNotSupported2 { get; set; } = LangFallback?._Dialogs.Media_ExtNotSupported2;
+                public string Media_ExtNotSupportedTitle { get; set; } = LangFallback?._Dialogs.Media_ExtNotSupportedTitle;
+                public string Media_ImageWICNotSupported1 { get; set; } = LangFallback?._Dialogs.Media_ImageWICNotSupported1;
+                public string Media_ImageWICNotSupportedTitle { get; set; } = LangFallback?._Dialogs.Media_ImageWICNotSupportedTitle;
+                public string Media_VideoMFNotSupportedFormatTypeUnknown { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupportedFormatTypeUnknown;
+                public string Media_VideoMFNotSupported1 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported1;
+                public string Media_VideoMFNotSupported2 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported2;
+                public string Media_VideoMFNotSupported3 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported3;
+                public string Media_VideoMFNotSupported4 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported4;
+                public string Media_VideoMFNotSupported5 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported5;
+                public string Media_VideoMFNotSupported6 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported6;
+                public string Media_VideoMFNotSupported7 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported7;
+                public string Media_VideoMFNotSupported8 { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupported8;
+                public string Media_VideoMFNotSupportedTitle { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupportedTitle;
+                public string Media_VideoMFNotSupportedCopyDetailsBtn { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupportedCopyDetailsBtn;
+                public string Media_VideoMFNotSupportedInstallMFCodecsBtn { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupportedInstallMFCodecsBtn;
+                public string Media_VideoMFNotSupportedInstallFFmpegBtn { get; set; } = LangFallback?._Dialogs.Media_VideoMFNotSupportedInstallFFmpegBtn;
+
+                public string Media_VideoMFCodecPrepareTitle      { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepareTitle;
+                public string Media_VideoMFCodecPrepare1          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare1;
+                public string Media_VideoMFCodecPrepare2          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare2;
+                public string Media_VideoMFCodecPrepare3          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare3;
+                public string Media_VideoMFCodecPrepare4          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare4;
+                public string Media_VideoMFCodecPrepare5          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare5;
+                public string Media_VideoMFCodecPrepare6          { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepare6;
+                public string Media_VideoMFCodecPrepareInstallBtn { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecPrepareInstallBtn;
+                public string Media_VideoMFCodecInstalledTitle    { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecInstalledTitle;
+                public string Media_VideoMFCodecInstalled1        { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecInstalled1;
+                public string Media_VideoMFCodecInstallingTitle   { get; set; } = LangFallback?._Dialogs.Media_VideoMFCodecInstallingTitle;
+
+                public string Media_VideoFFmpegCodecPrepareTitle        { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareTitle;
+                public string Media_VideoFFmpegCodecPrepare1            { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepare1;
+                public string Media_VideoFFmpegCodecPrepare2            { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepare2;
+                public string Media_VideoFFmpegCodecPrepare3            { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepare3;
+                public string Media_VideoFFmpegCodecPrepare4            { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepare4;
+                public string Media_VideoFFmpegCodecPrepareInstallBtn   { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareInstallBtn;
+                public string Media_VideoFFmpegCodecPrepareLocateBtn    { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateBtn;
+                public string Media_VideoFFmpegCodecPrepareLocateDialog { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateDialog;
+                public string Media_VideoFFmpegCodecPrepareLocateFailedTitle  { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailedTitle;
+                public string Media_VideoFFmpegCodecPrepareLocateFailed1      { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed1;
+                public string Media_VideoFFmpegCodecPrepareLocateFailed2      { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed2;
+                public string Media_VideoFFmpegCodecPrepareLocateFailed3      { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed3;
+                public string Media_VideoFFmpegCodecPrepareLocateSuccessTitle { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccessTitle;
+                public string Media_VideoFFmpegCodecPrepareLocateSuccess1     { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccess1;
+                public string Media_VideoFFmpegCodecInstallingTitle     { get; set; } = LangFallback?._Dialogs.Media_VideoFFmpegCodecInstallingTitle;
+
+                public string Agreement_ThirdPartyAgreementPreambleTitle { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
+                public string Agreement_ThirdPartyAgreementPreamble1 { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreamble1;
+                public string Agreement_ThirdPartyAgreementPreamble2 { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreamble2;
+                public string Agreement_ThirdPartyAgreementPreamble3 { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreamble3;
+                public string Agreement_ThirdPartyAgreementPreamble4 { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreamble4;
+                public string Agreement_ThirdPartyAgreementPreamble5 { get; set; } = LangFallback?._Dialogs.Agreement_ThirdPartyAgreementPreamble5;
             }
         }
         #endregion

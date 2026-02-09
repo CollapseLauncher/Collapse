@@ -4,6 +4,7 @@
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -31,6 +32,7 @@
                        Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}" />
             <Button x:Name="MenuReScanButton"
                     Grid.Column="1"
+                    extension:UIElementExtensions.CursorType="Hand"
                     x:FieldModifier="internal">
                 <Button.Content>
                     <Grid Margin="0,0">
@@ -56,6 +58,7 @@
                     Grid.Column="2"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
+                    extension:UIElementExtensions.CursorType="Hand"
                     x:FieldModifier="internal"
                     Style="{ThemeResource AccentButtonStyle}">
                 <Button.Content>
@@ -155,12 +158,14 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="ToggleCheckAllCheckBox"
+                          extension:UIElementExtensions.CursorType="Hand"
                           Checked="ToggleCheckAll"
                           IsChecked="False"
                           Unchecked="ToggleCheckAll" />
                 <Button x:Name="DeleteSelectedFiles"
                         Grid.Column="0"
                         HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="DeleteSelectedFiles_Click">
                     <Button.Content>
                         <Grid Margin="0,0">
@@ -186,6 +191,7 @@
                 <Button x:Name="DeleteAllFiles"
                         Grid.Column="1"
                         HorizontalAlignment="Right"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="DeleteAllFiles_Click"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>

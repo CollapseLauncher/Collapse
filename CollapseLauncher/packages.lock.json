@@ -78,6 +78,16 @@
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
+      "FFmpegInteropX": {
+        "type": "Direct",
+        "requested": "[2.0.117-uwp9, )",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "uZqP/GOIOSzdE80d9DcFBp2R6e5ydo7sJae1qejU1Fma62xLZPfb2jYz25ez4AvGOuntjSqnJlfA/d+4KKKB8Q==",
+        "dependencies": {
+          "FFmpegInteropX.Desktop.FFmpeg": "7.0.100-pre3",
+          "FFmpegInteropX.Desktop.Lib": "2.0.117-uwp9"
+        }
+      },
       "GitInfo": {
         "type": "Direct",
         "requested": "[3.6.0, )",
@@ -104,6 +114,12 @@
         "requested": "[0.44.0, )",
         "resolved": "0.44.0",
         "contentHash": "mNxf8HrQA/clO8usqQhVc0BGlw0bJtZ76dic5KZGBPJZDX4UR67Jglwilkp5A//gPSMwcoY5EjLPppkZ/B4IMg=="
+      },
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[10.0.2, )",
+        "resolved": "10.0.2",
+        "contentHash": "0g8tazNW4q0anSYNl1hnaHGc7+BQXwpNBMx3d5T3JboOVzz4OXZgqbuoBYfn60VtDFtBMNVS2Kfopelpo2pLZA=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -191,6 +207,24 @@
         "resolved": "0.15.0",
         "contentHash": "ajPOdS5wGIZrHGT0NHvmmrQ7sJb0Vp+Ex3JauD7Ru+U+F+N7tTYRVDcvXW2ER56MLzC+VSqK3KjRn4Sntkf3vA=="
       },
+      "PhotoSauce.NativeCodecs.Libheif": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.19.5-preview1",
+        "contentHash": "MkQ/HtuzfQi0aF158GLwubo8a+PoQFCVta6MJmqwfEdiUAZqlamtPQRcA/7JtYn7iO/jmgvgwJ3NAQrIILrPeA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libjxl": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "0.11.1-preview2",
+        "contentHash": "6/4aRRFIosViPNdQL5ciLJa/lUZHwwRbw/ApeR4Hc/PpMS9xn8X8spNf6oPqZdELbZFgu0DOInoI/OH5rIkEGA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",
         "requested": "[*-*, )",
@@ -264,6 +298,22 @@
         "dependencies": {
           "CommunityToolkit.WinUI.Helpers": "8.2.251219",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
+        }
+      },
+      "FFmpegInteropX.Desktop.FFmpeg": {
+        "type": "Transitive",
+        "resolved": "7.0.100-pre3",
+        "contentHash": "WDtjAYMMlbG9pU+WTtmfPeDMy24vCngAauzH/C9TnBHCS+EAS1Ziz7D5OrCxSSvgUVdd1QaDzQI+z4z4qYVzdQ==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
+        }
+      },
+      "FFmpegInteropX.Desktop.Lib": {
+        "type": "Transitive",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "jTBLJqo4pS9bCVX1NIud8xQalrOTbvcsQb/5QuoNZma2slhiTIfmfJs6GRcPzPCdWZ7soQeXw45dCMbJbtqsMw==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
         }
       },
       "Google.Protobuf": {
@@ -573,6 +623,15 @@
         "resolved": "0.5.1",
         "contentHash": "5fJusmhN7snIZzlsZ0xpQOoNvWZkJKS2/hhljLz8qvEPIJZgYxpkWWCROrSDpjMxQpixqI/nUhfhrQR67jVVoA=="
       },
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[10.0.2, )",
+        "resolved": "10.0.2",
+        "contentHash": "0g8tazNW4q0anSYNl1hnaHGc7+BQXwpNBMx3d5T3JboOVzz4OXZgqbuoBYfn60VtDFtBMNVS2Kfopelpo2pLZA==",
+        "dependencies": {
+          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "10.0.2"
+        }
+      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.3.2, )",
@@ -588,6 +647,24 @@
         "resolved": "1.0.3719.77",
         "contentHash": "t+ucyKw5NTwMjsUrDF6R9Lk40lpcKQD1/HgyGFxl49tdA4h9dKlsj6FYGEmDRpFNfnTpENuTypMcdbrlkqBdDA=="
       },
+      "PhotoSauce.NativeCodecs.Libheif": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.19.5-preview1",
+        "contentHash": "MkQ/HtuzfQi0aF158GLwubo8a+PoQFCVta6MJmqwfEdiUAZqlamtPQRcA/7JtYn7iO/jmgvgwJ3NAQrIILrPeA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libjxl": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "0.11.1-preview2",
+        "contentHash": "6/4aRRFIosViPNdQL5ciLJa/lUZHwwRbw/ApeR4Hc/PpMS9xn8X8spNf6oPqZdELbZFgu0DOInoI/OH5rIkEGA==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",
         "requested": "[*-*, )",
@@ -595,6 +672,22 @@
         "contentHash": "0AyuhMpynCdCq84dh0wU/Kjuxzo3GkYny5Z1l2JlWTHD2muUlE3Akqa1CtEPj0lif9o/KHnYwhmIWnP0ZctF4g==",
         "dependencies": {
           "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      },
+      "FFmpegInteropX.Desktop.FFmpeg": {
+        "type": "Transitive",
+        "resolved": "7.0.100-pre3",
+        "contentHash": "WDtjAYMMlbG9pU+WTtmfPeDMy24vCngAauzH/C9TnBHCS+EAS1Ziz7D5OrCxSSvgUVdd1QaDzQI+z4z4qYVzdQ==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
+        }
+      },
+      "FFmpegInteropX.Desktop.Lib": {
+        "type": "Transitive",
+        "resolved": "2.0.117-uwp9",
+        "contentHash": "jTBLJqo4pS9bCVX1NIud8xQalrOTbvcsQb/5QuoNZma2slhiTIfmfJs6GRcPzPCdWZ7soQeXw45dCMbJbtqsMw==",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "2.0.0"
         }
       },
       "Microsoft.Win32.SystemEvents": {
@@ -610,6 +703,11 @@
           "Microsoft.WindowsAppSDK.Base": "1.8.251216001",
           "Microsoft.WindowsAppSDK.InteractiveExperiences": "1.8.251217001"
         }
+      },
+      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "n7oF/KeIDJpf1wzniAhLcKYVyY8vA+Sb03rkV3e2Sr0+t+iPKZsLzdlXe7yUUqshcxc2XKVEKJzpKTyiZm+SKQ=="
       }
     }
   }

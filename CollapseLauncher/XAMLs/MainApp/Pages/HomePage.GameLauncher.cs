@@ -414,7 +414,6 @@ public partial class HomePage
 
             CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
             CurrentGameProperty.GameSettings.SaveBaseSettings();
-            _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
             BGPathDisplay.Text = Path.GetFileName(regionBgPath);
         } 

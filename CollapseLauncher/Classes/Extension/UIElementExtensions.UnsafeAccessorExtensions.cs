@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
         /// <summary>
         /// Set the cursor for the element.

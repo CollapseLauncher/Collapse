@@ -8,6 +8,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid>
@@ -15,6 +16,7 @@
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch" />
         <Button x:Name="NextPage"
+                extension:UIElementExtensions.CursorType="Hand"
                 Margin="32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
@@ -47,6 +49,7 @@
             </Button.Content>
         </Button>
         <Button x:Name="PrevPage"
+                extension:UIElementExtensions.CursorType="Hand"
                 Margin="32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
@@ -127,11 +130,13 @@
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="GameCategorySelect"
+                              extension:UIElementExtensions.CursorType="Hand"
                               Width="192"
                               CornerRadius="16"
                               PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}"
                               SelectionChanged="GameCategorySelect_SelectionChanged" />
                     <ComboBox x:Name="GameRegionSelect"
+                              extension:UIElementExtensions.CursorType="Hand"
                               Width="192"
                               Margin="16,0,0,0"
                               CornerRadius="16"

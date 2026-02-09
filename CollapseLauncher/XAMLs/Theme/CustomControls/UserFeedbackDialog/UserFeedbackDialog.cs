@@ -7,6 +7,7 @@ using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -116,9 +117,9 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             FileInfo filePathInfo = new(Path.Combine(LauncherConfig.AppExecutableDir, relFilePath));
             if (filePathInfo.Exists)
             {
-                using FileStream fileStream = filePathInfo.OpenRead();
-                using IRandomAccessStream accessStream = fileStream.AsRandomAccessStream();
-                BitmapImage bitmapImage = new();
+                using FileStream          fileStream   = filePathInfo.OpenRead();
+                using IRandomAccessStream accessStream = fileStream.AsRandomAccessStream(true);
+                BitmapImage               bitmapImage  = new();
                 bitmapImage.SetSource(accessStream);
 
                 _layoutTitleGridBackgroundImage!.Source = bitmapImage;

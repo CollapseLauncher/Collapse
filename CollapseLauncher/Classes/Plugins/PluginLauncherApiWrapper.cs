@@ -79,7 +79,7 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
         Action<Exception>?                  errorLoadRoutine       = null,
         CancellationToken                   token                  = default)
     {
-        _ = beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask;
+        await (beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
 
         try
         {
@@ -92,9 +92,9 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
             LauncherGameBackground.Data ??= new HypLauncherBackgroundList();
             LauncherGameContent         ??= new HypLauncherContentApi();
 
-            await ConvertBackgroundImageEntries(LauncherGameBackground.Data, token);
-            await ConvertSocialMediaEntries(LauncherGameContent, token);
-            await ConvertNewsAndCarouselEntries(LauncherGameContent, token);
+            ConvertBackgroundImageEntries(LauncherGameBackground.Data);
+            ConvertSocialMediaEntries(LauncherGameContent);
+            ConvertNewsAndCarouselEntries(LauncherGameContent);
 
             await(afterLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
             return true;

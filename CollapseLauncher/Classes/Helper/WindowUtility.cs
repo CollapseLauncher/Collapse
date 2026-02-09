@@ -1,5 +1,5 @@
-﻿#nullable enable
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -39,7 +39,9 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.Helper
 {
     internal enum WindowBackdropKind
@@ -63,43 +65,17 @@ namespace CollapseLauncher.Helper
 
         internal static Window? CurrentWindow { get; private set; }
 
-        internal static nint CurrentWindowPtr
-        {
-            get => WindowNative.GetWindowHandle(CurrentWindow);
-        }
+        internal static nint CurrentWindowPtr => WindowNative.GetWindowHandle(CurrentWindow);
 
-        internal static WindowId? CurrentWindowId
-        {
-            get => Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
-        }
+        internal static WindowId? CurrentWindowId => Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
 
-        internal static AppWindow? CurrentAppWindow
-        {
-            get => CurrentWindowId.HasValue ? AppWindow.GetFromWindowId(CurrentWindowId.Value) : null;
-        }
+        internal static AppWindow? CurrentAppWindow => CurrentWindowId.HasValue ? AppWindow.GetFromWindowId(CurrentWindowId.Value) : null;
 
-        internal static InputNonClientPointerSource? CurrentInputNonClientPointerSource
-        {
-            get => CurrentWindowId.HasValue ? InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value) : null;
-        }
+        internal static InputNonClientPointerSource? CurrentInputNonClientPointerSource => CurrentWindowId.HasValue ? InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value) : null;
 
-        internal static OverlappedPresenter? CurrentOverlappedPresenter
-        {
-            get => CurrentAppWindow?.Presenter as OverlappedPresenter;
-        }
+        internal static OverlappedPresenter? CurrentOverlappedPresenter => CurrentAppWindow?.Presenter as OverlappedPresenter;
 
-        internal static DispatcherQueue? CurrentDispatcherQueue
-        {
-            get => CurrentWindow?.DispatcherQueue;
-        }
-
-        internal static DisplayArea? CurrentWindowDisplayArea
-        {
-            get
-            {
-                return !CurrentWindowId.HasValue ? null : DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
-            }
-        }
+        internal static DisplayArea? CurrentWindowDisplayArea => !CurrentWindowId.HasValue ? null : DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
 
         internal static DisplayInformation? CurrentWindowDisplayInformation
         {
@@ -170,6 +146,16 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        internal static bool CurrentWindowIsVisible
+        {
+            get
+            {
+                WS_STYLE windowStyle = PInvoke.GetWindowLong(CurrentWindowPtr, GWL_INDEX.GWL_STYLE);
+                bool     isHide      = windowStyle.HasFlag(WS_STYLE.WS_MINIMIZE);
+                return !isHide;
+            }
+        }
+
         internal static nint CurrentWindowMonitorPtr
         {
             get
@@ -206,6 +192,14 @@ namespace CollapseLauncher.Helper
                 return defaultDpiValue;
 
             }
+        }
+        
+        // Do not manually change this value.
+        // This will be updated by the WindowEventHook handler.
+        internal static double CurrentWindowMonitorRefreshRate
+        {
+            get;
+            set;
         }
 
         internal static double CurrentWindowMonitorScaleFactor
@@ -406,6 +400,10 @@ namespace CollapseLauncher.Helper
             // Install WndProc callback
             _oldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
 
+            // Install WinEventHook callback
+            InstallWinEventHookCallback(MainWinEventHook);
+            CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(CurrentWindowPtr, out _);
+
             // Install Drag Area Change monitor
             InstallDragAreaChangeMonitor();
 
@@ -441,7 +439,45 @@ namespace CollapseLauncher.Helper
 
         #endregion
 
+        #region WinEventHook Handler
+
+        private static void InstallWinEventHookCallback(WinEventDelegate winEventDelegate)
+        {
+            const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
+            const uint WINEVENT_OUTOFCONTEXT = 0x0000;
+
+            PInvoke.SetWinEventHook(EVENT_SYSTEM_MOVESIZEEND,
+                                    EVENT_SYSTEM_MOVESIZEEND,
+                                    nint.Zero,
+                                    winEventDelegate,
+                                    (uint)Environment.ProcessId,
+                                    0,
+                                    WINEVENT_OUTOFCONTEXT);
+        }
+
+        private static void MainWinEventHook(nint hook,
+                                             uint evt,
+                                             nint hwnd,
+                                             int idObject,
+                                             int idChild,
+                                             uint thread,
+                                             uint time)
+        {
+            if (hwnd == CurrentWindowPtr)
+            {
+                CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(hwnd, out string? monitorPath);
+#if DEBUG
+                Logger.LogWriteLine($"[WindowUtility::MainWinEventHook] Current Window Refresh Rate is: {CurrentWindowMonitorRefreshRate}hz at Monitor: {monitorPath}",
+                                    LogType.Debug,
+                                    true);
+#endif
+            }
+        }
+
+        #endregion
+
         #region WndProc Handler
+
         private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
         {
             // Install WndProc hook
@@ -468,10 +504,12 @@ namespace CollapseLauncher.Helper
                         switch (wParam)
                         {
                             case 1 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowFocused();
+                                ImageBackgroundManager.Shared.SetWindowFocusedEvent();
+                                InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                 break;
                             case 0 when lParam == 0:
-                                MainPage.CurrentBackgroundHandler?.WindowUnfocused();
+                                ImageBackgroundManager.Shared.SetWindowUnfocusedEvent();
+                                InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                 break;
                         }
 
@@ -510,14 +548,14 @@ namespace CollapseLauncher.Helper
                                 }
                             case SC_MINIMIZE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                                    ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
+                                    InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
-                                    MainPage.CurrentBackgroundHandler?.WindowFocused();
-                                    InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                                    ImageBackgroundManager.Shared.SetWindowRestoreEvent();
+                                    InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                                     break;
                                 }
                         }
@@ -528,12 +566,11 @@ namespace CollapseLauncher.Helper
                     {
                         if (wParam == 0)
                         {
-                            InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                            InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
                         }
                         else
                         {
-                            MainPage.CurrentBackgroundHandler?.WindowFocused();
-                            InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                            InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
                         }
                         break;
                     }

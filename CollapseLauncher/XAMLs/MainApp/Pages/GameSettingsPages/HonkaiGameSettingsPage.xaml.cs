@@ -15,6 +15,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
+using CollapseLauncher.GameManagement.ImageBackground;
+
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
@@ -42,6 +44,10 @@ namespace CollapseLauncher.Pages
                 });
 
                 LoadPage();
+
+                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
             }
             catch (Exception ex)
             {
@@ -138,7 +144,6 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                BackgroundImgChanger.ToggleBackground(true);
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
                 if (CurrentGameProperty.IsGameRunning)
                 {

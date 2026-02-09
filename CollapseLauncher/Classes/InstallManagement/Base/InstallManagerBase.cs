@@ -128,7 +128,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected List<GameInstallPackage> _gameDeltaPatchPreReqList { get; } = [];
         protected bool                     _forceIgnoreDeltaPatch;
-        protected GameInstallFileInfo? _gameInstallFileInfo { get; set; }
+        protected GameInstallFileInfo _gameInstallFileInfo { get; set; }
         #endregion
 
         #region Public Properties

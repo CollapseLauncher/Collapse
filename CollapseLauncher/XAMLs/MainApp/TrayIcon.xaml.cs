@@ -292,7 +292,7 @@ namespace CollapseLauncher
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
-                m_homePage?.CarouselStopScroll();
+                m_homePage?.StopCarouselSlideshow();
                 LogWriteLine("Main window is hidden!");
 
                 // Spawn the hidden to tray toast notification
@@ -308,7 +308,7 @@ namespace CollapseLauncher
                 EfficiencyModeWrapper(false);
                 PInvoke.SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
-                m_homePage?.CarouselRestartScroll();
+                m_homePage?.StartCarouselSlideshow();
                 // Revert refresh rate to its default
                 RefreshRate = RefreshRateDefault;
                 LogWriteLine("Main window is shown!");

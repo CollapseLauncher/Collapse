@@ -1,12 +1,10 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
@@ -16,8 +14,6 @@ using System.IO.Hashing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 // ReSharper disable ConvertIfStatementToReturnStatement
 #pragma warning disable IDE0130
 
@@ -26,14 +22,12 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal sealed partial class PluginLauncherApiWrapper
 {
-    private async ValueTask ConvertSocialMediaEntries(HypLauncherContentApi contentApi, CancellationToken token)
+    private void ConvertSocialMediaEntries(HypLauncherContentApi contentApi)
     {
-        string spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
-
         contentApi.Data         ??= new HypLauncherContentData();
         contentApi.Data.Content ??= new HypLauncherContentKind();
 
-        var list = contentApi.Data.Content.SocialMedia;
+        List<HypLauncherSocialMediaContentData> list = contentApi.Data.Content.SocialMedia;
         list.Clear();
 
         using PluginDisposableMemory<LauncherSocialMediaEntry> socialMediaEntry = PluginDisposableMemoryExtension.ToManagedSpan<LauncherSocialMediaEntry>(_pluginNewsApi.GetSocialMediaEntries);
@@ -47,7 +41,7 @@ internal sealed partial class PluginLauncherApiWrapper
         for (int i = 0; i < count; i++)
         {
             using LauncherSocialMediaEntry entry = socialMediaEntry[i];
-            LauncherSocialMediaEntryFlag   flags = entry.Flags;
+            // LauncherSocialMediaEntryFlag   flags = entry.Flags; // TODO: Use them to mark if a download routine via plugin is necessary in API Standard V2 later.
 
             string? iconTitle          = entry.Description;
             string? iconClickUrl       = entry.ClickUrl;
@@ -57,30 +51,9 @@ internal sealed partial class PluginLauncherApiWrapper
             string? iconHoverDataMarshal = entry.IconHoverPath;
             string? qrImageDataMarshal   = entry.QrPath;
 
-            string? iconUrl = await GetSocialMediaIconFromFlags(_plugin,
-                                                                _pluginNewsApi,
-                                                                flags,
-                                                                LauncherSocialMediaEntryFlag.IconIsPath,
-                                                                LauncherSocialMediaEntryFlag.IconIsDataBuffer,
-                                                                spriteFolder,
-                                                                iconDataMarshal,
-                                                                token);
-            string? iconHoverUrl = await GetSocialMediaIconFromFlags(_plugin,
-                                                                     _pluginNewsApi,
-                                                                     flags,
-                                                                     LauncherSocialMediaEntryFlag.IconIsPath,
-                                                                     LauncherSocialMediaEntryFlag.IconIsDataBuffer,
-                                                                     spriteFolder,
-                                                                     iconHoverDataMarshal,
-                                                                     token);
-            string? qrImageUrl = await GetSocialMediaIconFromFlags(_plugin,
-                                                                   _pluginNewsApi,
-                                                                   flags,
-                                                                   LauncherSocialMediaEntryFlag.QrImageIsPath,
-                                                                   LauncherSocialMediaEntryFlag.QrImageIsDataBuffer,
-                                                                   spriteFolder,
-                                                                   qrImageDataMarshal,
-                                                                   token);
+            string? iconUrl      = ImageLoaderHelper.CopyToLocalIfBase64(iconDataMarshal);
+            string? iconHoverUrl = ImageLoaderHelper.CopyToLocalIfBase64(iconHoverDataMarshal);
+            string? qrImageUrl   = ImageLoaderHelper.CopyToLocalIfBase64(qrImageDataMarshal);
 
             list.Add(new HypLauncherSocialMediaContentData
             {
@@ -146,77 +119,6 @@ internal sealed partial class PluginLauncherApiWrapper
         return links;
     }
 
-    private static async Task<string?> GetSocialMediaIconFromFlags(IPlugin                      plugin,
-                                                                   ILauncherApiNews             pluginNewsApi,
-                                                                   LauncherSocialMediaEntryFlag flags,
-                                                                   LauncherSocialMediaEntryFlag flagIfUrl,
-                                                                   LauncherSocialMediaEntryFlag flagIfBuffer,
-                                                                   string                       outputDir,
-                                                                   string?                      embeddedDataOrPath,
-                                                                   CancellationToken            token)
-    {
-        if (string.IsNullOrEmpty(embeddedDataOrPath))
-        {
-            return null;
-        }
-
-        if (flags.HasFlag(flagIfUrl))
-        {
-            return await CopyOverUrlData(plugin, pluginNewsApi, outputDir, embeddedDataOrPath, token);
-        }
-
-        if (flags.HasFlag(flagIfBuffer))
-        {
-            return await CopyOverEmbeddedDataAsync(outputDir, embeddedDataOrPath, token);
-        }
-
-        return string.Empty;
-    }
-
-    private static async Task<string?> CopyOverUrlData(IPlugin           plugin,
-                                                       ILauncherApiNews  pluginNewsApi,
-                                                       string            outputDir,
-                                                       string?           dataUrl,
-                                                       CancellationToken token)
-    {
-        if (string.IsNullOrEmpty(dataUrl))
-        {
-            return null;
-        }
-
-        // Safeguard: Check if the data is actually base64. If so, redirect.
-        if (IsDataActuallyBase64(dataUrl))
-        {
-            return await CopyOverEmbeddedDataAsync(outputDir, dataUrl, token);
-        }
-
-        string fileName = Path.GetFileName(dataUrl);
-        string filePath = Path.Combine(outputDir, fileName);
-
-        FileInfo fileInfo = new FileInfo(filePath)
-                           .EnsureCreationOfDirectory()
-                           .EnsureNoReadOnly();
-
-        if (IsFileDownloadCompleted(fileInfo))
-        {
-            return filePath;
-        }
-
-        await using FileStream fileStream = fileInfo.Create();
-
-        Guid cancelToken = plugin.RegisterCancelToken(token);
-        pluginNewsApi.DownloadAssetAsync(dataUrl,
-                                         fileStream.SafeFileHandle.DangerousGetHandle(),
-                                         null,
-                                         in cancelToken,
-                                         out nint asyncDownloadAssetResult);
-        await asyncDownloadAssetResult.AsTask();
-
-        SaveFileStamp(fileInfo, fileStream.Length);
-
-        return filePath;
-    }
-
     internal static bool IsDataActuallyBase64(string data)
     {
         if (Base64Url.IsValid(data))
@@ -233,11 +135,6 @@ internal sealed partial class PluginLauncherApiWrapper
     }
 
     private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
-
-    internal static Task<string?> CopyOverEmbeddedDataAsync(string            outputDir,
-                                                            string?           dataBase64,
-                                                            CancellationToken token)
-        => Task.Factory.StartNew(() => CopyOverEmbeddedData(outputDir, dataBase64), token);
 
     internal static string? CopyOverEmbeddedData(string  outputDir,
                                                  string? dataBase64)

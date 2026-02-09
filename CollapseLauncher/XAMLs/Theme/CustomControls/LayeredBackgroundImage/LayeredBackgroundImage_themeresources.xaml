@@ -1,0 +1,21 @@
+﻿<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <AcrylicBrush x:Key="LayeredBackgroundImageSmokeBackground"
+                          FallbackColor="#E0EEEEEE"
+                          TintColor="#EEEEEE"
+                          TintLuminosityOpacity="0.9"
+                          TintOpacity="0.4" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Default">
+            <AcrylicBrush x:Key="LayeredBackgroundImageSmokeBackground"
+                          FallbackColor="#EE222222"
+                          TintColor="#222222"
+                          TintLuminosityOpacity="0.7"
+                          TintOpacity="0.0" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

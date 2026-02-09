@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:ImageEx"
                     xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
+                    xmlns:controls="using:ImageEx"
                     xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie">
     <Style BasedOn="{StaticResource CollapseImageExStyle}"
            TargetType="controls:ImageEx" />

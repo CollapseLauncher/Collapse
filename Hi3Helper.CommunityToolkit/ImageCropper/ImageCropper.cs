@@ -359,7 +359,16 @@ public partial class ImageCropper : Control
     /// <inheritdoc/>
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (Source == null || Source.PixelWidth == 0 || Source.PixelHeight == 0)
+        BitmapSource?   asBitmapSource   = Source as BitmapSource;
+        SvgImageSource? asSvgImageSource = Source as SvgImageSource;
+
+        double imageSourceWidth  = asBitmapSource?.PixelWidth  ?? asSvgImageSource?.RasterizePixelWidth  ?? 0;
+        double imageSourceHeight = asBitmapSource?.PixelHeight ?? asSvgImageSource?.RasterizePixelHeight ?? 0;
+
+        if (double.IsInfinity(imageSourceWidth)) imageSourceWidth   = 128d;
+        if (double.IsInfinity(imageSourceHeight)) imageSourceHeight = 128d;
+
+        if (Source == null || imageSourceWidth == 0 || imageSourceHeight == 0)
         {
             return base.MeasureOverride(availableSize);
         }
@@ -368,16 +377,16 @@ public partial class ImageCropper : Control
         {
             if (!double.IsInfinity(availableSize.Width))
             {
-                availableSize.Height = availableSize.Width / Source.PixelWidth * Source.PixelHeight;
+                availableSize.Height = availableSize.Width / imageSourceWidth * imageSourceHeight;
             }
             else if (!double.IsInfinity(availableSize.Height))
             {
-                availableSize.Width = availableSize.Height / Source.PixelHeight * Source.PixelWidth;
+                availableSize.Width = availableSize.Height / imageSourceHeight * imageSourceWidth;
             }
             else
             {
-                availableSize.Width = Source.PixelWidth;
-                availableSize.Height = Source.PixelHeight;
+                availableSize.Width  = imageSourceWidth;
+                availableSize.Height = imageSourceHeight;
             }
 
             base.MeasureOverride(availableSize);
@@ -404,6 +413,12 @@ public partial class ImageCropper : Control
     }
 
     /// <summary>
+    /// Get current crop area and shape.
+    /// </summary>
+    /// <returns>Crop area and the shape of the image.</returns>
+    public (Rect Area, CropShape Shape) GetCropArea() => (_currentCroppedRect, CropShape);
+
+    /// <summary>
     /// Saves the cropped image to a stream with the specified format.
     /// </summary>
     /// <param name="stream">The target stream.</param>
@@ -417,13 +432,18 @@ public partial class ImageCropper : Control
             return;
         }
 
+        if (Source is not WriteableBitmap writeableBitmapSource)
+        {
+            throw new NotSupportedException("You must use WriteableBitmap as your Source to save the image directly to file stream.");
+        }
+
         if (keepRectangularOutput || CropShape == CropShape.Rectangular)
         {
-            await CropImageAsync(Source, stream, _currentCroppedRect, bitmapFileFormat);
+            await CropImageAsync(writeableBitmapSource, stream, _currentCroppedRect, bitmapFileFormat);
             return;
         }
 
-        await CropImageWithShapeAsync(Source, stream, _currentCroppedRect, bitmapFileFormat, CropShape);
+        await CropImageWithShapeAsync(writeableBitmapSource, stream, _currentCroppedRect, bitmapFileFormat, CropShape);
     }
 
     /// <summary>

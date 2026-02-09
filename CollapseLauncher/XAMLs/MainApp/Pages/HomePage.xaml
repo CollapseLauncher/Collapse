@@ -4,15 +4,15 @@
 <Page x:Class="CollapseLauncher.Pages.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:animations="using:CommunityToolkit.WinUI.Animations"
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
-      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
+      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
+      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
@@ -20,33 +20,136 @@
       xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
-      xmlns:media="using:CommunityToolkit.WinUI.Media"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:s="using:CommunityToolkit.WinUI"
+      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
       CacheMode="BitmapCache"
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Key="SharedShadow" />
-        <media:AttachedCardShadow x:Key="SocMedButtonAttachedShadow"
-                                  BlurRadius="0"
-                                  CornerRadius="13"
-                                  Opacity="0"
-                                  Offset="0, 0, 0" />
-        <s:AttachedDropShadow x:Key="SharedDropShadow"
-                              BlurRadius="16"
-                              CastTo="{x:Bind ImageEventImgShadow}"
-                              Opacity="0.3"
-                              Offset="0,4,0" />
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
+        <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
         <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
+        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
+        <pages:IsNumberEqualToBooleanConverter x:Key="IsNumberEqualToBooleanConverter" />
+        <pages:InverseIsContainsAnyNumbersToBooleanConverter x:Key="InverseIsContainsAnyNumbersToBooleanConverter" />
+        <pages:TimeSpanToTimeStampStringConverter x:Key="TimeSpanToTimeStampStringConverter" />
+        <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
+
+        <MenuFlyout x:Key="BackgroundContextMenuFlyout"
+                    Placement="Bottom"
+                    ShouldConstrainToRootBounds="False">
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
+                            ToolTipService.Placement="Left"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="True">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE74E;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}"
+                            ToolTipService.Placement="Left"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="False">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE78C;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                <MenuFlyoutSubItem.Resources>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
+                    <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBoth">Both</backgroundManager:FrameToCopyType>
+                </MenuFlyoutSubItem.Resources>
+                <MenuFlyoutSubItem.Icon>
+                    <FontIcon Glyph="&#xE77F;"/>
+                </MenuFlyoutSubItem.Icon>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
+                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"/>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"/>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
+                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBoth}"/>
+            </MenuFlyoutSubItem>
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                <MenuFlyoutSubItem.Icon>
+                    <FontIcon Glyph="&#xE77F;"/>
+                </MenuFlyoutSubItem.Icon>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
+                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginOverlayImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}"
+                                ToolTipService.Placement="Left"
+                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
+            </MenuFlyoutSubItem>
+            <MenuFlyoutSeparator Margin="16, 8"/>
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
+                                  ToolTipService.Placement="Left"
+                                  IsChecked="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}">
+                <ToggleMenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE8D6;"/>
+                </ToggleMenuFlyoutItem.Icon>
+            </ToggleMenuFlyoutItem>
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                  IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
+                                  ToolTipService.Placement="Left">
+                <ToggleMenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE786;"/>
+                </ToggleMenuFlyoutItem.Icon>
+            </ToggleMenuFlyoutItem>
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                  IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
+                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
+                                  ToolTipService.Placement="Left">
+                <ToggleMenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE7B3;"/>
+                </ToggleMenuFlyoutItem.Icon>
+            </ToggleMenuFlyoutItem>
+            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                <RadioMenuFlyoutItem Text="2px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
+                <RadioMenuFlyoutItem Text="4px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
+                <RadioMenuFlyoutItem Text="8px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
+                <MenuFlyoutSeparator/>
+                <RadioMenuFlyoutItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}"
+                                     ToolTipService.Placement="Left"
+                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                                     Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"/>
+            </MenuFlyoutSubItem>
+        </MenuFlyout>
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -61,6 +164,15 @@
             <ColumnDefinition Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.SidePanel1Width}" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid x:Name="BackgroundImageContextMenuGrid"
+              Grid.Column="0"
+              Grid.Row="0"
+              Grid.ColumnSpan="2"
+              Grid.RowSpan="4"
+              Margin="-32"
+              Background="Transparent"
+              DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+              ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"/>
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
               Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
@@ -73,8 +185,7 @@
               Visibility="Collapsed">
             <Grid x:Name="ImageEventImgShadow" />
             <Image x:Name="ImageEventImg"
-                   s:Effects.Shadow="{ThemeResource SharedDropShadow}"
-                   Loaded="SetHandCursor"
+                   extension:UIElementExtensions.CursorType="Hand"
                    PointerPressed="ClickImageEventSpriteLink" />
         </Grid>
         <InfoBar x:Name="PreloadDialogBox"
@@ -91,8 +202,8 @@
                  IsClosable="True"
                  IsOpen="False"
                  Opacity="0"
-                 Severity="Informational"
-                 Shadow="{ThemeResource SharedShadow}">
+                 Shadow="{ThemeResource SharedShadow}"
+                 Severity="Informational">
             <InfoBar.Content>
                 <StackPanel Margin="0,-4,38,0"
                             Orientation="Vertical">
@@ -140,7 +251,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind progressPrePerFileBar.Value, Mode=OneWay}" />
+                                                   Text="{x:Bind ProgressPrePerFileBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -153,7 +264,7 @@
                                                    Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
                                     </StackPanel>
                                 </Grid>
-                                <ProgressBar x:Name="progressPrePerFileBar"
+                                <ProgressBar x:Name="ProgressPrePerFileBar"
                                              Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
@@ -187,7 +298,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                                   Text="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -205,7 +316,7 @@
                                                    Text="-" />
                                     </StackPanel>
                                 </Grid>
-                                <ProgressBar x:Name="progressPreBar"
+                                <ProgressBar x:Name="ProgressPreBar"
                                              Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
@@ -278,7 +389,7 @@
                                         Orientation="Horizontal">
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
-                                           Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                           Text="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
                                            Text="%" />
@@ -312,9 +423,9 @@
                                      Margin="0,8,0,24"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Bottom"
-                                     IsIndeterminate="{x:Bind progressPreBar.IsIndeterminate, Mode=OneWay}"
-                                     Maximum="{x:Bind progressPreBar.Maximum, Mode=OneWay}"
-                                     Value="{x:Bind progressPreBar.Value, Mode=OneWay}" />
+                                     IsIndeterminate="{x:Bind ProgressPreBar.IsIndeterminate, Mode=OneWay}"
+                                     Maximum="{x:Bind ProgressPreBar.Maximum, Mode=OneWay}"
+                                     Value="{x:Bind ProgressPreBar.Value, Mode=OneWay}" />
                     </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
                           Margin="0,-8,0,16"
@@ -346,8 +457,8 @@
                                 HorizontalContentAlignment="Stretch"
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
-                                Shadow="{ThemeResource SharedShadow}"
                                 Style="{ThemeResource AcrylicButtonStyle}"
+                                Shadow="{ThemeResource SharedShadow}"
                                 Translation="0,0,8"
                                 Visibility="Visible">
                             <Button.Content>
@@ -437,13 +548,13 @@
             </InfoBar.ActionButton>
         </InfoBar>
         <c:NonFaultyGrid x:Name="SocMedPanelAndWpfButtonGrid"
-              Grid.Row="0"
-              Grid.RowSpan="2"
-              Grid.Column="1"
-              Margin="0,0,-24,16"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Center"
-              RowSpacing="16">
+                         Grid.Row="0"
+                         Grid.RowSpan="2"
+                         Grid.Column="1"
+                         Margin="0,0,-24,16"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Center"
+                         RowSpacing="16">
             <c:NonFaultyGrid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -472,21 +583,20 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                                 <Button x:Name="SocMedButton"
-                                        MaxWidth="48"
-                                        MaxHeight="48"
                                         MinWidth="48"
                                         MinHeight="48"
+                                        MaxWidth="48"
+                                        MaxHeight="48"
                                         Margin="4,4"
                                         Padding="8"
+                                        extension:UIElementExtensions.CursorType="Hand"
                                         BorderThickness="0"
                                         Click="OpenSocMedLink"
                                         Content="{Binding}"
                                         CornerRadius="12"
                                         FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
-                                        Loaded="SetHandCursor"
                                         PointerExited="FadeOutSocMedButton"
                                         Style="{ThemeResource SocialMediaButtonStyle}"
-                                        s:Effects.Shadow="{StaticResource SocMedButtonAttachedShadow}"
                                         Tag="{Binding Icon.ClickLink, FallbackValue={x:Null}}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
@@ -543,9 +653,9 @@
                                                                         Margin="0,2"
                                                                         HorizontalAlignment="Stretch"
                                                                         HorizontalContentAlignment="Stretch"
+                                                                        extension:UIElementExtensions.CursorType="Hand"
                                                                         Click="OpenSocMedLink"
                                                                         CornerRadius="5"
-                                                                        Loaded="SetHandCursor"
                                                                         PointerEntered="ElementScaleOutHoveredPointerEntered"
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
@@ -642,15 +752,15 @@
                              DataContext="{x:Bind WpfContext}"
                              Visibility="{Binding IsWpfPackageEnabled, Converter={StaticResource BooleanVisibilityConverter}}">
                 <c:NonFaultyButton x:Name="WpfPackageBtn"
-                                 Padding="0"
-                                 HorizontalAlignment="Right"
-                                 BorderThickness="0"
-                                 Click="WpfPackageBtn_OnClick"
-                                 CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
-                                 FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
-                                 Loaded="WpfPackageBtn_OnLoaded"
-                                 PointerEntered="WpfPackageBtn_OnPointerEntered"
-                                 PointerExited="WpfPackageBtn_OnPointerExited">
+                                   Padding="0"
+                                   HorizontalAlignment="Right"
+                                   BorderThickness="0"
+                                   Click="WpfPackageBtn_OnClick"
+                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
+                                   FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
+                                   Loaded="WpfPackageBtn_OnLoaded"
+                                   PointerEntered="WpfPackageBtn_OnPointerEntered"
+                                   PointerExited="WpfPackageBtn_OnPointerExited">
                     <ToolTipService.ToolTip>
                         <ToolTip x:Name="WpfPackageBtnToolTip"
                                  Opened="WpfPackageBtnToolTip_OnOpened"
@@ -678,9 +788,9 @@
                                 </c:NonFaultyGrid.RowDefinitions>
                                 <c:NonFaultyStackPanel Grid.Row="0">
                                     <c:NonFaultyImageEx MaxWidth="72"
-                                                     EnableLazyLoading="True"
-                                                     IsCacheEnabled="True"
-                                                     Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                                        EnableLazyLoading="True"
+                                                        IsCacheEnabled="True"
+                                                        Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                     <TextBlock MaxWidth="110"
                                                Margin="0,8,0,0"
                                                FontSize="14"
@@ -707,12 +817,12 @@
                                                  Margin="0,0,0,8"
                                                  Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                                     <c:NonFaultyButton x:Name="WpfPackageStartUpdateBtn"
-                                                     HorizontalAlignment="Center"
-                                                     Background="{ThemeResource SystemFillColorCautionBrush}"
-                                                     Click="WpfPackageStartUpdateBtn_OnClick"
-                                                     CornerRadius="12"
-                                                     Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                     Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                                       HorizontalAlignment="Center"
+                                                       Background="{ThemeResource SystemFillColorCautionBrush}"
+                                                       Click="WpfPackageStartUpdateBtn_OnClick"
+                                                       CornerRadius="12"
+                                                       Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                       Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="8">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -787,25 +897,25 @@
                                                FontSize="12"
                                                FontWeight="Bold"
                                                HorizontalTextAlignment="Right"
-                                               TextAlignment="Right"
-                                               Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"/>
+                                               Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"
+                                               TextAlignment="Right" />
                                     <c:NonFaultyProgressBar Grid.Row="1"
-                                                     Grid.Column="0"
-                                                     Grid.ColumnSpan="2"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Bottom"
-                                                     IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
-                                                     Maximum="100"
-                                                     Minimum="0"
-                                                     Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                                                            Grid.Column="0"
+                                                            Grid.ColumnSpan="2"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Bottom"
+                                                            IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                                            Maximum="100"
+                                                            Minimum="0"
+                                                            Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
                                     <c:NonFaultyButton x:Name="WpfPackageCancelUpdateBtn"
-                                                     Grid.Row="2"
-                                                     Grid.Column="0"
-                                                     Grid.ColumnSpan="2"
-                                                     HorizontalAlignment="Stretch"
-                                                     Click="WpfPackageCancelUpdateBtn_OnClick"
-                                                     CornerRadius="4"
-                                                     Style="{ThemeResource AccentButtonStyle}">
+                                                       Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       Grid.ColumnSpan="2"
+                                                       HorizontalAlignment="Stretch"
+                                                       Click="WpfPackageCancelUpdateBtn_OnClick"
+                                                       CornerRadius="4"
+                                                       Style="{ThemeResource AccentButtonStyle}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="8">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -830,14 +940,14 @@
                                 <ItemsControl Grid.Row="3"
                                               Visibility="{Binding ChangesInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                     <c:NonFaultyButton x:Name="WpfPackageReinstallBtn"
-                                                     Margin="0,-2,0,4"
-                                                     Padding="4,4"
-                                                     HorizontalAlignment="Center"
-                                                     Background="{ThemeResource SystemFillColorCautionBrush}"
-                                                     Click="WpfPackageReinstallBtn_OnClick"
-                                                     CornerRadius="12"
-                                                     Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                     Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                                       Margin="0,-2,0,4"
+                                                       Padding="4,4"
+                                                       HorizontalAlignment="Center"
+                                                       Background="{ThemeResource SystemFillColorCautionBrush}"
+                                                       Click="WpfPackageReinstallBtn_OnClick"
+                                                       CornerRadius="12"
+                                                       Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                       Visibility="{Binding IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                         <c:NonFaultyGrid Margin="4,0"
                                                          ColumnSpacing="4">
                                             <c:NonFaultyGrid.ColumnDefinitions>
@@ -871,8 +981,8 @@
                                                   Width="22"
                                                   Height="22">
                                         <c:NonFaultyCheckBox x:Name="WpfPackageAutoCheckBox"
-                                                         Padding="0"
-                                                         IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
+                                                             Padding="0"
+                                                             IsChecked="{Binding IsAutoUpdateEnabled, Mode=TwoWay}">
                                             <c:NonFaultyCheckBox.RenderTransform>
                                                 <CompositeTransform ScaleX=".75"
                                                                     ScaleY=".75" />
@@ -896,9 +1006,9 @@
                                      Background="{ThemeResource GameSettingsBtnBrush}"
                                      DataContext="{x:Bind WpfContext}">
                         <c:NonFaultyImageEx Grid.Column="0"
-                                         EnableLazyLoading="True"
-                                         IsCacheEnabled="True"
-                                         Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                            EnableLazyLoading="True"
+                                            IsCacheEnabled="True"
+                                            Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                         <c:NonFaultyGrid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
                             <c:NonFaultyGrid.OpacityTransition>
                                 <ScalarTransition Duration="0:0:.5" />
@@ -906,13 +1016,13 @@
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}" />
                             <Border Background="{ThemeResource SmokeFillColorCollapseBrush}"
                                     Opacity=".5" />
-                            <c:NonFaultyProgressRing Foreground="{ThemeResource AccentColorBrush}"
-                                             IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
-                                             Maximum="100"
-                                             Minimum="0"
-                                             Width="48"
-                                             Height="48"
-                                             Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
+                            <c:NonFaultyProgressRing Width="48"
+                                                     Height="48"
+                                                     Foreground="{ThemeResource AccentColorBrush}"
+                                                     IsIndeterminate="{Binding Status.IsProgressAllIndetermined, Mode=OneWay}"
+                                                     Maximum="100"
+                                                     Minimum="0"
+                                                     Value="{Binding Progress.ProgressAllPercentage, Mode=OneWay}" />
                             <TextBlock Margin="0,0,0,2"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
@@ -921,8 +1031,8 @@
                                        FontSize="11"
                                        FontWeight="Bold"
                                        HorizontalTextAlignment="Center"
-                                       TextAlignment="Center"
-                                       Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"/>
+                                       Text="{Binding Progress.ProgressAllPercentage, Mode=OneWay, Converter={StaticResource PercentageValueConverter}}"
+                                       TextAlignment="Center" />
                         </c:NonFaultyGrid>
                     </c:NonFaultyGrid>
                 </c:NonFaultyButton>
@@ -943,11 +1053,198 @@
                                           Height="14"
                                           Margin="-5,-3"
                                           HorizontalAlignment="Center">
-                        <lottie:DownloadIcon />
+                        <lottie:DownloadIcon Foreground="{Binding ElementName=WpfPackageReinstallBtn, Path=Foreground}" />
                     </AnimatedVisualPlayer>
                 </c:NonFaultyGrid>
             </c:NonFaultyGrid>
         </c:NonFaultyGrid>
+        <Grid x:Name="MultiBackgroundPipsPagerGridHoverArea"
+              Grid.Row="0"
+              Grid.RowSpan="2"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              MinWidth="250"
+              MinHeight="50"
+              Margin="0,0,48,0"
+              Padding="0, 18, 0, 0"
+              Background="Transparent"
+              PointerEntered="MultiBackgroundPipsPagerGridHoverArea_OnPointerEntered"
+              PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited">
+            <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
+                        DataContext="{x:Bind CurrentBackgroundManager}"
+                        extension:UIElementExtensions.IsTranslationEnabled="True"
+                        RenderTransformOrigin=".5, .5"
+                        Opacity="0"
+                        Orientation="Vertical"
+                        Spacing="16">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="MultiBackgroundPipsPagerGridTranslateTransform"/>
+                </StackPanel.RenderTransform>
+                <StackPanel Background="{ThemeResource AcrylicComboBoxBackground}"
+                            MaxWidth="500"
+                            Padding="10, 8"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            CornerRadius="20"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock Margin="8,0,0,0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                           FontWeight="Bold">
+                        <Run Text="{Binding CurrentSelectedBackgroundIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
+                        <Run Text="/" />
+                        <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
+                    </TextBlock>
+                    <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
+                                               ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
+                                               ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               PreviousNavigationButtonMode="Visible"
+                                               NextNavigationButtonMode="Visible"
+                                               Orientation="Horizontal"
+                                               NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
+                                               NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
+                                               PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
+                                               SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}"/>
+                    <AppBarSeparator BorderThickness="2"
+                                     Margin="0, -4"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="-4, -2">
+                        <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="14"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Padding="8, 4"
+                                Margin="0,0,0,0"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                Flyout="{StaticResource BackgroundContextMenuFlyout}">
+                            <AnimatedIcon Width="16"
+                                          Height="16"
+                                          RenderTransformOrigin=".5, .5">
+                                <AnimatedIcon.RenderTransform>
+                                    <RotateTransform Angle="-90"/>
+                                </AnimatedIcon.RenderTransform>
+                                <AnimatedIcon.Source>
+                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource/>
+                                </AnimatedIcon.Source>
+                            </AnimatedIcon>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+                <Grid Background="{ThemeResource AcrylicComboBoxBackground}"
+                      MinWidth="380"
+                      Padding="16, 8"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      CornerRadius="8"
+                      ColumnSpacing="16"
+                      Visibility="{Binding CurrentBackgroundIsSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                            Margin="-10, -10, -8, -10"
+                            Padding="4"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="BackgroundVideoPlayToggle_OnClick"
+                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                        <Grid>
+                            <FontIcon Glyph="&#xE768;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
+                                      FontSize="12"/>
+                            <FontIcon Glyph="&#xE769;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
+                                      FontSize="12"/>
+                        </Grid>
+                    </Button>
+                    <TextBlock Grid.Column="1"
+                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                               Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               FontSize="12"
+                               Margin="0,0,0,0"
+                               FontWeight="Medium"/>
+                    <Slider Grid.Column="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            SmallChange="500"
+                            LargeChange="5000"
+                            Minimum="0"
+                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                            Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                            Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                            Margin="-4,-8"
+                            Padding="0"
+                            IsThumbToolTipEnabled="False"/>
+                    <TextBlock Grid.Column="3"
+                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                               Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               FontSize="12"
+                               Margin="0,0,0,0"
+                               FontWeight="Medium"/>
+                    <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
+                            Grid.Column="4"
+                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                            Margin="-8, -10, -10, -10"
+                            Padding="4"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                        <Grid>
+                            <FontIcon Glyph="&#xE74F;"
+                                      FontSize="14"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                            <FontIcon Glyph="&#xE767;"
+                                      FontSize="14"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                        </Grid>
+                        <Button.Flyout>
+                            <Flyout Placement="TopEdgeAlignedRight">
+                                <Grid ColumnSpacing="8"
+                                      Margin="-8, -12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0"
+                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                            Padding="4"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                            extension:UIElementExtensions.CursorType="Hand"
+                                            Click="MultiBackgroundPipsPagerGridAudioToggleBtn_OnClick">
+                                        <Grid>
+                                            <FontIcon Glyph="&#xE74F;"
+                                                      FontSize="14"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                                            <FontIcon Glyph="&#xE767;"
+                                                      FontSize="14"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                                        </Grid>
+                                    </Button>
+                                    <Slider Grid.Column="1"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            Width="100"
+                                            Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}"/>
+                                </Grid>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Grid>
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
@@ -973,20 +1270,26 @@
                 </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
-                    <FlipView x:Name="ImageCarousel"
-                              Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
-                              HorizontalAlignment="Stretch"
-                              CornerRadius="4"
-                              ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
-                              Shadow="{ThemeResource SharedShadow}"
-                              Style="{ThemeResource CollapseFlipViewStyle}"
-                              Translation="0,0,12">
-                        <FlipView.ItemTemplate>
+                    <panelslideshow:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
+                                                   Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
+                                                   CornerRadius="8"
+                                                   CountdownProgressMargin="8"
+                                                   CountdownSmokeHeight="80"
+                                                   ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
+                                                   NextButtonMargin="-16"
+                                                   NextButtonVerticalAlignment="Center"
+                                                   PreviousButtonMargin="-16"
+                                                   PreviousButtonVerticalAlignment="Center"
+                                                   SlideshowDuration="10">
+                        <panelslideshow:PanelSlideshow.ItemTransition>
+                            <PaneThemeTransition Edge="Left" />
+                        </panelslideshow:PanelSlideshow.ItemTransition>
+                        <panelslideshow:PanelSlideshow.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx VerticalAlignment="Center"
+                                                 extension:UIElementExtensions.CursorType="Hand"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
                                                  Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
@@ -994,8 +1297,50 @@
                                                  Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
                                                  ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
                             </DataTemplate>
-                        </FlipView.ItemTemplate>
-                    </FlipView>
+                        </panelslideshow:PanelSlideshow.ItemTemplate>
+                    </panelslideshow:PanelSlideshow>
+                    <Grid x:Name="ImageCarouselPipsPager"
+                          Grid.Row="0"
+                          Height="24"
+                          MaxWidth="160"
+                          Margin="8"
+                          Padding="8,0"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Top"
+                          Background="{ThemeResource CarouselPipsAcrylicBrush}"
+                          ColumnSpacing="4"
+                          CornerRadius="8"
+                          Opacity="0.5"
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,16">
+                        <Grid.OpacityTransition>
+                            <ScalarTransition Duration="0:0:.2" />
+                        </Grid.OpacityTransition>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="2,-1,0,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="9"
+                                   FontWeight="Bold"
+                                   Opacity=".8">
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}" />
+                        </TextBlock>
+                        <newpipspager:NewPipsPager Grid.Column="1"
+                                                   Margin="0,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
+                                                   ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
+                                                   NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"
+                                                   NextNavigationButtonMode="Hidden"
+                                                   NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
+                                                   PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
+                                                   PreviousNavigationButtonMode="Hidden"
+                                                   SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
+                    </Grid>
                 </Grid>
                 <Grid x:Name="PostPanel"
                       Grid.Row="1"
@@ -1012,9 +1357,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1029,8 +1374,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1090,9 +1435,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1107,8 +1452,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1168,9 +1513,9 @@
                         <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,6"
+                                           extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
                             </PivotItem.Header>
                             <Grid>
@@ -1185,8 +1530,8 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
+                                                            extension:UIElementExtensions.CursorType="Hand"
                                                             Click="OpenButtonLinkFromTag"
-                                                            Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
                                                             Tag="{Binding ClickLink}">
                                                         <Grid Margin="0,2"
@@ -1244,22 +1589,6 @@
                             </Grid>
                         </PivotItem>
                     </Pivot>
-                </Grid>
-                <Grid x:Name="ImageCarouselPipsPager"
-                      Grid.Row="0"
-                      Padding="8,0"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Bottom"
-                      Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                      CornerRadius="8,8,0,0"
-                      Shadow="{ThemeResource SharedShadow}"
-                      Translation="0,0,16">
-                    <PipsPager VerticalAlignment="Center"
-                               NextButtonVisibility="Collapsed"
-                               NumberOfPages="{x:Bind pages:HomePage.GameCarouselData.Count, Mode=OneWay}"
-                               Orientation="Horizontal"
-                               PreviousButtonVisibility="Collapsed"
-                               SelectedPageIndex="{Binding ElementName=ImageCarousel, Path=SelectedIndex, Mode=TwoWay}" />
                 </Grid>
             </Grid>
         </Grid>
@@ -1593,20 +1922,20 @@
                 <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
-                <Grid x:Name="progressRingShadow"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
+                <Grid x:Name="ProgressRingShadow"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
-                              IsIndeterminate="{x:Bind progressRing.IsIndeterminate, Mode=OneWay}"
-                              Maximum="{x:Bind progressRing.Maximum, Mode=OneWay}"
-                              Value="{x:Bind progressRing.Value, Mode=OneWay}" />
-                <Ellipse x:Name="progressRingBG"
+                              IsIndeterminate="{x:Bind ProgressRing.IsIndeterminate, Mode=OneWay}"
+                              Maximum="{x:Bind ProgressRing.Maximum, Mode=OneWay}"
+                              Value="{x:Bind ProgressRing.Value, Mode=OneWay}" />
+                <Ellipse x:Name="ProgressRingBG"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
-                <ProgressRing x:Name="progressRing"
+                <ProgressRing x:Name="ProgressRing"
                               Width="Auto"
                               Height="Auto"
                               Margin="-6"
@@ -1614,26 +1943,26 @@
                               IsIndeterminate="True"
                               Maximum="100"
                               Value="0" />
-                <Grid x:Name="progressPerFile"
+                <Grid x:Name="ProgressPerFile"
                       Margin="16"
                       Visibility="Visible">
                     <ProgressRing Width="Auto"
                                   Height="Auto"
                                   HorizontalAlignment="Stretch"
-                                  IsIndeterminate="{x:Bind progressRingPerFile.IsIndeterminate, Mode=OneWay}"
-                                  Maximum="{x:Bind progressRingPerFile.Maximum, Mode=OneWay}"
-                                  Value="{x:Bind progressRingPerFile.Value, Mode=OneWay}" />
+                                  IsIndeterminate="{x:Bind ProgressRingPerFile.IsIndeterminate, Mode=OneWay}"
+                                  Maximum="{x:Bind ProgressRingPerFile.Maximum, Mode=OneWay}"
+                                  Value="{x:Bind ProgressRingPerFile.Value, Mode=OneWay}" />
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
                           CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
                           Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,32" />
-                    <Ellipse x:Name="progressRingBG2"
+                    <Ellipse x:Name="ProgressRingBG2"
                              Margin="4"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch"
                              Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
-                    <ProgressRing x:Name="progressRingPerFile"
+                    <ProgressRing x:Name="ProgressRingPerFile"
                                   Width="Auto"
                                   Height="Auto"
                                   Margin="8"
@@ -1678,7 +2007,7 @@
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
-                               Text="{x:Bind progressRing.Value, Mode=OneWay}" />
+                               Text="{x:Bind ProgressRing.Value, Mode=OneWay}" />
                     <TextBlock Margin="-1,0,0,0"
                                FontWeight="Bold"
                                Text="%" />
@@ -1796,8 +2125,8 @@
                                   x:DataType="local:CommunityToolsEntry">
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="OpenCommunityButtonLink"
-                                Loaded="SetHandCursor"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
@@ -1824,8 +2153,8 @@
                                   x:DataType="local:CommunityToolsEntry">
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
+                                extension:UIElementExtensions.CursorType="Hand"
                                 Click="OpenCommunityButtonLink"
-                                Loaded="SetHandCursor"
                                 Style="{ThemeResource AccentButtonStyle}"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
@@ -1953,8 +2282,8 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}"
-                    Shadow="{ThemeResource SharedShadow}">
+                    Shadow="{ThemeResource SharedShadow}"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch">
@@ -2226,19 +2555,21 @@
                                 </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
-                                            Visibility="Visible">
+                                            Visibility="Visible"
+                                            DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared, Mode=OneWay}">
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
                                     <ToggleSwitch x:Name="UseCustomBGParamsSwitch"
-                                                  IsOn="{x:Bind UseCustomBGRegion, Mode=TwoWay}"
+                                                  IsOn="{Binding CurrentIsEnableCustomImage, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <Button x:Name="ChangeGameBGButton"
                                             Margin="0,8,0,8"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
+                                            Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                             Click="ChangeGameBGButton_Click"
                                             CornerRadius="14">
                                         <Button.Content>
@@ -2258,11 +2589,12 @@
                                         </Button.Content>
                                     </Button>
                                     <TextBlock x:Name="BGPathDisplay"
+                                               Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                                Width="{x:Bind CustomChangeBGParams.Width}"
                                                Margin="0,4"
                                                HorizontalAlignment="Stretch"
                                                VerticalAlignment="Center"
-                                               Text=""
+                                               Text="{Binding CurrentCustomBackgroundImagePath, Mode=OneWay}"
                                                TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
@@ -2451,7 +2783,7 @@
                                     </Grid.RenderTransform>
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:StartGameIcon />
+                                        <lottie:StartGameIcon Foreground="{Binding ElementName=GamePlaceholderBtnPreRegister, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                                 <TextBlock Grid.Column="1"
@@ -2468,7 +2800,7 @@
                                       Padding="8,0">
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:StartGameIcon />
+                                        <lottie:StartGameIcon Foreground="{Binding ElementName=GamePlaceholderBtnPreRegister, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2479,8 +2811,8 @@
                       Grid.Row="0"
                       Grid.Column="0"
                       HorizontalAlignment="Stretch"
+                      extension:UIElementExtensions.CursorType="Hand"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
-                      Loaded="SetHandCursor"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
                       Shadow="{ThemeResource SharedShadow}"
@@ -2512,7 +2844,7 @@
                                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
                                     <AnimatedVisualPlayer Height="26"
                                                           HorizontalAlignment="Right">
-                                        <lottie:DownloadIcon />
+                                        <lottie:DownloadIcon Foreground="{Binding ElementName=InstallGameBtn, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2522,9 +2854,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="UpdateGameDialog"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
-                            Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">
@@ -2548,7 +2880,7 @@
                                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
-                                        <lottie:UpdateIcon />
+                                        <lottie:UpdateIcon Foreground="{Binding ElementName=UpdateGameBtn, Path=Foreground}" />
                                     </AnimatedVisualPlayer>
                                 </Grid>
                             </Grid>
@@ -2558,9 +2890,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="StartGame"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
-                            Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind StartTooltipText}"
                             Visibility="Collapsed">
@@ -2583,7 +2915,7 @@
                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
                                 <AnimatedVisualPlayer Height="28"
                                                       HorizontalAlignment="Right">
-                                    <lottie:StartGameIcon />
+                                    <lottie:StartGameIcon Foreground="{Binding ElementName=StartGameBtn, Path=Foreground}" />
                                 </AnimatedVisualPlayer>
                             </Grid>
                             <FontIcon Grid.Column="1"
@@ -2598,9 +2930,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             Click="CancelInstallationProcedure"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
-                            Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
                         <Grid Margin="8,0">
@@ -2625,8 +2957,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
+                            extension:UIElementExtensions.CursorType="Hand"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
-                            Loaded="SetHandCursor"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
                             Visibility="Collapsed">

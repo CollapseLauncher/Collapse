@@ -117,6 +117,7 @@ namespace CollapseLauncher
                 Application.Start(_ =>
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                    DispatcherQueueExtensions.CurrentDispatcherQueue = dispatcherQueue;
 
                     DispatcherQueueSynchronizationContext context = new(dispatcherQueue);
                     SynchronizationContext.SetSynchronizationContext(context);

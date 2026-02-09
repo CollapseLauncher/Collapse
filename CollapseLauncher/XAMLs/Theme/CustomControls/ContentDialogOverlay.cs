@@ -14,7 +14,7 @@
         private string             ThemeTitleGlyph { get; }
         private ContentDialogTheme Theme           { get; }
         public ContentDialogOverlay()
-            : this(ContentDialogTheme.Warning) { }
+            : this(ContentDialogTheme.Informational) { }
 
         public ContentDialogOverlay(ContentDialogTheme theme = ContentDialogTheme.Warning)
         {

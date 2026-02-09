@@ -7,6 +7,7 @@
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -17,21 +18,11 @@
     </Page.Resources>
     <Grid x:Name="MainPageGrid"
           Background="{ThemeResource WindowBackground}">
-        <Grid x:Name="BackgroundNewBackGrid" />
-        <Grid x:Name="BackgroundNewMediaPlayerGrid">
-            <MediaPlayerElement HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Stretch="UniformToFill"
-                                Tag="MediaPlayer" />
+        <Grid x:Name="BackgroundPresenterGrid"
+              x:FieldModifier="internal">
+            <layeredBackgroundImage:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
+                                                           MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}"/>
         </Grid>
-        <Grid x:Name="BackgroundAcrylicMask"
-              Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
-              Opacity="0" />
-        <Grid x:Name="BackgroundOverlayTitleBar"
-              Height="64"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Top"
-              Background="{ThemeResource BackgroundOverlayTitleBarBrush}" />
         <Border x:Name="NavViewPaneBackground"
                 Width="48"
                 Margin="0"
@@ -434,8 +425,8 @@
               Margin="0,48,-700,0"
               HorizontalAlignment="Right"
               Background="{ThemeResource NotificationPanelBrush}"
-              CornerRadius="8,0,0,8"
-              Shadow="{ThemeResource SharedShadow}">
+              Shadow="{ThemeResource SharedShadow}"
+              CornerRadius="8,0,0,8">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />

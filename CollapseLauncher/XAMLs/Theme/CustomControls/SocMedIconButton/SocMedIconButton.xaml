@@ -1,12 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
-                    xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
                     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
                     xmlns:imageex="using:ImageEx"
-                    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-                    xmlns:pages="using:CollapseLauncher.Pages"
-                    xmlns:s="using:CommunityToolkit.WinUI">
+                    xmlns:pages="using:CollapseLauncher.Pages">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"
@@ -34,7 +30,7 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <pages:UrlToCachedImageSourceConverter x:Key="UrlToCachedImageSourceConverter" />
+    <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
 
     <Style x:Key="SocialMediaButtonStyle"
            TargetType="Button">
@@ -234,61 +230,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <animations:Explicit.Animations>
-                            <animations:AnimationSet x:Name="SocMedIconPointerEntered">
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                      To="0, 5, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                       To="0"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                          To="10"
-                                                                          Duration="0:0:.25" />
-
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                      To="0, 5, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                       To=".5"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                          To="10"
-                                                                          Duration="0:0:.25" />
-                            </animations:AnimationSet>
-                            <animations:AnimationSet x:Name="SocMedIconPointerExited">
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                      To="0, 2, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                       To=".25"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconShadow}"
-                                                                          To="4"
-                                                                          Duration="0:0:.25" />
-
-                                <animations:OffsetDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                      To="0, 2, 0"
-                                                                      Duration="0:0:.25" />
-                                <animations:OpacityDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                       To="0"
-                                                                       Duration="0:0:.25" />
-                                <animations:BlurRadiusDropShadowAnimation Target="{Binding ElementName=IconHoverShadow}"
-                                                                          To="4"
-                                                                          Duration="0:0:.25" />
-                            </animations:AnimationSet>
-                        </animations:Explicit.Animations>
-
-                        <interactivity:Interaction.Behaviors>
-                            <interactivity:EventTriggerBehavior EventName="PointerExited">
-                                <behaviors:StartAnimationAction Animation="{Binding ElementName=SocMedIconPointerExited}" />
-                            </interactivity:EventTriggerBehavior>
-                            <interactivity:EventTriggerBehavior EventName="PointerEntered">
-                                <behaviors:StartAnimationAction Animation="{Binding ElementName=SocMedIconPointerEntered}" />
-                            </interactivity:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-
-                        <Grid x:Name="RootGrid"
+                        <Grid
                               RenderTransformOrigin="0.5,0.5">
                             <Grid.RenderTransform>
                                 <TransformGroup>
@@ -297,33 +239,16 @@
                                 </TransformGroup>
                             </Grid.RenderTransform>
 
-                            <Grid x:Name="SocMedPanelShadowCaster" />
-                            <Grid x:Name="SocMedIconsGrid">
+                            <Grid>
                                 <imageex:ImageEx x:Name="Icon"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}">
-                                    <s:Effects.Shadow>
-                                        <s:AttachedDropShadow x:Name="IconShadow"
-                                                              BlurRadius="4"
-                                                              CastTo="{Binding ElementName=SocMedPanelShadowCaster}"
-                                                              Opacity=".25"
-                                                              Offset="0, 2, 0" />
-                                    </s:Effects.Shadow>
-                                </imageex:ImageEx>
+                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"/>
                                 <imageex:ImageEx x:Name="IconHover"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
                                                  Opacity="0"
-                                                 Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}">
-                                    <s:Effects.Shadow>
-                                        <s:AttachedDropShadow x:Name="IconHoverShadow"
-                                                              BlurRadius="4"
-                                                              CastTo="{Binding ElementName=SocMedPanelShadowCaster}"
-                                                              Opacity=".0"
-                                                              Offset="0, 2, 0" />
-                                    </s:Effects.Shadow>
-                                </imageex:ImageEx>
+                                                 Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"/>
                             </Grid>
                         </Grid>
                     </ContentPresenter>

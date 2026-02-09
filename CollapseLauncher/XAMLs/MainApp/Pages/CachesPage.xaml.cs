@@ -2,6 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -25,9 +26,12 @@ namespace CollapseLauncher.Pages
 
         public CachesPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             InitializeComponent();
+
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -246,7 +250,6 @@ namespace CollapseLauncher.Pages
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
-            BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
             if (GameInstallationState

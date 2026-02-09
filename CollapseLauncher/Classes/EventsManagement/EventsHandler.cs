@@ -304,50 +304,6 @@ namespace CollapseLauncher
 
     }
     #endregion
-    #region BackgroundRegion
-    internal static class BackgroundImgChanger
-    {
-        private static readonly BackgroundImgChangerInvoker Invoker = new();
-        public static void ChangeBackground(string imgPath, Action actionAfterLoaded,
-            bool isCustom = true, bool isForceRecreateCache = false, bool isRequestInit = false)
-        {
-            Invoker!.ChangeBackground(imgPath, actionAfterLoaded, isCustom, isForceRecreateCache, isRequestInit);
-        }
-        public static void ToggleBackground(bool hide) => Invoker!.ToggleBackground(hide);
-    }
-
-    internal class BackgroundImgChangerInvoker
-    {
-        public static event EventHandler<BackgroundImgProperty> ImgEvent;
-        public static event EventHandler<bool> IsImageHide;
-
-        public void ChangeBackground(string imgPath, Action actionAfterLoaded,
-                                     bool isCustom, bool isForceRecreateCache = false, bool isRequestInit = false)
-        {
-            ImgEvent?.Invoke(this, new BackgroundImgProperty(imgPath, isCustom, isForceRecreateCache, isRequestInit, actionAfterLoaded));
-        }
-
-        public void ToggleBackground(bool hide) => IsImageHide?.Invoke(this, hide);
-    }
-
-    internal class BackgroundImgProperty
-    {
-        internal BackgroundImgProperty(string imgPath, bool isCustom, bool isForceRecreateCache, bool isRequestInit, Action actionAfterLoaded)
-        {
-            ImgPath              = imgPath;
-            IsCustom             = isCustom;
-            IsForceRecreateCache = isForceRecreateCache;
-            IsRequestInit        = isRequestInit;
-            ActionAfterLoaded    = actionAfterLoaded;
-        }
-
-        public Action ActionAfterLoaded    { get; }
-        public bool   IsRequestInit        { get; }
-        public bool   IsForceRecreateCache { get; }
-        public string ImgPath              { get; }
-        public bool   IsCustom             { get; }
-    }
-    #endregion
     #region SpawnWebView2Region
     internal static class SpawnWebView2
     {

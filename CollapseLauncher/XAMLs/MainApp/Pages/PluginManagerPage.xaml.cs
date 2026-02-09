@@ -28,7 +28,6 @@ namespace CollapseLauncher.Pages
         {
             This = this;
             InitializeComponent();
-            ImportBoxButton.SetAllControlsCursorRecursive(InternalExtension.HandCursor);
         }
 
         private void OnListViewRightClickUpdate(object sender, RightTappedRoutedEventArgs e)

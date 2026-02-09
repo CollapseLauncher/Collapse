@@ -990,5 +990,11 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
         #endregion
+
+        #region Overrides
+
+        public override string ToString() => $"{GameName} - {ZoneName}";
+
+        #endregion
     }
 }

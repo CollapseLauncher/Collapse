@@ -117,7 +117,35 @@ namespace Hi3Helper
                 public string GameStateInvalidFixed_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle3;
                 public string GameStateInvalidFixed_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle4;
                 public string InstallFolderRootTitle { get; set; } = LangFallback?._HomePage.InstallFolderRootTitle;
-                public string InstallFolderRootSubtitle { get; set; } =LangFallback?._HomePage.InstallFolderRootSubtitle;
+                public string InstallFolderRootSubtitle { get; set; } = LangFallback?._HomePage.InstallFolderRootSubtitle;
+
+                public string BgContextMenu_SaveCurrentBgText { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveCurrentBgText;
+                public string BgContextMenu_SaveCurrentBgTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveCurrentBgTooltip;
+                public string BgContextMenu_SaveAllBgText { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveAllBgText;
+                public string BgContextMenu_SaveAllBgTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_SaveAllBgTooltip;
+                public string BgContextMenu_CopyFrameToClipboardParentText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardParentText;
+                public string BgContextMenu_CopyFrameToClipboardOverlayText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText;
+                public string BgContextMenu_CopyFrameToClipboardOverlayTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip;
+                public string BgContextMenu_CopyFrameToClipboardBackgroundText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText;
+                public string BgContextMenu_CopyFrameToClipboardBackgroundTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip;
+                public string BgContextMenu_CopyFrameToClipboardMergedText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardMergedText;
+                public string BgContextMenu_CopyFrameToClipboardMergedTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip;
+                public string BgContextMenu_CopyUrlToClipboardParentText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardParentText;
+                public string BgContextMenu_CopyUrlToClipboardOverlayText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText;
+                public string BgContextMenu_CopyUrlToClipboardOverlayTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip;
+                public string BgContextMenu_CopyUrlToClipboardBackgroundText { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText;
+                public string BgContextMenu_CopyUrlToClipboardBackgroundTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip;
+                public string BgContextMenu_EnableAudioText { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableAudioText;
+                public string BgContextMenu_EnableAudioTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableAudioTooltip;
+                public string BgContextMenu_KeepPlayVideoOnUnfocusText { get; set; } = LangFallback?._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText;
+                public string BgContextMenu_KeepPlayVideoOnUnfocusTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip;
+                public string BgContextMenu_EnableParallaxText { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableParallaxText;
+                public string BgContextMenu_EnableParallaxTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_EnableParallaxTooltip;
+                public string BgContextMenu_ParallaxPixelShiftParentText { get; set; } = LangFallback?._HomePage.BgContextMenu_ParallaxPixelShiftParentText;
+                public string BgContextMenu_ParallaxPixelShiftCustomText { get; set; } = LangFallback?._HomePage.BgContextMenu_ParallaxPixelShiftCustomText;
+                public string BgContextMenu_ParallaxPixelShiftCustomTooltip { get; set; } = LangFallback?._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip;
+                public string BgContextMenu_FolderSelectSaveCurrentBg { get; set; } = LangFallback?._HomePage.BgContextMenu_FolderSelectSaveCurrentBg;
+                public string BgContextMenu_FolderSelectSaveAllBg { get; set; } = LangFallback?._HomePage.BgContextMenu_FolderSelectSaveAllBg;
             }
         }
         #endregion

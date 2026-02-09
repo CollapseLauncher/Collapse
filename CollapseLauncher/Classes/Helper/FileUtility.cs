@@ -1,18 +1,22 @@
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 // ReSharper disable MemberCanBePrivate.Global
 
+#nullable enable
 namespace CollapseLauncher.Helper
 {
     public static class FileUtility
     {
-    #nullable enable
         /// <summary>
         /// Get latest file from a directory given a pattern.
         /// </summary>
@@ -27,7 +31,6 @@ namespace CollapseLauncher.Helper
                                           .FirstOrDefault();
             return latestFile?.FullName;
         }
-    #nullable restore
 
         /// <summary>
         /// Wait for a directory to spawn a new file.
@@ -144,5 +147,91 @@ namespace CollapseLauncher.Helper
                };
 
         public static int GetFileStreamBufferSize(this uint fileSize) => GetFileStreamBufferSize((ulong)fileSize);
+
+        public static string GetFullyQualifiedPath(string fileOrDirPath)
+        {
+            ReadOnlySpan<char> key           = fileOrDirPath.TrimEnd("\\/");
+            Span<char>         normalizedKey = stackalloc char[fileOrDirPath.Length];
+
+            key.Replace(normalizedKey, '/', '\\');
+
+            if (Path.IsPathFullyQualified(normalizedKey))
+            {
+                return normalizedKey.ToString();
+            }
+
+            // Try to normalize path if not qualified.
+            ReadOnlySpan<char> pathKey           = normalizedKey;
+            string             currentWorkingDir = Directory.GetCurrentDirectory();
+            if (normalizedKey.StartsWith('\\')) // Root absolute path
+            {
+                ReadOnlySpan<char> rootDrive = Path.GetPathRoot(currentWorkingDir);
+                pathKey = Path.Join(rootDrive, pathKey);
+            }
+            else // Join relative path
+            {
+                pathKey = Path.Join(currentWorkingDir, pathKey);
+            }
+
+            return pathKey.ToString();
+        }
+
+        public static IEnumerable<string> EnumerateDirectoryRecursive(string dir)
+        {
+            foreach (string dirChild in Directory.EnumerateDirectories(dir))
+            {
+                yield return dirChild;
+
+                foreach (string dirDirChild in EnumerateDirectoryRecursive(dirChild))
+                {
+                    yield return dirDirChild;
+                }
+            }
+        }
+
+        public static bool IsFileExistOrSymbolicLinkResolved(
+            string filePath,
+            [NotNullWhen(true)]
+            out string? resolvedPath,
+            [NotNullWhen(false)]
+            out Exception? exception)
+        {
+            string filePathToCheck = filePath;
+            Unsafe.SkipInit(out resolvedPath);
+            Unsafe.SkipInit(out exception);
+
+            while (true)
+            {
+                try
+                {
+                    FileInfo fileInfo = new(filePathToCheck);
+                    FileInfo? fileInfoSymLink = fileInfo is { Exists: true, LinkTarget: { } linkTarget }
+                        ? new FileInfo(linkTarget)
+                        : null;
+
+                    // -- Recursively check until we get the actual file path.
+                    if (fileInfoSymLink is not null)
+                    {
+                        filePathToCheck = fileInfoSymLink.FullName;
+                        continue;
+                    }
+
+                    // -- If it's an actual file and does exist, return true. Otherwise, false.
+                    if (!fileInfo.Exists)
+                    {
+                        exception = new FileNotFoundException("Source file does not exist.");
+                        return false;
+                    }
+
+                    resolvedPath = fileInfo.FullName;
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                    return false;
+                }
+            }
+        }
     }
 }

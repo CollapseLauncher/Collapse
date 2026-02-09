@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using CollapseLauncher.Helper.Image;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
@@ -8,12 +9,29 @@ using Windows.UI;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    internal static partial class UIElementExtensions
+    public static partial class UIElementExtensions
     {
         private static string CurrentReversedThemeKey => InnerLauncherConfig.IsAppThemeLight ? "Dark" : "Light";
 
-        public static void ChangeAccentColor(this FrameworkElement element, Color accentColor, Color accentColorMask, Color accentColorTransparent)
+        public static void ChangeAccentColor(this FrameworkElement element, Color baseColor)
         {
+            Color accentColorMask        = baseColor;
+            Color accentColorTransparent = baseColor;
+
+            if (InnerLauncherConfig.IsAppThemeLight)
+            {
+                accentColorMask        = accentColorMask.SetSaturation(.3f).GetLightColor();
+                accentColorTransparent = accentColorTransparent.SetSaturation(.3f).GetLightColor();
+            }
+            else
+            {
+                accentColorMask        = accentColorMask.GetDarkColor(.8f);
+                accentColorTransparent = accentColorTransparent.GetDarkColor(.8f);
+            }
+
+            accentColorMask.A        = (byte)(InnerLauncherConfig.IsAppThemeLight ? 240 : 192);
+            accentColorTransparent.A = 0;
+
             const string searchKeyAccentColor     = "AccentColor";
             const string searchKeyMain            = "System" + searchKeyAccentColor;
             const string searchKeyMask            = searchKeyMain + "BackgroundMask";
@@ -24,11 +42,11 @@ namespace CollapseLauncher.Extension
             string searchKey2        = $"{searchKeyMain}{searchReversedKey}2";
             string searchKey3        = $"{searchKeyMain}{searchReversedKey}3";
 
-            SetApplicationResource(searchKeyAccentColor,     new SolidColorBrush(accentColor));
-            SetApplicationResource(searchKeyMain,            accentColor);
-            SetApplicationResource(searchKey1,               accentColor);
-            SetApplicationResource(searchKey2,               accentColor);
-            SetApplicationResource(searchKey3,               accentColor);
+            SetApplicationResource(searchKeyAccentColor,     new SolidColorBrush(baseColor));
+            SetApplicationResource(searchKeyMain,            baseColor);
+            SetApplicationResource(searchKey1,               baseColor);
+            SetApplicationResource(searchKey2,               baseColor);
+            SetApplicationResource(searchKey3,               baseColor);
             SetApplicationResource(searchKeyMask,            accentColorMask);
             SetApplicationResource(searchKeyMaskTransparent, accentColorTransparent);
 

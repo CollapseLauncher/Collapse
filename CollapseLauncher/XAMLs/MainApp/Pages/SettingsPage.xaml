@@ -11,6 +11,7 @@
       xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
+      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
@@ -74,7 +75,6 @@
                                                       VerticalAlignment="Center"
                                                       Background="{ThemeResource NewAccentButtonBackground}"
                                                       CornerRadius="8"
-                                                      Shadow="{ThemeResource SharedShadow}"
                                                       Translation="0,0,12">
                                                     <TextBlock Margin="6,2"
                                                                HorizontalAlignment="Center"
@@ -188,14 +188,16 @@
                                        TextWrapping="WrapWholeWords"
                                        Visibility="Visible" />
                             <ToggleSwitch x:Name="AppBGMode"
+                                          DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                           Margin="0,4,0,8"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                          IsOn="{x:Bind IsBgCustom, Mode=TwoWay}"
+                                          IsOn="{Binding GlobalIsEnableCustomImage, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <StackPanel x:Name="AppBGCustomizer"
+                                        DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                         Margin="0,4,0,8"
-                                        Visibility="Collapsed">
+                                        Visibility="{Binding GlobalIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                 <StackPanel Margin="-2,4,0,8"
                                             Orientation="Horizontal">
                                     <Button x:Name="BGSelector"
@@ -203,7 +205,6 @@
                                             Margin="-40,0,0,0"
                                             Click="SelectBackgroundImg"
                                             CornerRadius="0,16,16,0"
-                                            IsEnabled="False"
                                             Style="{ThemeResource AccentButtonStyle}">
                                         <StackPanel Margin="32,0,0,0"
                                                     Orientation="Horizontal">
@@ -225,7 +226,7 @@
                                         <TextBlock x:Name="BGPathDisplay"
                                                    Margin="0,4"
                                                    VerticalAlignment="Center"
-                                                   Text="" />
+                                                   Text="{Binding GlobalCustomBackgroundImagePath, Mode=OneWay}" />
                                     </ScrollViewer>
                                 </StackPanel>
                                 <TextBlock x:Name="AppBGCustomizerNote"
@@ -271,21 +272,24 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel x:Name="CustomBGVideoSettings"
-                                        Margin="0,4">
+                                        Margin="0,4"
+                                        DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}">
                                 <TextBlock Margin="0,0,0,4"
                                            FontSize="16"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground}" />
+                                <!--
                                 <ToggleSwitch Margin="0,4"
                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAcrylicBackground}"
                                               IsEnabled="{x:Bind AppBackgroundUseAcrylic.IsOn, Mode=OneWay}"
                                               IsOn="{x:Bind IsUseVideoBgDynamicColorUpdate, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                -->
                                 <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
                                               Margin="0,4"
                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAudio}"
-                                              IsOn="{x:Bind IsVideoBackgroundAudioMute, Mode=TwoWay}"
+                                              IsOn="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                 <TextBlock Margin="0,4"
@@ -298,7 +302,7 @@
                                         Maximum="100"
                                         Minimum="0"
                                         Style="{ThemeResource FatSliderStyle}"
-                                        Value="{x:Bind VideoBackgroundAudioVolume, Mode=TwoWay}" />
+                                        Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}" />
                             </StackPanel>
                             <TextBlock Margin="0,16,0,8"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -606,7 +610,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1363,7 +1366,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1418,7 +1420,6 @@
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
                                           Opacity="{x:Bind NetworkNewPreallocDownloaderToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -3175,7 +3176,6 @@
               HorizontalAlignment="{x:Bind SettingsSearchBoxGrid.HorizontalAlignment, Mode=OneWay}"
               VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment, Mode=OneWay}"
               CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius, Mode=OneWay}"
-              Shadow="{StaticResource SharedShadow}"
               Translation="0,0,8" />
         <Grid x:Name="SettingsSearchBoxGrid"
               Width="380"
@@ -3219,7 +3219,6 @@
                 <Grid Grid.Column="1"
                       Grid.ColumnSpan="2"
                       CornerRadius="4"
-                      Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16" />
                 <Button x:Name="SettingsSearchHighlightPreviousBtn"
                         Grid.Column="1"
