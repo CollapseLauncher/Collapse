@@ -58,6 +58,8 @@ public partial class LayeredBackgroundImage
     internal static readonly HashSet<string> SupportedImageBitmapExternalCodecExtensions = new([
         ".jxr",  // "image/jxr" (Requires additional codec)
         ".avif", // "image/avif" (Requires additional codec)
+        ".heic", // "image/heic" (Requires additional codec)
+        ".heif", // "image/heif" (Requires additional codec)
         ".webp"  // "image/webp" (Requires additional codec)
     ], StringComparer.OrdinalIgnoreCase);
     internal static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> SupportedImageBitmapExternalCodecExtensionsLookup =

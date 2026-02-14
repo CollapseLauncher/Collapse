@@ -241,16 +241,33 @@
         <NativeLibrary Include="StaticLib\libwebpdemux.lib" />
         <DirectPInvoke Include="webpmux" />
         <NativeLibrary Include="StaticLib\libwebpmux.lib" />
-
-        <!-- Region: zstd (Decompressor only) -->
-        <DirectPInvoke Include="libzstd" />
-        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
-
         <!--
         These libraries are required by libwebp to resolve external calls.
         -->
         <NativeLibrary Include="StaticLib\libsharpyuv.lib" />
         <NativeLibrary Include="StaticLib\libwebpdecoder.lib" />
+
+        <!-- Region: heif -->
+        <DirectPInvoke Include="heif" />
+        <NativeLibrary Include="StaticLib\heif.lib" />
+        <!--
+        These libraries are required by jxl to resolve external calls.
+        -->
+        <NativeLibrary Include="StaticLib\libdav1d.lib" />
+        <NativeLibrary Include="StaticLib\libde265.lib" />
+
+        <!-- Region: jxl -->
+        <DirectPInvoke Include="jxl" />
+        <NativeLibrary Include="StaticLib\jxl.lib" />
+        <!--
+        These libraries are required by jxl to resolve external calls.
+        -->
+        <NativeLibrary Include="StaticLib\jxl_cms.lib" />
+        <NativeLibrary Include="StaticLib\hwy.lib" />
+
+        <!-- Region: zstd (Decompressor only) -->
+        <DirectPInvoke Include="libzstd" />
+        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
     </ItemGroup>
 
     <ItemGroup>
@@ -351,6 +368,12 @@
         <Content Include="Lib\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+
+        <Compile Remove="StaticLib\buildScript\**" />
+        <EmbeddedResource Remove="StaticLib\buildScript\**" />
+        <None Remove="StaticLib\buildScript\**" />
+        <Page Remove="StaticLib\buildScript\**" />
+        <PRIResource Remove="StaticLib\buildScript\**" />
     </ItemGroup>
 
     <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
@@ -521,6 +544,8 @@
         <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpmux.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)jxl.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)heif.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 
