@@ -14,6 +14,10 @@ using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
+using PhotoSauce.MagicScaler;
+using PhotoSauce.NativeCodecs.Libheif;
+using PhotoSauce.NativeCodecs.Libjxl;
+using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -318,10 +322,35 @@ namespace CollapseLauncher
                  * Module: Database Handler for Synchronization
                  */
                 await InitDatabaseHandler();
+
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: MagicScaler External Codecs for Image Decoding
+                 */
+                InitMagicScalerExternalCodecs();
             }
             catch (Exception ex)
             {
                 LogWriteLine($"[InitSDKAsync] Failed to load some SDKs.\r\n{ex}", LogType.Sentry, true);
+            }
+        }
+
+        private static void InitMagicScalerExternalCodecs()
+        {
+            try
+            {
+                CodecManager.Configure(codecs =>
+                                       {
+                                           codecs.UseWicCodecs(WicCodecPolicy.All);
+                                           codecs.UseLibwebp();
+                                           codecs.UseLibheif();
+                                           codecs.UseLibjxl();
+                                       });
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
+                             LogType.Error,
+                             true);
             }
         }
 

@@ -11,9 +11,9 @@ call :ToolchainTest
 if NOT %errorlevel% == 0 ( goto :EOF )
 
 :: Start building
-call :Build_libomp || goto :EOF
+call :Build_libomp  || goto :EOF
 call :Build_libheif || goto :EOF
-call :Build_libjxl || goto :EOF
+call :Build_libjxl  || goto :EOF
 call :Build_libzstd || goto :EOF
 call :Build_libwebp || goto :EOF
 call :Build_libheif || goto :EOF
@@ -110,7 +110,18 @@ goto :COMPLETE
     msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType%  /m:%NUMBER_OF_PROCESSORS% || goto :ERR
     set CXXFLAGS=
     call :CallCopy libde265\Release\libde265.lib || goto :ERR
-    cd "%~dp0"
+    cd "%~dp0
+    
+    title=Building libheif dependencies - zlib
+    git clone --recursive https://github.com/madler/zlib
+    cd zlib
+    git fetch --all && git pull --all
+    cmake . %GenericCMAKEParam% -DZLIB_BUILD_STATIC=1 -DZLIB_BUILD_SHARED=0 -B vclatestbuild
+    cd vclatestbuild
+    msbuild zlibstatic.vcxproj -p:Configuration=%BuildType%  /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    move Release\zs.lib Release\zlib.lib
+    call :CallCopy Release\zlib.lib || goto :ERR
+    cd "%~dp0
 
     title=Building libheif
     git clone --recursive https://github.com/strukturag/libheif
@@ -121,10 +132,12 @@ goto :COMPLETE
     cd ..\
     set thisdir=%~dp0
     copy /Y ..\patch\libheif\CMakeLists.txt CMakeLists.txt
-    cmake . %GenericCMAKEParam% -DBUILD_SHARED_LIBS=0 -DWITH_LIBDE265=1 -DWITH_DAV1D=1 -DWITH_LIBDE265_PLUGIN=0 -DWITH_DAV1D_PLUGIN=0 -B vclatestbuild ^
-    -DLIBDE265_INCLUDE_DIR=..\libde265 -DLIBDE265_LIBRARY=%thisdir%\libde265\vclatestbuild\libde265\Release\libde265.lib ^
-    -DDAV1D_INCLUDE_DIR=..\dav1d\include -DDAV1D_LIBRARY=%thisdir%\dav1d\build\src\libdav1d.lib ^
-    -DLIBSHARPYUV_INCLUDE_DIR=third-party\libwebp -DLIBSHARPYUV_LIBRARY=%thisdir%\libheif\third-party\libwebp\build\libsharpyuv.lib || goto :ERR
+    cmake . %GenericCMAKEParam% --preset=release-noplugins -DBUILD_SHARED_LIBS=0 -B vclatestbuild -DENABLE_EXPERIMENTAL_FEATURES=1 -DWITH_REDUCED_VISIBILITY=1 ^
+    -DWITH_LIBDE265=1 -DLIBDE265_INCLUDE_DIR=..\libde265 -DLIBDE265_LIBRARY=%thisdir%\libde265\vclatestbuild\libde265\Release\libde265.lib ^
+    -DWITH_DAV1D=1 -DDAV1D_INCLUDE_DIR=..\dav1d\include -DDAV1D_LIBRARY=%thisdir%\dav1d\build\src\libdav1d.lib ^
+    -DWITH_LIBSHARPYUV=1 -DLIBSHARPYUV_INCLUDE_DIR=third-party\libwebp -DLIBSHARPYUV_LIBRARY=%thisdir%\libheif\third-party\libwebp\build\libsharpyuv.lib ^
+    -DWITH_HEADER_COMPRESSION=1 -DWITH_UNCOMPRESSED_CODEC=1 -DZLIB_INCLUDE_DIR=..\zlib -DZLIB_LIBRARY=%thisdir%\zlib\vclatestbuild\Release\zlib.lib || goto :ERR
+    copy /Y ..\patch\libheif\vclatestbuild\libheif\heif_version.h vclatestbuild\libheif\heif_version.h
     cd vclatestbuild\libheif
     msbuild heif.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
     call :CallCopy Release\heif.lib || goto :ERR

@@ -1,14 +1,10 @@
-﻿using Hi3Helper.Win32.Native.LibraryImport;
-using Hi3Helper.Win32.WinRT.WindowsStream;
+﻿using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.MagicScaler.Transforms;
-using PhotoSauce.NativeCodecs.Libheif;
-using PhotoSauce.NativeCodecs.Libjxl;
-using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -28,17 +24,7 @@ internal static class LayeredBackgroundImageExtensions
 
     static LayeredBackgroundImageExtensions()
     {
-        // Initialize support for MagicScaler's WebP decoding
-        CodecManager.Configure(InitializeMagicScalerCodecs);
         Client = CreateHttpClient();
-    }
-
-    private static void InitializeMagicScalerCodecs(CodecCollection codecs)
-    {
-        codecs.UseWicCodecs(WicCodecPolicy.All);
-        codecs.UseLibwebp();
-        codecs.UseLibheif();
-        codecs.UseLibjxl();
     }
 
     private static HttpClient CreateHttpClient()

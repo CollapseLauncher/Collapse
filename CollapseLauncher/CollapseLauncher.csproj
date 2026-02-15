@@ -255,6 +255,7 @@
         -->
         <NativeLibrary Include="StaticLib\libdav1d.lib" />
         <NativeLibrary Include="StaticLib\libde265.lib" />
+        <NativeLibrary Include="StaticLib\zlib.lib" />
 
         <!-- Region: jxl -->
         <DirectPInvoke Include="jxl" />
