@@ -9,6 +9,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
+using CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -29,10 +30,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Hashing;
+using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -440,17 +445,86 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
+
         public void StartCarouselSlideshow()
-            => ImageCarouselEventSlideshow?.ResumeSlideshow();
+        {
+            if (!WindowUtility.IsCurrentWindowInFocus())
+            {
+                return;
+            }
+            ImageCarouselEventSlideshow?.ResumeSlideshow();
+        }
 
         public void StopCarouselSlideshow()
             => ImageCarouselEventSlideshow?.PauseSlideshow();
 
-        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)
-            => ImageCarouselPipsPager.Opacity = .5d;
+    #nullable enable
+        private NewPipsPager? innerImageCarouselPager;
 
-        private void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null)
-            => ImageCarouselPipsPager.Opacity = 1;
+        [MemberNotNull(nameof(innerImageCarouselPager))]
+        private void InitializeImageCarouselPipsPagerProps()
+        {
+            innerImageCarouselPager ??= ImageCarouselPipsPager
+                                       .Children
+                                       .OfType<NewPipsPager>()
+                                       .FirstOrDefault()!;
+        }
+
+        private void CarouselPointerExited(object? sender, PointerRoutedEventArgs? e)
+        {
+            ExpandOrShrinkImageCarouselPips(true);
+        }
+
+        private void CarouselPointerEntered(object? sender, PointerRoutedEventArgs? e)
+        {
+            ExpandOrShrinkImageCarouselPips(false);
+        }
+
+        private CancellationTokenSource? _lastExpandShringImageCarouselPipsCts;
+
+        private async void ExpandOrShrinkImageCarouselPips(bool shrink)
+        {
+            try
+            {
+                InitializeImageCarouselPipsPagerProps();
+
+                CancellationTokenSource? lastCts = Interlocked.Exchange(ref _lastExpandShringImageCarouselPipsCts, new CancellationTokenSource());
+                // ReSharper disable once MethodHasAsyncOverload
+                lastCts?.Cancel();
+                lastCts?.Dispose();
+                const int maxItemCountToShow = 5;
+
+                TimeSpan dur       = TimeSpan.FromSeconds(.15);
+                int      itemCount = Math.Clamp(GameCarouselData?.Count ?? 0, 0, maxItemCountToShow);
+
+                Storyboard                    widthSb    = new();
+                DoubleAnimationUsingKeyFrames widthAnim2 = new();
+                widthAnim2.KeyFrames.Add(new SplineDoubleKeyFrame
+                {
+                    KeyTime   = dur,
+                    Value     = shrink ? 0 : itemCount * 15,
+                    KeySpline = new KeySpline { ControlPoint1 = new Point(0, 0), ControlPoint2 = new Point(0, 1) }
+                });
+                widthAnim2.EnableDependentAnimation = true;
+
+                Storyboard.SetTarget(widthAnim2, innerImageCarouselPager);
+                Storyboard.SetTargetProperty(widthAnim2, "Width");
+
+                widthSb.Children.Add(widthAnim2);
+                widthSb.Begin();
+
+                await Task.Delay(dur, _lastExpandShringImageCarouselPipsCts.Token);
+                if (!shrink)
+                {
+                    innerImageCarouselPager.BringCurrentPipButtonIntoView();
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+    #nullable restore
 
         private async void HideImageCarousel(bool hide)
         {

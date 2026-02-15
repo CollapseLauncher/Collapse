@@ -176,11 +176,16 @@ public partial class NewPipsPager
             return;
         }
 
+        BringElementIntoCenterView(asButton, pager.Orientation);
+    }
+
+    private static void BringElementIntoCenterView(UIElement element, Orientation orientation)
+    {
         BringIntoViewOptions options = new()
         {
             AnimationDesired = true
         };
-        if (pager.Orientation == Orientation.Horizontal)
+        if (orientation == Orientation.Horizontal)
         {
             options.HorizontalAlignmentRatio = 0.5d;
         }
@@ -188,7 +193,17 @@ public partial class NewPipsPager
         {
             options.VerticalAlignmentRatio = 0.5d;
         }
-        asButton.StartBringIntoView(options);
+        element.StartBringIntoView(options);
+    }
+
+    public void BringCurrentPipButtonIntoView()
+    {
+        if (_pipsPagerItemsRepeater.TryGetElement(ItemIndex) is not { } element)
+        {
+            return;
+        }
+
+        BringElementIntoCenterView(element, Orientation);
     }
 
     private Button? UpdateSelectedPipStyle(int newIndex, int oldIndex)

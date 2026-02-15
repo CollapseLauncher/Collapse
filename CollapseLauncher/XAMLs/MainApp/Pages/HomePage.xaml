@@ -1302,35 +1302,34 @@
                     <Grid x:Name="ImageCarouselPipsPager"
                           Grid.Row="0"
                           Height="24"
-                          MaxWidth="160"
+                          MaxWidth="140"
                           Margin="8"
-                          Padding="8,0"
-                          HorizontalAlignment="Right"
+                          Padding="4,0"
+                          HorizontalAlignment="Left"
                           VerticalAlignment="Top"
+                          extension:UIElementExtensions.IsTranslationEnabled="True"
                           Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                          ColumnSpacing="4"
-                          CornerRadius="8"
-                          Opacity="0.5"
-                          Shadow="{ThemeResource SharedShadow}"
-                          Translation="0,0,16">
-                        <Grid.OpacityTransition>
-                            <ScalarTransition Duration="0:0:.2" />
-                        </Grid.OpacityTransition>
+                          ColumnSpacing="0"
+                          CornerRadius="6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="2,-1,0,0"
+                        <TextBlock Grid.Column="0"
+                                   Margin="4,-1,0,0"
                                    VerticalAlignment="Center"
-                                   FontSize="9"
-                                   FontWeight="Bold"
+                                   FontSize="8"
                                    Opacity=".8">
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}" />
-                            <Run Text="/" />
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}" />
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}"
+                                 FontWeight="Bold"/>
+                            <Run Text="/"
+                                 FontWeight="Bold"/>
+                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
+                                 FontWeight="Bold" />
                         </TextBlock>
                         <newpipspager:NewPipsPager Grid.Column="1"
-                                                   Margin="0,0,0,0"
+                                                   Width="0"
+                                                   Margin="4,0,0,0"
                                                    VerticalAlignment="Center"
                                                    ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
                                                    ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
