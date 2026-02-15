@@ -798,7 +798,7 @@ namespace CollapseLauncher.Pages
         }
 
         [field: AllowNull, MaybeNull]
-        private List<LangMetadata> LanguageList
+        public static List<LangMetadata> LanguageList
         {
             get
             {
@@ -807,7 +807,7 @@ namespace CollapseLauncher.Pages
                     return field;
                 }
 
-                var keys = LanguageNames.Keys;
+                Dictionary<string, LangMetadata>.KeyCollection keys = LanguageNames.Keys;
                 int dataLen = keys.Count;
 
                 List<LangMetadata> metadataList = [];
@@ -832,12 +832,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private int LanguageSelectedIndex
+        public static int LanguageSelectedIndex
         {
             get
             {
                 string key = GetAppConfigValue("AppLanguage").Value.ToLower();
-                return LanguageNames.TryGetValue(key, out var name) ? name.LangIndex : 0;
+                return LanguageNames.TryGetValue(key, out LangMetadata name) ? name.LangIndex : 0;
             }
         }
 

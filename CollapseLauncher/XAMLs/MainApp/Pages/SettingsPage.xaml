@@ -56,9 +56,9 @@
                                 <ComboBox x:Name="LanguageSelector"
                                           MinWidth="256"
                                           CornerRadius="14"
-                                          ItemsSource="{x:Bind LanguageList, Mode=OneWay}"
+                                          ItemsSource="{x:Bind conv:SettingsPage.LanguageList, Mode=OneWay}"
                                           MaxDropDownHeight="400"
-                                          SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=OneWay}"
+                                          SelectedIndex="{x:Bind conv:SettingsPage.LanguageSelectedIndex, Mode=OneWay}"
                                           SelectionChanged="LanguageSelector_SelectionChanged"
                                           SelectionChangedTrigger="Committed">
                                     <ComboBox.ItemTemplate>
@@ -82,14 +82,14 @@
                                                                FontWeight="Bold"
                                                                Foreground="{ThemeResource NewAccentButtonForeground}"
                                                                HorizontalTextAlignment="Center"
-                                                               Text="{x:Bind LangID}"
+                                                               Text="{Binding LangID, Mode=OneWay}"
                                                                TextAlignment="Center" />
                                                 </Grid>
                                                 <TextBlock x:Name="LanguageName"
                                                            Grid.Column="1"
                                                            Margin="0,0,4,0"
                                                            VerticalAlignment="Center"
-                                                           Text="{x:Bind LangName}" />
+                                                           Text="{Binding LangName, Mode=OneWay}" />
                                                 <TextBlock x:Name="LanguageAuthor"
                                                            Grid.Column="2"
                                                            Margin="6,0,0,0"
@@ -97,7 +97,7 @@
                                                            VerticalAlignment="Center"
                                                            FontSize="11"
                                                            Opacity="0.50"
-                                                           Text="{x:Bind LangAuthor, Converter={StaticResource ByStringConverter}}" />
+                                                           Text="{Binding LangAuthor, Converter={StaticResource ByStringConverter}, Mode=OneWay}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
