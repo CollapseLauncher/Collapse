@@ -251,6 +251,9 @@ public partial class ImageBackgroundManager
         }
         catch (Exception ex)
         {
+            Logger.LogWriteLine($"An error has occurred while trying to spawn Image Cropper!: {ex}",
+                                LogType.Error,
+                                true);
             SentryHelper.ExceptionHandler(ex);
             DispatcherQueueExtensions.TryEnqueue(dialogOverlay.Hide);
         }
