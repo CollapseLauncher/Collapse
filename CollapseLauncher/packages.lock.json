@@ -117,9 +117,9 @@
       },
       "Microsoft.DotNet.ILCompiler": {
         "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "0g8tazNW4q0anSYNl1hnaHGc7+BQXwpNBMx3d5T3JboOVzz4OXZgqbuoBYfn60VtDFtBMNVS2Kfopelpo2pLZA=="
+        "requested": "[10.0.3, )",
+        "resolved": "10.0.3",
+        "contentHash": "H9kuN7egYzW5JAn5CMK8uJdJDVnPEDpZHzjOXyz1iAgvxNgVSoAiTNkCBeY2jaXcHlruF5fRUrZoUHUHXftDDA=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -147,9 +147,9 @@
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "sXdDtMf2qcnbygw9OdE535c2lxSxrZP8gO4UhDJ0xiJbl1wIqXS1OTcTDFTIJPOFd6Mhcm8gPEthqWGUxBsTqw=="
+        "requested": "[10.0.3, )",
+        "resolved": "10.0.3",
+        "contentHash": "0B6nZyCHWXnvmlB559oduOspVdNOnpNXPjhpWVMovLPAsDVG7A4jJR9rzECf67JUzxP8/ee/wA8clwIzJcWNFA=="
       },
       "Microsoft.NETCore.Targets": {
         "type": "Direct",
@@ -625,11 +625,11 @@
       },
       "Microsoft.DotNet.ILCompiler": {
         "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "0g8tazNW4q0anSYNl1hnaHGc7+BQXwpNBMx3d5T3JboOVzz4OXZgqbuoBYfn60VtDFtBMNVS2Kfopelpo2pLZA==",
+        "requested": "[10.0.3, )",
+        "resolved": "10.0.3",
+        "contentHash": "H9kuN7egYzW5JAn5CMK8uJdJDVnPEDpZHzjOXyz1iAgvxNgVSoAiTNkCBeY2jaXcHlruF5fRUrZoUHUHXftDDA==",
         "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "10.0.2"
+          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "10.0.3"
         }
       },
       "Microsoft.Graphics.Win2D": {
@@ -706,8 +706,8 @@
       },
       "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
         "type": "Transitive",
-        "resolved": "10.0.2",
-        "contentHash": "n7oF/KeIDJpf1wzniAhLcKYVyY8vA+Sb03rkV3e2Sr0+t+iPKZsLzdlXe7yUUqshcxc2XKVEKJzpKTyiZm+SKQ=="
+        "resolved": "10.0.3",
+        "contentHash": "+QEENgt2GQ1lIZTMTIn0iX9kj+rq4KW0COytvbJai++1jJrurrZAfbp8wa6/8a4JybTcUd0z+eJr0KSWQws+xQ=="
       }
     }
   }
