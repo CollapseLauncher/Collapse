@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +61,19 @@ namespace CollapseLauncher
         public static bool                      IsSkippingUpdateCheck = false;
         public static AppThemeMode              CurrentAppTheme;
 #if !DISABLEDISCORD
-        public static DiscordPresenceManager? AppDiscordPresence;
+        public static DiscordPresenceManager AppDiscordPresence
+        {
+            get
+            {
+                if (field != null) return field;
+
+                bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
+                field = new DiscordPresenceManager(isEnableDiscord);
+                AppDiscordPresence.SetActivity(ActivityType.Idle);
+
+                return field;
+            }
+        }
 #endif
         public static bool IsAppThemeLight =>
             CurrentAppTheme switch

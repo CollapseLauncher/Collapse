@@ -177,12 +177,6 @@ namespace CollapseLauncher
 
             if (!isCacheUpdaterMode) SetActivatedRegion();
 
-#if !DISABLEDISCORD
-            bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
-            AppDiscordPresence = new DiscordPresenceManager(isEnableDiscord);
-            AppDiscordPresence.SetActivity(ActivityType.Idle);
-#endif
-
             // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
 
@@ -196,6 +190,7 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
+                bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
                 if (isEnableDiscord)
                 {
                     AppDiscordPresence.SetupPresence();

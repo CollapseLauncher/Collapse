@@ -155,7 +155,7 @@
                             <AcrylicBrush x:Key="CarouselPipsAcrylicBrush"
                                           FallbackColor="#EE333333"
                                           TintColor="#222222"
-                                          TintLuminosityOpacity="0.75"
+                                          TintLuminosityOpacity="0.7"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="WindowTrayBrush"
                                           FallbackColor="#DD222222"

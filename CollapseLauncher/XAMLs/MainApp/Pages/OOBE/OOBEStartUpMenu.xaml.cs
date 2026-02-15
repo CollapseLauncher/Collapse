@@ -1073,5 +1073,25 @@ namespace CollapseLauncher.Pages.OOBE
                     return;
             }
         }
+
+        private void OpenAppSettingsOverlay_OnClick(object sender, RoutedEventArgs e)
+        {
+            GoBackFromSettingsPageBtn.Visibility = Visibility.Visible;
+            SettingsPageFrame.Visibility         = Visibility.Visible;
+            SettingsPageFrame.Navigate(typeof(SettingsPage));
+        }
+
+        private void GoBackFromOverlayFrame(object sender, RoutedEventArgs e)
+        {
+            SettingsPageFrame.Navigate(typeof(NullPage));
+
+            if (sender is not Button btn)
+            {
+                return;
+            }
+
+            SettingsPageFrame.Visibility = Visibility.Collapsed;
+            btn.Visibility               = Visibility.Collapsed;
+        }
     }
 }
