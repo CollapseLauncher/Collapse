@@ -29,6 +29,11 @@ public partial class LayeredBackgroundImage
 
     public void Play()
     {
+        if (_lastBackgroundSourceType == MediaSourceType.Image)
+        {
+            return;
+        }
+
         if (Interlocked.CompareExchange(ref _videoState, VideoState.RequestedPlay, VideoState.Paused) !=
             VideoState.Paused)
             return;
@@ -46,6 +51,11 @@ public partial class LayeredBackgroundImage
 
     public void Pause()
     {
+        if (_lastBackgroundSourceType == MediaSourceType.Image)
+        {
+            return;
+        }
+
         if (Interlocked.CompareExchange(ref _videoState, VideoState.RequestedPause, VideoState.Playing) !=
             VideoState.Playing)
             return;
