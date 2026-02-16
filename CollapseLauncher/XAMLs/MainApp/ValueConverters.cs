@@ -821,14 +821,8 @@ namespace CollapseLauncher.Pages
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (parameter is not string format)
-            {
-                throw new
-                    InvalidOperationException("ConverterParameter must be in form of valid format string for TimeSpan.ToString()");
-            }
-
-            int        len              = (int)BitOperations.RoundUpToPowerOf2((uint)format.Length * 2);
-            Span<char> charFormatBuffer = stackalloc char[len];
+            const string format         = "mm':'ss";
+            const string formatWithHour = "h':'mm':'ss";
 
             if (value is not TimeSpan asTimeSpan)
             {
@@ -841,7 +835,14 @@ namespace CollapseLauncher.Pages
                 asTimeSpan = TimeSpan.FromMilliseconds(asDoubleMilliseconds);
             }
 
-            if (!asTimeSpan.TryFormat(charFormatBuffer, out int bytesWritten, format))
+            ReadOnlySpan<char> formatSpan = asTimeSpan.Hours > 0
+                ? formatWithHour
+                : format;
+
+            int        len              = (int)BitOperations.RoundUpToPowerOf2((uint)formatSpan.Length * 2);
+            Span<char> charFormatBuffer = stackalloc char[len];
+
+            if (!asTimeSpan.TryFormat(charFormatBuffer, out int bytesWritten, formatSpan))
             {
                 throw new
                     InvalidOperationException("Cannot format the TimeSpan as either the format string or value might be invalid");
@@ -855,6 +856,7 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+
     public partial class TimeSpanToNumberMillisecondsConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -910,6 +912,42 @@ namespace CollapseLauncher.Pages
                 8 => 2,
                 _ => 3
             };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class TimeSpanMoreThan15SecondsToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double seconds = 0;
+            if (value is TimeSpan asTimeSpan)
+            {
+                seconds = asTimeSpan.TotalSeconds;
+            }
+            
+            if (value is DateTime asDateTime)
+            {
+                seconds = asDateTime.Second;
+            }
+
+            if (value is DateTimeOffset asDateTimeOffset)
+            {
+                seconds = asDateTimeOffset.Second;
+            }
+
+            if (value is double asDouble)
+            {
+                seconds = asDouble;
+            }
+
+            return seconds >= 15
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

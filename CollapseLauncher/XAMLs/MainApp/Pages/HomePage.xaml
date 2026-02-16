@@ -24,7 +24,6 @@
       xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
-      CacheMode="BitmapCache"
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
@@ -33,7 +32,7 @@
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
+        <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImagePathConverter" />
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
         <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
@@ -42,6 +41,7 @@
         <pages:InverseIsContainsAnyNumbersToBooleanConverter x:Key="InverseIsContainsAnyNumbersToBooleanConverter" />
         <pages:TimeSpanToTimeStampStringConverter x:Key="TimeSpanToTimeStampStringConverter" />
         <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
+        <pages:TimeSpanMoreThan15SecondsToVisibilityConverter x:Key="TimeSpanMoreThan15SecondsToVisibilityConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
@@ -65,7 +65,7 @@
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Resources>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
@@ -93,7 +93,7 @@
                                 CommandParameter="{StaticResource CopyToClipboardBoth}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE77F;"/>
                 </MenuFlyoutSubItem.Icon>
@@ -110,7 +110,7 @@
                                 CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16, 8"/>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
@@ -119,7 +119,7 @@
                     <FontIcon Glyph="&#xE8D6;"/>
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
@@ -128,7 +128,7 @@
                     <FontIcon Glyph="&#xE786;"/>
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
@@ -138,7 +138,7 @@
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
                 <RadioMenuFlyoutItem Text="2px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="4px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="8px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
@@ -171,7 +171,7 @@
               Grid.RowSpan="4"
               Margin="-32"
               Background="Transparent"
-              DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+              DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
               ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"/>
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
@@ -630,7 +630,7 @@
                                                                          HorizontalAlignment="Center"
                                                                          EnableLazyLoading="True"
                                                                          IsCacheEnabled="True"
-                                                                         Source="{Binding QrImage.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                                                         Source="{Binding QrImage.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImagePathConverter}}" />
                                                         <TextBlock Grid.Row="1"
                                                                    Margin="0,0,0,8"
                                                                    HorizontalAlignment="Center"
@@ -790,7 +790,7 @@
                                     <c:NonFaultyImageEx MaxWidth="72"
                                                         EnableLazyLoading="True"
                                                         IsCacheEnabled="True"
-                                                        Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                                        Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImagePathConverter}}" />
                                     <TextBlock MaxWidth="110"
                                                Margin="0,8,0,0"
                                                FontSize="14"
@@ -1008,7 +1008,7 @@
                         <c:NonFaultyImageEx Grid.Column="0"
                                             EnableLazyLoading="True"
                                             IsCacheEnabled="True"
-                                            Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
+                                            Source="{Binding WpfPackageIconUrl, Converter={StaticResource UrlToCachedImagePathConverter}}" />
                         <c:NonFaultyGrid Opacity="{Binding ChangesInProgress, Converter={StaticResource BooleanToOpacityConverter}}">
                             <c:NonFaultyGrid.OpacityTransition>
                                 <ScalarTransition Duration="0:0:.5" />
@@ -1073,7 +1073,7 @@
               PointerEntered="MultiBackgroundPipsPagerGridHoverArea_OnPointerEntered"
               PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited">
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
-                        DataContext="{x:Bind CurrentBackgroundManager}"
+                        DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
                         RenderTransformOrigin=".5, .5"
                         Opacity="0"
@@ -1137,26 +1137,22 @@
                     </StackPanel>
                 </StackPanel>
                 <Grid Background="{ThemeResource AcrylicComboBoxBackground}"
-                      MinWidth="380"
-                      Padding="16, 8"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Stretch"
                       CornerRadius="8"
-                      ColumnSpacing="16"
-                      Visibility="{Binding CurrentBackgroundIsSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                      Padding="4"
+                      Visibility="{Binding CurrentBackgroundIsVideo, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="32"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="32"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
-                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                            Margin="-10, -10, -8, -10"
+                            Margin="2,0"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="BackgroundVideoPlayToggle_OnClick"
+                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
                         <Grid>
                             <FontIcon Glyph="&#xE768;"
@@ -1167,38 +1163,51 @@
                                       FontSize="12"/>
                         </Grid>
                     </Button>
-                    <TextBlock Grid.Column="1"
-                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                               Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Left"
-                               FontSize="12"
-                               Margin="0,0,0,0"
-                               FontWeight="Medium"/>
-                    <Slider Grid.Column="2"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            SmallChange="500"
-                            LargeChange="5000"
-                            Minimum="0"
-                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                            Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
-                            Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
-                            Margin="-4,-8"
-                            Padding="0"
-                            IsThumbToolTipEnabled="False"/>
-                    <TextBlock Grid.Column="3"
-                               DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                               Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}, ConverterParameter='mm\\:ss'}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"
-                               FontSize="12"
-                               Margin="0,0,0,0"
-                               FontWeight="Medium"/>
+                    <Grid Grid.Column="1"
+                          DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
+                          Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                        <Grid ColumnSpacing="10"
+                              Margin="4,0"
+                              VerticalAlignment="Center"
+                              Width="300"
+                              Visibility="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanMoreThan15SecondsToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       HorizontalTextAlignment="Center"
+                                       TextAlignment="Center"
+                                       FontSize="11"
+                                       FontFamily="Consolas"/>
+                            <Slider Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    SmallChange="500"
+                                    LargeChange="5000"
+                                    Minimum="0"
+                                    Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                                    Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                                    Margin="0,-8"
+                                    Padding="0"
+                                    IsThumbToolTipEnabled="False"/>
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       HorizontalTextAlignment="Center"
+                                       TextAlignment="Center"
+                                       FontSize="11"
+                                       FontFamily="Consolas"/>
+                        </Grid>
+                    </Grid>
                     <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
-                            Grid.Column="4"
-                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                            Margin="-8, -10, -10, -10"
+                            Grid.Column="2"
+                            DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
@@ -1211,15 +1220,15 @@
                                       Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
                         </Grid>
                         <Button.Flyout>
-                            <Flyout Placement="TopEdgeAlignedRight">
+                            <Flyout Placement="Right">
                                 <Grid ColumnSpacing="8"
-                                      Margin="-8, -12">
+                                      Margin="-8, -24">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Column="0"
-                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                            DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
                                             Padding="4"
                                             Style="{ThemeResource TransparentDefaultButtonStyle}"
                                             extension:UIElementExtensions.CursorType="Hand"
@@ -1237,6 +1246,8 @@
                                             Minimum="0"
                                             Maximum="100"
                                             Width="100"
+                                            VerticalAlignment="Center"
+                                            Margin="-4, -8, 4, -8"
                                             Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}"/>
                                 </Grid>
                             </Flyout>
@@ -1275,7 +1286,7 @@
                                                    CornerRadius="8"
                                                    CountdownProgressMargin="8"
                                                    CountdownSmokeHeight="80"
-                                                   ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
+                                                   ItemsSource="{x:Bind pages:HomePage.GameCarouselData, Mode=OneWay}"
                                                    NextButtonMargin="-16"
                                                    NextButtonVerticalAlignment="Center"
                                                    PreviousButtonMargin="-16"
@@ -1289,13 +1300,13 @@
                                 <imageex:ImageEx VerticalAlignment="Center"
                                                  extension:UIElementExtensions.CursorType="Hand"
                                                  EnableLazyLoading="True"
-                                                 IsCacheEnabled="True"
+                                                 IsCacheEnabled="False"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{Binding Image.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"
+                                                 Source="{Binding Image.ImageUrl, Mode=OneWay, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImagePathConverter}}"
                                                  Stretch="UniformToFill"
-                                                 Tag="{Binding Image.ClickLink, FallbackValue={x:Null}}"
-                                                 ToolTipService.ToolTip="{Binding Image.Description, FallbackValue={x:Null}}" />
+                                                 Tag="{Binding Image.ClickLink, Mode=OneWay, FallbackValue={x:Null}}"
+                                                 ToolTipService.ToolTip="{Binding Image.Description, Mode=OneWay, FallbackValue={x:Null}}" />
                             </DataTemplate>
                         </panelslideshow:PanelSlideshow.ItemTemplate>
                     </panelslideshow:PanelSlideshow>
