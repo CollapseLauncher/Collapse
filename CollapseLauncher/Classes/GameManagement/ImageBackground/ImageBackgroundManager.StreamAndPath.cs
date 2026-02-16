@@ -118,7 +118,7 @@ public partial class ImageBackgroundManager
         string fileName = $"cropped_{Path.GetFileNameWithoutExtension(filePath)}.png";
 
         croppedFilePath = Path.Combine(imageDirPath, fileName);
-        return File.Exists(croppedFilePath);
+        return IsFileExistAndNotEmpty(croppedFilePath);
     }
 
     private static bool TryGetDecodedTemporaryFile(string filePath,
@@ -128,7 +128,13 @@ public partial class ImageBackgroundManager
         string fileName = $"decoded_{Path.GetFileNameWithoutExtension(filePath)}.png";
 
         decodedFilePath = Path.Combine(imageDirPath, fileName);
-        return File.Exists(decodedFilePath);
+        return IsFileExistAndNotEmpty(decodedFilePath);
+    }
+
+    private static bool IsFileExistAndNotEmpty(string filePath)
+    {
+        FileInfo fileInfo = new(filePath);
+        return fileInfo is { Exists: true, Length: > 0 };
     }
 
     private static bool TryGetDownloadedFile(Uri           filePath,

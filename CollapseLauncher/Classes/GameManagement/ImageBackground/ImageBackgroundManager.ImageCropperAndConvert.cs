@@ -21,6 +21,7 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -82,7 +83,9 @@ public partial class ImageBackgroundManager
             Uri overlayImageUri = !string.IsNullOrEmpty(decodedOverlayPath)
                 ? new Uri(decodedOverlayPath)
                 : new Uri(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\ImageCropperOverlay",
-                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile") == "Small" ? "small.png" : "normal.png"));
+                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile") == "Small"
+                                           ? "small.png"
+                                           : "normal.png"));
 
             Uri backgroundImageUri = new(decodedBackgroundPath);
 
@@ -125,11 +128,11 @@ public partial class ImageBackgroundManager
 
             void SetDialogProperties(ContentDialogOverlay element)
             {
-                element.Title = Locale.Lang._Misc.ImageCropperTitle;
-                element.Content = parentGrid;
-                element.SecondaryButtonText = Locale.Lang._Misc.Cancel;
-                element.PrimaryButtonText = Locale.Lang._Misc.OkayHappy;
-                element.DefaultButton = ContentDialogButton.Primary;
+                element.Title                  = Locale.Lang._Misc.ImageCropperTitle;
+                element.Content                = parentGrid;
+                element.SecondaryButtonText    = Locale.Lang._Misc.Cancel;
+                element.PrimaryButtonText      = Locale.Lang._Misc.OkayHappy;
+                element.DefaultButton          = ContentDialogButton.Primary;
                 element.IsPrimaryButtonEnabled = false;
 
                 element.XamlRoot = (WindowUtility.CurrentWindow as MainWindow)?.Content.XamlRoot;
@@ -138,8 +141,8 @@ public partial class ImageBackgroundManager
             static void SetParentGridProperties(Grid element)
             {
                 element.HorizontalAlignment = HorizontalAlignment.Stretch;
-                element.VerticalAlignment = VerticalAlignment.Stretch;
-                element.CornerRadius = new CornerRadius(12);
+                element.VerticalAlignment   = VerticalAlignment.Stretch;
+                element.CornerRadius        = new CornerRadius(12);
             }
 
             void SetImageCropperProperties(ImageCropper element)
@@ -162,7 +165,7 @@ public partial class ImageBackgroundManager
                 };
             }
         }
-        catch
+        catch (OperationCanceledException)
         {
             return (null, null, true);
         }
@@ -269,39 +272,17 @@ public partial class ImageBackgroundManager
         CancellationToken token)
     {
         await using Stream imageSourceStream = await OpenStreamFromFileOrUrl(imageSourceFilePath, token);
-        (Rect cropArea, _) = imageCropper.GetCropArea();
-
-        FileInfo imageTargetFileInfo = new(imageTargetFilePath);
-        imageTargetFileInfo.Directory?.Create();
-
-        Stream imageTargetStream = imageTargetFileInfo.Create();
-        bool isError = false;
+        (Rect cropArea, _) = DispatcherQueueExtensions.TryEnqueue(imageCropper.GetCropArea);
         try
         {
-            await Task.Run(() =>
-            {
-                ProcessImageSettings settings = new()
-                {
-                    Crop = new Rectangle((int)cropArea.X, (int)cropArea.Y, (int)cropArea.Width, (int)cropArea.Height),
-                    EncoderOptions = new PngEncoderOptions()
-                };
-                MagicImageProcessor.ProcessImage(imageSourceStream, imageTargetStream, settings);
-            }, token);
-        }
-        catch
-        {
-            isError = true;
-            throw;
+            Rectangle cropAreaInt = new((int)cropArea.X,
+                                        (int)cropArea.Y,
+                                        (int)cropArea.Width,
+                                        (int)cropArea.Height);
+            await ConvertImageToPngFromStream(imageSourceStream, imageTargetFilePath, cropAreaInt, token);
         }
         finally
         {
-            await imageTargetStream.DisposeAsync();
-            imageTargetFileInfo.Refresh();
-            if (isError)
-            {
-                imageTargetFileInfo.TryDeleteFile();
-            }
-
             GC.WaitForPendingFinalizers();
             GC.WaitForFullGCComplete();
         }
@@ -310,33 +291,129 @@ public partial class ImageBackgroundManager
     /// <summary>
     /// Converts any (seekable) image stream to PNG.
     /// </summary>
-    private static Task ConvertImageToPngFromStream(Stream sourceStream, string targetFilePath, CancellationToken token)
+    private static async Task ConvertImageToPngFromStream(
+        Stream            sourceStream,
+        string            targetFilePath,
+        Rectangle         cropArea = default,
+        CancellationToken token    = default)
     {
-        return Task.Factory.StartNew(Impl, (sourceStream, targetFilePath), token);
+        FileInfo targetFileInfo = new FileInfo(targetFilePath)
+                                 .EnsureCreationOfDirectory()
+                                 .EnsureNoReadOnly();
+
+        bool isError = false;
+        try
+        {
+            await using FileStream targetFileStream =
+                targetFileInfo.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            await ConvertImageToPngFromStream(sourceStream, targetFileStream, cropArea, token);
+        }
+        catch
+        {
+            isError = true;
+            throw;
+        }
+        finally
+        {
+            if (isError)
+            {
+                targetFileInfo.TryDeleteFile();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Converts any (seekable) image stream to PNG.
+    /// </summary>
+    private static Task ConvertImageToPngFromStream(
+        Stream            sourceStream,
+        Stream            targetStream,
+        Rectangle         cropArea = default,
+        CancellationToken token    = default)
+    {
+        TaskCompletionSource tcs = new();
+        new Thread(Impl)
+        {
+            IsBackground = true
+        }.Start((sourceStream, targetStream, tcs, token, cropArea));
+
+        return tcs.Task;
 
         static void Impl(object? state)
         {
-            (Stream innerSourceStream, string innerTargetFilePath) = (ValueTuple<Stream, string>)state!;
+            (Stream innerSourceStream,
+             Stream innerTargetStream,
+             TaskCompletionSource tcs,
+             CancellationToken token,
+             Rectangle cropArea) =
+                (ValueTuple<Stream, Stream, TaskCompletionSource, CancellationToken, Rectangle>)state!;
 
-            FileInfo innerTargetFileInfo = new FileInfo(innerTargetFilePath)
-                                          .EnsureCreationOfDirectory()
-                                          .EnsureNoReadOnly()
-                                          .StripAlternateDataStream();
-            using FileStream innerTargetFileStream = innerTargetFileInfo.Open(FileMode.Create,
-                                                                              FileAccess.Write,
-                                                                              FileShare.ReadWrite);
-
-            // We won't do any post-processing and just do a straight conversion to PNG.
-            // The post-processing (like resizing with Waifu2X) will be done on image loading process.
-            ProcessImageSettings settings = new()
+            try
             {
-                DpiX             = 96,
-                DpiY             = 96,
-                ColorProfileMode = ColorProfileMode.Preserve,
-                BlendingMode     = GammaMode.Linear
-            };
-            settings.TrySetEncoderFormat(ImageMimeTypes.Png);
-            MagicImageProcessor.ProcessImage(innerSourceStream, innerTargetFileStream, settings);
+                // We won't do any post-processing and just do a straight conversion to PNG.
+                // The post-processing (like resizing with Waifu2X) will be done on image loading process.
+                ProcessImageSettings settings = new()
+                {
+                    DpiX             = 96,
+                    DpiY             = 96,
+                    ColorProfileMode = ColorProfileMode.Preserve,
+                    BlendingMode     = GammaMode.Linear,
+                    Crop             = cropArea,
+                    EncoderOptions   = new PngEncoderOptions()
+                };
+
+                if (IsWebpExtendedFormat(innerSourceStream, out ColorProfileMode colorProfileMode))
+                {
+                    settings.ColorProfileMode = colorProfileMode;
+                }
+
+                if (token.IsCancellationRequested)
+                {
+                    tcs.SetCanceled(token);
+                    return;
+                }
+
+                using (ProcessingPipeline pipeline = MagicImageProcessor.BuildPipeline(innerSourceStream, settings))
+                {
+                    pipeline.WriteOutput(innerTargetStream);
+                }
+
+                tcs.SetResult();
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        }
+    }
+
+    private static ReadOnlySpan<byte> Vp8XSignature => "VP8X"u8;
+
+    private static bool IsWebpExtendedFormat(Stream stream, out ColorProfileMode colorProfileMode)
+    {
+        long oldPos = stream.Position;
+        stream.Position = 0;
+
+        Span<byte> buffer = stackalloc byte[256];
+        int read = stream.Read(buffer);
+        buffer = buffer[..read];
+
+        try
+        {
+            if (buffer.Length < 16 ||
+                !buffer.Slice(12, 4).SequenceEqual(Vp8XSignature))
+            {
+                colorProfileMode = default;
+                stream.Position  = oldPos;
+                return false;
+            }
+
+            colorProfileMode = ColorProfileMode.Ignore;
+            return true;
+        }
+        finally
+        {
+            stream.Position = oldPos;
         }
     }
 
@@ -367,7 +444,7 @@ public partial class ImageBackgroundManager
 
         // Otherwise, try to convert the image to png and write it to given decoded file path.
         await using Stream sourceStream = await OpenStreamFromFileOrUrl(filePath, token);
-        await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token);
+        await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token: token);
 
         return (decodedFilePath, codecType);
     }
