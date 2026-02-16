@@ -14,7 +14,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -48,11 +47,9 @@ namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
-        private static IAsyncOperation<ContentDialogResult>? _currentSpawnedDialogTask;
-        private static DispatcherQueue?                      _sharedDispatcherQueue;
-
+        private static bool IsOtherDialogCurrentlyShowing = false;
         private static XamlRoot? SharedXamlRoot => field ??=
-            WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : null;
+            DispatcherQueueExtensions.TryEnqueue(() => WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : null);
 
         public static Task<ContentDialogResult> Dialog_DeltaPatchFileDetected(string sourceVer, string targetVer)
         {
@@ -2089,119 +2086,142 @@ namespace CollapseLauncher.Dialogs
                                Lang._Misc.Close);
         }
 
-        public static Task<ContentDialogResult> SpawnDialog(string?    title,
-                                                            object?    content,
-                                                            UIElement? parentUI      = null,
-                                                            string?    closeText     = null,
-                                                            string?    primaryText   = null,
-                                                            string?    secondaryText = null,
-                                                            ContentDialogButton defaultButton =
-                                                                ContentDialogButton.Primary,
-                                                            ContentDialogTheme dialogTheme =
-                                                                ContentDialogTheme.Informational,
-                                                            RoutedEventHandler? onLoaded = null)
+        public static Task<ContentDialogResult> SpawnDialog(
+            string?             title,
+            object?             content,
+            UIElement?          parentUI      = null,
+            string?             closeText     = null,
+            string?             primaryText   = null,
+            string?             secondaryText = null,
+            ContentDialogButton defaultButton = ContentDialogButton.Primary,
+            ContentDialogTheme  dialogTheme   = ContentDialogTheme.Informational,
+            RoutedEventHandler? onLoaded      = null)
         {
-            _sharedDispatcherQueue ??=
-                parentUI?.DispatcherQueue ??
-                (WindowUtility.CurrentWindow as MainWindow)?.DispatcherQueue;
+            TaskCompletionSource<ContentDialogResult> tcs = new();
+            DispatcherQueueExtensions.TryEnqueue(Impl);
 
-            return _sharedDispatcherQueue?.EnqueueAsync(async () =>
-                                                        {
-                                                            XamlRoot? xamlRoot =
-                                                                WindowUtility.CurrentWindow is MainWindow
-                                                                    mainWindow
-                                                                    ? mainWindow.Content.XamlRoot
-                                                                    : parentUI?.XamlRoot;
+            return tcs.Task;
 
-                                                            // Create a new instance of dialog
-                                                            ContentDialogCollapse dialog =
-                                                                new ContentDialogCollapse(dialogTheme)
-                                                                {
-                                                                    Title               = title,
-                                                                    Content             = content,
-                                                                    CloseButtonText     = closeText,
-                                                                    PrimaryButtonText   = primaryText,
-                                                                    SecondaryButtonText = secondaryText,
-                                                                    DefaultButton       = defaultButton,
-                                                                    Style =
-                                                                        CollapseUIExt
-                                                                           .GetApplicationResource<
-                                                                                Style>("CollapseContentDialogStyle"),
-                                                                    XamlRoot = xamlRoot
-                                                                };
+            async void Impl()
+            {
+                ContentDialogCollapse? dialog = null;
+                try
+                {
+                    XamlRoot? xamlRoot = parentUI?.XamlRoot ?? SharedXamlRoot;
+                    if (xamlRoot == null)
+                    {
+                        tcs.SetResult(ContentDialogResult.None);
+                        return;
+                    }
 
-                                                            try
-                                                            {
-                                                                if (onLoaded is not null)
-                                                                    dialog.Loaded += onLoaded;
+                    Style style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle");
 
-                                                                // Queue and spawn the dialog instance
-                                                                return await dialog.QueueAndSpawnDialog();
-                                                            }
-                                                            finally
-                                                            {
-                                                                if (onLoaded is not null)
-                                                                    dialog.Loaded -= onLoaded;
-                                                            }
-                                                        }) ?? Task.FromResult(ContentDialogResult.None);
+                    // Create a new instance of dialog
+                    dialog = new ContentDialogCollapse(dialogTheme)
+                    {
+                        Title               = title,
+                        Content             = content,
+                        CloseButtonText     = closeText,
+                        PrimaryButtonText   = primaryText,
+                        SecondaryButtonText = secondaryText,
+                        DefaultButton       = defaultButton,
+                        Style               = style,
+                        XamlRoot            = xamlRoot
+                    };
+
+                    if (onLoaded is not null)
+                        dialog.Loaded += onLoaded;
+
+                    // Queue and spawn the dialog instance
+                    await dialog.QueueAndSpawnDialog();
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    if (onLoaded is not null &&
+                        dialog is not null)
+                        dialog.Loaded -= onLoaded;
+                }
+            }
         }
 
         public static async Task<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
         {
-            // Wait until the SharedXamlRoot OR dialog.XamlRoot is not null
-            // Prevent crash on startup where the UI is not ready yet
-            var timeout = TimeSpan.FromSeconds(10);
-            var actStart = DateTime.Now;
-            while (SharedXamlRoot is null && dialog.XamlRoot is null && DateTime.Now - actStart < timeout)
+            TaskCompletionSource<ContentDialogResult> tcs = new();
+            while (Interlocked.CompareExchange(ref IsOtherDialogCurrentlyShowing, true, false))
             {
+                // Wait until the current dialog is not showing
                 await Task.Delay(200);
             }
 
-            if (SharedXamlRoot is null && dialog.XamlRoot is null)
-            {
-                var msg = $"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
-                          $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds";
-                Logger.LogWriteLine(msg, LogType.Warning, true);
-                SentryHelper.ExceptionHandler(new TimeoutException(msg));
-                return ContentDialogResult.None;
-            }
-            
-            // If a dialog is currently spawned, then wait until the task is completed
-            while (_currentSpawnedDialogTask is { Status: AsyncStatus.Started })
-            {
-                await Task.Delay(200);
-            }
+            Interlocked.Exchange(ref IsOtherDialogCurrentlyShowing, true);
+            DispatcherQueueExtensions.TryEnqueue(Impl);
 
-            // Set the theme of the content
-            if (WindowUtility.CurrentWindow is MainWindow window)
+            return await tcs.Task;
+
+            async void Impl()
             {
-                if (dialog is ContentDialogCollapse contentDialogCollapse)
+                try
                 {
-                    window.ContentDialog = contentDialogCollapse;
+                    // Wait until the SharedXamlRoot OR dialog.XamlRoot is not null
+                    // Prevent crash on startup where the UI is not ready yet
+                    TimeSpan timeout  = TimeSpan.FromSeconds(10);
+                    DateTime actStart = DateTime.Now;
+                    while (SharedXamlRoot is null && dialog.XamlRoot is null && DateTime.Now - actStart < timeout)
+                    {
+                        await Task.Delay(200);
+                    }
+
+                    if (SharedXamlRoot is null && dialog.XamlRoot is null)
+                    {
+                        string msg = $"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
+                                     $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds";
+                        Logger.LogWriteLine(msg, LogType.Warning, true);
+                        SentryHelper.ExceptionHandler(new TimeoutException(msg));
+                        tcs.SetResult(ContentDialogResult.None);
+                        return;
+                    }
+
+                    // Set the theme of the content
+                    if (WindowUtility.CurrentWindow is MainWindow window)
+                    {
+                        if (dialog is ContentDialogCollapse contentDialogCollapse)
+                        {
+                            window.ContentDialog = contentDialogCollapse;
+                        }
+
+                        dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight
+                            ? ElementTheme.Light
+                            : ElementTheme.Dark;
+                    }
+
+                    dialog.XamlRoot ??= SharedXamlRoot;
+                    dialog.Loaded   +=  RecursivelySetDialogCursor;
+
+                    // Assign the dialog to the global task
+                    IAsyncOperation<ContentDialogResult>? task =
+                        dialog switch
+                        {
+                            ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
+                            ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
+                            _ => dialog.ShowAsync()
+                        };
+
+                    // Spawn and await for the result
+                    ContentDialogResult dialogResult = await task;
+                    tcs.SetResult(dialogResult);
                 }
-
-                dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
-            }
-
-            try
-            {
-                dialog.XamlRoot ??= SharedXamlRoot;
-                dialog.Loaded += RecursivelySetDialogCursor;
-
-                // Assign the dialog to the global task
-                _currentSpawnedDialogTask = dialog switch
+                catch (Exception e)
                 {
-                    ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
-                    ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
-                    _ => dialog.ShowAsync()
-                };
-                // Spawn and await for the result
-                ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
-                return dialogResult; // Return the result
-            }
-            finally
-            {
-                dialog.Loaded -= RecursivelySetDialogCursor;
+                    tcs.SetException(e);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref IsOtherDialogCurrentlyShowing, false);
+                }
             }
         }
 
@@ -2211,12 +2231,18 @@ namespace CollapseLauncher.Dialogs
             {
                 return;
             }
+            contentDialog.Loaded -= RecursivelySetDialogCursor;
 
             InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             contentDialog.SetAllControlsCursorRecursive(cursor);
 
-            Grid? parent = (contentDialog.Content as UIElement)?.FindAscendant("LayoutRoot", StringComparison.OrdinalIgnoreCase) as Grid;
+            Grid? parent = contentDialog.FindDescendant("LayoutRoot", StringComparison.OrdinalIgnoreCase) as Grid;
             Grid? commandButtonGrid = parent?.FindDescendant("CommandSpace", StringComparison.OrdinalIgnoreCase) as Grid;
+            if (commandButtonGrid?.Children.FirstOrDefault() is Grid innerCommandSpace)
+            {
+                commandButtonGrid = innerCommandSpace;
+            }
+
             commandButtonGrid?.SetAllControlsCursorRecursive(cursor);
         }
     }

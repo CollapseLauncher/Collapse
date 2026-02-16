@@ -26,6 +26,7 @@ using WinRT;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Extension
 {
@@ -70,53 +71,30 @@ namespace CollapseLauncher.Extension
 
         internal static void SetAllControlsCursorRecursive(this UIElement? element, InputSystemCursor toCursor)
         {
+            if (element == null)
+            {
+                return;
+            }
+
             while (true)
             {
-                // DO NOT REMOVE THIS LINE OR YOU WILL FACE THE CONSEQUENCES!
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                if (element == null)
-                {
-                    return;
-                }
-
                 switch (element)
                 {
                     case Panel panelKind:
-                    {
                         foreach (UIElement panelElements in panelKind.Children)
                         {
-                            SetAllControlsCursorRecursive(panelElements, toCursor);
+                            panelElements.SetAllControlsCursorRecursive(toCursor);
                         }
 
                         break;
-                    }
                     case RadioButtons radioButtonsKind:
-                    {
                         foreach (UIElement radioButtonContent in radioButtonsKind.Items.OfType<UIElement>())
                         {
                             radioButtonContent.SetCursor(toCursor);
                         }
 
                         break;
-                    }
-                    case Border borderKind:
-                        SetAllControlsCursorRecursive(borderKind.Child, toCursor);
-                        break;
-                    case ComboBox comboBoxKind:
-                        comboBoxKind.SetCursor(toCursor);
-                        break;
-                    case UserControl userControlKind:
-                        SetAllControlsCursorRecursive(userControlKind.Content, toCursor);
-                        break;
-                    case ContentControl { Content: UIElement contentControlKindInner }:
-                        SetAllControlsCursorRecursive(contentControlKindInner, toCursor);
-                        break;
-                }
-
-                switch (element)
-                {
                     case NavigationView navigationViewKind:
-                    {
                         foreach (DependencyObject o in navigationViewKind.FindDescendants())
                         {
                             if (o is NavigationViewItem navigationViewItem)
@@ -125,21 +103,32 @@ namespace CollapseLauncher.Extension
                                 continue;
                             }
 
-                            SetAllControlsCursorRecursive(o as UIElement, toCursor);
+                            (o as UIElement)?.SetAllControlsCursorRecursive(toCursor);
                         }
 
                         break;
-                    }
+                    case Border borderKind:
+                        borderKind.Child.SetAllControlsCursorRecursive(toCursor);
+                        break;
+                    case ComboBox comboBoxKind:
+                        comboBoxKind.SetCursor(toCursor);
+                        break;
+                    case UserControl userControlKind:
+                        userControlKind.Content.SetAllControlsCursorRecursive(toCursor);
+                        break;
                     case ButtonBase buttonBaseKind:
-                    {
                         buttonBaseKind.SetCursor(toCursor);
-                        if (buttonBaseKind is Button buttonKind && buttonKind.Flyout != null && buttonKind.Flyout is Flyout buttonKindFlyout)
+                        if (buttonBaseKind is Button buttonKind &&
+                            buttonKind.Flyout != null &&
+                            buttonKind.Flyout is Flyout buttonKindFlyout)
                         {
-                            SetAllControlsCursorRecursive(buttonKindFlyout.Content, toCursor);
+                            buttonKindFlyout.Content.SetAllControlsCursorRecursive(toCursor);
                         }
 
                         break;
-                    }
+                    case ContentControl { Content: UIElement contentControlKindInner }:
+                        contentControlKindInner.SetAllControlsCursorRecursive(toCursor);
+                        break;
                     case ToggleSwitch:
                         element.SetCursor(toCursor);
                         break;
@@ -679,213 +668,213 @@ namespace CollapseLauncher.Extension
         internal static TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
-            SetWidth(element, uniform);
-            SetHeight(element, uniform);
+            element.SetWidth(uniform);
+            element.SetHeight(uniform);
             return element;
         }
         internal static TElement WithMinWidthAndMinHeight<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
-            SetMinWidth(element, uniform);
-            SetMinHeight(element, uniform);
+            element.SetMinWidth(uniform);
+            element.SetMinHeight(uniform);
             return element;
         }
         internal static TElement WithWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement
         {
-            SetWidth(element, width);
+            element.SetWidth(width);
             return element;
         }
         internal static TElement WithMinWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement
         {
-            SetMinWidth(element, width);
+            element.SetMinWidth(width);
             return element;
         }
         internal static TElement WithHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement
         {
-            SetHeight(element, height);
+            element.SetHeight(height);
             return element;
         }
         internal static TElement WithMinHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement
         {
-            SetMinHeight(element, height);
+            element.SetMinHeight(height);
             return element;
         }
 
         internal static TGrid WithRowSpacing<TGrid>(this TGrid grid, double rowSpacing)
             where TGrid : Grid
         {
-            SetRowSpacing(grid, rowSpacing);
+            grid.SetRowSpacing(rowSpacing);
             return grid;
         }
         internal static TGrid WithColumnSpacing<TGrid>(this TGrid grid, double columnSpacing)
             where TGrid : Grid
         {
-            SetColumnSpacing(grid, columnSpacing);
+            grid.SetColumnSpacing(columnSpacing);
             return grid;
         }
         internal static TGrid WithColumns<TGrid>(this TGrid grid, params GridLength[] columns)
             where TGrid : Grid
         {
-            SetGridSlices(grid, columns, true);
+            grid.SetGridSlices(columns, true);
             return grid;
         }
         internal static TGrid WithRows<TGrid>(this TGrid grid, params GridLength[] rows)
             where TGrid : Grid
         {
-            SetGridSlices(grid, rows, false);
+            grid.SetGridSlices(rows, false);
             return grid;
         }
 
         internal static TElement WithCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
-            SetCornerRadius(element, uniform, kind);
+            element.SetCornerRadius(uniform, kind);
             return element;
         }
         internal static TElement WithCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
-            SetCornerRadius(element, horizontal, vertical, kind);
+            element.SetCornerRadius(horizontal, vertical, kind);
             return element;
         }
         internal static TElement WithCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
-            SetCornerRadius(element, left, top, right, bottom, kind);
+            element.SetCornerRadius(left, top, right, bottom, kind);
             return element;
         }
 
         internal static TElement WithVisibility<TElement>(this TElement element, Visibility visibility)
             where TElement : FrameworkElement
         {
-            SetVisibility(element, visibility);
+            element.SetVisibility(visibility);
             return element;
         }
 
         internal static TElement WithTag<TElement>(this TElement element, object tag)
             where TElement : FrameworkElement
         {
-            SetTag(element, tag);
+            element.SetTag(tag);
             return element;
         }
 
         internal static TElement WithDataContext<TElement>(this TElement element, object dataContext)
             where TElement : FrameworkElement
         {
-            SetDataContext(element, dataContext);
+            element.SetDataContext(dataContext);
             return element;
         }
 
         internal static TElement WithBackground<TElement>(this TElement element, Brush brush)
             where TElement : FrameworkElement
         {
-            SetBackground(element, brush);
+            element.SetBackground(brush);
             return element;
         }
         internal static TElement WithForeground<TElement>(this TElement element, Brush brush)
             where TElement : FrameworkElement
         {
-            SetForeground(element, brush);
+            element.SetForeground(brush);
             return element;
         }
 
         internal static TElement WithOpacity<TElement>(this TElement element, double opacity)
             where TElement : FrameworkElement
         {
-            SetOpacity(element, opacity);
+            element.SetOpacity(opacity);
             return element;
         }
 
         internal static TElement WithStretch<TElement>(this TElement element, Stretch stretch)
             where TElement : FrameworkElement
         {
-            SetStretch(element, stretch);
+            element.SetStretch(stretch);
             return element;
         }
 
         internal static TElement WithPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
-            SetPadding(element, uniform);
+            element.SetPadding(uniform);
             return element;
         }
         internal static TElement WithPadding<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement
         {
-            SetPadding(element, horizontal, vertical);
+            element.SetPadding(horizontal, vertical);
             return element;
         }
         internal static TElement WithPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement
         {
-            SetPadding(element, left, top, right, bottom);
+            element.SetPadding(left, top, right, bottom);
             return element;
         }
         internal static TElement WithPadding<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
-            SetPadding(element, thickness);
+            element.SetPadding(thickness);
             return element;
         }
 
         internal static TElement WithMargin<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
-            SetMargin(element, uniform);
+            element.SetMargin(uniform);
             return element;
         }
         internal static TElement WithMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement
         {
-            SetMargin(element, horizontal, vertical);
+            element.SetMargin(horizontal, vertical);
             return element;
         }
         internal static TElement WithMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement
         {
-            SetMargin(element, left, top, right, bottom);
+            element.SetMargin(left, top, right, bottom);
             return element;
         }
         internal static TElement WithMargin<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
-            SetMargin(element, thickness);
+            element.SetMargin(thickness);
             return element;
         }
 
         internal static TButton WithFlyout<TButton>(this TButton button, FlyoutBase flyout)
             where TButton : Button
         {
-            SetButtonFlyout(button, flyout);
+            button.SetButtonFlyout(flyout);
             return button;
         }
 
         internal static TElement WithHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : FrameworkElement
         {
-            SetHorizontalAlignment(element, alignment);
+            element.SetHorizontalAlignment(alignment);
             return element;
         }
         internal static TElement WithHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : Control
         {
-            SetHorizontalContentAlignment(element, alignment);
+            element.SetHorizontalContentAlignment(alignment);
             return element;
         }
         internal static TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : FrameworkElement
         {
-            SetVerticalAlignment(element, alignment);
+            element.SetVerticalAlignment(alignment);
             return element;
         }
         internal static TElement WithVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : Control
         {
-            SetVerticalContentAlignment(element, alignment);
+            element.SetVerticalContentAlignment(alignment);
             return element;
         }
 
@@ -915,9 +904,11 @@ namespace CollapseLauncher.Extension
             where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.DataContext = dataContext);
 
         internal static void SetCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
-            where TElement : FrameworkElement => SetCornerRadius(element, uniform, uniform, uniform, uniform, kind);
+            where TElement : FrameworkElement =>
+            element.SetCornerRadius(uniform, uniform, uniform, uniform, kind);
         internal static void SetCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
-            where TElement : FrameworkElement => SetCornerRadius(element, horizontal, vertical, horizontal, vertical, kind);
+            where TElement : FrameworkElement =>
+            element.SetCornerRadius(horizontal, vertical, horizontal, vertical, kind);
         internal static void SetCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
@@ -944,9 +935,11 @@ namespace CollapseLauncher.Extension
             where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.Height = height);
 
         internal static void SetPadding<TElement>(this TElement element, double uniform)
-            where TElement : FrameworkElement => SetPadding(element, uniform, uniform, uniform, uniform);
+            where TElement : FrameworkElement =>
+            element.SetPadding(uniform, uniform, uniform, uniform);
         internal static void SetPadding<TElement>(this TElement element, double horizontal, double vertical)
-            where TElement : FrameworkElement => SetPadding(element, horizontal, vertical, horizontal, vertical);
+            where TElement : FrameworkElement =>
+            element.SetPadding(horizontal, vertical, horizontal, vertical);
         internal static void SetPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement => element.SetPadding(new Thickness(left, top, right, bottom));
         internal static void SetPadding<TElement>(this TElement element, Thickness thickness)
@@ -1053,9 +1046,11 @@ namespace CollapseLauncher.Extension
         }
 
         internal static void SetMargin<TElement>(this TElement element, double uniform)
-            where TElement : FrameworkElement => SetMargin(element, uniform, uniform, uniform, uniform);
+            where TElement : FrameworkElement =>
+            element.SetMargin(uniform, uniform, uniform, uniform);
         internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
-            where TElement : FrameworkElement => SetMargin(element, horizontal, vertical, horizontal, vertical);
+            where TElement : FrameworkElement =>
+            element.SetMargin(horizontal, vertical, horizontal, vertical);
         internal static void SetMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement => DispatcherQueueExtensions.TryEnqueue(() => element.SetMargin(new Thickness(left, top, right, bottom)));
         internal static void SetMargin<TElement>(this TElement element, Thickness thickness)
