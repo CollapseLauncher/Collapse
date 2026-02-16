@@ -520,7 +520,7 @@ public partial class ImageBackgroundManager
         }
         catch (Exception ex)
         {
-            SentryHelper.ExceptionHandler(ex);
+            ErrorSender.SendException(ex);
             // Yeet! we won't do any processing for this custom background.
 
             return false;
