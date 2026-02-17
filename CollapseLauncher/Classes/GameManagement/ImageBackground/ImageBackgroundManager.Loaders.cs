@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -46,6 +47,7 @@ public partial class ImageBackgroundManager
 
     private async void LoadImageAtIndexCore(int index, CancellationToken token)
     {
+        Stopwatch stopwatch = Stopwatch.StartNew();
         try
         {
             if (ImageContextSources.Count <= index ||
@@ -82,7 +84,7 @@ public partial class ImageBackgroundManager
             Unsafe.SkipInit(out Uri? downloadedBackgroundUri);
             if (Uri.TryCreate(context.BackgroundImagePath, UriKind.Absolute, out Uri? backgroundImageUri))
             {
-                downloadedBackgroundUri = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
+                downloadedBackgroundUri      = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
                 (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token);
             }
 
@@ -90,7 +92,7 @@ public partial class ImageBackgroundManager
             Unsafe.SkipInit(out Uri? downloadedBackgroundStaticUri);
             if (Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out Uri? backgroundStaticImageUri))
             {
-                downloadedBackgroundStaticUri = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token);
+                downloadedBackgroundStaticUri      = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token);
                 (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token);
             }
 
@@ -104,8 +106,8 @@ public partial class ImageBackgroundManager
             // -- Get upscaled image file if Waifu2X is enabled
             if (GlobalIsWaifu2XEnabled)
             {
-                downloadedOverlayUri = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token);
-                downloadedBackgroundUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
+                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri,    token);
+                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
                 downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token);
             }
 
@@ -139,6 +141,11 @@ public partial class ImageBackgroundManager
             Logger.LogWriteLine($"[ImageBackgroundManager::LoadImageAtIndex] {ex}",
                                 LogType.Error,
                                 true);
+        }
+        finally
+        {
+            stopwatch.Stop();
+            Logger.LogWriteLine($"Background image loading took: {stopwatch.Elapsed.TotalSeconds} second(s)");
         }
     }
 
@@ -255,6 +262,20 @@ public partial class ImageBackgroundManager
         layerElement.ImageLoaded -= LayerElementOnLoaded;
     }
 
+    private static bool TryGetUpscaledFilePath(string     inputFilePath,
+                                               out string upscaledFilePath)
+    {
+        upscaledFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, $"scaled_{Path.GetFileNameWithoutExtension(inputFilePath)}.png");
+        if (LayeredBackgroundImage.SupportedVideoExtensionsLookup.Contains(Path.GetExtension(inputFilePath))) // Ignore if file is a video.
+        {
+            upscaledFilePath = inputFilePath;
+            return true;
+        }
+
+        FileInfo outputFileInfo = new(upscaledFilePath);
+        return outputFileInfo is { Exists: true, Length: > 0 };
+    }
+
     private static async Task<Uri?> TryGetScaledWaifu2XImagePath(Uri? uri, CancellationToken token)
     {
         if (uri == null)
@@ -269,21 +290,12 @@ public partial class ImageBackgroundManager
 
         // Ignore if the input file is a video
         string inputFilePath = uri.LocalPath;
-        if (LayeredBackgroundImage.SupportedVideoExtensionsLookup
-                                  .Contains(Path.GetExtension(inputFilePath)))
+        if (TryGetUpscaledFilePath(inputFilePath, out string outputFilePath))
         {
-            return uri;
+            return new Uri(outputFilePath);
         }
-
-        string outputFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder,
-                                             $"scaled_{Path.GetFileNameWithoutExtension(inputFilePath)}.png");
 
         FileInfo outputFileInfo = new(outputFilePath);
-        if (outputFileInfo.Exists)
-        {
-            return new Uri(outputFileInfo.FullName);
-        }
-
         outputFileInfo.Directory?.Create();
 
         await Task.Run(Impl, token);

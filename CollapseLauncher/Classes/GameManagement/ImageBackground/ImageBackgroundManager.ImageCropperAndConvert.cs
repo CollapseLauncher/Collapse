@@ -21,7 +21,6 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -123,6 +122,22 @@ public partial class ImageBackgroundManager
 
             // -- Save cropped image
             await SaveCroppedImageToFilePath(backgroundUrlOrPath, croppedBackgroundPath, cropper, token);
+
+            // -- If there's an upscaled image, delete it.
+            if (TryGetUpscaledFilePath(croppedBackgroundPath,
+                                       out string croppedImagePath))
+            {
+                try
+                {
+                    File.Delete(croppedImagePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWriteLine($"An error has occurred while trying to delete previous upscaled image: {ex}",
+                                        LogType.Error,
+                                        true);
+                }
+            }
 
             return (null, croppedBackgroundPath, false);
 
@@ -423,6 +438,12 @@ public partial class ImageBackgroundManager
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
     internal static async Task<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token)
     {
+        // Try to get decoded temporary file. If it exists, return the file path.
+        if (TryGetDecodedTemporaryFile(filePath, out string decodedFilePath))
+        {
+            return (decodedFilePath, ImageExternalCodecType.Default);
+        }
+
         // Check the extension type. If the type is native or a video file, then just return the original path.
         if (await TryGetImageCodecType(filePath, token) is var codecType &&
             codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
@@ -434,12 +455,6 @@ public partial class ImageBackgroundManager
         if (codecType == ImageExternalCodecType.NotSupported)
         {
             throw new NotSupportedException($"The format of the image: {filePath} is not supported!");
-        }
-
-        // Try to get decoded temporary file. If it exists, return the file path.
-        if (TryGetDecodedTemporaryFile(filePath, out string decodedFilePath))
-        {
-            return (decodedFilePath, ImageExternalCodecType.Default);
         }
 
         // Otherwise, try to convert the image to png and write it to given decoded file path.
