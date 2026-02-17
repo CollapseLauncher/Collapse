@@ -280,6 +280,14 @@ namespace CollapseLauncher
         {
             IsLoadFrameCompleted  = false;
             m_appCurrentFrameName = e.FrameTo.Name;
+
+            if (e.RequireCacheReset)
+            {
+                int cacheSizeOld = LauncherFrame.CacheSize;
+                LauncherFrame.CacheSize = 0;
+                LauncherFrame.CacheSize = cacheSizeOld;
+            }
+
             LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
             IsLoadFrameCompleted = true;
         }

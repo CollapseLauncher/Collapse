@@ -217,20 +217,20 @@ namespace CollapseLauncher
         private static          Type                    _currentWindow;
         private static          Type                    _currentPage;
         private static readonly MainFrameChangerInvoker Invoker = new();
-        public static           void                    GoBackWindowFrame()            => Invoker.GoBackWindowFrame();
-        public static           void                    ChangeWindowFrame(Type toPage) => ChangeWindowFrame(toPage, new DrillInNavigationTransitionInfo());
-        public static void ChangeWindowFrame(Type toPage, NavigationTransitionInfo transition)
+        public static void GoBackWindowFrame() => Invoker.GoBackWindowFrame();
+        public static void ChangeWindowFrame(Type toPage, bool requireCacheReset = false) => ChangeWindowFrame(toPage, new DrillInNavigationTransitionInfo());
+        public static void ChangeWindowFrame(Type toPage, NavigationTransitionInfo transition, bool requireCacheReset = false)
         {
             _currentWindow = toPage ?? throw new ArgumentException("Cannot navigate to a null page!");
-            Invoker.ChangeWindowFrame(toPage, transition);
+            Invoker.ChangeWindowFrame(toPage, transition, requireCacheReset);
         }
 
         public static void GoBackMainFrame() => Invoker.GoBackMainFrame();
-        public static void ChangeMainFrame(Type toPage) => ChangeMainFrame(toPage, new DrillInNavigationTransitionInfo());
-        public static void ChangeMainFrame(Type toPage, NavigationTransitionInfo transition)
+        public static void ChangeMainFrame(Type toPage, bool requireCacheReset = false) => ChangeMainFrame(toPage, new DrillInNavigationTransitionInfo(), requireCacheReset);
+        public static void ChangeMainFrame(Type toPage, NavigationTransitionInfo transition, bool requireCacheReset = false)
         {
             _currentPage = toPage ?? throw new ArgumentException("Cannot navigate to a null page!");
-            Invoker!.ChangeMainFrame(toPage, transition);
+            Invoker!.ChangeMainFrame(toPage, transition, requireCacheReset);
         }
 
         public static void ReloadCurrentWindowFrame() => ChangeWindowFrame(_currentWindow);
@@ -243,21 +243,23 @@ namespace CollapseLauncher
         public static event EventHandler<MainFrameProperties> FrameEvent;
         public static event EventHandler WindowFrameGoBackEvent;
         public static event EventHandler FrameGoBackEvent;
-        public void ChangeWindowFrame(Type e, NavigationTransitionInfo eT) => WindowFrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
-        public void ChangeMainFrame(Type e, NavigationTransitionInfo eT) => FrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
+        public void ChangeWindowFrame(Type e, NavigationTransitionInfo eT, bool requireCacheReset = false) => WindowFrameEvent?.Invoke(this, new MainFrameProperties(e, eT, requireCacheReset));
+        public void ChangeMainFrame(Type e, NavigationTransitionInfo eT, bool requireCacheReset = false) => FrameEvent?.Invoke(this, new MainFrameProperties(e, eT, requireCacheReset));
         public void GoBackWindowFrame() => WindowFrameGoBackEvent?.Invoke(this, null);
         public void GoBackMainFrame() => FrameGoBackEvent?.Invoke(this, null);
     }
 
     internal class MainFrameProperties
     {
-        internal MainFrameProperties(Type frameTo, NavigationTransitionInfo transition)
+        internal MainFrameProperties(Type frameTo, NavigationTransitionInfo transition, bool requireCacheReset)
         {
-            FrameTo = frameTo;
-            Transition = transition;
+            FrameTo           = frameTo;
+            Transition        = transition;
+            RequireCacheReset = requireCacheReset;
         }
         public Type FrameTo { get; private set; }
         public NavigationTransitionInfo Transition { get; private set; }
+        public bool RequireCacheReset { get; private set; }
     }
     #endregion
     #region NotificationPushRegion

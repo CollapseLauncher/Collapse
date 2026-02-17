@@ -160,7 +160,7 @@ namespace CollapseLauncher.Pages
             }
 
             MainPage.PreviousTagString.Add(MainPage.PreviousTag);
-            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
