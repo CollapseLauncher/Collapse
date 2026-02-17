@@ -247,6 +247,7 @@ public partial class ImageBackgroundManager
             Play(false);
         }
 
+        CurrentBackgroundIsVideo = CurrentSelectedBackgroundContext?.IsVideo ?? false;
         if (layerElement.Tag is bool isDisplayControl)
         {
             CurrentBackgroundIsSeekable = isDisplayControl;

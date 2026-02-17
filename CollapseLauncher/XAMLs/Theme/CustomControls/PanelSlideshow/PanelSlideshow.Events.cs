@@ -1,4 +1,6 @@
-﻿using Hi3Helper.Data;
+﻿using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Animations;
+using Hi3Helper.Data;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Numerics;
 using Windows.System;
 
 #nullable enable
@@ -65,11 +68,12 @@ public partial class PanelSlideshow
         try
         {
             // Just add to Grid if oldIndex is -1 (initialization on startup)
-            if (oldIndex == -1 && Items.FirstOrDefault() is { } firstElement)
+            if (oldIndex == -1)
             {
-                firstElement.Transitions.Add(new ContentThemeTransition());
+                newElement.Transitions.Clear();
+                newElement.Transitions.Add(new ContentThemeTransition());
                 _presenterGrid.Children.Clear();
-                _presenterGrid.Children.Add(firstElement);
+                _presenterGrid.Children.Add(newElement);
                 return;
             }
 
@@ -394,18 +398,16 @@ public partial class PanelSlideshow
         if (_presenterGrid != null!)
         {
             _presenterGrid.Children.Clear();
-            _presenterGrid.Loaded   -= PanelSlideshow_Loaded;
-            _presenterGrid.Unloaded -= PanelSlideshow_Unloaded;
         }
 
         PointerEntered -= PanelSlideshow_PointerEntered;
-        PointerExited -= PanelSlideshow_PointerExited;
+        PointerExited  -= PanelSlideshow_PointerExited;
 
-        KeyDown -= PanelSlideshow_KeyDown;
+        KeyDown             -= PanelSlideshow_KeyDown;
         PointerWheelChanged -= PanelSlideshow_OnPointerWheelChanged;
 
         if (_previousButton != null!) _previousButton.Click -= PreviousButton_OnClick;
-        if (_nextButton != null!) _nextButton.Click -= NextButton_OnClick;
+        if (_nextButton != null!) _nextButton.Click         -= NextButton_OnClick;
 
         // Deregister timer
         DisposeAndDeregisterTimer();
@@ -424,9 +426,9 @@ public partial class PanelSlideshow
         ItemIndex_OnChange(ItemIndex, -1);
 
         PointerEntered += PanelSlideshow_PointerEntered;
-        PointerExited += PanelSlideshow_PointerExited;
+        PointerExited  += PanelSlideshow_PointerExited;
 
-        KeyDown += PanelSlideshow_KeyDown;
+        KeyDown             += PanelSlideshow_KeyDown;
         PointerWheelChanged += PanelSlideshow_OnPointerWheelChanged;
 
         if (_previousButton != null!) _previousButton.Click += PreviousButton_OnClick;
@@ -482,6 +484,8 @@ public partial class PanelSlideshow
     {
         _isMouseHover = true;
         VisualStateManager.GoToState(this, StateNamePointerOver, true);
+        PanelSlideshow_ElevateElementShadow(_previousButton, _previousButtonShadow);
+        PanelSlideshow_ElevateElementShadow(_nextButton,     _nextButtonShadow);
 
         PauseSlideshow();
     }
@@ -490,6 +494,8 @@ public partial class PanelSlideshow
     {
         _isMouseHover = false;
         VisualStateManager.GoToState(this, StateNameNormal, true);
+        PanelSlideshow_ElevateElementShadow(_previousButton, _previousButtonShadow, false);
+        PanelSlideshow_ElevateElementShadow(_nextButton,     _nextButtonShadow,     false);
 
         ResumeSlideshow();
     }
@@ -501,6 +507,44 @@ public partial class PanelSlideshow
     private void PreviousButton_OnClick(object? sender, RoutedEventArgs args) => ItemIndex--;
 
     private void NextButton_OnClick(object? sender, RoutedEventArgs args) => ItemIndex++;
+
+    #endregion
+
+    #region Shadow Elevation
+
+    private static void PanelSlideshow_ElevateElementShadow(UIElement element, AttachedDropShadow shadow, bool isElevate = true)
+    {
+        TimeSpan duration = TimeSpan.FromMilliseconds(250);
+
+        Vector3 toOffset  = isElevate ? new Vector3(0, 3, 0) : new Vector3(0, 0, 0);
+        double  toOpacity = isElevate ? .25d : 0d;
+        double  toBlur    = isElevate ? 8d : 0d;
+
+        string offsetStr = $"{toOffset.X},{toOffset.Y},{toOffset.Z}";
+        OffsetDropShadowAnimation offsetAnim = new()
+        {
+            From     = shadow.Offset,
+            To       = offsetStr,
+            Duration = duration,
+            Target   = shadow
+        };
+        OpacityDropShadowAnimation opacityAnim = new()
+        {
+            From     = shadow.Opacity,
+            To       = toOpacity,
+            Duration = duration,
+            Target   = shadow
+        };
+        BlurRadiusDropShadowAnimation blurAnim = new()
+        {
+            From     = shadow.BlurRadius,
+            To       = toBlur,
+            Duration = duration,
+            Target   = shadow
+        };
+        AnimationSet animationSet = [offsetAnim, opacityAnim, blurAnim];
+        animationSet.Start(element);
+    }
 
     #endregion
 }

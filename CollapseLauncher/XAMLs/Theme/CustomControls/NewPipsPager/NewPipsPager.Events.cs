@@ -273,22 +273,17 @@ public partial class NewPipsPager
             return;
         }
 
-        if (asButton.Tag is not int asIndex)
-        {
-            return;
-        }
-
-        AssignPipButtonStyle(asButton,
-                             asIndex != ItemIndex
+        AssignPipButtonStyle(asButton, args.Index != ItemIndex
                                  ? NormalPipButtonStyle
                                  : SelectedPipButtonStyle);
 
-        // Avoid redundant loaded + unloaded events assignment
-        if (asButton.IsLoaded)
+        if (asButton.Tag is true)
         {
             return;
         }
 
+        // Store Tag as true so the event won't be subscribed more than once.
+        asButton.Tag = true;
         asButton.Loaded   += ItemsRepeaterPipButton_LoadedEvent;
         asButton.Unloaded += ItemsRepeaterPipButton_UnloadedEvent;
     }
@@ -306,9 +301,6 @@ public partial class NewPipsPager
         {
             button.PointerEntered -= ItemsRepeaterPipButton_OnClick;
         }
-
-        button.Loaded   -= ItemsRepeaterPipButton_LoadedEvent;
-        button.Unloaded -= ItemsRepeaterPipButton_UnloadedEvent;
     }
 
     private void ItemsRepeaterPipButton_LoadedEvent(object sender, RoutedEventArgs e)
@@ -326,7 +318,19 @@ public partial class NewPipsPager
 
     private void ItemsRepeaterPipButton_OnClick(object sender, RoutedEventArgs args)
     {
-        ItemIndex = (int)((Button)sender).Tag;
+        if (sender is not Button asButton)
+        {
+            return;
+        }
+
+        int index = _pipsPagerItemsRepeater.GetElementIndex(asButton);
+        if (index < 0 ||
+            ItemsCount <= index)
+        {
+            return;
+        }
+
+        ItemIndex = index;
     }
 
     #endregion
@@ -404,10 +408,6 @@ public partial class NewPipsPager
 
     private void NewPipsPager_Unloaded(object sender, RoutedEventArgs e)
     {
-        UnapplyNavigationButtonEvents();
-        UnapplyKeyPressEvents();
-        UnapplyItemsRepeaterEvents();
-
         _pipsPagerItemsRepeater.ItemsSource = null;
     }
 

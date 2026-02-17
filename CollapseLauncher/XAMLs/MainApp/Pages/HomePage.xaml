@@ -25,6 +25,7 @@
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
       NavigationCacheMode="Enabled"
+      Loaded="Page_Loaded"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>

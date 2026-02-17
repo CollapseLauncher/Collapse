@@ -384,7 +384,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
         
@@ -399,7 +398,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
             ErrorSender.SendException(new
@@ -411,7 +409,6 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-            IsPageUnload = true;
             string exMessage = $"Timeout occurred when trying to install {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n\t" +
                                $"Check stability of your internet! If your internet speed is slow, please lower the download thread count.\r\n\t" +
                                $"**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!" +
@@ -430,8 +427,6 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
@@ -917,7 +912,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                                                                  $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
@@ -927,7 +921,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }

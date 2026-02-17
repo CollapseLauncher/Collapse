@@ -52,13 +52,13 @@ public partial class NewPipsPager
 
         base.OnApplyTemplate();
 
-        _previousPageButton = this.GetTemplateChild<Button>(TemplateNamePreviousPageButton);
-        _nextPageButton = this.GetTemplateChild<Button>(TemplateNameNextPageButton);
-        _pipsPagerScrollViewer = this.GetTemplateChild<ScrollViewer>(TemplateNamePipsPagerScrollViewer);
+        _previousPageButton     = this.GetTemplateChild<Button>(TemplateNamePreviousPageButton);
+        _nextPageButton         = this.GetTemplateChild<Button>(TemplateNameNextPageButton);
+        _pipsPagerScrollViewer  = this.GetTemplateChild<ScrollViewer>(TemplateNamePipsPagerScrollViewer);
         _pipsPagerItemsRepeater = this.GetTemplateChild<ItemsRepeater>(TemplateNamePipsPagerItemsRepeater);
 
-        _pipsPagerScrollViewer.Loaded += NewPipsPager_Loaded;
-        _pipsPagerScrollViewer.Unloaded += NewPipsPager_Unloaded;
+        Loaded   += NewPipsPager_Loaded;
+        Unloaded += NewPipsPager_Unloaded;
 
         ApplyNavigationButtonEvents();
         ApplyInitialTemplates();

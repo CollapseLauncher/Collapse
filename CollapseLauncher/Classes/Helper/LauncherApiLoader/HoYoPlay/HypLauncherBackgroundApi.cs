@@ -14,46 +14,53 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 
 public class HypLauncherBackgroundApi : HypApiResponse<HypLauncherBackgroundList>;
 
-public class HypLauncherBackgroundList
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherBackgroundList : NotifyPropertyChanged
 {
     [JsonPropertyName("game_info_list")]
     public List<HypLauncherBackgroundContentList> GameContentList { get; init; } = [];
 
     [JsonIgnore]
-    public string? BackgroundImageUrl
-    {
-        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.BackgroundImage?.ImageUrl;
-    }
+    public string? BackgroundImageUrl => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.BackgroundImage?.ImageUrl;
 
     [JsonIgnore]
-    public string? FeaturedEventIconUrl
-    {
-        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageUrl;
-    }
+    public string? FeaturedEventIconUrl => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageUrl;
 
     [JsonIgnore]
-    public string? FeaturedEventIconHoverUrl
-    {
-        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageHoverUrl;
-    }
+    public string? FeaturedEventIconHoverUrl => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageHoverUrl;
 
     [JsonIgnore]
-    public string? FeaturedEventIconClickLink
-    {
-        get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ClickLink;
-    }
+    public string? FeaturedEventIconClickLink => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ClickLink;
 }
 
-public class HypLauncherBackgroundContentList
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherBackgroundContentList : NotifyPropertyChanged
 {
     [JsonPropertyName("backgrounds")]
-    public List<HypLauncherBackgroundContentKindData> Backgrounds { get; init; } = [];
+    public List<HypLauncherBackgroundContentKindData> Backgrounds
+    {
+        get;
+        init
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = [];
 
     [JsonPropertyName("game")]
-    public HypGameInfoData? GameInfo { get; set; }
+    public HypGameInfoData? GameInfo
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
 }
 
-public class HypLauncherBackgroundContentKindData
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherBackgroundContentKindData : NotifyPropertyChanged
 {
     [JsonPropertyName("background")]
     public HypLauncherMediaContentData? BackgroundImage
@@ -64,7 +71,11 @@ public class HypLauncherBackgroundContentKindData
                field?.ContentType == null
             ? null
             : field;
-        set;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     [JsonPropertyName("icon")]
@@ -76,26 +87,46 @@ public class HypLauncherBackgroundContentKindData
                field?.ContentType == null
             ? null
             : field;
-        set;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     [JsonPropertyName("video")]
     public HypLauncherMediaContentData? BackgroundVideo
     {
         get;
-        set;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     [JsonPropertyName("theme")]
     public HypLauncherMediaContentData? BackgroundOverlay
     {
         get;
-        set;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     [JsonPropertyName("id")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public string? Id { get; set; }
+    public string? Id
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
 }
 
 [GeneratedBindableCustomProperty]

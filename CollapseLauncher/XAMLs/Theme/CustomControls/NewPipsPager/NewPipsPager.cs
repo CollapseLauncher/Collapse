@@ -12,8 +12,11 @@ public partial class NewPipsPager : Control
 
     ~NewPipsPager()
     {
-        if (_pipsPagerScrollViewer == null!) return;
-        _pipsPagerScrollViewer.Loaded   -= NewPipsPager_Loaded;
-        _pipsPagerScrollViewer.Unloaded -= NewPipsPager_Unloaded;
+        Loaded   -= NewPipsPager_Loaded;
+        Unloaded -= NewPipsPager_Unloaded;
+
+        UnapplyNavigationButtonEvents();
+        UnapplyKeyPressEvents();
+        UnapplyItemsRepeaterEvents();
     }
 }

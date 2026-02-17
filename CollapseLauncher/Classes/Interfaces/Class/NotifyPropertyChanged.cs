@@ -19,13 +19,6 @@ public abstract class NotifyPropertyChanged : INotifyPropertyChanged
 
     public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        bool hasThreadAccess = DispatcherQueueExtensions.HasThreadAccessSafe();
-        if (hasThreadAccess)
-        {
-            Impl();
-            return;
-        }
-
         DispatcherQueueExtensions.TryEnqueue(Impl);
         return;
 

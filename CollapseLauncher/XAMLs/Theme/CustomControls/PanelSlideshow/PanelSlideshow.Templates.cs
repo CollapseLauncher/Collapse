@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
@@ -12,6 +13,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow;
 [TemplatePart(Name = TemplateNamePreviousButton,       Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameNextButton,           Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(ProgressBar))]
+[TemplatePart(Name = TemplateNamePreviousButtonShadow, Type = typeof(AttachedDropShadow))]
+[TemplatePart(Name = TemplateNameNextButtonShadow,     Type = typeof(AttachedDropShadow))]
 
 [TemplateVisualState(GroupName = StateGroupNameCommon,               Name = StateNameNormal)]
 [TemplateVisualState(GroupName = StateGroupNameCommon,               Name = StateNamePointerOver)]
@@ -25,7 +28,9 @@ public partial class PanelSlideshow
     private const string TemplateNameRootGrid             = "RootGrid";
     private const string TemplateNamePresenterGrid        = "PresenterGrid";
     private const string TemplateNamePreviousButton       = "PreviousButton";
+    private const string TemplateNamePreviousButtonShadow = "PreviousButtonShadow";
     private const string TemplateNameNextButton           = "NextButton";
+    private const string TemplateNameNextButtonShadow     = "NextButtonShadow";
     private const string TemplateNameCountdownProgressBar = "CountdownProgressBar";
 
     private const string StateGroupNameCommon                 = "CommonStates";
@@ -40,12 +45,14 @@ public partial class PanelSlideshow
 
     #region Fields
 
-    private Grid        _presenterGrid        = null!;
-    private Button      _previousButton       = null!;
-    private Grid        _previousButtonGrid   = null!;
-    private Button      _nextButton           = null!;
-    private Grid        _nextButtonGrid       = null!;
-    private ProgressBar _countdownProgressBar = null!;
+    private Grid               _presenterGrid        = null!;
+    private Button             _previousButton       = null!;
+    private AttachedDropShadow _previousButtonShadow = null!;
+    private Grid               _previousButtonGrid   = null!;
+    private Button             _nextButton           = null!;
+    private AttachedDropShadow _nextButtonShadow     = null!;
+    private Grid               _nextButtonGrid       = null!;
+    private ProgressBar        _countdownProgressBar = null!;
 
     private bool _isTemplateLoaded;
 
@@ -55,6 +62,8 @@ public partial class PanelSlideshow
 
     protected override void OnApplyTemplate()
     {
+        base.OnApplyTemplate();
+
         // Avoid double template loading
         if (Interlocked.Exchange(ref _isTemplateLoaded, true))
         {
@@ -63,19 +72,19 @@ public partial class PanelSlideshow
 
         _presenterGrid        = this.GetTemplateChild<Grid>(TemplateNamePresenterGrid);
         _previousButton       = this.GetTemplateChild<Button>(TemplateNamePreviousButton);
+        _previousButtonShadow = this.GetTemplateChild<AttachedDropShadow>(TemplateNamePreviousButtonShadow);
         _nextButton           = this.GetTemplateChild<Button>(TemplateNameNextButton);
+        _nextButtonShadow     = this.GetTemplateChild<AttachedDropShadow>(TemplateNameNextButtonShadow);
         _countdownProgressBar = this.GetTemplateChild<ProgressBar>(TemplateNameCountdownProgressBar);
 
-        _presenterGrid.Loaded   += PanelSlideshow_Loaded;
-        _presenterGrid.Unloaded += PanelSlideshow_Unloaded;
+        Loaded   += PanelSlideshow_Loaded;
+        Unloaded += PanelSlideshow_Unloaded;
 
         _previousButtonGrid = (Grid)_previousButton.Parent;
         _nextButtonGrid     = (Grid)_nextButton.Parent;
 
         ElementCompositionPreview.SetIsTranslationEnabled(_previousButtonGrid, true);
         ElementCompositionPreview.SetIsTranslationEnabled(_nextButtonGrid, true);
-
-        base.OnApplyTemplate();
     }
 
     #endregion

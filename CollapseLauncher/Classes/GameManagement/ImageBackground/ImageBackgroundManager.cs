@@ -320,6 +320,16 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public bool CurrentBackgroundIsVideo
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     /// <summary>
     /// The collection of image context sources.<br/><br/>
     /// Notes to Dev:<br/>
@@ -414,7 +424,8 @@ public partial class ImageBackgroundManager
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
                             OriginBackgroundImagePath = bgPlaceholderPath,
-                            BackgroundImagePath = bgPlaceholderPath
+                            BackgroundImagePath       = bgPlaceholderPath,
+                            IsVideo                   = IsVideoMediaFileExtensionSupported(bgPlaceholderPath)
                         });
                         return;
                     }
@@ -430,12 +441,13 @@ public partial class ImageBackgroundManager
 
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
-                            OriginOverlayImagePath = overlayImagePath,
-                            OriginBackgroundImagePath = backgroundImagePath,
+                            OriginOverlayImagePath          = overlayImagePath,
+                            OriginBackgroundImagePath       = backgroundImagePath,
                             OriginBackgroundStaticImagePath = backgroundImageStaticPath,
-                            OverlayImagePath = overlayImagePath,
-                            BackgroundImagePath = backgroundImagePath,
-                            BackgroundImageStaticPath = backgroundImageStaticPath
+                            OverlayImagePath                = overlayImagePath,
+                            BackgroundImagePath             = backgroundImagePath,
+                            BackgroundImageStaticPath       = backgroundImageStaticPath,
+                            IsVideo                         = IsVideoMediaFileExtensionSupported(backgroundImagePath)
                         });
                     }
                 }
@@ -512,7 +524,8 @@ public partial class ImageBackgroundManager
             {
                 OriginBackgroundImagePath = imagePath,
                 BackgroundImagePath       = resultBackgroundPath,
-                ForceReload               = true // Request force reload (skip cache)
+                ForceReload               = true, // Request force reload (skip cache)
+                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath)
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
@@ -654,6 +667,12 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
         init;
     }
 
+    public bool IsVideo
+    {
+        get;
+        init;
+    }
+
     public bool Equals(LayeredImageBackgroundContext? other) => other?.GetHashCode() == GetHashCode();
 
     public override bool Equals(object? obj)
@@ -674,5 +693,6 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
                          OverlayImagePath,
                          BackgroundImagePath,
                          BackgroundImageStaticPath,
-                         ForceReload);
+                         ForceReload,
+                         IsVideo);
 }

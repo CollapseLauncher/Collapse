@@ -22,6 +22,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -76,13 +77,14 @@ namespace CollapseLauncher.Pages
     public sealed partial class HomePage
     {
         #region Properties
-        private GamePresetProperty             CurrentGameProperty { get; set; }
-        private CancellationTokenSourceWrapper PageToken           { get; set; }
+
+        private GamePresetProperty             CurrentGameProperty { get; }
+        private CancellationTokenSourceWrapper PageToken           { get; }
 
         private int barWidth;
         private int consoleWidth;
 
-        private readonly bool IsRpcEnabled_QS = AppDiscordPresence?.IsRpcEnabled ?? false; 
+        private readonly bool IsRpcEnabled_QS = AppDiscordPresence.IsRpcEnabled; 
 
         public static int RefreshRateDefault => 500;
         public static int RefreshRateSlow    => 1000;
@@ -112,17 +114,27 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
-            RefreshRate = RefreshRateDefault;
-            Loaded += StartLoadedRoutine;
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            PageToken           = new CancellationTokenSourceWrapper();
+            m_homePage          = this;
 
-            m_homePage = this;
+            InitializeComponent();
             InitializeConsoleValues();
-        }
 
-        ~HomePage()
-        {
-            // HACK: Fix random crash by always unsubscribing the StartLoadedRoutine if the GC is calling the deconstructor.
-            Loaded -= StartLoadedRoutine;
+            RefreshRate = RefreshRateDefault;
+
+            InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            foreach (UIElement multiBgChildElement in MultiBackgroundPipsPagerGrid.Children)
+            {
+                // multiBgChildElement.EnableImplicitAnimation(true);
+            }
+
+            WpfPackageParentGrid.EnableImplicitAnimation();
+            SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+            ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+            RightBottomButtons.SetAllControlsCursorRecursive(cursor);
+            LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
+            GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
         }
 
         private void InitializeConsoleValues()
@@ -137,14 +149,12 @@ namespace CollapseLauncher.Pages
             barWidth = (consoleWidth - 22) / 2 - 1;
         }
 
-        private bool IsPageUnload { get; set; }
-
         private static bool NeedShowEventIcon => GetAppConfigValue("ShowEventsPanel").ToBool();
 
         private void ReturnToHomePage()
         {
-            var presetConfig = GamePropertyVault.GetCurrentGameProperty().GamePreset;
-            if (IsPageUnload && presetConfig.HashID != CurrentGameProperty.GamePreset.HashID)
+            PresetConfig presetConfig = GamePropertyVault.GetCurrentGameProperty().GamePreset;
+            if (presetConfig.HashID != CurrentGameProperty.GamePreset.HashID)
             {
                 return;
             }
@@ -153,17 +163,10 @@ namespace CollapseLauncher.Pages
             MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
 
-        private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                // HACK: Fix random crash by manually load the XAML part
-                //       But first, let it initialize its properties.
-                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                PageToken           = new CancellationTokenSourceWrapper();
-
-                InitializeComponent();
-
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
@@ -183,7 +186,6 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                WpfPackageParentGrid.EnableImplicitAnimation();
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation  += Shadow32;
 
@@ -198,13 +200,6 @@ namespace CollapseLauncher.Pages
                     PostPanel.Visibility               =  Visibility.Visible;
                     PostPanel.Translation              += Shadow48;
                 }
-
-                InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-                SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
-                ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
-                RightBottomButtons.SetAllControlsCursorRecursive(cursor);
-                LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
-                GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
 
                 if (CurrentGameProperty.GameInstall != null)
                 {
@@ -344,104 +339,35 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            IsPageUnload = true;
             if (CurrentGameProperty.GamePlaytime != null)
             {
                 CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
             }
-
-            if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
         }
         #endregion
 
         #region EventPanel
-        private readonly ConcurrentDictionary<string, byte> _eventPanelProcessing =
-            new ConcurrentDictionary<string, byte>();
-        private async void TryLoadEventPanelImage()
+
+        private static IValueConverter ImageUrlCacheConverter;
+
+        private void TryLoadEventPanelImage()
         {
             // Get the url and article image path
-            string featuredEventArticleUrl = GameBackgroundData?.FeaturedEventIconClickLink;
-            string featuredEventIconImg = GameBackgroundData?.FeaturedEventIconUrl;
+            // Set event icon props
+            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
 
-            // If the region event panel property is null, then return
-            if (string.IsNullOrEmpty(featuredEventIconImg)
-             || string.IsNullOrEmpty(featuredEventArticleUrl)) return;
+            ImageEventImg.BindProperty(GameBackgroundData,
+                                       nameof(HypLauncherBackgroundList.FeaturedEventIconUrl),
+                                       Image.SourceProperty,
+                                       BindingMode.OneWay,
+                                       ImageUrlCacheConverter ??= new UrlToCachedImagePathConverter());
 
-            if (!_eventPanelProcessing.TryAdd(featuredEventArticleUrl, 0) ||
-                !_eventPanelProcessing.TryAdd(featuredEventIconImg, 0))
-            {
-                LogWriteLine($"[TryLoadEventPanelImage] Stopped processing {featuredEventIconImg} and {featuredEventArticleUrl} due to double processing",
-                             LogType.Warning, true);
-                return;
-            }
-
-            // Get the cached filename and path
-            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(featuredEventIconImg))!;
-            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
-            if (ImageLoaderHelper.IsWaifu2XEnabled)
-                cachedFilePath += "_waifu2x";
-
-            // Create a cached image folder if not exist
-            if (!Directory.Exists(AppGameImgCachedFolder))
-                Directory.CreateDirectory(AppGameImgCachedFolder);
-
-            // Init BitmapImage to load the image and the info for cached event icon file
-            BitmapImage source = new BitmapImage();
-            FileInfo cachedIconFileInfo = new FileInfo(cachedFilePath);
-
-            // Determine if the cache icon exist and the file is completed (more than 1kB in size)
-            bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
-
-            try
-            {
-                // Using the original icon file and cached icon file streams
-                if (!isCacheIconExist)
-                {
-                    await using FileStream cachedIconFileStream = new(cachedIconFileInfo.FullName,
-                             FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-                    await using Stream iconFileStream =
-                        await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                                                        PageToken.Token);
-
-                    double screenDpi = 96 * WindowUtility.CurrentWindowMonitorScaleFactor;
-                    using (MemoryStream outStream = new())
-                    {
-                        await iconFileStream.CopyToAsync(outStream);
-                        outStream.Position = 0;
-                        // Start resizing
-                        await ImageLoaderHelper.GetConvertedImageAsPng(outStream,
-                                                                       cachedIconFileStream,
-                                                                       screenDpi,
-                                                                       screenDpi);
-                        cachedIconFileStream.Position = 0; // Reset the cached icon stream position
-                    }
-
-                    // Set the source from cached icon stream
-                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                }
-                else
-                {
-                    await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
-                    // Set the source from cached icon stream
-                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                }
-
-                // Set event icon props
-                ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-                ImageEventImg.Source         = source;
-                ImageEventImg.Tag            = featuredEventArticleUrl;
-            }
-            catch (Exception ex)
-            {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
-            }
-            finally
-            {
-                _eventPanelProcessing.Remove(featuredEventIconImg,    out _);
-                _eventPanelProcessing.Remove(featuredEventArticleUrl, out _);
-            }
+            ImageEventImg.BindProperty(GameBackgroundData,
+                                       nameof(HypLauncherBackgroundList.FeaturedEventIconClickLink),
+                                       TagProperty,
+                                       BindingMode.OneWay);
         }
+
         #endregion
 
         #region Carousel
