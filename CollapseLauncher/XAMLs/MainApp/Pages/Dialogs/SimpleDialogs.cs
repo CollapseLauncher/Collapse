@@ -2133,7 +2133,7 @@ namespace CollapseLauncher.Dialogs
                         dialog.Loaded += onLoaded;
 
                     // Queue and spawn the dialog instance
-                    await dialog.QueueAndSpawnDialog();
+                    tcs.SetResult(await dialog.QueueAndSpawnDialog());
                 }
                 catch (Exception ex)
                 {
