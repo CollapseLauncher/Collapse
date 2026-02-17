@@ -1,25 +1,65 @@
 @echo off
 :: Set the Toolchain variable to empty to use MSVC instead.
-set Toolchain=-T ClangCL
+:: set Toolchain=-T ClangCL
+set Toolchain=
+:: Either can be Release (/O2 /Ob2), MinSizeRel (/O1 /Ob1) or RelWithDebInfo (/O2 /Ob1 /Zi)
 set BuildType=Release
 set OutputDir=%~dp0..\
+set RuntimeLibrary=MultiThreaded
 
-set GenericCMAKEParam=-DCMAKE_BUILD_TYPE=%BuildType% %Toolchain% -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+:: If you want to enables LTO using Clang, replaces LTOArgs with defined one below (very experimental)
+:: set LTOArgs=-flto=full -fuse-ld=lld
+:: set CXXFLAGS=%LTOArgs% -EHsc
+:: set CFLAGS=%LTOArgs% -EHsc
+:: set LDFLAGS=%LTOArgs% /LTCG
+:: Or use the one below if you're using MSVC.
+:: set LTOArgs=
+:: set CXXFLAGS=-EHsc
+:: set CFLAGS=-EHsc
+:: set LDFLAGS=/LTCG
+set LTOArgs=
+set CXXFLAGS=-EHsc
+set CFLAGS=-EHsc
+set LDFLAGS=/LTCG
+
+set GenericCMAKEParamNoFlagsNoIntOpt=-DCMAKE_BUILD_TYPE=%BuildType% %Toolchain% -DCMAKE_MSVC_RUNTIME_LIBRARY=%RuntimeLibrary%
+set GenericCMAKEParamNoFlags=%GenericCMAKEParamNoFlagsNoIntOpt% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=true
+set GenericCMAKEParam=%GenericCMAKEParamNoFlags% -DCMAKE_CXX_FLAGS="%CXXFLAGS%" -DCMAKE_C_FLAGS="%CFLAGS%" -DCMAKE_EXE_LINKER_FLAGS="%LDFLAGS%" -DCMAKE_EXE_LINKER_FLAGS_INIT="%LDFLAGS%"
 
 :: Test Toolchain
 call :ToolchainTest
 if NOT %errorlevel% == 0 ( goto :EOF )
 
 :: Start building
+call :Build_waifu2x || goto :EOF
 call :Build_libomp  || goto :EOF
+call :Build_libwebp || goto :EOF
 call :Build_libheif || goto :EOF
 call :Build_libjxl  || goto :EOF
 call :Build_libzstd || goto :EOF
-call :Build_libwebp || goto :EOF
-call :Build_libheif || goto :EOF
 
 :: Suicide
 goto :COMPLETE
+
+:: Building functions - waifu2x
+:Build_waifu2x
+    title=Building waifu2x
+    git clone --recursive https://github.com/shatyuka/waifu2x-ncnn-vulkan
+    cd waifu2x-ncnn-vulkan
+    git fetch --all && git pull --all
+    copy /Y ..\patch\waifu2x-ncnn-vulkan\src\CMakeLists.txt src\CMakeLists.txt
+    cmake . %GenericCMAKEParam% -B vclatestbuild -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || goto :ERR
+    cd vclatestbuild
+    msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    call :CallCopy src\%BuildType%\waifu2x-ncnn-vulkan-static.lib || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\glslang\%BuildType%\GenericCodeGen.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\glslang\%BuildType%\glslang.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\glslang\%BuildType%\MachineIndependent.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\glslang\OSDependent\Windows\%BuildType%\OSDependent.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\OGLCompilersDLL\%BuildType%\OGLCompiler.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\glslang\SPIRV\%BuildType%\SPIRV.lib Waifu2x || goto :ERR
+    call :CallCopy src\external\ncnn\src\%BuildType%\ncnn.lib Waifu2x || goto :ERR
+    goto :BACKTOROOT
 
 :: Building functions - libomp
 :Build_libomp
@@ -30,38 +70,11 @@ goto :COMPLETE
     git fetch --all && git pull --all
     copy /Y ..\patch\openmp\runtime\CMakeLists.txt openmp\runtime\CMakeLists.txt
     cd openmp
-    cmake . %GenericCMAKEParam% -DENABLE_CHECK_TARGETS=FALSE -DOPENMP_STANDALONE_BUILD=1 -DLIBOMP_ENABLE_SHARED=FALSE -B vclatestbuild || goto :ERR
+    cmake . %GenericCMAKEParamNoFlagsNoIntOpt% -DENABLE_CHECK_TARGETS=FALSE -DOPENMP_STANDALONE_BUILD=1 -DLIBOMP_ENABLE_SHARED=FALSE -B vclatestbuild || goto :ERR
     cd vclatestbuild
     msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    move runtime\src\Release\libomp.lib.lib runtime\src\Release\libomp.lib
-    call :CallCopy runtime\src\Release\libomp.lib || goto :ERR
-    goto :BACKTOROOT
-
-:: Building functions - libjxl
-:Build_libjxl
-    title=Building libjxl
-    git clone --recursive https://github.com/libjxl/libjxl
-    cd libjxl
-    git fetch --all && git pull --all
-    cmake . %GenericCMAKEParam% -DBUILD_TESTING=OFF -DJPEGXL_STATIC=1 -B vclatestbuild || goto :ERR
-    cd vclatestbuild
-    msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    call :CallCopy lib\Release\jxl.lib || goto :ERR
-    call :CallCopy lib\Release\jxl_cms.lib || goto :ERR
-    call :CallCopy third_party\highway\Release\hwy.lib || goto :ERR
-    goto :BACKTOROOT
-
-:: Building functions - libzstd
-:Build_libzstd
-    title=Building libzstd
-    git clone --recursive https://github.com/facebook/zstd
-    cd zstd
-    git fetch --all && git pull --all
-    cmake . %GenericCMAKEParam% -DBUILD_TESTING=OFF -DZSTD_USE_STATIC_RUNTIME=ON -DZSTD_BUILD_STATIC=ON -DZSTD_BUILD_PROGRAMS=OFF -DZSTD_MULTITHREAD_SUPPORT=ON -B vclatestbuild || goto :ERR
-    cd vclatestbuild\build\cmake\lib
-    msbuild libzstd_static.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    move Release\zstd_static.lib Release\libzstd_static.lib
-    call :CallCopy Release\libzstd_static.lib || goto :ERR
+    move runtime\src\%BuildType%\libomp.lib.lib runtime\src\%BuildType%\libomp.lib
+    call :CallCopy runtime\src\%BuildType%\libomp.lib || goto :ERR
     goto :BACKTOROOT
 
 :: Building functions - libwebp
@@ -76,11 +89,10 @@ goto :COMPLETE
     -DWEBP_BUILD_WEBPMUX=OFF -DWEBP_BUILD_EXTRAS=OFF -B vclatestbuild || goto :ERR
     cd vclatestbuild
     msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    call :CallCopy Release\libsharpyuv.lib || goto :ERR
-    call :CallCopy Release\libwebp.lib || goto :ERR
-    call :CallCopy Release\libwebpdecoder.lib || goto :ERR
-    call :CallCopy Release\libwebpdemux.lib || goto :ERR
-    call :CallCopy Release\libwebpmux.lib || goto :ERR
+    call :CallCopy %BuildType%\libsharpyuv.lib || goto :ERR
+    call :CallCopy %BuildType%\libwebp.lib || goto :ERR
+    call :CallCopy %BuildType%\libwebpdemux.lib || goto :ERR
+    call :CallCopy %BuildType%\libwebpmux.lib || goto :ERR
     goto :BACKTOROOT
 
 :: Building functions - libheif
@@ -89,12 +101,22 @@ goto :COMPLETE
     git clone --recursive https://code.videolan.org/videolan/dav1d
     cd dav1d
     git fetch --all && git pull --all
+    set OLDCXXFLAGS=%CXXFLAGS%
+    set OLDCFLAGS=%CFLAGS%
+    set OLDLDFLAGS=%LDFLAGS%
+    set CXXFLAGS=
+    set CFLAGS=
+    set LDFLAGS=
     call :SETCLANGCC
-    mkdir build && cd build
-    meson setup .. --wipe --default-library=static
+    mkdir build
+    cd build
+    meson setup .. --wipe --default-library=static || goto :ERR
     ninja
+    set CXXFLAGS=%OLDCXXFLAGS%
+    set CFLAGS=%OLDCFLAGS%
+    set LDFLAGS=%OLDLDFLAGS%
     copy src\libdav1d.a src\libdav1d.lib
-    call :CallCopy build\src\libdav1d.lib || goto :ERR
+    call :CallCopy src\libdav1d.lib || goto :ERR
     call :UNSETCLANGCC
     cd "%~dp0"
 
@@ -104,12 +126,18 @@ goto :COMPLETE
     git fetch --all && git pull --all
     xcopy /E /S /Y  ..\patch\libde265 .
     copy /Y extra\libde265\de265-version.h libde265\de265-version.h
-    set CXXFLAGS=-msse4.1 -mssse3 -msse2
-    cmake . %GenericCMAKEParam% -DBUILD_SHARED_LIBS=0 -DENABLE_SDL=OFF -DSUPPORTS_SSE4_1=1 -DSUPPORTS_SSSE3=1 -DSUPPORTS_SSE2=1 -B vclatestbuild
+    set OLD_CXXFLAGS=%CXXFLAGS%
+    set OLD_CFLAGS=%CFLAGS%
+    set CXXFLAGS=%CXXFLAGS% -msse4.1 -mssse3 -msse2
+    set CFLAGS=%CFLAGS% -msse4.1 -mssse3 -msse2
+    cmake . %GenericCMAKEParamNoFlags% -DBUILD_SHARED_LIBS=0 -DENABLE_SDL=OFF -B vclatestbuild ^
+    -DSUPPORTS_SSE4_1=1 -DSUPPORTS_SSSE3=1 -DSUPPORTS_SSE2=1 ^
+    -DCMAKE_CXX_FLAGS="%CXXFLAGS%" -DCMAKE_C_FLAGS="%CFLAGS%"
     cd vclatestbuild
-    msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType%  /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    set CXXFLAGS=
-    call :CallCopy libde265\Release\libde265.lib || goto :ERR
+    msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    set CXXFLAGS=%OLD_CXXFLAGS%
+    set CFLAGS=%OLD_CFLAGS%
+    call :CallCopy libde265\%BuildType%\libde265.lib || goto :ERR
     cd "%~dp0
     
     title=Building libheif dependencies - zlib
@@ -118,35 +146,63 @@ goto :COMPLETE
     git fetch --all && git pull --all
     cmake . %GenericCMAKEParam% -DZLIB_BUILD_STATIC=1 -DZLIB_BUILD_SHARED=0 -B vclatestbuild
     cd vclatestbuild
-    msbuild zlibstatic.vcxproj -p:Configuration=%BuildType%  /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    move Release\zs.lib Release\zlib.lib
-    call :CallCopy Release\zlib.lib || goto :ERR
+    msbuild zlibstatic.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    move %BuildType%\zs.lib %BuildType%\zlib.lib
     cd "%~dp0
 
     title=Building libheif
     git clone --recursive https://github.com/strukturag/libheif
     cd libheif
     git fetch --all && git pull --all
+    copy /Y ..\patch\libheif\third-party\libsharpyuv.cmd third-party\libsharpyuv.cmd
     cd third-party
     call libsharpyuv
     cd ..\
     set thisdir=%~dp0
     copy /Y ..\patch\libheif\CMakeLists.txt CMakeLists.txt
     cmake . %GenericCMAKEParam% --preset=release-noplugins -DBUILD_SHARED_LIBS=0 -B vclatestbuild -DENABLE_EXPERIMENTAL_FEATURES=1 -DWITH_REDUCED_VISIBILITY=1 ^
-    -DWITH_LIBDE265=1 -DLIBDE265_INCLUDE_DIR=..\libde265 -DLIBDE265_LIBRARY=%thisdir%\libde265\vclatestbuild\libde265\Release\libde265.lib ^
+    -DWITH_LIBDE265=1 -DLIBDE265_INCLUDE_DIR=..\libde265 -DLIBDE265_LIBRARY=%thisdir%\libde265\vclatestbuild\libde265\%BuildType%\libde265.lib ^
     -DWITH_DAV1D=1 -DDAV1D_INCLUDE_DIR=..\dav1d\include -DDAV1D_LIBRARY=%thisdir%\dav1d\build\src\libdav1d.lib ^
-    -DWITH_LIBSHARPYUV=1 -DLIBSHARPYUV_INCLUDE_DIR=third-party\libwebp -DLIBSHARPYUV_LIBRARY=%thisdir%\libheif\third-party\libwebp\build\libsharpyuv.lib ^
-    -DWITH_HEADER_COMPRESSION=1 -DWITH_UNCOMPRESSED_CODEC=1 -DZLIB_INCLUDE_DIR=..\zlib -DZLIB_LIBRARY=%thisdir%\zlib\vclatestbuild\Release\zlib.lib || goto :ERR
+    -DWITH_LIBSHARPYUV=1 -DLIBSHARPYUV_INCLUDE_DIR=..\libwebp -DLIBSHARPYUV_LIBRARY=%thisdir%\libwebp\vclatestbuild\%BuildType%\libsharpyuv.lib ^
+    -DWITH_HEADER_COMPRESSION=1 -DWITH_UNCOMPRESSED_CODEC=1 -DZLIB_INCLUDE_DIR=..\zlib -DZLIB_LIBRARY=%thisdir%\zlib\vclatestbuild\%BuildType%\zlib.lib || goto :ERR
     copy /Y ..\patch\libheif\vclatestbuild\libheif\heif_version.h vclatestbuild\libheif\heif_version.h
     cd vclatestbuild\libheif
     msbuild heif.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    call :CallCopy Release\heif.lib || goto :ERR
+    call :CallCopy %BuildType%\heif.lib || goto :ERR
+    goto :BACKTOROOT
+
+:: Building functions - libjxl
+:Build_libjxl
+    title=Building libjxl
+    git clone --recursive https://github.com/libjxl/libjxl
+    cd libjxl
+    git fetch --all && git pull --all
+    cmake . %GenericCMAKEParam% -DBUILD_TESTING=OFF -DJPEGXL_STATIC=1 -B vclatestbuild || goto :ERR
+    cd vclatestbuild
+    msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    call :CallCopy lib\%BuildType%\jxl.lib || goto :ERR
+    call :CallCopy lib\%BuildType%\jxl_cms.lib || goto :ERR
+    call :CallCopy third_party\highway\%BuildType%\hwy.lib || goto :ERR
+    goto :BACKTOROOT
+
+:: Building functions - libzstd
+:Build_libzstd
+    title=Building libzstd
+    git clone --recursive https://github.com/facebook/zstd
+    cd zstd
+    git fetch --all && git pull --all
+    cmake . %GenericCMAKEParam% -DBUILD_TESTING=OFF -DZSTD_USE_STATIC_RUNTIME=ON -DZSTD_BUILD_STATIC=ON -DZSTD_BUILD_PROGRAMS=OFF -DZSTD_MULTITHREAD_SUPPORT=ON -B vclatestbuild || goto :ERR
+    cd vclatestbuild\build\cmake\lib
+    msbuild libzstd_static.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
+    move %BuildType%\zstd_static.lib %BuildType%\libzstd_static.lib
+    call :CallCopy %BuildType%\libzstd_static.lib || goto :ERR
     goto :BACKTOROOT
 
 :CallCopy
-    if /I not exist "%OutputDir%" ( mkdir "%OutputDir%" )
-    echo Copying file "%~dpnx1" to "%OutputDir%\%~nx1"
-    1>nul copy /Y "%~dpnx1" "%OutputDir%\%~nx1" || call :ERR " while copying file %~1 to %OutputDir%" && goto :EOF
+    if /I not exist "%OutputDir%\%~2" ( mkdir "%OutputDir%\%~2" )
+    set copyToPath=%OutputDir%\%~2\%~nx1
+    echo Copying file "%~dpnx1" to "%copyToPath%"
+    1>nul copy /Y "%~dpnx1" "%copyToPath%" || call :ERR " while copying file %~1 to %copyToPath%" && goto :EOF
     goto :EOF
 
 :ERR
@@ -170,7 +226,7 @@ goto :COMPLETE
     for /f "tokens=*" %%a in ('where clang++') do (
         set CXX=%%a
     )
-    for /f "tokens=*" %%a in ('where lld-link') do (
+    for /f "tokens=*" %%a in ('where lld') do (
         set LD=%%a
     )
     goto :EOF
@@ -211,3 +267,9 @@ goto :COMPLETE
     )
 
     (>NUL nasm --version) || call :ERR ". Make sure you have installed NASM 3.x or above and installed in either 'C:\Program Files\NASM' or '%appdata%\..\Local\bin' directory" && goto :EOF
+    
+    :: Check for Vulkan SDK dependencies (for Waifu2X)
+    if /I not exist "%VULKAN_SDK%\Lib\vulkan-1.lib" (
+        set errorlevel=67
+        call :ERR ". Make sure you have Vulkan SDK installed and ^%VULKAN_SDK^% variable defined." && goto :EOF
+    )

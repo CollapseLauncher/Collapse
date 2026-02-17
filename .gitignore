@@ -7,6 +7,7 @@ packages/*
 msbuild.binlog
 
 CollapseLauncher/Deps/*
+CollapseLauncher/StaticLib/buildScript/waifu2x-ncnn-vulkan
 CollapseLauncher/StaticLib/buildScript/zlib
 CollapseLauncher/StaticLib/buildScript/zstd
 CollapseLauncher/StaticLib/buildScript/dav1d

@@ -221,6 +221,7 @@
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
+        <DirectPInvoke Include="libomp140.x86_64.dll" />
         <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static.lib" />
         <!--
         These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
@@ -245,7 +246,6 @@
         These libraries are required by libwebp to resolve external calls.
         -->
         <NativeLibrary Include="StaticLib\libsharpyuv.lib" />
-        <NativeLibrary Include="StaticLib\libwebpdecoder.lib" />
 
         <!-- Region: heif -->
         <DirectPInvoke Include="heif" />
@@ -255,7 +255,6 @@
         -->
         <NativeLibrary Include="StaticLib\libdav1d.lib" />
         <NativeLibrary Include="StaticLib\libde265.lib" />
-        <NativeLibrary Include="StaticLib\zlib.lib" />
 
         <!-- Region: jxl -->
         <DirectPInvoke Include="jxl" />
