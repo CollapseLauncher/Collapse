@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using System.Runtime.CompilerServices;
+using WinRT;
 
 #nullable enable
 namespace CollapseLauncher.Extension
@@ -24,6 +25,21 @@ namespace CollapseLauncher.Extension
         {
             element.SetCursor(inputCursor);
             return element;
+        }
+
+        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_disposedFlags")]
+        private static extern ref int GetObjectReferenceDisposeFlags(this IObjectReference obj);
+
+        /// <summary>
+        /// Check whether a WinRT object has been disposed.
+        /// </summary>
+        /// <returns><see langword="true"/> if object is already disposed. Otherwise, <see langword="false"/>.</returns>
+        internal static bool IsObjectDisposed(this IWinRTObject winRtObject)
+        {
+            IObjectReference reference = winRtObject.NativeObject;
+            ref int disposeFlags = ref reference.GetObjectReferenceDisposeFlags();
+
+            return disposeFlags > 0;
         }
     }
 }

@@ -80,8 +80,15 @@ public partial class NewPipsPager
 
     private void UnapplyNavigationButtonEvents()
     {
-        _previousPageButton.Click -= PreviousPageButton_OnClick;
-        _nextPageButton.Click     -= NextPageButton_OnClick;
+        if (!_previousPageButton.IsObjectDisposed())
+        {
+            _previousPageButton.Click -= PreviousPageButton_OnClick;
+        }
+
+        if (!_nextPageButton.IsObjectDisposed())
+        {
+            _nextPageButton.Click -= NextPageButton_OnClick;
+        }
     }
 
     private void ApplyKeyPressEvents()
@@ -104,7 +111,10 @@ public partial class NewPipsPager
 
     private void UnapplyItemsRepeaterEvents()
     {
-        _pipsPagerItemsRepeater.ElementPrepared -= ItemsRepeater_ElementPrepared;
+        if (!_pipsPagerItemsRepeater.IsObjectDisposed())
+        {
+            _pipsPagerItemsRepeater.ElementPrepared -= ItemsRepeater_ElementPrepared;
+        }
     }
 
     #endregion
