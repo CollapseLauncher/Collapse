@@ -218,6 +218,10 @@
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Version.lib" />
         <DirectPInvoke Include="ws2_32" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\WS2_32.lib" />
+
+        <!-- Region: Hi3Helper.Throttle -->
+        <DirectPInvoke Include="Lib\Hi3Helper.Throttle.dll" />
+        <NativeLibrary Include="StaticLib\Hi3Helper.Throttle.lib" />
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
