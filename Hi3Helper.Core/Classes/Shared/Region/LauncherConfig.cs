@@ -471,7 +471,6 @@ namespace Hi3Helper.Shared.Region
             set
             {
                 SetAndSaveConfigValue("IsUseDownloadSpeedLimiter", value);
-
                 _ = DownloadSpeedLimit;
             }
         }

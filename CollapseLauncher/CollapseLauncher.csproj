@@ -514,6 +514,9 @@
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
 
+        <!-- Region: Hi3Helper.Throttle -->
+        <Delete Files="$(PublishDir)Lib\Hi3Helper.Throttle.dll" Condition="'$(PublishAot)' == 'true'" />
+
         <!-- Region: libzstd -->
         <ItemGroup Condition="'$(PublishAot)' == 'true'">
             <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
