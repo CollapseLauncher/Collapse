@@ -220,8 +220,10 @@
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\WS2_32.lib" />
 
         <!-- Region: Hi3Helper.Throttle -->
+        <!--
         <DirectPInvoke Include="Lib\Hi3Helper.Throttle.dll" />
         <NativeLibrary Include="StaticLib\Hi3Helper.Throttle.lib" />
+        -->
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
@@ -515,7 +517,9 @@
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
 
         <!-- Region: Hi3Helper.Throttle -->
+        <!--
         <Delete Files="$(PublishDir)Lib\Hi3Helper.Throttle.dll" Condition="'$(PublishAot)' == 'true'" />
+        -->
 
         <!-- Region: libzstd -->
         <ItemGroup Condition="'$(PublishAot)' == 'true'">

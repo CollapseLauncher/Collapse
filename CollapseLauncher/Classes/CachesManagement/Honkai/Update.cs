@@ -39,7 +39,7 @@ namespace CollapseLauncher
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
-                ObservableCollection<IAssetProperty> assetProperty   = [.. AssetEntry];
+                ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
 
                 ConcurrentDictionary<(CacheAsset, IAssetProperty), byte> runningTask = new();
                 if (IsBurstDownloadEnabled)

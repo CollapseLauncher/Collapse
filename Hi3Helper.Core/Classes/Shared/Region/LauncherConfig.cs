@@ -477,8 +477,8 @@ namespace Hi3Helper.Shared.Region
 
         public static long DownloadSpeedLimit
         {
-            get => DownloadSpeedLimitCached = GetAppConfigValue("DownloadSpeedLimit");
-            set => SetAndSaveConfigValue("DownloadSpeedLimit", DownloadSpeedLimitCached = value);
+            get => GetAppConfigValue("DownloadSpeedLimit");
+            set => SetAndSaveConfigValue("DownloadSpeedLimit", value);
         }
 
         public static int DownloadChunkSize
@@ -504,19 +504,7 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
         }
 
-        public static long DownloadSpeedLimitCached
-        {
-            get;
-            set
-            {
-                field = IsUseDownloadSpeedLimiter ? value : 0;
-                DownloadSpeedLimitChanged?.Invoke(null, field);
-            }
-        }
-
-        public static event EventHandler<long>? DownloadSpeedLimitChanged;
-
-        private static bool? _cachedIsInstantRegionChange = null;
+        private static bool? _cachedIsInstantRegionChange;
 
         public static bool IsInstantRegionChange
         {

@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Shared.Region;
 using System;
 using System.Runtime.CompilerServices;
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Extension
 {
@@ -8,8 +9,13 @@ namespace CollapseLauncher.Extension
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static double ClampLimitedSpeedNumber(this double speed)
-            => LauncherConfig.DownloadSpeedLimitCached > 0 ?
-            Math.Min(LauncherConfig.DownloadSpeedLimitCached, speed) :
-            speed;
+        {
+            return speed;
+            /*
+            return LauncherConfig.DownloadSpeedLimit > 0 ?
+                Math.Min(LauncherConfig.DownloadSpeedLimit, speed) :
+                speed;
+            */
+        }
     }
 }

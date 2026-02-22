@@ -166,10 +166,16 @@ internal abstract class ProgressBase : GamePropertyBase
 
     // Extension for IGameInstallManager
 
-    private const int RefreshInterval = 100;
+    private const int  RefreshInterval             = 100;
+    protected     nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
 
     public bool IsSophonInUpdateMode { get; protected set; }
     protected bool IsAllowExtractCorruptZip { get; set; }
+
+    ~ProgressBase()
+    {
+        SpeedLimiterService.FreeServiceContext(SpeedLimiterServiceContext);
+    }
 
 
     #region ProgressEventHandlers - Fetch
@@ -1334,16 +1340,8 @@ internal abstract class ProgressBase : GamePropertyBase
             throw new InvalidOperationException("Both assetURL and secondaryURL cannot be empty! You must define one of them!");
         }
 
-        // For any instances that uses Burst Download and if the speed limiter is null when
-        // _isBurstDownloadEnabled set to false, then create the speed limiter instance
-        bool isUseSelfSpeedLimiter = !IsBurstDownloadEnabled;
-        DownloadSpeedLimiter? downloadSpeedLimiter = null;
-        if (isUseSelfSpeedLimiter)
-        {
-            // Create the speed limiter instance and register the listener
-            downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
-            LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
-        }
+        // Update 2026/02/22 - The download speed limiter is currently usable even on Burst Download Mode.
+        DownloadSpeedLimiter downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
         try
         {
@@ -1369,14 +1367,6 @@ internal abstract class ProgressBase : GamePropertyBase
             retrySecondary = true;
             assetURL       = null;
             goto StartOver;
-        }
-        finally
-        {
-            // If the self speed listener is used, then unregister the listener
-            if (isUseSelfSpeedLimiter && downloadSpeedLimiter != null)
-            {
-                LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
-            }
         }
     }
     #endregion

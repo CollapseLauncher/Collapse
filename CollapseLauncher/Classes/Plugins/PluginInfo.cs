@@ -19,7 +19,8 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
-
+using SpeedLimiterService = CollapseLauncher.Helper.SpeedLimiterService;
+#pragma warning disable IDE0130
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
@@ -244,6 +245,11 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 PresetConfigs[i] = presetConfigWrapper;
             }
 
+            if (SpeedLimiterService.Shared.IsEnabled)
+            {
+                ToggleSpeedLimiterService(true);
+            }
+
             isPluginLoaded = true;
         }
         catch
@@ -301,6 +307,31 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         }
 
         Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
+    }
+
+    internal unsafe void ToggleSpeedLimiterService(bool isEnable)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        if (!Handle.TryGetExportUnsafe("RegisterSpeedThrottlerService", out nint callP))
+        {
+            return;
+        }
+
+        nint addOrWaitCallbackP = isEnable
+            ? SpeedLimiterService.AddBytesOrWaitAsyncDelegatePtr
+            : nint.Zero;
+
+        HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)callP)(addOrWaitCallbackP);
+        if (Marshal.GetExceptionForHR(hr) is { } exception)
+        {
+            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register speed throttler service with error code: {hr} {exception}",
+                                LogType.Error,
+                                true);
+        }
     }
 
     internal async Task Initialize(CancellationToken token = default)
