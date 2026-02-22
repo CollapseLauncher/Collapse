@@ -1249,10 +1249,12 @@
                                                     <TextBlock Margin="0,8,0,16"
                                                                TextWrapping="Wrap">
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp4}" />
+                                                        <!--
                                                         <Run FontWeight="Bold"
                                                              Foreground="{ThemeResource AccentColor}"
                                                              Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Title}" />
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp5}" />
+                                                        -->
                                                     </TextBlock>
                                                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_Title}" />

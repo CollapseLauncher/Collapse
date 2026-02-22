@@ -690,8 +690,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "デフォルト:",
     "FileDownloadSettings_SpeedLimitHelp2": "速度制限の値の範囲:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/秒",
-    "FileDownloadSettings_SpeedLimitHelp4": "ダウンロードに使用できる最大帯域幅を制限します。この設定は",
-    "FileDownloadSettings_SpeedLimitHelp5": "と併用できません。",
+    "FileDownloadSettings_SpeedLimitHelp4": "ダウンロードに使用できる最大帯域幅を制限します。",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "新型事前割り当てダウンローダー",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "ゲームのインストール、修復、キャッシュ更新にのみ適用されます。",

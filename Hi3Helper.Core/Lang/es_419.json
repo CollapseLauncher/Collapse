@@ -690,8 +690,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
     "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga. Esta opción no puede utilizarse junto con la opción",
-    "FileDownloadSettings_SpeedLimitHelp5": ".",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Solo para la Instalación, Reparación y actualización de Caché del juego.",
