@@ -4,7 +4,6 @@ using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
-using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
