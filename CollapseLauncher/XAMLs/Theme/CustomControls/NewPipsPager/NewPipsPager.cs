@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CollapseLauncher.Extension;
+using Microsoft.UI.Xaml.Controls;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager;
@@ -12,8 +13,11 @@ public partial class NewPipsPager : Control
 
     ~NewPipsPager()
     {
-        Loaded   -= NewPipsPager_Loaded;
-        Unloaded -= NewPipsPager_Unloaded;
+        if (!this.IsObjectDisposed())
+        {
+            Loaded   -= NewPipsPager_Loaded;
+            Unloaded -= NewPipsPager_Unloaded;
+        }
 
         UnapplyNavigationButtonEvents();
         UnapplyKeyPressEvents();

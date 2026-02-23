@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CollapseLauncher.Extension;
+using Microsoft.UI.Xaml.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #nullable enable
@@ -16,8 +17,11 @@ public partial class LayeredBackgroundImage : Control
 
     ~LayeredBackgroundImage()
     {
-        Loaded   -= LayeredBackgroundImage_OnLoaded;
-        Unloaded -= LayeredBackgroundImage_OnUnloaded;
+        if (!this.IsObjectDisposed())
+        {
+            Loaded   -= LayeredBackgroundImage_OnLoaded;
+            Unloaded -= LayeredBackgroundImage_OnUnloaded;
+        }
 
         DisposeVideoPlayer();
     }

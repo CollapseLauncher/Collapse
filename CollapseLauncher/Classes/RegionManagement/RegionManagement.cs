@@ -1,8 +1,6 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
-using CollapseLauncher.Helper.Background;
-using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
@@ -17,7 +15,6 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -249,7 +246,7 @@ namespace CollapseLauncher
 
                 foreach (NotificationProp Entry in regionPushCopy)
                 {
-                    DispatcherQueue.TryEnqueue(() => Spawner(Entry));
+                    DispatcherQueueExtensions.TryEnqueue(() => Spawner(Entry));
                     await Task.Delay(250);
                 }
 
