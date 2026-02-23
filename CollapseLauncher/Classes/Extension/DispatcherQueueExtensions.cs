@@ -72,6 +72,11 @@ public static class DispatcherQueueExtensions
             return;
         }
 
+        if (CurrentDispatcherQueue.IsObjectDisposed())
+        {
+            return;
+        }
+
         CurrentDispatcherQueue.TryEnqueue(priority, action);
     }
 
@@ -86,7 +91,15 @@ public static class DispatcherQueueExtensions
         }
 
         TaskCompletionSource<T> tcs = new();
-        CurrentDispatcherQueue.TryEnqueue(priority, Impl);
+
+        if (!CurrentDispatcherQueue.IsObjectDisposed())
+        {
+            CurrentDispatcherQueue.TryEnqueue(priority, Impl);
+        }
+        else
+        {
+            tcs.SetResult(default!);
+        }
 
         return tcs.Task.Result;
 

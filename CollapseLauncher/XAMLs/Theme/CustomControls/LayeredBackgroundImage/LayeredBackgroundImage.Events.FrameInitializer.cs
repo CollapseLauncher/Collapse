@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper;
 using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -165,7 +166,7 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            if (_videoPlayer == null!)
+            if (_videoPlayer.IsObjectDisposed())
             {
                 return;
             }
