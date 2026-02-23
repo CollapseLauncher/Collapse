@@ -99,8 +99,11 @@ public partial class NewPipsPager
 
     private void UnapplyKeyPressEvents()
     {
-        KeyDown             -= KeyboardKeys_Pressed;
-        PointerWheelChanged -= ScrollViewer_OnPointerWheelChanged;
+        if (!this.IsObjectDisposed())
+        {
+            KeyDown             -= KeyboardKeys_Pressed;
+            PointerWheelChanged -= ScrollViewer_OnPointerWheelChanged;
+        }
     }
 
     private void ApplyItemsRepeaterEvents()
