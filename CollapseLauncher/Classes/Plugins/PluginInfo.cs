@@ -20,8 +20,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
 using SpeedLimiterService = CollapseLauncher.Helper.SpeedLimiterService;
-#pragma warning disable IDE0130
+// ReSharper disable CheckNamespace
 // ReSharper disable LoopCanBeConvertedToQuery
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
@@ -33,13 +34,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
     internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
     internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
-
-    private unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
-    private unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
-    private unsafe delegate GameVersion* DelegateGetPluginVersion();
-    private unsafe delegate void*        DelegateGetPlugin();
-    private delegate        void         DelegateFreePlugin();
-    private delegate        void         DelegateSetCallback(nint callbackP);
 
     private bool _isDisposed;
 
@@ -322,7 +316,11 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             ? SpeedLimiterService.AddBytesOrWaitAsyncDelegatePtr
             : nint.Zero;
 
-        HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)callP)(addOrWaitCallbackP);
+        nint getSharedThrottledBytesP = isEnable
+            ? SpeedLimiterService.GetSharedThrottleBytesDelegatePtr
+            : nint.Zero;
+
+        HResult hr = ((delegate* unmanaged[Cdecl]<nint, nint, HResult>)callP)(addOrWaitCallbackP, getSharedThrottledBytesP);
         if (Marshal.GetExceptionForHR(hr) is { } exception)
         {
             Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register speed throttler service with error code: {hr} {exception}",
