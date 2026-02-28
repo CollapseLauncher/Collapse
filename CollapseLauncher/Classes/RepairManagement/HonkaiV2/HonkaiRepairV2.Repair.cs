@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
@@ -118,10 +117,9 @@ internal partial class HonkaiRepairV2
             return;
         }
 
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
         TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal,
                                                                ProgressAllSizeCurrent,
-                                                               speedClamped);
+                                                               speedAll);
 
         double percentPerFile = ProgressPerFileSizeCurrent != 0
             ? ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent)
@@ -139,7 +137,7 @@ internal partial class HonkaiRepairV2
             Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
 
             // Calculate speed
-            Progress.ProgressAllSpeed    = speedClamped;
+            Progress.ProgressAllSpeed    = speedAll;
             Progress.ProgressAllTimeLeft = timeLeftSpan;
 
             // Update current progress percentages

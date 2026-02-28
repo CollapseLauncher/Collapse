@@ -218,7 +218,7 @@ internal partial class WpfPackageContext
         long totalToExtractSize = 0;
         await using (FileStream fileStream = fileInfo.OpenRead())
         {
-            totalToExtractSize += LauncherConfig.IsEnforceToUse7zipOnExtract
+            totalToExtractSize += LauncherConfig.IsEnforceToUse7ZipOnExtract
                 ? GetArchiveUncompressedSizeNative7Zip(fileStream)
                 : GetArchiveUncompressedSizeManaged(fileStream);
         }
@@ -227,7 +227,7 @@ internal partial class WpfPackageContext
         ResetProgress();
 
         InstallPackageExtractorDelegate extractDelegate =
-            LauncherConfig.IsEnforceToUse7zipOnExtract
+            LauncherConfig.IsEnforceToUse7ZipOnExtract
                 ? ExtractUsingNative7Zip
                 : ExtractUsingManagedZip;
 

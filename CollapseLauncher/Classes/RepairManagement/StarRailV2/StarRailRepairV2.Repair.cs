@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
@@ -226,10 +225,9 @@ namespace CollapseLauncher
                 return;
             }
 
-            double speedClamped = speedAll.ClampLimitedSpeedNumber();
             TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal,
                                                                    ProgressAllSizeCurrent,
-                                                                   speedClamped);
+                                                                   speedAll);
 
             double percentPerFile = ProgressPerFileSizeCurrent != 0
                 ? ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent)
@@ -247,7 +245,7 @@ namespace CollapseLauncher
                 Progress.ProgressAllSizeTotal = ProgressAllSizeTotal;
 
                 // Calculate speed
-                Progress.ProgressAllSpeed = speedClamped;
+                Progress.ProgressAllSpeed = speedAll;
                 Progress.ProgressAllTimeLeft = timeLeftSpan;
 
                 // Update current progress percentages

@@ -1323,8 +1323,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsEnforceToUse7ZipOnExtract
         {
-            get => IsEnforceToUse7zipOnExtract;
-            set => IsEnforceToUse7zipOnExtract = value;
+            get => LauncherConfig.IsEnforceToUse7ZipOnExtract;
+            set => LauncherConfig.IsEnforceToUse7ZipOnExtract = value;
         }
 
         private double DownloadChunkSize

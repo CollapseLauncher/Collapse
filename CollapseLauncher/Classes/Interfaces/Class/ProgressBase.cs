@@ -36,7 +36,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Logger = Hi3Helper.Logger;
 // ReSharper disable AccessToDisposedClosure
-
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
@@ -192,10 +191,8 @@ internal abstract class ProgressBase : GamePropertyBase
             return;
         }
 
-        // Calculate the clamped speed and timelapse
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
-
-        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded, speedClamped);
+        // Calculate the speed and timelapse
+        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded, speedAll);
         double   percentage   = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
         lock (Status)
@@ -203,7 +200,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // Update fetch status
             Status.IsProgressPerFileIndetermined = false;
             Status.IsProgressAllIndetermined     = false;
-            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(speedClamped));
+            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(speedAll));
         }
 
         lock (Progress)
@@ -212,7 +209,7 @@ internal abstract class ProgressBase : GamePropertyBase
             Progress.ProgressPerFilePercentage = percentage;
             Progress.ProgressAllSizeCurrent    = downloadProgress.BytesDownloaded;
             Progress.ProgressAllSizeTotal      = downloadProgress.BytesTotal;
-            Progress.ProgressAllSpeed          = speedClamped;
+            Progress.ProgressAllSpeed          = speedAll;
             Progress.ProgressAllTimeLeft       = timeLeftSpan;
         }
 
@@ -236,10 +233,8 @@ internal abstract class ProgressBase : GamePropertyBase
             return;
         }
 
-        // Calculate the clamped speed and timelapse
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
-
-        TimeSpan timeLeftSpan      = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+        // Calculate the speed and timelapse
+        TimeSpan timeLeftSpan      = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
         double   percentagePerFile = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
         lock (Progress)
@@ -251,7 +246,7 @@ internal abstract class ProgressBase : GamePropertyBase
             Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
 
             // Calculate speed
-            Progress.ProgressAllSpeed    = speedClamped;
+            Progress.ProgressAllSpeed    = speedAll;
             Progress.ProgressAllTimeLeft = timeLeftSpan;
 
             // Update current progress percentages
@@ -308,8 +303,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
 
         // Calculate the clamped speed and timelapse
-        double   speedClamped = speedAll.ClampLimitedSpeedNumber();
-        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
         double   percentage   = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
 
         // Update current progress percentages and speed
@@ -324,7 +318,7 @@ internal abstract class ProgressBase : GamePropertyBase
         Status.ActivityAll               = string.Format(Locale.Lang._Misc.Downloading + ": {0}/{1} ", ProgressAllCountCurrent,
                                                          ProgressAllCountTotal)
                                            + string.Format($"({Locale.Lang._Misc.SpeedPerSec})",
-                                                           ConverterTool.SummarizeSizeSimple(speedClamped))
+                                                           ConverterTool.SummarizeSizeSimple(speedAll))
                                            + $" | {timeLeftString}";
 
         // Trigger update
@@ -527,9 +521,6 @@ internal abstract class ProgressBase : GamePropertyBase
         // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
         _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
 
-        // Calculate the clamped speed for download and timelapse
-        double speedDownloadClamped = _sophonDownloadOnlySpeed.ClampLimitedSpeedNumber();
-
         if (!CheckIfNeedRefreshStopwatch())
         {
             return;
@@ -542,7 +533,7 @@ internal abstract class ProgressBase : GamePropertyBase
         Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
 
         Progress.ProgressAllSpeed     = speedAll;
-        Progress.ProgressPerFileSpeed = speedDownloadClamped;
+        Progress.ProgressPerFileSpeed = _sophonDownloadOnlySpeed;
 
         // Always change the status progress to determined
         Status.IsProgressAllIndetermined     = false;
@@ -678,19 +669,18 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Progress)
         {
             // Assign speed with clamped value
-            double speedClamped = speedAll.ClampLimitedSpeedNumber();
 
             // Assign local sizes to progress
             Progress.ProgressAllSizeCurrent = ProgressAllSizeCurrent;
             Progress.ProgressAllSizeTotal = ProgressAllSizeTotal;
-            Progress.ProgressAllSpeed = speedClamped;
+            Progress.ProgressAllSpeed = speedAll;
             Progress.ProgressAllPercentage = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-            Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+            Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
 
             // Update the status of per file size and current progress from Http client
             Progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
             Progress.ProgressPerFileSizeTotal = downloadProgress.BytesTotal;
-            Progress.ProgressPerFileSpeed = speedClamped;
+            Progress.ProgressPerFileSpeed = speedAll;
             Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
         }
         // Update the status
@@ -1439,7 +1429,7 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         // Use ThreadObjectPool to cache the Streams and re-using it.
         using ThreadObjectPool<Stream> streamPool = new(
-            () => CreateStreamWithPos(0, 0, token),
+            () => CreateStreamWithPos(0),
             capacity: ThreadCount * 2, // Double the thread count for spare capacity
             isDisposeObjects: true);
 
@@ -1490,7 +1480,7 @@ internal abstract class ProgressBase : GamePropertyBase
             }
         }
 
-        Stream CreateStreamWithPos(long? start, long? _, CancellationToken innerToken)
+        Stream CreateStreamWithPos(long? start)
         {
             Stream stream = streamFactory();
             stream.Position = start ?? 0;
