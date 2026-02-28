@@ -106,21 +106,23 @@
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
                         <Grid Grid.Column="0"
-                              extension:UIElementExtensions.UniformCornerRadius="-1">
+                              extension:UIElementExtensions.UniformCornerRadius="-1"
+                              Background="{ThemeResource AcrylicComboBoxBackground}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <ComboBox x:Name="ComboBoxGameCategory"
+                                      BorderThickness="0"
                                       MinWidth="167"
                                       Canvas.ZIndex="2"
                                       CornerRadius="15,0,0,15"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
-                                      SelectionChanged="SetGameCategoryChange"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
+                                      SelectionChanged="SetGameCategoryChange" />
                             <ComboBox x:Name="ComboBoxGameRegion"
+                                      BorderThickness="0"
                                       Grid.Column="1"
                                       MinWidth="148"
                                       Canvas.ZIndex="2"
@@ -128,8 +130,7 @@
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
-                                      SelectionChanged="EnableRegionChangeButton"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
+                                      SelectionChanged="EnableRegionChangeButton" />
                         </Grid>
                         <Grid x:Name="ChangeGameBtnGridShadow"
                               Grid.Column="1"
@@ -153,7 +154,8 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Margin="4,0,0,0"
+                                        <TextBlock Grid.Column="0"
+                                                   Margin="4,0,0,0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
