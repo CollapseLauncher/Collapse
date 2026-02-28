@@ -223,11 +223,6 @@ namespace Hi3Helper.Shared.Region
 
         #region Misc Fields
 
-        public static Vector3 Shadow16 = new(0, 0, 16);
-        public static Vector3 Shadow32 = new(0, 0, 32);
-        public static Vector3 Shadow48 = new(0, 0, 48);
-
-
         public const           string       AppNotifURLPrefix           = "/notification_{0}.json";
         public const           string       AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
         public const           string       AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";

@@ -5,7 +5,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
-using Hi3Helper.SentryHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -14,12 +13,12 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable RedundantExtendsListEntry
@@ -32,6 +31,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
+#nullable enable
 namespace CollapseLauncher;
 
 public partial class MainPage : Page
@@ -47,29 +47,27 @@ public partial class MainPage : Page
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.FooterMenuItems.Clear();
 
-            IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
+            IGameVersion? CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
 
-            FontIcon IconLauncher = new FontIcon { Glyph = "" };
-            FontIcon IconRepair = new FontIcon { Glyph = "" };
-            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
-            FontIcon IconGameSettings = new FontIcon { Glyph = "" };
-            FontIcon IconAppSettings = new FontIcon { Glyph = "" };
-            FontIcon IconFilesCleanup = new FontIcon { Glyph = "" };
+            FontIcon IconLauncher     = new() { Glyph = "" };
+            FontIcon IconRepair       = new() { Glyph = "" };
+            FontIcon IconCaches       = new() { Glyph = m_isWindows11 ? "" : "" };
+            FontIcon IconGameSettings = new() { Glyph = "" };
+            FontIcon IconAppSettings  = new() { Glyph = "" };
+            FontIcon IconFilesCleanup = new() { Glyph = "" };
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
                 if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                                { Icon = IconCaches, Tag = "caches" }
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconCaches, Tag = "caches" }
                                                            .BindNavigationViewItemText("_CachesPage",
                                                                 "PageTitle"));
                 }
                 return;
             }
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                        { Icon = IconLauncher, Tag = "launcher" }
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconLauncher, Tag = "launcher" }
                                                    .BindNavigationViewItemText("_HomePage", "PageTitle"));
 
             NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
@@ -77,44 +75,37 @@ public partial class MainPage : Page
 
             if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                            { Icon = IconRepair, Tag = "repair" }
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconRepair, Tag = "repair" }
                                                        .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
             }
 
             if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                            { Icon = IconCaches, Tag = "caches" }
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconCaches, Tag = "caches" }
                                                        .BindNavigationViewItemText("_CachesPage", "PageTitle"));
             }
 
             switch (CurrentGameVersionCheck?.GameType)
             {
                 case GameNameType.Honkai:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = "honkaigamesettings" }
                                                                  .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.StarRail:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = "starrailgamesettings" }
                                                                  .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Genshin:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = "genshingamesettings" }
                                                                  .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Zenless:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
                                                                  .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
             }
 
-            NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                            { Icon = IconFilesCleanup, Tag = "filescleanup"}
+            NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconFilesCleanup, Tag = "filescleanup"}
                                                         .BindNavigationViewItemText("_FileCleanupPage", "Title"));
 
             if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
@@ -189,7 +180,7 @@ public partial class MainPage : Page
             Duration = TimeSpan.FromMilliseconds(150)
         };
 
-        FrameworkElement paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
+        FrameworkElement? paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
         if (paneMainGrid is Grid paneMainGridAsGrid)
         {
             paneMainGridAsGrid.PointerEntered += NavView_PanePointerEntered;
@@ -197,7 +188,7 @@ public partial class MainPage : Page
         }
 
         // The toggle button is not a part of pane. Why Microsoft!!!
-        Grid paneToggleButtonGrid = (Grid)NavigationViewControl.FindDescendant("PaneToggleButtonGrid");
+        Grid? paneToggleButtonGrid = NavigationViewControl.FindDescendant("PaneToggleButtonGrid") as Grid;
         if (paneToggleButtonGrid != null)
         {
             paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
@@ -207,7 +198,7 @@ public partial class MainPage : Page
         // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
         // backIcon?.ApplyDropShadow(Colors.Gray, 20);
 
-        AnimatedIcon toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
+        AnimatedIcon? toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
         toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
     }
 
@@ -215,7 +206,7 @@ public partial class MainPage : Page
     {
         IsCursorInNavBarHoverArea         = true;
         NavViewPaneBackground.Opacity     = 1;
-        NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+        NavViewPaneBackground.Translation = new Vector3(0, 0, 32);
     }
 
     private bool IsCursorInNavBarHoverArea;
@@ -229,25 +220,23 @@ public partial class MainPage : Page
         {
             case false when !NavigationViewControl.IsPaneOpen:
                 NavViewPaneBackground.Opacity     = 0;
-                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+                NavViewPaneBackground.Translation = new Vector3(-48, 0, 0);
                 break;
             case true when !NavigationViewControl.IsPaneOpen:
                 NavViewPaneBackground.Opacity     = 1;
-                NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+                NavViewPaneBackground.Translation = new Vector3(0, 0, 32);
                 break;
         }
     }
 
     private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
-        if (!IsLoadFrameCompleted) return;
+        if (!_isLoadFrameCompleted) return;
         if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
-    #nullable enable
         NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
         item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
         if (item == null) return;
-    #nullable restore
 
         string itemTag = (string)item.Tag;
 
@@ -298,7 +287,7 @@ public partial class MainPage : Page
                 if (GetCurrentGameProperty().GameVersion?.GamePreset.IsCacheUpdateEnabled ?? false)
                     Navigate(IsGameInstalled() || 
                              (m_appMode == AppMode.Hi3CacheUpdater 
-                              && GetCurrentGameProperty().GameVersion?.GamePreset.GameType == GameNameType.Honkai) 
+                           && GetCurrentGameProperty().GameVersion?.GamePreset.GameType == GameNameType.Honkai) 
                                  ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                 else
                     Navigate(typeof(UnavailablePage), itemTag);
@@ -322,7 +311,7 @@ public partial class MainPage : Page
         }
     }
 
-    private void Navigate(Type sourceType, string tagStr)
+    private static void Navigate(Type sourceType, string tagStr)
     {
         MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
         PreviousTag = tagStr;
@@ -332,7 +321,7 @@ public partial class MainPage : Page
 
     internal void InvokeMainPageNavigateByTag(string tagStr)
     {
-        NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
+        NavigationViewItem? item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
                                                        .FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
         if (item == null)
         {
@@ -346,7 +335,7 @@ public partial class MainPage : Page
 
     private void ToggleNotificationPanelBtnClick(object sender, RoutedEventArgs e)
     {
-        IsNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
+        _isNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
         ShowHideNotificationPanel();
     }
 
@@ -355,28 +344,28 @@ public partial class MainPage : Page
         NewNotificationCountBadge.Value      = 0;
         NewNotificationCountBadge.Visibility = Visibility.Collapsed;
         Thickness lastMargin = NotificationPanel.Margin;
-        lastMargin.Right         = IsNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
+        lastMargin.Right         = _isNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
         NotificationPanel.Margin = lastMargin;
 
-        ShowHideNotificationLostFocusBackground(IsNotificationPanelShow);
+        ShowHideNotificationLostFocusBackground(_isNotificationPanelShow);
     }
 
     private async void ShowHideNotificationLostFocusBackground(bool show)
     {
         if (show)
         {
-            NotificationLostFocusBackground.Visibility                =  Visibility.Visible;
-            NotificationLostFocusBackground.Opacity                   =  0.3;
-            NotificationPanel.Translation                             += Shadow48;
-            ToggleNotificationPanelBtn.Translation                    -= Shadow16;
-            ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily =  FontCollections.FontAwesomeSolid;
+            NotificationLostFocusBackground.Visibility                = Visibility.Visible;
+            NotificationLostFocusBackground.Opacity                   = 0.3;
+            NotificationPanel.Translation                             = new Vector3(0, 0, 48);
+            ToggleNotificationPanelBtn.Translation                    = new Vector3();
+            ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily = FontCollections.FontAwesomeSolid;
         }
         else
         {
-            NotificationLostFocusBackground.Opacity                   =  0;
-            NotificationPanel.Translation                             -= Shadow48;
-            ToggleNotificationPanelBtn.Translation                    += Shadow16;
-            ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily =  FontCollections.FontAwesomeRegular;
+            NotificationLostFocusBackground.Opacity                   = 0;
+            NotificationPanel.Translation                             = new Vector3();
+            ToggleNotificationPanelBtn.Translation                    = new Vector3(0, 0, 16);
+            ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily = FontCollections.FontAwesomeRegular;
             await Task.Delay(200);
             NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
         }
@@ -384,14 +373,14 @@ public partial class MainPage : Page
 
     private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        IsNotificationPanelShow              = false;
+        _isNotificationPanelShow              = false;
         ToggleNotificationPanelBtn.IsChecked = false;
         ShowHideNotificationPanel();
     }
 
     private void NavigationViewControl_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
     {
-        if (!LauncherFrame.CanGoBack || !IsLoadFrameCompleted)
+        if (!LauncherFrame.CanGoBack || !_isLoadFrameCompleted)
         {
             return;
         }
@@ -407,12 +396,10 @@ public partial class MainPage : Page
             return;
         }
 
-    #nullable enable
-        string? goLastPreviousTag = PreviousTagString.Count < 2 ? PreviousTagString[^2] : lastPreviousTag;
+        string goLastPreviousTag = PreviousTagString.Count < 2 ? PreviousTagString[^2] : lastPreviousTag;
         
         NavigationViewItem? goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);
         goPreviousNavigationItem ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);
-    #nullable restore
 
         if (goLastPreviousTag == "settings")
         {
@@ -434,10 +421,10 @@ public partial class MainPage : Page
 
     private void NavigationPanelOpening_Event(NavigationView sender, object args)
     {
-        Thickness curMargin = GridBG_Icon.Margin;
+        Thickness curMargin = GridBGIcon.Margin;
         curMargin.Left       = 48;
-        GridBG_Icon.Margin   = curMargin;
-        IsTitleIconForceShow = true;
+        GridBGIcon.Margin   = curMargin;
+        _isTitleIconForceShow = true;
         ToggleTitleIcon(false);
 
         NavViewPaneBackgroundHoverArea.Width = NavigationViewControl.OpenPaneLength;
@@ -445,10 +432,10 @@ public partial class MainPage : Page
 
     private async void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
     {
-        Thickness curMargin = GridBG_Icon.Margin;
+        Thickness curMargin = GridBGIcon.Margin;
         curMargin.Left       = 58;
-        GridBG_Icon.Margin   = curMargin;
-        IsTitleIconForceShow = false;
+        GridBGIcon.Margin   = curMargin;
+        _isTitleIconForceShow = false;
         ToggleTitleIcon(true);
 
         NavViewPaneBackgroundHoverArea.Width = NavViewPaneBackground.Width;
@@ -460,6 +447,6 @@ public partial class MainPage : Page
         }
 
         NavViewPaneBackground.Opacity     = 0;
-        NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+        NavViewPaneBackground.Translation = new Vector3(-48, 0, 0);
     }
 }

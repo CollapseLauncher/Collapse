@@ -6,7 +6,6 @@ using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -554,8 +553,8 @@ public sealed partial class HomePage
         if (CurrentGameProperty.GameVersion == null || 
             !CurrentGameProperty.GameVersion.IsGameInstalled()) return;
 
-        var behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
-            ?? PostInstallBehaviour.Nothing;
+        PostInstallBehaviour behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
+                                      ?? PostInstallBehaviour.Nothing;
         switch (behaviour)
         {
             case PostInstallBehaviour.Nothing:
@@ -572,14 +571,14 @@ public sealed partial class HomePage
                 break;
             case PostInstallBehaviour.Restart:
             case PostInstallBehaviour.Shutdown:
-                var shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
-                var shutdownType = behaviour switch
-                {
-                    PostInstallBehaviour.Restart => "/r",
-                    PostInstallBehaviour.Shutdown => "/s",
-                    // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
-                    _ => "/a"
-                };
+                int shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
+                string shutdownType = behaviour switch
+                                      {
+                                          PostInstallBehaviour.Restart => "/r",
+                                          PostInstallBehaviour.Shutdown => "/s",
+                                          // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
+                                          _ => "/a"
+                                      };
 
                 Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
                 {
@@ -589,10 +588,7 @@ public sealed partial class HomePage
                 break;
         }
 
-        if (CurrentGameProperty.GameInstall != null)
-        {
-            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
-        }
+        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.Nothing;
     }
     #endregion
 
@@ -668,7 +664,7 @@ public sealed partial class HomePage
     {
         try
         {
-            var newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+            string newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
             if (newPath == null || newPath == CurrentGameProperty.GameVersion.GameDirPath)
             {
                 return;
@@ -691,45 +687,6 @@ public sealed partial class HomePage
     {
         Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion?.GamePreset.IsRepairEnabled ?? false ?
             Visibility.Visible : Visibility.Collapsed;
-
-        // Clear the _CommunityToolsProperty statics
-        PageStatics.CommunityToolsProperty?.Clear();
-
-        // Check if the _CommunityToolsProperty has the official tool list for current game type
-        if (PageStatics.CommunityToolsProperty?
-               .OfficialToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
-                            out List<CommunityToolsEntry> officialEntryList) ?? false)
-        {
-            // If yes, then iterate it and add it to the list, to then getting read by the
-            // DataTemplate from HomePage
-            for (int index = officialEntryList.Count - 1; index >= 0; index--)
-            {
-                CommunityToolsEntry iconProperty = officialEntryList[index];
-                if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
-                {
-                    PageStatics.CommunityToolsProperty.OfficialToolsList?.Add(iconProperty);
-                }
-            }
-        }
-
-        // Check if the _CommunityToolsProperty has the community tool list for current game type
-        if (PageStatics.CommunityToolsProperty?
-               .CommunityToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
-                            out List<CommunityToolsEntry> communityEntryList) ?? false)
-        {
-            // If yes, then iterate it and add it to the list, to then getting read by the
-            // DataTemplate from HomePage
-            for (int index = communityEntryList.Count - 1; index >= 0; index--)
-            {
-                CommunityToolsEntry iconProperty = communityEntryList[index];
-                if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
-                {
-                    PageStatics.CommunityToolsProperty.CommunityToolsList?.Add(iconProperty);
-                }
-            }
-        }
 
         if (CurrentGameProperty.GameVersion?.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
         GameInstallationState = await CurrentGameProperty.GameVersion!.GetGameState();

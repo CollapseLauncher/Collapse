@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ClassNeverInstantiated.Global
@@ -58,8 +59,8 @@ namespace CollapseLauncher
 
         private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            Thickness containerNotClosableMargin = new Thickness(-28, -8, 24, 20);
-            Thickness containerClosableMargin = new Thickness(-28, -8, -28, 20);
+            Thickness containerNotClosableMargin = new(-28, -8, 24, 20);
+            Thickness containerClosableMargin    = new(-28, -8, -28, 20);
 
             InfoBar parentNotificationUI = new InfoBar
                                      {
@@ -74,7 +75,7 @@ namespace CollapseLauncher
             }
             .WithMargin(4d, 4d, 4d, 0)
             .WithCornerRadius(8);
-            parentNotificationUI.Translation = LauncherConfig.Shadow32;
+            parentNotificationUI.Translation = new Vector3(0,0,32);
 
             StackPanel parentContainer = UIElementExtensions.CreateStackPanel()
                 .WithMargin(parentNotificationUI.IsClosable ? containerClosableMargin : containerNotClosableMargin);

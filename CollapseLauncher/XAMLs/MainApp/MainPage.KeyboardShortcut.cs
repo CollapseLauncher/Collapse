@@ -214,7 +214,7 @@ public partial class MainPage : Page
     {
         int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
-        DisableInstantRegionChange = true;
+        _disableInstantRegionChange = true;
         RestoreCurrentRegion();
             
         if (CannotUseKbShortcuts || !IsLoadRegionComplete
@@ -222,7 +222,7 @@ public partial class MainPage : Page
                                  || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
            )
         {
-            DisableInstantRegionChange = false;
+            _disableInstantRegionChange = false;
             return;
         }
 
@@ -232,14 +232,14 @@ public partial class MainPage : Page
         ChangeRegionConfirmBtn.IsEnabled          = false;
         ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
         CannotUseKbShortcuts                      = true;
-        DisableInstantRegionChange                = false;
+        _disableInstantRegionChange                = false;
     }
 
     private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
-        DisableInstantRegionChange = true;
+        _disableInstantRegionChange = true;
         RestoreCurrentRegion();
             
 
@@ -247,7 +247,7 @@ public partial class MainPage : Page
                                  || index >= ComboBoxGameRegion.Items.Count 
                                  || ComboBoxGameRegion.SelectedValue == ComboBoxGameRegion.Items[index])
         {
-            DisableInstantRegionChange = false;
+            _disableInstantRegionChange = false;
             return;
         }
 
@@ -255,7 +255,7 @@ public partial class MainPage : Page
         ChangeRegionConfirmBtn.IsEnabled          = false;
         ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
         CannotUseKbShortcuts                      = true;
-        DisableInstantRegionChange                = false;
+        _disableInstantRegionChange                = false;
         ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
     }
 

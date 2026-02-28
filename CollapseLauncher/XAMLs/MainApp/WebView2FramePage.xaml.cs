@@ -7,6 +7,7 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -61,8 +62,8 @@ namespace CollapseLauncher
                 WebView2WindowContainer.Children.Clear();
                 WebView2WindowContainer.Children.Add(_webView2Runtime);
 
-                WebView2Panel.Visibility  =  Visibility.Visible;
-                WebView2Panel.Translation += Shadow32;
+                WebView2Panel.Visibility  = Visibility.Visible;
+                WebView2Panel.Translation = new Vector3(0, 0, 32);
 
                 SetWebView2Bindings();
                 _webView2Runtime.Source = url;
@@ -145,9 +146,9 @@ namespace CollapseLauncher
         private void WebView2Unload(object sender, RoutedEventArgs e)
         {
             ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-            WebView2Panel.Visibility  =  Visibility.Collapsed;
-            WebView2Panel.Translation -= Shadow32;
-            
+            WebView2Panel.Visibility  = Visibility.Collapsed;
+            WebView2Panel.Translation = default;
+
             Dispose();
         }
 

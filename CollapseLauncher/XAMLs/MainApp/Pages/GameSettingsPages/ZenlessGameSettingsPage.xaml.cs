@@ -87,7 +87,7 @@ namespace CollapseLauncher.Pages
         private void LoadPage()
         {
             InitializeComponent();
-            ApplyButton.Translation = Shadow32;
+            ApplyButton.Translation           = new Vector3(0, 0, 32);
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
             Settings?.ReloadSettings();

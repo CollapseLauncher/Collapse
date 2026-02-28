@@ -4,7 +4,6 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Database;
-using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
@@ -12,8 +11,6 @@ using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -26,14 +23,11 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Hashing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -78,8 +72,9 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private GamePresetProperty             CurrentGameProperty { get; }
-        private CancellationTokenSourceWrapper PageToken           { get; }
+        private GamePresetProperty             CurrentGameProperty  { get; }
+        private CancellationTokenSourceWrapper PageToken            { get; }
+        private CommunityToolsContext          CommunityToolContext { get; }
 
         private int barWidth;
         private int consoleWidth;
@@ -118,16 +113,15 @@ namespace CollapseLauncher.Pages
             PageToken           = new CancellationTokenSourceWrapper();
             m_homePage          = this;
 
+            CommunityToolContext =
+                LauncherMetadataHelper.CommunityToolsProperty.GetContext(CurrentGameProperty.GamePreset);
+
             InitializeComponent();
             InitializeConsoleValues();
 
             RefreshRate = RefreshRateDefault;
 
             InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-            foreach (UIElement multiBgChildElement in MultiBackgroundPipsPagerGrid.Children)
-            {
-                // multiBgChildElement.EnableImplicitAnimation(true);
-            }
 
             WpfPackageParentGrid.EnableImplicitAnimation();
             SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
@@ -186,19 +180,12 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                GameStartupSetting.Translation += Shadow32;
-                CommunityToolsBtn.Translation  += Shadow32;
-
                 if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
-                    // ImageCarousel.SelectedIndex = 0;
-                    // ImageCarousel.Visibility = Visibility.Visible;
-                    ImageCarouselPipsPager.Visibility = Visibility.Visible;
-
-                    ShowEventsPanelToggle.IsEnabled    =  true;
-                    ScaleUpEventsPanelToggle.IsEnabled =  true;
-                    PostPanel.Visibility               =  Visibility.Visible;
-                    PostPanel.Translation              += Shadow48;
+                    ImageCarouselPipsPager.Visibility  = Visibility.Visible;
+                    ShowEventsPanelToggle.IsEnabled    = true;
+                    ScaleUpEventsPanelToggle.IsEnabled = true;
+                    PostPanel.Visibility               = Visibility.Visible;
                 }
 
                 if (CurrentGameProperty.GameInstall != null)
@@ -214,7 +201,7 @@ namespace CollapseLauncher.Pages
                 }
 
             #if !DISABLEDISCORD
-                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                AppDiscordPresence.SetActivity(ActivityType.Idle);
             #endif
 
                 if (IsGameStatusComingSoon || IsGameStatusPreRegister)
@@ -241,7 +228,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 // Get game state
-                var gameState = await CurrentGameProperty.GameVersion.GetGameState();
+                GameInstallStateEnum gameState = await CurrentGameProperty.GameVersion.GetGameState();
 
                 // Start automatic scan if the game is in NotInstalled state and GameInstall instance is not null
                 if (gameState == GameInstallStateEnum.NotInstalled && CurrentGameProperty.GameInstall != null)
@@ -459,8 +446,8 @@ namespace CollapseLauncher.Pages
 
             HideImageEventImg(hide);
 
-            Storyboard      storyboard       = new Storyboard();
-            DoubleAnimation OpacityAnimation = new DoubleAnimation
+            Storyboard      storyboard       = new();
+            DoubleAnimation OpacityAnimation = new()
             {
                 From     = hide ? 1 : 0,
                 To       = hide ? 0 : 1,
@@ -487,8 +474,8 @@ namespace CollapseLauncher.Pages
                 SocMedPanel.Visibility = Visibility.Visible;
             }
 
-            Storyboard      storyboard       = new Storyboard();
-            DoubleAnimation OpacityAnimation = new DoubleAnimation
+            Storyboard      storyboard       = new();
+            DoubleAnimation OpacityAnimation = new()
             {
                 From     = hide ? 1 : 0,
                 To       = hide ? 0 : 1,
@@ -510,8 +497,8 @@ namespace CollapseLauncher.Pages
         {
             if (!hide) PlaytimeBtn.Visibility = Visibility.Visible;
 
-            Storyboard      storyboard       = new Storyboard();
-            DoubleAnimation OpacityAnimation = new DoubleAnimation
+            Storyboard      storyboard       = new();
+            DoubleAnimation OpacityAnimation = new()
             {
                 From     = hide ? 1 : 0,
                 To       = hide ? 0 : 1,
@@ -568,8 +555,8 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            var isOutsideFlyout = IsOutsideButtonFlyoutArea(parentPanel, e, new Thickness(32));
-            var isOutsideButton = IsOutsideButtonFlyoutArea(btn,         e, new Thickness(32));
+            bool isOutsideFlyout = IsOutsideButtonFlyoutArea(parentPanel, e, new Thickness(32));
+            bool isOutsideButton = IsOutsideButtonFlyoutArea(btn,         e, new Thickness(32));
 
             if ((!isOutsideFlyout &&
                  !isOutsideButton) ||
@@ -578,19 +565,14 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            flyout?.Hide();
+            flyout.Hide();
         }
 
         private void HideSocMedFlyout(object sender, PointerRoutedEventArgs e)
         {
-            Panel dummyGrid = sender as Panel ?? throw new InvalidOperationException();
-            if (dummyGrid == null)
-            {
-                return;
-            }
-
-            Flyout flyout = dummyGrid.Tag as Flyout;
-            Button button = flyout?.Target as Button;
+            Panel  dummyGrid = sender as Panel ?? throw new InvalidOperationException();
+            Flyout flyout    = dummyGrid.Tag as Flyout;
+            Button button    = flyout?.Target as Button;
 
             if (flyout == null || button == null)
             {
@@ -619,8 +601,8 @@ namespace CollapseLauncher.Pages
             if (!hide)
                 ImageEventImgGrid.Visibility = Visibility.Visible;
 
-            Storyboard      storyboard       = new Storyboard();
-            DoubleAnimation OpacityAnimation = new DoubleAnimation
+            Storyboard      storyboard       = new();
+            DoubleAnimation OpacityAnimation = new()
             {
                 From     = hide ? 1 : 0,
                 To       = hide ? 0 : 1,
@@ -828,7 +810,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Try to run the application
-                Process proc = new Process
+                Process proc = new()
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -1034,16 +1016,16 @@ namespace CollapseLauncher.Pages
             CurrentBackgroundManager.IsBackgroundElevated = true;
             CurrentBackgroundManager.ForegroundOpacity    = 0d;
 
-            var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
-            var storyboard = new Storyboard();
-            var transform  = (CompositeTransform)elementPanel.RenderTransform;
+            float              toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+            Storyboard         storyboard = new();
+            CompositeTransform transform  = (CompositeTransform)elementPanel.RenderTransform;
             transform.CenterY = elementPanel.ActualHeight + 8;
-            var cubicEaseOut = new CubicEase
+            CubicEase cubicEaseOut = new()
             {
                 EasingMode = EasingMode.EaseOut
             };
 
-            var scaleXAnim = new DoubleAnimation
+            DoubleAnimation scaleXAnim = new()
             {
                 From           = transform.ScaleX,
                 To             = toScale,
@@ -1054,7 +1036,7 @@ namespace CollapseLauncher.Pages
             Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
             storyboard.Children.Add(scaleXAnim);
 
-            var scaleYAnim = new DoubleAnimation
+            DoubleAnimation scaleYAnim = new()
             {
                 From           = transform.ScaleY,
                 To             = toScale,
@@ -1088,15 +1070,15 @@ namespace CollapseLauncher.Pages
 
             HideImageEventImg(false);
 
-            var storyboard = new Storyboard();
-            var transform  = (CompositeTransform)elementPanel.RenderTransform;
+            Storyboard         storyboard = new();
+            CompositeTransform transform  = (CompositeTransform)elementPanel.RenderTransform;
             transform.CenterY = elementPanel.ActualHeight + 8;
-            var cubicEaseOut = new CubicEase
+            CubicEase cubicEaseOut = new()
             {
                 EasingMode = EasingMode.EaseOut
             };
 
-            var scaleXAnim = new DoubleAnimation
+            DoubleAnimation scaleXAnim = new()
             {
                 From           = transform.ScaleX,
                 To             = 1,
@@ -1107,7 +1089,7 @@ namespace CollapseLauncher.Pages
             Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
             storyboard.Children.Add(scaleXAnim);
 
-            var scaleYAnim = new DoubleAnimation
+            DoubleAnimation scaleYAnim = new()
             {
                 From           = transform.ScaleY,
                 To             = 1,
@@ -1141,12 +1123,12 @@ namespace CollapseLauncher.Pages
             Compositor compositor = this.GetElementCompositor();
 
             const float toScale       = 1.05f;
-            Vector3     fromTranslate = new Vector3(0, 0, element.Translation.Z);
+            Vector3     fromTranslate = new(0, 0, element.Translation.Z);
             // ReSharper disable ConstantConditionalAccessQualifier
             // ReSharper disable ConstantNullCoalescingCondition
-            Vector3 toTranslate = new Vector3(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
-                                              -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
-                                              element.Translation.Z);
+            Vector3 toTranslate = new(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
+                                      -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
+                                      element.Translation.Z);
             // ReSharper restore ConstantConditionalAccessQualifier
             // ReSharper restore ConstantNullCoalescingCondition
             await element.StartAnimation(
@@ -1174,10 +1156,10 @@ namespace CollapseLauncher.Pages
             const float toScale = 1.05f;
             // ReSharper disable ConstantConditionalAccessQualifier
             // ReSharper disable ConstantNullCoalescingCondition
-            Vector3 fromTranslate = new Vector3(0, 0, element.Translation.Z);
-            Vector3 toTranslate = new Vector3(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
-                                              -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
-                                              element.Translation.Z);
+            Vector3 fromTranslate = new(0, 0, element.Translation.Z);
+            Vector3 toTranslate = new(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
+                                      -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
+                                      element.Translation.Z);
             // ReSharper restore ConstantConditionalAccessQualifier
             // ReSharper restore ConstantNullCoalescingCondition
             await element.StartAnimation(TimeSpan.FromSeconds(0.25),
