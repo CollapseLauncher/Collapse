@@ -52,7 +52,7 @@ namespace CollapseLauncher.Extension
         internal static T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
             where T : NavigationViewItemBase
         {
-            NavigationViewItemLocaleTextProperty property = new NavigationViewItemLocaleTextProperty
+            NavigationViewItemLocaleTextProperty property = new()
             {
                 LocaleSetName = localeSetName,
                 LocalePropertyName = localePropertyName
@@ -205,7 +205,7 @@ namespace CollapseLauncher.Extension
             where T : FrameworkElement
         {
             // Create a new binding instance
-            Binding binding = new Binding
+            Binding binding = new()
             {
                 Source = objectToBind,
                 Mode = bindingMode,
@@ -250,13 +250,12 @@ namespace CollapseLauncher.Extension
                 Grid contentPanel = CreateIconTextGrid(text, iconGlyph, iconFontFamily, iconSize, textSize, textWeight);
                 TButtonBase buttonReturn = new();
 
+                InputCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                buttonReturn.SetCursor(cursor);
+
                 if (!cornerRadius.HasValue)
                 {
-                    buttonReturn.BindProperty(buttonReturn,
-                                              nameof(ButtonBase.RenderSize),
-                                              Control.CornerRadiusProperty,
-                                              BindingMode.OneWay,
-                                              StaticConverter<SizeToRoundedCornerRadiusConverter>.Shared);
+                    SetUniformCornerRadius(buttonReturn, -1d);
                 }
                 else
                 {
@@ -1189,7 +1188,7 @@ namespace CollapseLauncher.Extension
             string passedValue = $"{offset?.X},{offset?.Y},{offset?.Z}";
             // ReSharper restore ConstantConditionalAccessQualifier
 
-            AttachedDropShadow shadow = new AttachedDropShadow
+            AttachedDropShadow shadow = new()
             {
                 Color = shadowColor ?? Colors.Black,
                 BlurRadius = blurRadius,

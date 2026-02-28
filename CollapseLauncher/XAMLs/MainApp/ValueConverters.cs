@@ -1033,4 +1033,36 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+
+    public partial class CountToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueDouble = value.TryGetDouble();
+            return double.IsFinite(valueDouble) && valueDouble > 0
+                ? 1d
+                : 0d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseCountToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueDouble = value.TryGetDouble();
+            return double.IsFinite(valueDouble) && valueDouble > 0
+                ? 0d
+                : 1d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
