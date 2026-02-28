@@ -75,6 +75,8 @@ namespace CollapseLauncher
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
 
+                NotificationElementsCollection.CollectionChanged += NotificationElementsCollection_CollectionChanged;
+
                 ImageBackgroundManager.Shared.GlobalParallaxHoverSource = MainPageGrid;
                 ImageBackgroundManager.Shared.ColorAccentChanged += SharedOnColorAccentChanged;
 

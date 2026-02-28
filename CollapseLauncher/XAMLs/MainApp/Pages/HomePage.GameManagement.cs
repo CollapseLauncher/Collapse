@@ -18,7 +18,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -125,8 +124,8 @@ public sealed partial class HomePage
 
         PreloadDialogBox.Opacity = 0.0f;
         const float toScale = 0.98f;
-        Vector3 toTranslate = new Vector3(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
-                                          -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
+        Vector3 toTranslate = new(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                                  -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
 
         await PreloadDialogBox.StartAnimation(TimeSpan.FromSeconds(0.5),
                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f, 0.0f),
@@ -665,13 +664,13 @@ public sealed partial class HomePage
         try
         {
             string newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
-            if (newPath == null || newPath == CurrentGameProperty.GameVersion.GameDirPath)
+            if (string.IsNullOrEmpty(newPath) || newPath == CurrentGameProperty.GameVersion?.GameDirPath)
             {
                 return;
             }
 
-            CurrentGameProperty.GameVersion.UpdateGamePath(newPath);
-            CurrentGameProperty.GameInstall.ApplyGameConfig();
+            CurrentGameProperty.GameVersion?.UpdateGamePath(newPath);
+            CurrentGameProperty.GameInstall?.ApplyGameConfig();
             ReturnToHomePage();
         }
         catch (Exception ex)

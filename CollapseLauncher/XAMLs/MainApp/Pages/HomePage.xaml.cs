@@ -707,7 +707,7 @@ namespace CollapseLauncher.Pages
             return null;
         }
 
-        private async Task<bool> TagPropertyAction_OpenExternalApp(string propertiesString)
+        private static async Task<bool> TagPropertyAction_OpenExternalApp(string propertiesString)
         {
             // Split the properties string by , mark to get the argument string.
             string[] properties = propertiesString.Split(',');

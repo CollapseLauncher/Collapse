@@ -341,8 +341,7 @@ public partial class MainPage : Page
 
     private void ShowHideNotificationPanel()
     {
-        NewNotificationCountBadge.Value      = 0;
-        NewNotificationCountBadge.Visibility = Visibility.Collapsed;
+        NewNotificationCountBadge.Value = 0;
         Thickness lastMargin = NotificationPanel.Margin;
         lastMargin.Right         = _isNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
         NotificationPanel.Margin = lastMargin;

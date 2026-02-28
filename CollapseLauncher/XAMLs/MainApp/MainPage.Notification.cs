@@ -11,10 +11,13 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using InnoSetupHelper;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Notifications;
+using DispatcherQueueExtensions = CollapseLauncher.Extension.DispatcherQueueExtensions;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable StringLiteralTypo
 #pragma warning disable IDE0130
@@ -32,6 +36,8 @@ namespace CollapseLauncher;
 
 public partial class MainPage
 {
+    private ObservableCollection<UIElement> NotificationElementsCollection { get; }= [];
+
     private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
     {
         if (e.IsCustomNotif)
@@ -56,14 +62,16 @@ public partial class MainPage
     {
         try
         {
-            InnerLauncherConfig.NotificationData    = new NotificationPush();
-            _isLoadNotifComplete = false;
+            InnerLauncherConfig.NotificationData = new NotificationPush();
+            _isLoadNotifComplete                 = false;
+
             CancellationTokenSource tokenSource = new();
             RunTimeoutCancel(tokenSource);
 
             string prefixUrl = string.Format(LauncherConfig.AppNotifURLPrefix, LauncherConfig.IsPreview ? "preview" : "stable");
             await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(prefixUrl, token: tokenSource.Token);
             InnerLauncherConfig.NotificationData = await networkStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush, token: tokenSource.Token);
+
             _isLoadNotifComplete = true;
 
             InnerLauncherConfig.NotificationData?.EliminatePushList();
@@ -356,7 +364,8 @@ public partial class MainPage
                                        IsOpen        = true
                                    }
                                   .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
-                                  .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
+                                  .WithCornerRadius(8)
+                                  .WithHorizontalAlignment(HorizontalAlignment.Right);
 
             notification.Translation = new Vector3(0,0,32);
 
@@ -376,6 +385,9 @@ public partial class MainPage
                 };
                 neverAskNotif.Checked   += NeverAskNotif_Checked;
                 neverAskNotif.Unchecked += NeverAskNotif_Unchecked;
+
+                InputCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                neverAskNotif.SetCursor(cursor);
                 otherContentContainer.AddElementToStackPanel(neverAskNotif);
             }
 
@@ -399,11 +411,10 @@ public partial class MainPage
         Grid container = UIElementExtensions.CreateGrid().WithTag(tagID);
         notification.Loaded += (_, _) =>
                                {
-                                   NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                                   NewNotificationCountBadge.Visibility = Visibility.Visible;
-                                   NewNotificationCountBadge.Value++;
-
-                                   NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                                   if (!(ToggleNotificationPanelBtn.IsChecked ?? false))
+                                   {
+                                       NewNotificationCountBadge.Value++;
+                                   }
                                };
 
         notification.Closed += (s, _) =>
@@ -417,30 +428,26 @@ public partial class MainPage
                                    {
                                        InnerLauncherConfig.NotificationData.CurrentShowMsgIds.Remove(msg);
                                    }
-                                   NotificationContainer.Children.Remove(container);
-                                   NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
 
-                                   if (NewNotificationCountBadge.Value > 0)
-                                   {
-                                       NewNotificationCountBadge.Value--;
-                                   }
-                                   NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                                   NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
-                                   NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                                   RemoveNotificationUI(msg);
                                };
 
         container.AddElementToGridRowColumn(notification);
-        NotificationContainer.AddElementToStackPanel(container);
+        NotificationElementsCollection.Add(container);
     }
 
     private void RemoveNotificationUI(int tagID)
     {
-        Grid? notif = NotificationContainer.Children.OfType<Grid>().FirstOrDefault(x => (int)x.Tag == tagID);
-        if (notif == null) return;
-        NotificationContainer.Children.Remove(notif);
-        InfoBar? notifBar = notif.Children.OfType<InfoBar>().FirstOrDefault();
+        Grid?    notif    = NotificationContainer.Children.OfType<Grid>().FirstOrDefault(x => (int)x.Tag == tagID);
+        InfoBar? notifBar = notif?.Children.OfType<InfoBar>().FirstOrDefault();
+
         if (notifBar != null && notifBar.IsClosable)
             notifBar.IsOpen = false;
+
+        if (notif == null)
+            return;
+
+        NotificationElementsCollection.Remove(notif);
     }
 
     private async void ClearAllNotification(object sender, RoutedEventArgs args)
@@ -462,8 +469,8 @@ public partial class MainPage
                     continue;
                 }
 
-                NotificationContainer.Children.RemoveAt(stackIndex);
                 notifBar.IsOpen = false;
+                NotificationElementsCollection.Remove(container);
                 await Task.Delay(100);
             }
 
@@ -517,5 +524,29 @@ public partial class MainPage
         double currentVOffset = NotificationContainer.ActualHeight;
 
         NotificationPanelScrollViewer.ScrollToVerticalOffset(currentVOffset);
+    }
+
+    private void NotificationElementsCollection_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e)
+        {
+            case { Action: NotifyCollectionChangedAction.Add, NewItems: not null }:
+                foreach (UIElement element in e.NewItems.OfType<UIElement>())
+                {
+                    NotificationContainer.Children.Add(element);
+                }
+                return;
+            case { Action: NotifyCollectionChangedAction.Remove, OldItems: not null }:
+                foreach (UIElement element in e.OldItems.OfType<UIElement>())
+                {
+                    NotificationContainer.Children.Remove(element);
+                }
+                return;
+        }
+
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            NotificationContainer.Children.Clear();
+        }
     }
 }

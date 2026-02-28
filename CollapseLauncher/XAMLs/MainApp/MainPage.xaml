@@ -2,12 +2,13 @@
 <Page x:Class="CollapseLauncher.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
       xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:pages="using:CollapseLauncher.Pages"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -15,6 +16,9 @@
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <ListView x:Name="KeyboardHandler" />
+        <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        <pages:CountToOpacityConverter x:Key="CountToOpacityConverter"/>
+        <pages:InverseCountToOpacityConverter x:Key="InverseCountToOpacityConverter"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid"
           Background="{ThemeResource WindowBackground}">
@@ -319,7 +323,7 @@
                            Margin="0,-4,-4,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
-                           Visibility="Collapsed"
+                           Visibility="{Binding ElementName=NewNotificationCountBadge, Path=Value, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
                            Value="0" />
             </Grid>
             <Grid Grid.Column="7"
@@ -430,16 +434,17 @@
             <Grid.Transitions>
                 <RepositionThemeTransition />
             </Grid.Transitions>
-            <Grid>
+            <Grid Grid.Row="0">
                 <ScrollViewer x:Name="NotificationPanelScrollViewer"
                               CanContentRenderOutsideBounds="True"
                               HorizontalScrollBarVisibility="Disabled">
                     <Grid MinWidth="608"
                           MinHeight="200">
-                        <StackPanel x:Name="NoNotificationIndicator"
-                                    HorizontalAlignment="Center"
+                        <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Orientation="Vertical">
+                                    Orientation="Vertical"
+                                    DataContext="{x:Bind NotificationElementsCollection, Mode=OneWay}"
+                                    Opacity="{Binding Path=Count, Mode=OneWay, Converter={StaticResource InverseCountToOpacityConverter}}">
                             <StackPanel.OpacityTransition>
                                 <ScalarTransition />
                             </StackPanel.OpacityTransition>
@@ -466,7 +471,8 @@
                             </Grid>
                         </StackPanel>
                         <StackPanel x:Name="NotificationContainer"
-                                    Margin="0,0,0,7">
+                                    Margin="0,0,0,7"
+                                    VerticalAlignment="Top">
                             <StackPanel.ChildrenTransitions>
                                 <TransitionCollection>
                                     <PopupThemeTransition />
@@ -481,8 +487,9 @@
                   Grid.Row="1"
                   Padding="8"
                   VerticalAlignment="Bottom"
+                  DataContext="{x:Bind NotificationElementsCollection, Mode=OneWay}"
                   Background="{ThemeResource NotificationPanelBrush}"
-                  Visibility="Collapsed">
+                  Visibility="{Binding Path=Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
