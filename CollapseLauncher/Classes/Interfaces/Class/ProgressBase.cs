@@ -1392,7 +1392,7 @@ internal abstract class ProgressBase : GamePropertyBase
         using Stream stream = GetSingleOrSegmentedDownloadStream(asset);
 
 #if USENEWZIPDECOMPRESS
-        if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+        if (LauncherConfig.IsEnforceToUse7ZipOnExtract)
         {
             return GetArchiveUncompressedSizeNative7Zip(stream);
         }
