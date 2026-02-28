@@ -70,9 +70,9 @@ public class HypLauncherContentKind : HypApiIdentifiable
 
     public void ResetCachedNews()
     {
-        NewsEventKind = null;
-        NewsAnnouncementKind = null;
-        NewsInformationKind = null;
+        NewsEventKind        = [];
+        NewsAnnouncementKind = [];
+        NewsInformationKind  = [];
     }
 }
 

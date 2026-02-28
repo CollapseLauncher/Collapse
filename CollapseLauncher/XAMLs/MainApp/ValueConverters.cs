@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Buffers;
 using System.Collections;
@@ -26,6 +28,16 @@ using Windows.Globalization.NumberFormatting;
 
 namespace CollapseLauncher.Pages
 {
+    public static class StaticConverter<T> where T : IValueConverter, new()
+    {
+        public static T Shared { get; }
+
+        static StaticConverter()
+        {
+            Shared = new T();
+        }
+    }
+
     public partial class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string langInfo)
@@ -948,6 +960,72 @@ namespace CollapseLauncher.Pages
             return seconds >= 15
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class SizeToRoundedCornerRadiusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (double.IsFinite(valueAsDouble))
+            {
+                return new CornerRadius(valueAsDouble / 2);
+            }
+
+            if (value is Vector2 valueAsVector2)
+            {
+                valueAsDouble = valueAsVector2.X > valueAsVector2.Y
+                    ? valueAsVector2.Y
+                    : valueAsVector2.X;
+            }
+
+            if (value is System.Drawing.Size asDrawingSize)
+            {
+                valueAsDouble = asDrawingSize.Width > asDrawingSize.Height
+                    ? asDrawingSize.Height
+                    : asDrawingSize.Width;
+            }
+
+            if (value is Windows.Foundation.Size asFoundationSize)
+            {
+                valueAsDouble = asFoundationSize.Width > asFoundationSize.Height
+                    ? asFoundationSize.Height
+                    : asFoundationSize.Width;
+            }
+
+            return !double.IsFinite(valueAsDouble)
+                ? new CornerRadius()
+                : new CornerRadius(valueAsDouble / 2);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class FontPathLookupConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is FontFamily asFontFamily)
+            {
+                return asFontFamily;
+            }
+
+            if (value is string asString &&
+                FontCollections.TryGetFontFamily(asString, out FontFamily? fontFamily))
+            {
+                return fontFamily;
+            }
+
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

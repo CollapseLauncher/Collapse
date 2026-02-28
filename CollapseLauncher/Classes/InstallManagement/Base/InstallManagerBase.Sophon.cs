@@ -575,7 +575,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
-            List<string> additionalMatchingFields = otherManifestIdentity.Select(x => x.MatchingField).ToList();
+            List<string> additionalMatchingFields = otherManifestIdentity
+                                                   .Where(x => !string.IsNullOrEmpty(x.MatchingField))
+                                                   .Select(x => x.MatchingField!).ToList();
 
             installManifest.AddRange(additionalMatchingFields.Select(matchingField => installManifestFirst.GetOtherManifestInfoPair(matchingField)));
             return;
@@ -1091,8 +1093,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<string> additionalPackageMatchingFields =
                 manifestPair.OtherSophonBuildData!.ManifestIdentityList
-                            .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
-                            .Select(x => x.MatchingField)
+                            .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                            .Select(x => x.MatchingField!)
                             .WhereMatchPattern(x => x, true, excludeMatchingFieldsPattern)
                             .ToList();
 
@@ -1103,6 +1105,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             foreach (string matchingField in additionalPackageMatchingFields)
             {
+                if (string.IsNullOrEmpty(matchingField))
+                {
+                    continue;
+                }
+
                 await AddSophonDiffAssetsToList(httpClient,
                                                 requestedUrlFrom,
                                                 requestedUrlTo,
@@ -1274,9 +1281,9 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual int GetSophonLocaleCodeIndex(SophonManifestBuildData sophonData, string lookupName)
         {
-            List<string> localeList = sophonData.ManifestIdentityList
+            List<string?> localeList = sophonData.ManifestIdentityList
                                                 .Where(x => IsValidLocaleCode(x.MatchingField))
-                                                .Select(x => x.MatchingField.ToLower())
+                                                .Select(x => x.MatchingField?.ToLower())
                                                 .ToList();
 
             int index = localeList.IndexOf(lookupName);
@@ -1289,8 +1296,8 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (SophonManifestBuildIdentity identity in sophonData.ManifestIdentityList)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string localeCode = identity.MatchingField.ToLower();
-                if (!IsValidLocaleCode(localeCode))
+                string? localeCode = identity.MatchingField?.ToLower();
+                if (string.IsNullOrEmpty(localeCode) || !IsValidLocaleCode(localeCode))
                 {
                     continue;
                 }

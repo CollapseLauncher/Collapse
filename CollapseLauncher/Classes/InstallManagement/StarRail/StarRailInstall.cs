@@ -93,7 +93,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override StarRailRepairV2 GetGameRepairInstance(string? versionString) =>
             new StarRailRepairV2(ParentUI,
                     GameVersionManager,
-                    GameSettings,
+                    GameSettings!,
                     true,
                     versionString);
 #nullable restore

@@ -208,7 +208,7 @@ internal static class LayeredBackgroundImageExtensions
             {
                 using IRandomAccessStream sourceRandomStream = stream.AsRandomAccessStream(true);
                 SvgImageSource            svgImageSource     = new();
-                svgImageSource.SetSourceAsync(sourceRandomStream);
+                await svgImageSource.SetSourceAsync(sourceRandomStream);
                 image.Source = svgImageSource;
                 return true;
             }

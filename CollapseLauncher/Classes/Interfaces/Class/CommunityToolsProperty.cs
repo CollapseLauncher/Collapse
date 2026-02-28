@@ -1,13 +1,17 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using WinRT;
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable CheckNamespace
 
@@ -20,19 +24,19 @@ namespace CollapseLauncher
 
     public class CommunityToolsProperty
     {
-        public Dictionary<GameNameType, List<CommunityToolsEntry>>? OfficialToolsDictionary  { get; set; }
-        public Dictionary<GameNameType, List<CommunityToolsEntry>>? CommunityToolsDictionary { get; set; }
+        public Dictionary<GameNameType, List<CommunityToolsEntry>> OfficialToolsDictionary  { get; set; } = [];
+        public Dictionary<GameNameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; } = [];
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry>? OfficialToolsList { get; } = [];
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry>? CommunityToolsList { get; } = [];
+        private readonly Dictionary<string, List<CommunityToolsEntry>> _officialToolsDictionaryPerProfileCache  = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, List<CommunityToolsEntry>> _communityToolsDictionaryPerProfileCache = new(StringComparer.OrdinalIgnoreCase);
 
         public void Clear()
         {
-            OfficialToolsList?.Clear();
-            CommunityToolsList?.Clear();
+            OfficialToolsDictionary.Clear();
+            _officialToolsDictionaryPerProfileCache.Clear();
+
+            CommunityToolsDictionary.Clear();
+            _communityToolsDictionaryPerProfileCache.Clear();
         }
 
         public static async Task<CommunityToolsProperty?> LoadCommunityTools(Stream fileStream)
@@ -40,8 +44,6 @@ namespace CollapseLauncher
             try
             {
                 CommunityToolsProperty? communityToolkitProperty = await fileStream.DeserializeAsync(CommunityToolsPropertyJsonContext.Default.CommunityToolsProperty);
-                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.OfficialToolsDictionary);
-                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.CommunityToolsDictionary);
                 return communityToolkitProperty;
             }
             catch (Exception ex)
@@ -52,67 +54,157 @@ namespace CollapseLauncher
             }
         }
 
-        private static void ResolveCommunityToolkitFontAwesomeGlyph(Dictionary<GameNameType, List<CommunityToolsEntry>>? dictionary)
+        public void CombineFrom(CommunityToolsProperty fromSource)
         {
-            // If the dictionary is null, return
-            if (dictionary == null)
+            AddOrUpdate(OfficialToolsDictionary,  fromSource.OfficialToolsDictionary);
+            AddOrUpdate(CommunityToolsDictionary, fromSource.CommunityToolsDictionary);
+        }
+
+        public CommunityToolsContext GetContext(PresetConfig config)
+        {
+            string profileName = config.ProfileName ?? throw new NullReferenceException("Game config's ProfileName field cannot be null!");
+
+            ref List<CommunityToolsEntry>? officialEntries =
+                ref CollectionsMarshal.GetValueRefOrAddDefault(_officialToolsDictionaryPerProfileCache, profileName, out _);
+
+            ref List<CommunityToolsEntry>? communityEntries =
+                ref CollectionsMarshal.GetValueRefOrAddDefault(_communityToolsDictionaryPerProfileCache, profileName, out _);
+
+            officialEntries  ??= [];
+            communityEntries ??= [];
+
+            if (officialEntries.Count != 0 ||
+                communityEntries.Count != 0)
             {
-                return;
+                return new CommunityToolsContext
+                {
+                    OfficialEntries  = officialEntries,
+                    CommunityEntries = communityEntries,
+                    GamePresetConfig = config
+                };
             }
 
-            // Get font paths
-            string fontAwesomeSolidPath = FontCollections.FontAwesomeSolid.Source;
-            string fontAwesomeRegularPath = FontCollections.FontAwesomeRegular.Source;
-            string fontAwesomeBrandPath = FontCollections.FontAwesomeBrand.Source;
+            AddListBasedOnRegion(officialEntries,  OfficialToolsDictionary,  profileName);
+            AddListBasedOnRegion(communityEntries, CommunityToolsDictionary, profileName);
 
-            // Enumerate key pairs
-            foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> keyPair in dictionary)
+            return new CommunityToolsContext
             {
-                // Skip if value list is null or empty
-                if ((keyPair.Value.Count) == 0)
-                    continue;
+                OfficialEntries  = officialEntries,
+                CommunityEntries = communityEntries,
+                GamePresetConfig = config
+            };
+        }
 
-                // Enumerate list
-                foreach (CommunityToolsEntry entry in keyPair.Value)
-                {
-                    // Get the last index of font namespace. If none was found, then skip
-                    int lastIndexOfNamespace = entry.IconFontFamily?.LastIndexOf('#') ?? -1;
-                    if (lastIndexOfNamespace == -1)
-                        continue;
+        private static void AddListBasedOnRegion(
+            List<CommunityToolsEntry>                           listToAdd,
+            Dictionary<GameNameType, List<CommunityToolsEntry>> source,
+            string                                              profileName)
+        {
+            listToAdd.AddRange(source.Values
+                                     .SelectMany(x => x)
+                                     .Where(entry => entry.Profiles.Contains(profileName)));
+        }
 
-                    // Get the font path as its base only
-                    ReadOnlySpan<char> currentEntryFontPath = entry.IconFontFamily.AsSpan(0, lastIndexOfNamespace).TrimEnd('/');
-
-                    // Check if the path has Solid font-family.
-                    if (fontAwesomeSolidPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        entry.IconFontFamily = fontAwesomeSolidPath;
-                        continue;
-                    }
-
-                    // Check if the path has Regular font-family
-                    if (fontAwesomeRegularPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        entry.IconFontFamily = fontAwesomeRegularPath;
-                        continue;
-                    }
-
-                    // Check if the path has Brands font-family
-                    if (fontAwesomeBrandPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        entry.IconFontFamily = fontAwesomeBrandPath;
-                    }
-                }
+        private static void AddOrUpdate(
+            Dictionary<GameNameType, List<CommunityToolsEntry>> toUpdate,
+            Dictionary<GameNameType, List<CommunityToolsEntry>> source)
+        {
+            foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> kvp in source)
+            {
+                ref List<CommunityToolsEntry>? value = ref CollectionsMarshal.GetValueRefOrAddDefault(toUpdate, kvp.Key, out _);
+                (value ??= []).AddRange(kvp.Value);
             }
         }
     }
 
-    public class CommunityToolsEntry
+    [GeneratedBindableCustomProperty]
+    public partial class CommunityToolsContext : NotifyPropertyChanged
     {
-        public string?       IconFontFamily { get; set; }
-        public string?       IconGlyph      { get; set; }
-        public string?       Text           { get; set; }
-        public string?       URL            { get; set; }
-        public List<string>? Profiles       { get; set; }
+        public required PresetConfig GamePresetConfig
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<CommunityToolsEntry> OfficialEntries
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        } = [];
+
+        public List<CommunityToolsEntry> CommunityEntries
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        } = [];
+
+        public bool IsHasAnyEntries => OfficialEntries.Count > 0 &&
+                                       CommunityEntries.Count > 0;
+    }
+
+    [GeneratedBindableCustomProperty]
+    public partial class CommunityToolsEntry : NotifyPropertyChanged
+    {
+        public string? IconFontFamily
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? IconGlyph
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? Text
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? URL
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public HashSet<string> Profiles
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        } = [];
     }
 }

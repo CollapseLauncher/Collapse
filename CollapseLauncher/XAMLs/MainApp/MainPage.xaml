@@ -4,10 +4,10 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -64,14 +64,14 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="152" />
                 <ColumnDefinition Width="0" />
-                <ColumnDefinition x:Name="GridBG_RegionMargin" />
+                <ColumnDefinition x:Name="GridBGRegionMargin" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
-            <Grid x:Name="GridBG_IconGrid"
+            <Grid x:Name="GridBGIconGrid"
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
                   x:FieldModifier="internal" />
@@ -81,7 +81,7 @@
             <Grid x:Name="TitleBarDrag2"
                   Grid.Column="4"
                   Grid.ColumnSpan="2" />
-            <Grid x:Name="GridBG_RegionGrid"
+            <Grid x:Name="GridBGRegionGrid"
                   Grid.Column="2"
                   Grid.ColumnSpan="3"
                   Height="47"
@@ -89,7 +89,7 @@
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   x:FieldModifier="internal">
-                <StackPanel x:Name="GridBG_RegionInner"
+                <StackPanel x:Name="GridBGRegionInner"
                             Grid.Column="0"
                             Margin="0,0"
                             VerticalAlignment="Center"
@@ -101,13 +101,12 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Grid x:Name="ComboBoxGameGridShadow"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGridShadow)}"
+                        <Grid Grid.Column="0"
+                              extension:UIElementExtensions.UniformCornerRadius="-1"
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
-                        <Grid x:Name="ComboBoxGameGrid"
-                              Grid.Column="0"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
+                        <Grid Grid.Column="0"
+                              extension:UIElementExtensions.UniformCornerRadius="-1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
@@ -135,16 +134,16 @@
                         <Grid x:Name="ChangeGameBtnGridShadow"
                               Grid.Column="1"
                               Margin="8,0,0,0"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGridShadow)}"
+                              extension:UIElementExtensions.UniformCornerRadius="-1"
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
                         <Grid x:Name="ChangeGameBtnGrid"
                               Grid.Column="1"
                               Margin="8,0,0,0"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGrid)}">
+                              extension:UIElementExtensions.UniformCornerRadius="-1">
                             <Button x:Name="ChangeRegionConfirmBtnNoWarning"
                                     Click="ChangeRegionNoWarning"
-                                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeRegionConfirmBtnNoWarning)}"
+                                    extension:UIElementExtensions.UniformCornerRadius="-1"
                                     IsEnabled="False"
                                     Style="{ThemeResource NewAccentButtonStyle}"
                                     Visibility="Collapsed">
@@ -182,7 +181,7 @@
                                 </Button.Content>
                             </Button>
                             <Button x:Name="ChangeRegionConfirmBtn"
-                                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeRegionConfirmBtn)}"
+                                    extension:UIElementExtensions.UniformCornerRadius="-1"
                                     IsEnabled="False"
                                     Style="{ThemeResource NewAccentButtonStyle}">
                                 <Button.Content>
@@ -268,8 +267,7 @@
                                                                 <Grid.RenderTransform>
                                                                     <RotateTransform Angle="-180" />
                                                                 </Grid.RenderTransform>
-                                                                <AnimatedIcon x:Name="SearchAnimatedIcon"
-                                                                              Width="18"
+                                                                <AnimatedIcon Width="18"
                                                                               Height="18">
                                                                     <AnimatedIcon.Source>
                                                                         <animatedvisuals:AnimatedBackVisualSource />
@@ -296,15 +294,14 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid x:Name="GridBG_NotifBtn"
+            <Grid x:Name="GridBGNotifBtn"
                   Grid.Column="6"
                   Width="32"
                   Height="32"
                   Margin="0,1,0,0"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Stretch"
-                  x:FieldModifier="internal"
-                  CornerRadius="0,0,0,0">
+                  x:FieldModifier="internal">
                 <ToggleButton x:Name="ToggleNotificationPanelBtn"
                               Padding="0"
                               HorizontalAlignment="Stretch"
@@ -320,18 +317,16 @@
                            Margin="0,-4,-4,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
-                           Style="{StaticResource AttentionValueInfoBadgeStyle}"
                            Visibility="Collapsed"
                            Value="0" />
             </Grid>
-            <Grid x:Name="GridBG_WindowBtn"
-                  Grid.Column="7"
+            <Grid Grid.Column="7"
                   Height="31"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Top"
                   CornerRadius="0,0,0,0" />
         </Grid>
-        <Button x:Name="GridBG_Icon"
+        <Button x:Name="GridBGIcon"
                 Grid.Column="0"
                 Height="33"
                 Margin="58,8,0,0"
@@ -353,7 +348,7 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
                 <!--  ReSharper disable once Xaml.InvalidResourceType  -->
-                <Image x:Name="GridBG_IconImg"
+                <Image x:Name="GridBGIconImg"
                        Width="Auto"
                        Margin="-2,-2,0,-2"
                        VerticalAlignment="Stretch"
@@ -363,7 +358,7 @@
                         <ScalarTransition />
                     </Image.OpacityTransition>
                 </Image>
-                <StackPanel Name="GridBG_IconTitle"
+                <StackPanel Name="GridBGIconTitle"
                             Width="0"
                             Margin="6,-8,0,0"
                             VerticalAlignment="Center"
@@ -385,8 +380,7 @@
                                Text="Launcher"
                                Visibility="Visible" />
                 </StackPanel>
-                <StackPanel x:Name="PreviewBuildIndicator"
-                            Margin="-10,-12,0,0"
+                <StackPanel Margin="-10,-12,0,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Background="{ThemeResource AccentColor}"
@@ -491,11 +485,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="NotificationPanelClearAllBtn"
-                        Grid.Column="1"
+                <Button Grid.Column="1"
                         HorizontalAlignment="Right"
                         Click="ClearAllNotification"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(NotificationPanelClearAllBtn)}"
+                        extension:UIElementExtensions.UniformCornerRadius="-1"
                         Style="{ThemeResource TransparentDefaultButtonStyle}">
                     <StackPanel Margin="4,0"
                                 Orientation="Horizontal">

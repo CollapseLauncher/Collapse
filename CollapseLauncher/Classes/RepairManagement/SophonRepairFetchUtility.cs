@@ -64,9 +64,8 @@ internal static class RepairSharedUtility
         infoPairs.AddRange(infoPair
                           .OtherSophonBuildData?
                           .ManifestIdentityList
-                          .Where(x => !x.MatchingField
-                                        .ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
-                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField)) ?? []);
+                          .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !x.MatchingField.ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
+                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField!)) ?? []);
 
         foreach (SophonChunkManifestInfoPair pair in infoPairs)
         {

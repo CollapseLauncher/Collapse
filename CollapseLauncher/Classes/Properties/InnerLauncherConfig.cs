@@ -11,7 +11,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +20,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher
@@ -85,7 +85,10 @@ namespace CollapseLauncher
 
         public static string? GetComboBoxGameRegionValue(object obj)
         {
-            StackPanel value     = (StackPanel)obj;
+            if (obj is not StackPanel value)
+            {
+                return null;
+            }
             TextBlock? textBlock = value.Children.FirstOrDefault() as TextBlock;
             return textBlock?.Text;
         }

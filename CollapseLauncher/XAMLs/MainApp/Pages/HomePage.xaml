@@ -17,7 +17,6 @@
       xmlns:imageex="using:ImageEx"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
-      xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -37,12 +36,13 @@
         <pages:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
         <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
         <pages:PercentageValueConverter x:Key="PercentageValueConverter" />
-        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
         <pages:IsNumberEqualToBooleanConverter x:Key="IsNumberEqualToBooleanConverter" />
         <pages:InverseIsContainsAnyNumbersToBooleanConverter x:Key="InverseIsContainsAnyNumbersToBooleanConverter" />
         <pages:TimeSpanToTimeStampStringConverter x:Key="TimeSpanToTimeStampStringConverter" />
         <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
         <pages:TimeSpanMoreThan15SecondsToVisibilityConverter x:Key="TimeSpanMoreThan15SecondsToVisibilityConverter" />
+        <pages:FontPathLookupConverter x:Key="FontPathLookupConverter" />
+        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
@@ -757,7 +757,7 @@
                                    HorizontalAlignment="Right"
                                    BorderThickness="0"
                                    Click="WpfPackageBtn_OnClick"
-                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(WpfPackageBtn)}"
+                                   extension:UIElementExtensions.UniformCornerRadius="-1"
                                    FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
                                    Loaded="WpfPackageBtn_OnLoaded"
                                    PointerEntered="WpfPackageBtn_OnPointerEntered"
@@ -1358,7 +1358,8 @@
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
-                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty}">
+                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty}"
+                      Translation="0,0,48">
                     <Pivot HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex}">
                         <Pivot.Resources>
@@ -1619,7 +1620,7 @@
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
                 <Grid x:Name="SophonProgressRingShadow"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
+                      extension:UIElementExtensions.UniformCornerRadius="-1"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
@@ -1797,7 +1798,7 @@
                     Height="32"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressInformationButton)}"
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
@@ -1897,7 +1898,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressSettingsButton)}"
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
@@ -1934,7 +1935,7 @@
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
                 <Grid x:Name="ProgressRingShadow"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressRingShadow)}"
+                      extension:UIElementExtensions.UniformCornerRadius="-1"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,48" />
                 <ProgressRing Width="Auto"
@@ -1965,7 +1966,7 @@
                                   Value="{x:Bind ProgressRingPerFile.Value, Mode=OneWay}" />
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
-                          CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
+                          extension:UIElementExtensions.UniformCornerRadius="-1"
                           Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,32" />
                     <Ellipse x:Name="ProgressRingBG2"
@@ -2096,7 +2097,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressSettingsButton)}"
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
@@ -2128,9 +2129,11 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
                     Shadow="{ThemeResource SharedShadow}"
-                    Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}">
+                    DataContext="{x:Bind CommunityToolContext, Mode=OneWay}"
+                    Visibility="{Binding IsHasAnyEntries, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
+                    Translation="0,0,32">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
                                   x:DataType="local:CommunityToolsEntry">
@@ -2138,7 +2141,7 @@
                                 HorizontalContentAlignment="Left"
                                 extension:UIElementExtensions.CursorType="Hand"
                                 Click="OpenCommunityButtonLink"
-                                Tag="{x:Bind URL}">
+                                Tag="{Binding URL, Mode=OneWay}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
@@ -2148,14 +2151,14 @@
                                 <FontIcon Grid.Column="0"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
-                                          FontFamily="{x:Bind IconFontFamily}"
+                                          FontFamily="{Binding IconFontFamily, Mode=OneWay, Converter={StaticResource FontPathLookupConverter}}"
                                           FontSize="12"
-                                          Glyph="{x:Bind IconGlyph}" />
+                                          Glyph="{Binding IconGlyph, Mode=OneWay}" />
                                 <TextBlock Grid.Column="1"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           Text="{x:Bind Text}"
+                                           Text="{Binding Text, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
@@ -2167,23 +2170,24 @@
                                 extension:UIElementExtensions.CursorType="Hand"
                                 Click="OpenCommunityButtonLink"
                                 Style="{ThemeResource AccentButtonStyle}"
-                                Tag="{x:Bind URL}">
+                                Tag="{Binding URL, Mode=OneWay}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="28" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <FontIcon HorizontalAlignment="Center"
+                                <FontIcon Grid.Column="0"
+                                          HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
-                                          FontFamily="{x:Bind IconFontFamily}"
+                                          FontFamily="{Binding IconFontFamily, Mode=OneWay, Converter={StaticResource FontPathLookupConverter}}"
                                           FontSize="12"
-                                          Glyph="{x:Bind IconGlyph}" />
+                                          Glyph="{Binding IconGlyph, Mode=OneWay}" />
                                 <TextBlock Grid.Column="1"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           Text="{x:Bind Text}"
+                                           Text="{Binding Text, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
@@ -2221,7 +2225,8 @@
                                       HorizontalScrollBarVisibility="Visible"
                                       HorizontalScrollMode="Enabled"
                                       VerticalScrollBarVisibility="Disabled"
-                                      VerticalScrollMode="Disabled">
+                                      VerticalScrollMode="Disabled"
+                                      DataContext="{x:Bind CommunityToolContext, Mode=OneWay}">
                             <Grid Margin="16,0,8,0"
                                   ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
@@ -2229,14 +2234,14 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0"
-                                            Visibility="{x:Bind pages:HomePage.CommunityToolsOfficialGridVisibility}">
+                                            Visibility="{Binding OfficialEntries, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}">
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.OfficialToolsList}">
+                                              ItemsSource="{Binding OfficialEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -2256,14 +2261,14 @@
                                     </GridView>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1"
-                                            Visibility="{x:Bind pages:HomePage.CommunityToolsCommunityGridVisibility}">
+                                            Visibility="{Binding CommunityEntries, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}">
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.CommunityToolsList}">
+                                              ItemsSource="{Binding CommunityEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -2294,7 +2299,8 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     Shadow="{ThemeResource SharedShadow}"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}">
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
+                    Translation="0,0,32">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch">
@@ -2744,7 +2750,7 @@
                       Grid.Row="0"
                       Grid.Column="0"
                       HorizontalAlignment="Stretch"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
+                      extension:UIElementExtensions.UniformCornerRadius="-1"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
                       PointerExited="ElementScaleInHoveredPointerExited"
                       Shadow="{ThemeResource SharedShadow}"
@@ -2754,7 +2760,7 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             IsEnabled="False"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             Visibility="Collapsed">
@@ -2774,7 +2780,7 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             Click="OpenButtonLinkFromTag"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource AccentButtonStyle}"
                             Tag="{x:Bind pages:HomePage.GamePreRegisterLink}"
                             Visibility="Collapsed">
@@ -2823,19 +2829,18 @@
                       Grid.Column="0"
                       HorizontalAlignment="Stretch"
                       extension:UIElementExtensions.CursorType="Hand"
-                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                       PointerEntered="ElementScaleOutHoveredPointerEntered"
-                      PointerExited="ElementScaleInHoveredPointerExited"
-                      Shadow="{ThemeResource SharedShadow}"
-                      Translation="0,0,32">
+                      PointerExited="ElementScaleInHoveredPointerExited">
                     <Button x:Name="InstallGameBtn"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             Click="InstallGameDialog"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource NewAccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}">
+                            ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,32">
                         <Button.Content>
                             <Grid Margin="8,0">
                                 <Grid.ColumnDefinitions>
@@ -2852,7 +2857,7 @@
                                       Grid.Column="1"
                                       Margin="-20,-12"
                                       Padding="8,0"
-                                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
+                                      extension:UIElementExtensions.UniformCornerRadius="-1">
                                     <AnimatedVisualPlayer Height="26"
                                                           HorizontalAlignment="Right">
                                         <lottie:DownloadIcon Foreground="{Binding ElementName=InstallGameBtn, Path=Foreground}" />
@@ -2867,10 +2872,12 @@
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="UpdateGameDialog"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,32">
                         <Button.Content>
                             <Grid Margin="8,0">
                                 <Grid.ColumnDefinitions>
@@ -2888,7 +2895,7 @@
                                       Width="64"
                                       Margin="-20,-12"
                                       Padding="12,0"
-                                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
+                                      extension:UIElementExtensions.UniformCornerRadius="-1">
                                     <AnimatedVisualPlayer Height="28"
                                                           HorizontalAlignment="Right">
                                         <lottie:UpdateIcon Foreground="{Binding ElementName=UpdateGameBtn, Path=Foreground}" />
@@ -2903,10 +2910,12 @@
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="StartGame"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind StartTooltipText}"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,32">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -2923,7 +2932,7 @@
                                   Width="64"
                                   Margin="-20,-12"
                                   Padding="12,0"
-                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
+                                  extension:UIElementExtensions.UniformCornerRadius="-1">
                                 <AnimatedVisualPlayer Height="28"
                                                       HorizontalAlignment="Right">
                                     <lottie:StartGameIcon Foreground="{Binding ElementName=StartGameBtn, Path=Foreground}" />
@@ -2943,9 +2952,11 @@
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="CancelInstallationProcedure"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource NewAccentButtonStyle}"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,32">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -2969,10 +2980,12 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
-                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
+                            extension:UIElementExtensions.UniformCornerRadius="-1"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,32">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -3000,7 +3013,7 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     Click="ForceUpdatePlaytimeButton_Click"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
+                    extension:UIElementExtensions.UniformCornerRadius="-1"
                     PointerExited="HidePlaytimeStatsFlyout"
                     Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"

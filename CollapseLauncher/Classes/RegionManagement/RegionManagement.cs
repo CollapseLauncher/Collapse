@@ -34,10 +34,7 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static string RegionToChangeName
-        {
-            get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}";
-        }
+        private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}";
 
         private         List<object> LastMenuNavigationItem;
         private         List<object> LastFooterNavigationItem;
@@ -236,7 +233,7 @@ namespace CollapseLauncher
             try
             {
                 // Wait until the notification is ready
-                while (!IsLoadNotifComplete)
+                while (!_isLoadNotifComplete)
                 {
                     await Task.Delay(250);
                 }
@@ -306,9 +303,9 @@ namespace CollapseLauncher
                     return;
                 }
 
-                LockRegionChangeBtn = true;
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _lockRegionChangeBtn = true;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
@@ -323,7 +320,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 
@@ -336,9 +333,9 @@ namespace CollapseLauncher
                     return;
                 }
 
-                LockRegionChangeBtn = true;
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _lockRegionChangeBtn = true;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
@@ -353,7 +350,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 
@@ -367,7 +364,7 @@ namespace CollapseLauncher
                 }
 
                 // Disable ChangeRegionBtn and hide flyout
-                LockRegionChangeBtn = true;
+                _lockRegionChangeBtn = true;
                 ToggleChangeRegionBtn(sender, true);
                 if (!await LoadRegionRootButton())
                 {
@@ -376,8 +373,8 @@ namespace CollapseLauncher
 
                 // Finalize loading
                 ToggleChangeRegionBtn(sender, false);
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
             }
             catch (Exception ex)
             {
@@ -386,7 +383,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 
