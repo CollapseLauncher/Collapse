@@ -164,8 +164,8 @@
     
     <ItemGroup Condition="'$(PublishAot)' == 'true'">
         <!-- Use additional linker arguments -->
-        <LinkerArg Include="/DEBUG:NONE" Condition="'$(Configuration)'!='Debug'" />
-        <LinkerArg Include="/LTCG" />
+        <LinkerArg Include="/DEBUG:NONE" />
+        <!-- <LinkerArg Include="/LTCG" /> -->
         
         <!-- Region: Libsql.Client -->
         <DirectPInvoke Include="csharp_bindings" />
