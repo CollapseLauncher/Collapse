@@ -7,7 +7,6 @@ on:
   push:
     branches:
         - 'main'
-        - '1.83.x-staging'
     paths-ignore:
         - '**.md'
         - 'Hi3Helper.Core/Lang/**.json'
@@ -29,12 +28,12 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         configuration: [Debug] # No need to distribute Debug builds
         platform: [x64]
-        framework: [net9.0-windows10.0.26100.0]
+        framework: [net10.0-windows10.0.26100.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
@@ -85,12 +84,12 @@ jobs:
         dotnet build CollapseLauncher -c Publish --verbosity quiet --no-restore
 
   build-nativeaot:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         configuration: [Debug]
         platform: [x64]
-        framework: [net9.0-windows10.0.26100.0]
+        framework: [net10.0-windows10.0.26100.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
