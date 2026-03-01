@@ -690,8 +690,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "默认：",
     "FileDownloadSettings_SpeedLimitHelp2": "速度限制取值范围：",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "限制允许的最大下载带宽。该设置不能与",
-    "FileDownloadSettings_SpeedLimitHelp5": "同时使用。",
+    "FileDownloadSettings_SpeedLimitHelp4": "限制允许的最大下载带宽。",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "预分配下载器（新）",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "仅适用于游戏安装、游戏修复与缓存更新。",

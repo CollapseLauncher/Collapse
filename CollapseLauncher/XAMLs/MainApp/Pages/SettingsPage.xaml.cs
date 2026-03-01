@@ -1290,25 +1290,6 @@ namespace CollapseLauncher.Pages
             set => LauncherConfig.IsBurstDownloadModeEnabled = value;
         }
 
-        private bool IsUseDownloadSpeedLimiter
-        {
-            get
-            {
-                bool value = LauncherConfig.IsUseDownloadSpeedLimiter;
-                if (value)
-                    NetworkBurstDownloadModeToggle.IsOn = false;
-                NetworkBurstDownloadModeToggle.IsEnabled = !value;
-                return value;
-            }
-            set
-            {
-                if (value)
-                    NetworkBurstDownloadModeToggle.IsOn = false;
-                NetworkBurstDownloadModeToggle.IsEnabled = !value;
-                LauncherConfig.IsUseDownloadSpeedLimiter = value;
-            }
-        }
-
         private bool IsUsePreallocatedDownloader
         {
             get
@@ -1342,24 +1323,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsEnforceToUse7ZipOnExtract
         {
-            get => IsEnforceToUse7zipOnExtract;
-            set => IsEnforceToUse7zipOnExtract = value;
-        }
-
-        private double DownloadSpeedLimit
-        {
-            get
-            {
-                double val = LauncherConfig.DownloadSpeedLimit;
-                double valDividedM = val / (1 << 20);
-                return valDividedM;
-            }
-            set
-            {
-                long valBfromM = (long)(value * (1 << 20));
-                
-                LauncherConfig.DownloadSpeedLimit = Math.Max(valBfromM, 0);
-            }
+            get => LauncherConfig.IsEnforceToUse7ZipOnExtract;
+            set => LauncherConfig.IsEnforceToUse7ZipOnExtract = value;
         }
 
         private double DownloadChunkSize

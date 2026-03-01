@@ -164,8 +164,8 @@
     
     <ItemGroup Condition="'$(PublishAot)' == 'true'">
         <!-- Use additional linker arguments -->
-        <LinkerArg Include="/DEBUG:NONE" Condition="'$(Configuration)'!='Debug'" />
-        <LinkerArg Include="/LTCG" />
+        <LinkerArg Include="/DEBUG:NONE" />
+        <!-- <LinkerArg Include="/LTCG" /> -->
         
         <!-- Region: Libsql.Client -->
         <DirectPInvoke Include="csharp_bindings" />
@@ -218,6 +218,12 @@
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Version.lib" />
         <DirectPInvoke Include="ws2_32" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\WS2_32.lib" />
+
+        <!-- Region: Hi3Helper.Throttle -->
+        <!--
+        <DirectPInvoke Include="Lib\Hi3Helper.Throttle.dll" />
+        <NativeLibrary Include="StaticLib\Hi3Helper.Throttle.lib" />
+        -->
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
@@ -509,6 +515,11 @@
         <!-- Region: waifu2x-ncnn-vulkan -->
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
+
+        <!-- Region: Hi3Helper.Throttle -->
+        <!--
+        <Delete Files="$(PublishDir)Lib\Hi3Helper.Throttle.dll" Condition="'$(PublishAot)' == 'true'" />
+        -->
 
         <!-- Region: libzstd -->
         <ItemGroup Condition="'$(PublishAot)' == 'true'">

@@ -690,8 +690,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Default:",
     "FileDownloadSettings_SpeedLimitHelp2": "Speed Limit value range:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading. This setting cannot be used alongside the",
-    "FileDownloadSettings_SpeedLimitHelp5": "setting.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "New Pre-allocated Downloader",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "For Game Installation, Game Repair and Cache Updates only.",

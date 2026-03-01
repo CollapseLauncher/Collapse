@@ -1,26 +1,26 @@
 @echo off
 :: Set the Toolchain variable to empty to use MSVC instead.
 :: set Toolchain=-T ClangCL
-set Toolchain=
+set Toolchain=-T ClangCL
 :: Either can be Release (/O2 /Ob2), MinSizeRel (/O1 /Ob1) or RelWithDebInfo (/O2 /Ob1 /Zi)
-set BuildType=Release
+set BuildType=MinSizeRel
 set OutputDir=%~dp0..\
 set RuntimeLibrary=MultiThreaded
 
 :: If you want to enables LTO using Clang, replaces LTOArgs with defined one below (very experimental)
-:: set LTOArgs=-flto=full -fuse-ld=lld
+:: set LTOArgs=-flto
 :: set CXXFLAGS=%LTOArgs% -EHsc
 :: set CFLAGS=%LTOArgs% -EHsc
 :: set LDFLAGS=%LTOArgs% /LTCG
 :: Or use the one below if you're using MSVC.
 :: set LTOArgs=
-:: set CXXFLAGS=-EHsc
-:: set CFLAGS=-EHsc
-:: set LDFLAGS=/LTCG
+:: set CXXFLAGS=-EHsc /GL
+:: set CFLAGS=-EHsc /GL
+:: set LDFLAGS=/LTCG /GENPROFILE
 set LTOArgs=
 set CXXFLAGS=-EHsc
 set CFLAGS=-EHsc
-set LDFLAGS=/LTCG
+set LDFLAGS=
 
 set GenericCMAKEParamNoFlagsNoIntOpt=-DCMAKE_BUILD_TYPE=%BuildType% %Toolchain% -DCMAKE_MSVC_RUNTIME_LIBRARY=%RuntimeLibrary%
 set GenericCMAKEParamNoFlags=%GenericCMAKEParamNoFlagsNoIntOpt% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=true
@@ -32,11 +32,11 @@ if NOT %errorlevel% == 0 ( goto :EOF )
 
 :: Start building
 call :Build_waifu2x || goto :EOF
-call :Build_libomp  || goto :EOF
 call :Build_libwebp || goto :EOF
 call :Build_libheif || goto :EOF
 call :Build_libjxl  || goto :EOF
 call :Build_libzstd || goto :EOF
+call :Build_libomp  || goto :EOF
 
 :: Suicide
 goto :COMPLETE
@@ -64,17 +64,25 @@ goto :COMPLETE
 :: Building functions - libomp
 :Build_libomp
     title=Building libomp
-    git clone --no-checkout --depth=1 --filter=tree:0 https://github.com/llvm/llvm-project
+    git clone --recursive https://github.com/llvm/llvm-project
     cd llvm-project
-    git sparse-checkout set --no-cone /openmp /cmake && git checkout
     git fetch --all && git pull --all
     copy /Y ..\patch\openmp\runtime\CMakeLists.txt openmp\runtime\CMakeLists.txt
-    cd openmp
-    cmake . %GenericCMAKEParamNoFlagsNoIntOpt% -DENABLE_CHECK_TARGETS=FALSE -DOPENMP_STANDALONE_BUILD=1 -DLIBOMP_ENABLE_SHARED=FALSE -B vclatestbuild || goto :ERR
+    cd runtimes
+    set OldCXXFLAGS=%CXXFLAGS%
+    set OldCFLAGS=%CFLAGS%
+    set OldLDFLAGS=%LDFLAGS%
+    set CXXFLAGS=
+    set CFLAGS=
+    set LDFLAGS=
+    cmake . %GenericCMAKEParamNoFlagsNoIntOpt% -DENABLE_CHECK_TARGETS=FALSE -DLLVM_ENABLE_RUNTIMES=openmp -DLIBOMP_ENABLE_SHARED=FALSE -B vclatestbuild || goto :ERR
     cd vclatestbuild
     msbuild ALL_BUILD.vcxproj -p:Configuration=%BuildType% /m:%NUMBER_OF_PROCESSORS% || goto :ERR
-    move runtime\src\%BuildType%\libomp.lib.lib runtime\src\%BuildType%\libomp.lib
-    call :CallCopy runtime\src\%BuildType%\libomp.lib || goto :ERR
+    set CXXFLAGS=%OldCXXFLAGS%
+    set CFLAGS=%OldCFLAGS%
+    set LDFLAGS=%OldLDFLAGS%
+    move openmp\runtime\src\%BuildType%\libomp.lib.lib openmp\runtime\src\%BuildType%\libomp.lib
+    call :CallCopy openmp\runtime\src\%BuildType%\libomp.lib || goto :ERR
     goto :BACKTOROOT
 
 :: Building functions - libwebp
@@ -209,6 +217,9 @@ goto :COMPLETE
     title=Error %errorlevel%
     echo An error has occurred with code: %errorlevel%%~1
     (pause > nul) | echo Press any key to exit...
+    if %errorlevel% EQU 0 (
+        set errorlevel=1
+    )
     goto :EOF
 
 :BACKTOROOT

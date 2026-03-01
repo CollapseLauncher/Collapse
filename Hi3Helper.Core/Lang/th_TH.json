@@ -650,8 +650,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "ค่าเริ่มต้น:",
     "FileDownloadSettings_SpeedLimitHelp2": "ช่วงค่าจำกัดความเร็ว:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "จำกัดแบนด์วิดท์สูงสุดที่อนุญาตสำหรับการดาวน์โหลด การตั้งค่านี้ไม่สามารถใช้ร่วมกับ",
-    "FileDownloadSettings_SpeedLimitHelp5": "การตั้งค่า.",
+    "FileDownloadSettings_SpeedLimitHelp4": "จำกัดแบนด์วิดท์สูงสุดที่อนุญาตสำหรับการดาวน์โหลด.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "ตัวดาวน์โหลดที่จัดสรรล่วงหน้าใหม่",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "สำหรับการติดตั้งเกม, ซ่อมแซมเกม และอัปเดตแคชเท่านั้น",
