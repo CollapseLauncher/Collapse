@@ -121,10 +121,9 @@ goto :COMPLETE
     cd "%~dp0"
 
     title=Building libheif dependencies - libde265
-    git clone --recursive https://github.com/strukturag/libde265
+    git clone --recursive https://github.com/neon-nyan/libde265
     cd libde265
     git fetch --all && git pull --all
-    xcopy /E /S /Y  ..\patch\libde265 .
     copy /Y extra\libde265\de265-version.h libde265\de265-version.h
     set OLD_CXXFLAGS=%CXXFLAGS%
     set OLD_CFLAGS=%CFLAGS%
