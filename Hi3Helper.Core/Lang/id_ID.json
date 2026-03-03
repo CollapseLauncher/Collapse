@@ -677,8 +677,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Nilai Bawaan:",
     "FileDownloadSettings_SpeedLimitHelp2": "Jangkauan nilai untuk Batasan Kecepatan:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/d",
-    "FileDownloadSettings_SpeedLimitHelp4": "Membatasi berapa banyak maksimum bandwidth yang diperbolehkan saat mengunduh. Pengaturan",
-    "FileDownloadSettings_SpeedLimitHelp5": "tidak dapat digunakan apabila pengaturan Batasan Kecepatan sedang digunakan.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Membatasi berapa banyak maksimum bandwidth yang diperbolehkan saat mengunduh.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Gunakan Pengunduh Baru Berbasis Prealokasi",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Hanya untuk Pemasangan Game, Perbaikan Game dan Pembaruan Cache.",

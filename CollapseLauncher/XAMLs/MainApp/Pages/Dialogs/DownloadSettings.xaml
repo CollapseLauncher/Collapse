@@ -4,6 +4,7 @@
              xmlns:conv="using:CollapseLauncher.Pages"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helper="using:Hi3Helper"
+             xmlns:extHelper="using:CollapseLauncher.Helper"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              CacheMode="BitmapCache"
              Loaded="Control_Loaded"
@@ -94,13 +95,15 @@
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                            Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_Title}" />
                 <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
+                              DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}"
                               Margin="0,4,0,0"
                               Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
-                              IsOn="{x:Bind IsUseDownloadSpeedLimiter, Mode=TwoWay}"
+                              IsOn="{Binding IsEnabled, Mode=TwoWay}"
                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                 <Grid Margin="0,8,12,8"
-                      ColumnSpacing="8">
+                      ColumnSpacing="8"
+                      DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
@@ -110,7 +113,7 @@
                                MinWidth="120"
                                MaxWidth="300"
                                Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_NumBox}"
-                               IsEnabled="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay}"
+                               IsEnabled="{Binding ElementName=NetworkDownloadSpeedLimitToggle, Path=IsOn, Mode=OneWay}"
                                LargeChange="10"
                                Maximum="1000"
                                Minimum="0"
@@ -118,9 +121,8 @@
                                SmallChange="0.125"
                                SpinButtonPlacementMode="Inline"
                                Text="100"
-                               Value="{x:Bind DownloadSpeedLimit, Mode=TwoWay}" />
-                    <Grid x:Name="NetworkDownloadSpeedLimitGrid"
-                          Grid.Column="1"
+                               Value="{Binding CurrentThrottleMebiBytes, Mode=TwoWay}" />
+                    <Grid Grid.Column="1"
                           Padding="10,4"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Bottom"
@@ -132,7 +134,7 @@
                                    FontStyle="Italic"
                                    FontWeight="SemiBold"
                                    Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                                   Text="{x:Bind NetworkDownloadSpeedLimitNumberBox.Value, Converter={StaticResource DownloadSpeedLimitToStringConverter}, Mode=OneWay}" />
+                                   Text="{Binding ElementName=NetworkDownloadSpeedLimitNumberBox, Path=Value, Converter={StaticResource DownloadSpeedLimitToStringConverter}, Mode=OneWay}" />
                     </Grid>
                 </Grid>
             </StackPanel>

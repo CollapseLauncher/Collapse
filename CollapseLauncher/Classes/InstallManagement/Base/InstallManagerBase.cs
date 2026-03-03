@@ -800,7 +800,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Assign extractor
             #if USENEWZIPDECOMPRESS
                 InstallPackageExtractorDelegate installTaskDelegate;
-                if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+                if (LauncherConfig.IsEnforceToUse7ZipOnExtract)
                 {
                     installTaskDelegate = ExtractUsingNative7Zip;
                 }

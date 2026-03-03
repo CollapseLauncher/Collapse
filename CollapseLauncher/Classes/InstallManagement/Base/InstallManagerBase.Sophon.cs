@@ -166,7 +166,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Create a sophon download speed limiter instance
                 SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                    SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                    SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                 // Reset status and progress properties
                 ResetStatusAndProgress();
@@ -472,9 +472,6 @@ namespace CollapseLauncher.InstallManager.Base
                             SophonLogger.LogHandler -= UpdateSophonLogHandler;
                         }
                         httpClient.Dispose();
-
-                        // Unsubscribe download limiter
-                        LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                     }
                 }
             }
@@ -720,7 +717,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Create a sophon download speed limiter instance
                     SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                        SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                        SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                     // Add base game diff data
                     bool isSuccess = await AddSophonDiffAssetsToList(

@@ -194,16 +194,16 @@ namespace CollapseLauncher.DiscordPresence
                 switch (gameCategory)
                 {
                     case "Honkai: Star Rail":
-                        EnablePresence(AppDiscordApplicationID_HSR);
+                        EnablePresence(AppDiscordApplicationIDHsr);
                         return;
                     case "Honkai Impact 3rd":
-                        EnablePresence(AppDiscordApplicationID_HI3);
+                        EnablePresence(AppDiscordApplicationIDHi3);
                         return;
                     case "Genshin Impact":
-                        EnablePresence(AppDiscordApplicationID_GI);
+                        EnablePresence(AppDiscordApplicationIDGi);
                         return;
                     case "Zenless Zone Zero":
-                        EnablePresence(AppDiscordApplicationID_ZZZ);
+                        EnablePresence(AppDiscordApplicationIDZzz);
                         return;
                     default:
                         if (TryEnablePresenceIfPlugin())

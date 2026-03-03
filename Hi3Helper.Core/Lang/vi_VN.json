@@ -651,8 +651,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Mặc định:",
     "FileDownloadSettings_SpeedLimitHelp2": "Khoảng giới hạn có thể nhập:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Giới hạn băng thông tối đa sử dụng khi tải xuống. Cài đặt này không thể dùng chung với ",
-    "FileDownloadSettings_SpeedLimitHelp5": ".",
+    "FileDownloadSettings_SpeedLimitHelp4": "Giới hạn băng thông tối đa sử dụng khi tải xuống.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Tải xuống phân bổ sẵn dung lượng",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Chỉ cho cài đặt game, sửa game và cập nhật cache.",
