@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using static Hi3Helper.Locale;
 // ReSharper disable InconsistentNaming
 // ReSharper disable ConvertToPrimaryConstructor
 
+#nullable enable
 namespace CollapseLauncher.InstallManager.StarRail
 {
     internal sealed partial class StarRailInstall : InstallManagerBase
@@ -26,16 +28,16 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         protected override int _gameVoiceLanguageID => GameVersionManager.GamePreset.GetVoiceLanguageID();
         protected override bool _canDeltaPatch => GameVersionManager.IsGameHasDeltaPatch();
-        protected override DeltaPatchProperty _gameDeltaPatchProperty => GameVersionManager.GetDeltaPatchInfo();
+        protected override DeltaPatchProperty? _gameDeltaPatchProperty => GameVersionManager.GetDeltaPatchInfo();
 
         #endregion
 
         #region Properties
 
-        private string _execName => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
+        private string? _execName => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
         protected override string _gameDataPersistentPath => Path.Combine(GamePath, $"{_execName}_Data", "Persistent");
 
-        protected override string _gameAudioLangListPath
+        protected override string? _gameAudioLangListPath
         {
             get
             {
@@ -58,7 +60,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override string _gameAudioLangListPathStatic =>
             Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt");
 
-        private StarRailRepairV2 _gameRepairManager { get; set; }
+        private StarRailRepairV2? _gameRepairManager { get; set; }
 
         #endregion
 
@@ -89,18 +91,17 @@ namespace CollapseLauncher.InstallManager.StarRail
             return await base.StartPackageVerification(gamePackage);
         }
 
-#nullable enable
         protected override StarRailRepairV2 GetGameRepairInstance(string? versionString) =>
             new StarRailRepairV2(ParentUI,
                     GameVersionManager,
                     GameSettings!,
                     true,
                     versionString);
-#nullable restore
 
-        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null,
-                                                                    bool isOnlyInstallPackage = false,
-                                                                    bool doNotDeleteZipExplicit = false)
+        protected override async Task StartPackageInstallationInner(
+            List<GameInstallPackage>? gamePackage            = null,
+            bool                      isOnlyInstallPackage   = false,
+            bool                      doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
             if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false, true))
@@ -163,16 +164,17 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Override Method - InnerParsePkgVersion2FileInfo
-#nullable enable
-        protected override async ValueTask InnerParsePkgVersion2FileInfo(string gamePath, string path,
-                                                                         List<LocalFileInfo> pkgFileInfo,
-                                                                         HashSet<string> pkgFileInfoHashSet,
-                                                                         CancellationToken token)
+        protected override async ValueTask InnerParsePkgVersion2FileInfo(
+            string              gamePath,
+            string              path,
+            List<LocalFileInfo> pkgFileInfo,
+            HashSet<string>     pkgFileInfoHashSet,
+            CancellationToken   token)
         {
             // Assign path to reader
             using StreamReader reader = new StreamReader(path, true);
             // Do loop until EOF
-            while (await reader.ReadLineAsync(token) is {} line)
+            while (await reader.ReadLineAsync(token) is { } line)
             {
                 // Read line and deserialize
                 LocalFileInfo? localFileInfo = line.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
@@ -220,7 +222,6 @@ namespace CollapseLauncher.InstallManager.StarRail
                 }
             }
         }
-#nullable restore
         #endregion
 
         #region Override Methods - Others
@@ -238,7 +239,7 @@ namespace CollapseLauncher.InstallManager.StarRail
                    };
         }
 
-        protected override int GetIDByLanguageLocaleCode(string localeCode)
+        protected override int GetIDByLanguageLocaleCode([NotNull] string? localeCode)
         {
             return localeCode switch
                    {
@@ -251,7 +252,7 @@ namespace CollapseLauncher.InstallManager.StarRail
                    };
         }
 
-        protected override string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true)
+        protected override string? GetLanguageDisplayByLocaleCode(string? localeCode, bool throwIfInvalid = true)
         {
             return localeCode switch
                    {
