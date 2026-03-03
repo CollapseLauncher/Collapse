@@ -10,6 +10,7 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
@@ -25,8 +26,11 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -35,6 +39,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 using DispatcherQueueExtensions = CollapseLauncher.Extension.DispatcherQueueExtensions;
+#pragma warning disable IDE0130
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -47,7 +52,7 @@ namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
-        private static bool IsOtherDialogCurrentlyShowing = false;
+        private static bool _isOtherDialogCurrentlyShowing;
         private static XamlRoot? SharedXamlRoot => field ??=
             DispatcherQueueExtensions.TryEnqueue(() => WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : null);
 
@@ -1757,7 +1762,7 @@ namespace CollapseLauncher.Dialogs
 
             void HideDialog() => DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(dialog.Hide);
         }
-
+        
         internal static async Task<bool> Dialog_SpawnLicenseAgreementDialog(params string[] licenseDirsToView)
         {
             string[] availableLicenseFiles = licenseDirsToView.SelectMany(EnumerateLicenses)
@@ -1767,20 +1772,20 @@ namespace CollapseLauncher.Dialogs
             {
                 string directory        = Path.GetDirectoryName(licenseFile)!;
                 string ownerName        = Path.GetFileName(directory);
-                string licenseFileName  = Path.GetFileNameWithoutExtension(licenseFile);
-                string licenseName      = licenseFileName.GetSplit(1, '_').ToString();
                 string homepageFilePath = Path.Combine(directory, "Homepage");
 
-                StackPanel panel = CollapseUIExt.CreateStackPanel();
+                TryGetLicenseInfo(homepageFilePath, out List<string> homepageUrls, out List<LicensePairInfo> licenseInfos);
 
+                StackPanel panel = CollapseUIExt.CreateStackPanel();
                 TextBlock preambleTitle = CollapseUIExt.Create<TextBlock>(x =>
                 {
-                    x.Text                    = Lang._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
-                    x.FontSize                = 28;
-                    x.HorizontalAlignment     = HorizontalAlignment.Center;
+                    x.Text = Lang._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
+                    x.FontSize = 28;
+                    x.HorizontalAlignment = HorizontalAlignment.Center;
                     x.HorizontalTextAlignment = TextAlignment.Center;
-                    x.Margin                  = new Thickness(0, 0, 0, 16);
+                    x.Margin = new Thickness(0, 0, 0, 16);
                 });
+
                 panel.AddElementToStackPanel(preambleTitle);
                 TextBlock preambleText = CollapseUIExt.CreateTextBlock(fontSize: 12, fontFamilyName: "Consolas", textAlignment: TextAlignment.Center)
                                                       .WithMargin(0, 0, 0, 16)
@@ -1810,7 +1815,7 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock contentSubtitle = CollapseUIExt.Create<TextBlock>(x =>
                 {
-                    x.Text                    = licenseName;
+                    x.Text                    = licenseInfos.FirstOrDefault()?.Name;
                     x.FontSize                = 18;
                     x.FontWeight              = FontWeights.Bold;
                     x.HorizontalAlignment     = HorizontalAlignment.Center;
@@ -1820,7 +1825,6 @@ namespace CollapseLauncher.Dialogs
 
                 if (File.Exists(homepageFilePath))
                 {
-                    string[] homepageUrls = await File.ReadAllLinesAsync(homepageFilePath);
                     foreach (string homepageUrl in homepageUrls.Where(x => !string.IsNullOrEmpty(x) && !string.IsNullOrWhiteSpace(x)))
                     {
                         TextBlock homepageTextBlock = CollapseUIExt.Create<TextBlock>(x =>
@@ -1852,10 +1856,9 @@ namespace CollapseLauncher.Dialogs
                     }
                 }
 
-                string licenseContent = await File.ReadAllTextAsync(licenseFile);
                 TextBlock licenseTextBox = CollapseUIExt.Create<TextBlock>(x =>
                 {
-                    x.Text                    = licenseContent;
+                    x.Text                    = "Loading License Content...";
                     x.FontFamily              = new FontFamily("Consolas");
                     x.Margin                  = new Thickness(0, 16, 0, 0);
                     x.HorizontalAlignment     = HorizontalAlignment.Center;
@@ -1863,6 +1866,8 @@ namespace CollapseLauncher.Dialogs
                     x.FontSize                = 12;
                 });
                 panel.AddElementToStackPanel(licenseTextBox);
+
+                _ = TryLoadLicenseContentFromInfos(licenseTextBox, licenseInfos);
 
                 ContentDialogResult result = await
                     SpawnDialog(dialogTitle,
@@ -1879,6 +1884,44 @@ namespace CollapseLauncher.Dialogs
 
             return true;
 
+            static async Task TryLoadLicenseContentFromInfos(TextBlock licenseTextBox, List<LicensePairInfo> licenseInfos)
+            {
+                Exception? lastException = null;
+                HttpClient sharedClient  = FallbackCDNUtil.GetGlobalHttpClient(true);
+
+                foreach (LicensePairInfo licenseInfo in licenseInfos)
+                {
+                    try
+                    {
+                        CDNCacheResult result = await sharedClient.TryGetCachedStreamFrom(licenseInfo.Url);
+                        if (!result.IsSuccessStatusCode)
+                        {
+                            throw new
+                                HttpRequestException($"License mirror returns {(int)result.StatusCode} ({result.StatusCode}): {licenseInfo.Url}");
+                        }
+
+                        using StreamReader reader = new(result.Stream);
+                        string licenseContent = await reader.ReadToEndAsync();
+                        DispatcherQueueExtensions.TryEnqueue(() => licenseTextBox.Text = licenseContent);
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        lastException = ex;
+                    }
+                }
+
+                if (lastException != null)
+                {
+                    DispatcherQueueExtensions.TryEnqueue(() => licenseTextBox.Text =
+                                                             $"Failed while trying to gather license info: {lastException}");
+                    return;
+                }
+
+                DispatcherQueueExtensions.TryEnqueue(() => licenseTextBox.Text =
+                                                         $"Cannot get license info from any available mirrors: {string.Join(": ", licenseInfos.Select(x => x.Url))}");
+            }
+
             static IEnumerable<string> EnumerateLicenses(string directoryPath)
             {
                 foreach (string licensePath in Directory
@@ -1887,6 +1930,49 @@ namespace CollapseLauncher.Dialogs
                                                               SearchOption.TopDirectoryOnly))
                 {
                     yield return licensePath;
+                }
+            }
+
+            static void TryGetLicenseInfo(
+                string                               homepageFilePath,
+                [NotNull] out List<string>?          homepages,
+                [NotNull] out List<LicensePairInfo>? licenseInfos)
+            {
+                Unsafe.SkipInit(out homepages);
+                Unsafe.SkipInit(out licenseInfos);
+
+                const char   licenseInfoSplitter = ';';
+                const string licenseInfoStartMark = "LicenseHref";
+
+                using StreamReader reader = new(homepageFilePath);
+                while (reader.ReadLine() is { } line)
+                {
+                    if (Uri.TryCreate(line, UriKind.Absolute, out _))
+                    {
+                        (homepages ??= []).Add(line);
+                        continue;
+                    }
+
+                    // Try to parse license info
+                    ReadOnlySpan<char> startMark   = line.GetSplit(0, licenseInfoSplitter);
+                    ReadOnlySpan<char> licenseUrl  = line.GetSplit(1, licenseInfoSplitter);
+                    ReadOnlySpan<char> licenseName = line.GetSplit(2, licenseInfoSplitter);
+                    if (!startMark.IsEmpty &&
+                        startMark.StartsWith(licenseInfoStartMark, StringComparison.OrdinalIgnoreCase) &&
+                        !licenseUrl.IsEmpty &&
+                        !licenseName.IsEmpty)
+                    {
+                        (licenseInfos ??= []).Add(new LicensePairInfo
+                        {
+                            Url  = licenseUrl.ToString(),
+                            Name = licenseName.ToString()
+                        });
+                    }
+                }
+
+                if (homepages == null || licenseInfos == null)
+                {
+                    throw new NullReferenceException($"Cannot read license details in {homepageFilePath}");
                 }
             }
         }
@@ -2151,13 +2237,13 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
         {
             TaskCompletionSource<ContentDialogResult> tcs = new();
-            while (Interlocked.CompareExchange(ref IsOtherDialogCurrentlyShowing, true, false))
+            while (Interlocked.CompareExchange(ref _isOtherDialogCurrentlyShowing, true, false))
             {
                 // Wait until the current dialog is not showing
                 await Task.Delay(200);
             }
 
-            Interlocked.Exchange(ref IsOtherDialogCurrentlyShowing, true);
+            Interlocked.Exchange(ref _isOtherDialogCurrentlyShowing, true);
             DispatcherQueueExtensions.TryEnqueue(Impl);
 
             return await tcs.Task;
@@ -2220,7 +2306,7 @@ namespace CollapseLauncher.Dialogs
                 }
                 finally
                 {
-                    Interlocked.Exchange(ref IsOtherDialogCurrentlyShowing, false);
+                    Interlocked.Exchange(ref _isOtherDialogCurrentlyShowing, false);
                 }
             }
         }
@@ -2244,6 +2330,12 @@ namespace CollapseLauncher.Dialogs
             }
 
             commandButtonGrid?.SetAllControlsCursorRecursive(cursor);
+        }
+
+        private class LicensePairInfo
+        {
+            public required string Url  { get; init; }
+            public required string Name { get; init; }
         }
     }
 }
