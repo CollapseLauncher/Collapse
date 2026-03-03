@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -76,6 +75,11 @@ namespace Hi3Helper.Shared.Region
                 Logger.UseConsoleLog(true);
                 Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
                                     LogType.Error, true);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(gameFolder))
+            {
                 return;
             }
 
@@ -223,22 +227,17 @@ namespace Hi3Helper.Shared.Region
 
         #region Misc Fields
 
-        public static Vector3 Shadow16 = new(0, 0, 16);
-        public static Vector3 Shadow32 = new(0, 0, 32);
-        public static Vector3 Shadow48 = new(0, 0, 48);
-
-
         public const           string       AppNotifURLPrefix           = "/notification_{0}.json";
         public const           string       AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
         public const           string       AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
         private const          string       SectionName                 = "app";
         public static readonly List<string> ScreenResolutionsList       = [];
 
-        public const ulong AppDiscordApplicationID     = 1138126643592970251;
-        public const ulong AppDiscordApplicationID_HI3 = 1124126288370737314;
-        public const ulong AppDiscordApplicationID_GI  = 1124137436650426509;
-        public const ulong AppDiscordApplicationID_HSR = 1124153902959431780;
-        public const ulong AppDiscordApplicationID_ZZZ = 1124154024879456276;
+        public const ulong AppDiscordApplicationID    = 1138126643592970251;
+        public const ulong AppDiscordApplicationIDHi3 = 1124126288370737314;
+        public const ulong AppDiscordApplicationIDGi  = 1124137436650426509;
+        public const ulong AppDiscordApplicationIDHsr = 1124153902959431780;
+        public const ulong AppDiscordApplicationIDZzz = 1124154024879456276;
 
         public static nint AppIconLarge;
         public static nint AppIconSmall;
@@ -402,16 +401,15 @@ namespace Hi3Helper.Shared.Region
         }
 
         public static bool IsPreview                        = false;
-        public static bool IsFirstInstall                   = false;
         public static bool IsAppLangNeedRestart             = false;
         public static bool IsChangeRegionWarningNeedRestart = false;
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsInstantRegionNeedRestart       = false;
+        public static bool IsFirstInstall;
 
 #pragma warning disable CS8604 // Possible null reference argument.
         public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir, "Assets");
 #pragma warning restore CS8604 // Possible null reference argument.
-        public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
         public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
         public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
@@ -441,7 +439,7 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("EnableAcrylicEffect", value);
         }
 
-        public static bool IsUseVideoBGDynamicColorUpdate
+        public static bool IsUseVideoBgDynamicColorUpdate
         {
             get => GetAppConfigValue("IsUseVideoBGDynamicColorUpdate");
             set => SetAndSaveConfigValue("IsUseVideoBGDynamicColorUpdate", value);
@@ -471,15 +469,14 @@ namespace Hi3Helper.Shared.Region
             set
             {
                 SetAndSaveConfigValue("IsUseDownloadSpeedLimiter", value);
-
                 _ = DownloadSpeedLimit;
             }
         }
 
         public static long DownloadSpeedLimit
         {
-            get => DownloadSpeedLimitCached = GetAppConfigValue("DownloadSpeedLimit");
-            set => SetAndSaveConfigValue("DownloadSpeedLimit", DownloadSpeedLimitCached = value);
+            get => GetAppConfigValue("DownloadSpeedLimit");
+            set => SetAndSaveConfigValue("DownloadSpeedLimit", value);
         }
 
         public static int DownloadChunkSize
@@ -499,25 +496,13 @@ namespace Hi3Helper.Shared.Region
             }
         }
 
-        public static bool IsEnforceToUse7zipOnExtract
+        public static bool IsEnforceToUse7ZipOnExtract
         {
             get => GetAppConfigValue("EnforceToUse7zipOnExtract");
             set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
         }
 
-        public static long DownloadSpeedLimitCached
-        {
-            get;
-            set
-            {
-                field = IsUseDownloadSpeedLimiter ? value : 0;
-                DownloadSpeedLimitChanged?.Invoke(null, field);
-            }
-        }
-
-        public static event EventHandler<long>? DownloadSpeedLimitChanged;
-
-        private static bool? _cachedIsInstantRegionChange = null;
+        private static bool? _cachedIsInstantRegionChange;
 
         public static bool IsInstantRegionChange
         {
@@ -646,9 +631,11 @@ namespace Hi3Helper.Shared.Region
 
             { "IsEnablePluginAutoUpdate", true },
 
-            // TEMPORARY
-            { "Enable20250827CrisisIntro", true },
-            { "Enable20250827CrisisIntroDialog", true }
+            // New Background Manager Parameters
+            { "GlobalIsBackgroundParallaxEffectEnabled", false },
+            { "GlobalBackgroundParallaxPixelShift", 8d },
+            { "GlobalKeepPlayVideoWhenWindowUnfocused", true },
+            { "GlobalBackgroundAudioVolume", 50d }
         };
         #endregion
     }

@@ -19,8 +19,10 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
-
+using SpeedLimiterService = CollapseLauncher.Helper.SpeedLimiterService;
+// ReSharper disable CheckNamespace
 // ReSharper disable LoopCanBeConvertedToQuery
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
@@ -32,13 +34,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
     internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
     internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
-
-    private unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
-    private unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
-    private unsafe delegate GameVersion* DelegateGetPluginVersion();
-    private unsafe delegate void*        DelegateGetPlugin();
-    private delegate        void         DelegateFreePlugin();
-    private delegate        void         DelegateSetCallback(nint callbackP);
 
     private bool _isDisposed;
 
@@ -142,10 +137,10 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
 
-            if (!libraryHandle.TryGetExport("GetPluginStandardVersion", out DelegateGetPluginStandardVersion getPluginStandardVersionHandle) ||
-                !libraryHandle.TryGetExport("GetPluginVersion", out DelegateGetPluginVersion getPluginVersionHandle) ||
-                !libraryHandle.TryGetExport("GetPlugin", out DelegateGetPlugin getPluginHandle) ||
-                !libraryHandle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (!libraryHandle.TryGetExportUnsafe("GetPluginStandardVersion", out nint getPluginStandardVersionHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("GetPluginVersion", out nint getPluginVersionHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("GetPlugin", out nint getPluginHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("SetLoggerCallback", out nint setLoggerCallbackHandleP))
             {
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
@@ -154,13 +149,13 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(_sharedLoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
-                setLoggerCallbackHandle(callbackForLogger);
+                ((delegate* unmanaged[Cdecl]<nint, void>)setLoggerCallbackHandleP)(callbackForLogger);
             }
 
             // TODO: Add versioning check.
-            GameVersion pluginStandardVersion = *getPluginStandardVersionHandle();
-            GameVersion pluginVersion         = *getPluginVersionHandle();
-            void*       pluginInstancePtr     = getPluginHandle();
+            GameVersion pluginStandardVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginStandardVersionHandleP)();
+            GameVersion pluginVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginVersionHandleP)();
+            void* pluginInstancePtr = ((delegate* unmanaged[Cdecl]<void*>)getPluginHandleP)();
 
             if (pluginInstancePtr == null)
             {
@@ -178,15 +173,12 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             Updater = selfUpdater;
 
             // Get Managed Update CDN List
-            if (libraryHandle.TryGetExport("GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
+            if (libraryHandle.TryGetExportUnsafe("GetPluginUpdateCdnList", out nint getPluginUpdateCdnListP))
             {
-                int      pluginCdnListCount = 0;
-                ushort** urlsPtr            = null;
-
-                getPluginUpdateCdnList(&pluginCdnListCount, &urlsPtr);
-
-                if (pluginCdnListCount != 0 && urlsPtr != null)
+                ((delegate* unmanaged[Cdecl]<out int, out nint, void>)getPluginUpdateCdnListP)(out int pluginCdnListCount, out nint urlArrayPtr);
+                if (pluginCdnListCount != 0 && urlArrayPtr != nint.Zero)
                 {
+                    ushort** urlsPtr = (ushort**)urlArrayPtr;
                     string[] urlList = GC.AllocateUninitializedArray<string>(pluginCdnListCount);
                     for (int i = 0; i < pluginCdnListCount; i++)
                     {
@@ -244,6 +236,11 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 PresetConfigs[i] = presetConfigWrapper;
             }
 
+            if (SpeedLimiterService.Shared.IsEnabled)
+            {
+                ToggleSpeedLimiterService(true);
+            }
+
             isPluginLoaded = true;
         }
         catch
@@ -257,22 +254,22 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         }
     }
 
-    internal void EnableDnsResolver()
+    internal unsafe void EnableDnsResolver()
     {
         if (!IsLoaded)
         {
             return;
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallback",
-                                out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallback",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackHandle))
         {
             nint dnsCallback = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallback);
             setDnsResolverCallbackHandle(dnsCallback);
         }
 
-        if (!Handle.TryGetExport("SetDnsResolverCallbackAsync",
-                                 out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (!Handle.TryGetExportUnsafe("SetDnsResolverCallbackAsync",
+                                       out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackAsyncHandle))
         {
             return;
         }
@@ -281,26 +278,55 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         setDnsResolverCallbackAsyncHandle(dnsCallbackAsync);
     }
 
-    internal void DisableDnsResolver()
+    internal unsafe void DisableDnsResolver()
     {
         if (!IsLoaded)
         {
             return;
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallback",
-                                out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallback",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackHandle))
         {
             setDnsResolverCallbackHandle(nint.Zero);
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallbackAsync",
-                                out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallbackAsync",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackAsyncHandle))
         {
             setDnsResolverCallbackAsyncHandle(nint.Zero);
         }
 
         Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
+    }
+
+    internal unsafe void ToggleSpeedLimiterService(bool isEnable)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        if (!Handle.TryGetExportUnsafe("RegisterSpeedThrottlerService", out nint callP))
+        {
+            return;
+        }
+
+        nint addOrWaitCallbackP = isEnable
+            ? SpeedLimiterService.AddBytesOrWaitAsyncDelegatePtr
+            : nint.Zero;
+
+        nint getSharedThrottledBytesP = isEnable
+            ? SpeedLimiterService.GetSharedThrottleBytesDelegatePtr
+            : nint.Zero;
+
+        HResult hr = ((delegate* unmanaged[Cdecl]<nint, nint, HResult>)callP)(addOrWaitCallbackP, getSharedThrottledBytesP);
+        if (Marshal.GetExceptionForHR(hr) is { } exception)
+        {
+            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register speed throttler service with error code: {hr} {exception}",
+                                LogType.Error,
+                                true);
+        }
     }
 
     internal async Task Initialize(CancellationToken token = default)
@@ -323,7 +349,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     internal void SetPluginLocaleId(string localeId) => Instance?.SetPluginLocaleId(localeId);
 
-    public void Dispose()
+    public unsafe void Dispose()
     {
         if (_isDisposed || !IsLoaded)
         {
@@ -334,7 +360,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         {
             // Disable callbacks
             DisableDnsResolver();
-            if (Handle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (Handle.TryGetExportUnsafe("SetLoggerCallback",
+                                          out delegate* unmanaged[Cdecl]<nint, void> setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
                 Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
@@ -347,7 +374,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             }
 
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
-            if (Handle.TryGetExport("FreePlugin", out DelegateFreePlugin freePluginCallback))
+            if (Handle.TryGetExportUnsafe("FreePlugin",
+                                          out delegate* unmanaged[Cdecl]<void> freePluginCallback))
             {
                 // Try call the free function.
                 freePluginCallback();
@@ -388,9 +416,9 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     private static unsafe nint DnsResolverCallbackAsync(char* hostnameP, int hostnameLength, void** cancelCallbackP)
     {
-        string hostnameString = new string(new ReadOnlySpan<char>(hostnameP, hostnameLength));
+        string hostnameString = new(new ReadOnlySpan<char>(hostnameP, hostnameLength));
 
-        CancellationTokenSource tcs            = new CancellationTokenSource();
+        CancellationTokenSource tcs            = new();
         VoidCallback            cancelCallback = CancelDelegate;
         GCHandle                handle         = GCHandle.Alloc(cancelCallback); // Lock the callback from getting GCed
 

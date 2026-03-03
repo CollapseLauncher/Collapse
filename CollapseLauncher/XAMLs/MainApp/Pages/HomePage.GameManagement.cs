@@ -6,7 +6,6 @@ using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -19,13 +18,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -128,8 +124,8 @@ public sealed partial class HomePage
 
         PreloadDialogBox.Opacity = 0.0f;
         const float toScale = 0.98f;
-        Vector3 toTranslate = new Vector3(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
-                                          -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
+        Vector3 toTranslate = new(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                                  -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
 
         await PreloadDialogBox.StartAnimation(TimeSpan.FromSeconds(0.5),
                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f, 0.0f),
@@ -269,10 +265,10 @@ public sealed partial class HomePage
                                         ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadPerSizeString, downloadPerSizeString);
                                         ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, installDownloadSpeedString);
                                         ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
-                                        progressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
-                                        progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
-                                        progressPreBar.IsIndeterminate = false;
-                                        progressPrePerFileBar.IsIndeterminate = false;
+                                        ProgressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
+                                        ProgressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
+                                        ProgressPreBar.IsIndeterminate = false;
+                                        ProgressPrePerFileBar.IsIndeterminate = false;
                                     });
     }
     #endregion
@@ -293,8 +289,8 @@ public sealed partial class HomePage
 
             HideImageCarousel(true);
 
-            progressRing.Value           = 0;
-            progressRing.IsIndeterminate = true;
+            ProgressRing.Value           = 0;
+            ProgressRing.IsIndeterminate = true;
             InstallGameBtn.Visibility    = Visibility.Collapsed;
             CancelDownloadBtn.Visibility = Visibility.Visible;
             ProgressTimeLeft.Visibility  = Visibility.Visible;
@@ -386,7 +382,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
         
@@ -401,7 +396,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
             ErrorSender.SendException(new
@@ -413,7 +407,6 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-            IsPageUnload = true;
             string exMessage = $"Timeout occurred when trying to install {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n\t" +
                                $"Check stability of your internet! If your internet speed is slow, please lower the download thread count.\r\n\t" +
                                $"**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!" +
@@ -432,8 +425,6 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-
-            IsPageUnload = true;
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
@@ -472,10 +463,10 @@ public sealed partial class HomePage
     private void GameInstall_StatusChanged_Inner(TotalPerFileStatus e)
     {
         ProgressStatusTitle.Text   = e.ActivityStatus;
-        progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+        ProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
 
-        progressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
-        progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+        ProgressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
+        ProgressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
 
         ProgressStatusIconDisk.Visibility = e.ActivityStatusInternet ? Visibility.Collapsed : Visibility.Visible;
         ProgressStatusIconInternet.Visibility = e.ActivityStatusInternet ? Visibility.Visible : Visibility.Collapsed;
@@ -491,8 +482,8 @@ public sealed partial class HomePage
 
     private void GameInstall_ProgressChanged_Inner(TotalPerFileProgress e)
     {
-        progressRing.Value = e.ProgressAllPercentage;
-        progressRingPerFile.Value = e.ProgressPerFilePercentage;
+        ProgressRing.Value = e.ProgressAllPercentage;
+        ProgressRingPerFile.Value = e.ProgressPerFilePercentage;
         ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
         ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressAllSpeed));
         ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
@@ -561,8 +552,8 @@ public sealed partial class HomePage
         if (CurrentGameProperty.GameVersion == null || 
             !CurrentGameProperty.GameVersion.IsGameInstalled()) return;
 
-        var behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
-            ?? PostInstallBehaviour.Nothing;
+        PostInstallBehaviour behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
+                                      ?? PostInstallBehaviour.Nothing;
         switch (behaviour)
         {
             case PostInstallBehaviour.Nothing:
@@ -579,14 +570,14 @@ public sealed partial class HomePage
                 break;
             case PostInstallBehaviour.Restart:
             case PostInstallBehaviour.Shutdown:
-                var shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
-                var shutdownType = behaviour switch
-                {
-                    PostInstallBehaviour.Restart => "/r",
-                    PostInstallBehaviour.Shutdown => "/s",
-                    // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
-                    _ => "/a"
-                };
+                int shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
+                string shutdownType = behaviour switch
+                                      {
+                                          PostInstallBehaviour.Restart => "/r",
+                                          PostInstallBehaviour.Shutdown => "/s",
+                                          // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
+                                          _ => "/a"
+                                      };
 
                 Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
                 {
@@ -596,10 +587,7 @@ public sealed partial class HomePage
                 break;
         }
 
-        if (CurrentGameProperty.GameInstall != null)
-        {
-            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
-        }
+        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.Nothing;
     }
     #endregion
 
@@ -625,17 +613,16 @@ public sealed partial class HomePage
 
     private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-        if (string.IsNullOrEmpty(file)) return;
-
-        var currentMediaType = GetMediaType(file);
-            
-        if (currentMediaType == MediaType.StillImage)
+        if (m_mainPage == null)
         {
-            var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-            
-            if (croppedImage == null) return;
-            SetAlternativeImageStream(croppedImage);
+            return;
+        }
+
+        string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+        if (string.IsNullOrEmpty(file) ||
+            string.IsNullOrWhiteSpace(file))
+        {
+            return;
         }
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)
@@ -643,9 +630,8 @@ public sealed partial class HomePage
             CurrentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
             CurrentGameProperty.GameSettings.SaveBaseSettings();
         }
-        _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
-        BGPathDisplay.Text = Path.GetFileName(file);
+        await CurrentBackgroundManager.SetCurrentCustomBackground(file);
     }
 
     private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
@@ -677,14 +663,14 @@ public sealed partial class HomePage
     {
         try
         {
-            var newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
-            if (newPath == null || newPath == CurrentGameProperty.GameVersion.GameDirPath)
+            string newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+            if (string.IsNullOrEmpty(newPath) || newPath == CurrentGameProperty.GameVersion?.GameDirPath)
             {
                 return;
             }
 
-            CurrentGameProperty.GameVersion.UpdateGamePath(newPath);
-            CurrentGameProperty.GameInstall.ApplyGameConfig();
+            CurrentGameProperty.GameVersion?.UpdateGamePath(newPath);
+            CurrentGameProperty.GameInstall?.ApplyGameConfig();
             ReturnToHomePage();
         }
         catch (Exception ex)
@@ -700,45 +686,6 @@ public sealed partial class HomePage
     {
         Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion?.GamePreset.IsRepairEnabled ?? false ?
             Visibility.Visible : Visibility.Collapsed;
-
-        // Clear the _CommunityToolsProperty statics
-        PageStatics.CommunityToolsProperty?.Clear();
-
-        // Check if the _CommunityToolsProperty has the official tool list for current game type
-        if (PageStatics.CommunityToolsProperty?
-               .OfficialToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
-                            out List<CommunityToolsEntry> officialEntryList) ?? false)
-        {
-            // If yes, then iterate it and add it to the list, to then getting read by the
-            // DataTemplate from HomePage
-            for (int index = officialEntryList.Count - 1; index >= 0; index--)
-            {
-                CommunityToolsEntry iconProperty = officialEntryList[index];
-                if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
-                {
-                    PageStatics.CommunityToolsProperty.OfficialToolsList?.Add(iconProperty);
-                }
-            }
-        }
-
-        // Check if the _CommunityToolsProperty has the community tool list for current game type
-        if (PageStatics.CommunityToolsProperty?
-               .CommunityToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
-                            out List<CommunityToolsEntry> communityEntryList) ?? false)
-        {
-            // If yes, then iterate it and add it to the list, to then getting read by the
-            // DataTemplate from HomePage
-            for (int index = communityEntryList.Count - 1; index >= 0; index--)
-            {
-                CommunityToolsEntry iconProperty = communityEntryList[index];
-                if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
-                {
-                    PageStatics.CommunityToolsProperty.CommunityToolsList?.Add(iconProperty);
-                }
-            }
-        }
 
         if (CurrentGameProperty.GameVersion?.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
         GameInstallationState = await CurrentGameProperty.GameVersion!.GetGameState();
@@ -806,8 +753,8 @@ public sealed partial class HomePage
 
         HideImageCarousel(true);
 
-        progressRing.Value           = 0;
-        progressRing.IsIndeterminate = true;
+        ProgressRing.Value           = 0;
+        ProgressRing.IsIndeterminate = true;
 
         InstallGameBtn.Visibility    = Visibility.Collapsed;
         UpdateGameBtn.Visibility     = Visibility.Collapsed;
@@ -921,7 +868,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                                                                  $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
@@ -931,7 +877,6 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            IsPageUnload = true;
             LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }

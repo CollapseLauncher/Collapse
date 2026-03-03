@@ -648,8 +648,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "기본:",
     "FileDownloadSettings_SpeedLimitHelp2": "속도 제한 값의 범위:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/초",
-    "FileDownloadSettings_SpeedLimitHelp4": "다운로드에 사용하는 최대 대역폭을 제한해요. 이 설정은",
-    "FileDownloadSettings_SpeedLimitHelp5": "와 같이 사용되지 않아요.",
+    "FileDownloadSettings_SpeedLimitHelp4": "다운로드에 사용하는 최대 대역폭을 제한해요.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "새로운 사전 할당 다운로더",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "게임 설치, 게임 복구 또는 캐시 업데이트 전용.",

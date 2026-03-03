@@ -204,7 +204,6 @@
                                       Padding="16,0"
                                       Background="{ThemeResource AcrylicTitleGridBackground}"
                                       CornerRadius="8"
-                                      Shadow="{StaticResource SharedShadow}"
                                       Translation="0,0,32">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -239,7 +238,6 @@
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
                                       CornerRadius="8"
-                                      Shadow="{StaticResource SharedShadow}"
                                       Translation="0,0,32">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using CollapseLauncher.Extension;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 // ReSharper disable CheckNamespace
@@ -19,16 +19,9 @@ public abstract class NotifyPropertyChanged : INotifyPropertyChanged
 
     public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        bool hasThreadAccess = InnerLauncherConfig.m_mainPage?.DispatcherQueue.HasThreadAccess ?? true;
-        if (!hasThreadAccess)
-        {
-            InnerLauncherConfig
-               .m_mainPage?
-               .DispatcherQueue
-               .TryEnqueue(() => _propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
-            return;
-        }
+        DispatcherQueueExtensions.TryEnqueue(Impl);
+        return;
 
-        _propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        void Impl() => _propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -128,7 +128,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected List<GameInstallPackage> _gameDeltaPatchPreReqList { get; } = [];
         protected bool                     _forceIgnoreDeltaPatch;
-        protected GameInstallFileInfo? _gameInstallFileInfo { get; set; }
+        protected GameInstallFileInfo _gameInstallFileInfo { get; set; }
         #endregion
 
         #region Public Properties
@@ -800,7 +800,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Assign extractor
             #if USENEWZIPDECOMPRESS
                 InstallPackageExtractorDelegate installTaskDelegate;
-                if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+                if (LauncherConfig.IsEnforceToUse7ZipOnExtract)
                 {
                     installTaskDelegate = ExtractUsingNative7Zip;
                 }

@@ -1,7 +1,6 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Background;
-using CollapseLauncher.Helper.Image;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
@@ -16,7 +15,6 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -33,14 +31,14 @@ namespace CollapseLauncher
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
     public sealed partial class MainPage
     {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static  string        RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
-        private         List<object>  LastMenuNavigationItem;
-        private         List<object>  LastFooterNavigationItem;
-        internal static string        PreviousTag = string.Empty;
+        private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}";
+
+        private         List<object> LastMenuNavigationItem;
+        private         List<object> LastFooterNavigationItem;
+        internal static string       PreviousTag = string.Empty;
 
         private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
 
@@ -53,7 +51,7 @@ namespace CollapseLauncher
             }
             RegionLoadingStatus.Add((gameName, gameRegion), false);
             
-            CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
+            CancellationTokenSourceWrapper tokenSource = new();
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
             bool runResult = await preset.GameLauncherApi
@@ -97,8 +95,7 @@ namespace CollapseLauncher
                     NavigationViewControl.IsSettingsVisible = true;
                     LastMenuNavigationItem.Clear();
                     LastFooterNavigationItem.Clear();
-                    if (m_arguments.StartGame != null)
-                        m_arguments.StartGame.Play = false;
+                    m_arguments.StartGame?.Play = false;
 
                     ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
                     ChangeRegionConfirmBtn.IsEnabled = true;
@@ -117,16 +114,19 @@ namespace CollapseLauncher
                         _ = SentryHelper.ExceptionHandlerAsync(new Exception("Double region loading detected!"));
                         return;
                     }
-                    
+
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion, token);
-                    _ = ChangeBackgroundImageAsRegionAsync();
                     Interlocked.Exchange(ref IsLoadRegionComplete, true);
 
                     LoadingMessageHelper.HideActionButton();
                     LoadingMessageHelper.HideLoadingFrame();
 
                     KeyboardShortcuts.CannotUseKbShortcuts = false; // Re-enable keyboard shortcuts after loading region
+                    ImageBackgroundManager.Shared.Initialize(preset,
+                                                             preset.GameLauncherApi.LauncherGameBackground,
+                                                             presenterGrid: BackgroundPresenterGrid,
+                                                             token: token);
                 }
                 catch (Exception ex)
                 {
@@ -183,86 +183,6 @@ namespace CollapseLauncher
             });
         }
 
-        private async Task DownloadBackgroundImage(CancellationToken token)
-        {
-            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
-            // Get and set the current path of the image
-            string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
-            string backgroundFileName = Path.GetFileName(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = Path.Combine(backgroundFolder, backgroundFileName);
-            SetAndSaveConfigValue("CurrentBackground", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-            await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
-        }
-
-        private async Task DownloadNonPluginBackgroundImage(string             backgroundFolder,
-                                                            GamePresetProperty currentProperty,
-                                                            CancellationToken  token)
-        {
-            // Check if the background folder exist
-            if (!Directory.Exists(backgroundFolder))
-                Directory.CreateDirectory(backgroundFolder);
-
-            var imgFileInfo =
-                new FileInfo(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-
-            // Start downloading the background image
-            var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
-            if (isDownloaded)
-            {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      this.ReloadPageTheme,
-                                                      false,
-                                                      false,
-                                                      true);
-                return;
-            }
-
-        #nullable enable
-            string? tempImage = null;
-            var lastBgCfg = "lastBg-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameName +
-                            "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
-
-            // Check if the last background image exist, then use that temporarily instead
-            var lastGameBackground = GetAppConfigValue(lastBgCfg).ToString();
-            if (!string.IsNullOrEmpty(lastGameBackground))
-            {
-                if (File.Exists(lastGameBackground))
-                {
-                    tempImage = lastGameBackground;
-                }
-            }
-
-            // If the file is not downloaded, use template image first, then download the image
-            GameNameType? currentGameType = currentProperty.GameVersion?.GameType;
-            tempImage ??= currentGameType switch
-                          {
-                              GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
-                              GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
-                              GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
-                              GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                              _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
-                          };
-            BackgroundImgChanger.ChangeBackground(tempImage,
-                                                  this.ReloadPageTheme,
-                                                  false,
-                                                  false,
-                                                  true);
-            if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
-                                                                       LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
-                                                                       imgFileInfo,
-                                                                       false,
-                                                                       token))
-            {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      this.ReloadPageTheme,
-                                                      false,
-                                                      true,
-                                                      true);
-                SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
-            }
-        #nullable restore
-        }
-
         private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
@@ -313,7 +233,7 @@ namespace CollapseLauncher
             try
             {
                 // Wait until the notification is ready
-                while (!IsLoadNotifComplete)
+                while (!_isLoadNotifComplete)
                 {
                     await Task.Delay(250);
                 }
@@ -323,7 +243,7 @@ namespace CollapseLauncher
 
                 foreach (NotificationProp Entry in regionPushCopy)
                 {
-                    DispatcherQueue.TryEnqueue(() => Spawner(Entry));
+                    DispatcherQueueExtensions.TryEnqueue(() => Spawner(Entry));
                     await Task.Delay(250);
                 }
 
@@ -383,9 +303,9 @@ namespace CollapseLauncher
                     return;
                 }
 
-                LockRegionChangeBtn = true;
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _lockRegionChangeBtn = true;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
@@ -400,7 +320,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 
@@ -413,9 +333,9 @@ namespace CollapseLauncher
                     return;
                 }
 
-                LockRegionChangeBtn = true;
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _lockRegionChangeBtn = true;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
@@ -430,7 +350,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 
@@ -444,7 +364,7 @@ namespace CollapseLauncher
                 }
 
                 // Disable ChangeRegionBtn and hide flyout
-                LockRegionChangeBtn = true;
+                _lockRegionChangeBtn = true;
                 ToggleChangeRegionBtn(sender, true);
                 if (!await LoadRegionRootButton())
                 {
@@ -453,8 +373,8 @@ namespace CollapseLauncher
 
                 // Finalize loading
                 ToggleChangeRegionBtn(sender, false);
-                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
             }
             catch (Exception ex)
             {
@@ -463,7 +383,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                LockRegionChangeBtn = false;
+                _lockRegionChangeBtn = false;
             }
         }
 

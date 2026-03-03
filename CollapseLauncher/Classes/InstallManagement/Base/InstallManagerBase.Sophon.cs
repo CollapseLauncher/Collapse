@@ -166,7 +166,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Create a sophon download speed limiter instance
                 SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                    SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                    SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                 // Reset status and progress properties
                 ResetStatusAndProgress();
@@ -472,9 +472,6 @@ namespace CollapseLauncher.InstallManager.Base
                             SophonLogger.LogHandler -= UpdateSophonLogHandler;
                         }
                         httpClient.Dispose();
-
-                        // Unsubscribe download limiter
-                        LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                     }
                 }
             }
@@ -575,7 +572,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
-            List<string> additionalMatchingFields = otherManifestIdentity.Select(x => x.MatchingField).ToList();
+            List<string> additionalMatchingFields = otherManifestIdentity
+                                                   .Where(x => !string.IsNullOrEmpty(x.MatchingField))
+                                                   .Select(x => x.MatchingField!).ToList();
 
             installManifest.AddRange(additionalMatchingFields.Select(matchingField => installManifestFirst.GetOtherManifestInfoPair(matchingField)));
             return;
@@ -718,7 +717,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Create a sophon download speed limiter instance
                     SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                        SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                        SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                     // Add base game diff data
                     bool isSuccess = await AddSophonDiffAssetsToList(
@@ -873,18 +872,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
 
-                ConcurrentDictionary<SophonAsset, byte> processingAsset = new();
-
                 // Set the delegate function for the download action
                 async ValueTask Action(HttpClient localHttpClient, SophonAsset asset)
                 {
-                    if (!processingAsset.TryAdd(asset, 0))
-                    {
-                        Logger.LogWriteLine($"Found duplicate operation for {asset.AssetName}! Skipping...",
-                                            LogType.Warning, true);
-                        return;
-                    }
-
                     if (isPreloadMode)
                     {
                         // If preload mode, then only download the chunks
@@ -902,11 +892,12 @@ namespace CollapseLauncher.InstallManager.Base
                     await asset.WriteUpdateAsync(localHttpClient, gamePath, gamePath, chunkPath, canDeleteChunks,
                                                  parallelChunksOptions, UpdateSophonFileTotalProgress,
                                                  UpdateSophonFileDownloadProgress, UpdateSophonDownloadStatus);
-                    processingAsset.Remove(asset, out _);
                 }
 
                 // Enumerate in parallel and process the assets
-                await Parallel.ForEachAsync(sophonUpdateAssetList.Where(x => !x.IsDirectory),
+                await Parallel.ForEachAsync(sophonUpdateAssetList
+                                           .Where(x => !x.IsDirectory)
+                                           .ToHashSet(),
                                             parallelOptions,
                                             (asset, _) => Action(httpClient, asset));
 
@@ -1099,8 +1090,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<string> additionalPackageMatchingFields =
                 manifestPair.OtherSophonBuildData!.ManifestIdentityList
-                            .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
-                            .Select(x => x.MatchingField)
+                            .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                            .Select(x => x.MatchingField!)
                             .WhereMatchPattern(x => x, true, excludeMatchingFieldsPattern)
                             .ToList();
 
@@ -1111,6 +1102,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             foreach (string matchingField in additionalPackageMatchingFields)
             {
+                if (string.IsNullOrEmpty(matchingField))
+                {
+                    continue;
+                }
+
                 await AddSophonDiffAssetsToList(httpClient,
                                                 requestedUrlFrom,
                                                 requestedUrlTo,
@@ -1282,9 +1278,9 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual int GetSophonLocaleCodeIndex(SophonManifestBuildData sophonData, string lookupName)
         {
-            List<string> localeList = sophonData.ManifestIdentityList
+            List<string?> localeList = sophonData.ManifestIdentityList
                                                 .Where(x => IsValidLocaleCode(x.MatchingField))
-                                                .Select(x => x.MatchingField.ToLower())
+                                                .Select(x => x.MatchingField?.ToLower())
                                                 .ToList();
 
             int index = localeList.IndexOf(lookupName);
@@ -1297,8 +1293,8 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (SophonManifestBuildIdentity identity in sophonData.ManifestIdentityList)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string localeCode = identity.MatchingField.ToLower();
-                if (!IsValidLocaleCode(localeCode))
+                string? localeCode = identity.MatchingField?.ToLower();
+                if (string.IsNullOrEmpty(localeCode) || !IsValidLocaleCode(localeCode))
                 {
                     continue;
                 }

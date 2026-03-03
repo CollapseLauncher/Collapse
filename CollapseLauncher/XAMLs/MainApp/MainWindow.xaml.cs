@@ -57,7 +57,7 @@ namespace CollapseLauncher
             {
                 using (CriticalOpLock.EnterScope())
                 {
-                    var lastValue = field;
+                    bool lastValue = field;
                     field = value;
                     
                     if (value)
@@ -130,11 +130,9 @@ namespace CollapseLauncher
                     IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
 
                     IntroSequenceToggle.Visibility = Visibility.Visible;
-                    IntroAnimation.Visibility = Visibility.Visible;
-                    IntroAnimation.PlaybackRate = 1.5d;
-                    await Task.Delay(500);
+                    IntroAnimation.Visibility      = Visibility.Visible;
+                    IntroAnimation.PlaybackRate    = 1.5d;
                     await IntroAnimation.PlayAsync(0, 600d / 600d, false);
-                    IntroAnimation.Stop();
                 }
                 IntroAnimation.Source = null;
                 GC.Collect();
@@ -278,6 +276,13 @@ namespace CollapseLauncher
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
+            if (e.RequireCacheReset)
+            {
+                int cacheSizeOld = RootFrame.CacheSize;
+                RootFrame.CacheSize = 0;
+                RootFrame.CacheSize = cacheSizeOld;
+            }
+
             RootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
@@ -330,7 +335,7 @@ namespace CollapseLauncher
 
             InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId ?? throw new NullReferenceException());
             WindowUtility.EnableWindowNonClientArea();
-            WindowUtility.SetWindowTitlebarDragArea(MainPage.DragAreaMode_Full);
+            WindowUtility.SetWindowTitlebarDragArea(MainPage.DragAreaModeFull);
 
             if (!e.Template.HasFlag(DragAreaTemplate.OverlayOpened) ||
                 FullPageOverlay.CurrentlyOpenedOverlays.LastOrDefault() is not { LayoutCloseButton: { } currentOverlayCloseButton })
@@ -348,9 +353,9 @@ namespace CollapseLauncher
                     case DragAreaTemplate.Default:
                         nonClientInputSrc.ClearAllRegionRects();
                         RectInt32[] rects = m_mainPage != null ? [
-                            GetElementPos(m_mainPage.GridBG_RegionGrid),
-                            GetElementPos(m_mainPage.GridBG_IconGrid),
-                            GetElementPos(m_mainPage.GridBG_NotifBtn),
+                            GetElementPos(m_mainPage.GridBGRegionGrid),
+                            GetElementPos(m_mainPage.GridBGIconGrid),
+                            GetElementPos(m_mainPage.GridBGNotifBtn),
                             GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
                             GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
                         ] : [
@@ -379,8 +384,7 @@ namespace CollapseLauncher
             Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
             double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
 
-            return new RectInt32(
-                                 _X: (int)Math.Round(bounds.X * scaleFactor),
+            return new RectInt32(_X: (int)Math.Round(bounds.X * scaleFactor),
                                  _Y: (int)Math.Round(bounds.Y * scaleFactor),
                                  _Width: (int)Math.Round(bounds.Width * scaleFactor),
                                  _Height: (int)Math.Round(bounds.Height * scaleFactor)

@@ -651,8 +651,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Valeur par défaut :",
     "FileDownloadSettings_SpeedLimitHelp2": "Plage de valeurs :",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 Mio/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limite l'utilisation maximale de la bande passante pour le téléchargement. Le paramètre «",
-    "FileDownloadSettings_SpeedLimitHelp5": "» ne peut être utilisé si la limitation de bande passante est activée.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limite l'utilisation maximale de la bande passante pour le téléchargement.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nouveau téléchargeur avec préallocation",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Uniquement pour l'installation, la réparation et la mise à jour des caches du jeu.",

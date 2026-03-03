@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Windows.System;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -274,7 +275,7 @@ namespace CollapseLauncher.Dialogs
 
         private static Border CreateKeyBoardButton(string key)
         {
-            Border keyBoxBorder = new Border
+            Border keyBoxBorder = new()
             {
                 Height = 42,
                 Width = 42,
@@ -283,12 +284,12 @@ namespace CollapseLauncher.Dialogs
                 Background = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorAttentionBrush")
             };
 
-            ThemeShadow ts = new ThemeShadow();
+            ThemeShadow ts = new();
             ts.Receivers.Add(keyBoxBorder);
-            keyBoxBorder.Translation += Shadow48;
+            keyBoxBorder.Translation = new Vector3(0,0,48);
             keyBoxBorder.Shadow = ts;
 
-            TextBlock keyBox = new TextBlock
+            TextBlock keyBox = new()
             {
                 Text = key,
                 Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Colors.Black : Colors.White),
@@ -322,8 +323,8 @@ namespace CollapseLauncher.Dialogs
 
                 _oldSender = sender;
 
-                Storyboard storyboard = new Storyboard();
-                DoubleAnimation opacityAnimation = new DoubleAnimation
+                Storyboard storyboard = new();
+                DoubleAnimation opacityAnimation = new()
                 {
                     From = 1,
                     To = 0,
@@ -340,8 +341,8 @@ namespace CollapseLauncher.Dialogs
                 newStack.Visibility = Visibility.Visible;
                 oldStack.Visibility = Visibility.Collapsed;
 
-                Storyboard storyboard2 = new Storyboard();
-                DoubleAnimation opacityAnimation2 = new DoubleAnimation
+                Storyboard storyboard2 = new();
+                DoubleAnimation opacityAnimation2 = new()
                 {
                     From = 0,
                     To = 1,
@@ -370,8 +371,8 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel helpStack = CollapseUIExt.CreateStackPanel();
             helpStack.MaxWidth = 360d;
-            Flyout helpFlyout = new Flyout
-                                {
+            Flyout helpFlyout = new()
+            {
                                     Content = helpStack,
                                     Placement = FlyoutPlacementMode.RightEdgeAlignedTop
                                 };
@@ -458,7 +459,7 @@ namespace CollapseLauncher.Dialogs
             keysPanel.AddElementToStackPanel(newKey2);
             mainSwitchKeyContent.AddElementToStackPanel(keysPanel);
 
-            ContentDialogCollapse result = new ContentDialogCollapse(ContentDialogTheme.Informational)
+            ContentDialogCollapse result = new(ContentDialogTheme.Informational)
             {
                 Title = Lang._KbShortcuts.ChangeShortcut_Title,
                 Content = mainSwitchKeyContent,
@@ -474,7 +475,7 @@ namespace CollapseLauncher.Dialogs
             int keyCount = 0;
             TextBlock text1 = newKey1.Child as TextBlock;
             TextBlock text2 = newKey2.Child as TextBlock;
-            KbShortcut newShortcut = new KbShortcut();
+            KbShortcut newShortcut = new();
 
             result.KeyDown += (_, s) =>
             {

@@ -423,11 +423,11 @@ namespace CollapseLauncher
 
     public class Arguments
     {
-        public ArgumentUpdater   Updater       { get; set; }
-        public ArgumentReindexer Reindexer     { get; set; }
-        public ArgumentReindexer TakeOwnership { get; set; }
-        public ArgumentMigrate   Migrate       { get; set; }
-        public ArgumentStartGame StartGame     { get; set; }
+        public ArgumentUpdater    Updater       { get; set; }
+        public ArgumentReindexer  Reindexer     { get; set; }
+        public ArgumentReindexer  TakeOwnership { get; set; }
+        public ArgumentMigrate    Migrate       { get; set; }
+        public ArgumentStartGame? StartGame     { get; set; }
     }
 
     public class ArgumentUpdater
@@ -454,8 +454,8 @@ namespace CollapseLauncher
 
     public class ArgumentStartGame
     {
-        public string Game   { get; init; }
-        public string Region { get; init; }
-        public bool   Play   { get; set; }
+        public string? Game   { get; init; }
+        public string? Region { get; init; }
+        public bool    Play   { get; set; }
     }
 }

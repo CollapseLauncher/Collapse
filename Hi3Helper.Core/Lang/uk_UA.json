@@ -648,8 +648,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "За замовчуванням: ",
     "FileDownloadSettings_SpeedLimitHelp2": "Діапазон значень обмеження швидкості:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 МіБ/с",
-    "FileDownloadSettings_SpeedLimitHelp4": "Обмежує максимальну дозволену пропускну здатність для завантаження. Це налаштування не можна використовувати разом з",
-    "FileDownloadSettings_SpeedLimitHelp5": "Налаштування.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Обмежує максимальну дозволену пропускну здатність для завантаження.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Новий попередньо виділений завантажувач",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Тільки для встановлення гри, ремонту гри та оновлень кешу.",

@@ -1,6 +1,7 @@
 ﻿#if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
 #endif
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
@@ -51,6 +52,10 @@ namespace CollapseLauncher.Pages
                 });
 
                 LoadPage();
+
+                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
             }
             catch (Exception ex)
             {
@@ -82,7 +87,7 @@ namespace CollapseLauncher.Pages
         private void LoadPage()
         {
             InitializeComponent();
-            ApplyButton.Translation = Shadow32;
+            ApplyButton.Translation           = new Vector3(0, 0, 32);
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
             Settings?.ReloadSettings();
@@ -163,8 +168,6 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                BackgroundImgChanger.ToggleBackground(true);
-
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first

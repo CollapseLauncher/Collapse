@@ -20,6 +20,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher
@@ -60,7 +61,19 @@ namespace CollapseLauncher
         public static bool                      IsSkippingUpdateCheck = false;
         public static AppThemeMode              CurrentAppTheme;
 #if !DISABLEDISCORD
-        public static DiscordPresenceManager? AppDiscordPresence;
+        public static DiscordPresenceManager AppDiscordPresence
+        {
+            get
+            {
+                if (field != null) return field;
+
+                bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
+                field = new DiscordPresenceManager(isEnableDiscord);
+                AppDiscordPresence.SetActivity(ActivityType.Idle);
+
+                return field;
+            }
+        }
 #endif
         public static bool IsAppThemeLight =>
             CurrentAppTheme switch
@@ -72,7 +85,10 @@ namespace CollapseLauncher
 
         public static string? GetComboBoxGameRegionValue(object obj)
         {
-            StackPanel value     = (StackPanel)obj;
+            if (obj is not StackPanel value)
+            {
+                return null;
+            }
             TextBlock? textBlock = value.Children.FirstOrDefault() as TextBlock;
             return textBlock?.Text;
         }

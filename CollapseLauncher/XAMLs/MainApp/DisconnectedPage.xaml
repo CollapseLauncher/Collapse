@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:uielementex="using:CollapseLauncher.Extension"
+      xmlns:pages="using:CollapseLauncher.Pages"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid Margin="32">
@@ -31,7 +32,7 @@
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         Click="ShowError"
-                        CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ShowErrorBtn)}"
+                        extension:UIElementExtensions.UniformCornerRadius="-1"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Grid Margin="8,0">
                         <Grid.ColumnDefinitions>
@@ -68,7 +69,7 @@
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         Click="GoToAppSettings"
-                        CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(GoToAppSettingsBtn)}"
+                        extension:UIElementExtensions.UniformCornerRadius="-1"
                         Style="{ThemeResource DefaultButtonStyle}">
                     <Grid Margin="8,0">
                         <Grid.ColumnDefinitions>
@@ -106,7 +107,7 @@
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}" />
                 <!--  ReSharper disable once UnusedMember.Local  -->
                 <Grid x:Name="ComboBoxGameGrid"
-                      CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
+                      extension:UIElementExtensions.UniformCornerRadius="-1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />

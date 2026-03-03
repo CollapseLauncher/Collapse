@@ -21,7 +21,8 @@ using static ApplyUpdate.Statics;
 
 namespace Hi3Helper
 {
-    public struct LangMetadata
+    [GeneratedBindableCustomProperty]
+    public partial class LangMetadata
     {
         public LangMetadata(string filePath, int index)
         {
@@ -118,12 +119,40 @@ namespace Hi3Helper
             return _langData;
         }
 
-        public int LangIndex;
-        public string LangFilePath;
-        public string LangAuthor;
-        public string LangID;
-        public string LangName;
-        public bool LangIsLoaded;
+        public int LangIndex
+        {
+            get;
+            private set;
+        }
+
+        public string LangFilePath
+        {
+            get;
+        }
+
+        public string LangAuthor
+        {
+            get;
+            private set;
+        }
+
+        public string LangID
+        {
+            get;
+            private set;
+        }
+
+        public string LangName
+        {
+            get;
+            private set;
+        }
+
+        public bool LangIsLoaded
+        {
+            get;
+            private set;
+        }
     }
 
     [GeneratedBindableCustomProperty]

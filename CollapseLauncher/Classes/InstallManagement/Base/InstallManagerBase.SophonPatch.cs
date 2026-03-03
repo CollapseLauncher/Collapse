@@ -31,6 +31,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
@@ -113,7 +114,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Create a sophon download speed limiter instance
             SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
             // Get the patch assets to download
             (List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile) patchAssets =
@@ -325,13 +326,13 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async Task<(List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile)>
-            GetAlterSophonPatchAssets(HttpClient httpClient,
-                                      string manifestUrl,
-                                      string downloadOverUrl,
-                                      List<string> matchingFields,
-                                      string updateVersionfrom,
+            GetAlterSophonPatchAssets(HttpClient                 httpClient,
+                                      string                     manifestUrl,
+                                      string                     downloadOverUrl,
+                                      List<string>               matchingFields,
+                                      string                     updateVersionfrom,
                                       SophonDownloadSpeedLimiter downloadLimiter,
-                                      CancellationToken token)
+                                      CancellationToken          token)
         {
             SophonChunkManifestInfoPair?      rootPatchManifest = null;
             SophonChunkManifestInfoPair?      rootMainManifest  = null;
@@ -505,7 +506,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                       }
 
                                                       string patchFilePath = Path.Combine(patchOutputDir, asset.PatchHash);
-                                                      FileInfo patchFileInfo = new FileInfo(patchFilePath);
+                                                      FileInfo patchFileInfo = new(patchFilePath);
 
                                                       if (!patchFileInfo.Exists)
                                                       {

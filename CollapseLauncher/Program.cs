@@ -14,6 +14,10 @@ using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
+using PhotoSauce.MagicScaler;
+using PhotoSauce.NativeCodecs.Libheif;
+using PhotoSauce.NativeCodecs.Libjxl;
+using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -111,15 +115,15 @@ namespace CollapseLauncher
 
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
-                _ = InitDatabaseHandler();
                 _ = CheckRuntimeFeatures();
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                Application.Start(pContext =>
+                Application.Start(_ =>
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                    DispatcherQueueExtensions.CurrentDispatcherQueue = dispatcherQueue;
 
-                    DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                    DispatcherQueueSynchronizationContext context = new(dispatcherQueue);
                     SynchronizationContext.SetSynchronizationContext(context);
 
                     // ReSharper disable once ObjectCreationAsStatement
@@ -129,21 +133,31 @@ namespace CollapseLauncher
                     };
                 });
             }
-            #if !DEBUG
+#if !DEBUG
             catch (Exception ex)
             {
+                if (SentryHelper.IsEnabled && !SentryHelper.IsInitialized)
+                {
+                    InitSentrySdk();
+                }
+
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 SpawnFatalErrorConsole(ex);
             }
-            #else
+#else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
             catch (Exception ex)
             {
+                if (SentryHelper.IsEnabled && !SentryHelper.IsInitialized)
+                {
+                    InitSentrySdk();
+                }
+
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
-            #endif
+#endif
             finally
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
@@ -216,34 +230,6 @@ namespace CollapseLauncher
         private static void InitCriticalModules()
         {
             /* ---------------------------------------------------------------------------------------------
-             * Module: Internal Working Directory Check
-             */
-
-            if (Directory.GetCurrentDirectory() != AppExecutableDir)
-            {
-                LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
-                             LogType.Warning, true);
-                Directory.SetCurrentDirectory(AppExecutableDir);
-            }
-
-            /* ---------------------------------------------------------------------------------------------
-             * Module: Sentry SDK
-             */
-
-            // Set App information to Sentry SDK
-            SentryHelper.IsPreview          = IsPreview;
-            SentryHelper.AppBuildCommit     = ThisAssembly.Git.Sha;
-            SentryHelper.AppBuildBranch     = ThisAssembly.Git.Branch;
-            SentryHelper.AppBuildRepo       = ThisAssembly.Git.RepositoryUrl;
-            SentryHelper.AppCdnOptionGetter = () => FallbackCDNUtil.GetPreferredCDN().URLPrefix;
-
-            // Initialize Sentry SDK if enabled
-            if (SentryHelper.IsEnabled)
-            {
-                _ = Task.Factory.StartNew(InitializeSentrySdk);
-            }
-
-            /* ---------------------------------------------------------------------------------------------
              * Module: WindowsAppSDK + WinRT
              */
 
@@ -255,17 +241,11 @@ namespace CollapseLauncher
             ComWrappersSupport.InitializeComWrappers(new DefaultComWrappers());
 
             /* ---------------------------------------------------------------------------------------------
-             * Module: Libzstd
-             */
-
-            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
-            // But due to AOT build uses Static Library in favor of Shared ones (that comes
-            // with .dll files), the check will be ignored.
-            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
-
-            /* ---------------------------------------------------------------------------------------------
              * Module: Internal Misc. and Callbacks
              */
+
+            // Get how many the same processes are running
+            InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
             // Add callbacks to apply shared settings
             ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
@@ -280,8 +260,25 @@ namespace CollapseLauncher
             // Set ILogger for CDNCacheUtil
             CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
 
-            // Get how many the same processes are running
-            InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Internal Working Directory Check
+             */
+
+            if (Directory.GetCurrentDirectory() != AppExecutableDir)
+            {
+                LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
+                             LogType.Warning, true);
+                Directory.SetCurrentDirectory(AppExecutableDir);
+            }
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Libzstd
+             */
+
+            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
+            // But due to AOT build uses Static Library in favor of Shared ones (that comes
+            // with .dll files), the check will be ignored.
+            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
 
             /* ---------------------------------------------------------------------------------------------
              * Module: Velopack
@@ -289,25 +286,87 @@ namespace CollapseLauncher
 
             // Start Updater Hook
             VelopackLocatorExtension.StartUpdaterHook(AppAumid);
-            return;
 
-            static async void InitializeSentrySdk()
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Other SDKs which can be loaded asynchronously
+             */
+
+            new Thread(InitOtherSdkAsync)
             {
-                try
+                IsBackground = true
+            }.Start();
+        }
+
+        private static async void InitOtherSdkAsync()
+        {
+            try
+            {
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: Sentry SDK
+                 */
+
+                // Set App information to Sentry SDK
+                SentryHelper.IsPreview          = IsPreview;
+                SentryHelper.AppBuildCommit     = ThisAssembly.Git.Sha;
+                SentryHelper.AppBuildBranch     = ThisAssembly.Git.Branch;
+                SentryHelper.AppBuildRepo       = ThisAssembly.Git.RepositoryUrl;
+                SentryHelper.AppCdnOptionGetter = () => FallbackCDNUtil.GetPreferredCDN().URLPrefix;
+
+                // Initialize Sentry SDK if enabled
+                if (SentryHelper.IsEnabled)
                 {
-                    await Task.Run(() =>
-                    {
-                        // Sentry SDK Entry
-                        LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
-                        SentryHelper.InitializeSentrySdk();
-                        LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
-                        SentryHelper.InitializeExceptionRedirect();
-                    });
+                    InitSentrySdk();
                 }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
-                }
+
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: Database Handler for Synchronization
+                 */
+                await InitDatabaseHandler();
+
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: MagicScaler External Codecs for Image Decoding
+                 */
+                InitMagicScalerExternalCodecs();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"[InitSDKAsync] Failed to load some SDKs.\r\n{ex}", LogType.Sentry, true);
+            }
+        }
+
+        private static void InitMagicScalerExternalCodecs()
+        {
+            try
+            {
+                CodecManager.Configure(codecs =>
+                                       {
+                                           codecs.UseWicCodecs(WicCodecPolicy.All);
+                                           codecs.UseLibwebp();
+                                           codecs.UseLibheif();
+                                           codecs.UseLibjxl();
+                                       });
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
+                             LogType.Error,
+                             true);
+            }
+        }
+
+        private static void InitSentrySdk()
+        {
+            try
+            {
+                // Sentry SDK Entry
+                LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
+                SentryHelper.InitializeSentrySdk();
+                LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
+                SentryHelper.InitializeExceptionRedirect();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
             }
         }
 
@@ -369,7 +428,8 @@ namespace CollapseLauncher
                 {
                     startInfo.ArgumentList.Add(arg);
                 }
-                Process process = new Process()
+
+                Process process = new()
                 {
                     StartInfo = startInfo
                 };
@@ -385,7 +445,7 @@ namespace CollapseLauncher
             Console.CursorTop--;
             int posV = Console.CursorTop;
 
-            Updater updater = new Updater(IsPreview ? "preview" : "stable");
+            Updater updater = new(IsPreview ? "preview" : "stable");
             if (await TryRunUpdateCheck() is not { } updateInfo ||
                 !IsCurrentUpToDate(updateInfo.TargetFullRelease.Version.ToString()))
             {
@@ -393,7 +453,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+            updater.UpdaterProgressChanged += UpdaterUpdaterProgressChanged;
             PrintAndFlush(Console.Out, "Activity: Fallback/Recovery detected! Recovering...");
 
             await updater.StartUpdate(updateInfo, token);
@@ -453,17 +513,20 @@ namespace CollapseLauncher
 
             void PrintAndFlush(TextWriter writer, string message)
             {
+                // ReSharper disable once AccessToModifiedClosure
                 Console.CursorTop = posV;
                 int buffSize = Console.BufferWidth - 1;
 
-                if (buffSize > 0)
+                if (buffSize <= 0)
                 {
-                    writer.Write("\r" + new string(' ', buffSize));
-                    writer.Write("\r" + message);
+                    return;
                 }
+
+                writer.Write("\r" + new string(' ', buffSize));
+                writer.Write("\r" + message);
             }
 
-            void Updater_UpdaterProgressChanged(object? sender, Updater.UpdaterProgress? e)
+            void UpdaterUpdaterProgressChanged(object? sender, Updater.UpdaterProgress? e)
             {
                 PrintAndFlush(Console.Out, $"Activity: Fallback/Recovery detected! Recovering ({e?.ProgressPercentage}%)...");
             }
@@ -471,7 +534,7 @@ namespace CollapseLauncher
 
         private static void ShowAdditionalInfoIfComExceptionNotInstalled(Exception? ex)
         {
-            if (ex is not COMException exAsComEx ||
+            if (ex is not COMException ||
                 ex.HResult != unchecked((int)0x80040154))
             {
                 return;
@@ -499,6 +562,8 @@ namespace CollapseLauncher
 
                 Console.Error.WriteLine($"Error: {ex}");
             }
+
+            return;
 
             static bool IsWindowsLTSC()
             {
