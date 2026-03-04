@@ -31,6 +31,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
@@ -113,7 +114,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Create a sophon download speed limiter instance
             SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                SophonDownloadSpeedLimiter.CreateInstance(nint.Zero);
 
             // Get the patch assets to download
             (List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile) patchAssets =
@@ -142,8 +143,8 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         public virtual Task FilterAssetList<T>(
-            List<T>           itemList,
-            Func<T, string?>  itemPathSelector,
+            List<T> itemList,
+            Func<T, string?> itemPathSelector,
             CancellationToken token)
         {
             // NOP
@@ -168,16 +169,16 @@ namespace CollapseLauncher.InstallManager.Base
             long sizeCurrentToDownload = patchManifest.OtherSophonPatchData.ManifestIdentityList
                                                       .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                       .Sum(x =>
-                                                           {
-                                                               SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
-                                                               return firstTag?.CompressedSize ?? 0;
-                                                           });
+                                                      {
+                                                          SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                                          return firstTag?.CompressedSize ?? 0;
+                                                      });
             long sizeAdditionalToDownload = otherManifestIdentity
                                            .Sum(x =>
-                                                {
-                                                    SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
-                                                    return firstTag?.CompressedSize ?? 0;
-                                                });
+                                           {
+                                               SophonManifestChunkInfo? firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                               return firstTag?.CompressedSize ?? 0;
+                                           });
 
             if (AskAdditionalSophonPkg)
             {
@@ -199,11 +200,11 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 string filePath = Path.GetTempFileName();
                 filePath = Path.Combine(Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath) + ".log");
-                
+
                 long sizeUncompressed = 0;
-                long sizeCompressed   = 0;
-                long fileCount        = 0;
-                long chunkCount       = 0;
+                long sizeCompressed = 0;
+                long fileCount = 0;
+                long chunkCount = 0;
 
                 // ReSharper disable once ConvertToUsingDeclaration
                 using (FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write))
@@ -224,10 +225,10 @@ namespace CollapseLauncher.InstallManager.Base
                         writer.WriteLine($"    File Count: {fieldInfo.FileCount}");
                         writer.WriteLine();
 
-                        sizeCompressed   += fieldInfo.CompressedSize;
+                        sizeCompressed += fieldInfo.CompressedSize;
                         sizeUncompressed += fieldInfo.UncompressedSize;
-                        fileCount        += fieldInfo.FileCount;
-                        chunkCount       += fieldInfo.ChunkCount;
+                        fileCount += fieldInfo.FileCount;
+                        chunkCount += fieldInfo.ChunkCount;
                     }
 
                     writer.WriteLine($"Total Patch Size to Download (Compressed): {ConverterTool.SummarizeSizeSimple(sizeCompressed)} ({sizeCompressed} bytes)");
@@ -279,31 +280,31 @@ namespace CollapseLauncher.InstallManager.Base
                                                                                           cornerRadius: new CornerRadius(14));
                 showFileDetails.WithMargin(new Thickness(0, 16d, 0, 0));
                 showFileDetails.Click += async (sender, _) =>
-                                         {
-                                             if (sender is not ButtonBase button)
-                                             {
-                                                 return;
-                                             }
+                {
+                    if (sender is not ButtonBase button)
+                    {
+                        return;
+                    }
 
-                                             button.IsEnabled = false;
+                    button.IsEnabled = false;
 
-                                             string filePath = getFileDetailPath.Invoke();
-                                             if (!string.IsNullOrEmpty(filePath))
-                                             {
-                                                 Process process = new Process
-                                                 {
-                                                     StartInfo = new ProcessStartInfo
-                                                     {
-                                                         FileName = filePath,
-                                                         UseShellExecute = true
-                                                     }
-                                                 };
-                                                 process.Start();
-                                             }
+                    string filePath = getFileDetailPath.Invoke();
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        Process process = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = filePath,
+                                UseShellExecute = true
+                            }
+                        };
+                        process.Start();
+                    }
 
-                                             await Task.Delay(TimeSpan.FromSeconds(2));
-                                             button.IsEnabled = true;
-                                         };
+                    await Task.Delay(TimeSpan.FromSeconds(2));
+                    button.IsEnabled = true;
+                };
 
                 grid.AddElementToGridRow(showFileDetails, 1);
             }
@@ -333,8 +334,8 @@ namespace CollapseLauncher.InstallManager.Base
                                       SophonDownloadSpeedLimiter downloadLimiter,
                                       CancellationToken token)
         {
-            SophonChunkManifestInfoPair?      rootPatchManifest = null;
-            SophonChunkManifestInfoPair?      rootMainManifest  = null;
+            SophonChunkManifestInfoPair? rootPatchManifest = null;
+            SophonChunkManifestInfoPair? rootMainManifest = null;
             List<(SophonChunkManifestInfoPair Patch, SophonChunkManifestInfoPair Main, bool IsCommon)> patchManifestList = [];
             bool isAlowRemoveOldFile = true;
 
@@ -452,14 +453,14 @@ namespace CollapseLauncher.InstallManager.Base
             return voAudioMatchingFields;
         }
 
-        protected virtual async Task StartAlterSophonPatch(HttpClient                        httpClient,
-                                                           bool                              isPreloadMode,
-                                                           List<SophonPatchAsset>            patchAssets,
+        protected virtual async Task StartAlterSophonPatch(HttpClient httpClient,
+                                                           bool isPreloadMode,
+                                                           List<SophonPatchAsset> patchAssets,
                                                            List<SophonChunkManifestInfoPair> patchManifestInfoPairs,
-                                                           bool                              isAllowRemoveOldFile,
-                                                           SophonDownloadSpeedLimiter        downloadLimiter,
-                                                           int                               threadNum,
-                                                           CancellationToken                 token)
+                                                           bool isAllowRemoveOldFile,
+                                                           SophonDownloadSpeedLimiter downloadLimiter,
+                                                           int threadNum,
+                                                           CancellationToken token)
         {
             Dictionary<string, int> downloadedPatchHashSet = new();
             Lock dictionaryLock = new();
@@ -476,9 +477,9 @@ namespace CollapseLauncher.InstallManager.Base
             ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = threadNum,
-                CancellationToken      = token
+                CancellationToken = token
             };
-            
+
             if (LauncherConfig.GetAppConfigValue("SophonPreloadApplyPerfMode"))
             {
                 parallelOptions.MaxDegreeOfParallelism = Environment.ProcessorCount;
@@ -505,7 +506,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                       }
 
                                                       string patchFilePath = Path.Combine(patchOutputDir, asset.PatchHash);
-                                                      FileInfo patchFileInfo = new FileInfo(patchFilePath);
+                                                      FileInfo patchFileInfo = new(patchFilePath);
 
                                                       if (!patchFileInfo.Exists)
                                                       {
@@ -520,12 +521,12 @@ namespace CollapseLauncher.InstallManager.Base
                                                   token);
 
             // Assign local download progress
-            ProgressAllCountCurrent          = 0;
-            ProgressAllCountTotal            = pipelineDownloadEnumerable.Count;
-            ProgressPerFileSizeCurrent       = 0;
-            ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
-            ProgressAllSizeCurrent           = 0;
-            ProgressAllSizeTotal             = downloadSizePatchOnlyRemote;
+            ProgressAllCountCurrent = 0;
+            ProgressAllCountTotal = pipelineDownloadEnumerable.Count;
+            ProgressPerFileSizeCurrent = 0;
+            ProgressPerFileSizeTotal = downloadSizePatchOnlyRemote;
+            ProgressAllSizeCurrent = 0;
+            ProgressAllSizeTotal = downloadSizePatchOnlyRemote;
             Status.IsIncludePerFileIndicator = false;
 
             // Run parallel pipeline for download
@@ -538,12 +539,12 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // If it's not a preload mode (patch mode), then execute the patch pipeline as well
-            ProgressAllCountCurrent          = 0;
-            ProgressAllCountTotal            = downloadCountTotalAssetRemote;
-            ProgressPerFileSizeCurrent       = 0;
-            ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
-            ProgressAllSizeCurrent           = 0;
-            ProgressAllSizeTotal             = downloadSizeTotalAssetRemote;
+            ProgressAllCountCurrent = 0;
+            ProgressAllCountTotal = downloadCountTotalAssetRemote;
+            ProgressPerFileSizeCurrent = 0;
+            ProgressPerFileSizeTotal = downloadSizePatchOnlyRemote;
+            ProgressAllSizeCurrent = 0;
+            ProgressAllSizeTotal = downloadSizeTotalAssetRemote;
             Status.IsIncludePerFileIndicator = true;
 
             // Run parallel pipeline for patch
@@ -558,7 +559,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             async ValueTask ImplDownload(Tuple<SophonPatchAsset, Dictionary<string, int>> ctx, CancellationToken innerToken)
             {
-                SophonPatchAsset        patchAsset     = ctx.Item1;
+                SophonPatchAsset patchAsset = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
                 try

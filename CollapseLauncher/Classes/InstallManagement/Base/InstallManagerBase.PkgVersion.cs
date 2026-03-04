@@ -65,7 +65,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         [JsonIgnore] public bool IsFileExist { get; set; }
 
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public LocalFileInfo()
         {
         }
@@ -75,8 +75,8 @@ namespace CollapseLauncher.InstallManager.Base
             string fullPath = Path.Combine(basePath, zipEntry.Filename);
             fullPath.NormalizePathInplace();
 
-            FullPath     = fullPath;
-            FileName     = Path.GetFileName(FullPath);
+            FullPath = fullPath;
+            FileName = Path.GetFileName(FullPath);
             RelativePath = GetRelativePath(FullPath, basePath);
             Update();
         }
@@ -86,8 +86,8 @@ namespace CollapseLauncher.InstallManager.Base
             string fullPath = Path.Combine(basePath, packageVersion.localName ?? packageVersion.remoteName);
             fullPath.NormalizePathInplace();
 
-            FullPath     = fullPath;
-            FileName     = Path.GetFileName(FullPath);
+            FullPath = fullPath;
+            FileName = Path.GetFileName(FullPath);
             RelativePath = GetRelativePath(FullPath, basePath);
             Update();
         }
@@ -97,20 +97,20 @@ namespace CollapseLauncher.InstallManager.Base
             string fullPath = Path.Combine(basePath, packageData.FilePath ?? "");
             fullPath.NormalizePathInplace();
 
-            FullPath     = fullPath;
-            FileName     = Path.GetFileName(FullPath);
+            FullPath = fullPath;
+            FileName = Path.GetFileName(FullPath);
             RelativePath = GetRelativePath(FullPath, basePath);
             Update();
         }
 
         public LocalFileInfo(FileSystemInfo fileInfo, string basePath)
         {
-            FullPath     = fileInfo.FullName;
-            FileName     = Path.GetFileName(fileInfo.FullName);
+            FullPath = fileInfo.FullName;
+            FileName = Path.GetFileName(fileInfo.FullName);
             RelativePath = GetRelativePath(FullPath, basePath);
             Update();
         }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         private static string GetRelativePath(string fullPath, string basePath)
         {
@@ -152,7 +152,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the unused file info asynchronously
             (List<LocalFileInfo>, long) unusedFileInfo = await GetUnusedFileInfoList(withDialog);
-            
+
             // Spawn dialog if used
             if (withDialog)
             {
@@ -163,20 +163,20 @@ namespace CollapseLauncher.InstallManager.Base
                     mainWindow.OverlayFrame.Navigate(typeof(FileCleanupPage), null,
                                                      new DrillInNavigationTransitionInfo());
                 }
-                
+
                 if (FileCleanupPage.Current == null)
                     return;
                 await FileCleanupPage.Current.InjectFileInfoSource(unusedFileInfo.Item1, unusedFileInfo.Item2);
-                
+
                 LoadingMessageHelper.HideLoadingFrame();
-                
-                FileCleanupPage.Current.MenuExitButton.Click   += ExitFromOverlay;
+
+                FileCleanupPage.Current.MenuExitButton.Click += ExitFromOverlay;
                 FileCleanupPage.Current.MenuReScanButton.Click += ExitFromOverlay;
                 FileCleanupPage.Current.MenuReScanButton.Click += async (_, _) =>
-                                                                  {
-                                                                      await Task.Delay(250);
-                                                                      await CleanUpGameFiles();
-                                                                  };
+                {
+                    await Task.Delay(250);
+                    await CleanUpGameFiles();
+                };
 
                 return;
             }
@@ -261,8 +261,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                  .SetAllowedDecompression(DecompressionMethods.None)
                                                  .Create();
 
-                    DownloadClient    downloadClient = DownloadClient.CreateInstance(httpClient);
-                    GamePackageResult packageResult  = GameVersionManager.GetGameLatestZip(gameStateEnum);
+                    DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
+                    GamePackageResult packageResult = GameVersionManager.GetGameLatestZip(gameStateEnum);
 
                     // Download pkg_version file (with additional audio ones)
                     string pkgVersionPath = await DownloadPkgVersion(downloadClient, packageResult);
@@ -276,8 +276,8 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Try parse the pkg_versions (including the audio one)
-                List<LocalFileInfo> pkgFileInfo        = [];
-                HashSet<string>     pkgFileInfoHashSet = [];
+                List<LocalFileInfo> pkgFileInfo = [];
+                HashSet<string> pkgFileInfoHashSet = [];
                 await ParsePkgVersions2FileInfo(pkgFileInfo, pkgFileInfoHashSet, Token!.Token);
 
                 string[] ignoredFiles = [];
@@ -349,7 +349,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get and filter the unused file from the pkg_versions and ignoredFiles
                 List<LocalFileInfo> unusedFileInfo = [];
-                long                unusedFileSize = 0;
+                long unusedFileSize = 0;
                 await Task.Run(() =>
                                    Parallel.ForEach(localFileInfo,
                                                     new ParallelOptions { CancellationToken = Token.Token },
@@ -387,7 +387,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Initialize reader
             using StreamReader reader = new StreamReader(audioListFilePath);
             // Read until EOF
-            while (await reader.ReadLineAsync() is {} line)
+            while (await reader.ReadLineAsync() is { } line)
             {
                 // Read the line and skip if it's empty
                 if (string.IsNullOrEmpty(line))
@@ -397,8 +397,8 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get the pkg_version filename, url and then download it
                 string pkgFileName = $"Audio_{line.Trim()}_pkg_version";
-                string pkgPath     = Path.Combine(GamePath, pkgFileName);
-                string pkgUrl      = baseExtractUrl.CombineURLFromString(pkgFileName);
+                string pkgPath = Path.Combine(GamePath, pkgFileName);
+                string pkgUrl = baseExtractUrl.CombineURLFromString(pkgFileName);
 
                 // Skip if URL is not found
                 if ((await FallbackCDNUtil.GetURLStatusCode(pkgUrl, CancellationToken.None)).StatusCode == HttpStatusCode.NotFound)
@@ -412,8 +412,8 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async ValueTask ParsePkgVersions2FileInfo(List<LocalFileInfo> pkgFileInfo,
-                                                                    HashSet<string>     pkgFileInfoHashSet,
-                                                                    CancellationToken   token)
+                                                                    HashSet<string> pkgFileInfoHashSet,
+                                                                    CancellationToken token)
         {
             string gamePath = GamePath;
 
@@ -426,15 +426,15 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async ValueTask InnerParsePkgVersion2FileInfo(string              gamePath, string path,
+        protected virtual async ValueTask InnerParsePkgVersion2FileInfo(string gamePath, string path,
                                                                         List<LocalFileInfo> pkgFileInfo,
-                                                                        HashSet<string>     pkgFileInfoHashSet,
-                                                                        CancellationToken   token)
+                                                                        HashSet<string> pkgFileInfoHashSet,
+                                                                        CancellationToken token)
         {
             // Assign path to reader
             using StreamReader reader = new StreamReader(path, true);
             // Do loop until EOF
-            while (await reader.ReadLineAsync(token) is {} line)
+            while (await reader.ReadLineAsync(token) is { } line)
             {
                 // Read line and deserialize
                 LocalFileInfo? localFileInfo = line.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
@@ -443,8 +443,8 @@ namespace CollapseLauncher.InstallManager.Base
                 if (localFileInfo == null)
                     continue;
 
-                localFileInfo.FullPath    = Path.Combine(gamePath, localFileInfo.RelativePath);
-                localFileInfo.FileName    = Path.GetFileName(localFileInfo.RelativePath);
+                localFileInfo.FullPath = Path.Combine(gamePath, localFileInfo.RelativePath);
+                localFileInfo.FileName = Path.GetFileName(localFileInfo.RelativePath);
                 localFileInfo.IsFileExist = File.Exists(localFileInfo.FullPath);
 
                 // Add it to the list and hashset
@@ -458,11 +458,11 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Convert to LocalFileInfo and get the relative path
             localFileInfo = new LocalFileInfo(fileInfo, gamePath);
-            string             relativePath     = localFileInfo.RelativePath;
+            string relativePath = localFileInfo.RelativePath;
             ReadOnlySpan<char> relativePathSpan = relativePath;
-            string             fileName         = localFileInfo.FileName;
-            string             gameFolder       = _gameInstallFileInfo?.GameDataFolderName ?? string.Empty;
-            string             persistentPath   = Path.Combine(gameFolder, "Persistent");
+            string fileName = localFileInfo.FileName;
+            string gameFolder = _gameInstallFileInfo?.GameDataFolderName ?? string.Empty;
+            string persistentPath = Path.Combine(gameFolder, "Persistent");
 
             // 1st check: Ensure that the file is not a persistent file
             if (relativePathSpan.StartsWith(persistentPath, StringComparison.OrdinalIgnoreCase))
@@ -471,14 +471,14 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // 2nd check: Ensure that the file is not a config or pkg_version file
-            if (relativePathSpan.EndsWith("config.ini",     StringComparison.OrdinalIgnoreCase)
+            if (relativePathSpan.EndsWith("config.ini", StringComparison.OrdinalIgnoreCase)
                 || relativePathSpan.EndsWith("pkg_version", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
 
             // 3rd check: Ensure that the file is not a web cache file
-            if (relativePathSpan.Contains("webCache",    StringComparison.OrdinalIgnoreCase)
+            if (relativePathSpan.Contains("webCache", StringComparison.OrdinalIgnoreCase)
                 || relativePathSpan.Contains("SDKCache", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
@@ -488,7 +488,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (_gameInstallFileInfo?.FoldersToKeepInData
                                        .Any(x => relativePath
                                                 .AsSpan() // As Span<T> since StartsWith() in it is typically faster
-                                                 // than the one from String primitive
+                                                          // than the one from String primitive
                                                 .Contains(x.AsSpan(), StringComparison.OrdinalIgnoreCase)) ?? false)
             {
                 return false; // Return false if it's not actually in excluded list
@@ -531,7 +531,7 @@ namespace CollapseLauncher.InstallManager.Base
             // If all those matches failed, then return them as a non-game file
             return gameState == GameInstallStateEnum.Installed
                    && (localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase) ||
-                       localFileInfo.RelativePath.StartsWith("ldiff",          StringComparison.OrdinalIgnoreCase));
+                       localFileInfo.RelativePath.StartsWith("ldiff", StringComparison.OrdinalIgnoreCase));
         }
 
         protected virtual async Task GetRelativeLocalFilePaths(List<LocalFileInfo> localFileInfoList,
@@ -539,50 +539,50 @@ namespace CollapseLauncher.InstallManager.Base
                                                                CancellationToken token)
         {
             await Task.Run(() =>
-                           {
-                               int           count          = 0;
-                               long          totalSize      = 0;
-                               string        gamePath       = GamePath;
-                               DirectoryInfo dirInfo        = new DirectoryInfo(gamePath);
-                               int           updateInterval = 100; // Update UI every 100 files
-                               int           processedCount = 0;
+            {
+                int count = 0;
+                long totalSize = 0;
+                string gamePath = GamePath;
+                DirectoryInfo dirInfo = new DirectoryInfo(gamePath);
+                int updateInterval = 100; // Update UI every 100 files
+                int processedCount = 0;
 
-                               // Do the do in parallel since it will be a really CPU expensive task due to janky checks here and there.
-                               Parallel.ForEach(dirInfo.EnumerateFiles("*", SearchOption.AllDirectories),
-                                                new ParallelOptions { CancellationToken = token },
-                                                (fileInfo, _) =>
-                                                {
-                                                    // Throw if token is cancelled
-                                                    token.ThrowIfCancellationRequested();
+                // Do the do in parallel since it will be a really CPU expensive task due to janky checks here and there.
+                Parallel.ForEach(dirInfo.EnumerateFiles("*", SearchOption.AllDirectories),
+                                 new ParallelOptions { CancellationToken = token },
+                                 (fileInfo, _) =>
+                                 {
+                                     // Throw if token is cancelled
+                                     token.ThrowIfCancellationRequested();
 
-                                                    // Do the check within the lambda function to possibly check the file
-                                                    // condition in multithread
-                                                    if (!IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck, gameState, out LocalFileInfo localFileInfo))
-                                                        return;
+                                     // Do the check within the lambda function to possibly check the file
+                                     // condition in multithread
+                                     if (!IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck, gameState, out LocalFileInfo localFileInfo))
+                                         return;
 
-                                                    Interlocked.Add(ref totalSize, fileInfo.Exists ? fileInfo.Length : 0);
-                                                    Interlocked.Increment(ref count);
-                                                    int currentCount = Interlocked.Increment(ref processedCount);
+                                     Interlocked.Add(ref totalSize, fileInfo.Exists ? fileInfo.Length : 0);
+                                     Interlocked.Increment(ref count);
+                                     int currentCount = Interlocked.Increment(ref processedCount);
 
-                                                    if (currentCount % updateInterval == 0)
-                                                    {
-                                                        ParentUI.DispatcherQueue.TryEnqueue(() =>
-                                                        {
-                                                            LoadingMessageHelper.SetMessage(
-                                                                 Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                                 string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
-                                                                               count,
-                                                                               ConverterTool.SummarizeSizeSimple(totalSize))
-                                                                );
-                                                        });
-                                                    }
+                                     if (currentCount % updateInterval == 0)
+                                     {
+                                         ParentUI.DispatcherQueue.TryEnqueue(() =>
+                                         {
+                                             LoadingMessageHelper.SetMessage(
+                                                  Locale.Lang._FileCleanupPage.LoadingTitle,
+                                                  string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
+                                                                count,
+                                                                ConverterTool.SummarizeSizeSimple(totalSize))
+                                                 );
+                                         });
+                                     }
 
-                                                    lock (localFileInfoList)
-                                                    {
-                                                        localFileInfoList.Add(localFileInfo);
-                                                    }
-                                                });
-                           }, token);
+                                     lock (localFileInfoList)
+                                     {
+                                         localFileInfoList.Add(localFileInfo);
+                                     }
+                                 });
+            }, token);
         }
     }
 }
