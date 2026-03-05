@@ -1,7 +1,20 @@
 name: Publish Stable & Preview builds to WinGet
 on:
   release:
-    types: [released]
+    types: [released, prereleased]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 1.2.3)'
+        required: true
+        type: string
+      channel:
+        description: 'Release channel'
+        required: true
+        type: choice
+        options:
+          - Stable
+          - Preview
 jobs:
   determine_channel:
     runs-on: ubuntu-latest
@@ -13,18 +26,23 @@ jobs:
         id: check
         # Find X.Y.Z version, then check for "Preview" after it for regex
         run: |
-          RELEASE_NAME="${{ github.event.release.name }}"
-          if [[ "$RELEASE_NAME" =~ (\d+\.\d+\.\d+) ]]; then
-            VERSION="${BASH_REMATCH[1]}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+            CHANNEL="${{ inputs.channel }}"
           else
-            echo "Error: Could not find X.Y.Z version in release name."
-            exit 1
-          fi
+            RELEASE_NAME="${{ github.event.release.name }}"
+            if [[ "$RELEASE_NAME" =~ (\d+\.\d+\.\d+) ]]; then
+              VERSION="${BASH_REMATCH[1]}"
+            else
+              echo "Error: Could not find X.Y.Z version in release name."
+              exit 1
+            fi
 
-          if [[ "$RELEASE_NAME" == *"Preview"* ]]; then
-            CHANNEL="Preview"
-          else
-            CHANNEL="Stable"
+            if [[ "$RELEASE_NAME" == *"Preview"* ]]; then
+              CHANNEL="Preview"
+            else
+              CHANNEL="Stable"
+            fi
           fi
 
           echo "Detected Channel: $CHANNEL"
