@@ -25,6 +25,7 @@ jobs:
     outputs:
       channel: ${{ steps.check.outputs.channel }}
       version: ${{ steps.check.outputs.version }}
+      release-tag: ${{ steps.check.outputs.release-tag }}
     steps:
       - name: Check Release Name and Extract Version
         id: check
@@ -33,8 +34,10 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             VERSION="${{ inputs.version }}"
             CHANNEL="${{ inputs.channel }}"
+            RELEASE_TAG="${{ inputs.release-tag }}"
           else
             RELEASE_NAME="${{ github.event.release.name }}"
+            RELEASE_TAG="${{ github.event.release.tag_name }}"
             if [[ "$RELEASE_NAME" =~ (\d+\.\d+\.\d+) ]]; then
               VERSION="${BASH_REMATCH[1]}"
             else
@@ -51,8 +54,10 @@ jobs:
 
           echo "Detected Channel: $CHANNEL"
           echo "Detected Version: $VERSION"
+          echo "Detected Release Tag: $RELEASE_TAG"
           echo "channel=$CHANNEL" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "release-tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
   
   publish_stable:
     needs: determine_channel
@@ -64,7 +69,7 @@ jobs:
         with:
           identifier: CollapseLauncher.Collapse
           version: ${{ needs.determine_channel.outputs.version }}
-          release-tag: ${{ github.event_name == 'workflow_dispatch' && inputs.release-tag || github.event.release.tag_name }}
+          release-tag: ${{ needs.determine_channel.outputs.release-tag }}
           installers-regex: '\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
           
@@ -78,6 +83,6 @@ jobs:
         with:
           identifier: CollapseLauncher.Collapse.Preview
           version: ${{ needs.determine_channel.outputs.version }}
-          release-tag: ${{ github.event_name == 'workflow_dispatch' && inputs.release-tag || github.event.release.tag_name }}
+          release-tag: ${{ needs.determine_channel.outputs.release-tag }}
           installers-regex: '\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
