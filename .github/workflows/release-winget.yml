@@ -15,6 +15,10 @@ on:
         options:
           - Stable
           - Preview
+      release-tag:
+        description: 'Release tag to fetch installers from (e.g. CL-1.2.3)'
+        required: true
+        type: string
 jobs:
   determine_channel:
     runs-on: ubuntu-latest
@@ -60,6 +64,7 @@ jobs:
         with:
           identifier: CollapseLauncher.Collapse
           version: ${{ needs.determine_channel.outputs.version }}
+          release-tag: ${{ github.event_name == 'workflow_dispatch' && inputs.release-tag || github.event.release.tag_name }}
           installers-regex: '\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
           
@@ -73,5 +78,6 @@ jobs:
         with:
           identifier: CollapseLauncher.Collapse.Preview
           version: ${{ needs.determine_channel.outputs.version }}
+          release-tag: ${{ github.event_name == 'workflow_dispatch' && inputs.release-tag || github.event.release.tag_name }}
           installers-regex: '\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
