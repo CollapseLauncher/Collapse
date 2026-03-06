@@ -66,7 +66,7 @@
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Resources>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
@@ -94,7 +94,7 @@
                                 CommandParameter="{StaticResource CopyToClipboardBoth}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE77F;"/>
                 </MenuFlyoutSubItem.Icon>
@@ -111,7 +111,7 @@
                                 CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16, 8"/>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
@@ -120,7 +120,7 @@
                     <FontIcon Glyph="&#xE8D6;"/>
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
@@ -129,7 +129,7 @@
                     <FontIcon Glyph="&#xE786;"/>
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <ToggleMenuFlyoutItem DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+            <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
@@ -139,7 +139,7 @@
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
-                               DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}">
+                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <RadioMenuFlyoutItem Text="2px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="4px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
                 <RadioMenuFlyoutItem Text="8px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
@@ -172,7 +172,7 @@
               Grid.RowSpan="4"
               Margin="-32"
               Background="Transparent"
-              DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+              DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
               ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"/>
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
@@ -1074,7 +1074,7 @@
               PointerEntered="MultiBackgroundPipsPagerGridHoverArea_OnPointerEntered"
               PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited">
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
-                        DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager}"
+                        DataContext="{x:Bind CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
                         RenderTransformOrigin=".5, .5"
                         Opacity="0"
@@ -1208,7 +1208,7 @@
                     </Grid>
                     <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
                             Grid.Column="2"
-                            DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
@@ -1229,7 +1229,7 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Column="0"
-                                            DataContext="{x:Bind pages:HomePage.CurrentBackgroundManager, Mode=OneWay}"
+                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                             Padding="4"
                                             Style="{ThemeResource TransparentDefaultButtonStyle}"
                                             extension:UIElementExtensions.CursorType="Hand"

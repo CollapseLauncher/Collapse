@@ -203,7 +203,7 @@ public sealed partial class HomePage
             WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
             WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
 
-    private static ImageBackgroundManager CurrentBackgroundManager => ImageBackgroundManager.Shared;
+    private ImageBackgroundManager CurrentBackgroundManager => field ??= ImageBackgroundManager.Shared;
 
     internal string? StartTooltipText
     {
