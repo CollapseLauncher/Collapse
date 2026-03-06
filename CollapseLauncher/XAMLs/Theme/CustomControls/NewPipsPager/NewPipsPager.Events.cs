@@ -18,66 +18,82 @@ public partial class NewPipsPager
     protected override Size MeasureOverride(Size parentSize)
     {
         Orientation orientation = Orientation;
-        double pipsButtonSize = GetButtonSize(orientation);
+        GetButtonSize(orientation, out Vector2 pipsButtonSize);
 
-        Vector2 containerSize = _pipsPagerItemsRepeater.ActualSize;
-        double  containerTotalWidth  = containerSize.X;
-        double  containerTotalHeight = containerSize.Y;
+        // Update pip button size
+        SetValue(PipButtonSizeProperty, pipsButtonSize);
 
-        GetNavigationButtonTotalSize(PreviousNavigationButtonMode,
-                                     _previousPageButton,
-                                     out double buttonPrevSizeTotalWidth,
-                                     out double buttonPrevSizeTotalHeight);
+        Vector2 repeaterSize   = _pipsPagerItemsRepeater.ActualSize;
+        double  repeaterWidth  = repeaterSize.X;
+        double  repeaterHeight = repeaterSize.Y;
 
-        GetNavigationButtonTotalSize(NextNavigationButtonMode,
-                                     _nextPageButton,
-                                     out double buttonNextSizeTotalWidth,
-                                     out double buttonNextSizeTotalHeight);
+        GetNavigationButtonTotalSize(PreviousNavigationButtonMode, _previousPageButton, out double navPrevBtnWidth, out double navPrevBtnHeight);
+        GetNavigationButtonTotalSize(NextNavigationButtonMode, _nextPageButton, out double navNextBtnWidth, out double navNextBtnHeight);
 
-        Vector2 scrollViewportSize        = parentSize.ToVector2();
-        double  scrollViewportTotalWidth  = scrollViewportSize.X;
-        double  scrollViewportTotalHeight = scrollViewportSize.Y;
+        Size availableSpace = base.MeasureOverride(parentSize);
 
-        Size   selfSize              = base.MeasureOverride(parentSize);
-        double totalCalculatedWidth  = selfSize.Width;
-        double totalCalculatedHeight = selfSize.Height;
+        double calculatedWidth  = availableSpace.Width;
+        double calculatedHeight = availableSpace.Height;
 
         if (orientation == Orientation.Horizontal)
         {
-            _pipsPagerScrollViewer.MaxWidth =
-                GetViewportSize(scrollViewportTotalWidth,
-                                containerTotalWidth,
-                                buttonPrevSizeTotalWidth,
-                                buttonNextSizeTotalWidth,
-                                pipsButtonSize,
-                                out bool isContainerLarger);
+            calculatedWidth = CalculateElementSize(parentSize.Width,
+                                                   repeaterWidth,
+                                                   navPrevBtnWidth,
+                                                   navNextBtnWidth,
+                                                   pipsButtonSize.X,
+                                                   out double repeaterFinalWidth);
 
-            totalCalculatedWidth = 0;
-            totalCalculatedWidth += !isContainerLarger
-                ? containerTotalWidth
-                : _pipsPagerScrollViewer.MaxWidth;
-            totalCalculatedWidth += buttonPrevSizeTotalWidth +
-                                    buttonNextSizeTotalWidth;
+            calculatedHeight = GetMaxElementOtherSize(navPrevBtnHeight, navNextBtnHeight, calculatedHeight, repeaterHeight);
+            _pipsPagerScrollViewer.MaxWidth = repeaterFinalWidth;
         }
         else
         {
-            _pipsPagerScrollViewer.MaxHeight =
-                GetViewportSize(scrollViewportTotalHeight,
-                                containerTotalHeight,
-                                buttonPrevSizeTotalHeight,
-                                buttonNextSizeTotalHeight,
-                                pipsButtonSize,
-                                out bool isContainerLarger);
+            calculatedHeight = CalculateElementSize(parentSize.Height,
+                                                    repeaterHeight,
+                                                    navPrevBtnHeight,
+                                                    navNextBtnHeight,
+                                                    pipsButtonSize.Y,
+                                                    out double repeaterFinalHeight);
 
-            totalCalculatedHeight = 0;
-            totalCalculatedHeight += !isContainerLarger
-                ? containerTotalHeight
-                : _pipsPagerScrollViewer.MaxHeight;
-            totalCalculatedHeight += buttonPrevSizeTotalHeight +
-                                     buttonNextSizeTotalHeight;
+            calculatedWidth = GetMaxElementOtherSize(navPrevBtnWidth, navNextBtnWidth, calculatedWidth, repeaterWidth);
+            _pipsPagerScrollViewer.MaxHeight = repeaterFinalHeight;
         }
 
-        return new Size(totalCalculatedWidth, totalCalculatedHeight);
+        return new Size(calculatedWidth, calculatedHeight);
+    }
+
+    private static double CalculateElementSize(
+        double     parentSize,
+        double     repeaterSize,
+        double     navPrevBtnSize,
+        double     navNextBtnSize,
+        double     pipBtnSize,
+        out double repeaterFinalSize)
+    {
+        double remainedSize = parentSize - navPrevBtnSize - navNextBtnSize;
+        repeaterFinalSize = remainedSize >= repeaterSize
+            ? repeaterSize
+            : GetClampedRepeaterSize(remainedSize, pipBtnSize);
+
+        return navPrevBtnSize + navNextBtnSize + repeaterFinalSize;
+    }
+
+    private static double GetMaxElementOtherSize(
+        double navPrevBtnSize,
+        double navNextBtnSize,
+        double calculatedSize,
+        double repeaterSize)
+    {
+        double elementMaxSize = Math.Max(navPrevBtnSize,
+                                         Math.Max(navNextBtnSize, repeaterSize));
+
+        if (calculatedSize > elementMaxSize)
+        {
+            calculatedSize = elementMaxSize;
+        }
+
+        return calculatedSize;
     }
 
     private static void GetNavigationButtonTotalSize(
@@ -93,37 +109,21 @@ public partial class NewPipsPager
         height = size.Y + margin.Top + margin.Bottom;
     }
 
-    private static double GetViewportSize(double   initialViewportSize,
-                                          double   initialContainerSize,
-                                          double   previousSideElementSize,
-                                          double   nextSideElementSize,
-                                          double   perButtonSize,
-                                          out bool isContainerLarger)
+    private static double GetClampedRepeaterSize(
+        double remainedAvailSpace,
+        double buttonSize)
     {
-        // Decrease viewport based on total width of navigation buttons
-        initialViewportSize -= previousSideElementSize + nextSideElementSize;
-        isContainerLarger   =  initialContainerSize > initialViewportSize;
-
-        // Clamp to display only viewable pips
-        if (!isContainerLarger) return double.PositiveInfinity;
-
-        double dividedPerButtonSize = Math.Floor(initialViewportSize / perButtonSize);
-        initialViewportSize = dividedPerButtonSize * perButtonSize;
-        int clampedNth = (int)dividedPerButtonSize;
-        if (clampedNth % 2 == 0)
+        if (remainedAvailSpace < buttonSize ||
+            !double.IsFinite(remainedAvailSpace) ||
+            buttonSize <= 0)
         {
-            initialViewportSize = (clampedNth - 1) * perButtonSize;
+            return 0;
         }
 
-        // Avoid NaN or Infinite
-        initialViewportSize = Math.Max(Math.Abs(initialViewportSize), 0);
-        if (!double.IsFinite(initialViewportSize))
-        {
-            initialViewportSize = 0;
-        }
+        double itemCountDisp      = Math.Round(remainedAvailSpace / buttonSize);
+        double itemCountDispClamp = itemCountDisp % 2 == 0 ? itemCountDisp - 1 : itemCountDisp;
 
-        return initialViewportSize;
-
+        return itemCountDispClamp * buttonSize;
     }
 
     #endregion
@@ -346,7 +346,7 @@ public partial class NewPipsPager
         }
 
         Orientation layoutOrientation = Orientation;
-        double pipsButtonSize = GetButtonSize(layoutOrientation);
+        double pipsButtonSize = GetButtonSize(layoutOrientation, out _);
 
         PointerPoint pointer      = e.GetCurrentPoint(element);
         int          orientation  = pointer.Properties.MouseWheelDelta;
@@ -370,9 +370,10 @@ public partial class NewPipsPager
         }
     }
 
-    private double GetButtonSize(Orientation orientation)
+    private double GetButtonSize(Orientation orientation, out Vector2 renderedSize)
     {
         double pipsButtonSize;
+        renderedSize = default;
 
         bool isRetry = false;
         Retry:
@@ -386,6 +387,7 @@ public partial class NewPipsPager
             ? desiredSize.X
             : desiredSize.Y;
 
+        renderedSize = button.ActualSize;
         if (pipsButtonSize != 0) return pipsButtonSize;
 
         GetBasedOnRepeaterSize:
@@ -395,6 +397,7 @@ public partial class NewPipsPager
             isRetry = true;
             goto Retry;
         }
+
         pipsButtonSize = orientation == Orientation.Horizontal
             ? _pipsPagerItemsRepeater.ActualHeight
             : _pipsPagerItemsRepeater.ActualWidth;

@@ -415,7 +415,7 @@ namespace CollapseLauncher.Pages
                 widthAnim2.KeyFrames.Add(new SplineDoubleKeyFrame
                 {
                     KeyTime   = dur,
-                    Value     = shrink ? 0 : itemCount * 15,
+                    Value     = shrink ? 0 : itemCount * innerImageCarouselPager.PipButtonSize.X,
                     KeySpline = new KeySpline { ControlPoint1 = new Point(0, 0), ControlPoint2 = new Point(0, 1) }
                 });
                 widthAnim2.EnableDependentAnimation = true;
