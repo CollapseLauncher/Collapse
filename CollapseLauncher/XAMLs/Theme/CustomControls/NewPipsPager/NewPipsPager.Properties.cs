@@ -100,13 +100,9 @@ public partial class NewPipsPager
         set => SetValue(SelectedPipButtonStyleProperty, value);
     }
 
-    public Vector2 PipButtonSize
-    {
-        get => (Vector2)GetValue(PipButtonSizeProperty);
-        set => SetValue(PipButtonSizeProperty, value);
-    }
+    public Vector2 PipButtonSize => _pipsPagerItemsRepeater.TryGetElement(ItemIndex) is not { } button ? default : button.ActualSize;
 
-    #endregion
+#endregion
 
     #region Fields
 
@@ -309,8 +305,6 @@ public partial class NewPipsPager
     public static readonly DependencyProperty NextButtonStyleProperty = DependencyProperty.Register(nameof(NextButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
     public static readonly DependencyProperty NormalPipButtonStyleProperty = DependencyProperty.Register(nameof(NormalPipButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
     public static readonly DependencyProperty SelectedPipButtonStyleProperty = DependencyProperty.Register(nameof(SelectedPipButtonStyle), typeof(Style), typeof(NewPipsPager), new PropertyMetadata(null!));
-
-    public static readonly DependencyProperty PipButtonSizeProperty = DependencyProperty.Register(nameof(PipButtonSize), typeof(Vector2), typeof(NewPipsPager), new PropertyMetadata(default(Vector2)));
 
     #endregion
 }

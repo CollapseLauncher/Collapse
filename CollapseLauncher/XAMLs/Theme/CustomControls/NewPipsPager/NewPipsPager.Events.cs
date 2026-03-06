@@ -17,11 +17,8 @@ public partial class NewPipsPager
 
     protected override Size MeasureOverride(Size parentSize)
     {
-        Orientation orientation = Orientation;
-        GetButtonSize(orientation, out Vector2 pipsButtonSize);
-
-        // Update pip button size
-        SetValue(PipButtonSizeProperty, pipsButtonSize);
+        Orientation orientation    = Orientation;
+        Vector2     pipsButtonSize = PipButtonSize;
 
         Vector2 repeaterSize   = _pipsPagerItemsRepeater.ActualSize;
         double  repeaterWidth  = repeaterSize.X;
@@ -346,7 +343,7 @@ public partial class NewPipsPager
         }
 
         Orientation layoutOrientation = Orientation;
-        double pipsButtonSize = GetButtonSize(layoutOrientation, out _);
+        double      pipsButtonSize    = layoutOrientation == Orientation.Horizontal ? PipButtonSize.X : PipButtonSize.Y;
 
         PointerPoint pointer      = e.GetCurrentPoint(element);
         int          orientation  = pointer.Properties.MouseWheelDelta;
@@ -368,41 +365,6 @@ public partial class NewPipsPager
             toOffset = Math.Clamp(toOffset, 0, _pipsPagerScrollViewer.ExtentHeight);
             _pipsPagerScrollViewer.ChangeView(_pipsPagerScrollViewer.HorizontalOffset, toOffset, _pipsPagerScrollViewer.ZoomFactor);
         }
-    }
-
-    private double GetButtonSize(Orientation orientation, out Vector2 renderedSize)
-    {
-        double pipsButtonSize;
-        renderedSize = default;
-
-        bool isRetry = false;
-        Retry:
-        if (_pipsPagerItemsRepeater.TryGetElement(ItemIndex) is not { } button)
-        {
-            goto GetBasedOnRepeaterSize;
-        }
-
-        Vector2 desiredSize = button.ActualSize;
-        pipsButtonSize = orientation == Orientation.Horizontal
-            ? desiredSize.X
-            : desiredSize.Y;
-
-        renderedSize = button.ActualSize;
-        if (pipsButtonSize != 0) return pipsButtonSize;
-
-        GetBasedOnRepeaterSize:
-        _pipsPagerItemsRepeater.UpdateLayout(); // Wake up the repeater and re-display element.
-        if (!isRetry)
-        {
-            isRetry = true;
-            goto Retry;
-        }
-
-        pipsButtonSize = orientation == Orientation.Horizontal
-            ? _pipsPagerItemsRepeater.ActualHeight
-            : _pipsPagerItemsRepeater.ActualWidth;
-
-        return pipsButtonSize;
     }
 
     #endregion
