@@ -443,8 +443,7 @@
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Orientation="Vertical"
-                                    DataContext="{x:Bind NotificationElementsCollection, Mode=OneWay}"
-                                    Opacity="{Binding Path=Count, Mode=OneWay, Converter={StaticResource InverseCountToOpacityConverter}}">
+                                    Opacity="{x:Bind NotificationElementsCollection.Count, Mode=OneWay, Converter={StaticResource InverseCountToOpacityConverter}}">
                             <StackPanel.OpacityTransition>
                                 <ScalarTransition />
                             </StackPanel.OpacityTransition>
@@ -487,9 +486,8 @@
                   Grid.Row="1"
                   Padding="8"
                   VerticalAlignment="Bottom"
-                  DataContext="{x:Bind NotificationElementsCollection, Mode=OneWay}"
                   Background="{ThemeResource NotificationPanelBrush}"
-                  Visibility="{Binding Path=Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}">
+                  Visibility="{x:Bind NotificationElementsCollection.Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
