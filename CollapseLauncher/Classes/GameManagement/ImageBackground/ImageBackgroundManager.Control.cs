@@ -42,7 +42,7 @@ public partial class ImageBackgroundManager
     public void Play(bool isUserRequest = true)
     {
         // Block play request for window event if paused by user
-        if (!isUserRequest && _isPausedByUser)
+        if (!isUserRequest && (_isPausedByUser || !CurrentIsEnableBackgroundAutoPlay))
         {
             return;
         }
