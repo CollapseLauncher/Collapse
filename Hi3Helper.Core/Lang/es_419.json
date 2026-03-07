@@ -112,7 +112,8 @@
     "NavigationUtilities": "Utilidades",
     "Initializing": "Iniciando",
     "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
-    "LoadingGameConfiguration": "Cargando Ajustes del Juego"
+    "LoadingGameConfiguration": "Cargando Ajustes del Juego",
+    "LoadingBackgroundImage": "Loading Background Image"
   },
 
   "_HomePage": {
@@ -551,6 +552,15 @@
     "VideoBackground_IsEnableAudio": "Permitir Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
+    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegInstallStatus": "Install Status:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
+    "VideoBackground_FFmpegInstallNote": "Note",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
+    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
@@ -690,7 +700,7 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
     "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading.",
     "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
