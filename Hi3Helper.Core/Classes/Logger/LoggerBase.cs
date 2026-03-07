@@ -25,6 +25,10 @@ public abstract class LoggerBase : ILog
     protected readonly       Encoding Encoding;
     internal static readonly Lock     LockObject = new();
 
+    private const byte SquareBracketOpen  = 0x5B; // [
+    private const byte SquareBracketClose = 0x5D; // ]
+    private const byte CarriageReturn     = 0x0D; // \r
+
     /// <summary>
     /// NOTE FOR COLLAPSE DEVELOPER:<br/>
     /// Edit this dictionary to map the color of the log type tag.<br/>
@@ -301,12 +305,14 @@ public abstract class LoggerBase : ILog
     protected static unsafe T* GetSpanPointer<T>(ReadOnlySpan<T> span)
         where T : unmanaged => (T*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
 
+#if !NET10_0_OR_GREATER
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Text")]
     protected static extern ReadOnlySpan<char> GetInterpolateStringSpan(ref DefaultInterpolatedStringHandler element);
 
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "Clear")]
     protected static extern void ClearInterpolateString(ref DefaultInterpolatedStringHandler element);
-    #endregion
+#endif
+#endregion
 
     #region Logging Methods
     private readonly ArrayPool<byte> _logBufferPool = ArrayPool<byte>.Create();
@@ -329,11 +335,12 @@ public abstract class LoggerBase : ILog
 
     protected unsafe void WriteLineToStreamCore(Stream             stream,
                                                 ReadOnlySpan<char> line,
-                                                LogType            type             = LogType.Info,
-                                                bool               appendNewLine    = true,
-                                                bool               isWriteColor     = true,
-                                                bool               isWriteTagType   = true,
-                                                bool               isWriteTimestamp = false)
+                                                LogType            type                      = LogType.Info,
+                                                bool               appendNewLine             = true,
+                                                bool               isWriteColor              = true,
+                                                bool               isWriteTagType            = true,
+                                                bool               isWriteTimestamp          = false,
+                                                bool               isBeginWithCarriageReturn = false)
     {
         using (LockObject.EnterScope())
         {
@@ -353,7 +360,8 @@ public abstract class LoggerBase : ILog
                                             appendNewLine,
                                             isWriteColor,
                                             isWriteTagType,
-                                            isWriteTimestamp) :
+                                            isWriteTimestamp,
+                                            isBeginWithCarriageReturn) :
                 WriteToBufferCore(line,
                                   buffer,
                                   type,
@@ -361,7 +369,8 @@ public abstract class LoggerBase : ILog
                                   isWriteColor,
                                   isWriteTagType,
                                   isWriteTimestamp,
-                                  false);
+                                  false,
+                                  isBeginWithCarriageReturn);
 
             stream.Write(buffer[..len]);
             stream.Flush();
@@ -401,10 +410,17 @@ public abstract class LoggerBase : ILog
                                             bool               appendNewLine,
                                             bool               isWriteColor,
                                             bool               isWriteTagType,
-                                            bool               isWriteTimestamp)
+                                            bool               isWriteTimestamp,
+                                            bool               isBeginWithCarriageReturn = false)
     {
         int written = 0;
         int iteration = 0;
+
+        if (isBeginWithCarriageReturn)
+        {
+            bufferSpan[0] = CarriageReturn;
+            ++written; // Write carriage return and advance one byte
+        }
 
         foreach (Range range in line.SplitAny('\n'))
         {
@@ -433,11 +449,9 @@ public abstract class LoggerBase : ILog
                                          bool               isWriteColor,
                                          bool               isWriteTagType,
                                          bool               isWriteTimestamp,
-                                         bool               isWriteTimeTagPadding)
+                                         bool               isWriteTimeTagPadding,
+                                         bool               isBeginWithCarriageReturn = false)
     {
-        const byte squareBracketOpen  = 0x5B; // [
-        const byte squareBracketClose = 0x5D; // ]
-
         char* lineP        = GetSpanPointer(line);
         byte* bufferP      = GetSpanPointer(buffer);
         byte* bufferPStart = bufferP;
@@ -447,6 +461,12 @@ public abstract class LoggerBase : ILog
         uint  tagColorPLen = *(LogColorPLen + typeIndex);
         byte* tagTypeP     = *(LogTagTypeP + typeIndex);
         uint  tagTypePLen  = *(LogTagTypePLen + typeIndex);
+
+        if (isBeginWithCarriageReturn)
+        {
+            *bufferP = CarriageReturn;
+            ++bufferP; // Write carriage return and advance one byte
+        }
 
         if (isWriteTimeTagPadding && isWriteTimestamp)
         {
@@ -458,12 +478,12 @@ public abstract class LoggerBase : ILog
             if (isWriteTimestamp)
             {
                 DateTimeOffset offsetNow = DateTimeOffset.Now;
-                *bufferP++ = squareBracketOpen;
+                *bufferP++ = SquareBracketOpen;
                 if (offsetNow.TryFormat(new Span<byte>(bufferP, 16), out int dateTimeFormatWritten, DateTimeFormat))
                 {
                     bufferP += dateTimeFormatWritten;
                 }
-                *bufferP++ = squareBracketClose;
+                *bufferP++ = SquareBracketClose;
             }
 
             if (isWriteColor)
@@ -544,6 +564,24 @@ public abstract class LoggerBase : ILog
                                      bool                                 writeToLogFile          = false,
                                      bool                                 writeTimestampOnLogFile = true)
     {
+#if NET10_0_OR_GREATER
+        try
+        {
+            if (!writeToLogFile)
+            {
+                return;
+            }
+
+            LogWriteLine(interpolatedLine.Text,
+                         type,
+                         writeToLogFile,
+                         writeTimestampOnLogFile);
+        }
+        finally
+        {
+            interpolatedLine.Clear();
+        }
+#else
         ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
 
         try
@@ -559,6 +597,7 @@ public abstract class LoggerBase : ILog
         {
             ClearInterpolateString(ref interpolatedLine);
         }
+#endif
     }
 
     public virtual void LogWrite(ReadOnlySpan<char> line,
@@ -589,7 +628,26 @@ public abstract class LoggerBase : ILog
                                  bool                                 writeTypeTag            = false,
                                  bool                                 writeTimestampOnLogFile = true)
     {
+#if NET10_0_OR_GREATER
+        try
+        {
+            if (!writeToLogFile)
+            {
+                return;
+            }
 
+            LogWrite(interpolatedLine.Text,
+                     type,
+                     appendNewLine,
+                     writeToLogFile,
+                     writeTypeTag,
+                     writeTimestampOnLogFile);
+        }
+        finally
+        {
+            interpolatedLine.Clear();
+        }
+#else
         ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
 
         try
@@ -605,6 +663,7 @@ public abstract class LoggerBase : ILog
         {
             ClearInterpolateString(ref interpolatedLine);
         }
+#endif
     }
 
     public virtual Task LogWriteLineAsync(CancellationToken token = default)
@@ -647,5 +706,5 @@ public abstract class LoggerBase : ILog
         DisposeCore();
         GC.SuppressFinalize(this);
     }
-    #endregion
+#endregion
 }
