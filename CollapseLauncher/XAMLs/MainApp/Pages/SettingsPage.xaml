@@ -24,6 +24,7 @@
     <Page.Resources>
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+        <conv:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
         <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
@@ -32,6 +33,7 @@
         <conv:GamePluginIconConverter x:Key="GamePluginIconConverter" />
         <conv:ByStringConverter x:Key="ByStringConverter" />
         <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
+        <conv:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -279,14 +281,6 @@
                                            FontSize="16"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground}" />
-                                <!--
-                                <ToggleSwitch Margin="0,4"
-                                              Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAcrylicBackground}"
-                                              IsEnabled="{x:Bind AppBackgroundUseAcrylic.IsOn, Mode=OneWay}"
-                                              IsOn="{x:Bind IsUseVideoBgDynamicColorUpdate, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                                -->
                                 <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
                                               Margin="0,4"
                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAudio}"
@@ -304,6 +298,162 @@
                                         Minimum="0"
                                         Style="{ThemeResource FatSliderStyle}"
                                         Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}" />
+                                <ToggleSwitch x:Name="VideoCodecUseFfmpeg"
+                                              Margin="0,4, 0, 0"
+                                              Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_UseFFmpeg, Mode=OneWay}"
+                                              IsOn="{Binding GlobalIsUseFFmpeg, Mode=TwoWay}"
+                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                <Grid RowSpacing="16"
+                                      ColumnSpacing="8"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,0,8"
+                                      Visibility="{Binding ElementName=VideoCodecUseFfmpeg, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2"
+                                                Grid.Row="0"
+                                                Orientation="Horizontal"
+                                                Spacing="4"
+                                                DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus, Mode=OneWay}"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_Installed, Mode=OneWay}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                                        <TextBlock Text="-"
+                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding GlobalCustomFFmpegPath, Mode=OneWay}"
+                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}"/>
+                                    </StackPanel>
+                                    <Button Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Padding="12, 8"
+                                            Style="{ThemeResource AccentButtonStyle}"
+                                            ext:UIElementExtensions.UniformCornerRadius="-1"
+                                            Click="FFmpegInstall_StartInstallationWizard"
+                                            IsEnabled="{Binding GlobalIsFFmpegCurrentlyUsed, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                                        <Grid Margin="0,-2,0,0"
+                                              HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid Grid.Column="0"
+                                                  HorizontalAlignment="Left">
+                                                <TextBlock HorizontalAlignment="Left"
+                                                           VerticalAlignment="Center"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalTextAlignment="Left"
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallBtn_InstallationWizard, Mode=OneWay}" />
+                                            </Grid>
+                                            <Grid Grid.Column="1"
+                                                  Margin="4,2,0,0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  RenderTransformOrigin="0.5, 0.5">
+                                                <Grid.RenderTransform>
+                                                    <RotateTransform Angle="-90" />
+                                                </Grid.RenderTransform>
+                                                <AnimatedIcon Width="16"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center">
+                                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                                    <AnimatedIcon.FallbackIconSource>
+                                                        <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                                        Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                                        Glyph="&#xE70D;" />
+                                                    </AnimatedIcon.FallbackIconSource>
+                                                </AnimatedIcon>
+                                            </Grid>
+                                        </Grid>
+                                    </Button>
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2"
+                                                Grid.Row="2"
+                                                Spacing="8">
+                                        <Grid Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                              CornerRadius="4"
+                                              Padding="12"
+                                              ColumnSpacing="8"
+                                              RowSpacing="4"
+                                              MaxWidth="480"
+                                              HorizontalAlignment="Left"
+                                              Visibility="{Binding GlobalIsFFmpegCurrentlyUsed, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <FontIcon Grid.Column="0"
+                                                      Grid.Row="0"
+                                                      Glyph="&#xEB90;"
+                                                      FontSize="16"
+                                                      Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Grid.Row="0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}"
+                                                       FontWeight="Bold"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.ColumnSpan="2"
+                                                       Grid.Row="1"
+                                                       FontSize="12"
+                                                       TextWrapping="Wrap"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedContent, Mode=OneWay}"/>
+                                        </Grid>
+                                        <Grid Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                              CornerRadius="4"
+                                              Padding="12"
+                                              ColumnSpacing="8"
+                                              RowSpacing="4"
+                                              MaxWidth="480"
+                                              HorizontalAlignment="Left">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <FontIcon Grid.Column="0"
+                                                      Grid.Row="0"
+                                                      Glyph="&#xF736;"
+                                                      FontSize="16"
+                                                      Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Grid.Row="0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}"
+                                                       FontWeight="Bold"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.ColumnSpan="2"
+                                                       Grid.Row="1"
+                                                       FontSize="12"
+                                                       TextWrapping="Wrap"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallNoteContent, Mode=OneWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                             <TextBlock Margin="0,16,0,8"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -2796,190 +2946,13 @@
                         </Grid>
                     </Button>
                     <ItemsRepeater ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
-                        <!--
-                        <ItemsRepeater.Resources>
-                            <x:Double x:Key="SettingsCardMinHeight">52</x:Double>
-                            <Thickness x:Key="SettingsCardPadding">16,0,16,0</Thickness>
-                            <Thickness x:Key="SettingsExpanderHeaderPadding">16,0,4,0</Thickness>
-                            <Thickness x:Key="SettingsCardHeaderIconMargin">-4,0,12,0</Thickness>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
-                        </ItemsRepeater.Resources>
-                        -->
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="plugins:PluginInfo">
-                                <!--
-                                <controls:SettingsExpander Padding="0"
-                                                           HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
-                                                           Visibility="Collapsed">
-                                    <controls:SettingsExpander.Header>
-                                        <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True">
-                                            <Run Text="{x:Bind Name, Mode=OneWay}"/>
-                                            <Run Text=" (" FontSize="10" FontWeight="Bold" ext:TextBlockExtension.PreserveSpace="True"/>
-                                            <Run Text="{x:Bind PluginFileName, Mode=OneWay}" FontSize="10" FontWeight="Bold"/>
-                                            <Run Text=")" FontSize="10" FontWeight="Bold"/>
-                                        </TextBlock>
-                                    </controls:SettingsExpander.Header>
-                                    <controls:SettingsExpander.Description>
-                                        <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}" />
-                                    </controls:SettingsExpander.Description>
-                                    <controls:SettingsExpander.Items>
-                                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                                               ContentAlignment="Left"
-                                                               Padding="16,16,16,16">
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <Grid RowSpacing="4"
-                                                      ColumnSpacing="8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition MaxWidth="96"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                    </Grid.RowDefinitions>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
-                                                               Grid.Row="0"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
-                                                               Grid.Row="1"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
-                                                               Grid.Row="2"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
-                                                               Grid.Row="3"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
-                                                               Grid.Row="4"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
-                                                               Grid.Row="5"
-                                                               Grid.Column="0"
-                                                               FontSize="12"
-                                                               Opacity=".75"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Right"
-                                                               TextAlignment="Right"/>
-
-                                                    <TextBlock Text="{x:Bind Description, Mode=OneWay}"
-                                                               Grid.Row="0"
-                                                               Grid.Column="1"
-                                                               FontSize="12"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Left"/>
-                                                    <TextBlock Text="{x:Bind Version, Mode=OneWay}"
-                                                               Grid.Row="1"
-                                                               Grid.Column="1"
-                                                               FontSize="12"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Left"/>
-                                                    <TextBlock Text="{x:Bind StandardVersion, Mode=OneWay}"
-                                                               Grid.Row="2"
-                                                               Grid.Column="1"
-                                                               FontSize="12"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Left"/>
-                                                    <TextBlock Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource LocalFullDateTimeConverter}}"
-                                                               Grid.Row="3"
-                                                               Grid.Column="1"
-                                                               FontSize="12"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Left"/>
-                                                    <TextBlock Text="{x:Bind PluginFilePath, Mode=OneWay}"
-                                                               Grid.Row="4"
-                                                               Grid.Column="1"
-                                                               FontSize="12"
-                                                               TextWrapping="Wrap"
-                                                               HorizontalAlignment="Left"/>
-                                                    <ItemsRepeater Grid.Row="5"
-                                                                   Grid.Column="1"
-                                                                   ItemsSource="{x:Bind PresetConfigs, Mode=OneWay}">
-                                                        <ItemsRepeater.ItemTemplate>
-                                                            <DataTemplate x:DataType="plugins:PluginPresetConfigWrapper">
-                                                                <TextBlock FontSize="12"
-                                                                           TextWrapping="Wrap"
-                                                                           HorizontalAlignment="Left"
-                                                                           ext:TextBlockExtension.RemoveEmptyRuns="True">
-                                                                    <Run Text="• " ext:TextBlockExtension.PreserveSpace="True"/>
-                                                                    <Run Text="{x:Bind GameName, Mode=OneWay, Converter={StaticResource GameNameLocaleConverter}}"/>
-                                                                    <Run Text=" - " ext:TextBlockExtension.PreserveSpace="True"/>
-                                                                    <Run Text="{x:Bind ZoneName, Mode=OneWay, Converter={StaticResource GameRegionLocaleConverter}}"/>
-                                                                </TextBlock>
-                                                            </DataTemplate>
-                                                        </ItemsRepeater.ItemTemplate>
-                                                    </ItemsRepeater>
-                                                </Grid>
-                                                <Button Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                        Padding="4"
-                                                        Margin="0,0,-12,-8"
-                                                        HorizontalAlignment="Right"
-                                                        VerticalAlignment="Bottom"
-                                                        Click="CopyLoadedPluginInformationClick"
-                                                        Tag="{x:Bind}">
-                                                    <FontIcon Glyph="&#xE8C8;" FontSize="16" />
-                                                    <Button.Flyout>
-                                                        <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
-                                                            <Grid ColumnSpacing="6"
-                                                                  BorderThickness="0"
-                                                                  Margin="-16,-32"
-                                                                  Padding="12,0"
-                                                                  Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition/>
-                                                                    <ColumnDefinition/>
-                                                                </Grid.ColumnDefinitions>
-                                                                <FontIcon Glyph="&#xEC61;"
-                                                                          Grid.Column="0"
-                                                                          FontSize="16"
-                                                                          VerticalAlignment="Center"
-                                                                          Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
-                                                                           Grid.Column="1"
-                                                                           FontWeight="Bold"
-                                                                           Margin="0,-2,0,0"
-                                                                           VerticalAlignment="Center" />
-                                                            </Grid>
-                                                        </Flyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </Grid>
-                                        </controls:SettingsCard>
-                                    </controls:SettingsExpander.Items>
-                                </controls:SettingsExpander>
-                                -->
                                 <Button Padding="0"
+                                        Margin="0,0,0,4"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch"
-                                        CornerRadius="8">
+                                        CornerRadius="4">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -2998,7 +2971,7 @@
                                             <ContentPresenter HorizontalAlignment="Center"
                                                               VerticalAlignment="Stretch"
                                                               Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
-                                                              CornerRadius="8, 0, 0, 8" />
+                                                              CornerRadius="4, 0, 0, 4" />
                                         </Grid>
                                         <Grid Grid.Column="1"
                                               Margin="8,0">
@@ -3036,7 +3009,8 @@
                                                 VerticalAlignment="Stretch"
                                                 Click="{x:Bind conv:SettingsPage.CopyLoadedPluginInformationClick}"
                                                 Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                Tag="{x:Bind}">
+                                                Tag="{x:Bind}"
+                                                ext:UIElementExtensions.CursorType="Hand">
                                             <FontIcon FontSize="16"
                                                       Glyph="&#xE8C8;" />
                                             <Button.Flyout>

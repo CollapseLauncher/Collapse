@@ -47,9 +47,12 @@ public partial class ImageBackgroundManager
 
     private async void LoadImageAtIndexCore(int index, CancellationToken token)
     {
-        Stopwatch stopwatch = Stopwatch.StartNew();
+        Stopwatch? stopwatch = null;
         try
         {
+            bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+
+            stopwatch = Stopwatch.StartNew();
             if (ImageContextSources.Count <= index ||
                 index < 0)
             {
@@ -126,7 +129,7 @@ public partial class ImageBackgroundManager
             new Thread(GetMediaAccentColor)
             {
                 IsBackground = true
-            }.Start((downloadedBackgroundUri, IsUseFfmpeg));
+            }.Start((downloadedBackgroundUri, isUseFFmpeg));
 
             // -- Use UI thread and load image layer
             DispatcherQueueExtensions
@@ -136,6 +139,8 @@ public partial class ImageBackgroundManager
                                                  downloadedBackgroundStaticUri,
                                                  isVideo,
                                                  context));
+
+            GlobalIsFFmpegCurrentlyUsed = isVideo && isUseFFmpeg;
         }
         catch (Exception ex)
         {
@@ -146,8 +151,8 @@ public partial class ImageBackgroundManager
         }
         finally
         {
-            stopwatch.Stop();
-            Logger.LogWriteLine($"Background image loading took: {stopwatch.Elapsed.TotalSeconds} second(s)");
+            stopwatch?.Stop();
+            Logger.LogWriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
             IsBackgroundLoading = false;
         }
     }
@@ -163,7 +168,7 @@ public partial class ImageBackgroundManager
             BackgroundSource          = backgroundFilePath,
             BackgroundStaticSource    = backgroundStaticFilePath,
             ForegroundSource          = overlayFilePath,
-            UseFfmpegDecoder          = IsUseFfmpeg,
+            UseFfmpegDecoder          = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable,
             Tag                       = context,
             ParallaxResetOnUnfocused  = false,
             BackgroundElevationPixels = 64d

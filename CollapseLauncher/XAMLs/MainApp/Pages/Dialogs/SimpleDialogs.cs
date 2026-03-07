@@ -1523,7 +1523,7 @@ namespace CollapseLauncher.Dialogs
                     goto StartOver;
                 }
 
-                foundFfmpegDir = ImageBackgroundManager.FindFfmpegInstallFolder(ffmpegDir);
+                foundFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(ffmpegDir);
                 if (string.IsNullOrEmpty(foundFfmpegDir))
                 {
                     await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
@@ -1535,7 +1535,7 @@ namespace CollapseLauncher.Dialogs
                                                    .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed2, FontWeights.Bold, 12)
                                                    .AddTextBlockNewLine()
                                                    .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed3, true, size: 12)
-                                                   .AddTextBlockLine(string.Join(", ", ImageBackgroundManager.GetFfmpegRequiredDllFilenames()), FontWeights.Bold, 12),
+                                                   .AddTextBlockLine(string.Join(", ", ImageBackgroundManager.GetFFmpegRequiredDllFilenames()), FontWeights.Bold, 12),
                                       closeText: Lang._Misc.Okay,
                                       dialogTheme: ContentDialogTheme.Error);
                     goto StartOver;
@@ -1559,7 +1559,7 @@ namespace CollapseLauncher.Dialogs
 
             if (!string.IsNullOrEmpty(foundFfmpegDir))
             {
-                if (!ImageBackgroundManager.TryLinkFfmpegLibrary(foundFfmpegDir,
+                if (!ImageBackgroundManager.TryLinkFFmpegLibrary(foundFfmpegDir,
                                                                  Directory.GetCurrentDirectory(),
                                                                  out Exception? ex))
                 {
@@ -1584,7 +1584,7 @@ namespace CollapseLauncher.Dialogs
                 }
             }
 
-            ImageBackgroundManager.CustomFfmpegPath = foundFfmpegDir;
+            ImageBackgroundManager.Shared.GlobalCustomFFmpegPath = foundFfmpegDir;
             return true;
         }
 
@@ -1926,7 +1926,7 @@ namespace CollapseLauncher.Dialogs
             {
                 foreach (string licensePath in Directory
                                               .EnumerateFiles(directoryPath,
-                                                              "LICENSE_*.txt",
+                                                              "Homepage",
                                                               SearchOption.TopDirectoryOnly))
                 {
                     yield return licensePath;

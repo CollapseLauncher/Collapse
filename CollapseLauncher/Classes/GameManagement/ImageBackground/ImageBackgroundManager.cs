@@ -30,49 +30,11 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 public partial class ImageBackgroundManager
     : NotifyPropertyChanged
 {
-    internal static ImageBackgroundManager Shared
-    {
-        get;
-    } = new();
+    internal static ImageBackgroundManager Shared => field ??= new ImageBackgroundManager();
 
     #region Static Constructor
 
-    static ImageBackgroundManager()
-    {
-        string  curDir              = Directory.GetCurrentDirectory();
-        bool    isFfmpegAvailable   = IsFfmpegAvailable(curDir, out Exception? exception);
-        string? customFfmpegDirPath = CustomFfmpegPath;
-
-        try
-        {
-            if (isFfmpegAvailable ||
-                string.IsNullOrEmpty(customFfmpegDirPath))
-            {
-                return;
-            }
-
-            // -- If custom Ffmpeg path is set but Ffmpeg is not available,
-            //    Try to resolve the symbolic link path again.
-
-            // -- Check for custom Ffmpeg path availability first. If not available, skip.
-            if (!IsFfmpegAvailable(customFfmpegDirPath, out exception))
-            {
-                return;
-            }
-
-            // -- Re-link Ffmpeg symbolic link
-            TryLinkFfmpegLibrary(customFfmpegDirPath, curDir, out exception);
-        }
-        finally
-        {
-            if (exception != null)
-            {
-                Logger.LogWriteLine($"[StaticCtor::ImageBackgroundManager] {exception}",
-                                    LogType.Error,
-                                    true);
-            }
-        }
-    }
+    public ImageBackgroundManager() => TryRelinkFFmpegPath();
 
     #endregion
 
@@ -90,16 +52,7 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "GlobalBackgroundParallaxPixelShift";
     private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
-    private const string GlobalFfmpegCustomPathConfigKey                  = "GlobalFfmpegCustomPath";
     private const string GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey  = "GlobalKeepPlayVideoWhenWindowUnfocused";
-
-    public static bool IsUseFfmpeg => IsFfmpegAvailable(Directory.GetCurrentDirectory(), out _);
-
-    public static string? CustomFfmpegPath
-    {
-        get => LauncherConfig.GetAppConfigValue(GlobalFfmpegCustomPathConfigKey);
-        set => LauncherConfig.SetAndSaveConfigValue(GlobalFfmpegCustomPathConfigKey, value);
-    }
 
     public string? GlobalCustomBackgroundImagePath
     {

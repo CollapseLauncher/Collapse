@@ -2354,5 +2354,17 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
+        #region FFmpeg Install
+        
+        private async void FFmpegInstall_StartInstallationWizard(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_SpawnFfmpegInstallDialog())
+            {
+                ImageBackgroundManager.Shared.RefreshFFmpegBinding();
+            }
+        }
+        
+        #endregion
     }
 }
