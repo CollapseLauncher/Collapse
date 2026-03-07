@@ -2,7 +2,6 @@
   "LanguageName": "한국어",
   "LanguageID": "ko-KR",
   "Author": "despenser08, designed-re",
-
   "_StartupPage": {
     "SelectLang": "언어를 선택해 주세요",
     "SelectLangDesc": "런처를 새로 시작하려면 언어를 선택해 주세요!",
@@ -12,13 +11,10 @@
     "CDNHelpTitle_2": "​",
     "CDNHelpTitle_3": "콘텐츠 전송 네트워크",
     "CDNHelpTitle_4": "의 줄임말이에요",
-    "CDNHelpDetail_1": "​",
-    "CDNHelpDetail_2": "CDN",
     "CDNHelpDetail_3": "은 런처 파일을 많은 유저가 빠르고 효율적으로 사용할 수 있도록 만들어주는 시스템이에요.",
     "CDNHelpDetail_4": "Collapse는 GitHub를 기본 공급자로 선택해요.",
     "CDNsAvailable": "사용 가능한 CDN:",
     "SplashArt_1": "해당 스플래시 아트는 다음 소유자의 자산이에요",
-    "SplashArt_2": "miHoYo / HoYoverse",
     "ChooseFolderBtn": "폴더 지정",
     "ChooseFolderDialogCancel": "취소",
     "ChooseFolderDialogPrimary": "네!",
@@ -43,7 +39,6 @@
     "Pg2Subtitle1_2": "Collapse Launcher",
     "Pg2Subtitle1_3": "에서 플레이할 수 있어요.",
     "Pg2Subtitle2_1": "Collapse Launcher는 여러",
-    "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "게임을 지원해요. 아래 게임을 선택해",
     "Pg2Subtitle2_4": "Collapse Launcher",
     "Pg2Subtitle2_5": "를 사용하세요.",
@@ -54,10 +49,8 @@
     "Subtitle4_1": "시작하려면",
     "Subtitle4_2": "\"폴더 지정\"",
     "Subtitle4_3": "버튼을 눌러 게임을 설치할 경로를 선택해 주세요.",
-    "Title1": "환영해요",
-    "Title2": "Collapse Launcher"
+    "Title1": "환영해요"
   },
-
   "_DisconnectedPage": {
     "PageTitle": "연결 끊김 페이지",
     "Header1": "인터넷 연결이",
@@ -71,7 +64,6 @@
     "RegionChangerTitle": "게임 서버 변경",
     "RegionChangerSubtitle": "이 페이지에서 막혔을 경우"
   },
-
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "처리되지 않은 오류",
     "UnhandledSubtitle1": "처리되지 않은 오류가 다음 예외로 인해 발생했어요:",
@@ -80,19 +72,13 @@
     "UnhandledTitle3": "게임 충돌",
     "UnhandledSubtitle3": "게임이 아래 오류로 인해 충돌했어요:",
     "UnhandledTitle4": "경고",
-    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "이 문제는 크진 않지만, 알려드려야 할 거 같아서 알려드려요:\r\nmiHoYo A/B 테스트로 인해 이 키를 읽을 수 없어요: App_Settings_h2319593470.\r\n불편을 끼쳐드린 점 사과드리며 양해해 주셔서 감사해요.",
     "UnhandledTitleDiskCrc": "디스크 손상이 감지되었어요!",
     "UnhandledSubDiskCrc": "파일 접근 중 디스크 손상이 감지되었어요. chkdsk 명령어를 사용해 디스크를 확인해 주세요.",
     "CopyClipboardBtn1": "클립보드에 모두 복사",
     "CopyClipboardBtn2": "클립보드에 복사되었어요!",
-    "GoBackPageBtn1": "이전 페이지로 돌아가기",
-    
-    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
-    "CustomBackground_RegionalTag": "Region BG",
-    "CustomBackground_GlobalTag": "Global BG"
+    "GoBackPageBtn1": "이전 페이지로 돌아가기"
   },
-
   "_MainPage": {
     "PageTitle": "메인 페이지",
     "RegionChangeConfirm": "게임 서버가 변경돼요. 계속하시겠어요?",
@@ -114,7 +100,6 @@
     "LoadingLauncherMetadata": "런처 메타데이터 로드 중",
     "LoadingGameConfiguration": "게임 설정 로드 중"
   },
-
   "_HomePage": {
     "PageTitle": "런처",
     "PreloadTitle": "사전 다운로드가 가능해요!",
@@ -139,10 +124,8 @@
     "PauseCancelDownloadBtn": "일시 중지/취소",
     "PauseCancelBtn": "일시 중지/취소",
     "DownloadBtn": "게임 다운로드",
-
     "GameStatusPlaceholderComingSoonBtn": "곧 출시 예정",
     "GameStatusPlaceholderPreRegisterBtn": "지금 사전 등록하세요!",
-
     "GameSettingsBtn": "빠른 설정",
     "GameSettings_Panel1": "빠른 설정",
     "GameSettings_Panel1OpenGameFolder": "게임 폴더 열기",
@@ -168,7 +151,6 @@
     "GameSettings_Panel4SyncPlaytimeDatabase": "플레이 시간 데이터베이스 동기화",
     "GameSettings_Panel4CreateShortcutBtn": "바로가기 만들기",
     "GameSettings_Panel4AddToSteamBtn": "Steam에 추가",
-
     "GamePlaytime_Panel1": "플레이 시간 편집",
     "GamePlaytime_Idle_Panel1Hours": "시간",
     "GamePlaytime_Idle_Panel1Minutes": "분",
@@ -188,48 +170,28 @@
     "GamePlaytime_Stats_Daily": "오늘",
     "GamePlaytime_Stats_Weekly": "이번 주",
     "GamePlaytime_Stats_Monthly": "이번 달",
-
     "PostPanel_Events": "이벤트",
     "PostPanel_Notices": "공지사항",
     "PostPanel_Info": "소식",
     "PostPanel_NoNews": "엥?\n오늘 소식 없어요?",
-
     "CommunityToolsBtn": "커뮤니티 도구",
     "CommunityToolsBtn_OfficialText": "공식 도구",
     "CommunityToolsBtn_CommunityText": "커뮤니티 도구",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}",
-
     "CreateShortcut_FolderPicker": "바로가기 경로 설정",
-
     "Exception_DownloadTimeout1": "{0} 설치 중 시간 초과",
     "Exception_DownloadTimeout2": "인터넷의 안정성을 확인하세요! 인터넷 속도가 느리다면 다운로드 스레드 수를 낮춰주세요.",
     "Exception_DownloadTimeout3": "**경고** 다운로드 스레드 수를 변경하면 다운로드가 0으로 초기화되며, 기존 다운로드 청크를 수동으로 삭제해야 해요!",
-
-    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
     "GameStateInvalid_Subtitle1": "Collapse Launcher가 게임 파일 속성과 아래 서버와의 설정이 다른 걸 감지했어요: \r \n",
-    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
-    "GameStateInvalid_Subtitle3": "Click \"",
-    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
-    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
-
     "GameStateInvalidFixed_Title": "게임 파일 속성이 성공적으로 복구되었어요!",
-    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
-    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
-    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
-    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified.",
-
-    "InstallFolderRootTitle": "Drive Root Provided!",
     "InstallFolderRootSubtitle": "드라이브 최상위에 게임을 설치할 수 없어요! 새 폴더를 생성한 다음 다시 시도해 주세요."
   },
-
   "_GameRepairPage": {
     "PageTitle": "게임 복구",
     "ListCol1": "이름",
     "ListCol2": "유형",
     "ListCol3": "원본",
     "ListCol4": "크기",
-    "ListCol5": "L.CRC",
-    "ListCol6": "R.CRC",
     "Status1": "게임 파일 무결성을 검사하려면 \"파일 확인\"을 눌러주세요.",
     "Status2": "인덱스 로드 중...",
     "Status3": "{0}개의 파일이 손상되었을 수 있어요 (총 {1}). '게임 복구'를 눌러 복구 작업을 시작해 주세요.",
@@ -264,15 +226,12 @@
     "OverlayGameRunningTitle": "게임이 현재 실행 중이에요!",
     "OverlayGameRunningSubtitle": "이 기능을 사용하려면 먼저 게임을 종료해 주세요!"
   },
-
   "_CachesPage": {
     "PageTitle": "캐시 업데이트",
     "ListCol1": "이름",
     "ListCol2": "유형",
     "ListCol3": "원본",
     "ListCol4": "크기",
-    "ListCol5": "L.CRC",
-    "ListCol6": "R.CRC",
     "ListCol7": "상태",
     "Status1": "캐시 업데이트를 확인하려면 \"업데이트 확인\"을 눌러주세요.",
     "Status2": "{0}건의 캐시 에셋 가용성 확인 중: {1}",
@@ -295,14 +254,11 @@
     "OverlayGameRunningTitle": "게임이 현재 실행 중이에요!",
     "OverlayGameRunningSubtitle": "이 기능을 사용하려면 먼저 게임을 종료해 주세요!"
   },
-
   "_CutscenesPage": {
     "PageTitle": "컷신"
   },
-
   "_GameSettingsPage": {
     "PageTitle": "게임 설정",
-
     "Graphics_Title": "그래픽 설정",
     "Graphics_ResolutionPanel": "게임 해상도",
     "Graphics_Borderless": "테두리 없는 창모드 사용",
@@ -316,20 +272,15 @@
     "Graphics_ResCustomH": "높이",
     "Graphics_ResPrefixFullscreen": "{0}x{1} 전체 화면",
     "Graphics_ResPrefixWindowed": "{0}x{1} 창 모드",
-
     "Graphics_VSync": "수직 동기화",
-
-    "Graphics_FPS": "FPS",
     "Graphics_FPSUnlimited": "제한 없음",
     "Graphics_FPSPanel": "최대 FPS",
     "Graphics_FPSInCombat": "전투 중",
     "Graphics_FPSInMenu": "메인 메뉴",
-
     "Graphics_APIPanel": "그래픽 API",
     "Graphics_APIHelp1": "이 게임에서 사용할 수 있는 API 모드는 다음과 같아요:",
     "Graphics_APIHelp2": "참고:",
     "Graphics_APIHelp3": "게임이 기본적으로 DirectX 12 API로 컴파일되지 않았기 때문에 DirectX 12를 사용하면 충돌이 발생할 수 있어요.",
-
     "Graphics_SpecPanel": "전역 그래픽 설정",
     "Graphics_Preset": "그래픽 프리셋",
     "Graphics_Render": "렌더링 정확도",
@@ -338,27 +289,21 @@
     "Graphics_FX": "시각 효과",
     "Graphics_FXPost": "포스트 프로세싱",
     "Graphics_FXPhysics": "물리",
-    "Graphics_FXHDR": "HDR",
     "Graphics_FXHQ": "고품질",
-    "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "왜곡",
-
     "Graphics_APHO2Panel": "붕괴후서 제2장 & 새로운 챕터 그래픽 설정",
     "Graphics_APHO2GI": "글로벌 일루미네이션",
     "Graphics_APHO2VL": "볼륨 조명",
     "Graphics_APHO2AO": "앰비언트 오클루전",
     "Graphics_APHO2LOD": "세부 수준",
-
     "Graphics_ParticleQuality": "파티클 품질",
     "Graphics_LightingQuality": "조명 품질",
     "Graphics_PostFXQuality": "Post-FX 품질",
     "Graphics_AAMode": "안티앨리어싱 모드",
     "Graphics_CharacterQuality": "캐릭터 품질",
     "Graphics_WeatherQuality": "날씨 품질",
-
     "Graphics_Legacy_Title": "레거시 설정",
     "Graphics_Legacy_Subtitle": "이 설정들은 게임 내에 존재하지 않고 아무 영향도 미치지 않을 수 있어요.",
-
     "SpecDisabled": "꺼짐",
     "SpecCustom": "사용자 지정",
     "SpecLow": "낮음",
@@ -369,7 +314,6 @@
     "SpecUltra": "울트라",
     "SpecDynamic": "다이나믹",
     "SpecGlobal": "전역",
-
     "Audio_Title": "오디오 설정",
     "Audio_Master": "마스터 볼륨",
     "Audio_BGM": "음악 볼륨",
@@ -382,7 +326,6 @@
     "Audio_Elf": "엘프 음성 볼륨",
     "Audio_Cutscenes": "컷신 볼륨",
     "Audio_Mute": "오디오 음소거",
-
     "ApplyBtn": "설정 적용",
     "SettingsApplied": "변경 내용이 저장되었어요!",
     "SettingsRegExported": "레지스트리를 내보냈어요!",
@@ -391,29 +334,24 @@
     "SettingsRegImportTitle": "Collapse 레지스트리 파일을 선택하세요...",
     "SettingsRegErr1": "경로가 선택되지 않았어요!",
     "SettingsRegErr2": "Collapse 레지스트리의 헤더가 올바르지 않아요!",
-
     "RegImportExport": "레지스트리 불러오기/내보내기",
     "RegExportTitle": "내보내기",
     "RegExportTooltip": "레지스트리 키를 Collapse 레지스트리 파일로 내보내요.",
     "RegImportTitle": "불러오기",
     "RegImportTooltip": "Collapse 레지스트리 파일에서 레지스트리 키를 불러와요.",
-
     "OverlayNotInstalledTitle": "해당 서버가 아직 설치되지 않았거나 업데이트하지 않아 이 기능을 사용할 수 없어요!",
     "OverlayNotInstalledSubtitle": "게임 런처 페이지에서 먼저 게임을 다운로드/업데이트해 주세요!",
     "OverlayGameRunningTitle": "게임이 현재 실행 중이에요!",
     "OverlayGameRunningSubtitle": "이 기능을 사용하려면 먼저 게임을 종료해 주세요!",
     "OverlayFirstTimeTitle": "이 게임을 실행한 적이 없어요!",
     "OverlayFirstTimeSubtitle": "먼저 게임을 실행하여 필요한 파일을 생성한 후에 돌아와 이 기능을 사용해 주세요.",
-
     "CustomArgs_Title": "사용자 지정 시작 인수 (고급)",
     "CustomArgs_Subtitle": "시작 인수",
     "CustomArgs_Footer1": "시작 인수에 대한 자세한 내용은",
     "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를",
     "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요.",
-
     "GameBoost": "게임 우선 순위 올리기",
     "MobileLayout": "모바일 레이아웃 사용",
-
     "Advanced_Title": "고급 설정",
     "Advanced_Subtitle1": "Collapse Launcher 팀은 이 설정을 사용하는 동안 게임, 계정 또는 시스템에 발생한 어떤 일에도",
     "Advanced_Subtitle2": "책임지지 않아요!",
@@ -422,48 +360,36 @@
     "Advanced_GLC_PreLaunch_Title": "사전 실행 명령어",
     "Advanced_GLC_PreLaunch_Subtitle": "게임 실행 전 실행할 명령어",
     "Advanced_GLC_PreLaunch_Exit": "게임 종료/정지 시 실행된 프로세스를 강제 종료",
-    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "종료 후 명령어",
     "Advanced_GLC_PostExit_Subtitle": "게임 종료 후 실행할 명령어"
   },
-
   "_SettingsPage": {
     "PageTitle": "앱 설정",
-
     "Debug": "추가 설정",
     "Debug_Console": "콘솔 표시",
     "Debug_IncludeGameLogs": "게임 로그를 Collapse의 로그에 저장 (중요한 데이터가 포함되어 있을 수 있어요)",
     "Debug_SendRemoteCrashData": "개발자에게 익명 충돌 보고서 보내기",
-    "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
     "Debug_MultipleInstance": "여러 인스턴스에서 실행 허용",
-
     "ChangeRegionWarning_Toggle": "서버 변경 경고 표시",
     "ChangeRegionInstant_Toggle": "서버 선택 시 즉시 변경",
     "ChangeRegionWarning_Warning": "*이 설정을 적용하려면 앱을 다시 시작해야 해요.",
-
     "Language": "앱 언어",
     "LanguageEntry": "{0} ({1} 제공)",
     "AppLang_ApplyNeedRestart": "*언어 변경 사항을 적용하려면 앱을 다시 시작해야 해요.",
-
     "AppThemes": "앱 테마",
     "AppThemes_Default": "기본 (시스템 설정 사용)",
     "AppThemes_Light": "라이트",
     "AppThemes_Dark": "다크",
     "AppThemes_ApplyNeedRestart": "*테마 변경 사항을 적용하려면 앱을 다시 시작해야 해요.",
-
     "IntroSequenceToggle": "시작 애니메이션 사용",
-
     "AppWindowSize": "창 크기",
     "AppWindowSize_Normal": "일반",
     "AppWindowSize_Small": "작게",
-
     "AppCDNRepository": "저장소 CDN",
-
     "AppBG": "앱 배경",
     "AppBG_Checkbox": "사용자 지정 배경 사용",
     "AppBG_Note": "지원하는 확장자:\r \n이미지: {0}\r \n비디오: {1}",
     "AppBG_Note_Regional": "서버 별 사용자 지정 배경 설정은 런처 홈의 \"빠른 설정\" 버튼에 있어요.",
-
     "AppThreads": "앱 스레드",
     "AppThreads_Download": "다운로드 스레드",
     "AppThreads_Extract": "압축 해제 스레드",
@@ -473,7 +399,6 @@
     "AppThreads_Help4": "0 (자동 감지)",
     "AppThreads_Help5": "이 스레드는 게임을 설치/복구하는 동안 압축 해제/무결성 검사 작업을 처리해요.",
     "AppThreads_Help6": "참고: 이 설정은 더 이상 붕괴3rd 설치와 작동하지 않아요.",
-
     "SophonSettingsTitle": "Sophon 모드 설정",
     "SophonHelp_Title": "Sophon 다운로드 모드가 뭔가요?",
     "SophonHelp_1": "\"Sophon\"은 HoYoVerse에서 최근에 도입한 새로운 다운로드 매커니즘으로, 대용량 zip 아카이브를 다운받는 대신 파일을 \"청크\"로 나누어 다운로드 할 수 있게 해줘요. 이것으로 얻는 이점은 주로 드라이브의 여유 공간을 적게 요구하게 되며 다운로드와 업데이트의 효율성이 향상돼요.",
@@ -485,11 +410,9 @@
     "SophonHelp_Indicator4": "현재 다운로드 속도",
     "SophonHelp_Thread": "이 항목은 Collapse가 동시에 처리하는 청크의 수를 제어해요. 다운로드 중에 갑자기 멈추는 경우 이 값을 낮춰주세요.",
     "SophonHttpNumberBox": "최대 HTTP 연결 수",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
     "SophonToggle": "지원하는 서버에서 Sophon 사용",
     "SophonPredownPerfMode_Toggle": "사전 다운로드 적용 시 CPU의 모든 코어 사용 [실험 기능]",
     "SophonPredownPerfMode_Tooltip": "활성화 하면 시스템에서 CPU 쓰레드를 이용 가능한 최대치로 사용하게 될 거에요. 문제가 발생하면 이 설정을 비활성화 해주세요.",
-
     "AppThreads_Attention": "주의",
     "AppThreads_Attention1": "​",
     "AppThreads_Attention2": "값을 변경하기 전에, 기존 다운로드가 있는 경우 값을",
@@ -499,18 +422,15 @@
     "AppThreads_Attention6": "해야 할 수도 있어요.",
     "AppThreads_AttentionTop1": "아래의 문제는 ",
     "AppThreads_AttentionTop2": "설정을 사용하면 해결할 수 있어요.",
-
     "DiscordRPC": "Discord 활동 상태",
     "DiscordRPC_Toggle": "Discord 활동 상태 표시",
     "DiscordRPC_GameStatusToggle": "Discord 활동 상태에 현재 게임 표시",
     "DiscordRPC_IdleStatusToggle": "대기 중일 때 활동 상태 표시",
-
     "ImageBackground": "이미지 배경 설정",
     "VideoBackground": "비디오 배경 설정",
     "VideoBackground_IsEnableAudio": "오디오 활성화",
     "VideoBackground_IsEnableAcrylicBackground": "비디오 배경을 사용 중인 경우 아크릴 효과를 적용",
     "VideoBackground_AudioVolume": "볼륨",
-
     "Update": "업데이트 확인",
     "Update_CurVer": "현재 버전:",
     "Update_CheckBtn": "업데이트 확인",
@@ -520,54 +440,39 @@
     "Update_LatestVer": "최신 버전을 사용하고 있어요.",
     "Update_SeeChangelog": "최신 변경 사항 확인하기 (영어)",
     "Update_ChangelogTitle": "최신 변경 사항",
-
     "AppFiles": "앱 파일 관리",
     "AppFiles_OpenDataFolderBtn": "앱 데이터 폴더 열기",
     "AppFiles_RelocateDataFolderBtn": "앱 데이터 폴더 경로 변경",
     "AppFiles_ClearLogBtn": "로그 파일 삭제",
     "AppFiles_ClearImgCachesBtn": "이미지 파일 삭제",
-
     "AppFiles_ClearMetadataBtn": "메타데이터 지우기 및 재시작",
     "AppFiles_ClearMetadataDialog": "Collapse 메타데이터 지우기!",
     "AppFiles_ClearMetadataDialogHelp": "Collapse 메타데이터를 지우면 Collapse가 강제로 다시 시작하게 돼요. 서버 로드에 문제가 있는 경우에만 사용해 주세요.\r\n정말로 지울까요?",
-
     "ReportIssueBtn": "문제 보고",
     "ContributePRBtn": "기여하기",
     "ContributorListBtn": "오픈 소스 기여자분들",
     "HelpLocalizeBtn": "Collapse를 번역할 수 있도록 도와주세요!",
-    "ShareYourFeedbackBtn": "Share Your Feedback",
-
     "About": "정보",
-    "About_Copyright1": "© 2022-2025",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "​",
     "About_Copyright4": "하에. All rights reserved.",
-
     "LicenseType": "MIT 라이선스",
-
     "Disclaimer": "면책 조항",
     "Disclaimer1": "이 앱은",
     "Disclaimer2": "와 어떠한 관계도 없으며",
     "Disclaimer3": "완전히 오픈 소스에요. 어떤 기여도 환영해요.",
     "WebsiteBtn": "Collapse Launcher의 공식 사이트!",
     "DiscordBtn1": "Armada Discord에 참여하세요!",
-    "DiscordBtn2": "Honkai Impact 3rd Discord",
     "DiscordBtn3": "Collapse의 공식 Discord!",
-
     "AppChangeReleaseChannel": "{0} 릴리스 채널로 변경",
-
     "EnableAcrylicEffect": "아크릴 흐림 효과 사용",
     "EnableDownloadChunksMerging": "다운로드한 패키지 청크 병합",
     "Enforce7ZipExtract": "게임 설치/업데이트 시 항상 7-zip 사용",
     "UseExternalBrowser": "항상 외부 브라우저 사용",
-
     "LowerCollapsePrioOnGameLaunch": "게임이 실행됐을 때 Collapse 프로세스 리소스 사용량 감소",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "메인 페이지의 이미지 슬라이더 비활성화 및 Collapse의 우선순위를 보통 이하로 낮추기",
-
     "KbShortcuts_Title": "키보드 단축키",
     "KbShortcuts_ShowBtn": "단축키 표시",
     "KbShortcuts_ResetBtn": "기본값으로 초기화",
-
     "AppBehavior_Title": "앱 동작",
     "AppBehavior_PostGameLaunch": "게임 실행 이후",
     "AppBehavior_PostGameLaunch_Minimize": "최소화",
@@ -576,7 +481,6 @@
     "AppBehavior_MinimizeToTray": "트레이로 최소화",
     "AppBehavior_LaunchOnStartup": "컴퓨터 시작 시 자동으로 Collapse 시작",
     "AppBehavior_StartupToTray": "자동으로 시작할 때 Collapse 창 숨기기",
-
     "Waifu2X_Toggle": "Waifu2X 사용",
     "Waifu2X_Help": "Waifu2X를 사용해 배경 이미지를 확대해요.\n켜면 화질이 크게 향상되지만 처음 이미지를 로드하는 데 조금 더 시간이 걸릴 거에요.",
     "Waifu2X_Help2": "움직이지 않는 이미지에만 사용이 가능해요!",
@@ -584,64 +488,34 @@
     "Waifu2X_Warning_D3DMappingLayers": "경고: 시스템에 \"OpenCL™, OpenGL®, Vulkan® 호환 팩\"이 설치되어 있어요. Vulkan 로더와 호환되지 않아서 일부 GPU에서 충돌이 발생할 수 있다고 해요. GPU 모드를 사용하려면 이 팩을 제거해 주세요.",
     "Waifu2X_Error_Loader": "에러: Vulkan 로더 설정에 실패했어요. 적절한 GPU 드라이버가 설치된 Vulkan 호환 GPU를 사용하고 있는지 확인해 주세요.",
     "Waifu2X_Error_Output": "에러: Waifu2X 자체 테스트를 통과하지 못했어요. 비어있는 출력 이미지를 받았어요.",
-
     "NetworkSettings_Title": "네트워크 설정",
     "NetworkSettings_Proxy_Title": "프록시 설정",
-
     "NetworkSettings_Proxy_Hostname": "프록시 호스트 이름",
     "NetworkSettings_Proxy_HostnameHelp1": "사용할 프록시의 URL을 지정해요.",
     "NetworkSettings_Proxy_HostnameHelp2": "Collapse는",
     "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS 와 SOCKS4/4a/5",
     "NetworkSettings_Proxy_HostnameHelp4": "방식의 프록시만 지원해요.",
-
     "NetworkSettings_ProxyWarn_UrlInvalid": "입력한 URL이 잘못되었어요!",
     "NetworkSettings_ProxyWarn_NotSupported": "프록시 스키마가 지원되지 않아요! Collapse는 오직 https://, https://, socks4://, socks4a:// 와 socks5:// 만 지원해요.",
-
     "NetworkSettings_Proxy_Username": "프록시 사용자이름",
     "NetworkSettings_Proxy_UsernamePlaceholder": "프록시 사용자이름 입력",
     "NetworkSettings_Proxy_UsernameHelp1": "기본:",
     "NetworkSettings_Proxy_UsernameHelp2": "[비어있음]",
     "NetworkSettings_Proxy_UsernameHelp3": "프록시에 인증이 필요하지 않은 경우 이 칸을 비워두세요.",
-
     "NetworkSettings_Proxy_Password": "프록시 비밀번호",
     "NetworkSettings_Proxy_PasswordPlaceholder": "프록시 비밀번호 입력",
     "NetworkSettings_Proxy_PasswordHelp1": "기본:",
     "NetworkSettings_Proxy_PasswordHelp2": "[비어있음]",
     "NetworkSettings_Proxy_PasswordHelp3": "프록시에 인증이 필요하지 않은 경우 이 칸을 비워두세요.",
-
     "NetworkSettings_ProxyTest_Button": "프록시 연결 테스트",
     "NetworkSettings_ProxyTest_ButtonChecking": "연결 확인 중...",
     "NetworkSettings_ProxyTest_ButtonSuccess": "프록시 연결 테스트가 성공했어요!",
     "NetworkSettings_ProxyTest_ButtonFailed": "테스트 실패! 프록시에 연결할 수 없어요",
-
-    "NetworkSettings_Dns_Title": "Custom DNS Settings",
-    "NetworkSettings_Dns_ConnectionType": "Connection Type",
-    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
-    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
-    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
-    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
-    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
-    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
-    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
-    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
-    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
-    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
-    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
-    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
-    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
-    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
-    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
-    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
-    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
-    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
-    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
-
     "NetworkSettings_Http_Title": ".NET HTTP 클라이언트 설정",
     "NetworkSettings_Http_Redirect": "HTTP 리디렉션 허용",
     "NetworkSettings_Http_SimulateCookies": "HTTP 쿠키 시뮬레이션 허용",
     "NetworkSettings_Http_UntrustedHttps": "신뢰할 수 없는 HTTPS 인증서 허용",
     "NetworkSettings_Http_Timeout": "HTTP 클라이언트 타임아웃 (초 단위)",
-
     "FileDownloadSettings_Title": "다운로드 설정",
     "FileDownloadSettings_SpeedLimit_Title": "다운로드 속도 제한",
     "FileDownloadSettings_SpeedLimit_NumBox": "속도 제한 (MiB 단위)",
@@ -649,33 +523,18 @@
     "FileDownloadSettings_SpeedLimitHelp2": "속도 제한 값의 범위:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/초",
     "FileDownloadSettings_SpeedLimitHelp4": "다운로드에 사용하는 최대 대역폭을 제한해요.",
-    "FileDownloadSettings_SpeedLimitHelp5": "",
-
     "FileDownloadSettings_NewPreallocChunk_Title": "새로운 사전 할당 다운로더",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "게임 설치, 게임 복구 또는 캐시 업데이트 전용.",
     "FileDownloadSettings_NewPreallocChunk_NumBox": "청크 크기 (MiB 단위)",
     "FileDownloadSettings_NewPreallocChunkHelp1": "기본:",
     "FileDownloadSettings_NewPreallocChunkHelp2": "청크 크기 값의 범위:",
-    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
     "FileDownloadSettings_NewPreallocChunkHelp4": "이 설정이 켜져 있으면 다운로더가 파일 다운로드 중에 파일 크기를 동적으로 사전에 할당해요.",
     "FileDownloadSettings_NewPreallocChunkHelp5": "이렇게 하면 다운로더가 청크를 개별 파일로 분할하지 않고 직접 파일에 쓸 수 있어요.",
-    "FileDownloadSettings_NewPreallocChunkHelp6": "When disabled, the launcher will use the old allocation method, where data chunks will be written into separate files. It will also disable the",
-    "FileDownloadSettings_NewPreallocChunkHelp7": "and",
-    "FileDownloadSettings_NewPreallocChunkHelp8": "settings.",
     "FileDownloadSettings_NewPreallocChunkHelp9": "참고:",
     "FileDownloadSettings_NewPreallocChunkHelp10": "이 기능은 게임 설치 (최초 설치, 업데이트와 사전 설치 등), 게임 복구 및 캐시 업데이트 단계에서만 사용할 수 있어요.",
-
     "FileDownloadSettings_BurstDownload_Title": "버스트 파일 다운로드 모드",
     "FileDownloadSettings_BurstDownload_Subtitle": "게임 복구 시 또는 캐시 업데이트 전용",
     "FileDownloadSettings_BurstDownloadHelp1": "기본:",
-    "FileDownloadSettings_BurstDownloadHelp2": "When enabled, this feature will allow the download process on",
-    "FileDownloadSettings_BurstDownloadHelp3": "and",
-    "FileDownloadSettings_BurstDownloadHelp4": "features to run in parallel to make the download process more efficient.",
-    "FileDownloadSettings_BurstDownloadHelp5": "When disabled, the download process for",
-    "FileDownloadSettings_BurstDownloadHelp6": "and",
-    "FileDownloadSettings_BurstDownloadHelp7": "features will use a sequential download process.",
-
-    "Database_Title": "User Synchronizable Database",
     "Database_ConnectionOk": "데이터베이스 연결에 성공했어요!",
     "Database_ConnectFail": "데이터베이스 연결에 실패했어요, 아래 오류를 확인해 주세요:",
     "Database_Toggle": "온라인 데이터베이스 사용",
@@ -691,14 +550,9 @@
     "Database_Warning_PropertyChanged": "데이터베이스 설정을 변경했어요",
     "Database_ValidationChecking": "설정을 검증하고 있어요...",
     "Database_Placeholder_DbUserIdTextBox": "GUID 입력 예시: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "여기에 인증 토큰을 입력해 주세요",
-    
-    "SearchPlaceholder": "Type to search..."
+    "Database_Placeholder_DbTokenPasswordBox": "여기에 인증 토큰을 입력해 주세요"
   },
-
   "_Misc": {
-    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
-
     "UpdateCompleteTitle": "업데이트 완료!",
     "UpdateCompleteSubtitle": "런처 버전이 {0}(으)로 업데이트되었어요! (릴리스 채널: {1})",
     "FeatureUnavailableTitle": "현재 이 기능을 사용할 수 없어요",
@@ -710,9 +564,6 @@
     "SpeedTextOnly": "속도",
     "SpeedPerSec": "{0}/초",
     "SpeedPlaceholder": "속도: - /초",
-    "PerFromTo": "{0} / {1}",
-    "PerFromToPlaceholder": "- / -",
-
     "EverythingIsOkay": "완벽해요!",
     "Cancel": "취소",
     "Close": "닫기",
@@ -729,7 +580,6 @@
     "Prev": "이전",
     "Uninstall": "삭제",
     "Install": "설치",
-
     "Yes": "네",
     "YesRedownload": "네, 다시 다운로드할게요",
     "YesResume": "네, 다시 시작할게요",
@@ -740,7 +590,6 @@
     "YesIHaveBeefyPC": "네, 저는 강력한 컴퓨터를 가지고 있어요!",
     "YesChangeLocation": "네, 경로를 변경할게요",
     "YesContinue": "네, 계속할게요",
-
     "No": "아니요",
     "NoStartFromBeginning": "아니요, 처음부터 시작할게요",
     "NoCancel": "아니요, 취소할게요",
@@ -749,15 +598,12 @@
     "NoOtherLocation": "아니요, 계속 설치할게요",
     "NotSelected": "선택되지 않음",
     "ExtractAnyway": "아무튼 해제해 주세요!",
-
     "IAcceptAgreement": "약관에 동의해요",
     "IDoNotAcceptAgreement": "약관에 동의하지 않아요",
-
     "LangNameENUS": "영어",
     "LangNameJP": "일본어",
     "LangNameCN": "중국어",
     "LangNameKR": "한국어",
-
     "Downloading": "다운로드 중",
     "Updating": "업데이트 중",
     "UpdatingAndApplying": "업데이트 + 적용 중",
@@ -783,18 +629,14 @@
     "Enabled": "켜짐",
     "UseAsDefault": "기본으로 사용",
     "Default": "기본",
-
     "BuildChannelPreview": "미리 보기",
     "BuildChannelStable": "안정",
-
     "CDNDescription_Github": "런처의 공식 (기본) 저장소",
     "CDNDescription_Cloudflare": "Cloudflare R2 버킷에서 호스팅되는 공식 (기본) 저장소 미러",
     "CDNDescription_Bitbucket": "Bitbucket에서 호스팅되는 공식 (기본) 저장소 미러",
     "CDNDescription_GitLab": "GitLab에서 호스팅되는 공식 (기본) 저장소 미러.",
-
     "LocateExecutable": "실행 파일 지정",
     "OpenDownloadPage": "다운로드 페이지 열기",
-
     "DiscordRP_Play": "플레이 중",
     "DiscordRP_InGame": "인게임",
     "DiscordRP_Update": "업데이트 중",
@@ -806,9 +648,7 @@
     "DiscordRP_Default": "활동 없음",
     "DiscordRP_Ad": "- Collapse Launcher",
     "DiscordRP_Region": "서버:",
-
     "DownloadModeLabelSophon": "Sophon 모드",
-
     "Taskbar_PopupHelp1": "클릭하여 Collapse를 포그라운드로 가져오기",
     "Taskbar_PopupHelp2": "두 번 클릭하여 창을 표시하거나 숨기기",
     "Taskbar_ShowApp": "Collapse 창 표시",
@@ -816,18 +656,11 @@
     "Taskbar_ShowConsole": "Collapse 콘솔 창 표시",
     "Taskbar_HideConsole": "작업 표시줄에 Collapse 콘솔 창 숨기기",
     "Taskbar_ExitApp": "Collapse Launcher 종료",
-
     "LauncherNameOfficial": "공식 런처",
-    "LauncherNameBHI3L": "BetterHi3Launcher",
-    "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(런처 이름 알 수 없음)",
-
     "ImageCropperTitle": "이미지 자르기",
-
-    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= 무제한",
     "IsBytesNotANumber": "= 숫자로 입력해 주세요",
-
     "MissingVcRedist": "Visual C/C++ 재배포 가능 패키지를 찾을 수 없어요",
     "MissingVcRedistSubtitle": "이 기능을 실행하려면 Visual C/C++ 재배포 가능 패키지를 설치해야 해요. 지금 설치하시겠어요?\r \n참고: 브라우저 창이 열리고 Microsoft에서 파일을 다운로드 할 거에요. 다운로드 후 설치 프로그램을 실행한 다음 Collapse를 재시작 해서 다시 시도해 주세요.\r \n이미 설치했지만 오류가 남아있는 경우, GitHub의 issue로 저희에게 알려주세요.",
     "ExceptionFeedbackBtn": "무슨 일이 있었는지 말씀해 주세요",
@@ -836,29 +669,16 @@
     "ExceptionFeedbackTitle": "무슨 일이 있었는지 말씀해 주세요:",
     "ExceptionFeedbackTemplate_User": "사용자 이름 (선택 사항):",
     "ExceptionFeedbackTemplate_Email": "이메일 (선택 사항):",
-    "ExceptionFeedbackTemplate_Message": "이 줄 뒤에 피드백을 작성해 주세요",
-    
-    "Feedback": "User Feedback",
-    "FeedbackSending": "Sending your feedback...",
-    "FeedbackSent": "Feedback sent!",
-    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
-    
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "ExceptionFeedbackTemplate_Message": "이 줄 뒤에 피드백을 작성해 주세요"
   },
-
   "_BackgroundNotification": {
     "LoadingTitle": "활동 로드 중...",
-    "Placeholder": "-",
-
     "CategoryTitle_Downloading": "게임 다운로드 중: {0}",
     "CategoryTitle_DownloadingPreload": "사전 다운로드 다운로드 중: {0}",
     "CategoryTitle_Updating": "게임 업데이트 중: {0}",
-
     "NotifBadge_Completed": "[완료] {0}",
     "NotifBadge_Error": "[오류/취소] {0}"
   },
-
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "경고: 델타 패치 업데이트가 감지되었어요!",
     "DeltaPatchDetectedSubtitle": "게임을 {0}에서 {1}(으)로 업데이트하는 데 델타 패치가 사용돼요.\r\n일부 파일은 게임 내에서 같이 다운로드해야 할 수도 있어요.\r\n\r\n계속하시겠어요?",
@@ -892,7 +712,6 @@
     "RepairCompletedSubtitleNoBroken": "손상된 파일을 찾을 수 없어요.",
     "ExtremeGraphicsSettingsWarnTitle": "매우 높은 설정 프리셋이 선택되었어요!",
     "ExtremeGraphicsSettingsWarnSubtitle": "프리셋을 매우 높음으로 설정하려고 해요!\r \n매우 높음 프리셋은 기본적으로 MSAA가 활성화된 1.6x 렌더링 스케일을 사용하며 전혀 최적화 되어있지 않아요!\r \n\r \n이 설정을 사용하시겠어요?",
-    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
     "MigrateExistingInstallChoiceTitle": "이전에 설치한 {0}을 찾았어요! ",
     "MigrateExistingInstallChoiceSubtitle1": "이 경로에 {0}를 사용하는 게임이 이미 설치되어 있어요:",
     "MigrateExistingInstallChoiceSubtitle2": "기존의 게임 데이터를 다른 경로로 이동하거나 기존의 경로를 그대로 사용할 수도 있어요. {0}를 사용하여 게임을 계속 실행할 수 있도록 이미 사용 중인 경로를 선택 하는 것이 좋아요.",
@@ -912,7 +731,6 @@
     "InstallDataCorruptSubtitle": "다운로드된 파일이 손상되었어요.\r\n\r\n서버 해시: {0}\r\n다운로드된 해시: {1}\r\n\r\n파일을 다시 다운로드하시겠어요?",
     "InstallCorruptDataAnywayTitle": "압축 해제 중 손상된 데이터 발견",
     "InstallCorruptDataAnywaySubtitle1": "이 손상된 데이터를 압축 해제 하려고 해요:",
-    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
     "InstallCorruptDataAnywaySubtitle3": ". 압축 해제에 실패하거나, 게임 그래픽이 제대로 렌더링 되지 않을 수 있어요.\r \n\r \n압축 해제를 계속 진행할까요?",
     "InstallDataDownloadResumeTitle": "다운로드를 다시 시작하시겠어요?",
     "InstallDataDownloadResumeSubtitle": "이전에 게임의 {0}/{1}을(를) 다운로드했어요.\r\n\r\n다운로드를 다시 시작하시겠어요?",
@@ -944,33 +762,20 @@
     "CookbookLocateSubtitle5": "을 눌러 다운로드한 Cookbook 파일을 지정해 주시고 진행해 주세요.\r\n\r\n",
     "CookbookLocateSubtitle6": "참고:\r\n",
     "CookbookLocateSubtitle7": "다운로드해야 하는 Cookbook 파일의 이름이에요:\r\n",
-
     "PrivilegeMustRunTitle": "Collapse는 관리자 권한이 필요해요!",
     "PrivilegeMustRunSubtitle": "Collapse는 관리자 권한이 필요해요. Collapse를 관리자 권한으로 다시 실행하시겠어요?",
-
     "ReleaseChannelChangeTitle": "릴리스 채널 변경",
     "ReleaseChannelChangeSubtitle1": "릴리스 채널을 다음으로 변경하려고 해요:",
     "ReleaseChannelChangeSubtitle2": "참고:",
     "ReleaseChannelChangeSubtitle3": "이 작업으로 인해 되돌릴 수 없는 변경이나 비호환성이 발생할 수 있어요.",
-
-    "ForceUpdateCurrentInstallTitle": "Force-update Current Installation",
-    "ForceUpdateCurrentInstallSubtitle1": "You are about to perform a forced-update to your current:",
-    "ForceUpdateCurrentInstallSubtitle2": "installation and we recommend you to close your currently opened game(s).",
-
     "ChangePlaytimeTitle": "정말로 플레이 시간을 변경하시겠어요?",
     "ChangePlaytimeSubtitle": "플레이 시간을 변경한다는 것은 방금 입력한 값으로 현재 값을 덮어쓰는 것을 의미해요.\n\n정말로 계속하시겠어요?\n\n참고: 이 변경은 Collapse 작동에 영향을 미치지 않고 게임을 플레이하지 않을 때는 언제든지 이 값을 변경할 수 있어요.",
     "ResetPlaytimeTitle": "정말로 플레이 시간을 초기화하시겠어요?",
-    "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter and all related statistics back to 0. This is a ",
     "ResetPlaytimeSubtitle2": "치명적인",
     "ResetPlaytimeSubtitle3": " 설정이고, 되돌릴 수 없어요. \n\n정말로 계속하시겠어요?\n\n참고: 이 변경은 Collapse 작동에 영향을 미치지 않고 게임을 플레이하지 않을 때는 언제든지 이 값을 변경할 수 있어요.",
     "InvalidPlaytimeTitle": "이 세션의 플레이 시간을 저장하는데 문제가 발생했어요",
-    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
-    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
     "InvalidPlaytimeSubtitle3": "게임 내 에서는 컴퓨터의 시간을 조정하지 마세요.",
-
     "LocateExePathTitle": "실행 파일 설치 경로 지정",
-    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
-
     "CannotUseAppLocationForGameDirTitle": "폴더가 올바르지 않아요!",
     "CannotUseAppLocationForGameDirSubtitle": "이 폴더는 시스템 폴더로 사용되거나 앱의 주요 실행 폴더로 사용되기 때문에 이 폴더를 사용할 수 없어요. 다른 폴더를 선택해 주세요!",
     "InvalidGameDirNewTitleFormat": "경로가 올바르지 않아요: {0}",
@@ -989,29 +794,17 @@
     "InvalidGameDirNew6Title": "Program Files 또는 Program Files (x86) 폴더를 선택할 수 없어요",
     "InvalidGameDirNew6Subtitle": "귀찮은 일이 생기는 걸 막기 위해 Program Files 또는 Program Files (x86) 폴더를 게임 설치 위치로 사용할 수 없어요.",
     "FolderDialogTitle1": "게임 설치 위치 선택",
-
     "StopGameTitle": "게임 강제 종료",
     "StopGameSubtitle": "현재 실행 중인 게임을 정말로 강제 종료 하시겠어요?\r \n게임 내의 일부 진행 사항을 잃을 수 있어요.",
-
     "MeteredConnectionWarningTitle": "데이터 요금제 연결이 감지되었어요!",
     "MeteredConnectionWarningSubtitle": "현재 인터넷 연결이 \"데이터 요금제 연결\"임을 감지했어요! 업데이트 과정을 계속할 경우 인터넷 공급업체로부터 추가적인 요금이 발생할 수 있어요. 이대로 계속할까요?",
-
     "ResetKbShortcutsTitle": "정말 단축키 설정을 초기화 하시겠어요?",
     "ResetKbShortcutsSubtitle": "이는 모든 단축키 설정이 초기 기본 상태로 변경됨을 의미해요.  \n\n계속하시겠어요? \n\n참고: 이 작업은 Collapse 작동에 영향을 미치지 않으며, 키보드 단축키 설정에서 얼마든지 다시 단축키 조합을 바꿀 수 있어요.",
-
     "OperationErrorDiskSpaceInsufficientTitle": "드라이브: {0}의 디스크 공간이 부족해요!",
     "OperationErrorDiskSpaceInsufficientMsg": "{2} 드라이브에 이 게임을 설치할 공간이 부족해요!\r \n\r \n사용 가능한 공간: {0}\r \n필요한 공간: {1}.\r \n\r \n설치를 진행하기 전에 먼저 충분한 공간을 확보해 주세요.",
-
     "OperationWarningNotCancellableTitle": "주의: 이 작업은 취소할 수 없습니다!",
-    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
     "OperationWarningNotCancellableMsg2": "이 진행을 취소할 수 없습니다",
-    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
-    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
-
     "GenericWarningExceptionTitle": "경고",
-    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
-
     "ShortcutCreationConfirmTitle": "정말로 계속 하시겠어요?",
     "ShortcutCreationConfirmSubtitle1": "이 위치에 바로 가기가 생성될 거에요:",
     "ShortcutCreationConfirmSubtitle2": "만약 폴더에 이미 같은 이름의 바로 가기가 있는 경우 덮어 쓸 거에요.",
@@ -1022,10 +815,8 @@
     "ShortcutCreationSuccessSubtitle3": "참고:",
     "ShortcutCreationSuccessSubtitle4": "• 바로 가기를 사용했을 때 서버를 먼저 불러온 후 게임이 시작돼요.",
     "ShortcutCreationSuccessSubtitle5": "• 만약 게임이 설치/업데이트가 되어 있지 않은 경우, Collapse는 설치/업데이트를 시도할 거에요. 이러한 프로세스에 관한 대화 상자는 계속 표시 됨을 참고해 주세요.",
-
     "SteamShortcutCreationConfirmTitle": "정말로 계속 하시겠어요?",
     "SteamShortcutCreationConfirmSubtitle1": "Steam에 로그인 되어있는 사용자의 라이브러리에 바로 가기가 추가될 거에요.",
-    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
     "SteamShortcutCreationConfirmCheckBox": "바로 가기를 사용할 시 게임과 런처를 모두 시작",
     "SteamShortcutCreationSuccessTitle": "성공!",
     "SteamShortcutCreationSuccessSubtitle1": "Steam에 로그인 되어있는 사용자의 라이브러리에 반짝 반짝한 바로 가기를 추가했어요!",
@@ -1039,30 +830,23 @@
     "SteamShortcutCreationFailureSubtitle": "유효한 사용자 데이터 폴더를 찾지 못했어요. \n\n이 기능을 사용하려면 Steam 클라이언트에 적어도 한 번 이상 로그인이 필요해요.",
     "SteamShortcutTitle": "Steam 바로가기",
     "SteamShortcutDownloadingImages": "Steam 라이브러리 이미지 다운로드 중 ({0}/{1})",
-
     "DownloadSettingsTitle": "다운로드 설정",
     "DownloadSettingsOption1": "설치 완료 후 게임 시작",
-
     "OpenInExternalBrowser": "외부 브라우저로 열기",
     "CloseOverlay": "오버레이 종료",
-
     "DbGenerateUid_Title": "정말 유저 ID를 변경 하시겠어요?",
     "DbGenerateUid_Content": "사용자 ID를 바꾸기 전 현재 사용자 ID를 잊어버리면 해당 데이터에 접근할 수 없게 돼요.",
-
     "SophonIncrementUpdateUnavailTitle": "분할 업데이트를 사용할 수 없음: 버전이 너무 오래됨!",
     "SophonIncrementUpdateUnavailSubtitle1": "설치되어 있는 버전 {0}이",
     "SophonIncrementUpdateUnavailSubtitle2": "너무 오래된 버전이에요",
     "SophonIncrementUpdateUnavailSubtitle3": "때문에 설치되어 있는 버전에선 분할 업데이트를 사용할 수 없어요. 하지만 게임의 전체를 다시 다운로드 하는 방식으로 업데이트를 할 수 있어요.",
     "SophonIncrementUpdateUnavailSubtitle4": "전체를 다시 다운로드 하려면 \"{0}\"을 클릭하거나 이 작업을 취소하려면 \"{1}\"을 클릭하세요",
-
     "UACWarningTitle": "경고: UAC가 비활성화 됨이 감지되었어요!",
     "UACWarningContent": "사용자 계정 컨트롤 (UAC)를 비활성화 하는 것은 전혀 좋은 생각이 아니에요.\nOS의 보안이 위협 받을 수 있으며 게임이 제대로 실행되지 않을 수도 있어요.\n\n\"더 보기\" 버튼을 클릭하여 UAC를 어떻게 활성화 하는지 알아보세요.\n관련 항목은 다음과 같아요: 관리 승인 모드에서 모든 관리자 실행 ",
     "UACWarningLearnMore": "더 보기",
     "UACWarningDontShowAgain": "다시 표시하지 않기",
-
     "EnsureExitTitle": "앱 종료",
     "EnsureExitSubtitle": "백그라운드 에서 중요한 작업이 실행 중 이에요. 정말 종료하시겠어요?",
-
     "UserFeedback_DialogTitle": "생각하고 계신 걸 공유해 주세요",
     "UserFeedback_TextFieldTitleHeader": "피드백 제목",
     "UserFeedback_TextFieldTitlePlaceholder": "피드백 제목을 여기에 적어주세요...",
@@ -1076,7 +860,6 @@
     "UserFeedback_SubmitBtn_Completed": "완료되었어요!",
     "UserFeedback_SubmitBtn_Cancelled": "취소되었어요!"
   },
-
   "_FileMigrationProcess": {
     "PathActivityPanelTitle": "이동 중:",
     "SpeedIndicatorTitle": "속도:",
@@ -1090,7 +873,6 @@
     "ChoosePathErrorPathNotExist": "경로가 존재하지 않아요!",
     "ChoosePathErrorPathNoPermission": "이 위치에 접근할 수 있는 권한이 없어요! 다른 경로를 선택해 주세요!"
   },
-
   "_InstallMgmt": {
     "IntegrityCheckTitle": "무결성 검사",
     "PreparePatchTitle": "패치 준비 중",
@@ -1099,7 +881,6 @@
     "RepairFilesRequiredTitle": "{0}개의 파일을 복구해야 해요!",
     "RepairFilesRequiredSubtitle": "업데이트하기 전에 복구해야 하는 {0}개 이상의 파일 ({1})이 있어요!\r\n\r\n참고: 이 작업은 예상보다 오래 걸릴 수 있어요 (연결 속도와 안정성에 따라 다름). 다운로드 속도가 느린 경우 VPN을 사용해 보세요 (ProtonVPN과 같은 무료 VPN 이면 충분해요)."
   },
-
   "_InstallConvert": {
     "PageTitle": "크로스 버전 변환",
     "Step1Title": "게임 선택 및 의존성 불러오기",
@@ -1126,15 +907,11 @@
     "ConvertSuccessSubtitle": "{0}에서 {1}(으)로의 게임 변환이 성공적으로 완료되었어요!",
     "CookbookDownloadTitle": "레시피 다운로드 중",
     "CookbookDownloadSubtitle": "{0}에서 {1}(으)로 변환하기 위해 레시피를 다운로드하는 중",
-
-    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
-
     "CancelBtn": "변환 취소",
     "CancelMsgTitle": "변환을 취소하는 중...",
     "CancelMsgSubtitle1": "변환 작업를 취소하려고 해요. 모든 변환 진행률이 중단돼요.\r\n\r\n정말로 취소하시겠어요?",
     "CancelMsgSubtitle2": "변환 작업를 취소하려고 하지만 이미 게임이 {0}(으)로 변환되었어요. \"변환 후 무결성 검사\" 단계를 건너뛰어요.\r\n\r\n정말로 건너뛸까요?"
   },
-
   "_InstallMigrateSteam": {
     "PageTitle": "Steam 변환",
     "Step1Title": "폴더 권한 확인",
@@ -1166,7 +943,6 @@
     "InnerConvertFile2": "{0} 다운로드 중 [{1}/{2}]: {3}",
     "InnerConvertFile3": "{0} 다운로드 중 [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
-
   "_InstallMigrate": {
     "PageTitle": "게임 이동",
     "Step1Title": "작업이 5초 후에 실행돼요. 이동 작업을 시작하려면 관리자 권한을 허용해 주세요.",
@@ -1177,7 +953,6 @@
     "PageFooter2": "절대",
     "PageFooter3": "다른 페이지로 전환하거나 런처를 닫지 마세요."
   },
-
   "_UpdatePage": {
     "PageTitle1": "업데이트",
     "PageTitle2": "가 가능해요!",
@@ -1191,15 +966,12 @@
     "UpdateNowBtn": "지금 업데이트",
     "LoadingRelease": "릴리스 노트를 가져오는 중...",
     "LoadingReleaseFailed": "릴리스 노트를 가져오는 동안 오류가 발생했어요.\r\n{0}",
-
     "UpdateHeader1": "진행률:",
     "UpdateHeader2": "경과 시간:",
     "UpdateHeader3": "다운로드 크기:",
     "UpdateHeader4": "속도:",
     "UpdateHeader5PlaceHolder": "업데이트 다운로드 중 [- / -]:",
-
     "UpdateForcedHeader": "긴급 변경 사항으로 인해 런처가 정상적으로 작동하도록 강제 업데이트가 이루어질 예정이에요.",
-
     "UpdateStatus1": "업데이트 불러오는 중:",
     "UpdateMessage1": "업데이트 저장소에 연결하는 중...",
     "UpdateStatus2": "검사 중:",
@@ -1208,41 +980,28 @@
     "UpdateMessage4": "곧 게임 런처 스코프로 돌아가요...",
     "UpdateStatus5": "버전이 {0}(으)로 업데이트되었어요!",
     "UpdateMessage5": "런처가 곧 다시 열려요...",
-
     "UpdateCountdownMessage1": "런처가 {0}초 후에 업데이트돼요...",
     "UpdateCountdownMessage2": "(카운트다운을 취소하려면",
     "UpdateCountdownMessage3": "를 눌러주세요.)",
-
-    "ApplyUpdateTitle1": "We're updating",
-    "ApplyUpdateTitle2": "Collapse Launcher",
     "ApplyUpdateCDNSelectorTitle": "업데이트를 받아올 CDN 선택",
     "ApplyUpdateCDNSelectorSubtitle": "CDN을 선택하고 {0}를 클릭해 업데이트를 시작하세요!",
     "ApplyUpdateCDNSelectorSubtitleCount": "CDN이 {0}초 후에 자동으로 선택돼요",
     "ApplyUpdateUpdateNowBtn": "지금 업데이트!",
-
     "ApplyUpdateUpdateVersionTitle": "업데이트:",
     "ApplyUpdateUpdateChannelTitle": "채널:",
     "ApplyUpdateUpdateChannelSubtitlePlaceholder": "알 수 없음",
     "ApplyUpdateUpdateStatusTitle": "상태:",
     "ApplyUpdateMiscIdle": "대기 중",
     "ApplyUpdateMiscNone": "없음",
-    "ApplyUpdateVersionSeparator": "to",
-
     "ApplyUpdateErrCollapseRunTitle": "업데이트를 적용하기 전에 Collapse를 종료해 주세요!",
     "ApplyUpdateErrCollapseRunSubtitle": "Collapse가 종료되길 기다리는 중...",
     "ApplyUpdateErrCollapseRunTitleWarnBox": "Collapse Launcher가 아직 실행중 이에요!",
     "ApplyUpdateErrCollapseRunSubtitleWarnBox": "백그라운드에서 실행 중인 Collapse Launcher를 발견했어요. 런처를 강제로 닫으려면 \"네\"를 클릭하고, 직접 수동으로 닫으려면 \"아니요\"를 클릭해 주세요.",
     "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "이전에 설치한 파일이 파손됨!",
     "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "이전에 설치한 파일이 파손된 걸 확인했어요.\r \n\r \n\"예\"를 클릭하면 업데이트를 설치하기 전에 복구를 진행하고 \"아니요\"를 클릭하면 업데이트만 설치할 거에요.",
-    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "\"release\" 파일을 확인하고 다시 시도해주세요.",
-
-    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
-    "ApplyUpdateDownloadSpeed": "{0}/s",
-    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
     "ApplyUpdateDownloadTimeEst": "{0:%h}시간 {0:%m}분 {0:%s}초 남음",
     "ApplyUpdateDownloadTimeEstPlaceholder": "--시간 --분 --초 남음",
-
     "ApplyUpdateTaskLegacyVerFoundTitle": "이전 버전의 Collapse v{0}이 설치되어 있어요!",
     "ApplyUpdateTaskLegacyVerFoundSubtitle1": "이전 버전의 Collapse v{0}가 PC에 설치되어 있어요.",
     "ApplyUpdateTaskLegacyVerFoundSubtitle2": "업데이트를 위해 이전 버전 폴더에 포함된 모든 파일을 정리할 거에요.\r \n",
@@ -1251,41 +1010,32 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "확인을 위해 다시 \"네\"를 눌러주세요.",
     "ApplyUpdateTaskLegacyCleanupCount": "정리를 {0}초 뒤에 시작할 거에요...",
     "ApplyUpdateTaskLegacyDeleting": "삭제 중: {0}...",
-
     "ApplyUpdateTaskDownloadingPkgTitle": "패키지 다운로드 중",
     "ApplyUpdateTaskExtractingPkgTitle": "패키지 압축 해제 중",
     "ApplyUpdateTaskRemoveOldPkgTitle": "예전 패키지 제거 중",
     "ApplyUpdateTaskMovingExtractFileTitle": "압축 해제된 파일 이동 중",
-
     "ApplyUpdateTaskLauncherUpdatedTitle": "런처가 {0}(으)로 업데이트되었어요!",
     "ApplyUpdateTaskLauncherUpdatedSubtitle": "{0}초 후에 Collapse가 실행돼요...",
-
     "ApplyUpdateTaskError": "ERROR:\r \n업데이트를 적용하는 중에 오류가 발생했어요!\r \n{0}"
   },
-
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "런처 메타데이터 업데이트를 사용할 수 있어요!",
     "NotifMetadataUpdateSubtitle": "새 런처 메타데이터를 사용할 수 있어요! 런처가 miHoYo/HoYoverse 서버와 통신할 수 있도록 런처를 업데이트해요. 곧 업데이트가 시작해요!",
     "NotifMetadataUpdateBtn": "메타데이터 업데이트",
     "NotifMetadataUpdateBtnCountdown": "메타데이터를 {0}초 후에 업데이트해요.",
     "NotifMetadataUpdateBtnUpdating": "메타데이터를 업데이트하는 중이에요. 잠시 기다려 주세요...",
-
     "NotifFirstWelcomeTitle": "Collapse에 오신 것을 환영해요!",
     "NotifFirstWelcomeSubtitle": "시작하려면 아래의 \"{0}\" 버튼을 눌러 기존 게임을 설치하거나 이동하는 방법을 확인하세요.",
     "NotifFirstWelcomeBtn": "GitHub 위키 방문",
-
     "NotifPreviewBuildUsedTitle": "미리 보기 빌드를 사용하고 있어요!",
     "NotifPreviewBuildUsedSubtitle": "현재 테스트 중인 [미리 보기] 빌드를 사용하고 있어요. 문제가 발생하면 아래의 \"{0}\" 버튼을 사용하여 문제를 보고해 주세요. 감사해요!",
     "NotifPreviewBuildUsedBtn": "문제 보고",
-
     "NotifKbShortcutTitle": "새로운 기능이 도착했어요!",
     "NotifKbShortcutSubtitle": "Collapse를 새롭고, 신기한 방법으로 사용할 수 있는 키보드 단축키 기능을 소개할게요. \n이제부터 키보드를 사용해 원하는 기능을 빠르게 사용할 수 있답니다! \n\n더 알고 싶으시다고요? \nCTRL + Tab을 누르거나 아래 버튼을 클릭해 주세요.",
     "NotifKbShortcutBtn": "모든 단축키 표시"
   },
-
   "_StarRailGameSettingsPage": {
     "PageTitle": "게임 설정",
-
     "Graphics_Title": "그래픽 설정",
     "Graphics_ResolutionPanel": "게임 해상도",
     "Graphics_Fullscreen": "전체 화면",
@@ -1293,10 +1043,7 @@
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomTooltip": "이 설정은 크기 조절 가능 창 사용 옵션을 활성화 해야 사용할 수 있어요",
-    "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "높이",
-
-    "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS는 실험 기능이에요! 붕괴: 스타레일은 공식적으로 지원하지 않으므로 주의해서 사용해주세요!",
     "Graphics_FPS_Help2": "FPS 값을 120으로 설정해도 더 이상 설정 메뉴가 깨지지 않아요, 다만 게임 내 FPS 설정에서 값을 변경하게 되면 120 FPS를 사용할 수 없게 돼요.\r \n120 FPS 옵션을 사용하려면 Collapse를 사용하여 게임 그래픽 설정을 변경하세요.",
     "Graphics_VSync": "수직 동기화",
@@ -1310,17 +1057,11 @@
     "Graphics_ReflectionQuality": "반사 품질",
     "Graphics_BloomQuality": "광원 품질",
     "Graphics_AAMode": "안티앨리어싱 모드",
-    "Graphics_SFXQuality": "SFX Quality",
-    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "맵 탐사 중 실시간 그림자",
-    "Graphics_HalfResTransparent": "Half Resolution Transparency",
-    
     "Graphics_DLSS_UHP": "최고 성능",
     "Graphics_DLSS_Perf": "성능",
     "Graphics_DLSS_Balanced": "균형",
     "Graphics_DLSS_Quality": "품질",
-    "Graphics_DLSS_DLAA": "DLAA",
-
     "Graphics_SpecPanel": "전역 그래픽 설정",
     "SpecEnabled": "켜짐",
     "SpecDisabled": "꺼짐",
@@ -1329,30 +1070,25 @@
     "SpecMedium": "보통",
     "SpecHigh": "높음",
     "SpecVeryHigh": "매우 높음",
-
     "ApplyBtn": "설정 적용",
     "SettingsApplied": "변경 내용이 저장되었어요!",
-
     "OverlayNotInstalledTitle": "해당 서버가 아직 설치되지 않았거나 업데이트하지 않아 이 기능을 사용할 수 없어요!",
     "OverlayNotInstalledSubtitle": "게임 런처 페이지에서 먼저 게임을 다운로드/업데이트해 주세요!",
     "OverlayGameRunningTitle": "게임이 현재 실행 중이에요!",
     "OverlayGameRunningSubtitle": "이 기능을 사용하려면 먼저 게임을 종료해 주세요!",
     "OverlayFirstTimeTitle": "이 게임을 실행한 적이 없어요!",
     "OverlayFirstTimeSubtitle": "먼저 게임을 실행하여 필요한 파일을 생성한 후에 돌아와 이 기능을 사용해 주세요.",
-
     "CustomArgs_Title": "사용자 지정 시작 인수 (고급)",
     "CustomArgs_Subtitle": "시작 인수",
     "CustomArgs_Footer1": "시작 인수에 대한 자세한 내용은",
     "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를",
     "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요.",
-
     "Audio_Title": "오디오 설정",
     "Audio_Master": "마스터 볼륨",
     "Audio_BGM": "음악 볼륨",
     "Audio_SFX": "효과음 볼륨",
     "Audio_VO": "음성 볼륨",
     "Audio_Mute": "오디오 음소거",
-
     "Language": "언어 설정",
     "Language_Help1": "Collapse에서는 직접 오디오 패키지를 다운로드 할 수 없어요.",
     "Language_Help2": "다음번에 게임을 실행할 때 오디오 패키지가 게임 내에서 다운로드 될 거에요.",
@@ -1363,10 +1099,8 @@
     "VO_jp": "일본어",
     "VO_kr": "한국어"
   },
-
   "_GenshinGameSettingsPage": {
     "PageTitle": "게임 설정",
-
     "Graphics_Title": "그래픽 설정",
     "Graphics_ResolutionPanel": "게임 해상도",
     "Graphics_Fullscreen": "전체 화면",
@@ -1375,10 +1109,7 @@
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomW": "너비",
-    "Graphics_ResCustomH": "H",
-
     "Graphics_Gamma": "감마",
-    "Graphics_FPS": "FPS",
     "Graphics_RenderScale": "렌더링 스케일",
     "Graphics_ShadowQuality": "그림자 품질",
     "Graphics_VisualFX": "시각 효과",
@@ -1390,7 +1121,6 @@
     "Graphics_VolFogs_ToolTip": "그림자 품질을 보통 또는 높음으로 설정해야 해요!",
     "Graphics_ReflectionQuality": "반사",
     "Graphics_MotionBlur": "모션 블러",
-    "Graphics_BloomQuality": "Bloom",
     "Graphics_CrowdDensity": "군중 밀도",
     "Graphics_SubsurfaceScattering": "서브서페이스 스캐터링",
     "Graphics_TeammateFX": "다인 모드 파티원 이펙트",
@@ -1401,7 +1131,6 @@
     "Graphics_GlobalIllumination_Help2": "자세한 정보 (영어)",
     "Graphics_DynamicCharacterResolution": "캐릭터 동적 해상도",
     "Graphics_DynamicCharacterResolution_Tooltip": "지원되는 기기에만 적용할 수 있어요!",
-    "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "HDR 활성화",
     "Graphics_HDR_NotSupported1": "사용 중인 디스플레이가 HDR을 지원하지 않아요.",
     "Graphics_HDR_NotSupported2": "HDR 지원 모니터가 필요해요!",
@@ -1409,13 +1138,8 @@
     "Graphics_HDR_NotEnabled2": "윈도우의 설정에서 \"HDR 사용\" 옵션이 켜져 있어야 해요.",
     "Graphics_HDR_Help_Link": "자세한 정보",
     "Graphics_HDR_MaxLuminosity": "최대 휘도(니트)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
     "Graphics_HDR_UiBrightness": "UI 밝기",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
     "Graphics_HDR_SceneBrightness": "배경 밝기",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
-
     "Graphics_SpecPanel": "전역 그래픽 설정",
     "SpecEnabled": "켜짐",
     "SpecDisabled": "꺼짐",
@@ -1426,33 +1150,27 @@
     "SpecVeryHigh": "매우 높음",
     "SpecExtreme": "극한",
     "SpecPartiallyOff": "일부 꺼짐",
-
     "ApplyBtn": "설정 적용",
     "SettingsApplied": "변경 내용이 저장되었어요!",
-
     "OverlayNotInstalledTitle": "해당 서버가 아직 설치되지 않았거나 업데이트하지 않아 이 기능을 사용할 수 없어요!",
     "OverlayNotInstalledSubtitle": "게임 런처 페이지에서 먼저 게임을 다운로드/업데이트해 주세요!",
     "OverlayGameRunningTitle": "게임이 현재 실행 중이에요!",
     "OverlayGameRunningSubtitle": "이 기능을 사용하려면 먼저 게임을 종료해 주세요!",
     "OverlayFirstTimeTitle": "이 게임을 실행한 적이 없어요!",
     "OverlayFirstTimeSubtitle": "먼저 게임을 실행하여 필요한 파일을 생성한 후에 돌아와 이 기능을 사용해 주세요.",
-
     "CustomArgs_Title": "사용자 지정 시작 인수 (고급)",
     "CustomArgs_Subtitle": "시작 인수",
     "CustomArgs_Footer1": "시작 인수에 대한 자세한 내용은",
     "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를",
     "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요.",
-
     "Audio_Title": "오디오 설정",
     "Audio_Master": "마스터 볼륨",
     "Audio_BGM": "음악 볼륨",
     "Audio_SFX": "효과음 볼륨",
     "Audio_VO": "음성 볼륨",
-
     "Audio_Output_Surround": "서라운드 음향 사용",
     "Audio_DynamicRange": "동적 범위",
     "Audio_MuteOnMinimize": "최소화 시 음소거",
-
     "Language": "언어 설정",
     "Language_Help1": "Collapse에서는 직접 오디오 패키지를 다운로드 할 수 없어요.",
     "Language_Help2": "다음번에 게임을 실행할 때 오디오 패키지가 게임 내에서 다운로드 될 거에요.",
@@ -1463,23 +1181,18 @@
     "VO_jp": "일본어",
     "VO_kr": "한국어"
   },
-
   "_KbShortcuts": {
     "DialogTitle": "키보드 단축키",
     "GeneralTab": "일반",
     "SwitchTab": "빠른 변경",
     "GameFolderTab": "폴더 접근",
     "GameManagementTab": "게임 관리",
-
     "General_Title": "일반",
     "General_OpenMenu": "이 메뉴 열기",
-    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
     "General_GoHome": "홈페이지로 이동",
     "General_GoSettings": "설정 페이지로 이동",
     "General_OpenNotifTray": "알림 트레이 열기",
     "General_ReloadRegion": "이 페이지를 다시 로드",
-    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
-
     "Switch_Title": "빠른 게임/서버 변경",
     "Switch_Subtitle": "참고: 이 단축키는 선택 순서를 따라요.",
     "Switch_SwapBtn": "{0} & {1} 바꾸기",
@@ -1487,12 +1200,10 @@
     "Switch_ChangeGame_Desc": "이 단축키에선 숫자패드도 사용할 수 있어요!\n예를 들어 {0}+1 또는 NumPad1 (수식키 {0} 없이)을 누르면 붕괴3rd 페이지 (마지막으로 사용한 서버)로 이동해요.",
     "Switch_ChangeRegion": "서버 변경",
     "Switch_ChangeRegion_Desc": "예를 들어 원신의 경우, {0}+1은 글로벌 서버로 이동해요.",
-
     "GameFolder_Title": "게임 폴더 접근",
     "GameFolder_ScreenshotFolder": "스크린샷 폴더 열기",
     "GameFolder_MainFolder": "게임 폴더 열기",
     "GameFolder_CacheFolder": "캐시 폴더 열기",
-
     "GameManagement_Title": "게임 관리",
     "GameManagement_Subtitle": "참고: 이 단축키는 특정 지역에서 지원할 때만 작동해요.",
     "GameManagement_ForceCloseGame": "게임 강제 종료",
@@ -1500,26 +1211,19 @@
     "GameManagement_GoRepair": "게임 복구 페이지로 이동",
     "GameManagement_GoSettings": "게임 설정 페이지로 이동",
     "GameManagement_GoCaches": "캐시 복구 페이지로 이동",
-
     "ChangeShortcut_Title": "바로가기 변경",
     "ChangeShortcut_Text": "이 단축키의 새 조합을 입력해 주세요!",
     "ChangeShortcut_Help1": "단축키는 두 부분으로 구성돼 있어요:",
     "ChangeShortcut_Help2": "・ 수식키 - Shift, Control 또는 Alt/Menu",
     "ChangeShortcut_Help3": "・ 키 - 알파벳 (A부터 Z까지) 또는 Tab",
-    "ChangeShortcut_Help4": "시스템에서 예약했거나 이미 사용 중인 것이 아니라면, 각 범주에서 하나씩 값을 골라 조합할 수 있어요.",
-
-    "Keyboard_Control": "Ctrl",
-    "Keyboard_Menu": "Alt",
-    "Keyboard_Shift": "Shift"
+    "ChangeShortcut_Help4": "시스템에서 예약했거나 이미 사용 중인 것이 아니라면, 각 범주에서 하나씩 값을 골라 조합할 수 있어요."
   },
-
   "_GameClientTitles": {
     "Honkai Impact 3rd": "붕괴3rd",
     "Genshin Impact": "원신",
     "Honkai: Star Rail": "붕괴: 스타레일",
     "Zenless Zone Zero": "젠레스 존 제로"
   },
-
   "_GameClientRegions": {
     "Southeast Asia": "동남아",
     "Global": "글로벌",
@@ -1527,14 +1231,11 @@
     "TW/HK/MO": "대만/홍콩/마카오",
     "Korea": "한국",
     "Japan": "일본",
-    "Bilibili": "빌리빌리",
-    "Google Play": "Google Play"
+    "Bilibili": "빌리빌리"
   },
-
   "_OOBEAgreementMenu": {
     "AgreementTitle": "약관:"
   },
-
   "_FileCleanupPage": {
     "Title": "파일 정리",
     "TopButtonRescan": "다시 스캔",
@@ -1562,15 +1263,19 @@
     "DialogMoveToRecycleBin": "휴지통으로 이동",
     "DialogTitleMovedToRecycleBin": "파일이 휴지통으로 이동 되었어요!"
   },
-
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Collapse Launcher", "에" ],
-      "Lower": [ "오신 걸", "환영합니다" ]
+      "Upper": [
+        "Collapse Launcher",
+        "에"
+      ],
+      "Lower": [
+        "오신 걸",
+        "환영합니다"
+      ]
     },
     "SetupNextButton": "여기를 눌러 계속",
     "SetupBackButton": "돌아가기",
-
     "CustomizationTitle": "런처 설정",
     "CustomizationSettingsLanguageHeader": "언어",
     "CustomizationSettingsLanguageDescription": "표시되는 정보의 언어가 변경돼요.",
@@ -1584,10 +1289,7 @@
     "CustomizationSettingsStyleThemeDescription": "런처에 표시되는 색상을 변경해요.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "사용자 지정 배경 이미지",
     "CustomizationSettingsStyleCustomBackgroundDescription": "기본 배경 이미지 대신 사용자 지정 배경 이미지를 사용해요.",
-
     "VideoBackgroundPreviewUnavailableHeader": "비디오 배경 미리 보기를 사용할 수 없어요",
-    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
-
     "LoadingInitializationTitle": "런처 초기 시작 설정 중",
     "LoadingCDNCheckboxCheckLatency": "(지연 시간 확인 중...)",
     "LoadingCDNCheckboxPlaceholder": "권장 CDN 확인 중...",
@@ -1595,12 +1297,9 @@
     "LoadingCDNCheckingSkipButton": "CDN 확인 건너뛰기",
     "LoadingBackgroundImageTitle": "이미지 로드 중",
     "LoadingBackgroundImageSubtitle": "이미지가 처리되는 데 시간이 걸릴 수 있어요.",
-
-    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (알 수 없음)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [권장]"
   },
-
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "색상 필터 강도",
     "Graphics_RenderRes": "렌더링 해상도",
@@ -1610,41 +1309,29 @@
     "Graphics_HighPrecisionCharacterAnimation": "캐릭터 동적 해상도",
     "Audio_PlaybackDev": "기기 재생",
     "Audio_PlaybackDev_Headphones": "헤드셋",
-    "Audio_PlaybackDev_Speakers": "스피커",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_Speakers": "스피커"
   },
-
   "_NotificationToast": {
     "WindowHiddenToTray_Title": "Collapse Launcher가 트레이에 최소화 되었어요",
     "WindowHiddenToTray_Subtitle": "런처가 이제 백그라운드에서 실행 중 이에요. \r \n이 알림 또는 트레이의 아이콘을 클릭하면 다시 창을 열 수 있어요.",
-
     "GameInstallCompleted_Title": "{0}을(를) 플레이 할 준비가 완료되었어요",
     "GameInstallCompleted_Subtitle": "{0}을(를) 성공적으로 설치했어요!",
-
     "GameUpdateCompleted_Title": "{0}이(가) 업데이트 되었어요",
     "GameUpdateCompleted_Subtitle": "{0}이(가) 버전 {1}으로 성공적으로 업데이트 되었어요!",
-
     "GamePreloadCompleted_Title": "{0}의 사전 다운로드 패키지가 다운로드되었어요!",
-
     "GameRepairCheckCompleted_Title": "게임을 복구하기 위한 검사를 완료했어요",
     "GameRepairCheckCompletedFound_Subtitle": "{0}개의 파일에 업데이트 또는 복구가 필요해요. 이 알림을 클릭해 런처를 열어주세요.",
     "GameRepairCheckCompletedNotFound_Subtitle": "파일을 업데이트 하거나 복구할 필요가 없어요.",
-
     "GameRepairDownloadCompleted_Title": "게임을 복구하기 위한 파일 다운로드가 완료되었어요",
     "GameRepairDownloadCompleted_Subtitle": "{0}개의 파일이 성공적으로 업데이트 혹은 복구 되었어요.",
-
     "CacheUpdateCheckCompleted_Title": "캐시 업데이트 확인을 완료했어요",
     "CacheUpdateCheckCompletedFound_Subtitle": "{0}개의 캐시 파일에 업데이트가 필요해요. 이 알림을 클릭해 런처를 열어주세요.",
     "CacheUpdateCheckCompletedNotFound_Subtitle": "캐시 파일을 업데이트할 필요가 없어요.",
-
     "CacheUpdateDownloadCompleted_Title": "캐시를 업데이트 하기 위한 다운로드를 완료했어요",
     "CacheUpdateDownloadCompleted_Subtitle": "{0}개의 캐시 파일을 성공적으로 업데이트 했어요.",
-
     "GenericClickNotifToGoBack_Subtitle": "이 알림을 클릭하면 런처로 돌아 갈 수 있어요.",
-
     "OOBE_WelcomeTitle": "Collapse Launcher에 오신 것을 환영해요!",
     "OOBE_WelcomeSubtitle": "지금 {0} - {1} 게임을 선택 중 이에요. 더 많은 게임이 기다리고 있으니, 한번 둘러보죠!",
-
     "LauncherUpdated_NotifTitle": "런처가 최신 상태에요!",
     "LauncherUpdated_NotifSubtitle": "런처가 {0} 버전으로 업데이트 되었어요. \"{1}\" 에서 \"{2}\" 를 클릭하면 어떤 부분이 바뀌었는지 볼 수 있어요."
   }

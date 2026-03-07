@@ -2,7 +2,6 @@
   "LanguageName": "Español (LATAM)",
   "LanguageID": "es-419",
   "Author": "BloodDragooner, d-l-n, IhoFox, Laly",
-
   "_StartupPage": {
     "SelectLang": "Seleccione su idioma",
     "SelectLangDesc": "Por favor selecciona tu idioma para iniciar este launcher por primera vez!",
@@ -57,7 +56,6 @@
     "Title1": "Bienvenido a",
     "Title2": "Collapse Launcher"
   },
-
   "_DisconnectedPage": {
     "PageTitle": "Página de Desconexión",
     "Header1": "Tu Internet está",
@@ -71,7 +69,6 @@
     "RegionChangerTitle": "Cambiar la Región del Juego",
     "RegionChangerSubtitle": "En caso de que estés atascado en esta página"
   },
-
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Error No Procesado",
     "UnhandledSubtitle1": "La siguiente excepción a causado un Error No Procesado:",
@@ -87,12 +84,10 @@
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior",
-
     "CustomBackground_NotFound": "¡No se encontró el archivo de fondo personalizado! Se usara la imagen por defecto",
     "CustomBackground_RegionalTag": "Fondo Región",
     "CustomBackground_GlobalTag": "Fondo Global"
   },
-
   "_MainPage": {
     "PageTitle": "Página Principal",
     "RegionChangeConfirm": "Se cambiará la región del juego. ¿Deseas continuar?",
@@ -112,10 +107,8 @@
     "NavigationUtilities": "Utilidades",
     "Initializing": "Iniciando",
     "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
-    "LoadingGameConfiguration": "Cargando Ajustes del Juego",
-    "LoadingBackgroundImage": "Loading Background Image"
+    "LoadingGameConfiguration": "Cargando Ajustes del Juego"
   },
-
   "_HomePage": {
     "PageTitle": "Launcher",
     "PreloadTitle": "¡La precarga está disponible!",
@@ -147,10 +140,8 @@
     "UpdateSdkUpdateTooltip": "Actualizar SDK: v{0} -> v{1}",
     "InstallPluginTooltip": "Instalar Plugin: {0} v{1}",
     "UpdatePluginTooltip": "Actualizar Plugin: {0} v{1} -> v{2}",
-
     "GameStatusPlaceholderComingSoonBtn": "Próximamente",
     "GameStatusPlaceholderPreRegisterBtn": "¡Pre-regístrate ahora!",
-
     "GameSettingsBtn": "Ajustes Rápidos",
     "GameSettings_Panel1": "Configuración Rápida",
     "GameSettings_Panel1OpenGameFolder": "Abrir Carpeta del Juego",
@@ -177,7 +168,6 @@
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
-
     "GamePlaytime_Panel1": "Editar tiempo de juego",
     "GamePlaytime_Idle_Panel1Hours": "Horas",
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
@@ -197,39 +187,31 @@
     "GamePlaytime_Stats_Daily": "Hoy",
     "GamePlaytime_Stats_Weekly": "Semana",
     "GamePlaytime_Stats_Monthly": "Mes",
-
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Anuncios",
     "PostPanel_Info": "Información",
     "PostPanel_NoNews": "¿Qué?\n¿No hay noticias hoy?",
-
     "CommunityToolsBtn": "Herramientas",
     "CommunityToolsBtn_OfficialText": "Oficiales",
     "CommunityToolsBtn_CommunityText": "De la Comunidad",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}",
-
     "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo",
-
     "Exception_DownloadTimeout1": "Se supero el tiempo de espera al intentar instalar {0}",
     "Exception_DownloadTimeout2": "¡Verifica la estabilidad de tu conexión! Si la velocidad de tu internet es lenta, disminuye el numero de Hilos de Descarga.",
     "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!",
-
     "GameStateInvalid_Title": "¡Directorio de Datos de Juego/Nombre del Ejecutable/Config.ini/App.Info es inválido!",
     "GameStateInvalid_Subtitle1": "Collapse detectó que las propiedades de archivo del juego son inválidas para la región:\r\n",
     "GameStateInvalid_Subtitle2": "Es recomendado hacer una reparación para que el launcher detecte el juego correctamente",
     "GameStateInvalid_Subtitle3": "Haz clic en \"",
     "GameStateInvalid_Subtitle4": "\" para reparar las propiedades o clic en \"",
     "GameStateInvalid_Subtitle5": "\" para cancelar la operación.",
-
     "GameStateInvalidFixed_Title": "¡Se han corregido con éxito los archivos de juego!",
     "GameStateInvalidFixed_Subtitle1": "Se han corregido las propiedades para la región:",
     "GameStateInvalidFixed_Subtitle2": "Por Favor, realiza un \"",
     "GameStateInvalidFixed_Subtitle3": "\" en el menú de \"",
     "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados.",
-
     "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
     "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo.",
-
     "BgContextMenu_SaveCurrentBgText": "Guardar Imagen Actual",
     "BgContextMenu_SaveCurrentBgTooltip": "Guardar los archivos tanto del overlay actual (si está disponible) como la imagen/vídeo de fondo.",
     "BgContextMenu_SaveAllBgText": "Guardar Todas Las Imágenes",
@@ -258,7 +240,6 @@
     "BgContextMenu_FolderSelectSaveCurrentBg": "Guardar Fondo actual a una carpeta",
     "BgContextMenu_FolderSelectSaveAllBg": "Guarda todos los fondos actuales a una carpeta"
   },
-
   "_GameRepairPage": {
     "PageTitle": "Reparar Juego",
     "ListCol1": "Nombre",
@@ -301,7 +282,6 @@
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
     "OverlayGameRunningSubtitle": "¡Por favor cierra el juego primero para usar esta característica!"
   },
-
   "_CachesPage": {
     "PageTitle": "Actualizar Cachés",
     "ListCol1": "Nombre",
@@ -332,14 +312,11 @@
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
     "OverlayGameRunningSubtitle": "¡Por favor cierra el juego primero para usar esta característica!"
   },
-
   "_CutscenesPage": {
     "PageTitle": "Escenas"
   },
-
   "_GameSettingsPage": {
     "PageTitle": "Ajustes del Juego",
-
     "Graphics_Title": "Ajustes de Gráficos",
     "Graphics_ResolutionPanel": "Resolución del juego",
     "Graphics_Borderless": "Modo Ventana Sin Bordes",
@@ -349,8 +326,6 @@
     "Graphics_ResizableWindowTooltip": "Solo disponible cuando el modo Pantalla Completa está deshabilitado",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
     "Graphics_ResCustom": "Usar Resolución Personalizada",
-    "Graphics_ResCustomW": "W",
-    "Graphics_ResCustomH": "H",
     "Graphics_ResPrefixFullscreen": "{0}x{1} Pantalla Completa",
     "Graphics_ResPrefixWindowed": "{0}x{1} Ventana",
 
@@ -361,12 +336,10 @@
     "Graphics_FPSPanel": "FPS máximo",
     "Graphics_FPSInCombat": "En Combate",
     "Graphics_FPSInMenu": "Menú Principal",
-
     "Graphics_APIPanel": "API de Gráficos",
     "Graphics_APIHelp1": "Hay pocos modos API disponibles para este juego, incluyendo:",
     "Graphics_APIHelp2": "Aviso:",
     "Graphics_APIHelp3": "Usar DirectX 12 puede causar fallos en algunos escenarios, ya que el juego no fue compilado nativamente con la API de DirectX 12",
-
     "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "Graphics_Preset": "Ajustes Gráficos Predefinidos",
     "Graphics_Render": "Calidad de Renderizado",
@@ -379,23 +352,19 @@
     "Graphics_FXHQ": "Alta Calidad",
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Distorción",
-
     "Graphics_APHO2Panel": "Ajustes gráficos para APHO2 y capítulos nuevos",
     "Graphics_APHO2GI": "Iluminación Global",
     "Graphics_APHO2VL": "Iluminación Volumétrica",
     "Graphics_APHO2AO": "Oclusión Ambiental",
     "Graphics_APHO2LOD": "Nivel de Detalle",
-
     "Graphics_ParticleQuality": "Calidad de Partículas",
     "Graphics_LightingQuality": "Calidad de Iluminación",
     "Graphics_PostFXQuality": "Calidad de Post-FX",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_CharacterQuality": "Calidad de Personajes",
     "Graphics_WeatherQuality": "Calidad del Clima",
-
     "Graphics_Legacy_Title": "Ajustes de Legado",
     "Graphics_Legacy_Subtitle": "Estos ajustes no están presentes en el juego y puede que no tengan ningún efecto.",
-
     "SpecDisabled": "Deshabilitado",
     "SpecCustom": "Personalizada",
     "SpecLow": "Bajo",
@@ -419,7 +388,6 @@
     "Audio_Elf": "Volumen de la Voz del Elfo",
     "Audio_Cutscenes": "Volumen de las Escenas",
     "Audio_Mute": "Silenciar Audio",
-
     "ApplyBtn": "Aplicar Ajustes",
     "SettingsApplied": "¡Se guardaron tus cambios!",
     "SettingsRegExported": "¡El registro ha sido exportado!",
@@ -428,29 +396,24 @@
     "SettingsRegImportTitle": "Elije el archivo de Registro de Collapse...",
     "SettingsRegErr1": "No se ha elegido ningun archivo.",
     "SettingsRegErr2": "¡El encabezado del archivo de Registro de Collapse no es válido!",
-
     "RegImportExport": "Importar/Exportar Archivo de Registro",
     "RegExportTitle": "Exportar",
     "RegExportTooltip": "Exportar claves de registro a un archivo de Registro de Collapse",
     "RegImportTitle": "Importar",
     "RegImportTooltip": "Importar claves de registro de un archivo de Registro de Collapse",
-
     "OverlayNotInstalledTitle": "¡No puedes usar esta característica porque la región no está instalada o necesita ser actualizada!",
     "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del launcher del juego!",
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
     "OverlayGameRunningSubtitle": "¡Por favor, cierra el juego primero para usar esta característica!",
     "OverlayFirstTimeTitle": "¡Nunca has jugado este juego!",
     "OverlayFirstTimeSubtitle": "Por favor, ejecuta el juego primero para generar los archivos necesarios, luego vuelve aquí para usar esta función.",
-
     "CustomArgs_Title": "Comandos Personalizados de inicio (Avanzado)",
     "CustomArgs_Subtitle": "Argumentos de Arranque",
     "CustomArgs_Footer1": "Para obtener más información, consulta el",
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver más parámetros.",
-
     "GameBoost": "Aumentar Prioridad del Juego",
     "MobileLayout": "Usar Diseño de Móviles",
-
     "Advanced_Title": "Ajustes Avanzados",
     "Advanced_Subtitle1": "¡El equipo de Collapse Launcher",
     "Advanced_Subtitle2": "NO ES RESPONSABLE",
@@ -462,15 +425,12 @@
     "Advanced_GLC_PreLaunch_Delay": "Retrasar Inicio del Juego (ms)",
     "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
     "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego",
-
     "Advanced_RunWithExplorerAsParent_Title": "Iniciar Juego con Explorer como Proceso Principal",
     "Advanced_RunWithExplorerAsParent_Subtitle": "Desactivar para compatibilidad con Steam Input y Overlay",
     "Advanced_RunWithExplorerAsParent_Warning": "ADVERTENCIA: ¡Los inicios de sesión pueden bloquearse cuando se desactiva!"
   },
-
   "_SettingsPage": {
     "PageTitle": "Ajustes de la Aplicación",
-
     "Debug": "Ajustes adicionales",
     "Debug_Console": "Mostrar Consola",
     "Debug_IncludeGameLogs": "Guardar registros de juego en Collapse (podría contener datos sensibles)",
@@ -478,34 +438,25 @@
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Esta configuración está desactivada debido a que la variable 'DISABLE_SENTRY' está establecida como true.",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
     "Debug_CustomDialogBtn": "[DBG] Generar diálogo personalizado",
-
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
     "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
     "ChangeRegionWarning_Warning": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
-
     "Language": "Idioma de la Aplicación",
     "LanguageEntry": "{0} por {1}",
     "AppLang_ApplyNeedRestart": "*Necesitas reiniciar la aplicación para que los cambios del idioma surtan efecto.",
-
     "AppThemes": "Temas de la Aplicación",
     "AppThemes_Default": "Predeterminado (Usar ajustes del sistema)",
     "AppThemes_Light": "Claro",
     "AppThemes_Dark": "Oscuro",
     "AppThemes_ApplyNeedRestart": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
-
     "IntroSequenceToggle": "Usar Animación de Inicio",
-
     "AppWindowSize": "Tamaño de la Ventana",
-    "AppWindowSize_Normal": "Normal",
     "AppWindowSize_Small": "Pequeño",
-
     "AppCDNRepository": "CDN del Repositorio",
-
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
     "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
     "AppBG_Note_Regional": "Los ajustes de fondo personalizados específicos por región se encuentran en el botón «Ajustes Rápidos» en la página de inicio.",
-
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
     "AppThreads_Extract": "Hilos de Extracción",
@@ -515,7 +466,6 @@
     "AppThreads_Help4": "0 (Autodetectar)",
     "AppThreads_Help5": "Este thread manejará el proceso de extracción/verificación mientras se instala/repara el juego.",
     "AppThreads_Help6": "Aviso: Esta configuración ya no funciona al instalar Honkai Impact 3rd.",
-
     "SophonSettingsTitle": "Ajustes Modo Sophon",
     "SophonHelp_Title": "¿Qué es el modo de descarga Sophon?",
     "SophonHelp_1": "\"Sophon\" es el nuevo modo de descarga introducido por HoYoVerse que permite descargar archivos en \"partes\" en vez de un gran archivo ZIP. Las ventajas son principalmente para las descargas y actualizaciones, al ser mas eficientes y necesitar menos espacio en disco.",
@@ -531,7 +481,6 @@
     "SophonToggle": "Habilitar Sophon en Regiones Soportadas",
     "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Usar todos los núcleos del CPU al aplicar la predescarga ",
     "SophonPredownPerfMode_Tooltip": "Habilitar esto establecerá al máximo los hilos de la CPU disponibles en tu sistema. Desactiva la opción si causa cualquier problema.",
-
     "AppThreads_Attention": "Precaución",
     "AppThreads_Attention1": "Antes de cambiar el valor de los",
     "AppThreads_Attention2": ", por favor considera ",
@@ -541,27 +490,15 @@
     "AppThreads_Attention6": "debido a que generaran diferencias durante el conteo de la sesión.",
     "AppThreads_AttentionTop1": "Los problemas a continuación ya no se producirán si tiene la configuración",
     "AppThreads_AttentionTop2": "habilitada.",
-
     "DiscordRPC": "Estado de actividad en Discord (Rich Presence)",
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
-
     "ImageBackground": "Ajustes Imagen de Fondo",
     "VideoBackground": "Ajustes Video de Fondo",
     "VideoBackground_IsEnableAudio": "Permitir Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
-    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
-    "VideoBackground_FFmpegInstallStatus": "Install Status:",
-    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
-    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
-    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
-    "VideoBackground_FFmpegInstallNote": "Note",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
-    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
-
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
     "Update_CheckBtn": "Buscar Actualización",
@@ -571,31 +508,23 @@
     "Update_LatestVer": "Estás usando la última versión.",
     "Update_SeeChangelog": "Ver los Últimos Cambios (Ingles)",
     "Update_ChangelogTitle": "Últimos Cambios",
-
     "AppFiles": "Gestión de Archivos",
     "AppFiles_OpenDataFolderBtn": "Abrir Carpeta de Datos de la Aplicación",
     "AppFiles_RelocateDataFolderBtn": "Reubicar Carpeta de Datos",
     "AppFiles_ClearLogBtn": "Limpiar Archivos Log",
     "AppFiles_ClearImgCachesBtn": "Borrar Archivos de Imagen",
-
     "AppFiles_ClearMetadataBtn": "Borrar metadatos y reiniciar",
     "AppFiles_ClearMetadataDialog": "¡Borrando metadatos de Collapse!",
     "AppFiles_ClearMetadataDialogHelp": "Limpiar los metadatos de Collapse causará que Collapse se reinicie de forma forzada. Solo utilízalo si tienes problemas con la carga de la región.\n¿Estás seguro?",
-
     "ReportIssueBtn": "Reportar un problema",
     "ContributePRBtn": "Contribuye con un Pull Request",
     "ContributorListBtn": "Colaboradores del Open Source",
     "HelpLocalizeBtn": "¡Ayúdanos a traducir Collapse!",
     "ShareYourFeedbackBtn": "Compártenos tus comentarios",
-
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2025",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
-
     "LicenseType": "Licencia MIT",
-
     "Disclaimer": "Aviso",
     "Disclaimer1": "Esta aplicación no está afiliada con",
     "Disclaimer2": "de ninguna forma",
@@ -604,21 +533,16 @@
     "DiscordBtn1": "¡Únete a nuestro Discord Armada!",
     "DiscordBtn2": "Discord de Honkai Impact 3rd",
     "DiscordBtn3": "¡Discord Oficial de Collapse!",
-
     "AppChangeReleaseChannel": "Cambiar Collapse a versión {0} ",
-
     "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
     "Enforce7ZipExtract": "Usar siempre 7-zip para Instalación/Actualización del Juego",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
-
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desactiva el carrusel en la página principal y reduce la prioridad de Collapse a Baja.",
-
     "KbShortcuts_Title": "Atajos de teclado",
     "KbShortcuts_ShowBtn": "Mostrar atajos",
     "KbShortcuts_ResetBtn": "Restablecer a los valores predeterminados",
-
     "AppBehavior_Title": "Comportamiento de la aplicación",
     "AppBehavior_PostGameLaunch": "Después de abrir el juego",
     "AppBehavior_PostGameLaunch_Minimize": "Minimizar",
@@ -627,7 +551,6 @@
     "AppBehavior_MinimizeToTray": "Minimizar a la bandeja",
     "AppBehavior_LaunchOnStartup": "Iniciar automáticamente Collapse cuando se inicie tu computadora.",
     "AppBehavior_StartupToTray": "Ocultar ventana de Collapse cuando se inicie automáticamente.",
-
     "Waifu2X_Toggle": "Usar Waifu2X",
     "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
     "Waifu2X_Help2": "¡Solo disponible para imágenes fijas!",
@@ -636,36 +559,29 @@
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
     "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
     "Waifu2X_Initializing": "Iniciando Waifu2X. Por favor espera un momento.",
-
     "NetworkSettings_Title": "Ajustes de Red",
     "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
-
     "NetworkSettings_Proxy_Hostname": "Hostname de Proxy",
     "NetworkSettings_Proxy_HostnameHelp1": "Representa la URL del Proxy a utilizar.",
     "NetworkSettings_Proxy_HostnameHelp2": "Collapse solo soporta proxy de tipo ",
     "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS y SOCKS4/4a/5",
     "NetworkSettings_Proxy_HostnameHelp4": "por el momento.",
-
     "NetworkSettings_ProxyWarn_UrlInvalid": "¡La URL ingresada no es valida!",
     "NetworkSettings_ProxyWarn_NotSupported": "¡El formato de Proxy no es soportado! Collapse solo soporta http://, https://, socks4://, socks4a:// y socks5://",
-
     "NetworkSettings_Proxy_Username": "Nombre de Usuario de Proxy",
     "NetworkSettings_Proxy_UsernamePlaceholder": "Ingresar Nombre de Usuario",
     "NetworkSettings_Proxy_UsernameHelp1": "Por Defecto:",
     "NetworkSettings_Proxy_UsernameHelp2": "[Vacío]",
     "NetworkSettings_Proxy_UsernameHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
-
     "NetworkSettings_Proxy_Password": "Contraseña de Proxy",
     "NetworkSettings_Proxy_PasswordPlaceholder": "Ingresar Contraseña de Proxy",
     "NetworkSettings_Proxy_PasswordHelp1": "Por Defecto:",
     "NetworkSettings_Proxy_PasswordHelp2": "[Vacío]",
     "NetworkSettings_Proxy_PasswordHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
-
     "NetworkSettings_ProxyTest_Button": "Probar Conectividad del Proxy",
     "NetworkSettings_ProxyTest_ButtonChecking": "Comprobando Conectividad...",
     "NetworkSettings_ProxyTest_ButtonSuccess": "¡Prueba de Conectividad fue exitosa!",
     "NetworkSettings_ProxyTest_ButtonFailed": "¡Prueba fallida! No se puede alcanzar el proxy",
-
     "NetworkSettings_Dns_Title": "Ajustes DNS personalizados",
     "NetworkSettings_Dns_ConnectionType": "Tipo conexión ",
     "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Puerto 53)",
@@ -687,28 +603,21 @@
     "NetworkSettings_Dns_ApplyingSettingsButton": "Validando y aplicando cambios...",
     "NetworkSettings_Dns_SettingsSavedButton": "¡Cambios Guardados!",
     "NetworkSettings_Dns_SettingsFailedButton": "¡Error al guardar los cambios!",
-
     "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
     "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
     "NetworkSettings_Http_SimulateCookies": "Permitir Simular HTTP Cookies",
     "NetworkSettings_Http_UntrustedHttps": "Permitir Certificados HTTPS que no son de confianza",
     "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)",
-
     "FileDownloadSettings_Title": "Ajuste de Descarga de Archivos",
     "FileDownloadSettings_SpeedLimit_Title": "Limitar Velocidad de Descarga",
     "FileDownloadSettings_SpeedLimit_NumBox": "Limite de Velocidad (en MiB)",
     "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
     "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
-    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading.",
-    "FileDownloadSettings_SpeedLimitHelp5": "",
-
     "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Solo para la Instalación, Reparación y actualización de Caché del juego.",
     "FileDownloadSettings_NewPreallocChunk_NumBox": "Tamaño de Partes (en MiB)",
     "FileDownloadSettings_NewPreallocChunkHelp1": "Por Defecto:",
     "FileDownloadSettings_NewPreallocChunkHelp2": "Rango del tamaño de trozo:",
-    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
     "FileDownloadSettings_NewPreallocChunkHelp4": "Cuando esta habilitado, el descargador reasignará dinámicamente el tamaño del archivo durante su descarga.",
     "FileDownloadSettings_NewPreallocChunkHelp5": "Esto permite al descargador escribir directamente trozos de datos en el archivo sin dividirlo en archivos separados.",
     "FileDownloadSettings_NewPreallocChunkHelp6": "Cuando se deshabilita, el launcher utilizará el antiguo método de asignación, en el que los trozos de datos se escribirán en archivos separados. También desactivará los ajustes",
@@ -716,7 +625,6 @@
     "FileDownloadSettings_NewPreallocChunkHelp8": ".",
     "FileDownloadSettings_NewPreallocChunkHelp9": "Aviso:",
     "FileDownloadSettings_NewPreallocChunkHelp10": "Esta función esta disponible solo para la instalación del juego (como la primera instalación, actualización y pre-descarga), reparación del juego y actualización de caché.",
-
     "FileDownloadSettings_BurstDownload_Title": "Modo de Descarga en Ráfagas",
     "FileDownloadSettings_BurstDownload_Subtitle": "Solo para Reparación del juego y Actualización de Caché.",
     "FileDownloadSettings_BurstDownloadHelp1": "Por Defecto:",
@@ -726,14 +634,12 @@
     "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
     "FileDownloadSettings_BurstDownloadHelp6": "y",
     "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial.",
-
     "Database_Title": "Base de datos sincronizable",
     "Database_ConnectionOk": "¡Base de datos conectada exitosamente!",
     "Database_ConnectFail": "Falla al conectar a la base de datos, mira los errores a continuación:",
     "Database_Toggle": "Habilitar Base de datos en línea",
     "Database_Url": "URL Base de datos",
     "Database_Url_Example": "Ejemplo: https://db-collapse.turso.io",
-    "Database_Token": "Token",
     "Database_UserId": "ID Usuario",
     "Database_GenerateGuid": "Generar UID",
     "Database_Validate": "Validar y Guardar Ajustes",
@@ -744,9 +650,7 @@
     "Database_ValidationChecking": "Validando Configuración...",
     "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí",
-
     "SearchPlaceholder": "Escribe para buscar...",
-
     "HttpCache_Title": "Ajustes de caché HTTP",
     "HttpCacheModeToggle": "Modo Caché",
     "HttpCacheModeToggle_Tooltip1": "Si se utiliza la caché de red al realizar peticiones HTTP a CDNs. Esto podría reducir el tiempo de carga de ciertas funciones.",
@@ -769,7 +673,6 @@
     "HttpCacheMaxExpireTimeBoxMinutes": "minutos",
     "HttpCacheClearButton": "Borrar caché de red",
     "HttpCacheClearedText": "¡Los cachés han sido borrados!",
-
     "Plugin_LoadedInfoTitle": "Información de los plugins cargados",
     "Plugin_OpenManagerBtn": "Abrir menú de gestión de plugins",
     "Plugin_AuthorBy": "por {0}",
@@ -784,25 +687,18 @@
     "Plugin_PluginInfoDescUnknown": "Sin Descripción",
     "Plugin_PluginInfoAuthorUnknown": "Autor Desconocido"
   },
-
   "_PluginManagerPage": {
     "PageTitle": "Menú de gestión de plugins",
-
     "FileDialogTitle": "Importar Plugin a Collapse Launcher",
-    "FileDialogFileFilter1": "Collapse Launcher Plugin",
-
     "LeftPanelNoPluginTitle": "¡No tienes ningún plugin cargado!",
     "LeftPanelNoPluginButton1": "¡Ve al",
     "LeftPanelNoPluginButton2": "Catálogo de Plugin",
     "LeftPanelNoPluginButton3": "para obtener mas!",
-
     "LeftPanelListViewTitle": "Información del plugin cargado",
-
     "ListViewMainActionButton1": "Comprobar actualizaciones de plugins",
     "ListViewMainActionButton1AltChecking": "Comprobando actualizaciones...",
     "ListViewMainActionButton2": "Descargar actualizaciones de plugins",
     "ListViewMainActionButton3": "Habilitar la actualización automática de plugins al iniciar",
-
     "ListViewItemContextButton1": "Desinstalar plugins seleccionados",
     "ListViewItemContextButton2": "Restaurar plugin seleccionados",
     "ListViewItemContextButton3": "Habilitar plugins seleccionados",
@@ -811,33 +707,25 @@
     "ListViewItemContextButton6": "Abrir carpeta de plugin actual",
     "ListViewItemContextButton7": "Abrir carpeta de plugins de Collapse Launcher",
     "ListViewItemContextButton8": "Actualizar plugin actual",
-
     "ListViewItemContentButton1": "Desinstalar plugin",
     "ListViewItemContentButton2": "Restaurar plugin",
-
     "ListViewItemContextButtonCheckUpdateOnly": "Comprobar solo actualizaciones",
     "ListViewItemContextButtonCheckAndDownloadUpdate": "Comprobar y descargar actualizaciones",
     "ListViewItemContextButtonDownloadUpdate": "Descargar actualización",
-
     "ListViewItemUpdateStatusAvailable": "¡Actualización disponible!",
     "ListViewItemUpdateStatusAvailableButton": "Actualizar a {0}",
     "ListViewItemUpdateStatusAvailableButtonUpdating": "Actualizando ({0}%)...",
     "ListViewItemUpdateStatusCompleted": "Tu plugin fue actualizado a {0}. ¡Por favor reinicia el launcher para aplicar los cambios!",
     "ListViewItemUpdateStatusChecking": "Buscando actualizaciones...",
     "ListViewItemUpdateStatusUpToDate": "¡Los plugins están actualizados!",
-
     "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
     "ListViewFooterRestartButton": "Reiniciar el Launcher",
-
     "RightPanelImportTitle1": "Haz clic para agregar el",
     "RightPanelImportTitle2": "o",
     "RightPanelImportTitle3": "aquí",
     "RightPanelImportTitle4": "¡En cualquier parte del cuadro está bien!"
   },
-
   "_Misc": {
-    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
-
     "UpdateCompleteTitle": "¡Actualización Completada!",
     "UpdateCompleteSubtitle": "¡Su versión del launcher ha sido actualizada a {0}! (Canal de Lanzamiento: {1})",
     "FeatureUnavailableTitle": "Esta característica no está disponible en este momento",
@@ -847,11 +735,7 @@
     "TimeRemainHMSFormatPlaceholder": "restantes",
     "Speed": "Velocidad: {0}/s",
     "SpeedTextOnly": "Velocidad:",
-    "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Velocidad: - /s",
-    "PerFromTo": "{0} / {1}",
-    "PerFromToPlaceholder": "- / -",
-
     "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
@@ -860,16 +744,12 @@
     "UseDefaultDir": "Usar directorio predeterminado",
     "MoveToDifferentDir": "Mover a otra ubicación ",
     "LocateDir": "Ubicar Directorio",
-    "Okay": "Okay",
-    "OkaySad": "Okay ;-;)",
-    "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, volver al menú",
     "Skip": "Omitir, nunca mostrar de nuevo",
     "Next": "Siguiente",
     "Prev": "Anterior",
     "Uninstall": "Desinstalar",
     "Install": "Instalar",
-
     "Yes": "Sí",
     "YesRedownload": "Sí, Redescargar",
     "YesResume": "Sí, Reanudar",
@@ -880,8 +760,6 @@
     "YesIHaveBeefyPC": "Sí, tengo una buena computadora! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Sí, Cambiar ubicación",
     "YesContinue": "Si, Continuar",
-
-    "No": "No",
     "NoStartFromBeginning": "No, Comenzar Desde Cero",
     "NoCancel": "No, Cancelar",
     "NoKeepInstallIt": "Seguir Instalándolo",
@@ -889,15 +767,12 @@
     "NoOtherLocation": "Seguir instalándolo",
     "NotSelected": "No Seleccionado",
     "ExtractAnyway": "¡Extraer de todas formas!",
-
     "IAcceptAgreement": "He leído y acepto el Acuerdo",
     "IDoNotAcceptAgreement": "No acepto el Acuerdo",
-
     "LangNameENUS": "Inglés",
     "LangNameJP": "Japonés",
     "LangNameCN": "Chino",
     "LangNameKR": "Coreano",
-
     "Downloading": "Descargando",
     "Updating": "Actualizando",
     "UpdatingAndApplying": "Actualizando y Aplicando",
@@ -923,20 +798,16 @@
     "Enabled": "Habilitado",
     "UseAsDefault": "Usar como Predeterminado",
     "Default": "Predeterminado",
-
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
-
     "CDNDescription_Github": "El repositorio oficial (principal) del launcher.",
     "CDNDescription_DigitalOcean": "Mirror del repositorio oficial (principal) alojado por DigitalOcean.",
     "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado por Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado por Bitbucket.",
     "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado por GitLab.",
     "CDNDescription_CNB": "Mirror del repositorio oficial (principal) alojado por CNB.",
-
     "LocateExecutable": "Localizar el Ejecutable",
     "OpenDownloadPage": "Abrir página de descarga",
-
     "DiscordRP_Play": "Jugando",
     "DiscordRP_InGame": "En el juego",
     "DiscordRP_Update": "Actualizando",
@@ -948,9 +819,7 @@
     "DiscordRP_Default": "Sin actividad",
     "DiscordRP_Ad": "- Con Collapse Launcher",
     "DiscordRP_Region": "Región:",
-
     "DownloadModeLabelSophon": "Modo Sophon",
-
     "Taskbar_PopupHelp1": "Haz clic para llevar Collapse al primer plano.",
     "Taskbar_PopupHelp2": "Hacer doble clic para alternar la visibilidad de las ventanas",
     "Taskbar_ShowApp": "Mostrar ventana de Collapse",
@@ -958,18 +827,10 @@
     "Taskbar_ShowConsole": "Mostrar ventana de consola de Collapse",
     "Taskbar_HideConsole": "Ocultar ventana de consola de Collapse en la barra de tareas",
     "Taskbar_ExitApp": "Salir de Collapse Launcher",
-
     "LauncherNameOfficial": "Launcher Oficial ",
-    "LauncherNameBHI3L": "BetterHi3Launcher",
-    "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
-
     "ImageCropperTitle": "Recortar Imagen",
-
-    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Sin Límite",
-    "IsBytesNotANumber": "= NaN",
-
     "MissingVcRedist": "Falta el Visual C/C++ Redistributable",
     "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema.",
     "ExceptionFeedbackBtn": "Cuéntanos lo que pasó",
@@ -979,28 +840,21 @@
     "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
     "ExceptionFeedbackTemplate_Message": "Después de esta línea, dinos qué ha pasado: (No hace falta incluir el mensaje de error, nosotros lo adjuntaremos por ti).",
-
     "Feedback": "Compártenos tus comentarios",
     "FeedbackSending": "Enviando tus comentarios...",
     "FeedbackSent": "¡Enviado con Éxito!",
     "FeedbackSendFailure": "¡Error al enviar tus comentarios! Compruebe los registros/consola para más información.",
-
     "Tag_Deprecated": "Obsoleto",
     "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
   },
-
   "_BackgroundNotification": {
     "LoadingTitle": "Cargando actividad...",
-    "Placeholder": "-",
-
     "CategoryTitle_Downloading": "Descargando el Juego: {0}",
     "CategoryTitle_DownloadingPreload": "Predescarga del Juego: {0}",
     "CategoryTitle_Updating": "Actualizando el Juego: {0}",
-
     "NotifBadge_Completed": "[Completado] {0}",
     "NotifBadge_Error": "[Error/Cancelado] {0}"
   },
-
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Advertencia: ¡Una actualización al Delta Patch ha sido detectada!",
     "DeltaPatchDetectedSubtitle": "El Delta Patch se utilizará para actualizar tu juego de {0} a {1}.\nRecuerda que puede que necesite descargar algunos archivos dentro del juego.\n\n¿Desea continuar?",
@@ -1054,7 +908,6 @@
     "InstallDataCorruptSubtitle": "Uno de los archivos descargados está dañado.\n\nHash del servidor: {0}\nHash descargado: {1}\n\n¿Deseas redescargar el archivo?",
     "InstallCorruptDataAnywayTitle": "Extraer Archivos Corruptos ",
     "InstallCorruptDataAnywaySubtitle1": "Estas a punto de extraer estos datos corruptos:",
-    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
     "InstallCorruptDataAnywaySubtitle3": ". Ten en cuenta que extraer estos archivos puede fallar o hacer que el juego no funcione correctamente\r\n\r\n¿Estas seguro que quieres extraer estos datos?",
     "InstallDataDownloadResumeTitle": "Reanudar la Descarga?",
     "InstallDataDownloadResumeSubtitle": "Has descargado {0}/{1} del juego anteriormente.\n\n¿Deseas continuar la descarga?",
@@ -1086,19 +939,15 @@
     "CookbookLocateSubtitle5": "para ubicar el archivo de Cookbook descargado antes de continuar.\n\n",
     "CookbookLocateSubtitle6": "Aviso:\r\n",
     "CookbookLocateSubtitle7": "Aquí está el nombre del archivo de Cookbook que necesitas descargar:\n",
-
     "PrivilegeMustRunTitle": "¡Collapse requiere elevación de privilegios!",
     "PrivilegeMustRunSubtitle": "Collapse requiere privilegios administrativos para funcionar correctamente. ¿Deseas reiniciar Collapse y ejecutarlo como administrador?",
-
     "ReleaseChannelChangeTitle": "Cambiar Canal de Lanzamiento",
     "ReleaseChannelChangeSubtitle1": "Estás a punto de cambiar el canal de lanzamiento a:",
     "ReleaseChannelChangeSubtitle2": "Aviso:",
     "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
-
     "ForceUpdateCurrentInstallTitle": "Actualización forzada de la instalación actual ",
     "ForceUpdateCurrentInstallSubtitle1": "Estás a punto de realizar una actualización forzada de tu instalación:",
     "ForceUpdateCurrentInstallSubtitle2": "y recomendamos que cierres los juegos que estén abiertos en este momento.",
-
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
@@ -1109,10 +958,8 @@
     "InvalidPlaytimeSubtitle1": "La diferencia entre los tiempo de inicio y final resultaron en un numero negativo.",
     "InvalidPlaytimeSubtitle2": "Se guarda un valor de respaldo cada minuto y se utilizara en su lugar:",
     "InvalidPlaytimeSubtitle3": "Por favor, no realices ajustes al reloj de tu PC mientras estés en el juego. ",
-
     "LocateExePathTitle": "Localiza la Carpeta del Ejecutable",
     "LocateExePathSubtitle": "Por favor, selecciona la ubicacion del ejecutable de la aplicación:",
-
     "CannotUseAppLocationForGameDirTitle": "¡La carpeta no es válida!",
     "CannotUseAppLocationForGameDirSubtitle": "No puede utilizar esta carpeta ya que está siendo usada como una carpeta del sistema o usada para el ejecutable principal de la aplicación. ¡Por favor, elige otra carpeta!",
     "InvalidGameDirNewTitleFormat": "Ubicación Invalida: {0}",
@@ -1131,29 +978,22 @@
     "InvalidGameDirNew6Title": "No puedes seleccionar la carpeta Archivos de Programa o Archivos de Programa (x86)",
     "InvalidGameDirNew6Subtitle": "No puedes usar la carpeta Archivos de Programa o Archivos de Programa (x86) como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
     "FolderDialogTitle1": "Seleccionar Ubicación Instalación del Juego",
-
     "StopGameTitle": "Forzar el cierre del juego",
     "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
-
     "MeteredConnectionWarningTitle": "¡Conexión con límite de datos detectada!",
     "MeteredConnectionWarningSubtitle": "¡Se detectó que tu conexión a internet actual es 'Medida'! Continuar con el proceso de actualización puede generar cargos adicionales por parte de tu proveedor de internet. ¿Deseas continuar?",
-
     "ResetKbShortcutsTitle": "¿Seguro de que quieres resetear todos los atajos?",
     "ResetKbShortcutsSubtitle": "Esto significa que cada acceso directo se cambiará a su combinación de teclas predeterminada. \n\n¿Desea continuar?\n\nNota: Esto no afecta cómo funciona Collapse y aún puede cambiar la combinación de accesos directos accediendo al menú de Accesos directos del teclado.",
-
     "OperationErrorDiskSpaceInsufficientTitle": "¡El Espacio Disponible en Disco: {0} es insuficiente!",
     "OperationErrorDiskSpaceInsufficientMsg": "¡No tienes suficiente espacio libre para hacer el proceso en tu Unidad {2}!\r\n\r\nEspacio Disponible: {0}\r\nEspacio Requerido: {1}\r\n\r\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
-
     "OperationWarningNotCancellableTitle": "¡Precaución: Esta operación NO SE PUEDE CANCELAR!",
     "OperationWarningNotCancellableMsg1": "Deberías verificar que no tienes tareas pesadas corriendo en tu PC para evitar posibles problemas mientras el proceso se esté ejecutando. Recuerda que ",
     "OperationWarningNotCancellableMsg2": "NO PUEDES CANCELAR EL PROCESO",
     "OperationWarningNotCancellableMsg3": " mientras se está ejecutando!\r\n\r\nHace clic en \"",
     "OperationWarningNotCancellableMsg4": "\" para iniciar el proceso, o \"",
     "OperationWarningNotCancellableMsg5": "\" para cancelarlo.",
-
     "GenericWarningExceptionTitle": "Advertencia:",
     "GenericWarningExceptionSubtitle": "Esto no es un problema grave, pero creemos que deberíamos infórmate:",
-
     "ShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
     "ShortcutCreationConfirmSubtitle1": "El acceso directo se creara en la siguiente ubicación:",
     "ShortcutCreationConfirmSubtitle2": "Si ya existe un acceso directo con el mismo nombre en esta carpeta, será reemplazado.",
@@ -1164,7 +1004,6 @@
     "ShortcutCreationSuccessSubtitle3": "Aviso: ",
     "ShortcutCreationSuccessSubtitle4": " • Este acceso directo iniciará el juego después de cargar la región",
     "ShortcutCreationSuccessSubtitle5": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
-
     "SteamShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
     "SteamShortcutCreationConfirmSubtitle1": "Un acceso directo será añadido a todos los usuarios de Steam en este computador",
     "SteamShortcutCreationConfirmSubtitle2": "Si ya fue añadido, se verificaran los datos del acceso directo.",
@@ -1182,25 +1021,19 @@
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
     "SteamShortcutTitle": "Acceso directo de Steam",
     "SteamShortcutDownloadingImages": "Descargar Imágenes para Steam ({0}/{1})",
-
     "DownloadSettingsTitle": "Descargando Configuración",
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
-
     "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
     "CloseOverlay": "Cerrar Superposición (Overlay)",
-
     "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
     "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes.",
-
     "SophonIncrementUpdateUnavailTitle": "Actualización incremental no disponible: ¡La versión es demasiado obsoleta!",
     "SophonIncrementUpdateUnavailSubtitle1": "Tu versión del juego: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " es muy obsoleta",
     "SophonIncrementUpdateUnavailSubtitle3": " y la actualización incremental no está disponible para tu versión. Sin embargo, aún podrías actualizar tu juego volviendo a descargarlo desde cero.",
     "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso",
-
     "SophonAdditionalPkgAvailableUpdateTitle": "¡Paquetes disponibles para actualizar!",
     "SophonAdditionalPkgAvailableDownloadTitle": "Hay paquetes adicionales disponibles para descargar",
-
     "SophonAdditionalPkgAvailableSubtitle1": "Tu juego tiene paquetes adicionales que se pueden descargar. El tamaño de los archivos es:",
     "SophonAdditionalPkgAvailableSubtitle2": ". en total, es posible que necesite descargar:",
     "SophonAdditionalPkgAvailableSubtitle3": "de datos si deseas incluir los archivos adicionales.",
@@ -1213,16 +1046,13 @@
     "SophonAdditionalPkgSeeDetailsBtn": "Ver detalles de Datos Adicionales",
     "SophonAdditionalConfirmYesBtn": "Descargar Todo",
     "SophonAdditionalConfirmNoBtn": "Descargar Solo Base",
-
     "UACWarningTitle": "Advertencia: Detectado UAC deshabilitado",
     "UACWarningContent": "Desactivar el Control de cuentas de usuario (UAC) nunca es una buena idea. \nLa seguridad del SO se verá comprometida y es posible que el juego no funcione correctamente. \n\nHaz clic en \"Más información\" para ver cómo activar UAC. \nLa entrada relacionada es: Ejecución de todos los administradores en Administración modo de aprobación.",
     "UACWarningLearnMore": "Más información",
     "UACWarningDontShowAgain": "No mostrar de nuevo",
-
     "EnsureExitTitle": "Saliendo de la aplicación ",
     "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano.",
     "EnsureExitSubtitle2": "¿Estás seguro de que quieres salir?",
-
     "UserFeedback_DialogTitle": "Comparta su opinión",
     "UserFeedback_TextFieldTitleHeader": "Título",
     "UserFeedback_TextFieldTitlePlaceholder": "Escriba aquí el título...",
@@ -1235,18 +1065,15 @@
     "UserFeedback_SubmitBtn_Processing": "Procesando...",
     "UserFeedback_SubmitBtn_Completed": "¡Completado!",
     "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!",
-
     "PluginManagerUpdateAvailableTitle": "¡Tienes {0} Plugin(s) para ser actualizado(s)!",
     "PluginManagerUpdateAvailableSubtitle1": "Hay disponible {0} actualización(es) de plugin(s). Es necesario reiniciar el launcher para aplicar la actualización:",
     "PluginManagerUpdateAvailableSubtitle2": "¿Deseas reiniciar el Launcher?",
     "PluginManagerUpdateAvailableCancelBtn": "Más Tarde",
     "PluginManagerUpdateAvailableConfirmBtn": "¡Reiniciar Ahora!",
     "PluginManagerUpdateAvailableToManagerMenuBtn": "Ve a {0}",
-
     "LauncherRestartTitle": "Reiniciando Collapse Launcher",
     "LauncherRestartSubtitle1": "El launcher esta a punto de reiniciarse. Asegúrate de cerrar o cancelar cualquier tarea de fondo antes de seguir con el reinicio.",
     "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?",
-
     "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
     "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
     "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
@@ -1255,9 +1082,7 @@
     "PostInstallBehaviour_EnumHibernate": "Hibernar",
     "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
     "PostInstallBehaviour_EnumShutdown": "Apagar Equipo",
-
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Establecer píxeles para paralaje (Mín: {0}px, Máx: {1}px)",
-
     "Media_ExtNotSupported1": "Lo sentimos, pero la extensión del archivo de imagen/vídeo de fondo no es compatible.",
     "Media_ExtNotSupported2": "Ruta del Archivo/URL: {0}",
     "Media_ExtNotSupportedTitle": "El archivo de fondo no es compatible.",
@@ -1265,9 +1090,6 @@
     "Media_ImageWICNotSupportedTitle": "El archivo de imagen de fondo no es compatible",
     "Media_VideoMFNotSupportedFormatTypeUnknown": "Desconocido",
     "Media_VideoMFNotSupported1": "Collapse a detectado que el video de fondo no se puede reproducir debido a la falta de un decodificador. Mas detalles:",
-    "Media_VideoMFNotSupported2": "Video Codec FourCC: {0}",
-    "Media_VideoMFNotSupported3": "Video Codec GUID: {0}",
-    "Media_VideoMFNotSupported4": "Audio Codec GUID: {0}",
     "Media_VideoMFNotSupported5": "¿Se puede reproducir video/audio?: (Video: {0} | Audio: {1})",
     "Media_VideoMFNotSupported6": "Te sugerimos instalar los \"Media Foundation video/audio codecs\" haciendo click en \"{0}\" o usar FFmpeg haciendo click en el boton \"{1}\"",
     "Media_VideoMFNotSupported7": "Aviso:",
@@ -1276,7 +1098,6 @@
     "Media_VideoMFNotSupportedCopyDetailsBtn": "Copiar Detalles",
     "Media_VideoMFNotSupportedInstallMFCodecsBtn": "Instalar Media Foundation Codecs",
     "Media_VideoMFNotSupportedInstallFFmpegBtn": "Instalar y usar FFmpeg",
-
     "Media_VideoMFCodecPrepareTitle": "Preparando Media Foundation Codecs",
     "Media_VideoMFCodecPrepare1": "Collapse requiere códecs adicionales de \"Windows Media Foundation\" para reproducir videos de fondo u otros medios. Este proceso puede provocar falso positivos por parte de su antivirus, ya que utilizamos PowerShell para la instalación de estos códecs, por lo que le recomendamos desactivar su antivirus durante unos instantes.",
     "Media_VideoMFCodecPrepare2": "Estos códecs adicionales solo incluyen compatibilidad limitada con formatos de video/audio, entre los que se incluyen:",
@@ -1288,7 +1109,6 @@
     "Media_VideoMFCodecInstalledTitle": "¡Los códecs de Windows Media Foundation han sido instalados!",
     "Media_VideoMFCodecInstalled1": "Los códecs de Windows Media Foundation se instalaron correctamente. Por favor, reinicia tu equipo para que los códecs funcionen.",
     "Media_VideoMFCodecInstallingTitle": "Instalando Windows Media Foundation Codecs",
-
     "Media_VideoFFmpegCodecPrepareTitle": "Preparando FFmpeg",
     "Media_VideoFFmpegCodecPrepare1": "Collapse requiere FFmpeg para reproducir videos de fondo u otros medios. Puede descargar o utilizar un instalación existente.",
     "Media_VideoFFmpegCodecPrepare2": "Para continuar, haz clic en \"",
@@ -1304,7 +1124,6 @@
     "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "¡Instalación Existente de FFmpeg Detectada!",
     "Media_VideoFFmpegCodecPrepareLocateSuccess1": "Se a encontrado una instalación existente de FFmpeg en esta ubicación:",
     "Media_VideoFFmpegCodecInstallingTitle": "Instalando FFmpeg",
-
     "Agreement_ThirdPartyAgreementPreambleTitle": "Preámbulo",
     "Agreement_ThirdPartyAgreementPreamble1": "Collapse utiliza la siguiente biblioteca para habilitar una o varias de sus funciones.",
     "Agreement_ThirdPartyAgreementPreamble2": "Respetamos al propietario(s) de la siguiente biblioteca y, por lo tanto, cumplimos todas las normas mencionadas en este acuerdo.",
@@ -1312,7 +1131,6 @@
     "Agreement_ThirdPartyAgreementPreamble4": "\" para continuar, o \"",
     "Agreement_ThirdPartyAgreementPreamble5": "\" para cancelar."
   },
-
   "_FileMigrationProcess": {
     "PathActivityPanelTitle": "Moviendo: ",
     "SpeedIndicatorTitle": "Velocidad: ",
@@ -1326,7 +1144,6 @@
     "ChoosePathErrorPathNotExist": "¡Esta ubicación no existe!",
     "ChoosePathErrorPathNoPermission": "¡No tienes los permisos para acceder a esta carpeta! Por favor, selecciona otra ubicación."
   },
-
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Verificación de Integridad",
     "PreparePatchTitle": "Preparando Parche",
@@ -1335,7 +1152,6 @@
     "RepairFilesRequiredTitle": "{0} archivos deben ser reparados!",
     "RepairFilesRequiredSubtitle": "¡Tienes al menos {0} archivos ({1}) que deben ser reparados antes de actualizar!\n\nAviso: Este proceso puede tardar más de lo esperado (ya que depende de la estabilidad y el ancho de banda de la conexión). Considera usar una VPN si tienes velocidades de descarga lentas :)"
   },
-
   "_InstallConvert": {
     "PageTitle": "Conversión entre Versiones",
     "Step1Title": "Selecciona el Juego y la Obtención de sus Dependencias",
@@ -1362,15 +1178,12 @@
     "ConvertSuccessSubtitle": "¡La conversión de {0} a {1} se completo con éxito!",
     "CookbookDownloadTitle": "Descargando Receta",
     "CookbookDownloadSubtitle": "Descargando receta para conversión de {0} a {1}",
-
     "CookbookFileBrowserFileTypeCategory": "{0} a {1} Cookbook",
-
     "CancelBtn": "Cancelar Conversión",
     "CancelMsgTitle": "Cancelando Conversión...",
     "CancelMsgSubtitle1": "Estás por cancelar el proceso de conversión. Cualquier cambio realizado durante el proceso va a ser anulado.\n\n¿Estás seguro?",
     "CancelMsgSubtitle2": "Estás por cancelar el proceso de conversión pero el juego ya fue convertido a {0}. Se omitirá el proceso de \"verificación de la integridad de la conversión\".\n\n¿Estás seguro?"
   },
-
   "_InstallMigrateSteam": {
     "PageTitle": "Conversión de Steam",
     "Step1Title": "Chequeando Permisos de la Carpeta",
@@ -1402,7 +1215,6 @@
     "InnerConvertFile2": "Descargando {0} [{1}/{2}]: {3}",
     "InnerConvertFile3": "Descargando {0} [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
-
   "_InstallMigrate": {
     "PageTitle": "Migración del Juego",
     "Step1Title": "El proceso comenzará en 5 segundos. Por favor, acepte el de ejecución de Administrador para iniciar el proceso de migración",
@@ -1413,7 +1225,6 @@
     "PageFooter2": "NO CAMBIES",
     "PageFooter3": "cambies a otra página o cierres el launcher mientras el proceso se está ejecutando"
   },
-
   "_UpdatePage": {
     "PageTitle1": "NUEVA",
     "PageTitle2": "ACTUALIZACIÓN DISPONIBLE!",
@@ -1427,15 +1238,12 @@
     "UpdateNowBtn": "Actualizar Ahora",
     "LoadingRelease": "Obteniendo Notas de Versión...",
     "LoadingReleaseFailed": "Error al obtener las Notas de versión.\n{0}",
-
     "UpdateHeader1": "Progreso:",
     "UpdateHeader2": "Tiempo Transcurrido:",
     "UpdateHeader3": "Tamaño de la Descarga:",
     "UpdateHeader4": "Velocidad:",
     "UpdateHeader5PlaceHolder": "Descargando Actualización [- / -]:",
-
     "UpdateForcedHeader": "El launcher será actualizado forzosamente debido a cambios urgentes para asegurar el funcionamiento correcto ",
-
     "UpdateStatus1": "Obteniendo Actualización:",
     "UpdateMessage1": "Conectándose al Repositorio de Actualizaciones...",
     "UpdateStatus2": "Verificando:",
@@ -1444,18 +1252,14 @@
     "UpdateMessage4": "Volviendo al alcance del launcher del juego en breve...",
     "UpdateStatus5": "¡La versión ha sido actualizada a {0}!",
     "UpdateMessage5": "El Launcher se reabrirá en breve...",
-
     "UpdateCountdownMessage1": "El Launcher se actualizará en {0}...",
     "UpdateCountdownMessage2": "(Haz clic",
     "UpdateCountdownMessage3": "para abortar la cuenta regresiva)",
-
     "ApplyUpdateTitle1": "Actualizando",
-    "ApplyUpdateTitle2": "Collapse Launcher",
     "ApplyUpdateCDNSelectorTitle": "Elige un CDN para actualizar ",
     "ApplyUpdateCDNSelectorSubtitle": "¡Selecciona un CDN y haz clic en \"{0}\" para comenzar!",
     "ApplyUpdateCDNSelectorSubtitleCount": "El CDN se seleccionara automáticamente en: {0}",
     "ApplyUpdateUpdateNowBtn": "¡Actualizar Ahora!",
-
     "ApplyUpdateUpdateVersionTitle": "Actualización:",
     "ApplyUpdateUpdateChannelTitle": "Canal:",
     "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Desconocido",
@@ -1463,7 +1267,6 @@
     "ApplyUpdateMiscIdle": "Inactivo",
     "ApplyUpdateMiscNone": "Ninguna",
     "ApplyUpdateVersionSeparator": "a",
-
     "ApplyUpdateErrCollapseRunTitle": "¡Por favor, cierra Collapse antes de actualizar! ",
     "ApplyUpdateErrCollapseRunSubtitle": "Esperando que Collapse se cierre...",
     "ApplyUpdateErrCollapseRunTitleWarnBox": "¡Una instancia de Collapse Launcher sigue funcionando!",
@@ -1472,13 +1275,8 @@
     "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "Hemos detectado que tienes una instalación corrupta.\r\n\r\nHaz clic en \"Si\" para comenzar la reparación antes de instalar la actualización o clic en \"No\" para solo instalar la actualización.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\nEl archivo \"release\" no tiene el string \"stable\" o \"preview\" en él",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Por favor verifica el archivo \"release\" e intenta de nuevo",
-
-    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
-    "ApplyUpdateDownloadSpeed": "{0}/s",
-    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
     "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s restantes",
     "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s restantes",
-
     "ApplyUpdateTaskLegacyVerFoundTitle": "¡Se detectó una instalación antigua de Collapse v{0}! ",
     "ApplyUpdateTaskLegacyVerFoundSubtitle1": "Detectamos que tienes Collapse v{0} instalado en tu PC.",
     "ApplyUpdateTaskLegacyVerFoundSubtitle2": "El Actualizador necesita limpiar todos los archivos antiguos de la carpeta.\r\n",
@@ -1487,41 +1285,32 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Haz clic en \"Sí\" de nuevo para confirmar.",
     "ApplyUpdateTaskLegacyCleanupCount": "La limpieza de archivos comenzara en {0}...",
     "ApplyUpdateTaskLegacyDeleting": "Eliminando: {0}...",
-
     "ApplyUpdateTaskDownloadingPkgTitle": "Descargando paquete",
     "ApplyUpdateTaskExtractingPkgTitle": "Extrayendo paquete ",
     "ApplyUpdateTaskRemoveOldPkgTitle": "Removiendo paquete antiguo ",
     "ApplyUpdateTaskMovingExtractFileTitle": "Moviendo los archivos extraídos",
-
     "ApplyUpdateTaskLauncherUpdatedTitle": "¡El Launcher fue actualizado a: {0}!",
     "ApplyUpdateTaskLauncherUpdatedSubtitle": "Iniciando Collapse en {0}...",
-
     "ApplyUpdateTaskError": "ERROR:\r\n¡Ocurrió un error mientras se actualizaba!\r\n{0}"
   },
-
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "¡Una actualización de Metadatos del Launcher está disponible!",
     "NotifMetadataUpdateSubtitle": "¡Hay nuevos metadatos para el launcher! Este proceso es automático y se realiza para asegurar que el launcher pueda comunicarse correctamente con los servidores de miHoYo/HoYoverse. ¡La actualización empezará pronto!",
     "NotifMetadataUpdateBtn": "Actualizar Metadatos",
     "NotifMetadataUpdateBtnCountdown": "Actualizando metadatos en: {0}",
     "NotifMetadataUpdateBtnUpdating": "Actualizando Metadatos, por favor espera...",
-
     "NotifFirstWelcomeTitle": "¡Bienvenido a Collapse!",
     "NotifFirstWelcomeSubtitle": "Para empezar, haz clic en el botón \"{0}\" para ver cómo instalar o migrar un juego existente.",
     "NotifFirstWelcomeBtn": "Visita la Wiki En GitHub",
-
     "NotifPreviewBuildUsedTitle": "¡Estás usando una Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\". ¡Gracias!",
     "NotifPreviewBuildUsedBtn": "Enviar un Problema",
-
     "NotifKbShortcutTitle": "¡Una nueva función ha llegado!",
     "NotifKbShortcutSubtitle": "Estamos introduciendo una nueva forma de navegar por Collapse, Atajos de teclado.\n¡Ahora puedes usar tu teclado para acceder más rápidamente a algunas funcionalidades!\n\n¿Quieres saber más?\nIntenta usar CTRL + Tab o haz clic en el botón de abajo.",
     "NotifKbShortcutBtn": "Mostrar todos los atajos"
   },
-
   "_StarRailGameSettingsPage": {
     "PageTitle": "Ajustes del Juego",
-
     "Graphics_Title": "Ajustes Gráficos",
     "Graphics_ResolutionPanel": "Resolución del Juego",
     "Graphics_Fullscreen": "Pantalla Completa",
@@ -1531,11 +1320,8 @@
     "Graphics_ResCustomTooltip": "Resolución Personalizada solo puede ser usada cuando Redimensionar Ventana esta habilitado",
     "Graphics_ResCustomW": "An",
     "Graphics_ResCustomH": "Al",
-
-    "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "¡120 FPS es EXPERIMENTAL! Usarlo con cuidado, bajo tu propio riesgo.",
     "Graphics_FPS_Help2": "Ajustar los FPS a 120 ya no provoca que el menú deje de funcionar, pero cambiar los FPS en el juego a un valor inferior ya no funcionará.\nSi utilizas la opción de 120 FPS, deberás usar Collapse para cambiar la Configuración de gráficos del juego.",
-    "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "Vsync no está disponible para 120 FPS",
     "Graphics_RenderScale": "Escala de Renderizado",
     "Graphics_ResolutionQuality": "Calidad de Resolución",
@@ -1547,16 +1333,12 @@
     "Graphics_BloomQuality": "Calidad de Bloom",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
-    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
-
     "Graphics_DLSS_UHP": "Ultra Rendimiento",
     "Graphics_DLSS_Perf": "Rendimiento",
     "Graphics_DLSS_Balanced": "Balanceado",
     "Graphics_DLSS_Quality": "Calidad",
-    "Graphics_DLSS_DLAA": "DLAA",
-
     "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Habilitado",
     "SpecDisabled": "Desactivado",
@@ -1565,30 +1347,25 @@
     "SpecMedium": "Medio",
     "SpecHigh": "Alto",
     "SpecVeryHigh": "Muy Alto",
-
     "ApplyBtn": "Aplicar cambios",
     "SettingsApplied": "¡Se guardaron los cambios!",
-
     "OverlayNotInstalledTitle": "¡No puedes utilizar esta función debido a que la región no esta instalada o necesita ser actualizada!",
     "OverlayNotInstalledSubtitle": "Por favor, descarga/actualiza el juego primero desde la pagina principal!",
     "OverlayGameRunningTitle": "¡El juego esta iniciado!",
     "OverlayGameRunningSubtitle": "¡Por favor, cierra el juego antes de utilizar esta función!",
     "OverlayFirstTimeTitle": "¡Nunca has jugado antes a este juego!",
     "OverlayFirstTimeSubtitle": "Por favor, inicia el juego para generar los archivos necesarios, luego vuelve aquí para usar esta función.",
-
     "CustomArgs_Title": "Comandos Personalizados de inicio (Avanzado)",
     "CustomArgs_Subtitle": "Argumentos de Arranque",
     "CustomArgs_Footer1": "Para obtener más información, consulta el",
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver mas parámetros.",
-
     "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Principal",
     "Audio_BGM": "Volumen BGM",
     "Audio_SFX": "Volumen Efectos de Sonido",
     "Audio_VO": "Volumen Voces",
     "Audio_Mute": "Silenciar Audio",
-
     "Language": "Ajustes de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
@@ -1599,10 +1376,8 @@
     "VO_jp": "Japones",
     "VO_kr": "Coreano"
   },
-
   "_GenshinGameSettingsPage": {
     "PageTitle": "Ajustes del Juego",
-
     "Graphics_Title": "Ajustes Gráficos",
     "Graphics_ResolutionPanel": "Resolución del juego",
     "Graphics_Fullscreen": "Pantalla Completa",
@@ -1612,21 +1387,16 @@
     "Graphics_ResCustom": "Usar Resolución Personalizada",
     "Graphics_ResCustomW": "An",
     "Graphics_ResCustomH": "Al",
-
-    "Graphics_Gamma": "Gamma",
-    "Graphics_FPS": "FPS",
     "Graphics_RenderScale": "Escala de Renderizado",
     "Graphics_ShadowQuality": "Calidad de Sombras",
     "Graphics_VisualFX": "Efectos Visuales",
     "Graphics_SFXQuality": "Calidad de SFX",
     "Graphics_EnvDetailQuality": "Detalle de Escena",
-    "Graphics_VSync": "VSync",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_VolFogs": "Niebla volumétrica",
     "Graphics_VolFogs_ToolTip": "¡Requiere que la calidad de sombras se establezca en Medio o superior!",
     "Graphics_ReflectionQuality": "Reflejos",
     "Graphics_MotionBlur": "Desenfoque de movimiento",
-    "Graphics_BloomQuality": "Bloom",
     "Graphics_CrowdDensity": "Densidad de personas",
     "Graphics_SubsurfaceScattering": "Dispersión subsuperficial",
     "Graphics_TeammateFX": "Efectos de compañeros",
@@ -1637,7 +1407,6 @@
     "Graphics_GlobalIllumination_Help2": "Más información (eng)",
     "Graphics_DynamicCharacterResolution": "Resolución de Carácter Dinámico",
     "Graphics_DynamicCharacterResolution_Tooltip": "¡Sólo para hardware compatible!",
-    "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Habilitar HDR",
     "Graphics_HDR_NotSupported1": "Tu pantalla no es compatible con HDR.",
     "Graphics_HDR_NotSupported2": "¡Se requiere un monitor compatible con HDR!",
@@ -1651,7 +1420,6 @@
     "Graphics_HDR_UiBrightness_Help": "Controla qué tan brillantes deben ser los elementos de la interfaz de usuario.",
     "Graphics_HDR_SceneBrightness": "Brillo del paisaje",
     "Graphics_HDR_SceneBrightness_Help": "Controla qué tan brillante debería ser un paisaje.",
-
     "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Activado",
     "SpecDisabled": "Desactivado",
@@ -1662,33 +1430,27 @@
     "SpecVeryHigh": "Muy Alto",
     "SpecExtreme": "Extremo",
     "SpecPartiallyOff": "Parcialmente apagado",
-
     "ApplyBtn": "Aplicar Ajustes",
     "SettingsApplied": "¡Se guardaron los cambios!",
-
     "OverlayNotInstalledTitle": "¡No puedes utilizar esta función debido a que la región no esta instalada o necesita ser actualizada!",
     "OverlayNotInstalledSubtitle": "Por favor, descarga/actualiza el juego primero desde la pagina principal!",
     "OverlayGameRunningTitle": "¡El Juego Está Corriendo!",
     "OverlayGameRunningSubtitle": "¡Por favor, cierra el juego antes de utilizar esta función!",
     "OverlayFirstTimeTitle": "¡Nunca has jugado antes a este juego!",
     "OverlayFirstTimeSubtitle": "Por favor, inicia el juego para generar los archivos necesarios, luego vuelve aquí para usar esta función.",
-
     "CustomArgs_Title": "Comandos Personalizados de inicio (Avanzado)",
     "CustomArgs_Subtitle": "Argumentos de Arranque",
     "CustomArgs_Footer1": "Para más información sobre los Argumentos de Arranque, por favor revisa el",
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver mas parámetros.",
-
     "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Principal",
     "Audio_BGM": "Volumen BGM",
     "Audio_SFX": "Volumen Efectos de Sonido",
     "Audio_VO": "Volumen Voces",
-
     "Audio_Output_Surround": "Usar Sonido Envolvente",
     "Audio_DynamicRange": "Rango Dinámico completo",
     "Audio_MuteOnMinimize": "Silenciar Audio al Minimizar",
-
     "Language": "Ajustes de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
@@ -1699,15 +1461,11 @@
     "VO_jp": "Japones",
     "VO_kr": "Coreano"
   },
-
   "_KbShortcuts": {
     "DialogTitle": "Atajos de teclado",
-    "GeneralTab": "General",
     "SwitchTab": "Cambio rápido",
     "GameFolderTab": "Acceso a la carpeta",
     "GameManagementTab": "Gestión del juego",
-
-    "General_Title": "General",
     "General_OpenMenu": "Abrir este menú",
     "General_OpenMenu_Desc": "Esto también se puede acceder a través de la página de Configuración de la aplicación.",
     "General_GoHome": "Ir a la página de inicio",
@@ -1716,7 +1474,6 @@
     "General_ReloadRegion": "Recargar página actual",
     "General_ReloadRegion_Desc": "Presionar F5 es una alternativa a este atajo.\nTenga en cuenta que recargar la página de inicio volverá a cargar la región.",
     "General_OpenPluginManager": "Abre el overlay de gestión de plugins",
-
     "Switch_Title": "Juego rápido / Cambio de región",
     "Switch_Subtitle": "Nota: Las combinaciones de teclas siguen el orden del selector.",
     "Switch_SwapBtn": "Intercambiar {0} y {1}",
@@ -1724,12 +1481,10 @@
     "Switch_ChangeGame_Desc": "Puedes usar el NumPad para este atajo también.\nPor ejemplo, {0}+1 o NumPad1 (sin el modificador {0}) lleva a la página de Honkai Impact 3rd (última región utilizada).",
     "Switch_ChangeRegion": "Cambiar región",
     "Switch_ChangeRegion_Desc": "Por ejemplo, para Genshin Impact, {0}+1 lleva a la región Global.",
-
     "GameFolder_Title": "Acceso a la carpeta del juego",
     "GameFolder_ScreenshotFolder": "Abrir carpeta de capturas de pantalla",
     "GameFolder_MainFolder": "Abre la carpeta del juego",
     "GameFolder_CacheFolder": "Abrir la carpeta de caché",
-
     "GameManagement_Title": "Gestión del juego",
     "GameManagement_Subtitle": "Nota: Estas combinaciones de teclas solo funcionan si dicha función es compatible en la región.",
     "GameManagement_ForceCloseGame": "Cerrar el juego de manera forzada",
@@ -1737,37 +1492,15 @@
     "GameManagement_GoRepair": "Ir a la página de Reparación de Juegos",
     "GameManagement_GoSettings": "Ir a la página de configuración del juego",
     "GameManagement_GoCaches": "Ir a la página de reparación de cachés",
-
     "ChangeShortcut_Title": "Cambiar Acceso Directo",
     "ChangeShortcut_Text": "¡Escribe la nueva combinación para este atajo!",
     "ChangeShortcut_Help1": "Un atajo está compuesto por 2 partes:",
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control o Alt/Menu",
     "ChangeShortcut_Help3": "・ Clave - Alfabético (A a Z) o Tab",
-    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado.",
-
-    "Keyboard_Control": "Ctrl",
-    "Keyboard_Menu": "Alt",
-    "Keyboard_Shift": "Shift"
+    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado."
   },
-
-  "_GameClientTitles": {
-    "Honkai Impact 3rd": "Honkai Impact 3rd",
-    "Genshin Impact": "Genshin Impact",
-    "Honkai: Star Rail": "Honkai: Star Rail",
-    "Zenless Zone Zero": "Zenless Zone Zero"
-  },
-
-  "_GameClientRegions": {
-    "Southeast Asia": "Southeast Asia",
-    "Global": "Global",
-    "Mainland China": "Mainland China",
-    "TW/HK/MO": "TW/HK/MO",
-    "Korea": "Korea",
-    "Japan": "Japan",
-    "Bilibili": "Bilibili",
-    "Google Play": "Google Play"
-  },
-
+  "_GameClientTitles": {},
+  "_GameClientRegions": {},
   "_WpfPackageContext": {
     "StartUpdateBtn": "Iniciar Actualización ",
     "CancelUpdateBtn": "Cancelar Actualización",
@@ -1776,15 +1509,10 @@
     "NotifUpdateCompletedTitle": "¡{0} fue actualizado!",
     "NotifUpdateCompletedSubtitle": "Herramienta: {0} para tu juego: {1} - {2} fue actualizado a v{3}"
   },
-
-  "_WpfPackageName": {
-    "Genshin Impact": "Miliastra Sandbox"
-  },
-
+  "_WpfPackageName": {},
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Acuerdo:"
   },
-
   "_FileCleanupPage": {
     "Title": "Limpieza de Archivos",
     "TopButtonRescan": "Volver a Escanear",
@@ -1812,15 +1540,19 @@
     "DialogMoveToRecycleBin": "Mover a la Papelera",
     "DialogTitleMovedToRecycleBin": "Archivos movidos a la Papelera de reciclaje"
   },
-
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Bienvenido", "a" ],
-      "Lower": [ "Collapse", "Launcher" ]
+      "Upper": [
+        "Bienvenido",
+        "a"
+      ],
+      "Lower": [
+        "Collapse",
+        "Launcher"
+      ]
     },
     "SetupNextButton": "Haz clic para Continuar",
     "SetupBackButton": "Ir Atrás",
-
     "CustomizationTitle": "Personaliza el Launcher",
     "CustomizationSettingsLanguageHeader": "Idioma",
     "CustomizationSettingsLanguageDescription": "Esto ajustará el idioma de la información entregada. ",
@@ -1834,10 +1566,8 @@
     "CustomizationSettingsStyleThemeDescription": "Cambia el color que aparecerá en el Launcher.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Imagen Personalizada de Fondo",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Usar una Imagen personalizada en lugar de la predeterminada.",
-
     "VideoBackgroundPreviewUnavailableHeader": "La vista previa del video no está disponible",
     "VideoBackgroundPreviewUnavailableDescription": "No es posible previsualizar el video en la pantalla de ajustes del primer inicio (OOBE), ¡Pero no te preocupes!, igual será aplicado una vez termines la configuración. ",
-
     "LoadingInitializationTitle": "Preparando primer inicio del Launcher",
     "LoadingCDNCheckboxCheckLatency": "(Comprobando latencia...)",
     "LoadingCDNCheckboxPlaceholder": "Comprobando Recomendación de CDN...",
@@ -1845,14 +1575,10 @@
     "LoadingCDNCheckingSkipButton": "Saltar Prueba de CDN",
     "LoadingBackgroundImageTitle": "Cargando Imagen",
     "LoadingBackgroundImageSubtitle": "La imagen puede tardar en procesarse. ",
-
-    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": "(Desconocido)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Recomendado]"
   },
-
   "_ZenlessGameSettingsPage": {
-    "Mark_Experimental": "(Experimental)",
     "Graphics_ColorFilter": "Fuerza Filtro de Color",
     "Graphics_RenderRes": "Calidad de Renderizado",
     "Graphics_EffectsQ": "Calidad del Efectos",
@@ -1862,13 +1588,11 @@
     "Audio_PlaybackDev": "Dispositivo de Audio",
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
-    "Audio_PlaybackDev_TV": "TV",
     "Audio_Ambient": "Volumen Sonido Ambiente",
     "AdvancedGraphics_Title": "Ajustes Gráficos Avanzados",
     "AdvancedGraphics_Tooltip1": "Algunas funciones solo se pueden utilizar si tienes una tarjeta gráfica Nvidia GeForce RTX y habilitada la API DirectX 12",
     "AdvancedGraphics_Tooltip2": "Ten en cuenta que todas las funciones en esta sección son EXPERIMENTALES. ¡Úselas bajo su propia responsabilidad!",
     "AdvancedGraphics_UseDirectX12API": "Usar API DirectX 12",
-    "AdvancedGraphics_RayTracing": "Ray Tracing",
     "AdvancedGraphics_RayTracingQ": "Calidad Ray Tracing ",
     "AdvancedGraphics_SuperScaling": "Superescalado",
     "AdvancedGraphics_SuperScalingQ": "Prioridad Superescalado",
@@ -1876,38 +1600,27 @@
     "AdvancedGraphics_SuperScalingQ_Balanced": "Balanceado",
     "AdvancedGraphics_SuperScalingQ_Quality": "Calidad"
   },
-
   "_NotificationToast": {
     "WindowHiddenToTray_Title": "Collapse esta Minimizado en la Bandeja",
     "WindowHiddenToTray_Subtitle": "El Launcher esta funcionando en Segundo Plano.\r\nHaz clic en esta notificación o el icono de la bandeja para restaura la ventana.",
-
     "GameInstallCompleted_Title": "{0} está Listo para Jugar",
     "GameInstallCompleted_Subtitle": "¡{0} fue Instalado Exitosamente!",
-
     "GameUpdateCompleted_Title": "{0} fue Actualizado",
     "GameUpdateCompleted_Subtitle": "¡{0} fue actualizado exitosamente a v{1}!",
-
     "GamePreloadCompleted_Title": "¡Precarga para {0} fue Descargado!",
-
     "GameRepairCheckCompleted_Title": "Reparar Juego - Verificación Completada",
     "GameRepairCheckCompletedFound_Subtitle": "{0} archivo(s) necesitan ser actualizados/reparados. Haz clic aquí para ir al Launcher.",
     "GameRepairCheckCompletedNotFound_Subtitle": "Ningún archivo debe ser actualizado/reparado.",
-
     "GameRepairDownloadCompleted_Title": "Reparar Juego - Descarga Completada",
     "GameRepairDownloadCompleted_Subtitle": "{0} archivo(s) fueron actualizados/reparados exitosamente.",
-
     "CacheUpdateCheckCompleted_Title": "Actualizar Cachés - Verificación Completada",
     "CacheUpdateCheckCompletedFound_Subtitle": "{0} archivo(s) de caché necesitan ser actualizados. Haz clic aquí para ir al Launcher.",
     "CacheUpdateCheckCompletedNotFound_Subtitle": "Ningún archivo de caché debe ser actualizado.",
-
     "CacheUpdateDownloadCompleted_Title": "Actualizar Cachés - Descarga Completada",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} archivo(s) de caché fueron actualizados exitosamente.",
-
     "GenericClickNotifToGoBack_Subtitle": "Haz clic en esta notificación para ir al Launcher ",
-
     "OOBE_WelcomeTitle": "¡Bienvenido a Collapse Launcher!",
     "OOBE_WelcomeSubtitle": "Actualmente estás seleccionando {0} - {1} como juego. Hay más juegos esperándote, ¡descúbrelos!",
-
     "LauncherUpdated_NotifTitle": "¡Tu launcher está actualizado!",
     "LauncherUpdated_NotifSubtitle": "Tu launcher fue actualizado a: {0}. Ve a \"{1}\" y haz clic en \"{2}\" para ver qué ha cambiado."
   }
