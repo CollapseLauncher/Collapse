@@ -112,7 +112,8 @@
     "NavigationUtilities": "Perkakas",
     "Initializing": "Mempersiapkan",
     "LoadingLauncherMetadata": "Memuat Metadata Launcher",
-    "LoadingGameConfiguration": "Memuat Konfigurasi Game"
+    "LoadingGameConfiguration": "Memuat Konfigurasi Game",
+    "LoadingBackgroundImage": "Memuat Gambar Background"
   },
 
   "_HomePage": {

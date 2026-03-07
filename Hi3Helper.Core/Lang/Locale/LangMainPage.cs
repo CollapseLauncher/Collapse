@@ -33,6 +33,7 @@ namespace Hi3Helper
                 public string Initializing { get; set; } = LangFallback?._MainPage.Initializing;
                 public string LoadingLauncherMetadata { get; set; } = LangFallback?._MainPage.LoadingLauncherMetadata;
                 public string LoadingGameConfiguration { get; set; } = LangFallback?._MainPage.LoadingGameConfiguration;
+                public string LoadingBackgroundImage { get; set; } = LangFallback?._MainPage.LoadingBackgroundImage;
             }
         }
         #endregion

@@ -454,7 +454,21 @@ namespace CollapseLauncher.Pages
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            double thisValue = value is not bool boolean || boolean ? 1.0d : 0d;
+            double thisValue = value is not bool boolean || boolean ? 1d : 0d;
+            return typeof(float) == targetType ? (float)thisValue : thisValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseBooleanToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double thisValue = value is not bool boolean || boolean ? 0d : 1d;
             return typeof(float) == targetType ? (float)thisValue : thisValue;
         }
 

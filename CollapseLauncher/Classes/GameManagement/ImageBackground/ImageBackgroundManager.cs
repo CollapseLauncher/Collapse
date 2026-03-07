@@ -202,6 +202,16 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public bool IsBackgroundLoading
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public double ForegroundOpacity
     {
         get;

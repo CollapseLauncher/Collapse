@@ -16,6 +16,8 @@
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <ListView x:Name="KeyboardHandler" />
+        <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
+        <pages:InverseBooleanToOpacityConverter x:Key="InverseBooleanToOpacityConverter"/>
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <pages:CountToOpacityConverter x:Key="CountToOpacityConverter"/>
         <pages:InverseCountToOpacityConverter x:Key="InverseCountToOpacityConverter"/>
@@ -26,6 +28,44 @@
               x:FieldModifier="internal">
             <layeredBackgroundImage:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
                                                            MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}"/>
+        </Grid>
+        <Grid Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundElevated, Mode=OneWay, Converter={StaticResource InverseBooleanToOpacityConverter}}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top">
+            <Grid.OpacityTransition>
+                <ScalarTransition Duration="0:0:.2"/>
+            </Grid.OpacityTransition>
+            <Grid Background="{ThemeResource CarouselPipsAcrylicBrush}"
+                  Margin="60"
+                  Padding="12, 8"
+                  extension:UIElementExtensions.UniformCornerRadius="8"
+                  ColumnSpacing="8"
+                  Shadow="{StaticResource SharedShadow}"
+                  Translation="0,0,32"
+                  Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay, Converter={StaticResource BooleanToOpacityConverter}}">
+                <Grid.OpacityTransition>
+                    <ScalarTransition Duration="0:0:.2"/>
+                </Grid.OpacityTransition>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      Margin="-12"
+                      Opacity=".85"/>
+                <ProgressRing Grid.Column="0"
+                              Width="20"
+                              Height="20"
+                              Maximum="100"
+                              Value="100"
+                              VerticalAlignment="Center"
+                              IsIndeterminate="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay}"
+                              Foreground="{ThemeResource TextBoxBackgroundThemeBrush}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{x:Bind helper:Locale.Lang._MainPage.LoadingBackgroundImage, Mode=OneWay}"
+                           VerticalAlignment="Center"/>
+            </Grid>
         </Grid>
         <Border x:Name="NavViewPaneBackground"
                 Width="48"

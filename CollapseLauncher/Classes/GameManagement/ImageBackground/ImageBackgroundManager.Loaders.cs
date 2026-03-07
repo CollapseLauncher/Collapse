@@ -56,6 +56,8 @@ public partial class ImageBackgroundManager
                 return;
             }
 
+            IsBackgroundLoading = true;
+
             // -- Notify changes on context menu properties
             DispatcherQueueExtensions
                .CurrentDispatcherQueue
@@ -146,6 +148,7 @@ public partial class ImageBackgroundManager
         {
             stopwatch.Stop();
             Logger.LogWriteLine($"Background image loading took: {stopwatch.Elapsed.TotalSeconds} second(s)");
+            IsBackgroundLoading = false;
         }
     }
 

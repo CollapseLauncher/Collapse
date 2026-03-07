@@ -112,7 +112,8 @@
     "NavigationUtilities": "Utilities",
     "Initializing": "Initializing",
     "LoadingLauncherMetadata": "Loading Launcher Metadata",
-    "LoadingGameConfiguration": "Loading Game Configuration"
+    "LoadingGameConfiguration": "Loading Game Configuration",
+    "LoadingBackgroundImage": "Loading Background Image"
   },
 
   "_HomePage": {
