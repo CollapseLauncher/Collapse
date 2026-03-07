@@ -635,7 +635,8 @@ namespace Hi3Helper.Shared.Region
             { "GlobalIsBackgroundParallaxEffectEnabled", false },
             { "GlobalBackgroundParallaxPixelShift", 8d },
             { "GlobalKeepPlayVideoWhenWindowUnfocused", true },
-            { "GlobalBackgroundAudioVolume", 50d }
+            { "GlobalBackgroundAudioVolume", 50d },
+            { "GlobalIsUseFFmpeg", true }
         };
         #endregion
     }
