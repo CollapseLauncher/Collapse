@@ -112,7 +112,8 @@
     "NavigationUtilities": "機能",
     "Initializing": "初期化中",
     "LoadingLauncherMetadata": "ランチャーのメタデータを読み込み中",
-    "LoadingGameConfiguration": "ゲーム設定を読み込み中"
+    "LoadingGameConfiguration": "ゲーム設定を読み込み中",
+    "LoadingBackgroundImage": "Loading Background Image"
   },
 
   "_HomePage": {
@@ -551,6 +552,15 @@
     "VideoBackground_IsEnableAudio": "音を出す",
     "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
     "VideoBackground_AudioVolume": "音量",
+    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegInstallStatus": "Install Status:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
+    "VideoBackground_FFmpegInstallNote": "Note",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
+    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
 
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
