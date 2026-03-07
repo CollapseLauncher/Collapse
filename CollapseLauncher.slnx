@@ -90,4 +90,10 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
+  <Project Path="TLFixer/TLFixer.csproj" Id="5b59dd8f-24ee-4bec-91db-1e95b51f46a7">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+    <Build Solution="Publish|*" Project="false" />
+    <Build Solution="Release|*" Project="false" />
+  </Project>
 </Solution>
