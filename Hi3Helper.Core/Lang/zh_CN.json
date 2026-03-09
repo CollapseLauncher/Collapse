@@ -113,7 +113,7 @@
     "Initializing": "初始化",
     "LoadingLauncherMetadata": "正在加载启动器元数据",
     "LoadingGameConfiguration": "正在加载游戏配置",
-    "LoadingBackgroundImage": "Loading Background Image"
+    "LoadingBackgroundImage": "正在加载背景图片"
   },
 
   "_HomePage": {
@@ -552,15 +552,15 @@
     "VideoBackground_IsEnableAudio": "启用声音",
     "VideoBackground_IsEnableAcrylicBackground": "使用视频背景时使用亚克力效果",
     "VideoBackground_AudioVolume": "音量",
-    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
-    "VideoBackground_FFmpegInstallStatus": "Install Status:",
-    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
-    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
-    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
-    "VideoBackground_FFmpegInstallNote": "Note",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
-    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_UseFFmpeg": "使用 FFmpeg 进行视频解码",
+    "VideoBackground_FFmpegInstallStatus": "安装状态：",
+    "VideoBackground_FFmpegInstallStatus_Installed": "已安装",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "未安装",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "开始新安装或定位向导",
+    "VideoBackground_FFmpegInstallNote": "备注：",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse 启动器仅支持 FFmpeg 7.x 版本。其他版本的 FFmpeg 暂不支持！",
+    "VideoBackground_FFmpegInstallLockedTitle": "更改 FFmpeg 安装已被锁定",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg 目前被用来解码您当前的背景。要更改您现有的安装，请先禁用“使用 FFmpeg 进行视频解码”功能，重启您的启动器，返回到这项设置并点击“开始新安装或定位向导”按钮。",
 
     "Update": "检查更新",
     "Update_CurVer": "当前版本：",
