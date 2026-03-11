@@ -190,10 +190,10 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty.IsGameRunning)
                 {
                 #if !GSPBYPASSGAMERUNNING
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._StarRailGameSettingsPage.OverlayGameRunningTitle;
-                    OverlaySubtitle.Text = Lang._StarRailGameSettingsPage.OverlayGameRunningSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayGameRunningTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayGameRunningSubtitle;
                 #endif
                 }
                 else if (GameInstallationState

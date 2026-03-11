@@ -148,10 +148,10 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty.IsGameRunning)
                 {
                 #if !GSPBYPASSGAMERUNNING
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang?._GameSettingsPage.OverlayGameRunningTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang?._GameSettingsPage.OverlayGameRunningSubtitle;
                 #endif
                 }
                 else if (GameInstallationState
