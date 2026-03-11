@@ -72,6 +72,9 @@ namespace CollapseLauncher
                 // Initialize Logger
                 UseConsoleLog(IsConsoleEnabled);
 
+                // Initialize Localization Files
+                InitLocale();
+
                 // Initialize Critical Modules (Including Sentry SDK and WASDK+WinRT ComWrappers)
                 InitCriticalModules();
 
@@ -81,9 +84,6 @@ namespace CollapseLauncher
                 {
                     return; // Rage quit :>
                 }
-
-                // Initialize Localization Files
-                InitLocale();
 
                 // Log Application Info
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
