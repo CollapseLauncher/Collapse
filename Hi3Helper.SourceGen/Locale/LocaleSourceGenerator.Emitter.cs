@@ -34,11 +34,16 @@ public partial class LocaleSourceGenerator
             return; // TODO
         }
 
-        BeginWriteGeneric(ref ctx, classNamespace, className, classModifiers, document);
+        BeginWriteGeneric(ref ctx, classNamespace, className, classModifiers, document, sourceGenCtx.IsOnlyProduceBase);
+        if (sourceGenCtx.IsOnlyProduceBase)
+        {
+            return;
+        }
+
         BeginWriteJsonProperties(ref ctx, classNamespace, className, classModifiers, document);
     }
 
-    private static void BeginWriteGeneric(ref SourceProductionContext ctx, string classNamespace, string className, string classModifiers, JsonDocument document)
+    private static void BeginWriteGeneric(ref SourceProductionContext ctx, string classNamespace, string className, string classModifiers, JsonDocument document, bool isOnlyProduceBase)
     {
         StringBuilder builder = new();
 
@@ -91,7 +96,7 @@ public partial class LocaleSourceGenerator
                              new PropertyContext("LanguageID", "string?", false),
                              new PropertyContext("Author", "string?", false));
 
-        WriteClassBinding(className, builder, document.RootElement);
+        WriteClassBinding(className, builder, document.RootElement, isOnlyProduceBase);
 
         builder.AppendLine("}");
         ctx.AddSource($"{className}.g.cs", SourceText.From(builder.ToString(), Encoding.UTF8));

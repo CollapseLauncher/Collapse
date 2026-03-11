@@ -52,5 +52,6 @@ public sealed partial class LocaleSourceGeneratedAttribute : global::System.Attr
         string?      Namespace,
         string?      ClassName,
         string?      Modifier,
-        Diagnostic?  Diagnostic);
+        Diagnostic?  Diagnostic,
+        bool         IsOnlyProduceBase = false);
 }

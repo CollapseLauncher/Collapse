@@ -6,4 +6,5 @@ namespace Hi3Helper.LocaleSourceGen;
 public sealed class LocaleSourceGeneratedAttribute : Attribute
 {
     public string? LocalePath { get; set; }
+    public bool IsOnlyProduceBase { get; set; } = false;
 }

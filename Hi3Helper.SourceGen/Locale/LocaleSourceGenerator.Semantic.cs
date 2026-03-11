@@ -15,7 +15,8 @@ public partial class LocaleSourceGenerator
 {
     private static JsonSourceGenerationContext GetSemanticTargetForGeneration(GeneratorAttributeSyntaxContext ctx)
     {
-        string? jsonFilePath = "";
+        string? jsonFilePath      = "";
+        bool    isOnlyProduceBase = false;
 
         ClassDeclarationSyntax? classSyntax = ctx.TargetNode as ClassDeclarationSyntax;
         NamespaceDeclarationSyntax? namespaceSyntax = classSyntax?.Parent as NamespaceDeclarationSyntax;
@@ -74,9 +75,14 @@ public partial class LocaleSourceGenerator
                 string argName = arg.Key;
                 string? value = arg.Value.Value?.ToString();
 
-                if (argName == "LocalePath")
+                switch (argName)
                 {
-                    jsonFilePath = value;
+                    case "LocalePath":
+                        jsonFilePath = value;
+                        break;
+                    case "IsOnlyProduceBase":
+                        bool.TryParse(value, out isOnlyProduceBase);
+                        break;
                 }
             }
         }
@@ -92,10 +98,17 @@ public partial class LocaleSourceGenerator
 
                 foreach (AttributeArgumentSyntax argument in attributeSyntax.ArgumentList.Arguments)
                 {
-                    string? key = argument.NameEquals?.Name.ToString();
-                    if (key == "LocalePath")
+                    string? argName = argument.NameEquals?.Name.ToString();
+                    string? value   = (argument.Expression as LiteralExpressionSyntax)?.Token.ValueText;
+
+                    switch (argName)
                     {
-                        jsonFilePath = (argument.Expression as LiteralExpressionSyntax)?.Token.ValueText;
+                        case "LocalePath":
+                            jsonFilePath = value;
+                            break;
+                        case "IsOnlyProduceBase":
+                            bool.TryParse(value, out isOnlyProduceBase);
+                            break;
                     }
                 }
             }
@@ -147,7 +160,7 @@ public partial class LocaleSourceGenerator
             }
 
             using FileStream jsonFileStream = File.OpenRead(absolutePath);
-            return new JsonSourceGenerationContext(JsonDocument.Parse(jsonFileStream), @namespace, className, classModifier, null);
+            return new JsonSourceGenerationContext(JsonDocument.Parse(jsonFileStream), @namespace, className, classModifier, null, isOnlyProduceBase);
         }
         catch (Exception ex)
         {
