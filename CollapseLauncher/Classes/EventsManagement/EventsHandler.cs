@@ -1,4 +1,6 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using Hi3Helper.LocaleSourceGen;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -12,7 +14,6 @@ using System.Text.Json.Serialization;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CheckNamespace
 // ReSharper disable AssignNullToNotNullAttribute
@@ -164,28 +165,28 @@ namespace CollapseLauncher
 
         public static void SetPageTitle(ErrorType errorType)
         {
-            var locUnhandledException = Lang!._UnhandledExceptionPage!;
+            LangParamsUnhandledExceptionPage locUnhandledException = Locale.Current.Lang?._UnhandledExceptionPage;
             switch (errorType)
             {
                 case ErrorType.Unhandled:
-                    ExceptionTitle    = locUnhandledException.UnhandledTitle1;
-                    ExceptionSubtitle = locUnhandledException.UnhandledTitle1;
+                    ExceptionTitle    = locUnhandledException?.UnhandledTitle1;
+                    ExceptionSubtitle = locUnhandledException?.UnhandledTitle1;
                     break;
                 case ErrorType.Connection:
-                    ExceptionTitle    = locUnhandledException.UnhandledTitle2;
-                    ExceptionSubtitle = locUnhandledException.UnhandledSubtitle2;
+                    ExceptionTitle    = locUnhandledException?.UnhandledTitle2;
+                    ExceptionSubtitle = locUnhandledException?.UnhandledSubtitle2;
                     break;
                 case ErrorType.GameError:
-                    ExceptionTitle    = locUnhandledException.UnhandledTitle3;
-                    ExceptionSubtitle = locUnhandledException.UnhandledSubtitle3;
+                    ExceptionTitle    = locUnhandledException?.UnhandledTitle3;
+                    ExceptionSubtitle = locUnhandledException?.UnhandledSubtitle3;
                     break;
                 case ErrorType.Warning:
-                    ExceptionTitle    = locUnhandledException.UnhandledTitle4;
-                    ExceptionSubtitle = locUnhandledException.WarningSubtitle;
+                    ExceptionTitle    = locUnhandledException?.UnhandledTitle4;
+                    ExceptionSubtitle = locUnhandledException?.WarningSubtitle;
                     break;
                 case ErrorType.DiskCrc:
-                    ExceptionTitle    = locUnhandledException.UnhandledTitleDiskCrc;
-                    ExceptionSubtitle = locUnhandledException.UnhandledSubDiskCrc;
+                    ExceptionTitle    = locUnhandledException?.UnhandledTitleDiskCrc;
+                    ExceptionSubtitle = locUnhandledException?.UnhandledSubDiskCrc;
                     break;
             }
         }

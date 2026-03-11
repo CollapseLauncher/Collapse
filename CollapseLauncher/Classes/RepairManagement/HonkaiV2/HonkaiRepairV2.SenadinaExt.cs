@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -45,7 +46,7 @@ internal static class SenadinaExtension
         if (progressibleInstance != null)
         {
             progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Senadina Files");
+                string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Senadina Files");
             progressibleInstance.Status.IsProgressAllIndetermined = true;
             progressibleInstance.Status.IsIncludePerFileIndicator = false;
             progressibleInstance.UpdateStatus();

@@ -11,11 +11,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using Windows.UI;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 
 
 #if !DISABLEDISCORD
@@ -28,7 +28,7 @@ namespace CollapseLauncher.Pages
     public partial class HonkaiGameSettingsPage
     {
         private GamePresetProperty CurrentGameProperty   { get; }
-        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty.GameSettings; }
+        private HonkaiSettings     Settings              => (HonkaiSettings)CurrentGameProperty.GameSettings;
         private Brush              InheritApplyTextColor { get; set; }
         private RegistryMonitor    RegistryWatcher       { get; set; }
 
@@ -98,7 +98,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegExported;
+                ApplyText.Text = Locale.Current.Lang._GameSettingsPage.SettingsRegExported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -124,7 +124,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegImported;
+                ApplyText.Text       = Locale.Current.Lang._GameSettingsPage.SettingsRegImported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -160,10 +160,10 @@ namespace CollapseLauncher.Pages
                     or GameInstallStateEnum.InstalledHavePlugin
                     or GameInstallStateEnum.GameBroken)
                 {
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang._GameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
                 }
                 else
                 {
@@ -184,7 +184,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsApplied;
+                ApplyText.Text       = Locale.Current.Lang._GameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
                 ToggleRegistrySubscribe(false);

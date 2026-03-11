@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT;
@@ -17,7 +18,6 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
@@ -36,11 +36,9 @@ namespace CollapseLauncher.GameSettings.Base
         protected IGameVersion? GameVersionManager { get; set; } = gameVersionManager;
 
         [JsonIgnore]
-        private string? RegistryPath
-        {
-            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
+        private string? RegistryPath =>
+            string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
                 Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
-        }
 
         [JsonIgnore]
         private RegistryKey? _registryRoot;
@@ -76,12 +74,12 @@ namespace CollapseLauncher.GameSettings.Base
         {
             try
             {
-                string path = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Lang._GameSettingsPage.SettingsRegImportTitle);
+                string path = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegImportTitle);
 
-                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
+                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr1);
 
-                await using FileStream fs   = new FileStream(path, FileMode.Open, FileAccess.Read);
-                byte[]           head = new byte[6];
+                await using FileStream fs   = new(path, FileMode.Open, FileAccess.Read);
+                byte[]                 head = new byte[6];
                 _ = fs.Read(head, 0, head.Length);
 
                 Logger.LogWriteLine($"Importing registry {RegistryPath}...");
@@ -96,7 +94,7 @@ namespace CollapseLauncher.GameSettings.Base
                         ReadNewerValues(fs, gameBasePath);
                         break;
                     default:
-                        throw new FormatException(Lang._GameSettingsPage.SettingsRegErr2);
+                        throw new FormatException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr2);
                 }
             }
             catch (Exception ex)
@@ -115,8 +113,8 @@ namespace CollapseLauncher.GameSettings.Base
             switch (version)
             {
                 case 1:
-                    using (XORStream xorS = new XORStream(fs, XorKey, true))
-                        using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
+                    using (XORStream xorS = new(fs, XorKey, true))
+                        using (BrotliStream comp = new(xorS, CompressionMode.Decompress, true))
                         {
                             ReadLegacyValues(comp);
                         }
@@ -134,7 +132,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         private void ReadLegacyValues(Stream fs)
         {
-            using EndianBinaryReader reader = new EndianBinaryReader(fs, EndianType.BigEndian, true);
+            using EndianBinaryReader reader = new(fs, EndianType.BigEndian, true);
             short                    count  = reader.ReadInt16();
             Logger.LogWriteLine($"File has {count} values.");
             while (count-- > 0)
@@ -196,13 +194,13 @@ namespace CollapseLauncher.GameSettings.Base
         {
             try
             {
-                string path = await FileDialogNative.GetFileSavePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Lang._GameSettingsPage.SettingsRegExportTitle);
+                string path = await FileDialogNative.GetFileSavePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegExportTitle);
                 EnsureFileSaveHasExtension(ref path, ".clreg");
 
-                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
+                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr1);
                 Logger.LogWriteLine($"Exporting registry V3 {RegistryPath}...");
 
-                await using FileStream fileStream  = new FileStream(path, FileMode.Create, FileAccess.Write);
+                await using FileStream fileStream  = new(path, FileMode.Create, FileAccess.Write);
                 await using Stream     writeStream = isCompressed ? new BrotliStream(fileStream, CompressionLevel.Optimal, true) : fileStream;
 
                 // Magic
@@ -326,14 +324,14 @@ namespace CollapseLauncher.GameSettings.Base
 
         private static void ExportFilesToStream(Stream writeStream, string parentPath, string[] relativePaths)
         {
-            using BinaryWriter writer = new BinaryWriter(writeStream, Encoding.UTF8, true);
+            using BinaryWriter writer = new(writeStream, Encoding.UTF8, true);
             writer.Write7BitEncodedInt(relativePaths.Length);
 
             Logger.LogWriteLine($"Writing exported {relativePaths.Length} file(s) to V3 data...");
             foreach (string relativePath in relativePaths)
             {
                 string pathCombined = Path.Combine(parentPath, relativePath);
-                FileInfo fileInfo = new FileInfo(pathCombined);
+                FileInfo fileInfo = new(pathCombined);
                 if (!fileInfo.Exists) continue;
 
                 Logger.LogWriteLine($"Writing file: {relativePath} -> {fileInfo.Length} bytes to V3 data...");
@@ -351,8 +349,8 @@ namespace CollapseLauncher.GameSettings.Base
         {
             if (string.IsNullOrEmpty(gamePath)) return;
 
-            using BinaryReader reader = new BinaryReader(readStream, Encoding.UTF8, true);
-            int filesCount = reader.Read7BitEncodedInt();
+            using BinaryReader reader     = new(readStream, Encoding.UTF8, true);
+            int                filesCount = reader.Read7BitEncodedInt();
 
             byte[] buffer = new byte[16 << 10];
 

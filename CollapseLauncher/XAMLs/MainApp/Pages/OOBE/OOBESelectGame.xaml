@@ -6,7 +6,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
@@ -32,7 +32,7 @@
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2NextBtn}" />
                     <AnimatedIcon Width="24"
                                   MinHeight="{ThemeResource ComboBoxMinHeight}"
                                   Margin="0,-4,0,-8"
@@ -83,7 +83,7 @@
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtnNew}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2PrevBtnNew}" />
                 </StackPanel>
             </Button.Content>
         </Button>
@@ -104,36 +104,36 @@
                 <TextBlock Margin="0,0,0,32"
                            Foreground="{ThemeResource SystemAccentColor}"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Title}" />
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_1}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_3}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_3}" />
                 </TextBlock>
                 <TextBlock Margin="0,16,0,24"
                            Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_1}" />
                     <Run Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_3}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_4}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_5}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_5}" />
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="GameCategorySelect"
                               extension:UIElementExtensions.CursorType="Hand"
                               Width="192"
                               CornerRadius="16"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}"
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBox}"
                               SelectionChanged="GameCategorySelect_SelectionChanged" />
                     <ComboBox x:Name="GameRegionSelect"
                               extension:UIElementExtensions.CursorType="Hand"
@@ -141,7 +141,7 @@
                               Margin="16,0,0,0"
                               CornerRadius="16"
                               IsEnabled="False"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBoxRegion}"
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBoxRegion}"
                               SelectionChanged="GameSelect_SelectionChanged" />
                 </StackPanel>
             </StackPanel>

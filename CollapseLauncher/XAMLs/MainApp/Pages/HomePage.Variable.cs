@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -64,7 +64,7 @@ public sealed partial class HomePage
         && IsPostNoticePanelVisible == Visibility.Collapsed
         && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
 
-    internal static int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
+    internal static int PostEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
 
     internal static int DefaultPostPanelIndex
     {
@@ -210,7 +210,7 @@ public sealed partial class HomePage
         get
         {
             GameVersion? installed = CurrentGameProperty?.GameVersion?.GetGameExistingVersion();
-            return installed is null ? null : string.Format(Locale.Lang._HomePage.StartGameTooltip, installed);
+            return installed is null ? null : string.Format(Locale.Current.Lang?._HomePage?.StartGameTooltip ?? "", installed);
         }
     }
 
@@ -227,7 +227,7 @@ public sealed partial class HomePage
                 case GameInstallStateEnum.NotInstalled:
                 {
                     GameVersion? remote = CurrentGameProperty.GameVersion.GetGameVersionApi();
-                    return string.Format(Locale.Lang._HomePage.InstallGameTooltip, remote);
+                    return string.Format(Locale.Current.Lang?._HomePage?.InstallGameTooltip ?? "", remote);
                 }
                 case GameInstallStateEnum.NeedsUpdate:
                 {
@@ -237,8 +237,8 @@ public sealed partial class HomePage
                         return null;
 
                     return installed is null
-                        ? string.Format(Locale.Lang._HomePage.InstallGameTooltip, remote)
-                        : string.Format(Locale.Lang._HomePage.UpdateGameTooltip, installed, remote);
+                        ? string.Format(Locale.Current.Lang?._HomePage?.InstallGameTooltip ?? "", remote)
+                        : string.Format(Locale.Current.Lang?._HomePage?.UpdateGameTooltip ?? "",  installed, remote);
                 }
                 case GameInstallStateEnum.InstalledHavePlugin:
                 {
@@ -251,8 +251,8 @@ public sealed partial class HomePage
                         if (remote is not null && installed != remote)
                         {
                             tooltip.Append(installed is null
-                                               ? string.Format(Locale.Lang._HomePage.InstallSdkTooltip, remote)
-                                               : string.Format(Locale.Lang._HomePage.UpdateSdkTooltip, installed,
+                                               ? string.Format(Locale.Current.Lang?._HomePage?.InstallSdkTooltip ?? "", remote)
+                                               : string.Format(Locale.Current.Lang?._HomePage?.UpdateSdkUpdateTooltip ?? "", installed,
                                                                remote));
                         }
                     }
@@ -268,9 +268,9 @@ public sealed partial class HomePage
 
                             GameVersion remote = mismatch.Version;
                             tooltip.Append(!installedDict.TryGetValue(mismatch.PluginId!, out GameVersion installed)
-                                               ? string.Format(Locale.Lang._HomePage.InstallPluginTooltip,
+                                               ? string.Format(Locale.Current.Lang?._HomePage?.InstallPluginTooltip ?? "",
                                                                mismatch.PluginId, remote)
-                                               : string.Format(Locale.Lang._HomePage.UpdatePluginTooltip,
+                                               : string.Format(Locale.Current.Lang?._HomePage?.UpdatePluginTooltip ?? "",
                                                                mismatch.PluginId, installed, remote));
                         }
                     }

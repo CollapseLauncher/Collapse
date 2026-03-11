@@ -26,7 +26,6 @@ using Windows.Graphics.DirectX;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
@@ -140,7 +139,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegExported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegExported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -166,7 +165,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegImported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegImported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -203,10 +202,10 @@ namespace CollapseLauncher.Pages
                     or GameInstallStateEnum.InstalledHavePlugin
                     or GameInstallStateEnum.GameBroken)
                 {
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayNotInstalledSubtitle;
                 }
                 else
                 {
@@ -227,7 +226,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._StarRailGameSettingsPage.SettingsApplied;
+                ApplyText.Text       = Locale.Current.Lang?._StarRailGameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
                 ToggleRegistrySubscribe(false);

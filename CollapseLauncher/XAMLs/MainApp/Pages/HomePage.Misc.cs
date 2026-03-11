@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
@@ -17,7 +18,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -181,8 +181,8 @@ public partial class HomePage
                                        "EnableLUA", 1)!;
             if (enabled != 1)
             {
-                var result = await SpawnDialog(Lang._Dialogs.UACWarningTitle, Lang._Dialogs.UACWarningContent, this, Lang._Misc.Close,
-                                               Lang._Dialogs.UACWarningLearnMore, Lang._Dialogs.UACWarningDontShowAgain,
+                var result = await SpawnDialog(Locale.Current.Lang?._Dialogs?.UACWarningTitle, Locale.Current.Lang?._Dialogs?.UACWarningContent, this, Locale.Current.Lang?._Misc?.Close,
+                                               Locale.Current.Lang?._Dialogs?.UACWarningLearnMore, Locale.Current.Lang?._Dialogs?.UACWarningDontShowAgain,
                                                ContentDialogButton.Close, ContentDialogTheme.Warning);
                 switch (result)
                 {
@@ -251,13 +251,13 @@ public partial class HomePage
                 }
             };
 
-            ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle,
-                                        Lang._Dialogs.InstallingMediaPackSubtitle);
+            ShowLoadingPage.ShowLoading(Locale.Current.Lang?._Dialogs?.InstallingMediaPackTitle,
+                                        Locale.Current.Lang?._Dialogs?.InstallingMediaPackSubtitle);
             MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
             proc.Start();
             await proc.WaitForExitAsync();
-            ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle,
-                                        Lang._Dialogs.InstallingMediaPackSubtitleFinished);
+            ShowLoadingPage.ShowLoading(Locale.Current.Lang?._Dialogs?.InstallingMediaPackTitle,
+                                        Locale.Current.Lang?._Dialogs?.InstallingMediaPackSubtitleFinished);
             await Dialog_InstallMediaPackageFinished();
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
@@ -289,7 +289,7 @@ public partial class HomePage
 
     private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
     {
-        string folder = await FileDialogNative.GetFolderPicker(Lang._HomePage.CreateShortcut_FolderPicker);
+        string folder = await FileDialogNative.GetFolderPicker(Locale.Current.Lang?._HomePage?.CreateShortcut_FolderPicker);
 
         if (string.IsNullOrEmpty(folder))
             return;

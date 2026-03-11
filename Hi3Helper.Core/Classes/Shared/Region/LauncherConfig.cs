@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
@@ -177,51 +176,6 @@ namespace Hi3Helper.Shared.Region
                 ScreenResolutionsList.Add($"{res.Width}x{res.Height}");
             }
         }
-
-        #endregion
-
-        #region CDN List
-
-        public static List<CDNURLProperty> CDNList =>
-        [
-            new()
-            {
-                Name                   = "Cloudflare",
-                URLPrefix              = "https://r2.bagelnl.my.id/cl-cdn",
-                Description            = Lang._Misc!.CDNDescription_Cloudflare,
-                PartialDownloadSupport = true
-            },
-
-            new()
-            {
-                Name                   = "DigitalOcean",
-                URLPrefix              = "https://cdn.collapselauncher.com/cl-cdn",
-                Description            = Lang._Misc!.CDNDescription_DigitalOcean,
-                PartialDownloadSupport = true
-            },
-
-            new()
-            {
-                Name                   = "GitHub",
-                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
-                Description            = Lang._Misc!.CDNDescription_Github,
-                PartialDownloadSupport = true
-            },
-
-            new()
-            {
-                Name        = "GitLab",
-                URLPrefix   = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
-                Description = Lang._Misc!.CDNDescription_GitLab
-            },
-
-            new()
-            {
-                Name        = "CNB",
-                URLPrefix   = "https://cnb.cool/CollapseLauncher/ReleaseRepo/-/git/raw/main/",
-                Description = Lang._Misc!.CDNDescription_CNB
-            }
-        ];
 
         #endregion
 

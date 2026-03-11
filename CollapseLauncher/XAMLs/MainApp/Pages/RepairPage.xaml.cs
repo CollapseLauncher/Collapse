@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
@@ -81,10 +80,10 @@ namespace CollapseLauncher.Pages
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     WindowUtility.Tray_ShowNotification(
-                                                        Lang._NotificationToast.GameRepairCheckCompleted_Title,
-                                                        isGameBroken ?
-                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty.GameRepair?.AssetEntry.Count) :
-                                                            Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
+                                                        Locale.Current.Lang?._NotificationToast?.GameRepairCheckCompleted_Title ?? "",
+                                                        (isGameBroken ?
+                                                            string.Format(Locale.Current.Lang?._NotificationToast?.GameRepairCheckCompletedFound_Subtitle ?? "", CurrentGameProperty.GameRepair?.AssetEntry.Count) :
+                                                            Locale.Current.Lang?._NotificationToast?.GameRepairCheckCompletedNotFound_Subtitle) ?? ""
                                                        );
                 }
             }
@@ -135,8 +134,8 @@ namespace CollapseLauncher.Pages
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     WindowUtility.Tray_ShowNotification(
-                                                        Lang._NotificationToast.GameRepairDownloadCompleted_Title,
-                                                        string.Format(Lang._NotificationToast.GameRepairDownloadCompleted_Subtitle, assetCount)
+                                                        Locale.Current.Lang?._NotificationToast?.GameRepairDownloadCompleted_Title ?? "",
+                                                        string.Format(Locale.Current.Lang?._NotificationToast?.GameRepairDownloadCompleted_Subtitle ?? "", assetCount)
                                                        );
                 }
             }
@@ -237,7 +236,7 @@ namespace CollapseLauncher.Pages
 
         private void ResetStatusAndButtonState()
         {
-            RepairStatus.Text = Lang._GameRepairPage.Status1;
+            RepairStatus.Text = Locale.Current.Lang?._GameRepairPage?.Status1;
 
             CancelBtn.IsEnabled = false;
             CheckFilesBtn.Visibility = Visibility.Visible;
@@ -264,17 +263,17 @@ namespace CollapseLauncher.Pages
                 or GameInstallStateEnum.InstalledHavePlugin
                 or GameInstallStateEnum.GameBroken)
             {
-                Overlay.Visibility = Visibility.Visible;
+                Overlay.Visibility     = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = Lang._GameRepairPage.OverlayNotInstalledTitle;
-                OverlaySubtitle.Text = Lang._GameRepairPage.OverlayNotInstalledSubtitle;
+                OverlayTitle.Text      = Locale.Current.Lang?._GameRepairPage?.OverlayNotInstalledTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._GameRepairPage?.OverlayNotInstalledSubtitle;
             }
             else if (CurrentGameProperty.IsGameRunning)
             {
-                Overlay.Visibility = Visibility.Visible;
+                Overlay.Visibility     = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = Lang._GameRepairPage.OverlayGameRunningTitle;
-                OverlaySubtitle.Text = Lang._GameRepairPage.OverlayGameRunningSubtitle;
+                OverlayTitle.Text      = Locale.Current.Lang?._GameRepairPage?.OverlayGameRunningTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._GameRepairPage?.OverlayGameRunningSubtitle;
             }
         #if !DISABLEDISCORD
             else

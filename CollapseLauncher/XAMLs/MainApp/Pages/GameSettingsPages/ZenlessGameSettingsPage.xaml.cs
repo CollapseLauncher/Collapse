@@ -3,6 +3,7 @@ using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.GameSettings.Zenless;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -19,7 +20,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
@@ -107,7 +107,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegExported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegExported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegImported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegImported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -171,8 +171,8 @@ namespace CollapseLauncher.Pages
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first
-                var nativeResSize = GetNativeDefaultResolution();
-                var nativeResString = string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, nativeResSize.Width, nativeResSize.Height) + $" [{Lang._Misc.Default}]";
+                Size nativeResSize = GetNativeDefaultResolution();
+                string nativeResString = string.Format(Locale.Current.Lang?._GameSettingsPage.Graphics_ResPrefixFullscreen ?? "", nativeResSize.Width, nativeResSize.Height) + $" [{Locale.Current.Lang?._Misc?.Default}]";
 
                 // Then get the rest of the list
                 List<string> resFullscreen = GetResPairs_Fullscreen(nativeResSize);
@@ -210,10 +210,10 @@ namespace CollapseLauncher.Pages
                     or GameInstallStateEnum.InstalledHavePlugin
                     or GameInstallStateEnum.GameBroken)
                 {
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang?._GameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang?._GameSettingsPage.OverlayNotInstalledSubtitle;
                 }
                 else
                 {
@@ -244,9 +244,9 @@ namespace CollapseLauncher.Pages
         
         private List<string> GetResPairs_Fullscreen(Size defaultResolution)
         {
-            var       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            double       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
             List<int> acH               = AcceptableHeight;
-            var       acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            int       acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
@@ -268,7 +268,7 @@ namespace CollapseLauncher.Pages
                     indexOfDefaultRes = i;
 
                 // Add the resolution pair to the list
-                resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, w, h));
+                resPairs.Add(string.Format(Locale.Current.Lang?._GameSettingsPage.Graphics_ResPrefixFullscreen ?? "", w, h));
             }
 
             // If the index of default resolution is found, remove it from the list
@@ -282,11 +282,11 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var          nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            double          nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
             const double wideRatio         = (double)16 / 9;
             const double ulWideRatio       = (double)21 / 9;
             List<int>    acH               = AcceptableHeight;
-            var          acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            int          acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
@@ -305,7 +305,7 @@ namespace CollapseLauncher.Pages
                 int w = (int)Math.Round(h * wideRatio);
 
                 // Add the resolution pair to the list
-                resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixWindowed, w, h));
+                resPairs.Add(string.Format(Locale.Current.Lang?._GameSettingsPage.Graphics_ResPrefixWindowed ?? "", w, h));
             }
 
             return resPairs;
@@ -316,7 +316,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsApplied;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
                 ToggleRegistrySubscribe(false);

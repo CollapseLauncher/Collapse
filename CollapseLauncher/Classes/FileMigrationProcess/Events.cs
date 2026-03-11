@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
@@ -14,7 +15,7 @@ namespace CollapseLauncher
         {
             Interlocked.Add(ref _currentFileCountMoved, 1);
 
-            string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
+            string fileCountProcessedString = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
             _currentFileCountMoved,
             _totalFileCount);
 
@@ -41,8 +42,8 @@ namespace CollapseLauncher
             {
                 DispatcherQueueExtensions.TryEnqueue(() =>
                 {
-                    string speedString = string.Format(Locale.Lang!._Misc!.SpeedPerSec!, ConverterTool.SummarizeSizeSimple(speed));
-                    string sizeProgressString = string.Format(Locale.Lang._Misc.PerFromTo!,
+                    string speedString = string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", ConverterTool.SummarizeSizeSimple(speed));
+                    string sizeProgressString = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
                         ConverterTool.SummarizeSizeSimple(_currentSizeMoved),
                         ConverterTool.SummarizeSizeSimple(_totalFileSize));
 

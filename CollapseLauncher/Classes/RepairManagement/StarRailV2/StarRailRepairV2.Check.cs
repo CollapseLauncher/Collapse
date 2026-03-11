@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -9,7 +10,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -74,7 +74,7 @@ namespace CollapseLauncher
         private async Task CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            Status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status6 ?? "", asset.N);
 
             // Increment current total count
             ProgressAllCountCurrent++;

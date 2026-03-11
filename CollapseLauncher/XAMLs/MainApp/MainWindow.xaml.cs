@@ -62,7 +62,7 @@ namespace CollapseLauncher
                     
                     if (value)
                     {
-                        ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, Locale.Lang._Dialogs.EnsureExitSubtitle,
+                        ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, Locale.Current.Lang?._Dialogs?.EnsureExitSubtitle ?? "",
                                                       ILoggerHelper.GetILogger("ShutdownBlocker"));
                     }
                     else if (lastValue)

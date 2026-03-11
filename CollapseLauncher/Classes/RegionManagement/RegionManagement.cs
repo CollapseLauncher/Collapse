@@ -1,6 +1,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
@@ -18,7 +19,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
@@ -34,7 +34,7 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}";
+        private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Locale.Current.Lang?._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Locale.Current.Lang?._GameClientRegions)}";
 
         private         List<object> LastMenuNavigationItem;
         private         List<object> LastFooterNavigationItem;
@@ -136,11 +136,11 @@ namespace CollapseLauncher
 
             void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep)
             {
-                LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle,
-                                                string.Format($"[{retryAttemptCount} / {retryAttemptTotal}] " + Lang._MainPage.RegionLoadingSubtitleTimeOut,
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._MainPage?.RegionLoadingTitle,
+                                                string.Format($"[{retryAttemptCount} / {retryAttemptTotal}] " + Locale.Current.Lang?._MainPage?.RegionLoadingSubtitleTimeOut,
                                                               regionToChangeName,
                                                               timeOutSecond));
-                LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
+                LoadingMessageHelper.ShowActionButton(Locale.Current.Lang?._Misc?.Cancel, "", CancelLoadEvent);
             }
 
             async ValueTask BeforeLoadRoutine(CancellationToken token)
@@ -451,7 +451,7 @@ namespace CollapseLauncher
                 if (!IsLoadRegionComplete &&
                     !token.IsCancellationRequested)
                 {
-                    InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+                    InvokeLoadingRegionPopup(true, Locale.Current.Lang?._MainPage?.RegionLoadingTitle, RegionToChangeName);
                 }
             }
             catch (Exception ex)

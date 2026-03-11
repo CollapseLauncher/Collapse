@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ internal partial class HonkaiRepairV2
         ResetStatusAndProgress();
 
         // Set total activity string as "Loading Indexes..."
-        Status.ActivityStatus            = Locale.Lang._GameRepairPage.Status2;
+        Status.ActivityStatus            = Locale.Current.Lang?._GameRepairPage?.Status2;
         Status.IsProgressAllIndetermined = true;
         UpdateStatus();
 
@@ -65,10 +66,10 @@ internal partial class HonkaiRepairV2
         }
 
         return SummarizeStatusAndProgress(AssetIndex,
-                                          string.Format(Locale.Lang._GameRepairPage.Status3,
+                                          string.Format(Locale.Current.Lang?._GameRepairPage?.Status3 ?? "",
                                                         ProgressAllCountFound,
                                                         ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
-                                          Locale.Lang._GameRepairPage.Status4);
+                                          Locale.Current.Lang?._GameRepairPage?.Status4 ?? "");
 
         ValueTask Impl(FilePropertiesRemote asset, CancellationToken token) =>
             asset.FT switch

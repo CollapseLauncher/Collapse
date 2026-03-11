@@ -15,7 +15,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -28,8 +27,8 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<PkgVersionProperties> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            Status.ActivityStatus = Lang._GameRepairPage.Status11;
-            Status.IsProgressAllIndetermined = true;
+            Status.ActivityStatus                = Locale.Current.Lang?._GameRepairPage?.Status11;
+            Status.IsProgressAllIndetermined     = true;
             Status.IsProgressPerFileIndetermined = true;
 
             // Update status
@@ -124,10 +123,10 @@ namespace CollapseLauncher
             // Increment total count current
             ProgressAllCountCurrent++;
             // Set repair activity status
-            string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, asset.AssetIndex.remoteName),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
+                string.Format(Locale.Current.Lang?._GameRepairPage?.Status8 ?? "", asset.AssetIndex.remoteName),
+                string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
             string   assetPath     = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.remoteName));

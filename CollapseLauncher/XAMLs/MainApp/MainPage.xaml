@@ -4,7 +4,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
       xmlns:extension="using:CollapseLauncher.Extension"
@@ -63,7 +63,7 @@
                               IsIndeterminate="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay}"
                               Foreground="{ThemeResource TextBoxBackgroundThemeBrush}"/>
                 <TextBlock Grid.Column="1"
-                           Text="{x:Bind helper:Locale.Lang._MainPage.LoadingBackgroundImage, Mode=OneWay}"
+                           Text="{x:Bind helper:Locale.Current.Lang._MainPage.LoadingBackgroundImage, Mode=OneWay}"
                            VerticalAlignment="Center"/>
             </Grid>
         </Grid>
@@ -92,7 +92,7 @@
                         PaneClosing="NavigationPanelClosing_Event"
                         PaneDisplayMode="LeftCompact"
                         PaneOpening="NavigationPanelOpening_Event"
-                        PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
+                        PaneTitle="{x:Bind helper:Locale.Current.Lang._MainPage.NavigationMenu}"
                         Visibility="Visible">
             <Grid Background="Transparent">
                 <Frame x:Name="LauncherFrame">
@@ -163,7 +163,7 @@
                                       CornerRadius="15,0,0,15"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
+                                      PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange" />
                             <ComboBox x:Name="ComboBoxGameRegion"
                                       BorderThickness="0"
@@ -173,7 +173,7 @@
                                       CornerRadius="0,15,15,0"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
+                                      PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientRegions['Southeast Asia']}"
                                       SelectionChanged="EnableRegionChangeButton" />
                         </Grid>
                         <Grid x:Name="ChangeGameBtnGridShadow"
@@ -203,7 +203,7 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.Change}" />
                                         <Grid Grid.Column="1"
                                               Margin="4,0,0,0"
                                               HorizontalAlignment="Center"
@@ -240,7 +240,7 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.Change}" />
                                         <Grid Grid.Column="1"
                                               Margin="4,0,0,0"
                                               HorizontalAlignment="Center"
@@ -268,7 +268,7 @@
                                             <TextBlock Width="200"
                                                        Margin="0,0,0,12"
                                                        FontWeight="SemiBold"
-                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._MainPage.RegionChangeConfirm}"
                                                        TextWrapping="Wrap" />
                                             <StackPanel x:Name="ChangeRegionWarning"
                                                         Visibility="Collapsed">
@@ -276,7 +276,7 @@
                                                            FontSize="14"
                                                            FontWeight="SemiBold"
                                                            Style="{ThemeResource BaseTextBlockStyle}"
-                                                           Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._MainPage.RegionChangeWarnTitle}" />
                                                 <TextBlock x:Name="ChangeRegionWarningText"
                                                            Width="200"
                                                            Margin="0,0,0,12"
@@ -327,7 +327,7 @@
                                                                        HorizontalAlignment="Left"
                                                                        VerticalAlignment="Center"
                                                                        FontWeight="SemiBold"
-                                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
+                                                                       Text="{x:Bind helper:Locale.Current.Lang._MainPage.RegionChangeConfirmBtn}" />
                                                         </Grid>
                                                     </Grid>
                                                 </Button.Content>
@@ -505,7 +505,7 @@
                                            FontSize="20"
                                            FontWeight="SemiBold"
                                            Opacity="0.50"
-                                           Text="{x:Bind helper:Locale.Lang._MainPage.NotifNoNewNotifs}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._MainPage.NotifNoNewNotifs}"
                                            TextAlignment="Center" />
                             </Grid>
                         </StackPanel>
@@ -541,7 +541,7 @@
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,-1,8,1"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._MainPage.NotifClearAll}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._MainPage.NotifClearAll}" />
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="16"
                                   Glyph="&#xf2ed;" />

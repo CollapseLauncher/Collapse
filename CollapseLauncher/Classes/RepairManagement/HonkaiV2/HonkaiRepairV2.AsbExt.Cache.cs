@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.Honkai.Context;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -75,7 +76,7 @@ internal static partial class AssetBundleExtension
 
                     // Update Progress
                     progressibleInstance.Status.ActivityStatus =
-                        string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, cacheType);
+                        string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", cacheType);
                     progressibleInstance.Status.IsProgressAllIndetermined = true;
                     progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
@@ -251,7 +252,7 @@ internal static partial class AssetBundleExtension
             if (assetInfo.Asset.DLM == 2)
             {
                 // Update progress
-                progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.Status2, cacheType, assetInfo.Asset.N);
+                progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.Status2 ?? "", cacheType, assetInfo.Asset.N);
                 progressibleInstance.UpdateStatus();
 
                 UrlStatus urlStatus = await checkAsbHttpClient.GetURLStatusCode(assetInfo.AssetUrl, innerToken);

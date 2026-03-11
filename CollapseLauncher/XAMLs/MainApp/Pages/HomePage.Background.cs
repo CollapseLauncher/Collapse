@@ -6,7 +6,6 @@ using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Animations;
-using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
@@ -277,8 +276,8 @@ public sealed partial class HomePage
 
             string folderSave = await FileDialogNative
                .GetFolderPicker(onlyCurrent
-                                    ? Locale.Lang._HomePage.BgContextMenu_FolderSelectSaveCurrentBg
-                                    : Locale.Lang._HomePage.BgContextMenu_FolderSelectSaveAllBg);
+                                    ? Locale.Current.Lang?._HomePage?.BgContextMenu_FolderSelectSaveCurrentBg
+                                    : Locale.Current.Lang?._HomePage?.BgContextMenu_FolderSelectSaveAllBg);
             if (string.IsNullOrEmpty(folderSave))
             {
                 return;

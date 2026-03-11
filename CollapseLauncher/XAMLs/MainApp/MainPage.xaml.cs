@@ -178,7 +178,7 @@ namespace CollapseLauncher
 
             InitKeyboardShortcuts();
 
-            InvokeLoadingRegionPopup(true, Locale.Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+            InvokeLoadingRegionPopup(true, Locale.Current.Lang?._MainPage?.RegionLoadingTitle, RegionToChangeName);
             if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
                 MainFrameChanger.ChangeMainFrame(page);
@@ -351,10 +351,10 @@ namespace CollapseLauncher
 
             ContentDialogCollapse dialog = new(ContentDialogTheme.Warning)
             {
-                Title             = Locale.Lang._Dialogs.PrivilegeMustRunTitle,
-                Content           = Locale.Lang._Dialogs.PrivilegeMustRunSubtitle,
-                PrimaryButtonText = Locale.Lang._Misc.Yes,
-                CloseButtonText   = Locale.Lang._Misc.Close,
+                Title             = Locale.Current.Lang?._Dialogs?.PrivilegeMustRunTitle,
+                Content           = Locale.Current.Lang?._Dialogs?.PrivilegeMustRunSubtitle,
+                PrimaryButtonText = Locale.Current.Lang?._Misc?.Yes,
+                CloseButtonText   = Locale.Current.Lang?._Misc?.Close,
                 DefaultButton     = ContentDialogButton.Primary,
                 XamlRoot          = root.XamlRoot
             };
@@ -565,7 +565,7 @@ namespace CollapseLauncher
             PresetConfig preset   = await LauncherMetadataHelper.GetMetadataConfig(category, region);
             
             ChangeRegionWarningText.Text = preset!.GameChannel != GameChannel.Stable
-                ? string.Format(Locale.Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel)
+                ? string.Format(Locale.Current.Lang?._MainPage?.RegionChangeWarnExper1, preset.GameChannel)
                 : string.Empty;
             ChangeRegionWarning.Visibility =
                 preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
@@ -610,14 +610,14 @@ namespace CollapseLauncher
                 TextBlock textBlock = textGridBox.AddElementToGridRow(new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap
-                }.AddTextBlockLine(string.Format(Locale.Lang._Dialogs.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
+                }.AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
                  .AddTextBlockNewLine(2), 0);
 
                 CheckBox enablePluginAutoUpdateCheck = textGridBox.AddElementToGridRow(new CheckBox(), 1);
                 enablePluginAutoUpdateCheck.Content = new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap
-                }.AddTextBlockLine(Locale.Lang._PluginManagerPage.ListViewMainActionButton3);
+                }.AddTextBlockLine(Locale.Current.Lang?._PluginManagerPage?.ListViewMainActionButton3);
                 enablePluginAutoUpdateCheck.BindProperty(ToggleButton.IsCheckedProperty,
                                                          PluginManagerPage.Context,
                                                          nameof(PluginManagerPage.Context.IsEnableAutoUpdate),
@@ -639,16 +639,16 @@ namespace CollapseLauncher
                     }
                 }
                 textBlock.AddTextBlockNewLine(2)
-                    .AddTextBlockLine(Locale.Lang._Dialogs.PluginManagerUpdateAvailableSubtitle2);
+                    .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableSubtitle2);
 
                 ContentDialogResult pluginUpdateConfirm =
-                    await SimpleDialogs.SpawnDialog(string.Format(Locale.Lang._Dialogs.PluginManagerUpdateAvailableTitle, pluginUpdateNameList.Count),
+                    await SimpleDialogs.SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableTitle, pluginUpdateNameList.Count),
                                                     textGridBox,
                                                     null,
-                                                    Locale.Lang._Dialogs.PluginManagerUpdateAvailableCancelBtn,
-                                                    Locale.Lang._Dialogs.PluginManagerUpdateAvailableConfirmBtn,
-                                                    string.Format(Locale.Lang._Dialogs.PluginManagerUpdateAvailableToManagerMenuBtn,
-                                                                  Locale.Lang._PluginManagerPage.PageTitle),
+                                                    Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableCancelBtn,
+                                                    Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableConfirmBtn,
+                                                    string.Format(Locale.Current.Lang?._Dialogs?.PluginManagerUpdateAvailableToManagerMenuBtn,
+                                                                  Locale.Current.Lang?._PluginManagerPage?.PageTitle),
                                                     ContentDialogButton.Primary,
                                                     ContentDialogTheme.Success);
 
@@ -662,7 +662,7 @@ namespace CollapseLauncher
                     FullPageOverlay overlayMenu = new(new PluginManagerPage(), XamlRoot, true)
                     {
                         Size               = FullPageOverlaySize.Full,
-                        OverlayTitleSource = () => Locale.Lang._PluginManagerPage.PageTitle,
+                        OverlayTitleSource = () => Locale.Current.Lang?._PluginManagerPage?.PageTitle,
                         OverlayTitleIcon = new FontIconSource
                         {
                             Glyph    = "\uE912",
@@ -689,7 +689,7 @@ namespace CollapseLauncher
             }
 
             Button updateMetadataBtn =
-                UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Lang._AppNotification!.NotifMetadataUpdateBtn,
+                UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Current.Lang?._AppNotification!.NotifMetadataUpdateBtn,
                                                                  "",
                                                                  "FontAwesomeSolid",
                                                                  "AccentButtonStyle"
@@ -700,7 +700,7 @@ namespace CollapseLauncher
                                         {
                                             TextBlock text = new TextBlock
                                             {
-                                                Text       = Locale.Lang._AppNotification.NotifMetadataUpdateBtnUpdating,
+                                                Text       = Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateBtnUpdating,
                                                 FontWeight = FontWeights.Medium
                                             }.WithVerticalAlignment(VerticalAlignment.Center);
                                             ProgressRing loadBar = new ProgressRing
@@ -722,13 +722,13 @@ namespace CollapseLauncher
                                             int i = 2;
                                             while (i != 0)
                                             {
-                                                text.Text = string.Format(Locale.Lang._AppNotification.NotifMetadataUpdateBtnCountdown, i);
+                                                text.Text = string.Format(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateBtnCountdown, i);
                                                 await Task.Delay(1000);
                                                 i--;
                                             }
 
                                             loadBar.Visibility = Visibility.Visible;
-                                            text.Text          = Locale.Lang._AppNotification.NotifMetadataUpdateBtnUpdating;
+                                            text.Text          = Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateBtnUpdating;
 
                                             try
                                             {
@@ -741,8 +741,8 @@ namespace CollapseLauncher
                                                 Logger.LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
                                             }
                                         };
-            SpawnNotificationPush(Locale.Lang._AppNotification.NotifMetadataUpdateTitle,
-                                  Locale.Lang._AppNotification.NotifMetadataUpdateSubtitle,
+            SpawnNotificationPush(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateTitle,
+                                  Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateSubtitle,
                                   NotifSeverity.Informational,
                                   -886135731,
                                   true,

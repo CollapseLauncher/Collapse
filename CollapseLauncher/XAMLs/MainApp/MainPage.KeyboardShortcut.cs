@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
@@ -18,7 +19,6 @@ using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -49,14 +49,14 @@ public partial class MainPage : Page
             KbShortcutList = null;
 
             SpawnNotificationPush(
-                                  Lang._AppNotification.NotifKbShortcutTitle,
-                                  Lang._AppNotification.NotifKbShortcutSubtitle,
+                                  Locale.Current.Lang?._AppNotification?.NotifKbShortcutTitle ?? "",
+                                  Locale.Current.Lang?._AppNotification?.NotifKbShortcutSubtitle ?? "",
                                   NotifSeverity.Informational,
                                   -20,
                                   true,
                                   false,
                                   null,
-                                  NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (_, _) => ShowKeybinds_Invoked(null, null)),
+                                  NotificationPush.GenerateNotificationButton("", Locale.Current.Lang?._AppNotification?.NotifKbShortcutBtn, (_, _) => ShowKeybinds_Invoked(null, null)),
                                   true,
                                   true,
                                   true
@@ -298,7 +298,7 @@ public partial class MainPage : Page
         FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
         {
             Size = FullPageOverlaySize.Full,
-            OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+            OverlayTitleSource = () => Locale.Current.Lang?._PluginManagerPage?.PageTitle,
             OverlayTitleIcon = new FontIconSource
             {
                 Glyph = "\uE912",

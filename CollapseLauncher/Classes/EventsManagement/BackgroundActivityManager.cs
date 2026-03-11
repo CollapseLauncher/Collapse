@@ -6,7 +6,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -14,7 +13,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using static Hi3Helper.Locale;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable IDE0130
@@ -125,34 +123,33 @@ namespace CollapseLauncher
             TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
-                Text = Lang!._BackgroundNotification!.LoadingTitle
+                Text = Locale.Current.Lang?._BackgroundNotification?.LoadingTitle
             });
             TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }, 1);
 
             TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 0, 1);
             TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 1, 1);
 
             ProgressBar progressBar = progressStatusContainer.AddElementToStackPanel(
                 new ProgressBar { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true });
 
             Button cancelButton =
-                UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Lang._HomePage!.PauseCancelDownloadBtn,
-                    "",
-                    "FontAwesomeSolid",
-                    "AccentButtonStyle"
+                UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Current.Lang?._HomePage?.PauseCancelDownloadBtn,
+                                                                 "",
+                                                                 "FontAwesomeSolid",
+                                                                 "AccentButtonStyle"
                 )
                 .WithHorizontalAlignment(HorizontalAlignment.Right)
                 .WithMargin(0d, 4d, 0d, 0d);
@@ -166,7 +163,7 @@ namespace CollapseLauncher
 
             Button settingsButton =
                 UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Lang._Dialogs!.DownloadSettingsTitle,
+                    Locale.Current.Lang?._Dialogs?.DownloadSettingsTitle,
                     "\uf013",
                     "FontAwesomeSolid",
                     "AccentButtonStyle"
@@ -185,9 +182,9 @@ namespace CollapseLauncher
             EventHandler<TotalPerFileProgress> progressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args!.ProgressAllPercentage;
-                progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
-                progressRightTitle.Text = string.Format(Lang._Misc!.TimeRemainHMSFormat!, args.ProgressAllTimeLeft);
-                progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressAllPercentage);
+                progressLeftSubtitle.Text = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
+                progressRightTitle.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", args.ProgressAllTimeLeft);
+                progressRightSubtitle.Text = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateHeader1 + " {0}%", args.ProgressAllPercentage);
             });
 
             EventHandler<TotalPerFileStatus> statusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
@@ -200,7 +197,7 @@ namespace CollapseLauncher
                     settingsButton.IsEnabled = false;
                     controlButtons.Visibility = Visibility.Collapsed;
                     parentNotificationUI.Severity = InfoBarSeverity.Error;
-                    parentNotificationUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error!, activityTitle);
+                    parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Error!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
                 }
@@ -210,7 +207,7 @@ namespace CollapseLauncher
                     settingsButton.IsEnabled = false;
                     controlButtons.Visibility = Visibility.Collapsed;
                     parentNotificationUI.Severity = InfoBarSeverity.Success;
-                    parentNotificationUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed!, activityTitle);
+                    parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Completed!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
                 }

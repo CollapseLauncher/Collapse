@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -192,7 +192,7 @@ public partial class FullPageOverlay : ContentControl
         if (LayoutCloseButton is { Content: Grid asCloseButtonGrid } &&
             asCloseButtonGrid.Children.FirstOrDefault() is TextBlock asCloseButtonTextBlock)
         {
-            asCloseButtonTextBlock.BindProperty(TextBlock.TextProperty, Locale.Lang._Misc, nameof(Locale.Lang._Misc.CloseOverlay));
+            asCloseButtonTextBlock.BindProperty(TextBlock.TextProperty, Locale.Current.Lang?._Misc!, nameof(Locale.Current.Lang._Misc.CloseOverlay));
             asCloseButtonTextBlock.UpdateLayout();
         }
 

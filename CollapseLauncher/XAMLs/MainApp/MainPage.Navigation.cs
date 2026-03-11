@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
@@ -17,7 +18,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 // ReSharper disable CheckNamespace
@@ -255,8 +255,8 @@ public partial class MainPage : Page
             case "filescleanup":
                 LoadingMessageHelper.ShowLoadingFrame();
                 // Initialize and get game state, then get the latest package info
-                LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
-                                                Lang._FileCleanupPage.LoadingSubtitle2);
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                                Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
 
                 try
                 {
@@ -333,7 +333,7 @@ public partial class MainPage : Page
         NavigateInnerSwitch(tag);
     }
 
-    private void ToggleNotificationPanelBtnClick(object sender, RoutedEventArgs e)
+    private void ToggleNotificationPanelBtnClick(object? sender, RoutedEventArgs? e)
     {
         _isNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
         ShowHideNotificationPanel();

@@ -736,24 +736,24 @@ namespace CollapseLauncher.InstallManager.Base
 
                         // Spawn the confirmation dialog
                         ContentDialogResult fallbackResultConfirm = await SimpleDialogs.SpawnDialog(
-                            Locale.Lang._Dialogs.SophonIncrementUpdateUnavailTitle,
+                            Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailTitle,
                             new TextBlock
                             {
                                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
                             }
-                            .AddTextBlockLine(string.Format(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle1, requestedVersionFrom.ToString()))
-                            .AddTextBlockLine(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle2, Microsoft.UI.Text.FontWeights.Bold)
-                            .AddTextBlockLine(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle3)
+                            .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle1 ?? "", requestedVersionFrom.ToString()))
+                            .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle2, Microsoft.UI.Text.FontWeights.Bold)
+                            .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle3)
                             .AddTextBlockNewLine(2)
                             .AddTextBlockLine(
-                                string.Format(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle4,
-                                              Locale.Lang._Misc.YesContinue,
-                                              Locale.Lang._Misc.NoCancel),
+                                string.Format(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle4 ?? "",
+                                              Locale.Current.Lang?._Misc?.YesContinue,
+                                              Locale.Current.Lang?._Misc?.NoCancel),
                                 Microsoft.UI.Text.FontWeights.Bold,
                                 10),
                             ParentUI,
-                            Locale.Lang._Misc.NoCancel,
-                            Locale.Lang._Misc.YesContinue,
+                            Locale.Current.Lang?._Misc?.NoCancel,
+                            Locale.Current.Lang?._Misc?.YesContinue,
                             defaultButton: ContentDialogButton.Primary,
                             dialogTheme: CustomControls.ContentDialogTheme.Warning);
 
@@ -867,8 +867,8 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.IsProgressPerFileIndetermined = false;
                 Status.IsProgressAllIndetermined     = false;
                 Status.ActivityStatus = $"{(IsSophonInUpdateMode && !isPreloadMode
-                    ? Locale.Lang._Misc.UpdatingAndApplying
-                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+                    ? Locale.Current.Lang?._Misc?.UpdatingAndApplying
+                    : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
 

@@ -40,10 +40,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected    PresetConfig? PresetConfig            { get; } = presetConfig;
 
         public string? GameNameTranslation =>
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles);
+            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Current.Lang?._GameClientTitles);
 
         public string? GameRegionTranslation =>
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
+            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Current.Lang?._GameClientRegions);
 
         public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; protected set; }
         public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; protected set; }

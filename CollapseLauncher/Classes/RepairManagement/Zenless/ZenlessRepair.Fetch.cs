@@ -33,7 +33,7 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            Status.ActivityStatus = Locale.Lang._GameRepairPage.Status2;
+            Status.ActivityStatus = Locale.Current.Lang?._GameRepairPage?.Status2;
             Status.IsProgressAllIndetermined = true;
             UpdateStatus();
 

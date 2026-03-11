@@ -12,13 +12,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using Windows.UI;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper.SentryHelper;
 using CollapseLauncher.GameManagement.ImageBackground;
-
+using CollapseLauncher.Helper;
 
 
 #if !DISABLEDISCORD
@@ -93,7 +92,7 @@ namespace CollapseLauncher.Pages
                 GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
                 SettingsScrollViewer.EnableImplicitAnimation(true);
                 
-                MobileModeToggleText.Text = $"[{Lang._Misc.Tag_Deprecated}] {Lang._GameSettingsPage.MobileLayout}";
+                MobileModeToggleText.Text = $"[{Locale.Current.Lang?._Misc?.Tag_Deprecated}] {Locale.Current.Lang?._GameSettingsPage.MobileLayout}";
 
                 InheritApplyTextColor = ApplyText.Foreground!;
             #nullable enable
@@ -134,7 +133,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegExported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegExported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -160,7 +159,7 @@ namespace CollapseLauncher.Pages
                 if (exc != null) throw exc;
 
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsRegImported;
+                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegImported;
                 ApplyText.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
@@ -197,10 +196,10 @@ namespace CollapseLauncher.Pages
                     or GameInstallStateEnum.InstalledHavePlugin
                     or GameInstallStateEnum.GameBroken)
                 {
-                    Overlay.Visibility = Visibility.Visible;
+                    Overlay.Visibility     = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledSubtitle;
+                    OverlayTitle.Text      = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text   = Locale.Current.Lang?._StarRailGameSettingsPage.OverlayNotInstalledSubtitle;
                 }
                 else
                 {
@@ -221,7 +220,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._StarRailGameSettingsPage.SettingsApplied;
+                ApplyText.Text       = Locale.Current.Lang?._StarRailGameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
                 ToggleRegistrySubscribe(false);

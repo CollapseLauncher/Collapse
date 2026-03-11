@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Text;
@@ -108,7 +108,7 @@ namespace CollapseLauncher
                 StackPanel panel              = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock  gameTitleTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = title });
                 TextBlock? gameTitleTranslatedTextBlock =
-                    GetGameTitleRegionTranslationTextBlock(ref gameTitleTextBlock, Locale.Lang._GameClientTitles);
+                    GetGameTitleRegionTranslationTextBlock(ref gameTitleTextBlock, Locale.Current.Lang?._GameClientTitles);
 
                 if (gameTitleTranslatedTextBlock != null)
                 {
@@ -141,7 +141,7 @@ namespace CollapseLauncher
                 StackPanel    panel               = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock     gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock? gameRegionTranslatedTextBlock =
-                    GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
+                    GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Current.Lang?._GameClientRegions);
                 panel.AddElementToStackPanel(gameRegionTranslatedTextBlock);
     
                 if (config != null && config.GameChannel != GameChannel.Stable)
@@ -179,9 +179,9 @@ namespace CollapseLauncher
             return list;
         }
 
-        public static TextBlock? GetGameTitleRegionTranslationTextBlock(ref TextBlock originalTextBlock,
-                                                                        Dictionary<string, string?>?
-                                                                            translationDictionary)
+        public static TextBlock? GetGameTitleRegionTranslationTextBlock(
+            ref TextBlock               originalTextBlock,
+            Dictionary<string, string>? translationDictionary)
         {
             // Get the original region string
             string? originalString = originalTextBlock.Text;
@@ -216,8 +216,8 @@ namespace CollapseLauncher
             return translatedTextBlock;
         }
 
-        public static string? GetGameTitleRegionTranslationString(string?                      originalString,
-                                                                  Dictionary<string, string?>? translationDictionary)
+        public static string? GetGameTitleRegionTranslationString(string?                     originalString,
+                                                                  Dictionary<string, string>? translationDictionary)
         {
             // Check if the region translation is available. If not, then return null
             if (originalString != null && translationDictionary != null && (translationDictionary.Count == 0

@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
@@ -27,83 +27,67 @@ internal partial class WpfPackageContext
     /// <summary>
     /// Game info display data for the current game and region.
     /// </summary>
-    private HypGameInfoData? WpfGetGameData
-    {
-        get => field ??= GameVersionManager
-                        .LauncherApi?
-                        .LauncherGetGame?
-                        .Data?
-                        .TryFindByBizOrId(GameVersionManager.GameBiz,
-                                          GameVersionManager.GameId,
-                                          out HypGameInfoData? data) ?? false
+    private HypGameInfoData? WpfGetGameData =>
+        field ??= GameVersionManager
+                 .LauncherApi?
+                 .LauncherGetGame?
+                 .Data?
+                 .TryFindByBizOrId(GameVersionManager.GameBiz,
+                                   GameVersionManager.GameId,
+                                   out HypGameInfoData? data) ?? false
             ? data
             : null;
-    }
 
     /// <summary>
     /// Gets the WPF Package Data from the API. If the package is unavailable, it will return null.
     /// </summary>
-    private HypPackageData? WpfPackageData
-    {
-        get => field ??= (GameVersionManager
-                        .LauncherApi?
-                        .LauncherGameResourceWpf?
-                        .Data?
-                        .TryFindByBizOrId(GameVersionManager.GameBiz,
-                                          GameVersionManager.GameId,
-                                          out HypWpfPackageData? data) ?? false) &&
-                         data.PackageInfo != null
+    private HypPackageData? WpfPackageData =>
+        field ??= (GameVersionManager
+                  .LauncherApi?
+                  .LauncherGameResourceWpf?
+                  .Data?
+                  .TryFindByBizOrId(GameVersionManager.GameBiz,
+                                    GameVersionManager.GameId,
+                                    out HypWpfPackageData? data) ?? false) &&
+                  data.PackageInfo != null
             ? data.PackageInfo
             : null;
-    }
 
     /// <summary>
     /// Whether to skip WPF package verification before update if flag file exists
     /// </summary>
-    private bool IsSkipPackageVerification
-    {
-        get => File.Exists(Path.Combine(GamePath, "@NoVerification"));
-    }
+    private bool IsSkipPackageVerification => File.Exists(Path.Combine(GamePath, "@NoVerification"));
 
     /// <summary>
     /// Whether to delete WPF package after installation
     /// </summary>
-    private bool IsDeletePackageAfterInstall
-    {
-        get => !File.Exists(Path.Combine(GamePath, "@NoDeleteZip"));
-    }
+    private bool IsDeletePackageAfterInstall => !File.Exists(Path.Combine(GamePath, "@NoDeleteZip"));
 
     /// <summary>
     /// Whether WPF package is enabled for the game
     /// </summary>
-    public bool IsWpfPackageEnabled
-    {
-        get => GameVersionManager.IsGameInstalled() &&
-               GameVersionManager.IsGameVersionMatch() &&
-               GameVersionManager.GamePreset.IsWpfUpdateEnabled &&
-               WpfPackageData != null &&
-               WpfGetGameData != null;
-    }
+    public bool IsWpfPackageEnabled =>
+        GameVersionManager.IsGameInstalled() &&
+        GameVersionManager.IsGameVersionMatch() &&
+        GameVersionManager.GamePreset.IsWpfUpdateEnabled &&
+        WpfPackageData != null &&
+        WpfGetGameData != null;
 
     /// <summary>
     /// Gets the localized WPF package name
     /// </summary>
-    public string WpfPackageNameLocalized
-    {
-        get => Locale
-              .Lang
-              ._WpfPackageName
-              .TryGetValueIgnoreCase(GameVersionManager.GamePreset.GameName ?? "")
-               ?? "Unknown";
-    }
+    public string WpfPackageNameLocalized =>
+        Locale
+           .Current
+           .Lang?
+           ._WpfPackageName
+           .TryGetValueIgnoreCase(GameVersionManager.GamePreset.GameName ?? "")
+     ?? "Unknown";
 
     /// <summary>
     /// Gets the WPF package icon URL.
     /// </summary>
-    public string? WpfPackageIconUrl
-    {
-        get => field ??= WpfGetGameData?.Display?.WpfIcon?.ImageUrl;
-    }
+    public string? WpfPackageIconUrl => field ??= WpfGetGameData?.Display?.WpfIcon?.ImageUrl;
 
     /// <summary>
     /// Gets or sets the current directory of the game installation.
@@ -130,11 +114,9 @@ internal partial class WpfPackageContext
     /// <summary>
     /// To indicate whether an update is available.
     /// </summary>
-    public bool IsUpdateAvailable
-    {
-        get => CurrentAvailableVersion != GameVersion.Empty &&
-               CurrentAvailableVersion > CurrentInstalledVersion;
-    }
+    public bool IsUpdateAvailable =>
+        CurrentAvailableVersion != GameVersion.Empty &&
+        CurrentAvailableVersion > CurrentInstalledVersion;
 
     /// <summary>
     /// Gets or sets the last error to be displayed while processing WPF Package updates.

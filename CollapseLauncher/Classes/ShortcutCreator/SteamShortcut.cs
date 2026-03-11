@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
@@ -12,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.MainEntryPoint;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -38,23 +38,23 @@ namespace CollapseLauncher.ShortcutUtils
             _path = Path.GetDirectoryName(path);
             _preset = preset;
 
-            var translatedGameTitle =
+            string translatedGameTitle =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
-                                                                        Lang._GameClientTitles)!;
-            var translatedGameRegion =
+                                                                        Locale.Current.Lang?._GameClientTitles)!;
+            string translatedGameRegion =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
-                                                                        Lang._GameClientRegions);
+                                                                        Locale.Current.Lang?._GameClientRegions);
             AppName = $"{translatedGameTitle} - {translatedGameRegion}";
 
-            var stubPath = VelopackLocatorExtension.FindCollapseStubPath();
+            string stubPath = VelopackLocatorExtension.FindCollapseStubPath();
             Exe = $"\"{stubPath}\"";
             StartDir = $"{Path.GetDirectoryName(stubPath)}";
 
-            var appNameInternal = $"{preset.GameName} - {preset.ZoneName}";
+            string appNameInternal = $"{preset.GameName} - {preset.ZoneName}";
             AppID = GenerateAppId(Exe, appNameInternal);
 
-            var gridPath = Path.Combine(_path!, "grid");
-            var iconName = ShortcutCreator.GetIconName(_preset);
+            string gridPath = Path.Combine(_path!, "grid");
+            string iconName = ShortcutCreator.GetIconName(_preset);
             Icon = Path.Combine(gridPath, iconName);
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
@@ -66,7 +66,7 @@ namespace CollapseLauncher.ShortcutUtils
             // Actually the appid generation algorithm for custom apps has been changed.
             // It's now a completely random number instead of the crc32.
             // But to be able to track the target app, we still use crc32 as appid.
-            var crc32 = new Crc32();
+            Crc32 crc32 = new Crc32();
             crc32.Append(Encoding.UTF8.GetBytes(exe + appName));
             return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
@@ -75,10 +75,10 @@ namespace CollapseLauncher.ShortcutUtils
         {
             if (!string.IsNullOrEmpty(_path)) Directory.CreateDirectory(_path);
 
-            var gridPath = Path.Combine(_path!, "grid");
+            string gridPath = Path.Combine(_path!, "grid");
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
-            var iconAssetPath = ShortcutCreator.GetIconPath(_preset);
+            string iconAssetPath = ShortcutCreator.GetIconPath(_preset);
 
             if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
@@ -131,14 +131,14 @@ namespace CollapseLauncher.ShortcutUtils
             ];
             List<(string, string)> cacheImageList = [];
 
-            for (var index = images.Length - 1; index >= 0; index--)
+            for (int index = images.Length - 1; index >= 0; index--)
             {
-                var image       = images[index];
-                var asset       = assets[image.Item1];
-                var steamSuffix = image.Item2;
+                (string, string) image       = images[index];
+                SteamGameProp    asset       = assets[image.Item1];
+                string           steamSuffix = image.Item2;
 
-                var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
-                var hash      = MD5Hash(cachePath);
+                string cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+                string hash      = MD5Hash(cachePath);
                 if (!hash.Equals(asset.MD5, StringComparison.OrdinalIgnoreCase))
                     cacheImageList.Add(image);
             }
@@ -147,11 +147,11 @@ namespace CollapseLauncher.ShortcutUtils
 
             LoadingMessageHelper.ShowLoadingFrame();
 
-            for (var i = 0; i < cacheImageList.Count; i++)
+            for (int i = 0; i < cacheImageList.Count; i++)
             {
-                var image = cacheImageList[i];
-                var progressString = string.Format(Lang._Dialogs.SteamShortcutDownloadingImages, i + 1, cacheImageList.Count);
-                LoadingMessageHelper.SetMessage(Lang._Dialogs.SteamShortcutTitle, progressString);
+                (string, string) image = cacheImageList[i];
+                string progressString = string.Format(Locale.Current.Lang?._Dialogs?.SteamShortcutDownloadingImages ?? "", i + 1, cacheImageList.Count);
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._Dialogs?.SteamShortcutTitle, progressString);
                 await CacheImageFromUrl(assets[image.Item1], image.Item2, token);
             }
 
@@ -162,16 +162,16 @@ namespace CollapseLauncher.ShortcutUtils
         {
             if (token.IsCancellationRequested) return;
 
-            var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+            string cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
 
-            var hash = MD5Hash(cachePath);
+            string hash = MD5Hash(cachePath);
             if (hash.Equals(asset.MD5, StringComparison.OrdinalIgnoreCase)) return;
 
-            var cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
+            string cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
 
-            for (var i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                var info = new FileInfo(cachePath);
+                FileInfo info = new FileInfo(cachePath);
                 await DownloadImage(info, cdnURL, token);
 
                 if (token.IsCancellationRequested)
@@ -194,7 +194,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
                 // Try to get the remote stream and download the file
@@ -207,7 +207,7 @@ namespace CollapseLauncher.ShortcutUtils
                 });
 
                 // Get the file length
-                var fileLength = netStream.Length;
+                long fileLength = netStream.Length;
 
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);

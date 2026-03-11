@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -50,7 +51,7 @@ internal static partial class AssetBundleExtension
 
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Audio Manifest");
+            string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Audio Manifest");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
@@ -100,7 +101,7 @@ internal static partial class AssetBundleExtension
                         goto AddAsset; // I love goto. Dun ask me why :>
                     }
 
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status15, audioAsset.Path);
+                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status15 ?? "", audioAsset.Path);
                     progressibleInstance.Status.IsProgressAllIndetermined = true;
                     progressibleInstance.Status.IsProgressPerFileIndetermined = true;
                     progressibleInstance.UpdateStatus();
@@ -156,7 +157,7 @@ internal static partial class AssetBundleExtension
             throw new InvalidOperationException("This method cannot be called while AudioPatchInfo is null");
         }
 
-        if (asset.AssociatedObject is not ManifestAssetInfo audioAssetInfo)
+        if (asset.AssociatedObject is not ManifestAssetInfo)
         {
             throw new InvalidOperationException("This method cannot be called while AssociatedObject is not a ManifestAssetInfo type");
         }

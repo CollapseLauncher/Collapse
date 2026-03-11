@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Pages;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -180,8 +180,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
             // Set the text as "Processing..." to the Submit button.
             textBlock.BindProperty(TextBlock.TextProperty,
-                                   Locale.Lang._Dialogs,
-                                   nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Processing));
+                                   Locale.Current.Lang?._Dialogs!,
+                                   nameof(Locale.Current.Lang._Dialogs.UserFeedback_SubmitBtn_Processing));
         }
 
         private Task OnSubmitBtnCompletedTask()
@@ -207,10 +207,10 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
             // Set the Submit button's text based on the isCancelled state.
             textBlock.BindProperty(TextBlock.TextProperty,
-                                   Locale.Lang._Dialogs,
+                                   Locale.Current.Lang?._Dialogs!,
                                    isCancelled ?
-                                       nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Cancelled) :
-                                       nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Completed));
+                                       nameof(Locale.Current.Lang._Dialogs.UserFeedback_SubmitBtn_Cancelled) :
+                                       nameof(Locale.Current.Lang._Dialogs.UserFeedback_SubmitBtn_Completed));
 
             // Delay before return
             return ReturnDelay();

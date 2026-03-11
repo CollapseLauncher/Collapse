@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Interfaces.Class;
-using CollapseLauncher.Pages;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
@@ -46,7 +46,7 @@ namespace CollapseLauncher.Extension
         /// </summary>
         /// <typeparam name="T">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</typeparam>
         /// <param name="element">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</param>
-        /// <param name="localeSetName">The instance name of a <seealso cref="Hi3Helper.Locale"/> members.</param>
+        /// <param name="localeSetName">The instance name of a <seealso cref="Locale"/> members.</param>
         /// <param name="localePropertyName">Name of the locale property</param>
         /// <returns>A reference of the <typeparamref name="T"/></returns>
         internal static T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
@@ -156,7 +156,7 @@ namespace CollapseLauncher.Extension
                 {
                     navItemTextBlock.BindProperty(
                         TextBlock.TextProperty,
-                        Locale.Lang,
+                        Locale.Current.Lang!,
                         $"{localeProperty.LocaleSetName}.{localeProperty.LocalePropertyName}");
                     localeValue = navItemTextBlock.GetValue(TextBlock.TextProperty) as string;
                 }
@@ -164,7 +164,7 @@ namespace CollapseLauncher.Extension
                 {
                     navItemAsHeader.BindProperty(
                         ContentControl.ContentProperty,
-                        Locale.Lang,
+                        Locale.Current.Lang!,
                         $"{localePropertyOnHeader.LocaleSetName}.{localePropertyOnHeader.LocalePropertyName}");
                     localeValue = navItemAsHeader.GetValue(ContentControl.ContentProperty) as string;
                 }

@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
@@ -43,21 +43,16 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
     public bool IsForceRedirectToSophon => false;
     public bool IsLoadingCompleted      { get; private set; }
 
-    public string  GameBackgroundImg           { get; private set; } = string.Empty;
-    public string? GameBackgroundImgLocal      { get; set; }
-
-    // ReSharper disable UnusedAutoPropertyAccessor.Global
-    public int   GameBackgroundSequenceCount { get; private set; } = 1;
-    public float GameBackgroundSequenceFps   { get; private set; }
-    // ReSharper enable UnusedAutoPropertyAccessor.Global
+    public string  GameBackgroundImg      => string.Empty;
+    public string? GameBackgroundImgLocal { get; set; }
 
     public string  GameName   => _pluginPresetConfig.GameName;
     public string  GameRegion => _pluginPresetConfig.ZoneName;
     public string? GameBiz    => null;
     public string? GameId     => null;
 
-    public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
-    public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
+    public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Current.Lang?._GameClientTitles) ?? GameName;
+    public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Current.Lang?._GameClientRegions) ?? GameRegion;
 
     public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; set; }
     public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; set; }

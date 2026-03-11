@@ -20,7 +20,7 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            Status.ActivityStatus                = Locale.Lang._GameRepairPage.Status11;
+            Status.ActivityStatus                = Locale.Current.Lang?._GameRepairPage?.Status11;
             Status.IsProgressAllIndetermined     = true;
             Status.IsProgressPerFileIndetermined = true;
             Status.IsCompleted                   = false;
@@ -105,10 +105,10 @@ namespace CollapseLauncher
             // Increment total count current
             ProgressAllCountCurrent++;
             // Set repair activity status
-            string timeLeftString = string.Format(Locale.Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
-                string.Format(IsCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
-                string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
+                string.Format(IsCacheUpdateMode ? Locale.Current.Lang?._Misc?.Downloading + ": {0}" : Locale.Current.Lang?._GameRepairPage?.Status8 ?? "", Path.GetFileName(asset.AssetIndex.N)),
+                string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).StripAlternateDataStream().EnsureNoReadOnly();

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
@@ -101,7 +102,7 @@ namespace CollapseLauncher
                 : Path.GetDirectoryName(inputPathInfo.FullName);
 
             if (string.IsNullOrEmpty(inputPathDir))
-                throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat,
                                                                   InputPath));
             
             DirectoryInfo outputPathDirInfo = new DirectoryInfo(inputPathDir);
@@ -225,7 +226,7 @@ namespace CollapseLauncher
                 // Update path display
                 UpdateCountProcessed(uiRef, inputFileRelativePath);
                 if (string.IsNullOrEmpty(outputNewFileDir))
-                    throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                    throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat ?? "",
                                                                       InputPath));
 
                 if (IsSameOutputDrive)

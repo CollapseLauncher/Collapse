@@ -4,7 +4,6 @@ using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.UI.Xaml;
@@ -70,8 +69,8 @@ namespace CollapseLauncher.Pages.OOBE
                 return;
             }
 
-            string gameNameTranslated   = GetGameTitleRegionTranslationString(gameName,   Locale.Lang._GameClientTitles) ?? gameName;
-            string gameRegionTranslated = GetGameTitleRegionTranslationString(regionName, Locale.Lang._GameClientRegions) ?? regionName;
+            string gameNameTranslated   = GetGameTitleRegionTranslationString(gameName,   Locale.Current.Lang?._GameClientTitles) ?? gameName;
+            string gameRegionTranslated = GetGameTitleRegionTranslationString(regionName, Locale.Current.Lang?._GameClientRegions) ?? regionName;
 
             // Get game preset config
             PresetConfig? gamePresetConfig = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[regionName];
@@ -83,10 +82,10 @@ namespace CollapseLauncher.Pages.OOBE
 
             // Create Toast Notification Content
             NotificationContent toastContent = NotificationContent.Create()
-                                                                  .SetTitle(Locale.Lang._NotificationToast.OOBE_WelcomeTitle)
+                                                                  .SetTitle(Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeTitle)
                                                                   .SetContent(
                                                                               string.Format(
-                                                                                   Locale.Lang._NotificationToast.OOBE_WelcomeSubtitle,
+                                                                                   Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeSubtitle ?? "",
                                                                                    gameNameTranslated,
                                                                                    gameRegionTranslated))
                                                                   .SetAppLogoPath(

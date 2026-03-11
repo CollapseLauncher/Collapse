@@ -157,9 +157,9 @@ internal static class LauncherMetadataHelper
         string? curGameRegion = CurrentMetadataConfigGameRegion;
 
         string? curGameNameTranslate =
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Lang._GameClientTitles);
+            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Current.Lang?._GameClientTitles);
         string? curGameRegionTranslate =
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Lang._GameClientRegions);
+            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Current.Lang?._GameClientRegions);
 
         return $"{curGameNameTranslate} - {curGameRegionTranslate}";
     }
@@ -214,7 +214,7 @@ internal static class LauncherMetadataHelper
         if (isShowLoadingMessage)
         {
             LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing, Locale.Lang._MainPage.LoadingLauncherMetadata);
+            LoadingMessageHelper.SetMessage(Locale.Current.Lang?._MainPage?.Initializing, Locale.Current.Lang?._MainPage?.LoadingLauncherMetadata);
         }
 
         // Initialize the variable and create the metadata folder if it doesn't exist
@@ -453,10 +453,10 @@ internal static class LauncherMetadataHelper
 
             if (isShowLoadingMessage)
             {
-                LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing,
-                                                $"{Locale.Lang._MainPage.LoadingGameConfiguration} [{index}/{regionMetadataStampsCount}]: " +
-                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Lang._GameClientTitles)} - " +
-                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Lang._GameClientRegions)}");
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._MainPage?.Initializing,
+                                                $"{Locale.Current.Lang?._MainPage?.LoadingGameConfiguration} [{index}/{regionMetadataStampsCount}]: " +
+                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Current.Lang?._GameClientTitles)} - " +
+                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Current.Lang?._GameClientRegions)}");
             }
 
             object? regionMetadataObject = await LoadAndGetConfig(stamp, currentChannel);
@@ -524,8 +524,6 @@ internal static class LauncherMetadataHelper
             await fileStream.DisposeAsync();
             throw;
         }
-
-        return fileInfo.Open(FileMode.Open, FileAccess.Read);
     }
 
     private static async Task<object?> LoadAndGetConfig(Stamp  stamp,

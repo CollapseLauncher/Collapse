@@ -6,7 +6,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:localUpdateHelper="using:CollapseLauncher.Helper.Update"
       xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
@@ -29,16 +29,16 @@
             <TextBlock FontSize="78"
                        FontWeight="Light"
                        Style="{ThemeResource DisplayTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.PageTitle1}" />
             <TextBlock Margin="0,-18,0,0"
                        FontSize="32"
                        FontWeight="ExtraBold"
                        Style="{ThemeResource DisplayTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.PageTitle2}" />
             <StackPanel Margin="0,16,0,0"
                         Orientation="Horizontal">
                 <TextBlock FontSize="16">
-                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}" />
+                    <Run Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.VerCurLabel}" />
                     <Run x:Name="CurrentVersionLabel"
                          FontWeight="Bold"
                          Text="1.0.10.0" />
@@ -48,7 +48,7 @@
                         Orientation="Horizontal">
                 <TextBlock FontSize="28">
                     <Run FontWeight="Medium"
-                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerNewLabel}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.VerNewLabel}" />
                     <Run x:Name="NewVersionLabel"
                          FontWeight="Bold"
                          Foreground="{ThemeResource AccentColor}"
@@ -59,7 +59,7 @@
                         Orientation="Horizontal">
                 <TextBlock>
                     <Run FontWeight="Medium"
-                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerChannelLabel}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.VerChannelLabel}" />
                     <Run x:Name="UpdateChannelLabel"
                          FontWeight="Bold"
                          Foreground="{ThemeResource AccentColor}"
@@ -70,7 +70,7 @@
                         Orientation="Horizontal">
                 <TextBlock FontSize="12">
                     <Run FontWeight="Medium"
-                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerDateLabel}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.VerDateLabel}" />
                     <Run x:Name="BuildTimestampLabel"
                          FontWeight="Bold"
                          Foreground="{ThemeResource AccentColor}"
@@ -95,7 +95,7 @@
                         VerticalAlignment="Bottom"
                         Orientation="Vertical">
                 <TextBlock FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateHeader1}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Bind progressBar.Value, Mode=OneWay}"
                                TextAlignment="Left" />
@@ -107,17 +107,17 @@
                        Grid.Row="0"
                        HorizontalAlignment="Center"
                        FontWeight="Bold"
-                       Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}"
+                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateHeader5PlaceHolder}"
                        TextAlignment="Center" />
             <StackPanel Grid.Row="0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         Orientation="Vertical">
                 <TextBlock FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}"
+                           Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateHeader2}"
                            TextAlignment="Right" />
                 <TextBlock x:Name="TimeEstimation"
-                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}"
+                           Text="{x:Bind helper:Locale.Current.Lang._Misc.TimeRemainHMSFormatPlaceholder}"
                            TextAlignment="Right" />
             </StackPanel>
             <ProgressBar x:Name="progressBar"
@@ -135,7 +135,7 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ReleaseNote}" />
                 <Grid Margin="0,48,0,48"
                       Background="{ThemeResource WindowTrayBrush}"
                       CornerRadius="8">
@@ -170,7 +170,7 @@
                                    FontWeight="SemiBold"
                                    Foreground="{ThemeResource TextFillColorInverse}"
                                    HorizontalTextAlignment="Center"
-                                   Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateForcedHeader}"
+                                   Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateForcedHeader}"
                                    TextWrapping="Wrap" />
                         <FontIcon Grid.Column="2"
                                   HorizontalAlignment="Right"
@@ -203,7 +203,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="16,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._Misc.Cancel}" />
                 </Button>
             </StackPanel>
             <StackPanel x:Name="UpdateBox"
@@ -218,7 +218,7 @@
                                  HorizontalAlignment="Right"
                                  extension:UIElementExtensions.CursorType="Hand"
                                  Click="RemindMeClick"
-                                 Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" />
+                                 Content="{x:Bind helper:Locale.Current.Lang._UpdatePage.RemindLaterBtn}" />
                 <Button HorizontalAlignment="Right"
                         extension:UIElementExtensions.CursorType="Hand"
                         Click="DoUpdateClick"
@@ -226,7 +226,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="16,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateNowBtn}" />
                 </Button>
             </StackPanel>
         </Grid>
@@ -243,11 +243,11 @@
                        Style="{ThemeResource TitleLargeTextBlockStyle}"
                        Text="" />
             <TextBlock HorizontalAlignment="Center">
-                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage2}" />
+                <Run Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateCountdownMessage2}" />
                 <Run FontWeight="Bold"
                      Foreground="{ThemeResource AccentColor}"
-                     Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
-                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage3}" />
+                     Text="{x:Bind helper:Locale.Current.Lang._Misc.Cancel}" />
+                <Run Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.UpdateCountdownMessage3}" />
             </TextBlock>
         </StackPanel>
         <CheckBox x:Name="AskUpdateCheckbox"
@@ -258,7 +258,7 @@
                   VerticalAlignment="Bottom"
                   extension:UIElementExtensions.CursorType="Hand"
                   Checked="AskUpdateToggle"
-                  Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"
+                  Content="{x:Bind helper:Locale.Current.Lang._UpdatePage.NeverShowNotification}"
                   Unchecked="AskUpdateToggle" />
     </Grid>
 </Page>
