@@ -74,6 +74,13 @@ public partial class Locale : NotifyPropertyChanged
             {
                 OnPropertyChanged();
             }
+
+            if (value < 0 || value >= MetadataList.Count)
+            {
+                return;
+            }
+
+            LauncherConfig.SetAndSaveConfigValue("AppLanguage", MetadataList[value].LanguageID);
         }
     }
 
