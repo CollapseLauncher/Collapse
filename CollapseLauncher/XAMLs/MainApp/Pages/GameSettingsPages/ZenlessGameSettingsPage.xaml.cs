@@ -52,10 +52,6 @@ namespace CollapseLauncher.Pages
                 });
 
                 LoadPage();
-
-                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
-                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
-                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
             }
             catch (Exception ex)
             {
@@ -168,6 +164,10 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
+
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first

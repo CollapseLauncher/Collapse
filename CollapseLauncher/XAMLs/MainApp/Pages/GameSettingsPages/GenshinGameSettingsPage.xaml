@@ -14,7 +14,7 @@
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      NavigationCacheMode="Disabled"
+      NavigationCacheMode="Enabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -33,7 +33,7 @@
                             Padding="0,0,0,74">
                     <TextBlock Margin="0,0,0,16"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Title}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Title, Mode=OneWay}" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -45,7 +45,7 @@
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResolutionPanel}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResolutionPanel, Mode=OneWay}" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
@@ -59,7 +59,7 @@
                                                       VerticalAlignment="Center"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind VerticalSync, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VSync}"
+                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VSync, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <CheckBox x:Name="GameResolutionFullscreen"
@@ -67,7 +67,7 @@
                                                       VerticalAlignment="Center"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
+                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Fullscreen, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <CheckBox x:Name="GameResolutionBorderless"
@@ -75,7 +75,7 @@
                                                       VerticalAlignment="Center"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_Borderless}"
+                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_Borderless, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <Grid>
@@ -89,7 +89,7 @@
                                                           extension:UIElementExtensions.CursorType="Hand"
                                                           IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
                                                           IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
-                                                    <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                    <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_ResizableWindow, Mode=OneWay}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
                                                 <Button Grid.Column="1"
@@ -109,7 +109,7 @@
                                                         <Flyout>
                                                             <TextBlock MaxWidth="360"
                                                                        FontWeight="SemiBold"
-                                                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip, Mode=OneWay}"
                                                                        TextAlignment="Center"
                                                                        TextWrapping="Wrap" />
                                                         </Flyout>
@@ -122,7 +122,7 @@
                                                 Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <TextBlock Margin="28,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help, Mode=OneWay}"
                                                        Visibility="Collapsed" />
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
@@ -131,7 +131,7 @@
                                                       IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
                                                       Visibility="Collapsed">
-                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen}"
+                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                         </StackPanel>
@@ -143,8 +143,8 @@
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
                                                       IsEnabled="False"
-                                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._Misc.Generic_GameFeatureDeprecation}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.MobileLayout}"
+                                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._Misc.Generic_GameFeatureDeprecation, Mode=OneWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.MobileLayout, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                         </StackPanel>
@@ -160,7 +160,7 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
-                                                  PlaceholderText="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResSelectPlaceholder}"
+                                                  PlaceholderText="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResSelectPlaceholder, Mode=OneWay}"
                                                   SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}" />
                                         <CheckBox x:Name="GameCustomResolutionCheckbox"
                                                   Grid.Column="1"
@@ -169,7 +169,7 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
                                                   IsEnabled="{x:Bind IsExclusiveFullscreenEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustom}"
+                                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustom, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </Grid>
@@ -178,7 +178,7 @@
                                             Orientation="Horizontal">
                                     <TextBlock Margin="0,0,8,0"
                                                VerticalAlignment="Center"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustomW}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustomW, Mode=OneWay}" />
                                     <NumberBox x:Name="GameCustomResolutionWidth"
                                                Width="100"
                                                HorizontalAlignment="Left"
@@ -187,7 +187,7 @@
                                                Value="{x:Bind ResolutionW, Mode=TwoWay}" />
                                     <TextBlock Margin="16,0,8,0"
                                                VerticalAlignment="Center"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustomH}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ResCustomH, Mode=OneWay}" />
                                     <NumberBox x:Name="GameCustomResolutionHeight"
                                                Width="100"
                                                HorizontalAlignment="Left"
@@ -197,7 +197,7 @@
                                 </StackPanel>
                                 <TextBlock Margin="0,16,8,0"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_FPS}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_FPS, Mode=OneWay}" />
                                 <ComboBox x:Name="FPSSelector"
                                           Width="128"
                                           Margin="0,8,0,8"
@@ -210,16 +210,16 @@
                                         Orientation="Horizontal">
                                 <ToggleSwitch Margin="4,8,0,0"
                                               extension:UIElementExtensions.CursorType="Hand"
-                                              Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.GameBoost}"
+                                              Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.GameBoost, Mode=OneWay}"
                                               IsOn="{x:Bind IsGameBoost, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                              OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                              OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                             </StackPanel>
                             <StackPanel x:Name="HDRSettings"
                                         Orientation="Vertical">
                                 <TextBlock Margin="0,8,8,8"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR, Mode=OneWay}" />
                                 <Expander x:Name="HDRExpander"
                                           MinWidth="400"
                                           MaxWidth="700"
@@ -235,7 +235,7 @@
                                                       IsEnabled="{x:Bind IsHDREnabled}">
                                                 <CheckBox.Content>
                                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Enable}"
+                                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Enable, Mode=OneWay}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox.Content>
                                             </CheckBox>
@@ -257,46 +257,46 @@
                                                             <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource InverseBooleanVisibilityConverter}}">
                                                                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
                                                                            Visibility="{x:Bind IsHDRSupported, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported1}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported1, Mode=OneWay}" />
                                                                     <LineBreak />
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported2}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported2, Mode=OneWay}" />
                                                                     <LineBreak />
                                                                 </TextBlock>
                                                                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
                                                                            Visibility="{x:Bind IsHDRSupported, Converter={StaticResource BooleanVisibilityConverter}}">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled1}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled1, Mode=OneWay}" />
                                                                     <LineBreak />
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled2}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled2, Mode=OneWay}" />
                                                                     <LineBreak />
                                                                 </TextBlock>
                                                                 <TextBlock>
                                                                     <Hyperlink NavigateUri="https://support.microsoft.com/windows/2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
-                                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Help_Link}" />
+                                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Help_Link, Mode=OneWay}" />
                                                                     </Hyperlink>
                                                                 </TextBlock>
                                                             </StackPanel>
                                                             <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource BooleanVisibilityConverter}}">
                                                                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity, Mode=OneWay}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help, Mode=OneWay}" />
                                                                     <LineBreak />
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help, Mode=OneWay}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,16,0,0"
                                                                            Style="{ThemeResource SubtitleTextBlockStyle}">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness, Mode=OneWay}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help, Mode=OneWay}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,16,0,0"
                                                                            Style="{ThemeResource SubtitleTextBlockStyle}">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness, Mode=OneWay}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help, Mode=OneWay}" />
                                                                 </TextBlock>
                                                             </StackPanel>
                                                         </StackPanel>
@@ -315,7 +315,7 @@
                                             <Grid>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity, Mode=OneWay}" />
                                                 <NumberBox x:Name="MaxLuminosityValue"
                                                            Margin="0,0,0,0"
                                                            HorizontalAlignment="Right"
@@ -345,7 +345,7 @@
                                             <Grid>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness, Mode=OneWay}" />
                                                 <NumberBox x:Name="ScenePaperWhiteValue"
                                                            Margin="0,0,0,0"
                                                            HorizontalAlignment="Right"
@@ -369,7 +369,7 @@
                                             <Grid>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness, Mode=OneWay}" />
                                                 <NumberBox x:Name="UiPaperWhiteValue"
                                                            Height="32"
                                                            Margin="0,0,0,0"
@@ -402,13 +402,13 @@
                                     Margin="0,0">
                             <TextBlock Margin="0,0,0,16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SpecPanel}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SpecPanel, Mode=OneWay}" />
                             <StackPanel>
                                 <StackPanel>
                                     <Grid x:Name="GammaGrid">
                                         <TextBlock VerticalAlignment="Bottom"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Gamma}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_Gamma, Mode=OneWay}" />
                                         <NumberBox x:Name="GammaValue"
                                                    Width="110"
                                                    Margin="0,0,8,0"
@@ -443,7 +443,7 @@
                                                        Margin="0,0,0,8"
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_RenderScale}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_RenderScale, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                             <ComboBox x:Name="RenderScaleSelector"
                                                       Margin="0,0,8,8"
@@ -459,7 +459,7 @@
                                                        Margin="0,0,0,8"
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_AAMode}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_AAMode, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                             <ComboBox x:Name="AntialiasingSelector"
                                                       Margin="0,0,8,8"
@@ -467,7 +467,7 @@
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
                                                       SelectedIndex="{x:Bind Antialiasing, Mode=TwoWay}">
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled}" />
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled, Mode=OneWay}" />
                                                 <ComboBoxItem Content="FSR 2" />
                                                 <ComboBoxItem Content="SMAA" />
                                             </ComboBox>
@@ -478,7 +478,7 @@
                                                        Margin="0,0,0,8"
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_AnisotropicFiltering}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_AnisotropicFiltering, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                             <ComboBox x:Name="AnisotropicFilteringSelector"
                                                       Margin="0,0,8,8"
@@ -507,7 +507,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ShadowQuality}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ShadowQuality, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="ShadowQualitySelector"
                                                   Margin="0,0,8,8"
@@ -515,10 +515,10 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
@@ -527,7 +527,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VisualFX}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VisualFX, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="VisualEffectsSelector"
                                                   Margin="0,0,8,8"
@@ -535,10 +535,10 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind VisualEffects, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
@@ -547,7 +547,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SFXQuality}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SFXQuality, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="SFXQualitySelector"
                                                   Margin="0,0,8,8"
@@ -555,10 +555,10 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind SFXQuality, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -576,7 +576,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_EnvDetailQuality}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_EnvDetailQuality, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="EnvironmentDetailSelector"
                                                   Margin="0,0,8,8"
@@ -584,11 +584,11 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind EnvironmentDetail, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
@@ -597,7 +597,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_MotionBlur}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_MotionBlur, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="MotionBlurSelector"
                                                   Margin="0,0,8,8"
@@ -605,10 +605,10 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind MotionBlur, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecExtreme}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecExtreme, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
@@ -617,7 +617,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_CrowdDensity}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_CrowdDensity, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="CrowdDensitySelector"
                                                   Margin="0,0,8,8"
@@ -625,8 +625,8 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind CrowdDensity, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecLow, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -644,7 +644,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SubsurfaceScattering}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_SubsurfaceScattering, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="SubsurfaceScatteringSelector"
                                                   Margin="0,0,8,8"
@@ -652,9 +652,9 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind SubsurfaceScattering, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
@@ -663,7 +663,7 @@
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_TeammateFX}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_TeammateFX, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
                                         <ComboBox x:Name="CoOpTeammateEffectsSelector"
                                                   Margin="0,0,8,8"
@@ -671,9 +671,9 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind CoOpTeammateEffects, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecPartiallyOff}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecEnabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecPartiallyOff, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecEnabled, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
@@ -686,7 +686,7 @@
                                             <TextBlock Margin="0,0,0,8"
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination, Mode=OneWay}"
                                                        TextWrapping="WrapWholeWords" />
                                             <Button Grid.Column="1"
                                                     Width="24"
@@ -707,10 +707,10 @@
                                                         <StackPanel>
                                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
                                                                        TextAlignment="Center">
-                                                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help1}" />
+                                                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help1, Mode=OneWay}" />
                                                                 <LineBreak />
                                                                 <Hyperlink NavigateUri="https://genshin.hoyoverse.com/en/news/detail/112690#:~:text=Minimum%20Specifications%20for%20Global%20Illumination">
-                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help2}" />
+                                                                    <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help2, Mode=OneWay}" />
                                                                 </Hyperlink>
                                                             </TextBlock>
                                                         </StackPanel>
@@ -724,10 +724,10 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind GlobalIllumination, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecExtreme}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecDisabled, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecMedium, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecHigh, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecExtreme, Mode=OneWay}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -746,7 +746,7 @@
                                             -->
                                             <Border x:Name="VolumetricFogTooltipEnforcer"
                                                     Background="Transparent"
-                                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}"
+                                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip, Mode=OneWay}"
                                                     Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}}" />
                                             <CheckBox x:Name="VolumetricFogToggle"
                                                       HorizontalAlignment="Left"
@@ -754,7 +754,7 @@
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}">
                                                 <TextBlock Padding="0,0,8,0"
-                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VolFogs}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_VolFogs, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                         </Grid>
@@ -767,7 +767,7 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   IsChecked="{x:Bind Reflections, Mode=TwoWay}">
                                             <TextBlock Padding="0,0,8,0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -779,7 +779,7 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   IsChecked="{x:Bind Bloom, Mode=TwoWay}">
                                             <TextBlock Padding="0,0,8,0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_BloomQuality}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_BloomQuality, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -800,7 +800,7 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   IsChecked="{x:Bind TeamPageBackground, Mode=TwoWay}">
                                             <TextBlock Padding="0,0,8,0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_TeamPageBackground}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_TeamPageBackground, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -811,9 +811,9 @@
                                                   VerticalAlignment="Center"
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   IsChecked="{x:Bind DynamicCharacterResolution, Mode=TwoWay}"
-                                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution_Tooltip}">
+                                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution_Tooltip, Mode=OneWay}">
                                             <TextBlock Padding="0,0,8,0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -824,7 +824,7 @@
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <TextBlock Margin="0,0,0,16"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Title}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Title, Mode=OneWay}" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -836,7 +836,7 @@
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Master}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Master, Mode=OneWay}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
@@ -850,7 +850,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_SFX}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_SFX, Mode=OneWay}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
@@ -871,7 +871,7 @@
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_BGM}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_BGM, Mode=OneWay}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
@@ -885,7 +885,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_VO}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_VO, Mode=OneWay}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
@@ -916,7 +916,7 @@
                                   VerticalAlignment="Top"
                                   extension:UIElementExtensions.CursorType="Hand"
                                   IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}">
-                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_DynamicRange}"
+                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_DynamicRange, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                         </CheckBox>
                         <CheckBox x:Name="AudioSurroundToggle"
@@ -925,7 +925,7 @@
                                   VerticalAlignment="Top"
                                   extension:UIElementExtensions.CursorType="Hand"
                                   IsChecked="{x:Bind Audio_Surround, Mode=TwoWay}">
-                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Output_Surround}"
+                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_Output_Surround, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                         </CheckBox>
                         <CheckBox x:Name="AudioMuteOnMinimizeToggle"
@@ -934,7 +934,7 @@
                                   VerticalAlignment="Top"
                                   extension:UIElementExtensions.CursorType="Hand"
                                   IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}">
-                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
+                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                         </CheckBox>
                     </Grid>
@@ -942,7 +942,7 @@
                     <StackPanel>
                         <TextBlock Margin="0,0,0,16"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language, Mode=OneWay}" />
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -955,9 +955,9 @@
                             <TextBlock Grid.Row="0"
                                        Margin="0,0,0,16"
                                        TextWrapping="Wrap">
-                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language_Help1}" />
+                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language_Help1, Mode=OneWay}" />
                                 <LineBreak />
-                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language_Help2}" />
+                                <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Language_Help2, Mode=OneWay}" />
                             </TextBlock>
                             <Grid Grid.Row="1"
                                   Grid.Column="0">
@@ -971,17 +971,17 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.LanguageAudio}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.LanguageAudio, Mode=OneWay}" />
                                     <ComboBox x:Name="AudioLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_cn}" />
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_en}" />
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_jp}" />
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_kr}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_cn, Mode=OneWay}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_en, Mode=OneWay}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_jp, Mode=OneWay}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.VO_kr, Mode=OneWay}" />
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel x:Name="LangSettingRight"
@@ -990,7 +990,7 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.LanguageText}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.LanguageText, Mode=OneWay}" />
                                     <ComboBox x:Name="TextLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
@@ -1021,29 +1021,29 @@
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <TextBlock Margin="0,0,0,16"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Title}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Title, Mode=OneWay}" />
                     <TextBlock Margin="0,0,0,0"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.CustomArgs_Subtitle, Mode=OneWay}" />
                     <ToggleSwitch Margin="0,0,0,16"
                                   extension:UIElementExtensions.CursorType="Hand"
                                   IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
-                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                     <TextBox x:Name="CustomArgsTextBox"
                              Margin="0,0,0,16"
                              HorizontalAlignment="Stretch"
                              CornerRadius="8,8,0,0"
                              Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
                     <TextBlock TextWrapping="WrapWholeWords">
-                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer1}" />
+                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer1, Mode=OneWay}" />
                         <Hyperlink extension:UIElementExtensions.CursorType="Hand"
                                    NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
                                    UnderlineStyle="None">
                             <Run FontWeight="Bold"
-                                 Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer2}" />
+                                 Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer2, Mode=OneWay}" />
                         </Hyperlink>
-                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer3}" />
+                        <Run Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.CustomArgs_Footer3, Mode=OneWay}" />
                     </TextBlock>
                     <MenuFlyoutSeparator Margin="0,16,0,16" />
                     <Grid>
@@ -1055,7 +1055,7 @@
                                    Margin="0,0,8,0"
                                    VerticalAlignment="Stretch"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Title}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Title, Mode=OneWay}" />
                         <ToggleSwitch Grid.Column="1"
                                       Margin="8,12,0,8"
                                       VerticalAlignment="Stretch"
@@ -1064,39 +1064,39 @@
                                       FontSize="26"
                                       FontWeight="SemiBold"
                                       IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel"
                                 Visibility="Collapsed">
                         <TextBlock Margin="0,0,0,8"
                                    TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle1}" />
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle1, Mode=OneWay}" />
                             <Run FontWeight="Bold"
-                                 Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle2}" />
-                            <Run Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle3}" />
+                                 Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle2, Mode=OneWay}" />
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle3, Mode=OneWay}" />
                         </TextBlock>
                         <TextBlock Margin="0,0,8,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title, Mode=OneWay}" />
                         <ToggleSwitch Margin="0,0,0,0"
                                       extension:UIElementExtensions.CursorType="Hand"
-                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
+                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle, Mode=OneWay}"
                                       IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
                                       Margin="0,0,0,0"
                                       extension:UIElementExtensions.CursorType="Hand"
-                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
+                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit, Mode=OneWay}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                         <NumberBox x:Name="GameLaunchDelay"
                                    Width="200"
                                    Margin="0,0,0,12"
                                    HorizontalAlignment="Left"
-                                   Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
+                                   Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay, Mode=OneWay}"
                                    ValueChanged="GameLaunchDelay_OnValueChanged"
                                    Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
                         <TextBox x:Name="PreLaunchCommandTextBox"
@@ -1107,16 +1107,16 @@
                                  Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,8"
                                    FontWeight="Semibold"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin, Mode=OneWay}" />
                         <TextBlock Margin="0,0,8,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title, Mode=OneWay}" />
                         <ToggleSwitch Margin="0,0,0,8"
                                       extension:UIElementExtensions.CursorType="Hand"
-                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
+                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle, Mode=OneWay}"
                                       IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                         <TextBox x:Name="PostExitCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
@@ -1125,18 +1125,18 @@
                                  Text="{x:Bind PostExitCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,16"
                                    FontWeight="Semibold"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin, Mode=OneWay}" />
                         <TextBlock Margin="0,0,8,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Title}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Title, Mode=OneWay}" />
                         <ToggleSwitch Margin="0,0,0,0"
-                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Subtitle}"
+                                      Header="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Subtitle, Mode=OneWay}"
                                       IsOn="{x:Bind RunWithExplorerAsParent, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                         <TextBlock Margin="0,0,8,8"
                                    FontWeight="Semibold"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Warning}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_RunWithExplorerAsParent_Warning, Mode=OneWay}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
@@ -1167,7 +1167,7 @@
                                   Glyph="&#xf00c;" />
                         <TextBlock Margin="8,0,0,0"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}" />
                     </StackPanel>
                 </Button>
                 <TextBlock x:Name="ApplyText"
@@ -1176,7 +1176,7 @@
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Center"
                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SettingsApplied}"
+                           Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SettingsApplied, Mode=OneWay}"
                            TextWrapping="Wrap"
                            Visibility="Collapsed" />
                 <StackPanel Grid.Column="2"
@@ -1185,14 +1185,14 @@
                     <TextBlock Margin="16,-4,16,0"
                                VerticalAlignment="Center"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportExport}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportExport, Mode=OneWay}" />
                     <Button x:Name="RegistryExport"
                             Height="32"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="RegistryExportClick"
                             CornerRadius="16,0,0,16"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTooltip}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTooltip, Mode=OneWay}">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -1200,7 +1200,7 @@
                                       Glyph="&#xf56e;" />
                             <TextBlock Margin="8,0,0,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTitle}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTitle, Mode=OneWay}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="RegistryImport"
@@ -1209,12 +1209,12 @@
                             Click="RegistryImportClick"
                             CornerRadius="0,16,16,0"
                             Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTooltip}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTooltip, Mode=OneWay}">
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <TextBlock Margin="0,0,8,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTitle}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTitle, Mode=OneWay}" />
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="14"
                                       Glyph="&#xf56f;" />

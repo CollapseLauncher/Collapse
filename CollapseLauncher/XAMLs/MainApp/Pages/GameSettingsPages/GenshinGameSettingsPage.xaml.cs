@@ -85,10 +85,6 @@ namespace CollapseLauncher.Pages
 #nullable restore
 
                 LoadPage();
-
-                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
-                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
-                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
             }
             catch (Exception ex)
             {
@@ -185,6 +181,10 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+                ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+                ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
+
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
                 if (CurrentGameProperty.IsGameRunning)
