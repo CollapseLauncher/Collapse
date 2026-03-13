@@ -152,7 +152,6 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            MainPage.PreviousTagString.Add(MainPage.PreviousTag);
             MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
         }
 

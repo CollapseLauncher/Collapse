@@ -173,8 +173,6 @@ namespace CollapseLauncher.Pages
                                                      ImageLoaderHelper.SupportedVideoFormats
                                                     );
 
-            UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
-
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
 #endif
@@ -795,31 +793,8 @@ namespace CollapseLauncher.Pages
 
         private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is not ComboBox combobox)
-            {
-                return;
-            }
-
             string selectedKey = Locale.Current.Lang.LanguageID;
-            UpdateBindings.Update();
             PluginManager.SetPluginLocaleId(selectedKey);
-
-            foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
-            {
-                if (comboBoxOthers == combobox)
-                    continue;
-
-                int lastSelected = comboBoxOthers.SelectedIndex;
-                comboBoxOthers.SelectedIndex = -1;
-                comboBoxOthers.SelectedIndex = lastSelected;
-            }
-
-            foreach (RadioButtons radioButtonOthers in this.FindDescendants().OfType<RadioButtons>())
-            {
-                int lastSelected = radioButtonOthers.SelectedIndex;
-                radioButtonOthers.SelectedIndex = -1;
-                radioButtonOthers.SelectedIndex = lastSelected;
-            }
 
             InitializeSettingsSearch();
         }

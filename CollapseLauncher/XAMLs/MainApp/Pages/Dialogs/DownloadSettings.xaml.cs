@@ -1,7 +1,9 @@
-﻿using Hi3Helper.Shared.Region;
+﻿using CollapseLauncher.Pages;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using System;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -28,7 +30,8 @@ namespace CollapseLauncher.Dialogs
         private void Control_Loaded(object sender, RoutedEventArgs e)
         {
             PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
-            if (MainPage.PreviousTag == "settings")
+            if ((InnerLauncherConfig.m_mainPage?.TryGetCurrentPageObject(out object? typeOfPageObj) ?? false) &&
+                typeOfPageObj is Type asPageType && asPageType == typeof(SettingsPage))
                 NetworkSettings.Visibility = Visibility.Collapsed;
         }
 

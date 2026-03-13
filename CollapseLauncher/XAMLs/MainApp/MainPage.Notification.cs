@@ -38,7 +38,7 @@ public partial class MainPage
 {
     private ObservableCollection<UIElement> NotificationElementsCollection { get; }= [];
 
-    private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
+    private void NotificationInvoker_EventInvoker(object? sender, NotificationInvokerProp e)
     {
         if (e.IsCustomNotif)
         {

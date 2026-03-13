@@ -376,23 +376,6 @@ namespace CollapseLauncher.Pages.OOBE
             obj.Opacity =  0.8f;
         }
 
-        private void RefreshSelection()
-        {
-            SelectWindowSize.SelectedIndex = -1;
-            SelectWindowSize.SelectedIndex = SelectedWindowSizeProfile;
-            SelectCDN.UpdateLayout();
-            SelectCDN.SelectedIndex = SelectedCDN;
-
-            UpdateBindings.Update();
-
-            int lastAppThemeIndex = SettingsAppThemeCombobox.SelectedIndex;
-            SettingsAppThemeCombobox.SelectedIndex = -1;
-            SettingsAppThemeCombobox.UpdateLayout();
-            SettingsAppThemeCombobox.SelectedIndex = lastAppThemeIndex;
-            Bindings.Update();
-            UpdateLayout();
-        }
-
         private int SelectedWindowSizeProfile
         {
             get

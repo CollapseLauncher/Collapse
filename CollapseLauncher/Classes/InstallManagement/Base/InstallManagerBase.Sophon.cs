@@ -234,10 +234,10 @@ namespace CollapseLauncher.InstallManager.Base
                     GameVersion? requestedVersion = gameState switch
                                                     {
                                                         GameInstallStateEnum.InstalledHavePreload =>
-                                                            GameVersionManager!
+                                                            GameVersionManager
                                                                .GetGameVersionApiPreload(),
-                                                        _ => GameVersionManager!.GetGameVersionApi()
-                                                    } ?? GameVersionManager!.GetGameVersionApi();
+                                                        _ => GameVersionManager.GetGameVersionApi()
+                                                    } ?? GameVersionManager.GetGameVersionApi();
 
                     // Add the tag query to the Url
                     requestedUrl += $"&tag={requestedVersion}";
@@ -685,7 +685,7 @@ namespace CollapseLauncher.InstallManager.Base
                 List<SophonAsset> sophonUpdateAssetList = [];
 
                 // Get the previous version details of the preload or the recent update.
-                GameVersion? requestedVersionFrom = GameVersionManager!.GetGameExistingVersion();
+                GameVersion? requestedVersionFrom = GameVersionManager.GetGameExistingVersion();
                 if (GameVersionManager.GamePreset.LauncherResourceChunksURL != null)
                 {
                     // Reassociate the URL if branch url exist

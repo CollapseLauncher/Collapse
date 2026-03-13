@@ -415,18 +415,4 @@ namespace CollapseLauncher
         public DragAreaTemplate Template { get; private set; }
     }
     #endregion
-    #region UpdateBindings
-    internal static class UpdateBindings
-    {
-        private static readonly UpdateBindingsInvoker Invoker = new();
-        public static   void                  Update() => Invoker!.Update();
-    }
-
-    internal class UpdateBindingsInvoker
-    {
-        private static readonly EventArgs DummyArgs = EventArgs.Empty;
-        public static event EventHandler  UpdateEvents;
-        public void                       Update() => UpdateEvents?.Invoke(this, DummyArgs);
-    }
-    #endregion
 }

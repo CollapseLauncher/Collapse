@@ -837,10 +837,7 @@ internal static class LauncherMetadataHelper
         }
     }
 
-    internal static List<string>? GetGameNameCollection()
-    {
-        return LauncherGameNameRegionCollection?.Keys.ToList();
-    }
+    internal static List<string> GetGameNameCollection() => LauncherGameNameRegionCollection?.Keys.ToList() ?? [];
 
     internal static List<string>? GetGameRegionCollection(string? gameName)
     {

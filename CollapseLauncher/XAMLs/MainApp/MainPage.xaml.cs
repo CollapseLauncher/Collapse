@@ -22,6 +22,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -51,11 +52,8 @@ namespace CollapseLauncher
         private bool _isTitleIconForceShow;
         private bool _isNotificationPanelShow;
         private bool _isLoadNotifComplete;
-        private bool _isLoadFrameCompleted = true;
         private int  _currentGameCategory  = -1;
         private int  _currentGameRegion    = -1;
-
-        internal static readonly List<string> PreviousTagString = [];
 
         internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
         internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
@@ -181,7 +179,7 @@ namespace CollapseLauncher
             InvokeLoadingRegionPopup(true, Locale.Current.Lang?._MainPage?.RegionLoadingTitle, RegionToChangeName);
             if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
-                MainFrameChanger.ChangeMainFrame(page);
+                MainFrameChanger.ChangeMainFrame(page, true);
                 bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
                 if (isEnableDiscord)
                 {
@@ -200,39 +198,13 @@ namespace CollapseLauncher
         #endregion
 
         #region Invokers
-        private void UpdateBindingsEvent(object sender, EventArgs e)
-        {
-            // Find the last selected category/title and region
-            string? lastName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            string? lastRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
 
-#nullable enable
-            NavigationViewControl?.ApplyNavigationViewItemLocaleTextBindings();
-
-            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
-            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!);
-
-            int indexOfName = gameNameCollection?.IndexOf(lastName!) ?? -1;
-            int indexOfRegion = gameRegionCollection?.IndexOf(lastRegion!) ?? -1;
-#nullable restore
-                
-            // Rebuild Game Titles and Regions ComboBox items
-            ComboBoxGameCategory.ItemsSource   = InnerLauncherConfig.BuildGameTitleListUI();
-            ComboBoxGameCategory.SelectedIndex = indexOfName;
-            ComboBoxGameRegion.SelectedIndex   = indexOfRegion;
-
-            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-
-            UpdateLayout();
-            Bindings.Update();
-        }
-
-        private static void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
+        private static void ShowLoadingPageInvoker_PageEvent(object? sender, ShowLoadingPageProperty e)
         {
             InvokeLoadingRegionPopup(!e.Hide, e.Title, e.Subtitle);
         }
 
-        private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e)
+        private void SpawnWebView2Invoker_SpawnEvent(object? sender, SpawnWebView2Property e)
         {
             if (e.URL == null)
             {
@@ -243,13 +215,12 @@ namespace CollapseLauncher
             SpawnWebView2Panel(new Uri(e.URL));
         }
 
-        private async void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
+        private async void ErrorSenderInvoker_ExceptionEvent(object? sender, ErrorProperties e)
         {
             try
             {
                 if (e.Exception.GetType() == typeof(NotImplementedException))
                 {
-                    PreviousTag = "unavailable";
                     if (!DispatcherQueue?.HasThreadAccessSafe() ?? false)
                         DispatcherQueue?.TryEnqueue(() => MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage)));
                     else
@@ -259,13 +230,11 @@ namespace CollapseLauncher
                 // CRC error show
                 else if (e.Exception.GetType() == typeof(IOException) && e.Exception.HResult == unchecked((int)0x80070017))
                 {
-                    PreviousTag               = "crashinfo";
                     ErrorSender.ExceptionType = ErrorType.DiskCrc;
                     await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
                 }
                 else
                 {
-                    PreviousTag = "crashinfo";
                     await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
                 }
             }
@@ -276,23 +245,20 @@ namespace CollapseLauncher
             }
         }
 
-        private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)
+        private void MainFrameChangerInvoker_FrameEvent(object? sender, MainFrameProperties e)
         {
-            _isLoadFrameCompleted                     = false;
             InnerLauncherConfig.m_appCurrentFrameName = e.FrameTo.Name;
 
             if (e.RequireCacheReset)
             {
-                int cacheSizeOld = LauncherFrame.CacheSize;
-                LauncherFrame.CacheSize = 0;
-                LauncherFrame.CacheSize = cacheSizeOld;
+                LauncherFrame.BackStack.Clear();
+                NavigationViewControl.SelectedItem = null;
             }
 
-            LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
-            _isLoadFrameCompleted = true;
+            TryNavigateFrom(e.FrameTo, e.Transition, e.RequireCacheReset);
         }
 
-        private void MainFrameChangerInvoker_FrameGoBackEvent(object sender, EventArgs e)
+        private void MainFrameChangerInvoker_FrameGoBackEvent(object? sender, EventArgs e)
         {
             if (LauncherFrame.CanGoBack)
                 LauncherFrame.GoBack();
@@ -425,8 +391,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent         += ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent      += SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
-            UpdateBindingsInvoker.UpdateEvents       += UpdateBindingsEvent;
-            GridBGRegionGrid.SizeChanged            += GridBG_RegionGrid_SizeChanged;
+            GridBGRegionGrid.SizeChanged             += GridBG_RegionGrid_SizeChanged;
             MainPageGrid.SizeChanged                 += MainPageGrid_SizeChanged;
         }
 
@@ -439,8 +404,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent         -= ShowLoadingPageInvoker_PageEvent;
             SettingsPage.KeyboardShortcutsEvent      -= SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
-            UpdateBindingsInvoker.UpdateEvents       -= UpdateBindingsEvent;
-            GridBGRegionGrid.SizeChanged            -= GridBG_RegionGrid_SizeChanged;
+            GridBGRegionGrid.SizeChanged             -= GridBG_RegionGrid_SizeChanged;
             MainPageGrid.SizeChanged                 -= MainPageGrid_SizeChanged;
         }
         #endregion
@@ -722,7 +686,7 @@ namespace CollapseLauncher
                                             int i = 2;
                                             while (i != 0)
                                             {
-                                                text.Text = string.Format(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateBtnCountdown, i);
+                                                text.Text = string.Format(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateBtnCountdown ?? "", i);
                                                 await Task.Delay(1000);
                                                 i--;
                                             }
@@ -741,8 +705,8 @@ namespace CollapseLauncher
                                                 Logger.LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
                                             }
                                         };
-            SpawnNotificationPush(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateTitle,
-                                  Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateSubtitle,
+            SpawnNotificationPush(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateTitle ?? "",
+                                  Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateSubtitle ?? "",
                                   NotifSeverity.Informational,
                                   -886135731,
                                   true,
@@ -799,23 +763,7 @@ namespace CollapseLauncher
             ToggleTitleIcon(true);
         }
 
-        private void GridBG_Icon_Click(object sender, RoutedEventArgs e)
-        {
-            if (PreviousTag.Equals("launcher", StringComparison.OrdinalIgnoreCase)) return;
-
-            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            PreviousTag = "launcher";
-            PreviousTagString.Add(PreviousTag);
-
-            NavigationViewItem navItem = NavigationViewControl.MenuItems
-                                                              .OfType<NavigationViewItem>()
-                                                              .FirstOrDefault(x => ((string)x.Tag).Equals(PreviousTag, StringComparison.OrdinalIgnoreCase));
-
-            if (navItem != null)
-            {
-                NavigationViewControl.SelectedItem = navItem;
-            }
-        }
+        private void GridBG_Icon_Click(object sender, RoutedEventArgs e) => TryNavigateFrom(typeof(HomePage));
         #endregion
 
         #region AppActivation
@@ -828,7 +776,7 @@ namespace CollapseLauncher
             string? oldGameCategory = GetAppConfigValue("GameCategory");
             string? gameName        = args.Game;
 
-            List<string>? gameNameCollection   = LauncherMetadataHelper.GetGameNameCollection()!;
+            List<string>? gameNameCollection   = LauncherMetadataHelper.GetGameNameCollection();
             List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
             if (gameRegionCollection == null)
             {

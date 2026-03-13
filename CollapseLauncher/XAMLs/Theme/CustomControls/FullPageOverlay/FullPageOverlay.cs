@@ -144,9 +144,8 @@ public partial class FullPageOverlay : ContentControl
     {
         using (ThisThreadLock.EnterScope())
         {
-            Loaded                             += OnUILayoutLoaded;
-            Unloaded                           += OnUILayoutUnloaded;
-            UpdateBindingsInvoker.UpdateEvents += UpdateBindings;
+            Loaded   += OnUILayoutLoaded;
+            Unloaded += OnUILayoutUnloaded;
 
             if (LayoutCloseButton != null)
             {
@@ -159,9 +158,8 @@ public partial class FullPageOverlay : ContentControl
     {
         using (ThisThreadLock.EnterScope())
         {
-            Loaded                             -= OnUILayoutLoaded;
-            Unloaded                           -= OnUILayoutUnloaded;
-            UpdateBindingsInvoker.UpdateEvents -= UpdateBindings;
+            Loaded   -= OnUILayoutLoaded;
+            Unloaded -= OnUILayoutUnloaded;
 
             if (LayoutCloseButton != null)
             {
@@ -178,12 +176,6 @@ public partial class FullPageOverlay : ContentControl
         }
 
         Hide();
-    }
-
-    private void UpdateBindings(object? sender, EventArgs e)
-    {
-        ChangeTitleDragArea.UpdateLayout();
-        AssignBindings();
     }
 
     private void AssignBindings()

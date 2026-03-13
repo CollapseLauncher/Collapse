@@ -36,9 +36,8 @@ namespace CollapseLauncher
 
         private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Locale.Current.Lang?._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Locale.Current.Lang?._GameClientRegions)}";
 
-        private         List<object> LastMenuNavigationItem;
-        private         List<object> LastFooterNavigationItem;
-        internal static string       PreviousTag = string.Empty;
+        private List<object> LastMenuNavigationItem;
+        private List<object> LastFooterNavigationItem;
 
         private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
 
@@ -171,9 +170,6 @@ namespace CollapseLauncher
                 NavigationViewControl.MenuItems.Clear();
                 NavigationViewControl.FooterMenuItems.Clear();
                 NavigationViewControl.IsSettingsVisible = false;
-                PreviousTag = "launcher";
-                PreviousTagString.Clear();
-                PreviousTagString.Add(PreviousTag);
 
                 // Clear cache on navigation reset
                 LauncherFrame.BackStack.Clear();
@@ -308,10 +304,10 @@ namespace CollapseLauncher
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
+
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
                                                      ? typeof(CachesPage)
-                                                     : typeof(HomePage));
-                LauncherFrame.BackStack.Clear();
+                                                     : typeof(HomePage), true);
             }
             catch (Exception ex)
             {
@@ -338,10 +334,10 @@ namespace CollapseLauncher
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
+
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
                                                      ? typeof(CachesPage)
-                                                     : typeof(HomePage));
-                LauncherFrame.BackStack.Clear();
+                                                     : typeof(HomePage), true);
             }
             catch (Exception ex)
             {

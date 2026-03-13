@@ -1,6 +1,4 @@
-﻿using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Interfaces.Class;
+﻿using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
@@ -16,7 +14,6 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -32,41 +29,35 @@ using WinRT;
 namespace CollapseLauncher.Extension
 {
     internal enum CornerRadiusKind { Normal, Rounded }
-    internal class NavigationViewItemLocaleTextProperty
-    {
-        public string LocaleSetName      { get; init; }
-        public string LocalePropertyName { get; init; }
-    }
 
     public static partial class UIElementExtensions
     {
 #nullable enable
         /// <summary>
-        /// Set the initial navigation view item's locale binding before getting set with <seealso cref="ApplyNavigationViewItemLocaleTextBindings"/>
+        /// Set the initial navigation view item's locale binding.
         /// </summary>
         /// <typeparam name="T">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</typeparam>
         /// <param name="element">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</param>
-        /// <param name="localeSetName">The instance name of a <seealso cref="Locale"/> members.</param>
+        /// <param name="localeObjBinding">The instance object of a locale member.</param>
         /// <param name="localePropertyName">Name of the locale property</param>
         /// <returns>A reference of the <typeparamref name="T"/></returns>
-        internal static T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
+        internal static T BindNavigationViewItemText<T>(this T element, object? localeObjBinding, string localePropertyName)
             where T : NavigationViewItemBase
         {
-            NavigationViewItemLocaleTextProperty property = new()
-            {
-                LocaleSetName = localeSetName,
-                LocalePropertyName = localePropertyName
-            };
+            element.BindProperty(ContentControl.ContentProperty,
+                                 localeObjBinding,
+                                 localePropertyName,
+                                 sourceTrigger: UpdateSourceTrigger.PropertyChanged);
 
-            if (element is NavigationViewItemHeader elementAsHeader)
-            {
-                elementAsHeader.Tag = property;
-            }
-            else
-            {
-                TextBlock textBlock = new TextBlock().WithTag(property);
-                element.Content = textBlock;
-            }
+            if (element is not NavigationViewItem) return element;
+
+            TextBlock tooltipTextBlock = new();
+            tooltipTextBlock.BindProperty(TextBlock.TextProperty,
+                                          localeObjBinding,
+                                          localePropertyName,
+                                          sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+
+            ToolTipService.SetToolTip(element, tooltipTextBlock);
             return element;
         }
 
@@ -145,39 +136,6 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static void ApplyNavigationViewItemLocaleTextBindings(this NavigationView navViewControl)
-        {
-            foreach (NavigationViewItemBase navItem in navViewControl
-                .FindDescendants()
-                .OfType<NavigationViewItemBase>())
-            {
-                string? localeValue = null;
-                if (navItem.Content is TextBlock { Tag: NavigationViewItemLocaleTextProperty localeProperty } navItemTextBlock)
-                {
-                    navItemTextBlock.BindProperty(
-                        TextBlock.TextProperty,
-                        Locale.Current.Lang!,
-                        $"{localeProperty.LocaleSetName}.{localeProperty.LocalePropertyName}");
-                    localeValue = navItemTextBlock.GetValue(TextBlock.TextProperty) as string;
-                }
-                else if (navItem is NavigationViewItemHeader { Tag: NavigationViewItemLocaleTextProperty localePropertyOnHeader } navItemAsHeader)
-                {
-                    navItemAsHeader.BindProperty(
-                        ContentControl.ContentProperty,
-                        Locale.Current.Lang!,
-                        $"{localePropertyOnHeader.LocaleSetName}.{localePropertyOnHeader.LocalePropertyName}");
-                    localeValue = navItemAsHeader.GetValue(ContentControl.ContentProperty) as string;
-                }
-
-                if (!string.IsNullOrEmpty(localeValue))
-                {
-                    ToolTipService.SetToolTip(navItem, localeValue);
-                }
-            }
-
-            navViewControl.UpdateLayout();
-        }
-
         internal static void BindProperty(this FrameworkElement element,
                                           object?               source,
                                           string                propertyName,
@@ -197,46 +155,34 @@ namespace CollapseLauncher.Extension
         internal static void BindProperty<T>(
             this T              element,
             DependencyProperty  dependencyProperty,
-            object              objectToBind,
+            object?             objectToBind,
             string              propertyName,
-            IValueConverter?    converter     = null,
-            BindingMode         bindingMode   = BindingMode.OneWay,
-            UpdateSourceTrigger sourceTrigger = UpdateSourceTrigger.Default)
+            IValueConverter?    converter          = null,
+            BindingMode         bindingMode        = BindingMode.OneWay,
+            UpdateSourceTrigger sourceTrigger      = UpdateSourceTrigger.Default,
+            object?             converterParameter = null)
             where T : FrameworkElement
         {
             // Create a new binding instance
             Binding binding = new()
             {
-                Source = objectToBind,
-                Mode = bindingMode,
-                Path = new PropertyPath(propertyName),
+                Source              = objectToBind,
+                Mode                = bindingMode,
+                Path                = new PropertyPath(propertyName),
                 UpdateSourceTrigger = sourceTrigger
             };
 
             // If the converter is assigned, then add the converter
             if (converter != null)
             {
-                binding.Converter = converter;
+                binding.Converter          = converter;
+                binding.ConverterParameter = converterParameter;
             }
 
             // Set binding to the element
             element.SetBinding(dependencyProperty, binding);
         }
 
-        internal static void OnPropertyChanged<T>(
-            this               T       instance,
-            [CallerMemberName] string? propertyName = null)
-            where T : NotifyPropertyChanged, INotifyPropertyChanged
-        {
-            InnerLauncherConfig
-               .m_mainPage?
-               .DispatcherQueue
-               .TryEnqueue(() => instance.OnPropertyChanged(propertyName));
-
-#if DEBUG
-            Logger.LogWriteLine($"{typeof(T).Name}::OnPropertyChanged() Change to Property: {propertyName} has been notified!");
-#endif
-        }
 #nullable restore
 
         internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",

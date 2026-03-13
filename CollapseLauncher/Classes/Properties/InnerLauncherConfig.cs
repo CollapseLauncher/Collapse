@@ -103,7 +103,7 @@ namespace CollapseLauncher
         public static List<StackPanel> BuildGameTitleListUI()
         {
             List<StackPanel> list = [];
-            foreach (string title in LauncherMetadataHelper.GetGameNameCollection()!)
+            foreach (string title in LauncherMetadataHelper.GetGameNameCollection())
             {
                 StackPanel panel              = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock  gameTitleTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = title });
@@ -204,7 +204,7 @@ namespace CollapseLauncher
             // TextBlock visibility to collapse
             string? translatedString = translationDictionary?[originalString];
             originalTextBlock.Visibility = Visibility.Collapsed;
-            TextBlock translatedTextBlock = new TextBlock { Text = translatedString };
+            TextBlock translatedTextBlock = new() { Text = translatedString };
             if (translatedString is not { Length: > 15 })
             {
                 return translatedTextBlock;

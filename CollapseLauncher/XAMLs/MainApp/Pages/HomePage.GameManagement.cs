@@ -593,7 +593,7 @@ public sealed partial class HomePage
     #region Game Management Buttons
     private void RepairGameButton_Click(object sender, RoutedEventArgs e)
     {
-        m_mainPage!.InvokeMainPageNavigateByTag("repair");
+        m_mainPage!.TryNavigateFrom(typeof(RepairPage));
     }
 
     private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
