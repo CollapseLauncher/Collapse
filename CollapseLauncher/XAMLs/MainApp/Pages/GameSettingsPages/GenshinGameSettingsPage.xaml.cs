@@ -1,7 +1,8 @@
-using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
@@ -12,9 +13,7 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
-using RegistryUtils;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -25,33 +24,28 @@ using Windows.Globalization.NumberFormatting;
 using Windows.Graphics.DirectX;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using Hi3Helper.SentryHelper;
-using CollapseLauncher.GameManagement.ImageBackground;
-
+using WinRT;
 
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
+#endif
+
+#pragma warning disable IDE0130
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
-#endif
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [GeneratedBindableCustomProperty]
     public partial class GenshinGameSettingsPage
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty   { get; }
-        private GenshinSettings    Settings              { get => (GenshinSettings)CurrentGameProperty.GameSettings; }
-        private Brush              InheritApplyTextColor { get; set; }
-        private RegistryMonitor    RegistryWatcher       { get; set; }
-        
         private CanvasBitmap _hdrCalibrationIcon;
         private CanvasBitmap _hdrCalibrationScene;
         private CanvasBitmap _hdrCalibrationUI;
@@ -61,17 +55,10 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Main GSP Methods
-        public GenshinGameSettingsPage()
+        public GenshinGameSettingsPage() : base(GetCurrentGameProperty().GameSettings, Registry.CurrentUser.CreateSubKey(Path.Combine($"Software\\{GetCurrentGameProperty().GameVersion.VendorTypeProp.VendorType}", GetCurrentGameProperty().GameVersion.GamePreset.InternalGameNameInConfig!)))
         {
             try
             {
-                CurrentGameProperty = GetCurrentGameProperty();
-                DispatcherQueue?.TryEnqueue(() =>
-                {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
-                    ToggleRegistrySubscribe(true);
-                });
-
 #nullable enable
                 // ReSharper disable once UnusedVariable
                 DisplayAdvancedColorInfo? colorInfo = WindowUtility.CurrentWindowDisplayColorInfo;
@@ -84,96 +71,18 @@ namespace CollapseLauncher.Pages
 #endif
 #nullable restore
 
-                LoadPage();
+                InitializeComponent();
+
+                ApplyButton.Translation           = new Vector3(0, 0, 32);
+                GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
+                SettingsScrollViewer.EnableImplicitAnimation(true);
+
+                SetApplyTextContainer(GameSettingsApplyGrid, gridColumn: 1);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            }
-        }
-
-        private void ToggleRegistrySubscribe(bool doSubscribe)
-        {
-            if (doSubscribe)
-            {
-                RegistryWatcher.RegChanged += RegistryListener;
-                RegistryWatcher.Start();
-            }
-            else
-            {
-                RegistryWatcher.Stop();
-                RegistryWatcher.RegChanged -= RegistryListener;
-            }
-        }
-
-        private void RegistryListener(object sender, EventArgs e)
-        {
-            LogWriteLine("[GI GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-            DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
-        }
-
-        private void LoadPage()
-        {
-            Settings.ReloadSettings();
-            InitializeComponent();
-
-            ApplyButton.Translation           = new Vector3(0, 0, 32);
-            GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
-            SettingsScrollViewer.EnableImplicitAnimation(true);
-
-            InheritApplyTextColor = ApplyText.Foreground;
-        }
-
-        private async void RegistryExportClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ToggleRegistrySubscribe(false);
-                Exception exc = await Settings.ExportSettings();
-
-                if (exc != null) throw exc;
-
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegExported;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Error has occurred while exporting registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
-                ApplyText.Text = ex.Message;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        private async void RegistryImportClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ToggleRegistrySubscribe(false);
-                Exception exc = await Settings.ImportSettings();
-
-                if (exc != null) throw exc;
-
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text       = Locale.Current.Lang?._GameSettingsPage.SettingsRegImported;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Error has occurred while importing registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
-                ApplyText.Text = ex.Message;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -221,69 +130,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text       = Locale.Current.Lang?._StarRailGameSettingsPage.SettingsApplied;
-                ApplyText.Visibility = Visibility.Visible;
-
-                ToggleRegistrySubscribe(false);
-                Settings.SaveSettings();
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        public string CustomArgsValue
-        {
-            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
-            set
-            {
-                ToggleRegistrySubscribe(false);
-                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        public bool IsUseCustomArgs
-        {
-            get
-            {
-                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
-                CustomArgsTextBox.IsEnabled = value;
-                return value;
-            }
-            set
-            {
-                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
-                CustomArgsTextBox.IsEnabled = value;
-            }
-        }
-        
-        private void OnUnload(object sender, RoutedEventArgs e)
-        {
-            DispatcherQueue?.TryEnqueue(() =>
-            {
-                try
-                {
-                    ToggleRegistrySubscribe(false);
-                    RegistryWatcher.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"[GI GSP Module] Error when disposing RegistryWatcher module!\r\n{ex}", LogType.Error, true);
-                }
-            });
-        }
         #endregion
 
         #region Method - NumberBox to Slider
@@ -303,12 +149,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    IncrementNumberRounder rounder = new IncrementNumberRounder
+                    IncrementNumberRounder rounder = new()
                     {
                         Increment = 0.0000001
                     };
 
-                    DecimalFormatter formatter = new DecimalFormatter
+                    DecimalFormatter formatter = new()
                     {
                         IntegerDigits  = 1,
                         FractionDigits = 5,
@@ -336,12 +182,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    IncrementNumberRounder rounder = new IncrementNumberRounder
+                    IncrementNumberRounder rounder = new()
                     {
                         Increment = 0.1
                     };
 
-                    DecimalFormatter formatter = new DecimalFormatter
+                    DecimalFormatter formatter = new()
                     {
                         IntegerDigits  = 3,
                         FractionDigits = 1,
@@ -369,12 +215,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    IncrementNumberRounder rounder = new IncrementNumberRounder
+                    IncrementNumberRounder rounder = new()
                     {
                         Increment = 0.1
                     };
 
-                    DecimalFormatter formatter = new DecimalFormatter
+                    DecimalFormatter formatter = new()
                     {
                         IntegerDigits  = 3,
                         FractionDigits = 1,
@@ -402,12 +248,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    IncrementNumberRounder rounder = new IncrementNumberRounder
+                    IncrementNumberRounder rounder = new()
                     {
                         Increment = 0.1
                     };
 
-                    DecimalFormatter formatter = new DecimalFormatter
+                    DecimalFormatter formatter = new()
                     {
                         IntegerDigits  = 3,
                         FractionDigits = 1,
@@ -436,7 +282,7 @@ namespace CollapseLauncher.Pages
         private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (e.OldValue == 0) return;
-            var value = Math.Round(e.NewValue, 1);
+            double value = Math.Round(e.NewValue, 1);
             MaxLuminosityValue.Value = value;
             MaxLuminosity            = value;
             DrawHDRCalibrationImage1();
@@ -445,7 +291,7 @@ namespace CollapseLauncher.Pages
         private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (e.OldValue == 0) return;
-            var value = Math.Round(e.NewValue, 1);
+            double value = Math.Round(e.NewValue, 1);
             UiPaperWhiteValue.Value = value;
             UiPaperWhite            = value;
             DrawHDRCalibrationImage2();
@@ -454,7 +300,7 @@ namespace CollapseLauncher.Pages
         private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (e.OldValue == 0) return;
-            var value = Math.Round(e.NewValue, 1);
+            double value = Math.Round(e.NewValue, 1);
             ScenePaperWhiteValue.Value = value;
             ScenePaperWhite            = value;
             DrawHDRCalibrationImage2();
@@ -491,7 +337,7 @@ namespace CollapseLauncher.Pages
                 CanvasSolidColorBrush white = CanvasSolidColorBrush.CreateHdr(swapChain, new Vector4(125, 125, 125, 1));
                 ds.FillRectangle(0, 0, w, h, white);
 
-                LinearTransferEffect bg = new LinearTransferEffect
+                LinearTransferEffect bg = new()
                 {
                     Source = _hdrCalibrationIcon,
                     BufferPrecision = CanvasBufferPrecision.Precision16Float,
@@ -513,7 +359,7 @@ namespace CollapseLauncher.Pages
                 float                w         = (float)panel.Width;
                 float                h         = (float)panel.Height;
                 float                dpi       = 96 * (float)XamlRoot.RasterizationScale;
-                CanvasSwapChain      swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
+                CanvasSwapChain      swapChain = new(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
                 panel.SwapChain = swapChain;
 
                 // Unpacked app failed to open ms-appx uri, so we need to read it manually :(
@@ -547,7 +393,7 @@ namespace CollapseLauncher.Pages
 
             using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.White))
             {
-                LinearTransferEffect bg = new LinearTransferEffect
+                LinearTransferEffect bg = new()
                 {
                     Source = _hdrCalibrationScene,
                     BufferPrecision = CanvasBufferPrecision.Precision16Float,
@@ -557,7 +403,7 @@ namespace CollapseLauncher.Pages
                 };
                 ds.DrawImage(bg, new Rect(0, 0, w, h), _hdrCalibrationScene.Bounds);
 
-                LinearTransferEffect ui = new LinearTransferEffect
+                LinearTransferEffect ui = new()
                 {
                     Source = _hdrCalibrationUI,
                     BufferPrecision = CanvasBufferPrecision.Precision16Float,
@@ -579,7 +425,7 @@ namespace CollapseLauncher.Pages
                 float                w         = (float)panel.Width;
                 float                h         = (float)panel.Height;
                 float                dpi       = 96 * (float)XamlRoot.RasterizationScale;
-                CanvasSwapChain      swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
+                CanvasSwapChain      swapChain = new(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
                 panel.SwapChain = swapChain;
 
                 StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibration/Scene.jxr"));

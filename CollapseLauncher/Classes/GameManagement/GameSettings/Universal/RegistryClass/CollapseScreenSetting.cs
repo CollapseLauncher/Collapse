@@ -16,7 +16,7 @@ using static Hi3Helper.Logger;
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
-    internal class CollapseScreenSetting : IGameSettingsValue<CollapseScreenSetting>
+    public class CollapseScreenSetting : IGameSettingsValue<CollapseScreenSetting>
     {
         #region Fields
         private const string ValueName = "CollapseLauncher_ScreenSetting";

@@ -30,7 +30,7 @@ using System.IO;
 #nullable enable
 namespace CollapseLauncher
 {
-    internal sealed partial class GamePresetProperty : IDisposable
+    public sealed partial class GamePresetProperty : IDisposable
     {
         internal static GamePresetProperty Create(UIElement uiElementParent, ILauncherApi? launcherApis, string gameName, string gameRegion)
         {

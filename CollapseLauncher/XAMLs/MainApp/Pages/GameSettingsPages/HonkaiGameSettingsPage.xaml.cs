@@ -1,138 +1,47 @@
-using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
-using RegistryUtils;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
-using Windows.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using CollapseLauncher.GameManagement.ImageBackground;
-using CollapseLauncher.Helper;
-
+using WinRT;
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
 #endif
 
+#pragma warning disable IDE0130
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [GeneratedBindableCustomProperty]
     public partial class HonkaiGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty   { get; }
-        private HonkaiSettings     Settings              => (HonkaiSettings)CurrentGameProperty.GameSettings;
-        private Brush              InheritApplyTextColor { get; set; }
-        private RegistryMonitor    RegistryWatcher       { get; set; }
 
-        public HonkaiGameSettingsPage()
+        public HonkaiGameSettingsPage() : base(GetCurrentGameProperty().GameSettings, Registry.CurrentUser.CreateSubKey(Path.Combine($"Software\\{GetCurrentGameProperty().GameVersion.VendorTypeProp.VendorType}", GetCurrentGameProperty().GameVersion.GamePreset.InternalGameNameInConfig!)))
         {
             try
             {
-                CurrentGameProperty = GetCurrentGameProperty();
-                DispatcherQueue?.TryEnqueue(() =>
-                {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
-                    ToggleRegistrySubscribe(true);
-                });
+                InitializeComponent();
 
-                LoadPage();
+                ApplyButton.Translation           = new Vector3(0, 0, 32);
+                GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
+                SettingsScrollViewer.EnableImplicitAnimation(true);
+
+                SetApplyTextContainer(GameSettingsApplyGrid, gridColumn: 1);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            }
-        }
-
-        private void ToggleRegistrySubscribe(bool doSubscribe)
-        {
-            if (doSubscribe)
-            {
-                RegistryWatcher.RegChanged += RegistryListener;
-                RegistryWatcher.Start();
-            }
-            else
-            {
-                RegistryWatcher.Stop();
-                RegistryWatcher.RegChanged -= RegistryListener;
-            }
-        }
-
-        private void RegistryListener(object sender, EventArgs e)
-        {
-            LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-            DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
-        }
-
-        private void LoadPage()
-        {
-            Settings.ReloadSettings();
-
-            InitializeComponent();
-            ApplyButton.Translation = new Vector3(0,0,32);
-            GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
-            SettingsScrollViewer.EnableImplicitAnimation(true);
-
-            InheritApplyTextColor = ApplyText.Foreground;
-        }
-
-        private async void RegistryExportClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ToggleRegistrySubscribe(false);
-                Exception exc = await Settings.ExportSettings();
-
-                if (exc != null) throw exc;
-
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Locale.Current.Lang._GameSettingsPage.SettingsRegExported;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Error has occurred while exporting registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
-                ApplyText.Text = ex.Message;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        private async void RegistryImportClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ToggleRegistrySubscribe(false);
-                Exception exc = await Settings.ImportSettings();
-
-                if (exc != null) throw exc;
-
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text       = Locale.Current.Lang._GameSettingsPage.SettingsRegImported;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Error has occured while importing registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
-                ApplyText.Text = ex.Message;
-                ApplyText.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -177,63 +86,6 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
-        }
-
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text       = Locale.Current.Lang._GameSettingsPage.SettingsApplied;
-                ApplyText.Visibility = Visibility.Visible;
-
-                ToggleRegistrySubscribe(false);
-                Settings.SaveSettings();
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
-            finally
-            {
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        public string CustomArgsValue
-        {
-            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
-            set
-            {
-                ToggleRegistrySubscribe(false);
-                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
-                ToggleRegistrySubscribe(true);
-            }
-        }
-
-        public bool IsUseCustomArgs
-        {
-            get
-            {
-                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
-                CustomArgsTextBox.IsEnabled = value;
-                return value;
-            }
-            set
-            {
-                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
-                CustomArgsTextBox.IsEnabled = value;
-            }
-        }
-
-        private void OnUnload(object sender, RoutedEventArgs e)
-        {
-            DispatcherQueue?.TryEnqueue(() =>
-            {
-                ToggleRegistrySubscribe(false);
-                RegistryWatcher?.Dispose();
-            });
         }
     }
 }
