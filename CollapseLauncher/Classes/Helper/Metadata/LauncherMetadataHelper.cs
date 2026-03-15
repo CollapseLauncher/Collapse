@@ -1,5 +1,4 @@
-﻿#nullable enable
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
@@ -19,6 +18,7 @@ using System.Threading.Tasks;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -41,15 +41,18 @@ internal static class LauncherMetadataHelper
 
     #region Metadata Stamp List and Config Dictionary
 
-    private static List<Stamp?>?              LauncherMetadataStamp           { get; set; }
-    private static List<Stamp?>?              NewUpdateMetadataStamp          { get; set; }
-    private static Dictionary<string, Stamp>? LauncherMetadataStampDictionary { get; set; }
+    private static List<Stamp?>?             LauncherMetadataStamp           { get; set; }
+    private static List<Stamp?>?             NewUpdateMetadataStamp          { get; set; }
 
-    internal static Dictionary<string, Dictionary<string, PresetConfig>?>? LauncherMetadataConfig
+    private static Dictionary<string, Stamp> LauncherMetadataStampDictionary
     {
         get;
-        private set;
-    }
+    } = [];
+
+    internal static Dictionary<string, Dictionary<string, PresetConfig>> LauncherMetadataConfig
+    {
+        get;
+    } = [];
 
     internal static CommunityToolsProperty CommunityToolsProperty = new();
 
@@ -61,7 +64,11 @@ internal static class LauncherMetadataHelper
 
     internal static string? CurrentMetadataConfigGameName;
     internal static string? CurrentMetadataConfigGameRegion;
-    internal static Dictionary<string, List<string>?>? LauncherGameNameRegionCollection { get; private set; }
+
+    internal static Dictionary<string, List<string>> LauncherGameNameRegionCollection
+    {
+        get;
+    } = [];
 
     #endregion
 
@@ -69,15 +76,17 @@ internal static class LauncherMetadataHelper
 
     internal static MasterKeyConfig? CurrentMasterKey { get; private set; }
 
-    private static Dictionary<string, MasterKeyConfig>? OtherMasterKeyConfigVault { get; set; }
+    private static Dictionary<string, MasterKeyConfig> OtherMasterKeyConfigVault
+    {
+        get;
+    } = [];
 
     #endregion
 
     #region Current Game Name and Max Region Counts
 
-    internal static int CurrentGameNameCount => LauncherGameNameRegionCollection?.Count ?? 0;
-    internal static int CurrentGameRegionMaxCount => LauncherGameNameRegionCollection?
-        .GetValueOrDefault(CurrentMetadataConfigGameName ?? "")?.Count ?? 0;
+    internal static int CurrentGameNameCount => LauncherGameNameRegionCollection.Count;
+    internal static int CurrentGameRegionMaxCount => LauncherGameNameRegionCollection.GetValueOrDefault(CurrentMetadataConfigGameName ?? "")?.Count ?? 0;
 
     #endregion
 
@@ -106,26 +115,24 @@ internal static class LauncherMetadataHelper
                 {
                     Logger.LogWriteLine($"Metadata config for {gameName} - {gameRegion} has been modified! Reloading the config!", LogType.Warning, true);
 
-                    Dictionary<string, PresetConfig>? regionDict = null;
-                    if (!LauncherMetadataConfig?.TryGetValue(gameName, out regionDict) ?? false)
+                    if (!LauncherMetadataConfig.TryGetValue(gameName, out Dictionary<string, PresetConfig>? regionDict))
                         throw new KeyNotFoundException("Game name is not found in the metadata collection!");
 
-                    if (!regionDict?.ContainsKey(gameRegion) ?? false)
+                    if (!regionDict.ContainsKey(gameRegion))
                         throw new KeyNotFoundException("Game region is not found in the metadata collection!");
 
                     // Get the stamp and remove the old config from metadata config dictionary
                     string stampKey = $"{gameName} - {gameRegion}";
-                    Stamp? previousStamp = LauncherMetadataStampDictionary?[stampKey];
-                    LauncherMetadataConfig?[gameName]?.Remove(gameRegion);
 
                     // If the previous stamp is found, then start reloading the config
-                    if (previousStamp != null)
+                    if (LauncherMetadataStampDictionary.TryGetValue(stampKey, out Stamp ? previousStamp))
                     {
+                        LauncherMetadataConfig[gameName].Remove(gameRegion);
                         // Get the current channel
                         string currentChannel = CurrentLauncherChannel;
                         if (await LoadAndGetConfig(previousStamp, currentChannel) is PresetConfig presetConfig)
                         {
-                            LauncherMetadataConfig?[gameName]?.Add(gameRegion, presetConfig);
+                            LauncherMetadataConfig[gameName].Add(gameRegion, presetConfig);
                         }
                     }
                 }
@@ -138,17 +145,12 @@ internal static class LauncherMetadataHelper
                 break;
         }
 
-        PresetConfig? config = LauncherMetadataConfig?[gameName]?[gameRegion];
-        if (config != null)
-        {
-            CurrentMetadataConfig = config;
-            CurrentMetadataConfigGameName = gameName;
-            CurrentMetadataConfigGameRegion = gameRegion;
+        PresetConfig config = LauncherMetadataConfig[gameName][gameRegion];
+        CurrentMetadataConfig           = config;
+        CurrentMetadataConfigGameName   = gameName;
+        CurrentMetadataConfigGameRegion = gameRegion;
 
-            return config;
-        }
-
-        throw new AccessViolationException($"Config is not exist or null inside of the metadata! This should not be happening!\r\nGame: ({gameName} - {gameRegion})");
+        return config;
     }
 
     internal static string GetTranslatedCurrentGameTitleRegionString()
@@ -182,12 +184,7 @@ internal static class LauncherMetadataHelper
             string stampKey = $"{gameName} - {gameRegion}";
 
             // If the stamp key does not exist in the stamp dictionary, return -2
-            Stamp? stamp = null;
-            if (!LauncherMetadataStampDictionary?.TryGetValue(stampKey, out stamp) ?? false)
-                return -2;
-
-            // Load the stamp from dictionary and if it's null, return -2
-            if (stamp == null)
+            if (!LauncherMetadataStampDictionary.TryGetValue(stampKey, out Stamp? stamp))
                 return -2;
 
             // Ignore the stamp generated by the plugin. Return as 0 (unmodified)
@@ -235,7 +232,7 @@ internal static class LauncherMetadataHelper
         PluginManager.UnloadPlugins();
 
         // Load preset config from plugins
-        await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!, LauncherMetadataStampDictionary!);
+        await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!, LauncherMetadataStampDictionary);
     }
 
     private static async Task InitializeStamp(bool throwAfterRetry = false)
@@ -244,7 +241,6 @@ internal static class LauncherMetadataHelper
         string stampRemoteFilePath = LauncherStampRemoteURLPath;
 
         // Initialize and clear the stamp dictionary
-        LauncherMetadataStampDictionary ??= new Dictionary<string, Stamp>();
         LauncherMetadataStampDictionary.Clear();
 
         FileStream? stampLocalStream = null;
@@ -353,15 +349,12 @@ internal static class LauncherMetadataHelper
         }
 
         // Initialize the dictionary of the config
-        LauncherMetadataConfig ??= [];
         LauncherMetadataConfig.Clear();
 
         // Initialize the game name region collection if it's null
-        LauncherGameNameRegionCollection ??= [];
         LauncherGameNameRegionCollection.Clear();
 
         // Initialize the game master key config vault
-        OtherMasterKeyConfigVault ??= [];
         OtherMasterKeyConfigVault.Clear();
 
         #region Master Key Loading
@@ -427,7 +420,7 @@ internal static class LauncherMetadataHelper
             }
 
             // Re-add the region preset config into its region dict
-            if (!(regionDict?.TryAdd(gameRegion, presetConfig) ?? false))
+            if (!regionDict.TryAdd(gameRegion, presetConfig))
             {
                 continue;
             }
@@ -439,7 +432,7 @@ internal static class LauncherMetadataHelper
             }
 
             // Re-add the region name into its region dict
-            regionList?.Add(gameRegion);
+            regionList.Add(gameRegion);
         }
 
         async ValueTask LoadRegionMetadataConfig((int, (Stamp?, ConcurrentDictionary<string, PresetConfig>)) state, CancellationToken token)
@@ -484,6 +477,8 @@ internal static class LauncherMetadataHelper
             CommunityToolsProperty.CombineFrom(communityToolsProperty);
         }
         #endregion
+
+        GameSelectionContext.Shared.UpdateAllBindings();
     }
 
     private static async Task<FileStream> LoadOrGetConfigStream(
@@ -559,7 +554,7 @@ internal static class LauncherMetadataHelper
                 // Deserialize the config
                 case MetadataType.PresetConfigV2:
                     {
-                        PresetConfig? presetConfig =
+                        PresetConfig presetConfig =
                             await configLocalStream.DeserializeAsync(PresetConfigJsonContext.Default.PresetConfig)
                             ?? throw new InvalidDataException("Config seems to be empty!");
 
@@ -573,8 +568,9 @@ internal static class LauncherMetadataHelper
                         presetConfig.GameLauncherApi ??= presetConfig.LauncherType switch
                         {
                             LauncherType.HoYoPlay => HypApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
-                            LauncherType.Legacy => throw new NotSupportedException("Legacy Launcher API is no longer supported!"),
-                            _ => throw new NotSupportedException($"Launcher type: {presetConfig.LauncherType} is not supported!")
+                            LauncherType.Legacy   => throw new NotSupportedException("Legacy Launcher API is no longer supported!"),
+                            LauncherType.Plugin   => throw new InvalidOperationException("You cannot set built-in game PresetConfig as Plugin-based game type!"),
+                            _                     => throw new NotSupportedException($"Launcher type: {presetConfig.LauncherType} is not supported!")
                         };
 
                         // Dispose the file first
@@ -837,12 +833,12 @@ internal static class LauncherMetadataHelper
         }
     }
 
-    internal static List<string> GetGameNameCollection() => LauncherGameNameRegionCollection?.Keys.ToList() ?? [];
+    internal static List<string> GetGameNameCollection() => LauncherGameNameRegionCollection.Keys.ToList();
 
     internal static List<string>? GetGameRegionCollection(string? gameName)
     {
         if (!string.IsNullOrEmpty(gameName) &&
-            (LauncherGameNameRegionCollection?.TryGetValue(gameName, out List<string>? hashSetRegion) ?? false))
+            LauncherGameNameRegionCollection.TryGetValue(gameName, out List<string>? hashSetRegion))
             return hashSetRegion;
 
         string msg = $"Game region collection for name: \"{gameName}\" isn't exist!";
@@ -858,7 +854,7 @@ internal static class LauncherMetadataHelper
 
         // Get the region collection
         List<string>? gameRegionCollection = GetGameRegionCollection(gameName);
-        gameRegionCollection ??= LauncherGameNameRegionCollection?.FirstOrDefault().Value!;
+        gameRegionCollection ??= LauncherGameNameRegionCollection.FirstOrDefault().Value;
 
         // Throw if the collection is empty or null
         if (gameRegionCollection == null || gameRegionCollection.Count == 0)
