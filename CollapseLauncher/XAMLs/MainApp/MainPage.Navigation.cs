@@ -303,7 +303,7 @@ public partial class MainPage : Page
         {
             case Type pageType:
             {
-                if (pageType.Name.EndsWith("SettingsPage") &&
+                if (pageType.Name.EndsWith("GameSettingsPage") &&
                     !IsGameInstalled())
                 {
                     pageType = typeof(NotInstalledPage);
