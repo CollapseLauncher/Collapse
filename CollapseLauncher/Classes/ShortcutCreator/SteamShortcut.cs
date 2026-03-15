@@ -38,12 +38,8 @@ namespace CollapseLauncher.ShortcutUtils
             _path = Path.GetDirectoryName(path);
             _preset = preset;
 
-            string translatedGameTitle =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
-                                                                        Locale.Current.Lang?._GameClientTitles)!;
-            string translatedGameRegion =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
-                                                                        Locale.Current.Lang?._GameClientRegions);
+            string translatedGameTitle = LauncherMetadataHelper.GetGameTitleTranslation(preset.GameName) ?? preset.GameName;
+            string translatedGameRegion = LauncherMetadataHelper.GetGameRegionTranslation(preset.ZoneName) ?? preset.ZoneName;
             AppName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             string stubPath = VelopackLocatorExtension.FindCollapseStubPath();

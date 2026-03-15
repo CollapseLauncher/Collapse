@@ -7,8 +7,15 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
       Background="Transparent"
       mc:Ignorable="d">
+    <Page.Resources>
+        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter"/>
+        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter"/>
+        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter"/>
+        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter"/>
+    </Page.Resources>
     <Grid Margin="32">
         <Grid x:Name="FrontGrid"
               Margin="16">
@@ -112,13 +119,19 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="ComboBoxGameCategory"
+                    <ComboBox x:Name="ComboBoxGameTitle"
                               HorizontalAlignment="Stretch"
                               Canvas.ZIndex="2"
                               CornerRadius="15,0,0,15"
                               PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientTitles['Honkai Impact 3rd']}"
-                              SelectionChanged="SetGameCategoryChange"
-                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                              SelectionChanged="SetGameTitleChange"
+                              Style="{ThemeResource DefaultComboBoxStyle}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <ComboBox x:Name="ComboBoxGameRegion"
                               Grid.Column="1"
                               HorizontalAlignment="Stretch"
@@ -126,7 +139,29 @@
                               CornerRadius="0,15,15,0"
                               PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientRegions['Southeast Asia']}"
                               SelectionChanged="SetGameRegionChange"
-                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                              Style="{ThemeResource DefaultComboBoxStyle}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="metadata:PresetConfig">
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="4">
+                                    <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}"/>
+                                    <Grid Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                          CornerRadius="4"
+                                          Padding="4, 0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
+                                        <TextBlock Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   Foreground="{ThemeResource TextBoxForegroundThemeBrush}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
             </StackPanel>
             <TextBlock Grid.Column="0"

@@ -1,5 +1,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -16,6 +17,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Buffers;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Numerics;
@@ -270,7 +272,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Current.Lang?._GameClientTitles);
+                return LauncherMetadataHelper.GetGameTitleTranslation(asString);
             }
 
             return value;
@@ -288,7 +290,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Current.Lang?._GameClientRegions);
+                return LauncherMetadataHelper.GetGameRegionTranslation(asString);
             }
 
             return value;
@@ -1073,6 +1075,115 @@ namespace CollapseLauncher.Pages
                 ? 0d
                 : 1d;
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringDictionaryToValueConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not Dictionary<string, string> asDictionary ||
+                parameter is not string lookupString)
+            {
+                return null;
+            }
+
+            return asDictionary.GetValueOrDefault(lookupString, lookupString);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameTitleComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not string asString)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientTitles",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   asString);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameRegionComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not PresetConfig presetConfig)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientRegions",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   presetConfig.ZoneName);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringUppercaseConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language) =>
+            value?.ToString()?.ToUpper();
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameChannelToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, string language) =>
+            value switch
+            {
+                GameChannel gameChannel => gameChannel == GameChannel.Stable
+                    ? Visibility.Collapsed
+                    : Visibility.Visible,
+                _ => Visibility.Collapsed
+            };
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

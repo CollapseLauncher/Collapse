@@ -4,6 +4,7 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -724,8 +725,7 @@ namespace CollapseLauncher.Dialogs
                        };
             }
 
-            string gameFullnameString =
-                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Locale.Current.Lang?._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Locale.Current.Lang?._GameClientRegions)}";
+            string gameFullnameString = $"{LauncherMetadataHelper.GetGameTitleTranslation(gameTitle)} - {LauncherMetadataHelper.GetGameRegionTranslation(gameRegion)}";
 
             TextBlock contentTextBlock = new() { TextWrapping = TextWrapping.Wrap };
             contentTextBlock.AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingInstallChoiceSubtitle1 ?? "",

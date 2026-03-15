@@ -9,6 +9,7 @@
       xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:pages="using:CollapseLauncher.Pages"
+      xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -21,6 +22,10 @@
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <pages:CountToOpacityConverter x:Key="CountToOpacityConverter"/>
         <pages:InverseCountToOpacityConverter x:Key="InverseCountToOpacityConverter"/>
+        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter"/>
+        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter"/>
+        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter"/>
+        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid"
           Background="{ThemeResource WindowBackground}">
@@ -96,9 +101,9 @@
                         Visibility="Visible">
             <Grid Background="Transparent">
                 <Frame x:Name="LauncherFrame">
-                    <Frame.ContentTransitions>
+                    <!--<Frame.ContentTransitions>
                         <NavigationThemeTransition />
-                    </Frame.ContentTransitions>
+                    </Frame.ContentTransitions>-->
                 </Frame>
             </Grid>
         </NavigationView>
@@ -156,15 +161,22 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <ComboBox x:Name="ComboBoxGameCategory"
+                            <ComboBox x:Name="ComboBoxGameTitle"
                                       BorderThickness="0"
+                                      Grid.Column="0"
                                       MinWidth="167"
                                       Canvas.ZIndex="2"
                                       CornerRadius="15,0,0,15"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
                                       PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientTitles['Honkai Impact 3rd'], Mode=OneWay}"
-                                      SelectionChanged="SetGameCategoryChange" />
+                                      SelectionChanged="SetGameTitleChange">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                             <ComboBox x:Name="ComboBoxGameRegion"
                                       BorderThickness="0"
                                       Grid.Column="1"
@@ -174,7 +186,29 @@
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
                                       PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientRegions['Southeast Asia'], Mode=OneWay}"
-                                      SelectionChanged="EnableRegionChangeButton" />
+                                      SelectionChanged="EnableRegionChangeButton">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="metadata:PresetConfig">
+                                        <StackPanel Orientation="Horizontal"
+                                                    Spacing="4">
+                                            <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}"/>
+                                            <Grid Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                                  CornerRadius="4"
+                                                  Padding="4, 0"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"
+                                                  Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
+                                                <TextBlock Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}"
+                                                           FontSize="10"
+                                                           FontWeight="Bold"
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{ThemeResource TextBoxForegroundThemeBrush}"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </Grid>
                         <Grid x:Name="ChangeGameBtnGridShadow"
                               Grid.Column="1"
@@ -383,12 +417,12 @@
                 Shadow="{ThemeResource SharedShadow}"
                 Style="{ThemeResource AcrylicButtonStyle}"
                 Translation="0,0,8">
-            <Button.Transitions>
+            <!--<Button.Transitions>
                 <RepositionThemeTransition />
             </Button.Transitions>
             <Button.ContentTransitions>
                 <RepositionThemeTransition />
-            </Button.ContentTransitions>
+            </Button.ContentTransitions>-->
             <StackPanel Margin="0,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
@@ -432,9 +466,9 @@
                             Background="{ThemeResource AccentColor}"
                             CornerRadius="3"
                             Visibility="Visible">
-                    <StackPanel.Transitions>
+                    <!--<StackPanel.Transitions>
                         <RepositionThemeTransition />
-                    </StackPanel.Transitions>
+                    </StackPanel.Transitions>-->
                     <TextBlock x:Name="VersionNumberIndicator"
                                Padding="3,0,3,0"
                                VerticalAlignment="Center"
@@ -471,9 +505,9 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid.Transitions>
+            <!--<Grid.Transitions>
                 <RepositionThemeTransition />
-            </Grid.Transitions>
+            </Grid.Transitions>-->
             <Grid Grid.Row="0">
                 <ScrollViewer x:Name="NotificationPanelScrollViewer"
                               CanContentRenderOutsideBounds="True"

@@ -22,6 +22,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher
 {
@@ -34,7 +35,7 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static string RegionToChangeName => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Locale.Current.Lang?._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Locale.Current.Lang?._GameClientRegions)}";
+        private static string RegionToChangeName => $"{LauncherMetadataHelper.GetGameTitleTranslation(LauncherMetadataHelper.CurrentMetadataConfigGameName)} - {LauncherMetadataHelper.GetGameRegionTranslation(LauncherMetadataHelper.CurrentMetadataConfigGameRegion)}";
 
         private List<object> LastMenuNavigationItem;
         private List<object> LastFooterNavigationItem;
@@ -300,7 +301,7 @@ namespace CollapseLauncher
                 }
 
                 _lockRegionChangeBtn = true;
-                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
@@ -330,7 +331,7 @@ namespace CollapseLauncher
                 }
 
                 _lockRegionChangeBtn = true;
-                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
                 InvokeLoadingRegionPopup(false);
@@ -369,7 +370,7 @@ namespace CollapseLauncher
 
                 // Finalize loading
                 ToggleChangeRegionBtn(sender, false);
-                _currentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
             }
             catch (Exception ex)
@@ -385,20 +386,20 @@ namespace CollapseLauncher
 
         private async Task<bool> LoadRegionRootButton()
         {
-            string GameCategory = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
-            string GameRegion = GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue);
+            if (ComboBoxGameTitle.SelectedValue is not string gameTitle ||
+                ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion) return false;
 
             // Set and Save CurrentRegion in AppConfig
-            SetAndSaveConfigValue("GameCategory", GameCategory);
-            LauncherMetadataHelper.SetPreviousGameRegion(GameCategory, GameRegion);
+            SetAndSaveConfigValue("GameCategory", gameTitle);
+            LauncherMetadataHelper.SaveGameRegionIndex(gameTitle, gameRegion.ZoneName);
 
             // Load Game ConfigV2 List before loading the region
             Interlocked.Exchange(ref IsLoadRegionComplete, false);
-            PresetConfig Preset = await LauncherMetadataHelper.GetMetadataConfig(GameCategory, GameRegion);
+            PresetConfig Preset = await LauncherMetadataHelper.GetMetadataConfig(gameTitle, gameRegion.ZoneName);
 
             // Start region loading
             _ = ShowAsyncLoadingTimedOutPill();
-            if (!await LoadRegionFromCurrentConfigV2(Preset, GameCategory, GameRegion))
+            if (!await LoadRegionFromCurrentConfigV2(Preset, gameTitle, gameRegion.ZoneName))
             {
                 return false;
             }

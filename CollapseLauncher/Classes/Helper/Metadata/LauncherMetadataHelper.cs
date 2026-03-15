@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Helper.Metadata;
 
-internal static class LauncherMetadataHelper
+internal static partial class LauncherMetadataHelper
 {
     private const string MetadataVersion = "v3";
     private const string LauncherMetadataStampPrefix = "stamp.json";
@@ -41,8 +41,8 @@ internal static class LauncherMetadataHelper
 
     #region Metadata Stamp List and Config Dictionary
 
-    private static List<Stamp?>?             LauncherMetadataStamp           { get; set; }
-    private static List<Stamp?>?             NewUpdateMetadataStamp          { get; set; }
+    private static List<Stamp> LauncherMetadataStamp  { get; } = [];
+    private static List<Stamp> NewUpdateMetadataStamp { get; } = [];
 
     private static Dictionary<string, Stamp> LauncherMetadataStampDictionary
     {
@@ -50,6 +50,11 @@ internal static class LauncherMetadataHelper
     } = [];
 
     internal static Dictionary<string, Dictionary<string, PresetConfig>> LauncherMetadataConfig
+    {
+        get;
+    } = [];
+
+    internal static Dictionary<string, List<PresetConfig>> LauncherGameNameRegionCollection
     {
         get;
     } = [];
@@ -64,11 +69,6 @@ internal static class LauncherMetadataHelper
 
     internal static string? CurrentMetadataConfigGameName;
     internal static string? CurrentMetadataConfigGameRegion;
-
-    internal static Dictionary<string, List<string>> LauncherGameNameRegionCollection
-    {
-        get;
-    } = [];
 
     #endregion
 
@@ -97,13 +97,13 @@ internal static class LauncherMetadataHelper
 
     #endregion
 
-    internal static async Task<PresetConfig?> GetMetadataConfig(string? gameName, string? gameRegion)
+    internal static async Task<PresetConfig> GetMetadataConfig(string gameTitle, string gameRegion)
     {
-        ArgumentException.ThrowIfNullOrEmpty(gameName);
+        ArgumentException.ThrowIfNullOrEmpty(gameTitle);
         ArgumentException.ThrowIfNullOrEmpty(gameRegion);
 
         // Check the modification status
-        int isConfigLocallyModified = await IsMetadataLocallyModified(gameName, gameRegion);
+        int isConfigLocallyModified = await IsMetadataLocallyModified(gameTitle, gameRegion);
 
         switch (isConfigLocallyModified)
         {
@@ -113,26 +113,26 @@ internal static class LauncherMetadataHelper
             // Local modification has been made and config needs to be reloaded
             case 1:
                 {
-                    Logger.LogWriteLine($"Metadata config for {gameName} - {gameRegion} has been modified! Reloading the config!", LogType.Warning, true);
+                    Logger.LogWriteLine($"Metadata config for {gameTitle} - {gameRegion} has been modified! Reloading the config!", LogType.Warning, true);
 
-                    if (!LauncherMetadataConfig.TryGetValue(gameName, out Dictionary<string, PresetConfig>? regionDict))
+                    if (!LauncherMetadataConfig.TryGetValue(gameTitle, out Dictionary<string, PresetConfig>? regionDict))
                         throw new KeyNotFoundException("Game name is not found in the metadata collection!");
 
                     if (!regionDict.ContainsKey(gameRegion))
                         throw new KeyNotFoundException("Game region is not found in the metadata collection!");
 
                     // Get the stamp and remove the old config from metadata config dictionary
-                    string stampKey = $"{gameName} - {gameRegion}";
+                    string stampKey = $"{gameTitle} - {gameRegion}";
 
                     // If the previous stamp is found, then start reloading the config
                     if (LauncherMetadataStampDictionary.TryGetValue(stampKey, out Stamp ? previousStamp))
                     {
-                        LauncherMetadataConfig[gameName].Remove(gameRegion);
+                        LauncherMetadataConfig[gameTitle].Remove(gameRegion);
                         // Get the current channel
                         string currentChannel = CurrentLauncherChannel;
                         if (await LoadAndGetConfig(previousStamp, currentChannel) is PresetConfig presetConfig)
                         {
-                            LauncherMetadataConfig[gameName].Add(gameRegion, presetConfig);
+                            LauncherMetadataConfig[gameTitle].Add(gameRegion, presetConfig);
                         }
                     }
                 }
@@ -145,9 +145,9 @@ internal static class LauncherMetadataHelper
                 break;
         }
 
-        PresetConfig config = LauncherMetadataConfig[gameName][gameRegion];
+        PresetConfig config = LauncherMetadataConfig[gameTitle][gameRegion];
         CurrentMetadataConfig           = config;
-        CurrentMetadataConfigGameName   = gameName;
+        CurrentMetadataConfigGameName   = gameTitle;
         CurrentMetadataConfigGameRegion = gameRegion;
 
         return config;
@@ -158,10 +158,8 @@ internal static class LauncherMetadataHelper
         string? curGameName = CurrentMetadataConfigGameName;
         string? curGameRegion = CurrentMetadataConfigGameRegion;
 
-        string? curGameNameTranslate =
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Current.Lang?._GameClientTitles);
-        string? curGameRegionTranslate =
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Current.Lang?._GameClientRegions);
+        string? curGameNameTranslate = GetGameTitleTranslation(curGameName);
+        string? curGameRegionTranslate = GetGameRegionTranslation(curGameRegion);
 
         return $"{curGameNameTranslate} - {curGameRegionTranslate}";
     }
@@ -232,7 +230,7 @@ internal static class LauncherMetadataHelper
         PluginManager.UnloadPlugins();
 
         // Load preset config from plugins
-        await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!, LauncherMetadataStampDictionary);
+        await PluginManager.LoadPlugins(LauncherMetadataConfig, LauncherGameNameRegionCollection, LauncherMetadataStampDictionary);
     }
 
     private static async Task InitializeStamp(bool throwAfterRetry = false)
@@ -264,8 +262,7 @@ internal static class LauncherMetadataHelper
             }
 
             // Deserialize the stream
-            LauncherMetadataStamp =
-                await stampLocalStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
+            LauncherMetadataStamp.AddRange(await stampLocalStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp));
 
             // SANITIZE: Check if the stamp is empty, then throw
             if (LauncherMetadataStamp == null || LauncherMetadataStamp.Count == 0)
@@ -338,11 +335,6 @@ internal static class LauncherMetadataHelper
                                                bool   isCacheUpdateModeOnly,
                                                bool   isShowLoadingMessage)
     {
-        if (LauncherMetadataStamp == null)
-        {
-            throw new NullReferenceException("The Metadata Stamp list is not initialized!");
-        }
-
         if (LauncherMetadataStamp.Count == 0)
         {
             throw new InvalidOperationException("The Metadata Stamp list is empty!");
@@ -360,11 +352,8 @@ internal static class LauncherMetadataHelper
         #region Master Key Loading
         // Load master key config
         bool isMasterKeyLoaded = false;
-        foreach (Stamp? stamp in LauncherMetadataStamp.Where(x => x?.MetadataType == MetadataType.MasterKey))
+        foreach (Stamp stamp in LauncherMetadataStamp.Where(x => x.MetadataType == MetadataType.MasterKey))
         {
-            if (stamp == null)
-                continue;
-
             object? masterKey = await LoadAndGetConfig(stamp, currentChannel, false, true);
             if (masterKey is not MasterKeyConfig keyConfig)
                 continue;
@@ -387,8 +376,8 @@ internal static class LauncherMetadataHelper
 
         #region Region Metadata Config Loading
         ConcurrentDictionary<string, PresetConfig> loadedRegionMetadata = [];
-        List<Stamp?> regionMetadataStamps = LauncherMetadataStamp
-                                           .Where(x => x?.MetadataType == MetadataType.PresetConfigV2)
+        List<Stamp> regionMetadataStamps = LauncherMetadataStamp
+                                           .Where(x => x.MetadataType == MetadataType.PresetConfigV2)
                                            .ToList();
 
         // Load metadata in parallel
@@ -399,11 +388,8 @@ internal static class LauncherMetadataHelper
             LoadRegionMetadataConfig);
 
         // Sort the metadata based on stamps order
-        foreach (Stamp? stamp in regionMetadataStamps)
+        foreach (Stamp stamp in regionMetadataStamps)
         {
-            if (stamp == null)
-                continue;
-
             string filePath = stamp.MetadataPath ?? "";
             if (!loadedRegionMetadata.TryGetValue(filePath, out PresetConfig? presetConfig))
             {
@@ -426,13 +412,13 @@ internal static class LauncherMetadataHelper
             }
 
             // Re-add the region list into the game name map
-            if (!LauncherGameNameRegionCollection.TryGetValue(gameName, out List<string>? regionList))
+            if (!LauncherGameNameRegionCollection.TryGetValue(gameName, out List<PresetConfig>? regionList))
             {
                 LauncherGameNameRegionCollection.Add(gameName, regionList = []);
             }
 
             // Re-add the region name into its region dict
-            regionList.Add(gameRegion);
+            regionList.Add(presetConfig);
         }
 
         async ValueTask LoadRegionMetadataConfig((int, (Stamp?, ConcurrentDictionary<string, PresetConfig>)) state, CancellationToken token)
@@ -448,8 +434,8 @@ internal static class LauncherMetadataHelper
             {
                 LoadingMessageHelper.SetMessage(Locale.Current.Lang?._MainPage?.Initializing,
                                                 $"{Locale.Current.Lang?._MainPage?.LoadingGameConfiguration} [{index}/{regionMetadataStampsCount}]: " +
-                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Current.Lang?._GameClientTitles)} - " +
-                                                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Current.Lang?._GameClientRegions)}");
+                                                $"{GetGameTitleTranslation(stamp.GameName)} - " +
+                                                $"{GetGameRegionTranslation(stamp.GameRegion)}");
             }
 
             object? regionMetadataObject = await LoadAndGetConfig(stamp, currentChannel);
@@ -465,11 +451,8 @@ internal static class LauncherMetadataHelper
         #endregion
 
         #region Community Tools Config Loading
-        foreach (Stamp? stamp in LauncherMetadataStamp.Where(x => x?.MetadataType == MetadataType.CommunityTools))
+        foreach (Stamp stamp in LauncherMetadataStamp.Where(x => x.MetadataType == MetadataType.CommunityTools))
         {
-            if (stamp == null)
-                continue;
-
             object? communityTools = await LoadAndGetConfig(stamp, currentChannel);
             if (communityTools is not CommunityToolsProperty communityToolsProperty)
                 continue;
@@ -477,8 +460,6 @@ internal static class LauncherMetadataHelper
             CommunityToolsProperty.CombineFrom(communityToolsProperty);
         }
         #endregion
-
-        GameSelectionContext.Shared.UpdateAllBindings();
     }
 
     private static async Task<FileStream> LoadOrGetConfigStream(
@@ -621,7 +602,7 @@ internal static class LauncherMetadataHelper
 
     private static DateTime GetFileLastModifiedStampUtc(string configLocalFilePath)
     {
-        FileInfo fileInfo = new FileInfo(configLocalFilePath);
+        FileInfo fileInfo = new(configLocalFilePath);
         return fileInfo.LastWriteTimeUtc;
     }
 
@@ -653,8 +634,6 @@ internal static class LauncherMetadataHelper
                     NullReferenceException("MetadataV3 stamp list is returns a null or empty after deserialization!");
             }
 
-            NewUpdateMetadataStamp ??= [];
-
             // Make sure to clear the new update list first
             NewUpdateMetadataStamp.Clear();
 
@@ -668,11 +647,11 @@ internal static class LauncherMetadataHelper
                 // Check if the local stamp does not have one, then add it to new update stamp list
                 Stamp? localStamp =
                     LauncherMetadataStamp?.FirstOrDefault(x => remoteMetadataStamp.GameRegion ==
-                                                               x?.GameRegion &&
+                                                               x.GameRegion &&
                                                                remoteMetadataStamp.GameName ==
-                                                               x?.GameName &&
+                                                               x.GameName &&
                                                                remoteMetadataStamp.LastUpdated ==
-                                                               x?.LastUpdated &&
+                                                               x.LastUpdated &&
                                                                remoteMetadataStamp.MetadataPath ==
                                                                x.MetadataPath &&
                                                                remoteMetadataStamp.MetadataType ==
@@ -718,16 +697,15 @@ internal static class LauncherMetadataHelper
             _isUpdateRoutineRunning = true;
 
             // If the new update list is null or empty, then return
-            if (NewUpdateMetadataStamp == null || NewUpdateMetadataStamp.Count == 0)
+            if (NewUpdateMetadataStamp.Count == 0)
             {
                 Logger.LogWriteLine("The new update stamp is empty! Please make sure that IsMetadataHasUpdate() has been executed and returns true.");
                 return;
             }
 
             // Remove the old metadata config file first
-            foreach (Stamp? newUpdateStamp in NewUpdateMetadataStamp)
+            foreach (Stamp newUpdateStamp in NewUpdateMetadataStamp)
             {
-                if (newUpdateStamp == null) continue;
                 if (!MetadataUpdateEntry.TryAdd(newUpdateStamp, 0))
                 {
                     Logger.LogWriteLine($"[RunMetadataUpdate] Skipping duplicate assignment for stamp:\r\n\t" +
@@ -769,7 +747,7 @@ internal static class LauncherMetadataHelper
         }
     }
 
-    private static async Task UpdateStampContent(string stampPath, List<Stamp?> newStampList)
+    private static async Task UpdateStampContent(string stampPath, List<Stamp> newStampList)
     {
         try
         {
@@ -778,7 +756,7 @@ internal static class LauncherMetadataHelper
                 throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
 
             // Read the old stamp list stream
-            List<Stamp?> oldStampList;
+            List<Stamp> oldStampList;
             await using (FileStream stampStream = File.OpenRead(stampPath))
             {
                 // Deserialize and do sanitize if the old stamp list is empty
@@ -787,19 +765,17 @@ internal static class LauncherMetadataHelper
                     throw new NullReferenceException("The old stamp list contains an empty/null content!");
 
                 // Try to iterate the new stamp list to replace the old ones or add a new entry
-                foreach (Stamp? newStamp in newStampList)
+                foreach (Stamp newStamp in newStampList)
                 {
-                    if (newStamp == null) continue;
-
                     // Find the old stamp reference from the old list
                     Stamp? oldStampRef = oldStampList?.FirstOrDefault(x => newStamp.GameRegion ==
-                                                                      x?.GameRegion
+                                                                      x.GameRegion
                                                                       && newStamp.GameName ==
-                                                                      x?.GameName
+                                                                      x.GameName
                                                                       && newStamp.MetadataPath ==
-                                                                      x?.MetadataPath
+                                                                      x.MetadataPath
                                                                       && newStamp.MetadataType ==
-                                                                      x?.MetadataType);
+                                                                      x.MetadataType);
                     // Check if the old stamp ref is null or index of old stamp reference returns < 0, then
                     // add it as a new entry.
                     int indexOfOldStamp;
@@ -830,64 +806,6 @@ internal static class LauncherMetadataHelper
             File.Delete(stampPath);
             Logger.LogWriteLine($"Removed old metadata stamp file!\r\nLocation: {stampPath}",
                                 LogType.Default, true);
-        }
-    }
-
-    internal static List<string> GetGameNameCollection() => LauncherGameNameRegionCollection.Keys.ToList();
-
-    internal static List<string>? GetGameRegionCollection(string? gameName)
-    {
-        if (!string.IsNullOrEmpty(gameName) &&
-            LauncherGameNameRegionCollection.TryGetValue(gameName, out List<string>? hashSetRegion))
-            return hashSetRegion;
-
-        string msg = $"Game region collection for name: \"{gameName}\" isn't exist!";
-        Logger.LogWriteLine(msg, LogType.Error, true);
-        return null;
-    }
-
-    internal static int GetPreviousGameRegion(string? gameName)
-    {
-        // Get the config key name
-        string iniKeyName = $"LastRegion_{gameName!.Replace(" ", string.Empty)}";
-        string? gameRegion;
-
-        // Get the region collection
-        List<string>? gameRegionCollection = GetGameRegionCollection(gameName);
-        gameRegionCollection ??= LauncherGameNameRegionCollection.FirstOrDefault().Value;
-
-        // Throw if the collection is empty or null
-        if (gameRegionCollection == null || gameRegionCollection.Count == 0)
-        {
-            throw new NullReferenceException("Game region collection is null or empty!");
-        }
-
-        // If the config key name is not exist, then return the first region
-        if (!LauncherConfig.IsConfigKeyExist(iniKeyName))
-        {
-            gameRegion = gameRegionCollection.FirstOrDefault();
-            LauncherConfig.SetAndSaveConfigValue(iniKeyName, gameRegion);
-            return 0;
-        }
-
-        // Get the last region and find the index inside the collection.
-        // If not found, then set the region to the first.
-        gameRegion = LauncherConfig.GetAppConfigValue(iniKeyName).ToString();
-        int indexOfGameRegion = gameRegionCollection.IndexOf(gameRegion!);
-        return indexOfGameRegion < 1 ? 0 : indexOfGameRegion;
-    }
-
-    public static void SetPreviousGameRegion(string? gameCategoryName, string? regionName, bool isSave = true)
-    {
-        string iniKeyName = $"LastRegion_{gameCategoryName?.Replace(" ", string.Empty)}";
-
-        if (isSave)
-        {
-            LauncherConfig.SetAndSaveConfigValue(iniKeyName, regionName);
-        }
-        else
-        {
-            LauncherConfig.SetAppConfigValue(iniKeyName, regionName);
         }
     }
 }

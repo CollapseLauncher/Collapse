@@ -2,6 +2,7 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -116,8 +117,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         if (!string.IsNullOrEmpty(existingPath) && Directory.Exists(existingPath))
         {
             ContentDialogResult dialogResult = await SimpleDialogs.Dialog_MigrationChoiceDialog(existingPath,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.GameName, Locale.Current.Lang?._GameClientTitles) ?? _pluginPresetConfig.GameName,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.ZoneName, Locale.Current.Lang?._GameClientRegions) ?? _pluginPresetConfig.ZoneName,
+                LauncherMetadataHelper.GetGameTitleTranslation(_pluginPresetConfig.GameName) ?? _pluginPresetConfig.GameName,
+                LauncherMetadataHelper.GetGameRegionTranslation(_pluginPresetConfig.ZoneName) ?? _pluginPresetConfig.ZoneName,
                 nameof(MigrateFromLauncherType.Plugin),
                 MigrateFromLauncherType.Plugin,
                 true);

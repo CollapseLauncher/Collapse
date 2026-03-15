@@ -1039,11 +1039,9 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get translated fullname
             string translatedGameTitle =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GameVersionManager.GamePreset.GameName,
-                                                                        Locale.Current.Lang?._GameClientTitles);
+                LauncherMetadataHelper.GetGameTitleTranslation(GameVersionManager.GamePreset.GameName) ?? "";
             string translatedGameRegion =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GameVersionManager.GamePreset.ZoneName,
-                                                                        Locale.Current.Lang?._GameClientRegions);
+                LauncherMetadataHelper.GetGameRegionTranslation(GameVersionManager.GamePreset.ZoneName) ?? "";
             string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             // Check if the dialog result is Okay (Primary). If not, then return false
@@ -2398,11 +2396,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // If secondary option is selected, then do the directory migration
-            string translatedGameFullname = $"{InnerLauncherConfig
-               .GetGameTitleRegionTranslationString(GameVersionManager.GamePreset.GameName,
-                                                    Locale.Current.Lang?._GameClientTitles)} - {InnerLauncherConfig
-                                                   .GetGameTitleRegionTranslationString(GameVersionManager.GamePreset.ZoneName,
-                                                        Locale.Current.Lang?._GameClientRegions)}";
+            string translatedGameFullname = $"{LauncherMetadataHelper.GetGameTitleTranslation(GameVersionManager.GamePreset.GameName)} - {LauncherMetadataHelper.GetGameRegionTranslation(GameVersionManager.GamePreset.ZoneName)}";
 
             FileMigrationProcess migrationProcessTool = await FileMigrationProcess.CreateJob(
              string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingMoveDirectoryTitle ?? "", translatedGameFullname),

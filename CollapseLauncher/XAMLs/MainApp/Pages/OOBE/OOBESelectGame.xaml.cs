@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Notifications;
@@ -28,14 +29,14 @@ namespace CollapseLauncher.Pages.OOBE
 {
     public sealed partial class OOBESelectGame
     {
-        private string? SelectedCategory { get; set; }
+        private string? SelectedTitle { get; set; }
         private string? SelectedRegion   { get; set; }
         private string? _lastSelectedCategory = "";
 
         public OOBESelectGame()
         {
             InitializeComponent();
-            GameCategorySelect.ItemsSource = BuildGameTitleListUI();
+            GameTitleComboBox.ItemsSource = LauncherMetadataHelper.GetGameTitleList();
             BackgroundFrame.Navigate(typeof(OOBESelectGameBG));
             RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
@@ -43,13 +44,11 @@ namespace CollapseLauncher.Pages.OOBE
         private void NextPage_Click(object sender, RoutedEventArgs e)
         {
             // Set and Save CurrentRegion in AppConfig
-            string? categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
-            string? regionSelected = GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue);
-            SetAppConfigValue("GameCategory", categorySelected);
-            LauncherMetadataHelper.SetPreviousGameRegion(categorySelected,
-                                                         regionSelected,
-                                                         false);
-            SaveAppConfig();
+            if (GameTitleComboBox.SelectedValue is not string asGameTitleString) return;
+            if (GameRegionComboBox.SelectedValue is not PresetConfig asGameRegionString) return;
+
+            SetAppConfigValue("GameCategory", asGameTitleString);
+            LauncherMetadataHelper.SaveGameRegionIndex(asGameTitleString, asGameRegionString.ZoneName ?? "");
 
             (WindowUtility.CurrentWindow as MainWindow)?.RootFrame.Navigate(typeof(MainPage), null,
                                                          new SlideNavigationTransitionInfo
@@ -58,24 +57,26 @@ namespace CollapseLauncher.Pages.OOBE
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
             // Spawn welcome toast after clicking in
-            SpawnGreetingsToastNotification(categorySelected, regionSelected);
+            SpawnGreetingsToastNotification(asGameTitleString, asGameRegionString.ZoneName ?? "");
         }
 
-        private static void SpawnGreetingsToastNotification(string? gameName, string? regionName)
+        private static void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
         {
-            if (string.IsNullOrEmpty(gameName)
-                || string.IsNullOrEmpty(regionName))
+            if (string.IsNullOrEmpty(gameTitle)
+                || string.IsNullOrEmpty(gameRegion))
             {
                 return;
             }
 
-            string gameNameTranslated   = GetGameTitleRegionTranslationString(gameName,   Locale.Current.Lang?._GameClientTitles) ?? gameName;
-            string gameRegionTranslated = GetGameTitleRegionTranslationString(regionName, Locale.Current.Lang?._GameClientRegions) ?? regionName;
+            string gameTitleTranslated  = LauncherMetadataHelper.GetGameTitleTranslation(gameTitle) ?? gameTitle;
+            string gameRegionTranslated = LauncherMetadataHelper.GetGameRegionTranslation(gameRegion) ?? gameRegion;
 
             // Get game preset config
-            PresetConfig? gamePresetConfig = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[regionName];
-            if (gamePresetConfig == null) // If empty, return
+            if (!LauncherMetadataHelper.LauncherMetadataConfig.TryGetValue(gameTitle, out Dictionary<string, PresetConfig>? regionDict) ||
+                !regionDict.TryGetValue(gameRegion, out PresetConfig? gamePresetConfig))
+            {
                 return;
+            }
 
             // Get logo name and poster name
             (string? logoName, string? posterName) = GetLogoAndHeroImgPath(gamePresetConfig);
@@ -86,7 +87,7 @@ namespace CollapseLauncher.Pages.OOBE
                                                                   .SetContent(
                                                                               string.Format(
                                                                                    Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeSubtitle ?? "",
-                                                                                   gameNameTranslated,
+                                                                                   gameTitleTranslated,
                                                                                    gameRegionTranslated))
                                                                   .SetAppLogoPath(
                                                                         logoName,
@@ -143,10 +144,10 @@ namespace CollapseLauncher.Pages.OOBE
         {
             try
             {
-                object value = ((ComboBox)sender).SelectedValue;
-                if (value is not null)
+                if (((ComboBox)sender).SelectedValue is PresetConfig asGameRegionString &&
+                    !string.IsNullOrEmpty(SelectedTitle))
                 {
-                    SelectedRegion = GetComboBoxGameRegionValue(value);
+                    SelectedRegion = asGameRegionString.ZoneName ?? "";
 
                     NextPage.IsEnabled = true;
                     NextPage.Opacity   = 1;
@@ -155,7 +156,7 @@ namespace CollapseLauncher.Pages.OOBE
                     BarBGLoading.IsIndeterminate = true;
                     FadeBackground(1, 0.25);
 
-                    PresetConfig? gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedCategory, SelectedRegion);
+                    PresetConfig gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedTitle, SelectedRegion);
                     if (await TryLoadGameDetails(gameConfig))
                     {
                         if (IsLoadDescription &&
@@ -166,7 +167,7 @@ namespace CollapseLauncher.Pages.OOBE
                         }
                     }
 
-                    NavigationTransitionInfo transition = _lastSelectedCategory == SelectedCategory
+                    NavigationTransitionInfo transition = _lastSelectedCategory == SelectedTitle
                         ? new SuppressNavigationTransitionInfo()
                         : new DrillInNavigationTransitionInfo();
 
@@ -174,7 +175,7 @@ namespace CollapseLauncher.Pages.OOBE
                     FadeBackground(0.25, 1);
                     BarBGLoading.IsIndeterminate = false;
                     BarBGLoading.Visibility      = Visibility.Collapsed;
-                    _lastSelectedCategory        = SelectedCategory;
+                    _lastSelectedCategory        = SelectedTitle;
 
                     return;
                 }
@@ -193,9 +194,9 @@ namespace CollapseLauncher.Pages.OOBE
             try
             {
                 const double dur          = 0.250;
-                Storyboard   storyBufBack = new Storyboard();
+                Storyboard   storyBufBack = new();
 
-                DoubleAnimation opacityBufBack = new DoubleAnimation
+                DoubleAnimation opacityBufBack = new()
                 {
                     Duration = new Duration(TimeSpan.FromSeconds(dur)),
                     From     = from,
@@ -218,11 +219,12 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GameRegionSelect.ItemsSource = BuildGameRegionListUI(SelectedCategory);
-            GameRegionSelect.IsEnabled   = true;
-            NextPage.IsEnabled           = false;
-            NextPage.Opacity             = 0;
+            SelectedTitle = ((ComboBox)sender).SelectedValue as string;
+            if (string.IsNullOrEmpty(SelectedTitle)) return;
+            GameRegionComboBox.ItemsSource = LauncherMetadataHelper.GetGameRegionList(SelectedTitle);
+            GameRegionComboBox.IsEnabled   = true;
+            NextPage.IsEnabled             = false;
+            NextPage.Opacity               = 0;
         }
     }
 }

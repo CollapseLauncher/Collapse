@@ -171,7 +171,7 @@ public partial class MainPage : Page
         if (CannotUseKbShortcuts || !IsLoadRegionComplete)
             return;
 
-        if (!TryGetCurrentPageObject(out object? typeOfPageObj))
+        if (!TryGetCurrentPageObject(out object typeOfPageObj))
         {
             return;
         }
@@ -197,17 +197,17 @@ public partial class MainPage : Page
 
     private void RestoreCurrentRegion()
     {
-        string        gameName           = GetAppConfigValue("GameCategory")!;
-        List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
-        _ = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+        string       gameTitle     = GetAppConfigValue("GameCategory");
+        List<string> gameTitleList = LauncherMetadataHelper.GetGameTitleList();
 
-        var indexCategory                    = gameNameCollection?.IndexOf(gameName) ?? -1;
-        if (indexCategory < 0) indexCategory = 0;
+        int indexCategory = gameTitleList.IndexOf(gameTitle);
+        if (indexCategory < 0)
+            indexCategory = 0;
 
-        var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
+        int indexRegion = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(gameTitle);
 
-        ComboBoxGameCategory.SelectedIndex = indexCategory;
-        ComboBoxGameRegion.SelectedIndex   = indexRegion;
+        ComboBoxGameTitle.SelectedIndex  = indexCategory;
+        ComboBoxGameRegion.SelectedIndex = indexRegion;
     }
 
     private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -218,21 +218,27 @@ public partial class MainPage : Page
         RestoreCurrentRegion();
             
         if (CannotUseKbShortcuts || !IsLoadRegionComplete
-                                 || index >= ComboBoxGameCategory.Items.Count
-                                 || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
+                                 || index >= ComboBoxGameTitle.Items.Count
+                                 || ComboBoxGameTitle.SelectedValue == ComboBoxGameTitle.Items[index]
            )
         {
             _disableInstantRegionChange = false;
             return;
         }
 
-        ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
-        ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue));
+        ComboBoxGameTitle.SelectedValue = ComboBoxGameTitle.Items[index];
+        if (ComboBoxGameTitle.SelectedValue is not string asGameTitleString)
+        {
+            return;
+        }
+
+        ComboBoxGameRegion.SelectedIndex = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(asGameTitleString);
         ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+
         ChangeRegionConfirmBtn.IsEnabled          = false;
         ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
         CannotUseKbShortcuts                      = true;
-        _disableInstantRegionChange                = false;
+        _disableInstantRegionChange               = false;
     }
 
     private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -361,9 +367,9 @@ public partial class MainPage : Page
         {
             if (!IsGameInstalled()) return;
 
-            var gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
-                             CurrentGameProperty.GameVersion?.GameDirPath ?? 
-                             null;
+            string gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
+                                CurrentGameProperty.GameVersion?.GameDirPath ?? 
+                                null;
             
             if (string.IsNullOrEmpty(gameFolder)) return;
             LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
@@ -399,7 +405,7 @@ public partial class MainPage : Page
         try
         {
             Process[] gameProcess = Process.GetProcessesByName(gamePresetExecName.Split('.')[0]);
-            foreach (var p in gameProcess)
+            foreach (Process p in gameProcess)
             {
                 LogWriteLine($"Trying to stop game process {gamePresetExecName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                 p.Kill();

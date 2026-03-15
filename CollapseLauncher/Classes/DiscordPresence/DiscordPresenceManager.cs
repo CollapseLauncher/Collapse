@@ -186,8 +186,8 @@ namespace CollapseLauncher.DiscordPresence
         {
             if (!IsRpcEnabled) return;
             
-            var gameCategory        = GetAppConfigValue("GameCategory").ToString();
-            var isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+            string? gameCategory        = GetAppConfigValue("GameCategory").ToString();
+            bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
 
             if (isGameStatusEnabled)
             {
@@ -302,16 +302,14 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled, DateTime? activityOffset = null)
         {
-            var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string? curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+            string? curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
 
             if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
                 return;
 
-            var curGameNameTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Current.Lang?._GameClientTitles);
-            var curGameRegionTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Current.Lang?._GameClientRegions);
+            string? curGameNameTranslate   = LauncherMetadataHelper.GetGameTitleTranslation(curGameName);
+            string? curGameRegionTranslate = LauncherMetadataHelper.GetGameRegionTranslation(curGameRegion);
 
             if (TryBuildActivityGameStatusFromPlugin(activityName,
                                                      curGameNameTranslate,
@@ -395,16 +393,14 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName)
         {
-            var curGameName = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string? curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+            string? curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
 
             if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
                 return;
 
-            var curGameNameTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Current.Lang?._GameClientTitles);
-            var curGameRegionTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Current.Lang?._GameClientRegions);
+            string? curGameNameTranslate   = LauncherMetadataHelper.GetGameTitleTranslation(curGameName);
+            string? curGameRegionTranslate = LauncherMetadataHelper.GetGameRegionTranslation(curGameRegion);
 
             if (TryBuildActivityAppStatusFromPlugin(activityName,
                                                     curGameNameTranslate,

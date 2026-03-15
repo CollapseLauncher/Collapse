@@ -320,13 +320,9 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return true;
             }
 
-            string? translatedGameTitle =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.GameName,
-                                                                        Locale.Current.Lang?._GameClientTitles);
-            string? translatedGameRegion =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.ZoneName,
-                                                                        Locale.Current.Lang?._GameClientRegions);
-            string gameNameTranslated = $"{translatedGameTitle} - {translatedGameRegion}";
+            string? translatedGameTitle  = LauncherMetadataHelper.GetGameTitleTranslation(GamePreset.GameName);
+            string? translatedGameRegion = LauncherMetadataHelper.GetGameRegionTranslation(GamePreset.ZoneName);
+            string  gameNameTranslated   = $"{translatedGameTitle} - {translatedGameRegion}";
 
             TextBlock textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
                                  .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle1, true)

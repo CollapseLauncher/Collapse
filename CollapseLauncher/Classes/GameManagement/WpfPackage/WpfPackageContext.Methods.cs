@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool;
@@ -252,8 +253,8 @@ internal partial class WpfPackageContext
             string gameName   = GameVersionManager.GameName;
             string regionName = GameVersionManager.GameRegion;
 
-            string gameNameTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(gameName, Locale.Current.Lang?._GameClientTitles) ?? gameName;
-            string gameRegionTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(regionName, Locale.Current.Lang?._GameClientRegions) ?? regionName;
+            string gameNameTranslated   = LauncherMetadataHelper.GetGameTitleTranslation(gameName) ?? gameName;
+            string gameRegionTranslated = LauncherMetadataHelper.GetGameRegionTranslation(regionName) ?? regionName;
 
             string icon = await ImageLoaderHelper
                              .GetCachedSpritesAsync(WpfPackageIconUrl,

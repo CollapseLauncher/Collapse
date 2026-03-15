@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
@@ -51,8 +52,8 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
     public string? GameBiz    => null;
     public string? GameId     => null;
 
-    public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Current.Lang?._GameClientTitles) ?? GameName;
-    public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Current.Lang?._GameClientRegions) ?? GameRegion;
+    public string GameNameTranslation   => LauncherMetadataHelper.GetGameTitleTranslation(GameName) ?? GameName;
+    public string GameRegionTranslation => LauncherMetadataHelper.GetGameRegionTranslation(GameRegion) ?? GameRegion;
 
     public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; set; }
     public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; set; }
