@@ -102,7 +102,7 @@ namespace CollapseLauncher.Pages
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                    Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to importing the registry!\r\n{ex}", LogType.Error, true);
                     SetApplyTextStatus(ex.Message, true);
                     ErrorSender.SendException(ex);
                     SentryHelper.ExceptionHandler(ex);
