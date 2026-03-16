@@ -8,7 +8,6 @@
       xmlns:animations="using:CommunityToolkit.WinUI.Animations"
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
-      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
@@ -20,9 +19,8 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
+      xmlns:theme="using:CollapseLauncher.XAMLs.Theme"
       NavigationCacheMode="Enabled"
       Loaded="Page_Loaded"
       Unloaded="Page_Unloaded"
@@ -42,7 +40,7 @@
         <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
         <pages:TimeSpanMoreThan15SecondsToVisibilityConverter x:Key="TimeSpanMoreThan15SecondsToVisibilityConverter" />
         <pages:FontPathLookupConverter x:Key="FontPathLookupConverter" />
-        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
+        <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
@@ -1100,7 +1098,7 @@
                         <Run Text="/" />
                         <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
                     </TextBlock>
-                    <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
+                    <c:NewPipsPager x:Name="MultiBackgroundPipsPager"
                                                ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
                                                ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
                                                HorizontalAlignment="Center"
@@ -1282,7 +1280,7 @@
                 </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
-                    <panelslideshow:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
+                    <c:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
                                                    Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                                                    CornerRadius="8"
                                                    CountdownProgressMargin="8"
@@ -1293,10 +1291,10 @@
                                                    PreviousButtonMargin="-16"
                                                    PreviousButtonVerticalAlignment="Center"
                                                    SlideshowDuration="10">
-                        <panelslideshow:PanelSlideshow.ItemTransition>
+                        <c:PanelSlideshow.ItemTransition>
                             <PaneThemeTransition Edge="Left" />
-                        </panelslideshow:PanelSlideshow.ItemTransition>
-                        <panelslideshow:PanelSlideshow.ItemTemplate>
+                        </c:PanelSlideshow.ItemTransition>
+                        <c:PanelSlideshow.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx VerticalAlignment="Center"
                                                  extension:UIElementExtensions.CursorType="Hand"
@@ -1309,8 +1307,8 @@
                                                  Tag="{Binding Image.ClickLink, Mode=OneWay, FallbackValue={x:Null}}"
                                                  ToolTipService.ToolTip="{Binding Image.Description, Mode=OneWay, FallbackValue={x:Null}}" />
                             </DataTemplate>
-                        </panelslideshow:PanelSlideshow.ItemTemplate>
-                    </panelslideshow:PanelSlideshow>
+                        </c:PanelSlideshow.ItemTemplate>
+                    </c:PanelSlideshow>
                     <Grid x:Name="ImageCarouselPipsPager"
                           Grid.Row="0"
                           Height="24"
@@ -1339,7 +1337,7 @@
                             <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
                                  FontWeight="Bold" />
                         </TextBlock>
-                        <newpipspager:NewPipsPager Grid.Column="1"
+                        <c:NewPipsPager Grid.Column="1"
                                                    Width="0"
                                                    Margin="4,0,0,0"
                                                    VerticalAlignment="Center"
@@ -1400,7 +1398,7 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
                                                                                                HorizontalAlignment="Left"
                                                                                                VerticalAlignment="Center"
                                                                                                FontSize="12"
@@ -1478,7 +1476,7 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
                                                                                                HorizontalAlignment="Left"
                                                                                                VerticalAlignment="Center"
                                                                                                FontSize="12"
@@ -1556,7 +1554,7 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
                                                                                                HorizontalAlignment="Left"
                                                                                                VerticalAlignment="Center"
                                                                                                FontSize="12"

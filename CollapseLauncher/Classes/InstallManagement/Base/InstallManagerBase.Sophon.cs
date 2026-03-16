@@ -11,6 +11,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -755,7 +756,7 @@ namespace CollapseLauncher.InstallManager.Base
                             Locale.Lang._Misc.NoCancel,
                             Locale.Lang._Misc.YesContinue,
                             defaultButton: ContentDialogButton.Primary,
-                            dialogTheme: CustomControls.ContentDialogTheme.Warning);
+                            dialogTheme: ContentDialogTheme.Warning);
 
                         // If cancelled, then throw
                         if (ContentDialogResult.Primary != fallbackResultConfirm)

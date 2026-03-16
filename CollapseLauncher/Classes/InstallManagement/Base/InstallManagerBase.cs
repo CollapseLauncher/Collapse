@@ -1,19 +1,3 @@
-// ReSharper disable MergeIntoLogicalPattern
-// ReSharper disable MemberCanBeMadeStatic.Local
-// ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable ShiftExpressionResultEqualsZero
-// ReSharper disable CheckNamespace
-// ReSharper disable InconsistentNaming
-// ReSharper disable StringLiteralTypo
-// ReSharper disable GrammarMistakeInComment
-// ReSharper disable IdentifierTypo
-// ReSharper disable CommentTypo
-// ReSharper disable SuggestBaseTypeForParameter
-// ReSharper disable ArrangeObjectCreationWhenTypeEvident
-// ReSharper disable EmptyRegion
-// ReSharper disable ConvertToPrimaryConstructor
-
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
@@ -26,6 +10,7 @@ using CollapseLauncher.InstallManagement.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -61,6 +46,20 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
+// ReSharper disable MergeIntoLogicalPattern
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable ShiftExpressionResultEqualsZero
+// ReSharper disable CheckNamespace
+// ReSharper disable InconsistentNaming
+// ReSharper disable StringLiteralTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+// ReSharper disable SuggestBaseTypeForParameter
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable EmptyRegion
+// ReSharper disable ConvertToPrimaryConstructor
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ForCanBeConvertedToForeach

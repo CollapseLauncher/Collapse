@@ -1,5 +1,6 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
 using System.Threading;
+
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130

@@ -1,8 +1,9 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 // ReSharper disable CheckNamespace

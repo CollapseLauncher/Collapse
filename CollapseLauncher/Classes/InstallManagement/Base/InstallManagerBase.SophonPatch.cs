@@ -12,6 +12,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -317,7 +318,7 @@ namespace CollapseLauncher.InstallManager.Base
              Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn,
              Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn,
              defaultButton: ContentDialogButton.Secondary,
-             dialogTheme: CustomControls.ContentDialogTheme.Warning);
+             dialogTheme: ContentDialogTheme.Warning);
 
             if (confirmAdditionalTag == ContentDialogResult.None)
                 throw new OperationCanceledException("Cancelling the download/update");

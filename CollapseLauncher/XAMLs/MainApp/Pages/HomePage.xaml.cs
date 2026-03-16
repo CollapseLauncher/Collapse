@@ -1,4 +1,3 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
@@ -8,7 +7,8 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
-using CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager;
+using CollapseLauncher.XAMLs.Theme;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -40,9 +40,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using Image = Microsoft.UI.Xaml.Controls.Image;
-using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable AsyncVoidMethod

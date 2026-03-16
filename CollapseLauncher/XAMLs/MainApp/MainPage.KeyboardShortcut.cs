@@ -1,6 +1,6 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
-using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;

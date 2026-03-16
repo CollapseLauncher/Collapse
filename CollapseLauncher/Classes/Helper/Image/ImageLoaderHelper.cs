@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -24,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment

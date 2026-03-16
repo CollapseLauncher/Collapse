@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
@@ -117,7 +118,7 @@ namespace CollapseLauncher.FileDialogCOM
                     (WindowUtility.CurrentWindow as MainWindow)?.Content,
                     Locale.Lang._Misc.Okay,
                     defaultButton: ContentDialogButton.Close,
-                    dialogTheme: CustomControls.ContentDialogTheme.Error);
+                    dialogTheme: ContentDialogTheme.Error);
             }
         }
 

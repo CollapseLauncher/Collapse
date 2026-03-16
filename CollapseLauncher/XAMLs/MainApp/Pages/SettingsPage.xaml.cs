@@ -1,7 +1,6 @@
 ﻿#if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
 #endif
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
@@ -14,11 +13,11 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
-using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
-using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -62,6 +61,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
+
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault

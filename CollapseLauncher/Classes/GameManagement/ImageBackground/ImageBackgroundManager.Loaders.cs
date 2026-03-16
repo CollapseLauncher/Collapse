@@ -4,7 +4,7 @@ using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Pages;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;

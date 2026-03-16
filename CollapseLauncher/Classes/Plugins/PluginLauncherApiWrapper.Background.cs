@@ -1,11 +1,12 @@
 ﻿using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management.Api;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+
 #pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;

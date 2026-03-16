@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Storage.Streams;
+
 // ReSharper disable CommentTypo
 // ReSharper disable CheckNamespace
 

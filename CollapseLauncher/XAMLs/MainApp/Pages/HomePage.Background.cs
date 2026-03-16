@@ -3,7 +3,7 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -29,6 +29,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
+
 // ReSharper disable CheckNamespace
 
 #nullable enable
