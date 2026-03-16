@@ -1,6 +1,7 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style x:Key="WindowCaptionButton" TargetType="Button">
+    <Style x:Key="WindowCaptionButton"
+           TargetType="Button">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="{ThemeResource WindowCaptionBackground}" />
         <Setter Property="IsTabStop" Value="False" />
@@ -10,12 +11,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="LayoutRoot"
-                                            Padding="{TemplateBinding Padding}"
-                                            Background="{TemplateBinding Background}"
-                                            BackgroundSizing="{TemplateBinding BackgroundSizing}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="{TemplateBinding CornerRadius}">
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
                         <Border.BackgroundTransition>
                             <BrushTransition Duration="0:0:0.050" />
                         </Border.BackgroundTransition>
@@ -25,14 +26,14 @@
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
-                                                                                       Storyboard.TargetProperty="Background">
+                                                                       Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
-                                                                                       Storyboard.TargetProperty="Foreground">
+                                                                       Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionForeground}" />
+                                                                    Value="{ThemeResource WindowCaptionForeground}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -40,14 +41,14 @@
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
-                                                                                       Storyboard.TargetProperty="Background">
+                                                                       Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
-                                                                                       Storyboard.TargetProperty="Foreground">
+                                                                       Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionForegroundDisabled}" />
+                                                                    Value="{ThemeResource WindowCaptionForegroundDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -55,14 +56,14 @@
                                 <VisualState x:Name="CloseButtonPointerOver">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
-                                                                                       Storyboard.TargetProperty="Background">
+                                                                       Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
-                                                                                       Storyboard.TargetProperty="Foreground">
+                                                                       Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonStrokePointerOver}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonStrokePointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -70,14 +71,14 @@
                                 <VisualState x:Name="CloseButtonPressed">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
-                                                                                       Storyboard.TargetProperty="Background">
+                                                                       Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
-                                                                                       Storyboard.TargetProperty="Foreground">
+                                                                       Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource WindowCaptionButtonStrokePressed}" />
+                                                                    Value="{ThemeResource WindowCaptionButtonStrokePressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -85,7 +86,7 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <ContentPresenter x:Name="ContentPresenter"
-                                                          Content="{TemplateBinding Content}" />
+                                          Content="{TemplateBinding Content}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

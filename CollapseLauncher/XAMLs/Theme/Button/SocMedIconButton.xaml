@@ -32,7 +32,8 @@
 
     <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImageSourceConverter" />
 
-    <Style x:Key="SocialMediaButtonStyle" TargetType="Button">
+    <Style x:Key="SocialMediaButtonStyle"
+           TargetType="Button">
         <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
         <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
         <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
@@ -229,8 +230,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <Grid
-                              RenderTransformOrigin="0.5,0.5">
+                        <Grid RenderTransformOrigin="0.5,0.5">
                             <Grid.RenderTransform>
                                 <TransformGroup>
                                     <TranslateTransform x:Name="SocMedIconTranslate" />
@@ -242,12 +242,12 @@
                                 <imageex:ImageEx x:Name="Icon"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"/>
+                                                 Source="{Binding Icon.ImageUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                                 <imageex:ImageEx x:Name="IconHover"
                                                  EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
                                                  Opacity="0"
-                                                 Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}"/>
+                                                 Source="{Binding Icon.ImageHoverUrl, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImageSourceConverter}}" />
                             </Grid>
                         </Grid>
                     </ContentPresenter>

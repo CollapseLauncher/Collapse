@@ -326,7 +326,8 @@
     <Thickness x:Key="FatSliderHeaderThemeMargin">0,0,0,4</Thickness>
     <text:FontWeight x:Key="FatSliderHeaderThemeFontWeight"><![CDATA[Normal]]></text:FontWeight>
 
-    <Style x:Key="FatSliderStyle" TargetType="Slider">
+    <Style x:Key="FatSliderStyle"
+           TargetType="Slider">
         <Setter Property="Background" Value="{ThemeResource FatSliderTrackFill}" />
         <Setter Property="BorderThickness" Value="{ThemeResource FatSliderBorderThemeThickness}" />
         <Setter Property="BorderBrush" Value="{ThemeResource FatSliderThumbBorderBrush}" />

@@ -136,7 +136,8 @@
     </ResourceDictionary.ThemeDictionaries>
     <x:Double x:Key="FlipViewButtonFontSize">8</x:Double>
     <x:Double x:Key="FlipViewButtonScalePressed">0.875</x:Double>
-    <Style BasedOn="{StaticResource CollapseFlipViewStyle}" TargetType="FlipView" />
+    <Style BasedOn="{StaticResource CollapseFlipViewStyle}"
+           TargetType="FlipView" />
     <Style x:Key="CollapseFlipViewStyle"
            TargetType="FlipView">
         <Setter Property="Background" Value="{ThemeResource FlipViewBackground}" />

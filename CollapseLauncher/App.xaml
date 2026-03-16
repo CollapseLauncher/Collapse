@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
                 <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls/Themes/Generic.xaml" />
 
+                <ResourceDictionary Source="ms-appx:///ImageEx/ImageEx.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ImageEx/ImageEx.xaml" />
 
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
