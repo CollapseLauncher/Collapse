@@ -72,6 +72,9 @@ namespace CollapseLauncher
                 // Initialize Logger
                 UseConsoleLog(IsConsoleEnabled);
 
+                // Initialize Localization Files
+                InitLocale();
+
                 // Initialize Critical Modules (Including Sentry SDK and WASDK+WinRT ComWrappers)
                 InitCriticalModules();
 
@@ -81,9 +84,6 @@ namespace CollapseLauncher
                 {
                     return; // Rage quit :>
                 }
-
-                // Initialize Localization Files
-                InitLocale();
 
                 // Log Application Info
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
@@ -115,9 +115,10 @@ namespace CollapseLauncher
 
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
-                _ = CheckRuntimeFeatures();
-                AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
+                CheckRuntimeFeatures();
+                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
+                Console.WriteLine(Directory.GetCurrentDirectory());
                 Application.Start(_ =>
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -602,7 +603,7 @@ namespace CollapseLauncher
             LogWriteLine(e.Message, severity, true);
         }
 
-        private static void OnProcessExit(object sender, EventArgs e)
+        private static void OnProcessExit(object? sender, EventArgs e)
         {
             // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
             //       to ensure no hot-exit being called before all background tasks
@@ -610,25 +611,21 @@ namespace CollapseLauncher
             // App.IsAppKilled = true;
         }
 
-        private static async Task CheckRuntimeFeatures()
+        private static void CheckRuntimeFeatures()
         {
             try
             {
-                await Task.Run(() =>
-                               {
-                                   // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
-                                   LogWriteLine($"Available Runtime Features:\r\n\t" +
-                                                $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
-                                                $"IsDynamicCodeCompiled:   {RuntimeFeature.IsDynamicCodeCompiled}\r\n\t" +
-                                                $"IsDynamicCodeSupported:  {RuntimeFeature.IsDynamicCodeSupported}\r\n\t" +
-                                                $"UnmanagedSignatureCallingConventions:    {RuntimeFeature.IsSupported(RuntimeFeature.UnmanagedSignatureCallingConvention)}",
-                                                LogType.Debug, true);
-                               }
-                              );
+                // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
+                LogWriteLine($"Available Runtime Features:\r\n\t" +
+                             $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
+                             $"IsDynamicCodeCompiled:   {RuntimeFeature.IsDynamicCodeCompiled}\r\n\t" +
+                             $"IsDynamicCodeSupported:  {RuntimeFeature.IsDynamicCodeSupported}\r\n\t" +
+                             $"UnmanagedSignatureCallingConventions:    {RuntimeFeature.IsSupported(RuntimeFeature.UnmanagedSignatureCallingConvention)}",
+                             LogType.Debug, true);
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}",
                              LogType.Error, true);
             }
