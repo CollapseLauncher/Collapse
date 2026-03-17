@@ -1,7 +1,7 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.UI.Text;
@@ -20,6 +20,7 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault

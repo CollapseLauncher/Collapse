@@ -26,9 +26,9 @@
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
-        "requested": "[2.3.0-prerelease.251115.2, )",
-        "resolved": "2.3.0-prerelease.251115.2",
-        "contentHash": "p+U1Afh5GPnTPyz4ToxxsUPrkOP47Z1pzAiFsmGrm5D5T1mbifabqCpd5J6+hxotFt9YLbysch4jCw09niFfsg=="
+        "requested": "[2.2.0, )",
+        "resolved": "2.2.0",
+        "contentHash": "R8MDVawukHrKgYCFgYaoLfbAna/FrImEFRxDK9k8ITbrXv3KLE5uN6tRqrNV83H4MFdqJ/uiA/hg1cSsXkl0vw=="
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",

@@ -1,9 +1,9 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
+﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;

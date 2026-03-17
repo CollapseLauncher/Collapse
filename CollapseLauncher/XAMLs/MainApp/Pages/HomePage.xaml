@@ -6,9 +6,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
-      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:CollapseLauncher.Helper"
@@ -20,11 +20,10 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:newpipspager="using:CollapseLauncher.XAMLs.Theme.CustomControls.NewPipsPager"
       xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:panelslideshow="using:CollapseLauncher.XAMLs.Theme.CustomControls.PanelSlideshow"
-      NavigationCacheMode="Enabled"
+      xmlns:theme="using:CollapseLauncher.XAMLs.Theme"
       Loaded="Page_Loaded"
+      NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -42,7 +41,7 @@
         <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
         <pages:TimeSpanMoreThan15SecondsToVisibilityConverter x:Key="TimeSpanMoreThan15SecondsToVisibilityConverter" />
         <pages:FontPathLookupConverter x:Key="FontPathLookupConverter" />
-        <newpipspager:IndexAddOneConverter x:Key="IndexAddOneConverter" />
+        <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
@@ -50,19 +49,17 @@
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
                             ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
-                            CommandParameter="True">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xE74E;"/>
+                    <FontIcon Glyph="&#xE74E;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
                             ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
-                            CommandParameter="False">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xE78C;"/>
+                    <FontIcon Glyph="&#xE78C;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
@@ -73,7 +70,7 @@
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBoth">Both</backgroundManager:FrameToCopyType>
                 </MenuFlyoutSubItem.Resources>
                 <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xE77F;"/>
+                    <FontIcon Glyph="&#xE77F;" />
                 </MenuFlyoutSubItem.Icon>
                 <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
@@ -90,13 +87,12 @@
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
-                                CommandParameter="{StaticResource CopyToClipboardBoth}"/>
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
                                DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xE77F;"/>
+                    <FontIcon Glyph="&#xE77F;" />
                 </MenuFlyoutSubItem.Icon>
                 <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
@@ -107,17 +103,16 @@
                 <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
-                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
-            <MenuFlyoutSeparator Margin="16, 8"/>
+            <MenuFlyoutSeparator Margin="16,8" />
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
-                                  IsChecked="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}">
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xE8D6;"/>
+                    <FontIcon Glyph="&#xE8D6;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
@@ -126,7 +121,7 @@
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left">
                 <ToggleMenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xE786;"/>
+                    <FontIcon Glyph="&#xE786;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
@@ -135,7 +130,7 @@
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left">
                 <ToggleMenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xE7B3;"/>
+                    <FontIcon Glyph="&#xE7B3;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
@@ -148,7 +143,9 @@
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
                                      IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
-                                     Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"/>
+                                     Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
+                                     ToolTipService.Placement="Left"
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
         </MenuFlyout>
     </Page.Resources>
@@ -166,14 +163,14 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid x:Name="BackgroundImageContextMenuGrid"
-              Grid.Column="0"
               Grid.Row="0"
-              Grid.ColumnSpan="2"
               Grid.RowSpan="4"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
               Margin="-32"
               Background="Transparent"
-              DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-              ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"/>
+              ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"
+              DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}" />
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
               Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
@@ -203,8 +200,8 @@
                  IsClosable="True"
                  IsOpen="False"
                  Opacity="0"
-                 Shadow="{ThemeResource SharedShadow}"
-                 Severity="Informational">
+                 Severity="Informational"
+                 Shadow="{ThemeResource SharedShadow}">
             <InfoBar.Content>
                 <StackPanel Margin="0,-4,38,0"
                             Orientation="Vertical">
@@ -458,8 +455,8 @@
                                 HorizontalContentAlignment="Stretch"
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
-                                Style="{ThemeResource AcrylicButtonStyle}"
                                 Shadow="{ThemeResource SharedShadow}"
+                                Style="{ThemeResource AcrylicButtonStyle}"
                                 Translation="0,0,8"
                                 Visibility="Visible">
                             <Button.Content>
@@ -755,9 +752,9 @@
                 <c:NonFaultyButton x:Name="WpfPackageBtn"
                                    Padding="0"
                                    HorizontalAlignment="Right"
+                                   extension:UIElementExtensions.UniformCornerRadius="-1"
                                    BorderThickness="0"
                                    Click="WpfPackageBtn_OnClick"
-                                   extension:UIElementExtensions.UniformCornerRadius="-1"
                                    FlyoutBase.AttachedFlyout="{x:Bind WpfPackageBtnFlyout}"
                                    Loaded="WpfPackageBtn_OnLoaded"
                                    PointerEntered="WpfPackageBtn_OnPointerEntered"
@@ -1064,89 +1061,89 @@
               Grid.RowSpan="2"
               Grid.Column="0"
               Grid.ColumnSpan="2"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Top"
               MinWidth="250"
               MinHeight="50"
               Margin="0,0,48,0"
-              Padding="0, 18, 0, 0"
+              Padding="0,18,0,0"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
               Background="Transparent"
               PointerEntered="MultiBackgroundPipsPagerGridHoverArea_OnPointerEntered"
               PointerExited="MultiBackgroundPipsPagerGridHoverArea_OnPointerExited">
             <StackPanel x:Name="MultiBackgroundPipsPagerGrid"
-                        DataContext="{x:Bind CurrentBackgroundManager}"
                         extension:UIElementExtensions.IsTranslationEnabled="True"
-                        RenderTransformOrigin=".5, .5"
+                        DataContext="{x:Bind CurrentBackgroundManager}"
                         Opacity="0"
                         Orientation="Vertical"
+                        RenderTransformOrigin=".5, .5"
                         Spacing="16">
                 <StackPanel.RenderTransform>
-                    <TranslateTransform x:Name="MultiBackgroundPipsPagerGridTranslateTransform"/>
+                    <TranslateTransform x:Name="MultiBackgroundPipsPagerGridTranslateTransform" />
                 </StackPanel.RenderTransform>
-                <StackPanel Background="{ThemeResource AcrylicComboBoxBackground}"
-                            MaxWidth="500"
-                            Padding="10, 8"
+                <StackPanel MaxWidth="500"
+                            Padding="10,8"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Bottom"
+                            Background="{ThemeResource AcrylicComboBoxBackground}"
                             CornerRadius="20"
                             Orientation="Horizontal"
                             Spacing="8">
                     <TextBlock Margin="8,0,0,0"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           FontSize="12"
-                           FontWeight="Bold">
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               FontWeight="Bold">
                         <Run Text="{Binding CurrentSelectedBackgroundIndex, Converter={StaticResource IndexAddOneConverter}, Mode=OneWay}" />
                         <Run Text="/" />
                         <Run Text="{Binding CurrentBackgroundCount, Mode=OneWay}" />
                     </TextBlock>
-                    <newpipspager:NewPipsPager x:Name="MultiBackgroundPipsPager"
-                                               ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
-                                               ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               PreviousNavigationButtonMode="Visible"
-                                               NextNavigationButtonMode="Visible"
-                                               Orientation="Horizontal"
-                                               NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
-                                               NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
-                                               PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
-                                               SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}"/>
-                    <AppBarSeparator BorderThickness="2"
-                                     Margin="0, -4"/>
-                    <StackPanel Orientation="Horizontal"
-                                Margin="-4, -2">
+                    <c:NewPipsPager x:Name="MultiBackgroundPipsPager"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
+                                    ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
+                                    NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"
+                                    NextNavigationButtonMode="Visible"
+                                    NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMediumStyle}"
+                                    Orientation="Horizontal"
+                                    PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMediumStyle}"
+                                    PreviousNavigationButtonMode="Visible"
+                                    SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMediumStyle}" />
+                    <AppBarSeparator Margin="0,-4"
+                                     BorderThickness="2" />
+                    <StackPanel Margin="-4,-2"
+                                Orientation="Horizontal">
                         <Button x:Name="MultiBackgroundPipsPagerGridViewMoreBtn"
-                                VerticalAlignment="Stretch"
-                                CornerRadius="14"
-                                extension:UIElementExtensions.CursorType="Hand"
-                                Padding="8, 4"
                                 Margin="0,0,0,0"
-                                Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                Flyout="{StaticResource BackgroundContextMenuFlyout}">
+                                Padding="8,4"
+                                VerticalAlignment="Stretch"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                CornerRadius="14"
+                                Flyout="{StaticResource BackgroundContextMenuFlyout}"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}">
                             <AnimatedIcon Width="16"
                                           Height="16"
                                           RenderTransformOrigin=".5, .5">
                                 <AnimatedIcon.RenderTransform>
-                                    <RotateTransform Angle="-90"/>
+                                    <RotateTransform Angle="-90" />
                                 </AnimatedIcon.RenderTransform>
                                 <AnimatedIcon.Source>
-                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource/>
+                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                                 </AnimatedIcon.Source>
                             </AnimatedIcon>
                         </Button>
                     </StackPanel>
                 </StackPanel>
-                <Grid Background="{ThemeResource AcrylicComboBoxBackground}"
+                <Grid Padding="4"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Stretch"
+                      Background="{ThemeResource AcrylicComboBoxBackground}"
                       CornerRadius="8"
-                      Padding="4"
                       Visibility="{Binding CurrentBackgroundIsVideo, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
                             Margin="2,0"
@@ -1156,100 +1153,100 @@
                             DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
                         <Grid>
-                            <FontIcon Glyph="&#xE768;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
-                                      FontSize="12"/>
-                            <FontIcon Glyph="&#xE769;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
-                                      FontSize="12"/>
+                            <FontIcon FontSize="12"
+                                      Glyph="&#xE768;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                            <FontIcon FontSize="12"
+                                      Glyph="&#xE769;"
+                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
                         </Grid>
                     </Button>
                     <Grid Grid.Column="1"
                           DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
                           Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
-                        <Grid ColumnSpacing="10"
+                        <Grid Width="300"
                               Margin="4,0"
                               VerticalAlignment="Center"
-                              Width="300"
+                              ColumnSpacing="10"
                               Visibility="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanMoreThan15SecondsToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
-                                       Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
-                                       VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       HorizontalTextAlignment="Center"
-                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
                                        FontSize="11"
-                                       FontFamily="Consolas"/>
+                                       HorizontalTextAlignment="Center"
+                                       Text="{Binding MediaDurationPosition, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
+                                       TextAlignment="Center" />
                             <Slider Grid.Column="1"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    SmallChange="500"
-                                    LargeChange="5000"
-                                    Minimum="0"
-                                    Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
-                                    Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                                     Margin="0,-8"
                                     Padding="0"
-                                    IsThumbToolTipEnabled="False"/>
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    IsThumbToolTipEnabled="False"
+                                    LargeChange="5000"
+                                    Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
+                                    Minimum="0"
+                                    SmallChange="500"
+                                    Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}" />
                             <TextBlock Grid.Column="2"
-                                       Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
-                                       VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       HorizontalTextAlignment="Center"
-                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
                                        FontSize="11"
-                                       FontFamily="Consolas"/>
+                                       HorizontalTextAlignment="Center"
+                                       Text="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToTimeStampStringConverter}}"
+                                       TextAlignment="Center" />
                         </Grid>
                     </Grid>
                     <Button x:Name="MultiBackgroundPipsPagerGridAudioToggleBtn"
                             Grid.Column="2"
-                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
+                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                             Style="{ThemeResource TransparentDefaultButtonStyle}">
                         <Grid>
-                            <FontIcon Glyph="&#xE74F;"
-                                      FontSize="14"
-                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
-                            <FontIcon Glyph="&#xE767;"
-                                      FontSize="14"
-                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                            <FontIcon FontSize="14"
+                                      Glyph="&#xE74F;"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                            <FontIcon FontSize="14"
+                                      Glyph="&#xE767;"
+                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
                         </Grid>
                         <Button.Flyout>
                             <Flyout Placement="Right">
-                                <Grid ColumnSpacing="8"
-                                      Margin="-8, -24">
+                                <Grid Margin="-8,-24"
+                                      ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Column="0"
-                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                             Padding="4"
-                                            Style="{ThemeResource TransparentDefaultButtonStyle}"
                                             extension:UIElementExtensions.CursorType="Hand"
-                                            Click="MultiBackgroundPipsPagerGridAudioToggleBtn_OnClick">
+                                            Click="MultiBackgroundPipsPagerGridAudioToggleBtn_OnClick"
+                                            DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                            Style="{ThemeResource TransparentDefaultButtonStyle}">
                                         <Grid>
-                                            <FontIcon Glyph="&#xE74F;"
-                                                      FontSize="14"
-                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
-                                            <FontIcon Glyph="&#xE767;"
-                                                      FontSize="14"
-                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
+                                            <FontIcon FontSize="14"
+                                                      Glyph="&#xE74F;"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                                            <FontIcon FontSize="14"
+                                                      Glyph="&#xE767;"
+                                                      Visibility="{Binding GlobalBackgroundAudioEnabled, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
                                         </Grid>
                                     </Button>
                                     <Slider Grid.Column="1"
-                                            Minimum="0"
-                                            Maximum="100"
                                             Width="100"
+                                            Margin="-4,-8,4,-8"
                                             VerticalAlignment="Center"
-                                            Margin="-4, -8, 4, -8"
-                                            Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}"/>
+                                            Maximum="100"
+                                            Minimum="0"
+                                            Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}" />
                                 </Grid>
                             </Flyout>
                         </Button.Flyout>
@@ -1295,8 +1292,8 @@
                                                    SlideshowDuration="10">
                         <panelslideshow:PanelSlideshow.ItemTransition>
                             <PaneThemeTransition Edge="Left" />
-                        </panelslideshow:PanelSlideshow.ItemTransition>
-                        <panelslideshow:PanelSlideshow.ItemTemplate>
+                        </c:PanelSlideshow.ItemTransition>
+                        <c:PanelSlideshow.ItemTemplate>
                             <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx VerticalAlignment="Center"
                                                  extension:UIElementExtensions.CursorType="Hand"
@@ -1309,8 +1306,8 @@
                                                  Tag="{Binding Image.ClickLink, Mode=OneWay, FallbackValue={x:Null}}"
                                                  ToolTipService.ToolTip="{Binding Image.Description, Mode=OneWay, FallbackValue={x:Null}}" />
                             </DataTemplate>
-                        </panelslideshow:PanelSlideshow.ItemTemplate>
-                    </panelslideshow:PanelSlideshow>
+                        </c:PanelSlideshow.ItemTemplate>
+                    </c:PanelSlideshow>
                     <Grid x:Name="ImageCarouselPipsPager"
                           Grid.Row="0"
                           Height="24"
@@ -1332,25 +1329,25 @@
                                    VerticalAlignment="Center"
                                    FontSize="8"
                                    Opacity=".8">
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}"
-                                 FontWeight="Bold"/>
-                            <Run Text="/"
-                                 FontWeight="Bold"/>
-                            <Run Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
-                                 FontWeight="Bold" />
+                            <Run FontWeight="Bold"
+                                 Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=OneWay, Converter={StaticResource IndexAddOneConverter}}" />
+                            <Run FontWeight="Bold"
+                                 Text="/" />
+                            <Run FontWeight="Bold"
+                                 Text="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}" />
                         </TextBlock>
-                        <newpipspager:NewPipsPager Grid.Column="1"
-                                                   Width="0"
-                                                   Margin="4,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
-                                                   ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
-                                                   NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"
-                                                   NextNavigationButtonMode="Hidden"
-                                                   NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
-                                                   PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
-                                                   PreviousNavigationButtonMode="Hidden"
-                                                   SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
+                        <c:NewPipsPager Grid.Column="1"
+                                        Width="0"
+                                        Margin="4,0,0,0"
+                                        VerticalAlignment="Center"
+                                        ItemIndex="{Binding ElementName=ImageCarouselEventSlideshow, Path=ItemIndex, Mode=TwoWay}"
+                                        ItemsCount="{Binding ElementName=ImageCarouselEventSlideshow, Path=Items.Count, Mode=OneWay}"
+                                        NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMiniStyle}"
+                                        NextNavigationButtonMode="Hidden"
+                                        NormalPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseMiniStyle}"
+                                        PreviousButtonStyle="{ThemeResource NewPipsPagerPreviousPageButtonMiniStyle}"
+                                        PreviousNavigationButtonMode="Hidden"
+                                        SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
                     </Grid>
                 </Grid>
                 <Grid x:Name="PostPanel"
@@ -1400,13 +1397,13 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                               HorizontalAlignment="Left"
-                                                                                               VerticalAlignment="Center"
-                                                                                               FontSize="12"
-                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                               Text="{Binding Title}"
-                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                                       HorizontalAlignment="Left"
+                                                                                       VerticalAlignment="Center"
+                                                                                       FontSize="12"
+                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                       Text="{Binding Title}"
+                                                                                       TextTrimming="CharacterEllipsis" />
                                                             <TextBlock Grid.Column="1"
                                                                        HorizontalAlignment="Right"
                                                                        VerticalAlignment="Center"
@@ -1478,13 +1475,13 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                               HorizontalAlignment="Left"
-                                                                                               VerticalAlignment="Center"
-                                                                                               FontSize="12"
-                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                               Text="{Binding Title}"
-                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                                       HorizontalAlignment="Left"
+                                                                                       VerticalAlignment="Center"
+                                                                                       FontSize="12"
+                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                       Text="{Binding Title}"
+                                                                                       TextTrimming="CharacterEllipsis" />
                                                             <TextBlock Grid.Column="1"
                                                                        HorizontalAlignment="Right"
                                                                        VerticalAlignment="Center"
@@ -1556,13 +1553,13 @@
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                               HorizontalAlignment="Left"
-                                                                                               VerticalAlignment="Center"
-                                                                                               FontSize="12"
-                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                               Text="{Binding Title}"
-                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                                       HorizontalAlignment="Left"
+                                                                                       VerticalAlignment="Center"
+                                                                                       FontSize="12"
+                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                       Text="{Binding Title}"
+                                                                                       TextTrimming="CharacterEllipsis" />
                                                             <TextBlock Grid.Column="1"
                                                                        HorizontalAlignment="Right"
                                                                        VerticalAlignment="Center"
@@ -1897,8 +1894,8 @@
                     Height="32"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Click="ProgressSettingsButton_OnClick"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                    Click="ProgressSettingsButton_OnClick"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
@@ -2096,8 +2093,8 @@
                     Height="32"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Click="ProgressSettingsButton_OnClick"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                    Click="ProgressSettingsButton_OnClick"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,16">
                 <Button.Content>
@@ -2130,10 +2127,10 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
-                    Shadow="{ThemeResource SharedShadow}"
                     DataContext="{x:Bind CommunityToolContext, Mode=OneWay}"
-                    Visibility="{Binding IsHasAnyEntries, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
-                    Translation="0,0,32">
+                    Shadow="{ThemeResource SharedShadow}"
+                    Translation="0,0,32"
+                    Visibility="{Binding IsHasAnyEntries, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
                                   x:DataType="local:CommunityToolsEntry">
@@ -2222,11 +2219,11 @@
                     <Flyout>
                         <ScrollViewer MaxWidth="436"
                                       Margin="-16,-4,-16,-16"
+                                      DataContext="{x:Bind CommunityToolContext, Mode=OneWay}"
                                       HorizontalScrollBarVisibility="Visible"
                                       HorizontalScrollMode="Enabled"
                                       VerticalScrollBarVisibility="Disabled"
-                                      VerticalScrollMode="Disabled"
-                                      DataContext="{x:Bind CommunityToolContext, Mode=OneWay}">
+                                      VerticalScrollMode="Disabled">
                             <Grid Margin="16,0,8,0"
                                   ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
@@ -2298,8 +2295,8 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    Shadow="{ThemeResource SharedShadow}"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                    Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,32">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
@@ -2572,8 +2569,8 @@
                                 </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
-                                            Visibility="Visible"
-                                            DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared, Mode=OneWay}">
+                                            DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared, Mode=OneWay}"
+                                            Visibility="Visible">
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -2586,9 +2583,9 @@
                                             Margin="0,8,0,8"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
-                                            Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                             Click="ChangeGameBGButton_Click"
-                                            CornerRadius="14">
+                                            CornerRadius="14"
+                                            Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                         <Button.Content>
                                             <Grid Margin="4,0">
                                                 <Grid.ColumnDefinitions>
@@ -2606,13 +2603,13 @@
                                         </Button.Content>
                                     </Button>
                                     <TextBlock x:Name="BGPathDisplay"
-                                               Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
                                                Width="{x:Bind CustomChangeBGParams.Width}"
                                                Margin="0,4"
                                                HorizontalAlignment="Stretch"
                                                VerticalAlignment="Center"
                                                Text="{Binding CurrentCustomBackgroundImagePath, Mode=OneWay}"
-                                               TextTrimming="CharacterEllipsis" />
+                                               TextTrimming="CharacterEllipsis"
+                                               Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
                                             Visibility="Collapsed">
@@ -2779,8 +2776,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Click="OpenButtonLinkFromTag"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
+                            Click="OpenButtonLinkFromTag"
                             Style="{ThemeResource AccentButtonStyle}"
                             Tag="{x:Bind pages:HomePage.GamePreRegisterLink}"
                             Visibility="Collapsed">
@@ -2835,11 +2832,11 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Click="InstallGameDialog"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
+                            Click="InstallGameDialog"
+                            Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
-                            Shadow="{ThemeResource SharedShadow}"
                             Translation="0,0,32">
                         <Button.Content>
                             <Grid Margin="8,0">
@@ -2871,13 +2868,13 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
-                            Click="UpdateGameDialog"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
+                            Click="UpdateGameDialog"
+                            Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
-                            Visibility="Collapsed"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Translation="0,0,32">
+                            Translation="0,0,32"
+                            Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">
                                 <Grid.ColumnDefinitions>
@@ -2909,13 +2906,13 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
-                            Click="StartGame"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
+                            Click="StartGame"
+                            Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind StartTooltipText}"
-                            Visibility="Collapsed"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Translation="0,0,32">
+                            Translation="0,0,32"
+                            Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -2951,12 +2948,12 @@
                             VerticalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
-                            Click="CancelInstallationProcedure"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
-                            Style="{ThemeResource NewAccentButtonStyle}"
-                            Visibility="Collapsed"
+                            Click="CancelInstallationProcedure"
                             Shadow="{ThemeResource SharedShadow}"
-                            Translation="0,0,32">
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            Translation="0,0,32"
+                            Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -2981,11 +2978,11 @@
                             HorizontalContentAlignment="Stretch"
                             extension:UIElementExtensions.CursorType="Hand"
                             extension:UIElementExtensions.UniformCornerRadius="-1"
+                            Shadow="{ThemeResource SharedShadow}"
                             Style="{ThemeResource NewAccentButtonStyle}"
                             ToolTipService.ToolTip="{x:Bind InstallUpdateTooltipText}"
-                            Visibility="Collapsed"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Translation="0,0,32">
+                            Translation="0,0,32"
+                            Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -3012,8 +3009,8 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    Click="ForceUpdatePlaytimeButton_Click"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                    Click="ForceUpdatePlaytimeButton_Click"
                     PointerExited="HidePlaytimeStatsFlyout"
                     Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"

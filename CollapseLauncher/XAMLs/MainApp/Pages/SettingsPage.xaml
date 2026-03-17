@@ -6,6 +6,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:ext="using:CollapseLauncher.Extension"
@@ -13,7 +14,6 @@
       xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
-      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
@@ -192,15 +192,14 @@
                                        TextWrapping="WrapWholeWords"
                                        Visibility="Visible" />
                             <ToggleSwitch x:Name="AppBGMode"
-                                          DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                           Margin="0,4,0,8"
                                           Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppBG_Checkbox, Mode=OneWay}"
                                           IsOn="{Binding GlobalIsEnableCustomImage, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                           OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                             <StackPanel x:Name="AppBGCustomizer"
-                                        DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                         Margin="0,4,0,8"
+                                        DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                         Visibility="{Binding GlobalIsEnableCustomImage, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                 <StackPanel Margin="-2,4,0,8"
                                             Orientation="Horizontal">
@@ -308,20 +307,22 @@
                                 <Grid RowSpacing="16"
                                       ColumnSpacing="8"
                                       HorizontalAlignment="Left"
-                                      Margin="0,0,0,8"
+                                      ColumnSpacing="8"
+                                      RowSpacing="16"
                                       Visibility="{Binding ElementName=VideoCodecUseFfmpeg, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <StackPanel Grid.Column="0"
+                                    <StackPanel Grid.Row="0"
+                                                Grid.Column="0"
                                                 Grid.ColumnSpan="2"
-                                                Grid.Row="0"
+                                                DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                                 Orientation="Horizontal"
                                                 Spacing="4"
                                                 DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}">
@@ -333,20 +334,21 @@
                                         <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
                                                    FontWeight="Bold"
                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
+                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
                                         <TextBlock Text="-"
-                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}"/>
+                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}" />
                                         <TextBlock Text="{Binding GlobalCustomFFmpegPath, Mode=OneWay}"
-                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}"/>
+                                                   Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}" />
                                     </StackPanel>
                                     <Button Grid.Row="1"
                                             Grid.Column="0"
                                             Grid.ColumnSpan="2"
-                                            Padding="12, 8"
-                                            Style="{ThemeResource AccentButtonStyle}"
+                                            Padding="12,8"
                                             ext:UIElementExtensions.UniformCornerRadius="-1"
                                             Click="FFmpegInstall_StartInstallationWizard"
-                                            IsEnabled="{Binding GlobalIsFFmpegCurrentlyUsed, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                                            IsEnabled="{Binding GlobalIsFFmpegCurrentlyUsed, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
+                                            Style="{ThemeResource AccentButtonStyle}">
                                         <Grid Margin="0,-2,0,0"
                                               HorizontalAlignment="Stretch">
                                             <Grid.ColumnDefinitions>
@@ -382,73 +384,69 @@
                                             </Grid>
                                         </Grid>
                                     </Button>
-                                    <StackPanel Grid.Column="0"
+                                    <StackPanel Grid.Row="2"
+                                                Grid.Column="0"
                                                 Grid.ColumnSpan="2"
-                                                Grid.Row="2"
                                                 Spacing="8">
-                                        <Grid Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
-                                              CornerRadius="4"
+                                        <Grid MaxWidth="480"
                                               Padding="12"
-                                              ColumnSpacing="8"
-                                              RowSpacing="4"
-                                              MaxWidth="480"
                                               HorizontalAlignment="Left"
+                                              Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                              ColumnSpacing="8"
+                                              CornerRadius="4"
+                                              RowSpacing="4"
                                               Visibility="{Binding GlobalIsFFmpegCurrentlyUsed, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
-                                            <FontIcon Grid.Column="0"
-                                                      Grid.Row="0"
-                                                      Glyph="&#xEB90;"
+                                            <FontIcon Grid.Row="0"
+                                                      Grid.Column="0"
                                                       FontSize="16"
                                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                                             <TextBlock Grid.Column="1"
                                                        Grid.Row="0"
                                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}"
                                                        FontWeight="Bold"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}" />
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Grid.Row="1"
                                                        FontSize="12"
                                                        TextWrapping="Wrap"
                                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedContent, Mode=OneWay}"/>
                                         </Grid>
-                                        <Grid Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
-                                              CornerRadius="4"
+                                        <Grid MaxWidth="480"
                                               Padding="12"
+                                              HorizontalAlignment="Left"
+                                              Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                                               ColumnSpacing="8"
-                                              RowSpacing="4"
-                                              MaxWidth="480"
-                                              HorizontalAlignment="Left">
+                                              CornerRadius="4"
+                                              RowSpacing="4">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
-                                            <FontIcon Grid.Column="0"
-                                                      Grid.Row="0"
-                                                      Glyph="&#xF736;"
+                                            <FontIcon Grid.Row="0"
+                                                      Grid.Column="0"
                                                       FontSize="16"
                                                       Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
                                             <TextBlock Grid.Column="1"
                                                        Grid.Row="0"
                                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}"
                                                        FontWeight="Bold"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}" />
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Grid.Row="1"
                                                        FontSize="12"
                                                        TextWrapping="Wrap"
                                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNoteContent, Mode=OneWay}"/>
@@ -1493,8 +1491,8 @@
                                               OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                               OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                 <Grid Margin="0,0,0,8"
-                                      DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}"
-                                      ColumnSpacing="8">
+                                      ColumnSpacing="8"
+                                      DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
@@ -2949,8 +2947,8 @@
                     <ItemsRepeater ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="plugins:PluginInfo">
-                                <Button Padding="0"
-                                        Margin="0,0,0,4"
+                                <Button Margin="0,0,0,4"
+                                        Padding="0"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch"
                                         CornerRadius="4">
@@ -3008,10 +3006,10 @@
                                                 Padding="8"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Stretch"
+                                                ext:UIElementExtensions.CursorType="Hand"
                                                 Click="{x:Bind conv:SettingsPage.CopyLoadedPluginInformationClick}"
                                                 Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                Tag="{x:Bind}"
-                                                ext:UIElementExtensions.CursorType="Hand">
+                                                Tag="{x:Bind}">
                                             <FontIcon FontSize="16"
                                                       Glyph="&#xE8C8;" />
                                             <Button.Flyout>

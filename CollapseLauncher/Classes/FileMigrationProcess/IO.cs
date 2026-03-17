@@ -1,6 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml.Controls;

@@ -1,4 +1,3 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
@@ -7,7 +6,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;

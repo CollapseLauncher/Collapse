@@ -1,7 +1,7 @@
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using ColorThiefDotNet;
 using FFmpegInteropX;
 using Hi3Helper;
@@ -27,6 +27,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI;
+
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo

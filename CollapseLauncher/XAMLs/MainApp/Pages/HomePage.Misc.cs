@@ -1,9 +1,9 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;

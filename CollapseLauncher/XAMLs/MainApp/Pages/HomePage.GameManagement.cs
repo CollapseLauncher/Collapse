@@ -1,4 +1,3 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
@@ -6,6 +5,7 @@ using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;

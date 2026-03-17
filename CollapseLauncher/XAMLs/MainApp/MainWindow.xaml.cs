@@ -7,7 +7,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
-using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -32,6 +32,7 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable IdentifierTypo
 // ReSharper disable AsyncVoidMethod

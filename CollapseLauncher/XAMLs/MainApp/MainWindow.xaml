@@ -1,7 +1,7 @@
 ﻿<Window x:Class="CollapseLauncher.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+        xmlns:contentDialog="using:CollapseLauncher.XAMLs.Theme.ContentDialog"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:helper="using:CollapseLauncher.Helper"
         xmlns:local="using:CollapseLauncher"
@@ -139,8 +139,8 @@
             <Button x:Name="LoadingStatusActionButton"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
-                    x:FieldModifier="internal"
                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                    x:FieldModifier="internal"
                     Shadow="{StaticResource SharedThemeShadow}"
                     Style="{ThemeResource AccentButtonStyle}"
                     Translation="0,0,16"
@@ -159,7 +159,7 @@
                 </StackPanel>
             </Button>
         </Grid>
-        <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
+        <contentDialog:ContentDialogCollapse x:Name="ContentDialog"
                                              Grid.Row="0"
                                              x:FieldModifier="internal" />
         <Grid Grid.Row="0"

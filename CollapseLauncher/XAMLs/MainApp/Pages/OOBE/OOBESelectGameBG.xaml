@@ -5,10 +5,10 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:oobe="using:CollapseLauncher.Pages.OOBE"
       xmlns:s="using:CommunityToolkit.WinUI"
-      xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
     <Page.Resources>
@@ -41,7 +41,7 @@
                   Visibility="Collapsed">
                 <Grid.Background>
                     <LinearGradientBrush Opacity="0.9" StartPoint="1,0" EndPoint="0,0">
-                        <GradientStop Offset="0.15" Color="{ThemeResource SystemAccentColorBackgroundMaskTransparent}"/>
+                        <GradientStop Offset="0.15" Color="{ThemeResource SystemAccentColorBackgroundMaskTransparent}" />
                         <GradientStop Offset="0.75" Color="{ThemeResource SystemAccentColorBackgroundMask}" />
                     </LinearGradientBrush>
                 </Grid.Background>
@@ -71,10 +71,10 @@
                     </ScrollViewer>
                 </Grid>
                 <Button x:Name="GameDetailsHomepage"
-                        extension:UIElementExtensions.CursorType="Hand"
                         Padding="16,4,16,8"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
+                        extension:UIElementExtensions.CursorType="Hand"
                         Click="GameDetailsHomepage_Click"
                         CornerRadius="0,0,8,8"
                         Style="{ThemeResource AccentButtonStyle}"

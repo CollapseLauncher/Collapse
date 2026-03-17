@@ -1,9 +1,10 @@
 ﻿using CollapseLauncher.Dialogs;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace

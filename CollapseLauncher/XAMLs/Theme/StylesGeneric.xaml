@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <!--  Project styles: Button  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AccentButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AcrylicButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AcrylicSemiButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/DefaultButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/DraftButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/NewAccentButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/SocMedIconButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/TransparentDefaultButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/WindowsCaptionButton.xaml" />
+
+        <!--  Project styles: ComboBox  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ComboBox/AcrylicComboBox.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ComboBox/DefaultComboBox.xaml" />
+
+        <!--  Project styles: ContentDialog  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog/ContentDialogCollapse.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog/ContentDialogOverlay.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog/UserFeedbackDialog.xaml" />
+
+        <!--  Project styles: FlipView  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView/CollapseFlipView.xaml" />
+
+        <!--  Project styles: NavigationView  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/NavigationView/DefaultNavigationView.xaml" />
+
+        <!--  Project styles: PipsPager  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/PipsPager/PipsPager.xaml" />
+
+        <!--  Project styles: Pivot  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Pivot/DefaultPivot.xaml" />
+
+        <!--  Project styles: RadioButton  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/RadioButton/DefaultRadioButton.xaml" />
+
+        <!--  Project styles: ScrollBar  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ScrollBar/DefaultScrollBar.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ScrollBar/MinScrollBar.xaml" />
+
+        <!--  Project styles: Slider  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Slider/FatSlider.xaml" />
+
+        <!--  Project styles: ToggleButton  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ToggleButton/AcrylicToggleButton.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

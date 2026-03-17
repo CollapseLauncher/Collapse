@@ -1,10 +1,10 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;

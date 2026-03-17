@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper;
-using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.LocaleSourceGen;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
@@ -15,6 +14,7 @@ using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
 // ReSharper disable CheckNamespace
 // ReSharper disable AssignNullToNotNullAttribute
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault

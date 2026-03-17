@@ -6,11 +6,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:helper="using:CollapseLauncher.Helper"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
+      xmlns:helper="using:CollapseLauncher.Helper"
+      xmlns:extension="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
     <Page.Resources>
@@ -24,10 +22,10 @@
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch" />
         <Button x:Name="NextPage"
-                extension:UIElementExtensions.CursorType="Hand"
                 Margin="32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
+                extension:UIElementExtensions.CursorType="Hand"
                 Click="NextPage_Click"
                 IsEnabled="False"
                 Opacity="0"
@@ -57,10 +55,10 @@
             </Button.Content>
         </Button>
         <Button x:Name="PrevPage"
-                extension:UIElementExtensions.CursorType="Hand"
                 Margin="32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
+                extension:UIElementExtensions.CursorType="Hand"
                 Click="PrevPage_Click"
                 IsEnabled="True"
                 Style="{ThemeResource TransparentDefaultButtonStyle}">
@@ -136,11 +134,8 @@
                     <Run FontWeight="Normal"
                          Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_5}" />
                 </TextBlock>
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="GameTitleComboBox"
+                    <ComboBox x:Name="GameCategorySelect"
                               extension:UIElementExtensions.CursorType="Hand"
-                              Width="192"
-                              CornerRadius="16"
                               PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBox}"
                               SelectionChanged="GameCategorySelect_SelectionChanged">
                         <ComboBox.ItemTemplate>
@@ -151,8 +146,10 @@
                     </ComboBox>
                     <ComboBox x:Name="GameRegionComboBox"
                               extension:UIElementExtensions.CursorType="Hand"
+                              extension:UIElementExtensions.CursorType="Hand"
                               Width="192"
                               Margin="16,0,0,0"
+                              extension:UIElementExtensions.CursorType="Hand"
                               CornerRadius="16"
                               IsEnabled="False"
                               PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBoxRegion}"

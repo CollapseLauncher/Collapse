@@ -38,8 +38,8 @@
                         Padding="8,8"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
-                        Click="ShowError"
                         extension:UIElementExtensions.UniformCornerRadius="-1"
+                        Click="ShowError"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Grid Margin="8,0">
                         <Grid.ColumnDefinitions>
@@ -75,8 +75,8 @@
                         Padding="8,8"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
-                        Click="GoToAppSettings"
                         extension:UIElementExtensions.UniformCornerRadius="-1"
+                        Click="GoToAppSettings"
                         Style="{ThemeResource DefaultButtonStyle}">
                     <Grid Margin="8,0">
                         <Grid.ColumnDefinitions>

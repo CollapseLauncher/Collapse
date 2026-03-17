@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <!--  Custom Controls: FullPageOverlay  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/FullPageOverlay.xaml" />
+
+        <!--  Custom Controls: LayeredBackgroundImage  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/LayeredBackgroundImage_themeresources.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/LayeredBackgroundImage.xaml" />
+
+        <!--  Custom Controls: NewPipsPager  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/NewPipsPager_themeresources.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/NewPipsPager.xaml" />
+
+        <!--  Custom Controls: PanelSlideshow  -->
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/PanelSlideshow_themeresources.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/PanelSlideshow.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

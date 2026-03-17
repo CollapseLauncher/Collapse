@@ -6,8 +6,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-      xmlns:layeredBackgroundImage="using:CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage"
+      xmlns:customControls="using:CollapseLauncher.XAMLs.Theme.CustomControls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:layeredBackgroundImage1="using:CollapseLauncher.XAMLs.Theme.LayeredBackgroundImage"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"
@@ -17,8 +21,8 @@
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <ListView x:Name="KeyboardHandler" />
-        <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
-        <pages:InverseBooleanToOpacityConverter x:Key="InverseBooleanToOpacityConverter"/>
+        <pages:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
+        <pages:InverseBooleanToOpacityConverter x:Key="InverseBooleanToOpacityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <pages:CountToOpacityConverter x:Key="CountToOpacityConverter"/>
         <pages:InverseCountToOpacityConverter x:Key="InverseCountToOpacityConverter"/>
@@ -31,42 +35,42 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
-            <layeredBackgroundImage:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
-                                                           MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}"/>
+            <customControls:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
+                                                   MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}" />
         </Grid>
-        <Grid Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundElevated, Mode=OneWay, Converter={StaticResource InverseBooleanToOpacityConverter}}"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top">
+        <Grid HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundElevated, Mode=OneWay, Converter={StaticResource InverseBooleanToOpacityConverter}}">
             <Grid.OpacityTransition>
-                <ScalarTransition Duration="0:0:.2"/>
+                <ScalarTransition Duration="0:0:.2" />
             </Grid.OpacityTransition>
-            <Grid Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                  Margin="60"
-                  Padding="12, 8"
+            <Grid Margin="60"
+                  Padding="12,8"
                   extension:UIElementExtensions.UniformCornerRadius="8"
+                  Background="{ThemeResource CarouselPipsAcrylicBrush}"
                   ColumnSpacing="8"
+                  Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay, Converter={StaticResource BooleanToOpacityConverter}}"
                   Shadow="{StaticResource SharedShadow}"
-                  Translation="0,0,32"
-                  Opacity="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay, Converter={StaticResource BooleanToOpacityConverter}}">
+                  Translation="0,0,32">
                 <Grid.OpacityTransition>
-                    <ScalarTransition Duration="0:0:.2"/>
+                    <ScalarTransition Duration="0:0:.2" />
                 </Grid.OpacityTransition>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0"
                       Grid.ColumnSpan="2"
                       Margin="-12"
-                      Opacity=".85"/>
+                      Opacity=".85" />
                 <ProgressRing Grid.Column="0"
                               Width="20"
                               Height="20"
-                              Maximum="100"
-                              Value="100"
                               VerticalAlignment="Center"
+                              Foreground="{ThemeResource TextBoxBackgroundThemeBrush}"
                               IsIndeterminate="{x:Bind CurrentBackgroundManager.IsBackgroundLoading, Mode=OneWay}"
-                              Foreground="{ThemeResource TextBoxBackgroundThemeBrush}"/>
+                              Maximum="100"
+                              Value="100" />
                 <TextBlock Grid.Column="1"
                            Text="{x:Bind helper:Locale.Current.Lang._MainPage.LoadingBackgroundImage, Mode=OneWay}"
                            VerticalAlignment="Center"/>
@@ -178,9 +182,9 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <ComboBox x:Name="ComboBoxGameRegion"
-                                      BorderThickness="0"
                                       Grid.Column="1"
                                       MinWidth="148"
+                                      BorderThickness="0"
                                       Canvas.ZIndex="2"
                                       CornerRadius="0,15,15,0"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
@@ -221,8 +225,8 @@
                               Margin="8,0,0,0"
                               extension:UIElementExtensions.UniformCornerRadius="-1">
                             <Button x:Name="ChangeRegionConfirmBtnNoWarning"
-                                    Click="ChangeRegionNoWarning"
                                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                                    Click="ChangeRegionNoWarning"
                                     IsEnabled="False"
                                     Style="{ThemeResource NewAccentButtonStyle}"
                                     Visibility="Collapsed">
@@ -499,8 +503,8 @@
               Margin="0,48,-700,0"
               HorizontalAlignment="Right"
               Background="{ThemeResource NotificationPanelBrush}"
-              Shadow="{ThemeResource SharedShadow}"
-              CornerRadius="8,0,0,8">
+              CornerRadius="8,0,0,8"
+              Shadow="{ThemeResource SharedShadow}">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -516,8 +520,8 @@
                           MinHeight="200">
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Orientation="Vertical"
-                                    Opacity="{x:Bind NotificationElementsCollection.Count, Mode=OneWay, Converter={StaticResource InverseCountToOpacityConverter}}">
+                                    Opacity="{x:Bind NotificationElementsCollection.Count, Mode=OneWay, Converter={StaticResource InverseCountToOpacityConverter}}"
+                                    Orientation="Vertical">
                             <StackPanel.OpacityTransition>
                                 <ScalarTransition />
                             </StackPanel.OpacityTransition>
@@ -568,8 +572,8 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="1"
                         HorizontalAlignment="Right"
-                        Click="ClearAllNotification"
                         extension:UIElementExtensions.UniformCornerRadius="-1"
+                        Click="ClearAllNotification"
                         Style="{ThemeResource TransparentDefaultButtonStyle}">
                     <StackPanel Margin="4,0"
                                 Orientation="Horizontal">

@@ -3,8 +3,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces.Class;
-using CollapseLauncher.XAMLs.Theme.CustomControls.LayeredBackgroundImage;
-using Hi3Helper;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -13,13 +12,13 @@ using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using WinRT;
+
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 

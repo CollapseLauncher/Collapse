@@ -1,4 +1,3 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
@@ -9,7 +8,8 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
-using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
