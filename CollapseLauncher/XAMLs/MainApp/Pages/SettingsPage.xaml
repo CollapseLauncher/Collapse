@@ -12,9 +12,9 @@
       xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:extHelper="using:CollapseLauncher.Helper"
       xmlns:helper="using:CollapseLauncher.Helper"
-      xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+      xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
       CacheMode="BitmapCache"
@@ -299,14 +299,12 @@
                                         Style="{ThemeResource FatSliderStyle}"
                                         Value="{Binding GlobalBackgroundAudioVolume, Mode=TwoWay}" />
                                 <ToggleSwitch x:Name="VideoCodecUseFfmpeg"
-                                              Margin="0,4, 0, 0"
+                                              Margin="0,4,0,0"
                                               Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_UseFFmpeg, Mode=OneWay}"
                                               IsOn="{Binding GlobalIsUseFFmpeg, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                               OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
-                                <Grid RowSpacing="16"
-                                      ColumnSpacing="8"
-                                      HorizontalAlignment="Left"
+                                <Grid HorizontalAlignment="Left"
                                       ColumnSpacing="8"
                                       RowSpacing="16"
                                       Visibility="{Binding ElementName=VideoCodecUseFfmpeg, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
@@ -324,17 +322,15 @@
                                                 Grid.ColumnSpan="2"
                                                 DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                                 Orientation="Horizontal"
-                                                Spacing="4"
-                                                DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}">
-                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus, Mode=OneWay}"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_Installed, Mode=OneWay}"
-                                                   FontWeight="Bold"
+                                                Spacing="4">
+                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus, Mode=OneWay}" />
+                                        <TextBlock FontWeight="Bold"
                                                    Foreground="{ThemeResource SystemFillColorSuccessBrush}"
-                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
-                                                   FontWeight="Bold"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_Installed, Mode=OneWay}"
+                                                   Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
+                                        <TextBlock FontWeight="Bold"
                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallStatus_NotInstalled, Mode=OneWay}"
                                                    Visibility="{Binding GlobalIsFFmpegAvailable, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
                                         <TextBlock Text="-"
                                                    Visibility="{Binding GlobalCustomFFmpegPath, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}" />
@@ -407,18 +403,17 @@
                                             <FontIcon Grid.Row="0"
                                                       Grid.Column="0"
                                                       FontSize="16"
-                                                      Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                            <TextBlock Grid.Column="1"
-                                                       Grid.Row="0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}"
+                                                      Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="1"
                                                        FontWeight="Bold"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}" />
+                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedTitle, Mode=OneWay}" />
                                             <TextBlock Grid.Row="1"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedContent, Mode=OneWay}"/>
+                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallLockedContent, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
                                         </Grid>
                                         <Grid MaxWidth="480"
                                               Padding="12"
@@ -438,18 +433,17 @@
                                             <FontIcon Grid.Row="0"
                                                       Grid.Column="0"
                                                       FontSize="16"
-                                                      Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
-                                            <TextBlock Grid.Column="1"
-                                                       Grid.Row="0"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}"
+                                                      Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="1"
                                                        FontWeight="Bold"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}" />
+                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNote, Mode=OneWay}" />
                                             <TextBlock Grid.Row="1"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNoteContent, Mode=OneWay}"/>
+                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegInstallNoteContent, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
                                         </Grid>
                                     </StackPanel>
                                 </Grid>

@@ -540,7 +540,7 @@
       "hi3helper.localesourcegen": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.251115.2, )"
+          "Microsoft.Windows.CsWinRT": "[2.2.0, )"
         }
       },
       "hi3helper.plugin.core": {

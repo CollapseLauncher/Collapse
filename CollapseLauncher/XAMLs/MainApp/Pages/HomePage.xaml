@@ -12,7 +12,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:CollapseLauncher.Helper"
-      xmlns:backgroundManager="using:CollapseLauncher.GameManagement.ImageBackground"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
@@ -47,23 +46,21 @@
                     Placement="Bottom"
                     ShouldConstrainToRootBounds="False">
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE74E;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE78C;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+            <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}">
                 <MenuFlyoutSubItem.Resources>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
@@ -72,45 +69,42 @@
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE77F;" />
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
-                                CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"/>
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}" />
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
-                                CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"/>
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
-                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}" />
+                <MenuFlyoutItem IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
-            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
+            <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE77F;" />
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginOverlayImagePath, FallbackValue={x:Null}, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
-                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginOverlayImagePath, FallbackValue={x:Null}, Mode=OneWay}"/>
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}" />
                 <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16,8" />
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE8D6;" />
                 </ToggleMenuFlyoutItem.Icon>
@@ -118,8 +112,8 @@
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}"
-                                  ToolTipService.Placement="Left">
+                                  ToolTipService.Placement="Left"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE786;" />
                 </ToggleMenuFlyoutItem.Icon>
@@ -127,25 +121,25 @@
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
-                                  ToolTipService.Placement="Left">
+                                  ToolTipService.Placement="Left"
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE7B3;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
-            <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
-                               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}">
-                <RadioMenuFlyoutItem Text="2px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
-                <RadioMenuFlyoutItem Text="4px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
-                <RadioMenuFlyoutItem Text="8px" IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"/>
-                <MenuFlyoutSeparator/>
-                <RadioMenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
-                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}"
+            <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}">
+                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
+                                     Text="2px" />
+                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
+                                     Text="4px" />
+                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
+                                     Text="8px" />
+                <MenuFlyoutSeparator />
+                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                                     Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
-                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
-                                     Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
-                                     ToolTipService.Placement="Left"
-                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
         </MenuFlyout>
     </Page.Resources>
@@ -1279,18 +1273,18 @@
                 </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
-                    <panelslideshow:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
-                                                   Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height, Mode=OneWay}"
-                                                   CornerRadius="8"
-                                                   CountdownProgressMargin="8"
-                                                   CountdownSmokeHeight="80"
-                                                   ItemsSource="{x:Bind pages:HomePage.GameCarouselData, Mode=OneWay}"
-                                                   NextButtonMargin="-16"
-                                                   NextButtonVerticalAlignment="Center"
-                                                   PreviousButtonMargin="-16"
-                                                   PreviousButtonVerticalAlignment="Center"
-                                                   SlideshowDuration="10">
-                        <panelslideshow:PanelSlideshow.ItemTransition>
+                    <c:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
+                                      Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height, Mode=OneWay}"
+                                      CornerRadius="8"
+                                      CountdownProgressMargin="8"
+                                      CountdownSmokeHeight="80"
+                                      ItemsSource="{x:Bind pages:HomePage.GameCarouselData, Mode=OneWay}"
+                                      NextButtonMargin="-16"
+                                      NextButtonVerticalAlignment="Center"
+                                      PreviousButtonMargin="-16"
+                                      PreviousButtonVerticalAlignment="Center"
+                                      SlideshowDuration="10">
+                        <c:PanelSlideshow.ItemTransition>
                             <PaneThemeTransition Edge="Left" />
                         </c:PanelSlideshow.ItemTransition>
                         <c:PanelSlideshow.ItemTemplate>
@@ -1355,8 +1349,8 @@
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width, Mode=OneWay}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
                       Padding="8,6,8,0"
-                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty, Mode=OneWay}"
-                      Translation="0,0,48">
+                      Translation="0,0,48"
+                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty, Mode=OneWay}">
                     <Pivot HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex, Mode=OneWay}">
                         <Pivot.Resources>

@@ -3,18 +3,18 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
+      xmlns:pages="using:CollapseLauncher.Pages"
       Background="Transparent"
       mc:Ignorable="d">
     <Page.Resources>
-        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter"/>
-        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter"/>
-        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter"/>
-        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter"/>
+        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter" />
+        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter" />
+        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter" />
+        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter" />
     </Page.Resources>
     <Grid Margin="32">
         <Grid x:Name="FrontGrid"
@@ -128,7 +128,7 @@
                               Style="{ThemeResource DefaultComboBoxStyle}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
-                                <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}"/>
+                                <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -144,19 +144,19 @@
                             <DataTemplate x:DataType="metadata:PresetConfig">
                                 <StackPanel Orientation="Horizontal"
                                             Spacing="4">
-                                    <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}"/>
-                                    <Grid Background="{ThemeResource TextBoxBackgroundThemeBrush}"
-                                          CornerRadius="4"
-                                          Padding="4, 0"
-                                          VerticalAlignment="Center"
+                                    <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}" />
+                                    <Grid Padding="4,0"
                                           HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                          CornerRadius="4"
                                           Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
-                                        <TextBlock Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}"
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
                                                    FontSize="10"
                                                    FontWeight="Bold"
-                                                   VerticalAlignment="Center"
-                                                   HorizontalAlignment="Center"
-                                                   Foreground="{ThemeResource TextBoxForegroundThemeBrush}"/>
+                                                   Foreground="{ThemeResource TextBoxForegroundThemeBrush}"
+                                                   Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}" />
                                     </Grid>
                                 </StackPanel>
                             </DataTemplate>

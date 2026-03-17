@@ -1,9 +1,9 @@
-﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
-<!-- ReSharper disable Xaml.ConstructorWarning -->
+﻿<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:imageex="using:ImageEx"
-                        xmlns:pages="using:CollapseLauncher.Pages">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:imageex="using:ImageEx"
+                    xmlns:pages="using:CollapseLauncher.Pages">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"

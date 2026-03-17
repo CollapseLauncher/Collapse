@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.LocaleSourceGen;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;

@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:contentDialog="using:CollapseLauncher.XAMLs.Theme.ContentDialog"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:extension="using:CollapseLauncher.Extension"
         xmlns:helper="using:CollapseLauncher.Helper"
         xmlns:local="using:CollapseLauncher"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:extension="using:CollapseLauncher.Extension"
         SizeChanged="MainWindow_OnSizeChanged"
         mc:Ignorable="d">
     <Grid>

@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="using:CollapseLauncher.Pages"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:extHelper="using:CollapseLauncher.Helper"
-             xmlns:helper="using:Hi3Helper"
+             xmlns:helper="using:CollapseLauncher.Helper"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              CacheMode="BitmapCache"
              Loaded="Control_Loaded"
@@ -95,15 +94,15 @@
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                            Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.FileDownloadSettings_Title}" />
                 <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
-                              DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}"
                               Margin="0,4,0,0"
+                              DataContext="{x:Bind helper:SpeedLimiterService.Shared}"
                               Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
                               IsOn="{Binding IsEnabled, Mode=TwoWay}"
                               OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
                               OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
                 <Grid Margin="0,8,12,8"
                       ColumnSpacing="8"
-                      DataContext="{x:Bind extHelper:SpeedLimiterService.Shared}">
+                      DataContext="{x:Bind helper:SpeedLimiterService.Shared}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
