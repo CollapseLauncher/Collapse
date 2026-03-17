@@ -122,7 +122,6 @@
         
         <!-- Compilation and Optimization -->
         <Deterministic>true</Deterministic>
-        <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
         <IlcOptimizationPreference>Size</IlcOptimizationPreference>
         <OptimizationPreference>Size</OptimizationPreference>
         <IlcDisableReflection>false</IlcDisableReflection>
