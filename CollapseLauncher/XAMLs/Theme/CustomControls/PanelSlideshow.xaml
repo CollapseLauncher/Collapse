@@ -1,5 +1,4 @@
-﻿<!--  ReSharper disable UnusedMember.Local  -->
-<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+﻿<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:customControls="using:CollapseLauncher.XAMLs.Theme.CustomControls"
