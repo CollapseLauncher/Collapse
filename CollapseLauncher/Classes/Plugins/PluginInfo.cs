@@ -329,6 +329,43 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         }
     }
 
+    /// <summary>
+    /// Registers a per-file progress callback with the plugin via the V1Ext_Update5 export.
+    /// Returns <c>true</c> if the plugin supports Update5 and the callback was registered.
+    /// </summary>
+    internal unsafe bool EnablePerFileProgressCallback(nint callbackPtr)
+    {
+        if (!IsLoaded)
+            return false;
+
+        if (!Handle.TryGetExportUnsafe("SetPerFileProgressCallback", out nint setCallbackP))
+            return false;
+
+        HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(callbackPtr);
+        if (Marshal.GetExceptionForHR(hr) is { } exception)
+        {
+            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register per-file progress callback: {hr} {exception}",
+                                LogType.Error, true);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Unregisters the per-file progress callback from the plugin.
+    /// </summary>
+    internal unsafe void DisablePerFileProgressCallback()
+    {
+        if (!IsLoaded)
+            return;
+
+        if (!Handle.TryGetExportUnsafe("SetPerFileProgressCallback", out nint setCallbackP))
+            return;
+
+        ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(nint.Zero);
+    }
+
     internal async Task Initialize(CancellationToken token = default)
     {
         if (!IsLoaded)

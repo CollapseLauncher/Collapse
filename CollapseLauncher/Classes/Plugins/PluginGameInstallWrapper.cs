@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,6 +29,9 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IGameInstallManager
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void PerFileProgressCallbackNative(InstallPerFileProgress* progress);
+
     private struct InstallProgressProperty
     {
         public int  StateCount;
@@ -60,6 +64,10 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private readonly InstallProgressDelegate      _updateProgressDelegate;
     private readonly InstallProgressStateDelegate _updateProgressStatusDelegate;
     private          InstallProgressProperty      _updateProgressProperty;
+
+    private PerFileProgressCallbackNative? _perFileProgressDelegate;
+    private GCHandle                       _perFileProgressGcHandle;
+    private bool                           _hasPerFileProgress;
 
     private PluginGameVersionWrapper GameManager =>
         GameVersionManager as PluginGameVersionWrapper ?? throw new InvalidCastException("GameVersionManager is not PluginGameVersionWrapper");
@@ -101,8 +109,58 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     public void Dispose()
     {
+        UnregisterPerFileProgressCallback();
         _gameInstaller.Free();
         GC.SuppressFinalize(this);
+    }
+
+    private void TryRegisterPerFileProgressCallback()
+    {
+        _perFileProgressDelegate = OnPerFileProgressCallback;
+        _perFileProgressGcHandle = GCHandle.Alloc(_perFileProgressDelegate);
+        nint callbackPtr = Marshal.GetFunctionPointerForDelegate(_perFileProgressDelegate);
+
+        _hasPerFileProgress = _pluginPresetConfig.PluginInfo.EnablePerFileProgressCallback(callbackPtr);
+
+        if (!_hasPerFileProgress)
+        {
+            _perFileProgressGcHandle.Free();
+            _perFileProgressDelegate = null;
+        }
+    }
+
+    private void UnregisterPerFileProgressCallback()
+    {
+        if (!_hasPerFileProgress)
+            return;
+
+        _pluginPresetConfig.PluginInfo.DisablePerFileProgressCallback();
+        _hasPerFileProgress = false;
+
+        if (_perFileProgressGcHandle.IsAllocated)
+            _perFileProgressGcHandle.Free();
+        _perFileProgressDelegate = null;
+    }
+
+    private unsafe void OnPerFileProgressCallback(InstallPerFileProgress* progress)
+    {
+        // IMPORTANT: Called from NativeAOT plugin across reverse P/Invoke. Must never throw.
+        try
+        {
+            long downloaded = progress->PerFileDownloadedBytes;
+            long total = progress->PerFileTotalBytes;
+
+            Progress.ProgressPerFileSizeCurrent = downloaded;
+            Progress.ProgressPerFileSizeTotal   = total;
+            Progress.ProgressPerFilePercentage  = total > 0
+                ? ConverterTool.ToPercentage(total, downloaded)
+                : 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[PluginGameInstallWrapper::OnPerFileProgressCallback] Exception (swallowed):\r\n{ex}",
+                                LogType.Error, true);
+        }
     }
 
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
@@ -230,6 +288,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 5/5: StartPreloadAsync...", LogType.Debug, true);
+            TryRegisterPerFileProgressCallback();
+
             _gameInstaller.StartPreloadAsync(
                 _updateProgressDelegate,
                 _updateProgressStatusDelegate,
@@ -254,6 +314,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         finally
         {
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Entering finally block.", LogType.Debug, true);
+            UnregisterPerFileProgressCallback();
             Status.IsCompleted = true;
             IsRunning          = false;
             UpdateStatus();
@@ -296,6 +357,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
+            TryRegisterPerFileProgressCallback();
+
             Task routineTask;
             if (_updateProgressProperty.IsUpdateMode)
             {
@@ -327,6 +390,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         finally
         {
+            UnregisterPerFileProgressCallback();
             Status.IsCompleted = true;
             IsRunning = false;
             UpdateStatus();
@@ -358,11 +422,22 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Progress.ProgressAllSizeTotal = downloadedBytesTotal;
                 Progress.ProgressAllSpeed = currentSpeed;
 
-                // Mirror into per-file fields — plugin reports aggregate progress only,
-                // but the preload UI has a left-side panel that reads PerFile values.
-                Progress.ProgressPerFileSizeCurrent = downloadedBytes;
-                Progress.ProgressPerFileSizeTotal   = downloadedBytesTotal;
-                Progress.ProgressPerFileSpeed        = currentSpeed;
+                if (_hasPerFileProgress)
+                {
+                    // V1Ext_Update5: per-file bytes/percentage come from OnPerFileProgressCallback.
+                    // We only set the speed here (overall throughput is the meaningful metric).
+                    Progress.ProgressPerFileSpeed = currentSpeed;
+                }
+                else
+                {
+                    // Fallback: mirror aggregate values into per-file fields for older plugins.
+                    Progress.ProgressPerFileSizeCurrent = downloadedBytes;
+                    Progress.ProgressPerFileSizeTotal   = downloadedBytesTotal;
+                    Progress.ProgressPerFileSpeed       = currentSpeed;
+                    Progress.ProgressPerFilePercentage  = downloadedBytesTotal > 0
+                        ? ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes)
+                        : 0;
+                }
 
                 Progress.ProgressAllTimeLeft = downloadedBytesTotal > 0 && currentSpeed > 0
                     ? ConverterTool.ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed)
@@ -371,8 +446,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Progress.ProgressAllPercentage = downloadedBytesTotal > 0
                     ? ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes)
                     : 0;
-
-                Progress.ProgressPerFilePercentage = Progress.ProgressAllPercentage;
 
                 _updateProgressProperty.LastDownloaded = downloadedBytes;
 
