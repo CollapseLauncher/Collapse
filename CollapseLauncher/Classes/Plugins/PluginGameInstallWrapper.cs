@@ -114,7 +114,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         GC.SuppressFinalize(this);
     }
 
-    private void TryRegisterPerFileProgressCallback()
+    private unsafe void TryRegisterPerFileProgressCallback()
     {
         _perFileProgressDelegate = OnPerFileProgressCallback;
         _perFileProgressGcHandle = GCHandle.Alloc(_perFileProgressDelegate);
