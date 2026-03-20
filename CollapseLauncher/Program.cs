@@ -647,6 +647,10 @@ namespace CollapseLauncher
                 Locale.Current.TryLoadLocaleFrom(Locale.FallbackLocaleCode);
             }
 
+#if DEBUG
+            Locale.Current.EnableLocaleHotReload();
+#endif
+
             string? themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {

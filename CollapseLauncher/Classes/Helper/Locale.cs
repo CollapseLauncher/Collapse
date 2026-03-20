@@ -11,6 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+#if DEBUG
+using System.Threading;
+#endif
 using WinRT;
 // ReSharper disable StringLiteralTypo
 
@@ -305,4 +308,102 @@ public partial class Locale : NotifyPropertyChanged
 
         httpStream.CopyTo(fileStream);
     }
+
+#if DEBUG
+    private FileSystemWatcher? _langFileWatcher;
+    private Timer?             _langReloadDebounce;
+    private string?            _sourceLangFolder;
+
+    /// <summary>
+    /// Walk up from <see cref="LauncherConfig.AppLangFolder"/> (build output) looking for
+    /// the source <c>Hi3Helper.Core\Lang</c> directory in the repo.
+    /// </summary>
+    private static string? FindSourceLangFolder()
+    {
+        try
+        {
+            string? dir = LauncherConfig.AppLangFolder;
+            for (int i = 0; i < 10 && dir != null; i++)
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (dir == null) break;
+                string candidate = Path.Combine(dir, "Hi3Helper.Core", "Lang");
+                if (Directory.Exists(candidate) &&
+                    File.Exists(Path.Combine(candidate, "en_US.json")))
+                    return candidate;
+            }
+        }
+        catch { /* best-effort */ }
+        return null;
+    }
+
+    /// <summary>
+    /// Start watching the Lang folder for JSON changes. On save,
+    /// re-deserializes the active locale via <see cref="TryLoadLocaleFrom(FileInfo)"/>
+    /// which sets <see cref="Lang"/> and fires <see cref="NotifyPropertyChanged.PropertyChanged"/>,
+    /// causing all <c>Mode=OneWay</c> XAML bindings to refresh automatically.
+    /// </summary>
+    public void EnableLocaleHotReload()
+    {
+        if (_langFileWatcher != null) return;
+
+        _sourceLangFolder = FindSourceLangFolder();
+        string watchFolder = _sourceLangFolder ?? LauncherConfig.AppLangFolder!;
+
+        _langFileWatcher = new FileSystemWatcher(watchFolder, "*.json")
+        {
+            NotifyFilter          = NotifyFilters.LastWrite,
+            IncludeSubdirectories = true,
+            EnableRaisingEvents   = true
+        };
+
+        _langReloadDebounce = new Timer(_ =>
+        {
+            try
+            {
+                string? currentLangId = Lang?.LanguageID;
+                if (string.IsNullOrEmpty(currentLangId)) return;
+
+                // Find the matching source file and reload it
+                string folder = _sourceLangFolder ?? LauncherConfig.AppLangFolder!;
+                foreach (string file in Directory.EnumerateFiles(folder, "*.json", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        var baseData = fs.Deserialize(LocaleJsonContext.Default.LangParamsBase);
+                        if (baseData != null &&
+                            string.Equals(baseData.LanguageID, currentLangId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            TryLoadLocaleFrom(new FileInfo(file));
+                            Logger.LogWriteLine($"[Locale::HotReload] Reloaded locale from: {file}", LogType.Scheme, true);
+                            return;
+                        }
+                    }
+                    catch { /* skip unreadable files */ }
+                }
+
+                Logger.LogWriteLine($"[Locale::HotReload] Could not find source file for '{currentLangId}'", LogType.Warning, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[Locale::HotReload] Failed to reload: {ex.Message}", LogType.Warning, true);
+            }
+        }, null, Timeout.Infinite, Timeout.Infinite);
+
+        _langFileWatcher.Changed += (_, _) =>
+            _langReloadDebounce.Change(300, Timeout.Infinite);
+
+        Logger.LogWriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
+    }
+
+    public void DisableLocaleHotReload()
+    {
+        _langFileWatcher?.Dispose();
+        _langFileWatcher = null;
+        _langReloadDebounce?.Dispose();
+        _langReloadDebounce = null;
+        _sourceLangFolder = null;
+    }
+#endif
 }
