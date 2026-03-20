@@ -30,10 +30,10 @@ namespace CollapseLauncher.Pages
         #region GameResolution
         public bool IsFullscreenEnabled
         {
-            get => Settings.SettingsScreen.isfullScreen;
+            get => ((StarRailSettings)Settings).SettingsScreen.isfullScreen;
             set
             {
-                Settings.SettingsScreen.isfullScreen = value;
+                ((StarRailSettings)Settings).SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled = false;
@@ -51,10 +51,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsBorderlessEnabled
         {
-            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            get => ((StarRailSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen;
             set
             {
-                Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+                ((StarRailSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled = false;
@@ -72,10 +72,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsCustomResolutionEnabled
         {
-            get => Settings.SettingsCollapseScreen.UseCustomResolution;
+            get => ((StarRailSettings)Settings).SettingsCollapseScreen.UseCustomResolution;
             set
             {
-                Settings.SettingsCollapseScreen.UseCustomResolution = value;
+                ((StarRailSettings)Settings).SettingsCollapseScreen.UseCustomResolution = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -108,11 +108,11 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                return IsFullscreenEnabled && Settings.SettingsCollapseScreen.UseExclusiveFullscreen;
+                return IsFullscreenEnabled && ((StarRailSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen;
             }
             set
             {
-                Settings.SettingsCollapseScreen.UseExclusiveFullscreen = value;
+                ((StarRailSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = false;
@@ -127,15 +127,15 @@ namespace CollapseLauncher.Pages
 
         public bool IsCanResizableWindow
         {
-            get => !Settings.SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
+            get => !((StarRailSettings)Settings).SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
         }
 
         public bool IsResizableWindow
         {
-            get => Settings.SettingsCollapseScreen.UseResizableWindow;
+            get => ((StarRailSettings)Settings).SettingsCollapseScreen.UseResizableWindow;
             set
             {
-                Settings.SettingsCollapseScreen.UseResizableWindow = value;
+                ((StarRailSettings)Settings).SettingsCollapseScreen.UseResizableWindow = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = true;
@@ -150,19 +150,19 @@ namespace CollapseLauncher.Pages
 
         public bool IsCanCustomResolution
         {
-            get => Settings.SettingsCollapseScreen.UseResizableWindow && !IsExclusiveFullscreenEnabled;
+            get => ((StarRailSettings)Settings).SettingsCollapseScreen.UseResizableWindow && !IsExclusiveFullscreenEnabled;
         }
 
         public int ResolutionW
         {
-            get => Settings.SettingsScreen.sizeRes.Width;
-            set => Settings.SettingsScreen.sizeRes = new Size(value, ResolutionH);
+            get => ((StarRailSettings)Settings).SettingsScreen.sizeRes.Width;
+            set => ((StarRailSettings)Settings).SettingsScreen.sizeRes = new Size(value, ResolutionH);
         }
 
         public int ResolutionH
         {
-            get => Settings.SettingsScreen.sizeRes.Height;
-            set => Settings.SettingsScreen.sizeRes = new Size(ResolutionW, value);
+            get => ((StarRailSettings)Settings).SettingsScreen.sizeRes.Height;
+            set => ((StarRailSettings)Settings).SettingsScreen.sizeRes = new Size(ResolutionW, value);
         }
 
         public bool IsCanResolutionWH
@@ -174,7 +174,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string res = Settings.SettingsScreen.sizeResString;
+                string res = ((StarRailSettings)Settings).SettingsScreen.sizeResString;
                 if (!string.IsNullOrEmpty(res))
                 {
                     return res;
@@ -183,7 +183,7 @@ namespace CollapseLauncher.Pages
                 Size size = ScreenProp.CurrentResolution;
                 return $"{size.Width}x{size.Height}";
             }
-            set => Settings.SettingsScreen.sizeResString = value;
+            set => ((StarRailSettings)Settings).SettingsScreen.sizeResString = value;
         }
         #endregion
 
@@ -193,7 +193,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int value = Model.FpsIndexDict[NormalizeFPSNumber(Settings.GraphicsSettings.FPS)];
+                int value = Model.FpsIndexDict[NormalizeFPSNumber(((StarRailSettings)Settings).GraphicsSettings.FPS)];
                 if (value != 2)
                 {
                     return value;
@@ -213,7 +213,7 @@ namespace CollapseLauncher.Pages
                 }
                 else { VSyncToggle.IsEnabled = true; }
 
-                Settings.GraphicsSettings.FPS = Model.FpsIndex[value];
+                ((StarRailSettings)Settings).GraphicsSettings.FPS = Model.FpsIndex[value];
             }
         }
 
@@ -223,87 +223,87 @@ namespace CollapseLauncher.Pages
         //VSync
         public bool EnableVSync
         {
-            get => Settings.GraphicsSettings.EnableVSync;
-            set => Settings.GraphicsSettings.EnableVSync = value;
+            get => ((StarRailSettings)Settings).GraphicsSettings.EnableVSync;
+            set => ((StarRailSettings)Settings).GraphicsSettings.EnableVSync = value;
         }
         //RenderScale
         public double RenderScale
         {
-            get => Math.Round(Settings.GraphicsSettings.RenderScale, 1);
-            set => Settings.GraphicsSettings.RenderScale = Math.Round(value, 1); // Round it to x.x (0.1) to fix floating-point rounding issue
+            get => Math.Round(((StarRailSettings)Settings).GraphicsSettings.RenderScale, 1);
+            set => ((StarRailSettings)Settings).GraphicsSettings.RenderScale = Math.Round(value, 1); // Round it to x.x (0.1) to fix floating-point rounding issue
         }
         //ResolutionQuality
         public int ResolutionQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.ResolutionQuality, 0, 5);
-            set => Settings.GraphicsSettings.ResolutionQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.ResolutionQuality, 0, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.ResolutionQuality = (Quality)value;
         }
         //ShadowQuality
         public int ShadowQuality
         {
             get
             {
-                var v = Math.Clamp((int)Settings.GraphicsSettings.ShadowQuality, 0, 4);
+                var v = Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.ShadowQuality, 0, 4);
                 if (v == 1) v = 2;
                 return v;
             }
-            set => Settings.GraphicsSettings.ShadowQuality = (Quality)value;
+            set => ((StarRailSettings)Settings).GraphicsSettings.ShadowQuality = (Quality)value;
         }
         //LightQuality
         public int LightQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.LightQuality, 1, 5);
-            set => Settings.GraphicsSettings.LightQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.LightQuality, 1, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.LightQuality = (Quality)value;
         }
         //CharacterQuality
         public int CharacterQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.CharacterQuality, 2, 4);
-            set => Settings.GraphicsSettings.CharacterQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.CharacterQuality, 2, 4);
+            set => ((StarRailSettings)Settings).GraphicsSettings.CharacterQuality = (Quality)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.EnvDetailQuality, 1, 5);
-            set => Settings.GraphicsSettings.EnvDetailQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.EnvDetailQuality, 1, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.EnvDetailQuality = (Quality)value;
         }
         //ReflectionQuality
         public int ReflectionQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.ReflectionQuality, 1, 5);
-            set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.ReflectionQuality, 1, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.ReflectionQuality = (Quality)value;
         }
         //SFXQuality
         public int SFXQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.SFXQuality, 1, 4);
-            set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.SFXQuality, 1, 4);
+            set => ((StarRailSettings)Settings).GraphicsSettings.SFXQuality = (Quality)value;
         }
 
         //DLSSQuality
         public int DlssQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.DlssQuality, 0, 5);
-            set => Settings.GraphicsSettings.DlssQuality = (DLSSMode)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.DlssQuality, 0, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.DlssQuality = (DLSSMode)value;
         }
         //BloomQuality
         public int BloomQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.BloomQuality, 0, 5);
-            set => Settings.GraphicsSettings.BloomQuality = (Quality)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.BloomQuality, 0, 5);
+            set => ((StarRailSettings)Settings).GraphicsSettings.BloomQuality = (Quality)value;
         }
         //AAMode
         public int AAMode
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.AAMode, 0, 2);
-            set => Settings.GraphicsSettings.AAMode = (AntialiasingMode)value;
+            get => Math.Clamp((int)((StarRailSettings)Settings).GraphicsSettings.AAMode, 0, 2);
+            set => ((StarRailSettings)Settings).GraphicsSettings.AAMode = (AntialiasingMode)value;
         }
         //EnableSelfShadow
         public bool SelfShadow
         {
             get
             {
-                var v = Settings.GraphicsSettings.EnableSelfShadow;
+                var v = ((StarRailSettings)Settings).GraphicsSettings.EnableSelfShadow;
                 switch (v)
                 {
                     case 1:
@@ -315,65 +315,65 @@ namespace CollapseLauncher.Pages
                         return false;
                 }
             }
-            set => Settings.GraphicsSettings.EnableSelfShadow = value ? 1 : 2;
+            set => ((StarRailSettings)Settings).GraphicsSettings.EnableSelfShadow = value ? 1 : 2;
         }
         //HalfResTransparent
         public bool HalfResTransparent
         {
-            get => Settings.GraphicsSettings.EnableHalfResTransparent;
-            set => Settings.GraphicsSettings.EnableHalfResTransparent = value;
+            get => ((StarRailSettings)Settings).GraphicsSettings.EnableHalfResTransparent;
+            set => ((StarRailSettings)Settings).GraphicsSettings.EnableHalfResTransparent = value;
         }
         #endregion
 
         #region Audio
         public int AudioMasterVolume
         {
-            get => Settings.AudioSettingsMaster.MasterVol = Settings.AudioSettingsMaster.MasterVol;
-            set => Settings.AudioSettingsMaster.MasterVol = value;
+            get => ((StarRailSettings)Settings).AudioSettingsMaster.MasterVol = ((StarRailSettings)Settings).AudioSettingsMaster.MasterVol;
+            set => ((StarRailSettings)Settings).AudioSettingsMaster.MasterVol = value;
         }
 
         public int AudioBGMVolume
         {
-            get => Settings.AudioSettingsBgm.BGMVol = Settings.AudioSettingsBgm.BGMVol;
-            set => Settings.AudioSettingsBgm.BGMVol = value;
+            get => ((StarRailSettings)Settings).AudioSettingsBgm.BGMVol = ((StarRailSettings)Settings).AudioSettingsBgm.BGMVol;
+            set => ((StarRailSettings)Settings).AudioSettingsBgm.BGMVol = value;
         }
 
         public int AudioSFXVolume
         {
-            get => Settings.AudioSettingsSfx.SFXVol = Settings.AudioSettingsSfx.SFXVol;
-            set => Settings.AudioSettingsSfx.SFXVol = value;
+            get => ((StarRailSettings)Settings).AudioSettingsSfx.SFXVol = ((StarRailSettings)Settings).AudioSettingsSfx.SFXVol;
+            set => ((StarRailSettings)Settings).AudioSettingsSfx.SFXVol = value;
         }
 
         public int AudioVOVolume
         {
-            get => Settings.AudioSettingsVo.VOVol = Settings.AudioSettingsVo.VOVol;
-            set => Settings.AudioSettingsVo.VOVol = value;
+            get => ((StarRailSettings)Settings).AudioSettingsVo.VOVol = ((StarRailSettings)Settings).AudioSettingsVo.VOVol;
+            set => ((StarRailSettings)Settings).AudioSettingsVo.VOVol = value;
         }
 
         public int AudioLang
         {
-            get => Settings.AudioLanguage.LocalAudioLangInt = Settings.AudioLanguage.LocalAudioLangInt;
-            set => Settings.AudioLanguage.LocalAudioLangInt = value;
+            get => ((StarRailSettings)Settings).AudioLanguage.LocalAudioLangInt = ((StarRailSettings)Settings).AudioLanguage.LocalAudioLangInt;
+            set => ((StarRailSettings)Settings).AudioLanguage.LocalAudioLangInt = value;
         }
 
         public int TextLang
         {
-            get => Settings.TextLanguage.LocalTextLangInt = Settings.TextLanguage.LocalTextLangInt;
-            set => Settings.TextLanguage.LocalTextLangInt = value;
+            get => ((StarRailSettings)Settings).TextLanguage.LocalTextLangInt = ((StarRailSettings)Settings).TextLanguage.LocalTextLangInt;
+            set => ((StarRailSettings)Settings).TextLanguage.LocalTextLangInt = value;
         }
         #endregion
 
         #region Misc
         public bool IsGameBoost
         {
-            get => Settings.SettingsCollapseMisc.UseGameBoost;
-            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.UseGameBoost;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.UseGameBoost = value;
         }
         
         public bool IsMobileMode
         {
-            get => Settings.SettingsCollapseMisc.LaunchMobileMode;
-            set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.LaunchMobileMode;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.LaunchMobileMode = value;
         }
         #endregion
 
@@ -382,13 +382,13 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                bool value = ((StarRailSettings)Settings).SettingsCollapseMisc.UseAdvancedGameSettings;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
             {
-                Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                ((StarRailSettings)Settings).SettingsCollapseMisc.UseAdvancedGameSettings = value;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
             }
         }
@@ -397,7 +397,7 @@ namespace CollapseLauncher.Pages
         {
             get 
             { 
-                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+                bool value = ((StarRailSettings)Settings).SettingsCollapseMisc.UseGamePreLaunchCommand;
 
                 if (value)
                 {
@@ -427,47 +427,47 @@ namespace CollapseLauncher.Pages
                     GameLaunchDelay.IsEnabled           = false;
                 }
 
-                Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+                ((StarRailSettings)Settings).SettingsCollapseMisc.UseGamePreLaunchCommand = value;
             }
         }
 
         public string PreLaunchCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
-            set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePreLaunchCommand;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePreLaunchCommand = value;
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
-            set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
         public int LaunchDelay
         {
-            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
-            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.GameLaunchDelay;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.GameLaunchDelay = value;
         }
         
         public bool IsUsePostExitCommand
         {
             get
             {
-                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
+                bool value = ((StarRailSettings)Settings).SettingsCollapseMisc.UseGamePostExitCommand;
                 PostExitCommandTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
                 PostExitCommandTextBox.IsEnabled                     = value;
-                Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
+                ((StarRailSettings)Settings).SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
 
         public string PostExitCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
-            set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePostExitCommand;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.GamePostExitCommand = value;
         }
 
         private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -479,8 +479,8 @@ namespace CollapseLauncher.Pages
 
         public bool RunWithExplorerAsParent
         {
-            get => Settings.SettingsCollapseMisc.RunWithExplorerAsParent;
-            set => Settings.SettingsCollapseMisc.RunWithExplorerAsParent = value;
+            get => ((StarRailSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent;
+            set => ((StarRailSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent = value;
         }
         #endregion
     }

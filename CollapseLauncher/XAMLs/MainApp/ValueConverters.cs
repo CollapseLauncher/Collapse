@@ -1,5 +1,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -16,6 +17,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Buffers;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Numerics;
@@ -112,13 +114,13 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             long valBFromM = (long)(asDouble * (1 << 20));
             return valBFromM > 0 ?
-                string.Format(Locale.Lang._Misc.IsBytesMoreThanBytes, valBFromM, string.Format(Locale.Lang._Misc.SpeedPerSec, ConverterTool.SummarizeSizeSimple(valBFromM))) :
-                string.Format(Locale.Lang._Misc.IsBytesUnlimited);
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", ConverterTool.SummarizeSizeSimple(valBFromM))) :
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -133,13 +135,13 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             int valBFromM = (int)(asDouble * (1 << 20));
             return valBFromM > 0 ?
-                string.Format(Locale.Lang._Misc.IsBytesMoreThanBytes, valBFromM, ConverterTool.SummarizeSizeSimple(valBFromM)) :
-                string.Format(Locale.Lang._Misc.IsBytesUnlimited);
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, ConverterTool.SummarizeSizeSimple(valBFromM)) :
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -152,7 +154,7 @@ namespace CollapseLauncher.Pages
     {
         private const string Format = "{0:F5}";
         public string FormatDouble(double value) => string.Format(Format, value);
-        public double? ParseDouble(string text) => double.TryParse(text, out var dbl) ? dbl : null;
+        public double? ParseDouble(string text) => double.TryParse(text, out double dbl) ? dbl : null;
 
         public string FormatInt(long value) => throw new NotSupportedException();
         public string FormatUInt(ulong value) => throw new NotSupportedException();
@@ -270,7 +272,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientTitles);
+                return LauncherMetadataHelper.GetGameTitleTranslation(asString);
             }
 
             return value;
@@ -288,7 +290,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientRegions);
+                return LauncherMetadataHelper.GetGameRegionTranslation(asString);
             }
 
             return value;
@@ -306,7 +308,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return string.Format(Locale.Lang._SettingsPage.Plugin_AuthorBy, asString);
+                return string.Format(Locale.Current.Lang?._SettingsPage?.Plugin_AuthorBy ?? "", asString);
             }
 
             return value;
@@ -423,7 +425,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             TimeSpan span = TimeSpan.FromSeconds(asDouble);
@@ -549,7 +551,7 @@ namespace CollapseLauncher.Pages
     public partial class UpdateToVersionStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButton,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButton ?? "",
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
@@ -566,7 +568,7 @@ namespace CollapseLauncher.Pages
     public partial class UpdatingPercentageStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButtonUpdating,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButtonUpdating ?? "",
                              Math.Round((double)value, 2));
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -578,7 +580,7 @@ namespace CollapseLauncher.Pages
     public partial class PluginUpdatedToVersionStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusCompleted,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusCompleted ?? "",
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
@@ -1073,6 +1075,115 @@ namespace CollapseLauncher.Pages
                 ? 0d
                 : 1d;
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringDictionaryToValueConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not Dictionary<string, string> asDictionary ||
+                parameter is not string lookupString)
+            {
+                return null;
+            }
+
+            return asDictionary.GetValueOrDefault(lookupString, lookupString);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameTitleComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not string asString)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientTitles",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   asString);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameRegionComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not PresetConfig presetConfig)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientRegions",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   presetConfig.ZoneName);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringUppercaseConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language) =>
+            value?.ToString()?.ToUpper();
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameChannelToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, string language) =>
+            value switch
+            {
+                GameChannel gameChannel => gameChannel == GameChannel.Stable
+                    ? Visibility.Collapsed
+                    : Visibility.Visible,
+                _ => Visibility.Collapsed
+            };
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

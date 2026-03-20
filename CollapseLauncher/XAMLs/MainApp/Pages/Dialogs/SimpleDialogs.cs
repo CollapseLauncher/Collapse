@@ -3,6 +3,7 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
@@ -34,7 +35,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 using DispatcherQueueExtensions = CollapseLauncher.Extension.DispatcherQueueExtensions;
@@ -57,22 +57,22 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_DeltaPatchFileDetected(string sourceVer, string targetVer)
         {
-            return SpawnDialog(Lang._Dialogs.DeltaPatchDetectedTitle,
-                               string.Format(Lang._Dialogs.DeltaPatchDetectedSubtitle, sourceVer, targetVer),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.DeltaPatchDetectedTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.DeltaPatchDetectedSubtitle ?? "", sourceVer, targetVer),
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.Yes,
-                               Lang._Misc.No,
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.Yes,
+                               Locale.Current.Lang?._Misc?.No,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
         }
 
         public static Task<ContentDialogResult> Dialog_PreDownloadPackageVerified()
         {
-            return SpawnDialog(Lang._Dialogs.PreloadVerifiedTitle,
-                               Lang._Dialogs.PreloadVerifiedSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.PreloadVerifiedTitle,
+                               Locale.Current.Lang?._Dialogs?.PreloadVerifiedSubtitle,
                                null,
-                               Lang._Misc.Close,
+                               Locale.Current.Lang?._Misc?.Close,
                                null,
                                null,
                                ContentDialogButton.Secondary,
@@ -81,54 +81,54 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_PreviousDeltaPatchInstallFailed()
         {
-            return SpawnDialog(Lang._Dialogs.DeltaPatchPrevFailedTitle,
-                               Lang._Dialogs.DeltaPatchPrevFailedSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.DeltaPatchPrevFailedTitle,
+                               Locale.Current.Lang?._Dialogs?.DeltaPatchPrevFailedSubtitle,
                                null,
                                null,
-                               Lang._Misc.Yes,
-                               Lang._Misc.No,
+                               Locale.Current.Lang?._Misc?.Yes,
+                               Locale.Current.Lang?._Misc?.No,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Error);
         }
 
         public static Task<ContentDialogResult> Dialog_PreviousGameConversionFailed()
         {
-            return SpawnDialog(Lang._Dialogs.GameConversionPrevFailedTitle,
-                               Lang._Dialogs.GameConversionPrevFailedSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.GameConversionPrevFailedTitle,
+                               Locale.Current.Lang?._Dialogs?.GameConversionPrevFailedSubtitle,
                                null,
                                null,
-                               Lang._Misc.Yes,
-                               Lang._Misc.No,
+                               Locale.Current.Lang?._Misc?.Yes,
+                               Locale.Current.Lang?._Misc?.No,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Error);
         }
 
         public static Task<ContentDialogResult> Dialog_InstallationLocation()
         {
-            return SpawnDialog(Lang._Dialogs.LocateInstallTitle,
-                               Lang._Dialogs.LocateInstallSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.LocateInstallTitle,
+                               Locale.Current.Lang?._Dialogs?.LocateInstallSubtitle,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.UseDefaultDir,
-                               Lang._Misc.LocateDir);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.UseDefaultDir,
+                               Locale.Current.Lang?._Misc?.LocateDir);
         }
 
         public static Task<ContentDialogResult> Dialog_OpenExecutable()
         {
-            return SpawnDialog(Lang._Dialogs.LocateExePathTitle,
-                               Lang._Dialogs.LocateExePathSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.LocateExePathTitle,
+                               Locale.Current.Lang?._Dialogs?.LocateExePathSubtitle,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.LocateExecutable,
-                               Lang._Misc.OpenDownloadPage);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.LocateExecutable,
+                               Locale.Current.Lang?._Misc?.OpenDownloadPage);
         }
 
         public static Task<ContentDialogResult> Dialog_InsufficientWritePermission(string path)
         {
-            return SpawnDialog(Lang._Dialogs.UnauthorizedDirTitle,
-                               string.Format(Lang._Dialogs.UnauthorizedDirSubtitle, path),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.UnauthorizedDirTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.UnauthorizedDirSubtitle ?? "", path),
                                null,
-                               Lang._Misc.Okay);
+                               Locale.Current.Lang?._Misc?.Okay);
         }
 
         public static async Task<(HashSet<string>?, string?)> Dialog_ChooseAudioLanguageChoice(
@@ -145,7 +145,7 @@ namespace CollapseLauncher.Dialogs
 
             parentPanel.AddElementToStackPanel(new TextBlock
             {
-                Text                = Lang._Dialogs.ChooseAudioLangSubtitle,
+                Text                = Locale.Current.Lang?._Dialogs?.ChooseAudioLangSubtitle,
                 TextWrapping        = TextWrapping.Wrap,
                 FontWeight          = FontWeights.Medium,
                 Margin              = new Thickness(0, 0, 0, 16),
@@ -160,10 +160,10 @@ namespace CollapseLauncher.Dialogs
 
             ContentDialogCollapse dialog = new(ContentDialogTheme.Warning)
             {
-                Title               = Lang._Dialogs.ChooseAudioLangTitle,
+                Title               = Locale.Current.Lang?._Dialogs?.ChooseAudioLangTitle,
                 Content             = parentPanel,
-                CloseButtonText     = Lang._Misc.Cancel,
-                PrimaryButtonText   = Lang._Misc.Next,
+                CloseButtonText     = Locale.Current.Lang?._Misc?.Cancel,
+                PrimaryButtonText   = Locale.Current.Lang?._Misc?.Next,
                 SecondaryButtonText = null,
                 DefaultButton       = ContentDialogButton.Primary,
                 Style               = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
@@ -194,12 +194,12 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock useAsDefaultText = new()
                 {
-                    Text = Lang._Misc.UseAsDefault,
-                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Text                    = Locale.Current.Lang?._Misc?.UseAsDefault,
+                    HorizontalAlignment     = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.5,
-                    Name = "UseAsDefaultLabel"
+                    VerticalAlignment       = VerticalAlignment.Top,
+                    Opacity                 = 0.5,
+                    Name                    = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(language,
@@ -378,7 +378,7 @@ namespace CollapseLauncher.Dialogs
 
             parentPanel.AddElementToStackPanel(new TextBlock
             {
-                Text                = Lang._Dialogs.ChooseAudioLangSubtitle,
+                Text                = Locale.Current.Lang?._Dialogs?.ChooseAudioLangSubtitle,
                 TextWrapping        = TextWrapping.Wrap,
                 FontWeight          = FontWeights.Medium,
                 Margin              = new Thickness(0, 0, 0, 16),
@@ -392,12 +392,12 @@ namespace CollapseLauncher.Dialogs
 
             parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
 
-            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
+            ContentDialogCollapse dialog = new(ContentDialogTheme.Warning)
             {
-                Title               = Lang._Dialogs.ChooseAudioLangTitle,
+                Title               = Locale.Current.Lang?._Dialogs?.ChooseAudioLangTitle,
                 Content             = parentPanel,
-                CloseButtonText     = Lang._Misc.Cancel,
-                PrimaryButtonText   = Lang._Misc.Next,
+                CloseButtonText     = Locale.Current.Lang?._Misc?.Cancel,
+                PrimaryButtonText   = Locale.Current.Lang?._Misc?.Next,
                 SecondaryButtonText = null,
                 DefaultButton       = ContentDialogButton.Primary,
                 Style               = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
@@ -415,7 +415,7 @@ namespace CollapseLauncher.Dialogs
                                                  .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                                  .WithMargin(0, 0, 0, 8);
 
-                CheckBox checkBox = new CheckBox
+                CheckBox checkBox = new()
                 {
                     Content                    = checkBoxGrid,
                     HorizontalAlignment        = HorizontalAlignment.Stretch,
@@ -424,9 +424,9 @@ namespace CollapseLauncher.Dialogs
                     VerticalContentAlignment   = VerticalAlignment.Center
                 };
 
-                TextBlock useAsDefaultText = new TextBlock
+                TextBlock useAsDefaultText = new()
                 {
-                    Text                    = Lang._Misc.UseAsDefault,
+                    Text                    = Locale.Current.Lang?._Misc?.UseAsDefault,
                     HorizontalAlignment     = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
                     VerticalAlignment       = VerticalAlignment.Top,
@@ -623,12 +623,12 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning()
         {
-            return SpawnDialog(Lang._Dialogs.ExtremeGraphicsSettingsWarnTitle,
-                               Lang._Dialogs.ExtremeGraphicsSettingsWarnSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ExtremeGraphicsSettingsWarnTitle,
+                               Locale.Current.Lang?._Dialogs?.ExtremeGraphicsSettingsWarnSubtitle,
                                null,
                                null,
-                               Lang._Misc.YesIHaveBeefyPC,
-                               Lang._Misc.No,
+                               Locale.Current.Lang?._Misc?.YesIHaveBeefyPC,
+                               Locale.Current.Lang?._Misc?.No,
                                ContentDialogButton.Secondary,
                                ContentDialogTheme.Warning);
         }
@@ -636,18 +636,18 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_ChangeReleaseToChannel(string channelName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
-                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle1)
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeSubtitle1)
                              .AddTextBlockLine($" {channelName}", FontWeights.Bold)
                              .AddTextBlockNewLine(2)
-                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
                              .AddTextBlockNewLine()
-                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeSubtitle3);
 
-            return SpawnDialog(Lang._Dialogs.ReleaseChannelChangeTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeTitle,
                                texts,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.OkayHappy,
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.OkayHappy,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -656,19 +656,19 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_ForceUpdateOnChannel(string channelName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
-                             .AddTextBlockLine(Lang._Dialogs.ForceUpdateCurrentInstallSubtitle1)
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ForceUpdateCurrentInstallSubtitle1)
                              .AddTextBlockLine($" {channelName} ", FontWeights.Bold)
-                             .AddTextBlockLine(Lang._Dialogs.ForceUpdateCurrentInstallSubtitle2)
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ForceUpdateCurrentInstallSubtitle2)
                              .AddTextBlockNewLine(2)
-                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
                              .AddTextBlockNewLine()
-                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ReleaseChannelChangeSubtitle3);
 
-            return SpawnDialog(Lang._Dialogs.ForceUpdateCurrentInstallTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ForceUpdateCurrentInstallTitle,
                                texts,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.OkayHappy,
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.OkayHappy,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -676,34 +676,34 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_ExistingInstallation(string actualLocation)
         {
-            return SpawnDialog(Lang._Dialogs.ExistingInstallTitle,
-                               string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ExistingInstallTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.ExistingInstallSubtitle ?? "", actualLocation),
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.YesMigrateIt,
-                               Lang._Misc.NoKeepInstallIt);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.YesMigrateIt,
+                               Locale.Current.Lang?._Misc?.NoKeepInstallIt);
         }
 
         private static Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(
             string gamePath, bool isHasOnlyMigrateOption)
         {
-            return SpawnDialog(Lang._Dialogs.ExistingInstallBHI3LTitle,
-                               string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, gamePath),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ExistingInstallBHI3LTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.ExistingInstallBHI3LSubtitle ?? "", gamePath),
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.YesMigrateIt,
-                               isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.YesMigrateIt,
+                               isHasOnlyMigrateOption ? null : Locale.Current.Lang?._Misc?.NoKeepInstallIt);
         }
 
         private static Task<ContentDialogResult> Dialog_ExistingInstallationSteam(
             string gamePath, bool isHasOnlyMigrateOption)
         {
-            return SpawnDialog(Lang._Dialogs.ExistingInstallSteamTitle,
-                               string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ExistingInstallSteamTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.ExistingInstallSteamSubtitle ?? "", gamePath),
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.YesMigrateIt,
-                               isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.YesMigrateIt,
+                               isHasOnlyMigrateOption ? null : Locale.Current.Lang?._Misc?.NoKeepInstallIt);
         }
 
 
@@ -724,35 +724,34 @@ namespace CollapseLauncher.Dialogs
                        };
             }
 
-            string gameFullnameString =
-                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
+            string gameFullnameString = $"{LauncherMetadataHelper.GetGameTitleTranslation(gameTitle)} - {LauncherMetadataHelper.GetGameRegionTranslation(gameRegion)}";
 
-            TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle1,
+            TextBlock contentTextBlock = new() { TextWrapping = TextWrapping.Wrap };
+            contentTextBlock.AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingInstallChoiceSubtitle1 ?? "",
                                                             launcherName));
             contentTextBlock.AddTextBlockNewLine(2);
             contentTextBlock.AddTextBlockLine(existingGamePath, FontWeights.SemiBold);
             contentTextBlock.AddTextBlockNewLine(2);
-            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle2,
+            contentTextBlock.AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingInstallChoiceSubtitle2 ?? "",
                                                             launcherName));
 
-            return SpawnDialog(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceTitle, gameFullnameString),
+            return SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingInstallChoiceTitle ?? "", gameFullnameString),
                                contentTextBlock,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.UseCurrentDir,
-                               isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir);
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.UseCurrentDir,
+                               isHasOnlyMigrateOption ? null : Locale.Current.Lang?._Misc?.MoveToDifferentDir);
         }
 
         public static Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(
             string sourceHash, string downloadedHash)
         {
-            return SpawnDialog(Lang._Dialogs.InstallDataCorruptTitle,
-                               string.Format(Lang._Dialogs.InstallDataCorruptSubtitle, sourceHash, downloadedHash),
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.InstallDataCorruptTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.InstallDataCorruptSubtitle ?? "", sourceHash, downloadedHash),
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.YesRedownload,
-                               Lang._Misc.ExtractAnyway,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.YesRedownload,
+                               Locale.Current.Lang?._Misc?.ExtractAnyway,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Error);
         }
@@ -763,16 +762,16 @@ namespace CollapseLauncher.Dialogs
                                   {
                                       TextWrapping = TextWrapping.Wrap
                                   }
-                                 .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle1)
-                                 .AddTextBlockLine(string.Format(Lang._Dialogs.InstallCorruptDataAnywaySubtitle2, fileName, SummarizeSizeSimple(fileSize), fileSize),
+                                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.InstallCorruptDataAnywaySubtitle1)
+                                 .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.InstallCorruptDataAnywaySubtitle2 ?? "", fileName, SummarizeSizeSimple(fileSize), fileSize),
                                                    FontWeights.SemiBold)
-                                 .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle3);
+                                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.InstallCorruptDataAnywaySubtitle3);
 
-            return SpawnDialog(Lang._Dialogs.InstallCorruptDataAnywayTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.InstallCorruptDataAnywayTitle,
                                textBlock,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.YesImReallySure,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.YesImReallySure,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -780,24 +779,24 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_LocateFirstSetupFolder(string defaultAppFolder)
         {
-            return SpawnDialog(Lang._StartupPage.ChooseFolderDialogTitle,
-                               string.Format(Lang._StartupPage.ChooseFolderDialogSubtitle, defaultAppFolder),
+            return SpawnDialog(Locale.Current.Lang?._StartupPage?.ChooseFolderDialogTitle,
+                               string.Format(Locale.Current.Lang?._StartupPage?.ChooseFolderDialogSubtitle ?? "", defaultAppFolder),
                                null,
-                               Lang._StartupPage.ChooseFolderDialogCancel,
-                               Lang._StartupPage.ChooseFolderDialogPrimary,
-                               Lang._StartupPage.ChooseFolderDialogSecondary);
+                               Locale.Current.Lang?._StartupPage?.ChooseFolderDialogCancel,
+                               Locale.Current.Lang?._StartupPage?.ChooseFolderDialogPrimary,
+                               Locale.Current.Lang?._StartupPage?.ChooseFolderDialogSecondary);
         }
 
         public static Task<ContentDialogResult> Dialog_ExistingDownload(double partialLength, double contentLength)
         {
-            return SpawnDialog(Lang._Dialogs.InstallDataDownloadResumeTitle,
-                               string.Format(Lang._Dialogs.InstallDataDownloadResumeSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.InstallDataDownloadResumeTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.InstallDataDownloadResumeSubtitle ?? "",
                                              SummarizeSizeSimple(partialLength),
                                              SummarizeSizeSimple(contentLength)),
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.YesResume,
-                               Lang._Misc.NoStartFromBeginning,
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.YesResume,
+                               Locale.Current.Lang?._Misc?.NoStartFromBeginning,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
         }
@@ -805,14 +804,14 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_InsufficientDriveSpace(
             long driveFreeSpace, double requiredSpace, string driveLetter)
         {
-            return SpawnDialog(Lang._Dialogs.InsufficientDiskTitle,
-                               string.Format(Lang._Dialogs.InsufficientDiskSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.InsufficientDiskTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.InsufficientDiskSubtitle ?? "",
                                              SummarizeSizeSimple(driveFreeSpace),
                                              SummarizeSizeSimple(requiredSpace),
                                              driveLetter),
                                null,
                                null,
-                               Lang._Misc.Okay,
+                               Locale.Current.Lang?._Misc?.Okay,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Error);
@@ -823,19 +822,19 @@ namespace CollapseLauncher.Dialogs
             TextBlock warningMessage = new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap
-                }.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg1)
-                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg2, FontWeights.Bold)
-                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg3)
-                 .AddTextBlockLine(Lang._Misc.Yes, FontWeights.SemiBold)
-                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg4)
-                 .AddTextBlockLine(Lang._Misc.NoCancel, FontWeights.SemiBold)
-                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg5);
+                }.AddTextBlockLine(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableMsg1)
+                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableMsg2, FontWeights.Bold)
+                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableMsg3)
+                 .AddTextBlockLine(Locale.Current.Lang?._Misc?.Yes, FontWeights.SemiBold)
+                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableMsg4)
+                 .AddTextBlockLine(Locale.Current.Lang?._Misc?.NoCancel, FontWeights.SemiBold)
+                 .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableMsg5);
 
-            return SpawnDialog(Lang._Dialogs.OperationWarningNotCancellableTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.OperationWarningNotCancellableTitle,
                                warningMessage,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -843,35 +842,35 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_RelocateFolder()
         {
-            return SpawnDialog(Lang._Dialogs.RelocateFolderTitle,
-                               string.Format(Lang._Dialogs.RelocateFolderSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.RelocateFolderTitle,
+                               string.Format(Locale.Current.Lang?._Dialogs?.RelocateFolderSubtitle ?? "",
                                              GetAppConfigValue("GameFolder").ToString()),
                                null,
                                null,
-                               Lang._Misc.YesRelocate,
-                               Lang._Misc.Cancel);
+                               Locale.Current.Lang?._Misc?.YesRelocate,
+                               Locale.Current.Lang?._Misc?.Cancel);
         }
 
         public static Task<ContentDialogResult> Dialog_UninstallGame(string gameLocation, string region)
         {
-            return SpawnDialog(string.Format(Lang._Dialogs.UninstallGameTitle, region),
-                               string.Format(Lang._Dialogs.UninstallGameSubtitle,
+            return SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.UninstallGameTitle ?? "", region),
+                               string.Format(Locale.Current.Lang?._Dialogs?.UninstallGameSubtitle ?? "",
                                              gameLocation),
                                null,
                                null,
-                               Lang._Misc.Uninstall,
-                               Lang._Misc.Cancel,
+                               Locale.Current.Lang?._Misc?.Uninstall,
+                               Locale.Current.Lang?._Misc?.Cancel,
                                ContentDialogButton.Secondary,
                                ContentDialogTheme.Error);
         }
 
         public static Task<ContentDialogResult> Dialog_EnsureExit()
         {
-            return SpawnDialog(Lang._Dialogs.EnsureExitTitle,
-                               $"{Lang._Dialogs.EnsureExitSubtitle} {Lang._Dialogs.EnsureExitSubtitle2}",
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.EnsureExitTitle,
+                               $"{Locale.Current.Lang?._Dialogs?.EnsureExitSubtitle} {Locale.Current.Lang?._Dialogs?.EnsureExitSubtitle2}",
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Close,
                                ContentDialogTheme.Warning);
@@ -879,45 +878,45 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_ClearMetadata()
         {
-            return SpawnDialog(string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialog),
-                               string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialogHelp),
+            return SpawnDialog(string.Format(Locale.Current.Lang?._SettingsPage?.AppFiles_ClearMetadataDialog ?? ""),
+                               string.Format(Locale.Current.Lang?._SettingsPage?.AppFiles_ClearMetadataDialogHelp ?? ""),
                                null,
                                null,
-                               Lang._Misc.Yes,
-                               Lang._Misc.Cancel,
+                               Locale.Current.Lang?._Misc?.Yes,
+                               Locale.Current.Lang?._Misc?.Cancel,
                                ContentDialogButton.Secondary,
                                ContentDialogTheme.Warning);
         }
 
         public static Task<ContentDialogResult> Dialog_NeedInstallMediaPackage()
         {
-            return SpawnDialog(Lang._Dialogs.NeedInstallMediaPackTitle,
-                               Lang._Dialogs.NeedInstallMediaPackSubtitle1 +
-                               Lang._Dialogs.NeedInstallMediaPackSubtitle2,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.NeedInstallMediaPackTitle,
+                               Locale.Current.Lang?._Dialogs?.NeedInstallMediaPackSubtitle1 +
+                               Locale.Current.Lang?._Dialogs?.NeedInstallMediaPackSubtitle2,
                                null,
-                               Lang._Misc.Cancel,
-                               Lang._Misc.Install,
-                               Lang._Misc.Skip,
+                               Locale.Current.Lang?._Misc?.Cancel,
+                               Locale.Current.Lang?._Misc?.Install,
+                               Locale.Current.Lang?._Misc?.Skip,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
         }
 
         public static Task<ContentDialogResult> Dialog_OOBEVideoBackgroundPreviewUnavailable()
         {
-            return SpawnDialog(Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableHeader,
-                               Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription,
+            return SpawnDialog(Locale.Current.Lang?._OOBEStartUpMenu?.VideoBackgroundPreviewUnavailableHeader,
+                               Locale.Current.Lang?._OOBEStartUpMenu?.VideoBackgroundPreviewUnavailableDescription,
                                null,
                                null,
-                               Lang._Misc.OkayHappy);
+                               Locale.Current.Lang?._Misc?.OkayHappy);
         }
 
         public static Task<ContentDialogResult> Dialog_InstallMediaPackageFinished()
         {
-            return SpawnDialog(Lang._Dialogs.InstallMediaPackCompleteTitle,
-                               Lang._Dialogs.InstallMediaPackCompleteSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.InstallMediaPackCompleteTitle,
+                               Locale.Current.Lang?._Dialogs?.InstallMediaPackCompleteSubtitle,
                                null,
                                null,
-                               Lang._Misc.OkayBackToMenu,
+                               Locale.Current.Lang?._Misc?.OkayBackToMenu,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Success);
@@ -925,11 +924,11 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_StopGame()
         {
-            return SpawnDialog(Lang._Dialogs.StopGameTitle,
-                               Lang._Dialogs.StopGameSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.StopGameTitle,
+                               Locale.Current.Lang?._Dialogs?.StopGameSubtitle,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -939,11 +938,11 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_ChangePlaytime()
         {
-            return SpawnDialog(Lang._Dialogs.ChangePlaytimeTitle,
-                               Lang._Dialogs.ChangePlaytimeSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ChangePlaytimeTitle,
+                               Locale.Current.Lang?._Dialogs?.ChangePlaytimeSubtitle,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -951,16 +950,16 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_ResetPlaytime()
         {
-            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle });
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle2, FontWeight = FontWeights.Bold });
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle3 });
+            TextBlock texts = new() { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text       = Locale.Current.Lang?._Dialogs?.ResetPlaytimeSubtitle });
+            texts.Inlines.Add(new Run { Text       = Locale.Current.Lang?._Dialogs?.ResetPlaytimeSubtitle2, FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text       = Locale.Current.Lang?._Dialogs?.ResetPlaytimeSubtitle3 });
 
-            return SpawnDialog(Lang._Dialogs.ResetPlaytimeTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ResetPlaytimeTitle,
                                texts,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -972,31 +971,31 @@ namespace CollapseLauncher.Dialogs
             {
                 StackPanel stack = CollapseUIExt.CreateStackPanel();
 
-                stack.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
+                stack.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
                                              new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.InvalidPlaytimeSubtitle2,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.InvalidPlaytimeSubtitle2,
                                                  TextWrapping = TextWrapping.Wrap
                                              }.WithMargin(0d, 4d),
                                              new TextBlock
                                              {
-                                                 Text = string.Format(Lang._HomePage.GamePlaytime_Display,
+                                                 Text = string.Format(Locale.Current.Lang?._HomePage?.GamePlaytime_Display ?? "",
                                                                       elapsedSeconds / 3600,
                                                                       elapsedSeconds % 3600 / 60),
                                                  FontWeight = FontWeights.Bold
                                              }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center),
                                              new TextBlock
                                                  {
-                                                     Text         = Lang._Dialogs.InvalidPlaytimeSubtitle3,
+                                                     Text         = Locale.Current.Lang?._Dialogs?.InvalidPlaytimeSubtitle3,
                                                      TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.Bold
                                                  }.WithMargin(0d, 4d, 0d, -2d)
                                                   .WithHorizontalAlignment(HorizontalAlignment.Center)
                                             );
 
-                await SpawnDialog(Lang._Dialogs.InvalidPlaytimeTitle,
+                await SpawnDialog(Locale.Current.Lang?._Dialogs?.InvalidPlaytimeTitle,
                                   stack,
                                   null,
-                                  Lang._Misc.Close,
+                                  Locale.Current.Lang?._Misc?.Close,
                                   dialogTheme: ContentDialogTheme.Warning);
             }
             catch
@@ -1010,13 +1009,13 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_MeteredConnectionWarning()
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
-               .AddTextBlockLine(Lang._Dialogs.MeteredConnectionWarningSubtitle);
+               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.MeteredConnectionWarningSubtitle);
 
-            return SpawnDialog(Lang._Dialogs.MeteredConnectionWarningTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.MeteredConnectionWarningTitle,
                                texts,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -1024,11 +1023,11 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts()
         {
-            return SpawnDialog(Lang._Dialogs.ResetKbShortcutsTitle,
-                               Lang._Dialogs.ResetKbShortcutsSubtitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ResetKbShortcutsTitle,
+                               Locale.Current.Lang?._Dialogs?.ResetKbShortcutsSubtitle,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Primary,
                                ContentDialogTheme.Warning);
@@ -1036,11 +1035,11 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_DbGenerateUid()
         {
-            return SpawnDialog(Lang._Dialogs.DbGenerateUid_Title,
-                               Lang._Dialogs.DbGenerateUid_Content,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.DbGenerateUid_Title,
+                               Locale.Current.Lang?._Dialogs?.DbGenerateUid_Content,
                                null,
-                               Lang._Misc.NoCancel,
-                               Lang._Misc.Yes,
+                               Locale.Current.Lang?._Misc?.NoCancel,
+                               Locale.Current.Lang?._Misc?.Yes,
                                null,
                                ContentDialogButton.Close,
                                ContentDialogTheme.Warning);
@@ -1048,10 +1047,10 @@ namespace CollapseLauncher.Dialogs
 
         public static Task<ContentDialogResult> Dialog_StarRailABTestingWarning()
         {
-            return SpawnDialog(Lang._UnhandledExceptionPage.UnhandledTitle4,
-                               Lang._UnhandledExceptionPage.UnhandledSubtitle4,
+            return SpawnDialog(Locale.Current.Lang?._UnhandledExceptionPage?.UnhandledTitle4,
+                               Locale.Current.Lang?._UnhandledExceptionPage?.UnhandledSubtitle4,
                                null,
-                               Lang._Misc.Okay,
+                               Locale.Current.Lang?._Misc?.Okay,
                                null,
                                null,
                                ContentDialogButton.Primary,
@@ -1095,7 +1094,7 @@ namespace CollapseLauncher.Dialogs
                             .WithVerticalAlignment(VerticalAlignment.Stretch);
 
                 copyButton = rootGrid.AddElementToGridRow(CollapseUIExt.CreateButtonWithIcon<Button>(
-                                                               Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
+                                                               Locale.Current.Lang?._UnhandledExceptionPage?.CopyClipboardBtn1,
                                                                "",
                                                                "FontAwesomeSolid",
                                                                "AccentButtonStyle"
@@ -1104,10 +1103,10 @@ namespace CollapseLauncher.Dialogs
                                                               ), 2);
                 copyButton.Click += CopyTextToClipboard;
 
-                var btnText = isUserFeedbackSent ? Lang._Misc.ExceptionFeedbackBtn_FeedbackSent :
+                var btnText = isUserFeedbackSent ? Locale.Current.Lang?._Misc?.ExceptionFeedbackBtn_FeedbackSent :
                     ErrorSender.SentryErrorId == Guid.Empty
-                    ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
-                    : Lang._Misc.ExceptionFeedbackBtn;
+                    ? Locale.Current.Lang?._Misc?.ExceptionFeedbackBtn_Unavailable
+                    : Locale.Current.Lang?._Misc?.ExceptionFeedbackBtn;
 
                 Button submitFeedbackButton = rootGrid.AddElementToGridRowColumn(CollapseUIExt.CreateButtonWithIcon<Button>(
                     btnText,
@@ -1131,7 +1130,7 @@ namespace CollapseLauncher.Dialogs
                 // TODO: Change button content after feedback is submitted
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
-                                                               Lang._UnhandledExceptionPage.GoBackPageBtn1,
+                                                               Locale.Current.Lang?._UnhandledExceptionPage?.GoBackPageBtn1,
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
@@ -1169,15 +1168,15 @@ namespace CollapseLauncher.Dialogs
             TextBlock content = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap
-            }.AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle1)
+            }.AddTextBlockLine(Locale.Current.Lang?._Dialogs?.LauncherRestartSubtitle1)
              .AddTextBlockNewLine(2)
-             .AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle2);
+             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.LauncherRestartSubtitle2);
 
-            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.LauncherRestartTitle,
+            ContentDialogResult result = await SpawnDialog(Locale.Current.Lang?._Dialogs?.LauncherRestartTitle,
                                                            content,
                                                            null,
-                                                           Lang._Misc.NoCancel,
-                                                           Lang._Misc.YesImReallySure,
+                                                           Locale.Current.Lang?._Misc?.NoCancel,
+                                                           Locale.Current.Lang?._Misc?.YesImReallySure,
                                                            null,
                                                            ContentDialogButton.Primary,
                                                            ContentDialogTheme.Warning);
@@ -1204,12 +1203,12 @@ namespace CollapseLauncher.Dialogs
                                    BindingMode.TwoWay);
 
 
-            return SpawnDialog(string.Format(Lang._Dialogs.BgContextMenu_ParallaxPixelShiftCustomDialogTitle,
+            return SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.BgContextMenu_ParallaxPixelShiftCustomDialogTitle ?? "",
                                              numberBox.Minimum,
                                              numberBox.Maximum),
                                numberBox,
                                null,
-                               Lang._Misc.Okay);
+                               Locale.Current.Lang?._Misc?.Okay);
         }
 
         // ReSharper disable once AsyncVoidMethod
@@ -1226,9 +1225,9 @@ namespace CollapseLauncher.Dialogs
                 contentDialog.Hide();
 
                 string exceptionContent = UserFeedbackTemplate.FeedbackTemplate;
-                string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
+                string exceptionTitle   = $"{Locale.Current.Lang?._Misc?.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
 
-                UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
+                UserFeedbackDialog  feedbackDialog = new(contentDialog.XamlRoot)
                 {
                     Title   = exceptionTitle,
                     IsTitleReadOnly = true,
@@ -1241,10 +1240,10 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
                 
-                string? feedbackLoadingTitle = Lang._Misc.Feedback;
+                string? feedbackLoadingTitle = Locale.Current.Lang?._Misc?.Feedback;
 
                 LoadingMessageHelper.Initialize();
-                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSending);
                 LoadingMessageHelper.ShowLoadingFrame();
                 
                 UserFeedbackTemplate.UserFeedbackTemplateResult? parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
@@ -1252,7 +1251,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
                     
-                    LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                    LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                     await Task.Delay(1000);
                     LoadingMessageHelper.HideLoadingFrame();
                 }
@@ -1263,7 +1262,7 @@ namespace CollapseLauncher.Dialogs
                     {
                         // Hide the loading message after 200ms
                         await Task.Delay(500);
-                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSent);
                         await Task.Delay(1000);
                         LoadingMessageHelper.HideLoadingFrame();
                         isFeedbackSent = true;
@@ -1271,7 +1270,7 @@ namespace CollapseLauncher.Dialogs
                     else
                     {
                         await Task.Delay(250);
-                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                         await Task.Delay(1000);
                         LoadingMessageHelper.HideLoadingFrame();
                     }
@@ -1304,7 +1303,7 @@ namespace CollapseLauncher.Dialogs
                 string lastText  = textBlock!.Text;
 
                 fontIcon.Glyph = "";
-                textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
+                textBlock.Text = Locale.Current.Lang?._UnhandledExceptionPage?.CopyClipboardBtn2;
                 btn.IsEnabled  = false;
 
                 await Task.Delay(1000);
@@ -1324,13 +1323,13 @@ namespace CollapseLauncher.Dialogs
         public static async Task Dialog_SpawnMediaExtensionNotSupportedDialog(string filePath)
         {
             TextBlock textBlock = CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine(Lang._Dialogs.Media_ExtNotSupported1)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_ExtNotSupported1)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
-            await SpawnDialog(Lang._Dialogs.Media_ExtNotSupportedTitle,
+                                               .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_ExtNotSupported2 ?? "", filePath));
+            await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_ExtNotSupportedTitle,
                               textBlock,
                               null,
-                              Lang._Misc.OkaySad,
+                              Locale.Current.Lang?._Misc?.OkaySad,
                               defaultButton: ContentDialogButton.Close,
                               dialogTheme: ContentDialogTheme.Error);
         }
@@ -1338,13 +1337,13 @@ namespace CollapseLauncher.Dialogs
         public static async Task Dialog_SpawnImageNotSupportedDialog(string filePath)
         {
             TextBlock textBlock = CollapseUIExt.CreateTextBlock();
-            textBlock.AddTextBlockLine(Lang._Dialogs.Media_ImageWICNotSupported1)
+            textBlock.AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_ImageWICNotSupported1)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath));
-            await SpawnDialog(Lang._Dialogs.Media_ImageWICNotSupportedTitle,
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_ExtNotSupported2 ?? "", filePath));
+            await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_ImageWICNotSupportedTitle,
                               textBlock,
                               null,
-                              Lang._Misc.OkaySad,
+                              Locale.Current.Lang?._Misc?.OkaySad,
                               defaultButton: ContentDialogButton.Close,
                               dialogTheme: ContentDialogTheme.Error);
         }
@@ -1359,45 +1358,45 @@ namespace CollapseLauncher.Dialogs
             WindowsCodecHelper.TryGetFourCCString(in videoCodecGuid,
                                                   out string? videoCodecString);
 
-            videoCodecString ??= Lang._Dialogs.Media_VideoMFNotSupportedFormatTypeUnknown;
+            videoCodecString ??= Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupportedFormatTypeUnknown;
 
-            string useInternalMfLocale = Lang._Dialogs.Media_VideoMFNotSupportedInstallMFCodecsBtn;
-            string useFfmpegLocale     = Lang._Dialogs.Media_VideoMFNotSupportedInstallFFmpegBtn;
+            string useInternalMfLocale = Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupportedInstallMFCodecsBtn ?? "";
+            string useFfmpegLocale     = Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupportedInstallFFmpegBtn ?? "";
 
             TextBlock textBlock = CollapseUIExt.CreateTextBlock();
 
-            textBlock.AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported1)
+            textBlock.AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported1)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_ExtNotSupported2, filePath), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_ExtNotSupported2 ?? "", filePath), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported2, videoCodecString), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported2 ?? "", videoCodecString), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported3, videoCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported3 ?? "", videoCodecGuid), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported4, audioCodecGuid), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported4 ?? "", audioCodecGuid), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported5, canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported5 ?? "", canPlayVideo, canPlayAudio), size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(string.Format(Lang._Dialogs.Media_VideoMFNotSupported6, useInternalMfLocale, useFfmpegLocale))
+                     .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported6 ?? "", useInternalMfLocale, useFfmpegLocale))
                      .AddTextBlockNewLine(2)
-                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported7, size: 11, weight: FontWeights.Bold)
+                     .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported7, size: 11, weight: FontWeights.Bold)
                      .AddTextBlockNewLine()
-                     .AddTextBlockLine(Lang._Dialogs.Media_VideoMFNotSupported8, size: 11);
+                     .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupported8, size: 11);
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(textBlock);
 
-            Button buttonIconCopyDetails = CollapseUIExt.CreateButtonWithIcon<Button>(Lang._Dialogs.Media_VideoMFNotSupportedCopyDetailsBtn, textSize: 12d, textWeight: FontWeights.Bold)
+            Button buttonIconCopyDetails = CollapseUIExt.CreateButtonWithIcon<Button>(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupportedCopyDetailsBtn, textSize: 12d, textWeight: FontWeights.Bold)
                                                         .WithHorizontalAlignment(HorizontalAlignment.Left)
                                                         .WithMargin(0, 16, 0, 0);
             panel.AddElementToStackPanel(buttonIconCopyDetails);
             buttonIconCopyDetails.Click += ButtonIconCopyDetailsOnClick;
             buttonIconCopyDetails.Unloaded += ButtonIconCopyDetailsOnUnloaded;
 
-            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.Media_VideoMFNotSupportedTitle,
+            ContentDialogResult result = await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoMFNotSupportedTitle,
                                                            panel,
                                                            null,
-                                                           Lang._Misc.Close,
+                                                           Locale.Current.Lang?._Misc?.Close,
                                                            useFfmpegLocale,
                                                            useInternalMfLocale,
                                                            defaultButton: ContentDialogButton.Primary,
@@ -1438,25 +1437,25 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<bool> Dialog_SpawnMediaFoundationCodecInstallDialog()
         {
-            string dialogConfirmInstall = Lang._Dialogs.Media_VideoMFCodecPrepareInstallBtn;
+            string dialogConfirmInstall = Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepareInstallBtn ?? "";
 
         StartOver:
             ContentDialogResult result =
-                await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecPrepareTitle,
+                await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepareTitle,
                                   CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare1)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare1)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare2)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare2)
                                                .AddTextBlockNewLine()
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare3, FontWeights.Bold)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare3, FontWeights.Bold)
                                                .AddTextBlockNewLine()
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare4, FontWeights.Bold)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare4, FontWeights.Bold)
                                                .AddTextBlockNewLine(2)
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare5)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare5)
                                                .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecPrepare6),
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecPrepare6),
                                   primaryText: dialogConfirmInstall,
-                                  closeText: Lang._Misc.Cancel,
+                                  closeText: Locale.Current.Lang?._Misc?.Cancel,
                                   defaultButton: ContentDialogButton.Primary,
                                   dialogTheme: ContentDialogTheme.Warning);
 
@@ -1470,17 +1469,17 @@ namespace CollapseLauncher.Dialogs
 #pragma warning restore IDE0063
             {
                 WindowsCodecInstaller codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
-                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoMFCodecInstallingTitle,
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecInstallingTitle ?? "",
                                                                   codecInstaller, tokenSource))
                 {
                     goto StartOver;
                 }
             }
 
-            await SpawnDialog(Lang._Dialogs.Media_VideoMFCodecInstalledTitle,
+            await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecInstalledTitle,
                               CollapseUIExt.CreateTextBlock()
-                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoMFCodecInstalled1),
-                              closeText: Lang._Misc.OkayHappy,
+                                           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoMFCodecInstalled1),
+                              closeText: Locale.Current.Lang?._Misc?.OkayHappy,
                               dialogTheme: ContentDialogTheme.Success);
 
             return true;
@@ -1488,23 +1487,23 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<bool> Dialog_SpawnFfmpegInstallDialog()
         {
-            string dialogConfirmInstall        = Lang._Dialogs.Media_VideoFFmpegCodecPrepareInstallBtn;
-            string dialogLocateExistingInstall = Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateBtn;
+            string dialogConfirmInstall        = Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareInstallBtn ?? "";
+            string dialogLocateExistingInstall = Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateBtn ?? "";
 
         StartOver:
             ContentDialogResult result =
-            await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareTitle,
+            await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareTitle,
                               CollapseUIExt.CreateTextBlock()
-                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare1)
+                                           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepare1)
                                            .AddTextBlockNewLine(2)
-                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare2)
+                                           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepare2)
                                            .AddTextBlockLine(dialogConfirmInstall, FontWeights.Bold)
-                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare3)
+                                           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepare3)
                                            .AddTextBlockLine(dialogLocateExistingInstall, FontWeights.Bold)
-                                           .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepare4),
+                                           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepare4),
                                   primaryText: dialogConfirmInstall,
                                   secondaryText: dialogLocateExistingInstall,
-                                  closeText: Lang._Misc.Cancel,
+                                  closeText: Locale.Current.Lang?._Misc?.Cancel,
                                   defaultButton: ContentDialogButton.Primary,
                                   dialogTheme: ContentDialogTheme.Warning);
 
@@ -1516,7 +1515,7 @@ namespace CollapseLauncher.Dialogs
             string? foundFfmpegDir = null;
             if (result == ContentDialogResult.Secondary)
             {
-                string ffmpegDir = await FileDialogNative.GetFolderPicker(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateDialog);
+                string ffmpegDir = await FileDialogNative.GetFolderPicker(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateDialog);
                 if (string.IsNullOrEmpty(ffmpegDir))
                 {
                     goto StartOver;
@@ -1525,27 +1524,27 @@ namespace CollapseLauncher.Dialogs
                 foundFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(ffmpegDir);
                 if (string.IsNullOrEmpty(foundFfmpegDir))
                 {
-                    await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
+                    await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
                                       CollapseUIExt.CreateTextBlock()
-                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed1)
+                                                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailed1)
                                                    .AddTextBlockNewLine(2)
                                                    .AddTextBlockLine(ffmpegDir, FontWeights.Bold, 12)
                                                    .AddTextBlockNewLine(2)
-                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed2, FontWeights.Bold, 12)
+                                                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailed2, FontWeights.Bold, 12)
                                                    .AddTextBlockNewLine()
-                                                   .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateFailed3, true, size: 12)
+                                                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailed3, true, size: 12)
                                                    .AddTextBlockLine(string.Join(", ", ImageBackgroundManager.GetFFmpegRequiredDllFilenames()), FontWeights.Bold, 12),
-                                      closeText: Lang._Misc.Okay,
+                                      closeText: Locale.Current.Lang?._Misc?.Okay,
                                       dialogTheme: ContentDialogTheme.Error);
                     goto StartOver;
                 }
 
-                await SpawnDialog(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccessTitle,
+                await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateSuccessTitle,
                                   CollapseUIExt.CreateTextBlock()
-                                               .AddTextBlockLine(Lang._Dialogs.Media_VideoFFmpegCodecPrepareLocateSuccess1)
+                                               .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateSuccess1)
                                                .AddTextBlockNewLine(2)
                                                .AddTextBlockLine(foundFfmpegDir, FontWeights.Bold, 12),
-                                  closeText: Lang._Misc.OkayHappy,
+                                  closeText: Locale.Current.Lang?._Misc?.OkayHappy,
                                   dialogTheme: ContentDialogTheme.Success);
             }
 
@@ -1577,7 +1576,7 @@ namespace CollapseLauncher.Dialogs
 
                 using CancellationTokenSourceWrapper tokenSource    = new();
                 FFmpegCodecInstaller                 codecInstaller = new(Directory.GetCurrentDirectory(), tokenSource);
-                if (!await Dialog_SpawnCodecDownloadInstallDialog(Lang._Dialogs.Media_VideoFFmpegCodecInstallingTitle, codecInstaller, tokenSource))
+                if (!await Dialog_SpawnCodecDownloadInstallDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecInstallingTitle ?? "", codecInstaller, tokenSource))
                 {
                     goto StartOver;
                 }
@@ -1609,7 +1608,7 @@ namespace CollapseLauncher.Dialogs
                                               {
                                                   x.Title                  = title;
                                                   x.IsPrimaryButtonEnabled = false;
-                                                  x.CloseButtonText        = Lang._Misc.Cancel;
+                                                  x.CloseButtonText        = Locale.Current.Lang?._Misc?.Cancel;
                                                   x.DefaultButton          = ContentDialogButton.Close;
                                                   x.Content                = grid;
                                               });
@@ -1733,7 +1732,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     DispatcherQueueExtensions.TryEnqueue(() =>
                     {
-                        textBlockRightIndicator.Text = $"({string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressAllSpeed))}) {e.ProgressAllPercentage}%";
+                        textBlockRightIndicator.Text = $"({string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", SummarizeSizeSimple(e.ProgressAllSpeed))}) {e.ProgressAllPercentage}%";
                     });
                 }
             }
@@ -1778,7 +1777,7 @@ namespace CollapseLauncher.Dialogs
                 StackPanel panel = CollapseUIExt.CreateStackPanel();
                 TextBlock preambleTitle = CollapseUIExt.Create<TextBlock>(x =>
                 {
-                    x.Text = Lang._Dialogs.Agreement_ThirdPartyAgreementPreambleTitle;
+                    x.Text = Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreambleTitle;
                     x.FontSize = 28;
                     x.HorizontalAlignment = HorizontalAlignment.Center;
                     x.HorizontalTextAlignment = TextAlignment.Center;
@@ -1790,18 +1789,18 @@ namespace CollapseLauncher.Dialogs
                                                       .WithMargin(0, 0, 0, 16)
                                                       .WithHorizontalAlignment(HorizontalAlignment.Center);
                 preambleText
-                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble1, true, size: 12)
-                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble2, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreamble1, true, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreamble2, size: 12)
                    .AddTextBlockNewLine(2)
-                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble3, size: 12)
-                   .AddTextBlockLine(Lang._Misc.IAcceptAgreement,                          FontWeights.Bold, size: 12)
-                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble4, size: 12)
-                   .AddTextBlockLine(Lang._Misc.IDoNotAcceptAgreement,                     FontWeights.Bold, size: 12)
-                   .AddTextBlockLine(Lang._Dialogs.Agreement_ThirdPartyAgreementPreamble5, size: 12);
+                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreamble3, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Misc?.IAcceptAgreement,                          FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreamble4, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Misc?.IDoNotAcceptAgreement,                     FontWeights.Bold, size: 12)
+                   .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.Agreement_ThirdPartyAgreementPreamble5, size: 12);
                 panel.AddElementToStackPanel(preambleText);
 
                 string dialogTitle =
-                    $"[{index + 1}/{availableLicenseFiles.Length}] {Lang._OOBEAgreementMenu.AgreementTitle} {ownerName}";
+                    $"[{index + 1}/{availableLicenseFiles.Length}] {Locale.Current.Lang?._OOBEAgreementMenu?.AgreementTitle} {ownerName}";
 
                 TextBlock contentTitle = CollapseUIExt.Create<TextBlock>(x =>
                 {
@@ -1871,8 +1870,8 @@ namespace CollapseLauncher.Dialogs
                 ContentDialogResult result = await
                     SpawnDialog(dialogTitle,
                                 panel,
-                                closeText: Lang._Misc.IDoNotAcceptAgreement,
-                                primaryText: Lang._Misc.IAcceptAgreement,
+                                closeText: Locale.Current.Lang?._Misc?.IDoNotAcceptAgreement,
+                                primaryText: Locale.Current.Lang?._Misc?.IAcceptAgreement,
                                 defaultButton: ContentDialogButton.Primary,
                                 dialogTheme: ContentDialogTheme.Informational);
                 if (result == ContentDialogResult.None)
@@ -1984,7 +1983,7 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1 }
+            panel.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.ShortcutCreationConfirmSubtitle1 }
                                         .WithMargin(0d, 2d, 0d, 4d)
                                         .WithHorizontalAlignment(HorizontalAlignment.Center));
 
@@ -1996,22 +1995,21 @@ namespace CollapseLauncher.Dialogs
                                          pathText,
                                          new TextBlock
                                          {
-                                             Text         = Lang._Dialogs.ShortcutCreationConfirmSubtitle2,
+                                             Text         = Locale.Current.Lang?._Dialogs?.ShortcutCreationConfirmSubtitle2,
                                              TextWrapping = TextWrapping.WrapWholeWords
                                          }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
             CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
             {
                 Content = new TextBlock
-                    { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
+                    { Text = Locale.Current.Lang?._Dialogs?.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
             }.WithMargin(0d, 4d, 0d, -8d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            ContentDialogResult result = await SpawnDialog(
-                                                           Lang._Dialogs.ShortcutCreationConfirmTitle,
+            ContentDialogResult result = await SpawnDialog(Locale.Current.Lang?._Dialogs?.ShortcutCreationConfirmTitle,
                                                            panel,
                                                            null,
-                                                           Lang._Misc.Cancel,
-                                                           Lang._Misc.YesContinue,
+                                                           Locale.Current.Lang?._Misc?.Cancel,
+                                                           Locale.Current.Lang?._Misc?.YesContinue,
                                                            dialogTheme: ContentDialogTheme.Warning
                                                           );
 
@@ -2022,16 +2020,16 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1 }
+            panel.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessSubtitle1 }
                                         .WithMargin(0d, 2d, 0d, 4d)
                                         .WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            TextBlock pathText = new TextBlock
+            TextBlock pathText = new()
             {
                 HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords,
                 Margin              = new Thickness(0, 4, 0, 4)
             };
-            pathText.AddTextBlockLine(Lang._Dialogs.ShortcutCreationSuccessSubtitle2);
+            pathText.AddTextBlockLine(Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessSubtitle2);
             pathText.AddTextBlockLine(path, FontWeights.Bold);
             panel.AddElementToStackPanel(pathText);
 
@@ -2040,25 +2038,25 @@ namespace CollapseLauncher.Dialogs
                 panel.AddElementToStackPanel(
                                              new TextBlock
                                              {
-                                                 Text       = Lang._Dialogs.ShortcutCreationSuccessSubtitle3,
+                                                 Text       = Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessSubtitle3,
                                                  FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap
                                              }.WithMargin(0d, 8d, 0d, 4d),
                                              new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.ShortcutCreationSuccessSubtitle4,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessSubtitle4,
                                                  TextWrapping = TextWrapping.WrapWholeWords
                                              }.WithMargin(0d, 2d),
                                              new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.ShortcutCreationSuccessSubtitle5,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessSubtitle5,
                                                  TextWrapping = TextWrapping.WrapWholeWords
                                              }.WithMargin(0d, 2d));
             }
 
-            return SpawnDialog(Lang._Dialogs.ShortcutCreationSuccessTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.ShortcutCreationSuccessTitle,
                                panel,
                                null,
-                               Lang._Misc.Close,
+                               Locale.Current.Lang?._Misc?.Close,
                                dialogTheme: ContentDialogTheme.Success);
         }
 
@@ -2070,13 +2068,13 @@ namespace CollapseLauncher.Dialogs
             panel.AddElementToStackPanel(
                                          new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationConfirmSubtitle1,
                                                  TextWrapping = TextWrapping.WrapWholeWords
                                              }.WithHorizontalAlignment(HorizontalAlignment.Center)
                                               .WithMargin(0d, 4d, 0d, 2d),
                                          new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationConfirmSubtitle2,
                                                  TextWrapping = TextWrapping.WrapWholeWords
                                              }.WithHorizontalAlignment(HorizontalAlignment.Center)
                                               .WithMargin(0d, 2d, 0d, 4d));
@@ -2084,15 +2082,15 @@ namespace CollapseLauncher.Dialogs
             CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
             {
                 Content = new TextBlock
-                    { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
+                    { Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
             }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, -8d));
 
             ContentDialogResult result = await SpawnDialog(
-                                                           Lang._Dialogs.SteamShortcutCreationConfirmTitle,
+                                                           Locale.Current.Lang?._Dialogs?.SteamShortcutCreationConfirmTitle,
                                                            panel,
                                                            null,
-                                                           Lang._Misc.Cancel,
-                                                           Lang._Misc.YesContinue,
+                                                           Locale.Current.Lang?._Misc?.Cancel,
+                                                           Locale.Current.Lang?._Misc?.YesContinue,
                                                            dialogTheme: ContentDialogTheme.Warning
                                                           );
 
@@ -2104,44 +2102,44 @@ namespace CollapseLauncher.Dialogs
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
 
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d),
+            panel.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d),
                                          new TextBlock
                                          {
-                                             Text       = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2,
+                                             Text       = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle2,
                                              FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords
                                          }.WithMargin(0d, 8d, 0d, 4d));
 
             if (play)
             {
-                panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+                panel.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
                                              new TextBlock
                                              {
-                                                 Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7,
+                                                 Text         = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle7,
                                                  TextWrapping = TextWrapping.WrapWholeWords
                                              }.WithMargin(0d, 2d, 0d, 2d));
             }
 
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+            panel.AddElementToStackPanel(new TextBlock { Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
                                          new TextBlock
                                          {
-                                             Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4,
+                                             Text         = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle4,
                                              TextWrapping = TextWrapping.WrapWholeWords
                                          }.WithMargin(0d, 2d, 0d, 2d),
                                          new TextBlock
                                          {
-                                             Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6,
+                                             Text         = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle6,
                                              TextWrapping = TextWrapping.WrapWholeWords
                                          }.WithMargin(0d, 2d, 0d, 1d),
                                          new TextBlock
                                          {
-                                             Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle8,
+                                             Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessSubtitle8,
                                              TextWrapping = TextWrapping.WrapWholeWords
                                          }.WithMargin(0d, 1d, 0d, 4d));
 
-            return SpawnDialog(Lang._Dialogs.SteamShortcutCreationSuccessTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.SteamShortcutCreationSuccessTitle,
                                panel,
                                null,
-                               Lang._Misc.Close,
+                               Locale.Current.Lang?._Misc?.Close,
                                dialogTheme: ContentDialogTheme.Success);
         }
 
@@ -2151,13 +2149,13 @@ namespace CollapseLauncher.Dialogs
             panel.MaxWidth = 350d;
             panel.AddElementToStackPanel(new TextBlock
             {
-                Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap
+                Text = Locale.Current.Lang?._Dialogs?.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap
             }.WithMargin(0d, 2d, 0d, 4d));
 
-            return SpawnDialog(Lang._Dialogs.SteamShortcutCreationFailureTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.SteamShortcutCreationFailureTitle,
                                panel,
                                null,
-                               Lang._Misc.Close,
+                               Locale.Current.Lang?._Misc?.Close,
                                dialogTheme: ContentDialogTheme.Error);
         }
 
@@ -2165,10 +2163,10 @@ namespace CollapseLauncher.Dialogs
 
         internal static Task<ContentDialogResult> Dialog_DownloadSettings(GamePresetProperty currentGameProperty)
         {
-            return SpawnDialog(Lang._Dialogs.DownloadSettingsTitle,
+            return SpawnDialog(Locale.Current.Lang?._Dialogs?.DownloadSettingsTitle,
                                new DownloadSettings(currentGameProperty),
                                null,
-                               Lang._Misc.Close);
+                               Locale.Current.Lang?._Misc?.Close);
         }
 
         public static Task<ContentDialogResult> SpawnDialog(

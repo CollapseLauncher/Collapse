@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -55,7 +56,7 @@ namespace CollapseLauncher
                 _webView2Runtime.NavigationStarting      += WebView2Window_PageLoading;
                 _webView2Runtime.NavigationCompleted     += WebView2Window_PageLoaded;
                 
-                WebViewWindowTitle.Text = Locale.Lang._MainPage.Initializing;
+                WebViewWindowTitle.Text = Locale.Current.Lang?._MainPage?.Initializing;
                 
                 await _webView2Runtime.EnsureCoreWebView2Async();
                 

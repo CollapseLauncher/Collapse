@@ -3,7 +3,7 @@
 #nullable enable
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameSettings : IGameSettingsUniversal
+    public interface IGameSettings : IGameSettingsUniversal
     {
         void InitializeSettings();
         void ReloadSettings();

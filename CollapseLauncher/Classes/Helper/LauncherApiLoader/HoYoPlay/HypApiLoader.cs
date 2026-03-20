@@ -289,7 +289,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         {
             bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
 
-            string localeCode = isUseMultiLang ? Locale.Lang.LanguageID.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
+            string localeCode = isUseMultiLang ? Locale.Current.Lang?.LanguageID?.ToLower() ?? "" : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
             string launcherSpriteUrl = string.Format(PresetConfig?.LauncherSpriteURL!, localeCode);
             string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
 
@@ -358,7 +358,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
 
-            string localeCode = isUseMultiLang ? Locale.Lang.LanguageID.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
+            string localeCode = (isUseMultiLang ? Locale.Current.Lang?.LanguageID?.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback) ?? "";
             string launcherGameInfoUrl = string.Format(PresetConfig?.LauncherGameInfoDisplayURL!, localeCode);
 
             ActionTimeoutTaskAwaitableCallback<HypLauncherSophonBranchesApi?> hypLauncherGameInfoCallback =

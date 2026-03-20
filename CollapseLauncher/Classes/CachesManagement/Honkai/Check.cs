@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;
@@ -9,7 +10,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 
@@ -123,8 +123,8 @@ namespace CollapseLauncher
         {
             // Increment the count and update the status
             Interlocked.Add(ref ProgressAllCountCurrent, 1);
-            Status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
-            Status.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, ProgressAllCountCurrent, ProgressAllCountTotal);
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusChecking ?? "", asset!.DataType, asset.N);
+            Status.ActivityAll = string.Format(Locale.Current.Lang?._CachesPage?.CachesTotalStatusChecking ?? "", ProgressAllCountCurrent, ProgressAllCountTotal);
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath).EnsureNoReadOnly(out bool isExist);

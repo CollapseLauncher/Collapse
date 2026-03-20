@@ -537,6 +537,12 @@
       "hi3helper.http": {
         "type": "Project"
       },
+      "hi3helper.localesourcegen": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Windows.CsWinRT": "[2.2.0, )"
+        }
+      },
       "hi3helper.plugin.core": {
         "type": "Project",
         "dependencies": {

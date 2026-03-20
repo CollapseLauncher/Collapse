@@ -200,7 +200,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // Update fetch status
             Status.IsProgressPerFileIndetermined = false;
             Status.IsProgressAllIndetermined     = false;
-            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(speedAll));
+            Status.ActivityPerFile               = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle3 ?? "", ConverterTool.SummarizeSizeSimple(speedAll));
         }
 
         lock (Progress)
@@ -262,10 +262,10 @@ internal abstract class ProgressBase : GamePropertyBase
             Status.IsProgressPerFileIndetermined = false;
 
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll     = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll     = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}";
 
@@ -314,10 +314,10 @@ internal abstract class ProgressBase : GamePropertyBase
 
         // Update current activity status
         Status.IsProgressAllIndetermined = false;
-        string timeLeftString             = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
-        Status.ActivityAll               = string.Format(Locale.Lang._Misc.Downloading + ": {0}/{1} ", ProgressAllCountCurrent,
+        string timeLeftString             = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", timeLeftSpan);
+        Status.ActivityAll               = string.Format(Locale.Current.Lang?._Misc?.Downloading + ": {0}/{1} ", ProgressAllCountCurrent,
                                                          ProgressAllCountTotal)
-                                           + string.Format($"({Locale.Lang._Misc.SpeedPerSec})",
+                                           + string.Format($"({Locale.Current.Lang?._Misc?.SpeedPerSec})",
                                                            ConverterTool.SummarizeSizeSimple(speedAll))
                                            + $" | {timeLeftString}";
 
@@ -350,9 +350,9 @@ internal abstract class ProgressBase : GamePropertyBase
             // Update current activity status
             Status.IsProgressAllIndetermined     = false;
             Status.IsProgressPerFileIndetermined = false;
-            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle5,
+            Status.ActivityPerFile               = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle5 ?? "",
                                                                  ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll                   = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+            Status.ActivityAll                   = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                                  ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                                  ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal));
         }
@@ -399,11 +399,11 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Status)
         {
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
             // Update current activity status
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, 
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", 
                                                 ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), 
                                                 ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}";
         }
@@ -443,11 +443,11 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Status)
         {
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
             // Update current activity status
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll     = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, 
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll     = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", 
                                                    ConverterTool.SummarizeSizeSimple(currentPosition), 
                                                    ConverterTool.SummarizeSizeSimple(totalReadSize)) + $" | {timeLeftString}";
         }
@@ -578,8 +578,8 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
-            ? Locale.Lang._Misc.Updating
-            : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+            ? Locale.Current.Lang?._Misc?.Updating
+            : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                        ProgressAllCountTotal)}";
 
         UpdateStatus();
@@ -950,12 +950,12 @@ internal abstract class ProgressBase : GamePropertyBase
             Status.IsAssetEntryPanelShow = false;
 
             // Reset all total activity status
-            Status.ActivityStatus            = Locale.Lang._GameRepairPage.StatusNone;
-            Status.ActivityAll               = Locale.Lang._GameRepairPage.StatusNone;
+            Status.ActivityStatus            = Locale.Current.Lang?._GameRepairPage?.StatusNone;
+            Status.ActivityAll               = Locale.Current.Lang?._GameRepairPage?.StatusNone;
             Status.IsProgressAllIndetermined = false;
 
             // Reset all per-file activity status
-            Status.ActivityPerFile               = Locale.Lang._GameRepairPage.StatusNone;
+            Status.ActivityPerFile               = Locale.Current.Lang?._GameRepairPage?.StatusNone;
             Status.IsProgressPerFileIndetermined = false;
 
             // Reset all status indicators
@@ -996,7 +996,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
 
         // Set total activity string as "Loading Indexes..."
-        Status.ActivityStatus = Locale.Lang._GameRepairPage.Status2;
+        Status.ActivityStatus = Locale.Current.Lang?._GameRepairPage?.Status2;
         UpdateStatus();
 
         string gamePath = GamePath;

@@ -1,5 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
-using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.Shared.ClassStruct;
 using System.IO;
 using System.Threading;
@@ -21,12 +21,12 @@ internal static partial class AssetBundleExtension
                                            long?                useFoundSize = null)
         {
             AssetProperty<RepairAssetType> property =
-                new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
-                                                   asset.GetRepairAssetType(),
-                                                   Path.GetDirectoryName(asset.N) ?? "\\",
-                                                   useFoundSize ?? asset.S,
-                                                   finalHash,
-                                                   asset.CRCArray);
+                new(Path.GetFileName(asset.N),
+                    asset.GetRepairAssetType(),
+                    Path.GetDirectoryName(asset.N) ?? "\\",
+                    useFoundSize ?? asset.S,
+                    finalHash,
+                    asset.CRCArray);
 
             asset.AssociatedAssetProperty = property;
             progressBase.Dispatch(AddToUITable);
@@ -60,7 +60,7 @@ internal static partial class AssetBundleExtension
         {
             // Increment total count current
             progressBase.ProgressAllCountCurrent++;
-            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, asset.N);
+            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Current.Lang?._Misc?.Downloading + ": {0}" : Locale.Current.Lang?._GameRepairPage?.Status8 ?? "", asset.N);
             progressBase.UpdateStatus();
         }
     }
@@ -76,32 +76,4 @@ internal static partial class AssetBundleExtension
             { FT: FileType.Unused } => RepairAssetType.Unused,
             _ => RepairAssetType.Generic
         };
-
-    /*
-    internal static long GetDownloadableSize(this List<FilePropertiesRemote> assetList)
-    {
-        if (assetList.Count == 0)
-        {
-            return 0;
-        }
-
-        IEnumerable<FilePropertiesRemote> nonPatchableQuery =
-            assetList.Where(x => x.FT != FileType.Unused && !x.IsPatchApplicable);
-
-        IEnumerable<uint> patchableBlockLengthQuery =
-            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, BlockPatchInfo: not null })
-                     .Select(x => x.BlockPatchInfo)
-                     .SelectMany(x => x?.PatchPairs ?? [])
-                     .Select(x => x.PatchSize);
-
-        IEnumerable<uint> patchableAudioLengthQuery =
-            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, AudioPatchInfo: not null })
-                     .Select(x => x.AudioPatchInfo)
-                     .Select(x => x?.PatchFileSize ?? 0);
-
-        return nonPatchableQuery.Sum(x => x.S)
-            + patchableBlockLengthQuery.Sum(x => x)
-            + patchableAudioLengthQuery.Sum(x => x);
-    }
-    */
 }

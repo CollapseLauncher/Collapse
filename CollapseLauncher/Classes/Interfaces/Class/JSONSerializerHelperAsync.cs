@@ -43,17 +43,19 @@ namespace CollapseLauncher
         internal static async Task<JsonNode?> DeserializeAsNodeAsync(this Stream data, CancellationToken token = default)
             => await InnerDeserializeStreamAsNodeAsync(data, token);
 
-        internal static IAsyncEnumerable<T?> DeserializeAsEnumerable<T>(this Stream data, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
+        internal static IAsyncEnumerable<T?> DeserializeAsEnumerable<T>(this Stream data, JsonTypeInfo<T> typeInfo, CancellationToken token = default)
             => JsonSerializer.DeserializeAsyncEnumerable(data, typeInfo, token);
 
-        internal static async Task<List<T?>> DeserializeAsListAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
+        internal static async Task<List<T>> DeserializeAsListAsync<T>(this Stream data, JsonTypeInfo<T> typeInfo, CancellationToken token = default)
         {
             // Create List of T
-            List<T?> listItem = [];
+            List<T> listItem = [];
 
             // Enumerate in async
             await foreach (T? item in data.DeserializeAsEnumerable(typeInfo, token))
             {
+                if (item == null) continue;
+
                 // Add an item to List<T>
                 listItem.Add(item);
             }

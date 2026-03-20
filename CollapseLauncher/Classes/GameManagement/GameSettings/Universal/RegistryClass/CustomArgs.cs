@@ -12,7 +12,7 @@ using static Hi3Helper.Logger;
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
-    internal class CustomArgs : IGameSettingsValue<CustomArgs>
+    public class CustomArgs : IGameSettingsValue<CustomArgs>
     {
         #region Fields
         private const string ValueName = "CollapseLauncher_CustomArgs";

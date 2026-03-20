@@ -29,12 +29,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Load Settings required for MainPage
             base.InitializeSettings();
-            SettingsScreen         = PCResolution.Load(this);
-        }
-
-        public override void ReloadSettings()
-        {
-            // Load rest of the settings for GSP
+            SettingsScreen      = PCResolution.Load(this);
             AudioSettingsBgm    = BGMVolume.Load(this);
             AudioSettingsMaster = MasterVolume.Load(this);
             AudioSettingsSfx    = SFXVolume.Load(this);
@@ -42,6 +37,10 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioLanguage       = LocalAudioLanguage.Load(this);
             TextLanguage        = LocalTextLanguage.Load(this);
             GraphicsSettings    = Model.Load(this);
+        }
+
+        public override void ReloadSettings()
+        {
             InitializeSettings();
         } 
 

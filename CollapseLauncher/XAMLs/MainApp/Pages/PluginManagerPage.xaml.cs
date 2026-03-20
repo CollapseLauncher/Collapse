@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Dialogs;
-using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -13,7 +13,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using InternalExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -70,11 +69,11 @@ namespace CollapseLauncher.Pages
                 ImportBoxButton.IsEnabled = false;
                 Dictionary<string, string> supportedFiles = new()
                 {
-                    { Locale.Lang._PluginManagerPage.FileDialogFileFilter1, "*.zip;manifest.json" }
+                    { Locale.Current.Lang?._PluginManagerPage?.FileDialogFileFilter1 ?? "", "*.zip;manifest.json" }
                 };
 
                 string[] selectedFiles =
-                    await FileDialogNative.GetMultiFilePicker(supportedFiles, Locale.Lang._PluginManagerPage.FileDialogTitle);
+                    await FileDialogNative.GetMultiFilePicker(supportedFiles, Locale.Current.Lang?._PluginManagerPage?.FileDialogTitle);
                 if (selectedFiles.Length == 0)
                 {
                     return;

@@ -37,7 +37,6 @@ using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable InconsistentNaming
@@ -150,7 +149,6 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            MainPage.PreviousTagString.Add(MainPage.PreviousTag);
             MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
         }
 
@@ -783,7 +781,7 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             // Try to get the file path
-                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
+                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Locale.Current.Lang?._HomePage?.CommunityToolsBtn_OpenExecutableAppDialogTitle ?? "", applicationName));
                             // If the file returns null because of getting cancelled, then back to loop again.
                             if (string.IsNullOrEmpty(file)) continue;
                             // Otherwise, assign the value to applicationPath variable and save it to the app config
@@ -938,8 +936,8 @@ namespace CollapseLauncher.Pages
                 LoadingMessageHelper.ShowLoadingFrame();
 
                 // Initialize and get game state, then get the latest package info
-                LoadingMessageHelper.SetMessage(Lang._FileCleanupPage.LoadingTitle,
-                                                Lang._FileCleanupPage.LoadingSubtitle2);
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                                Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
 
                 GameStartupSetting.Flyout.Hide();
                 if (CurrentGameProperty?.GameInstall != null)

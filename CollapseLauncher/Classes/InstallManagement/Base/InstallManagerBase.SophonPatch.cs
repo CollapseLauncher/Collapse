@@ -254,27 +254,27 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 TextWrapping = TextWrapping.Wrap
             }
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle1, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle1, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(additionalDownloadSize), Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle2, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle2, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize + additionalDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle3)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle3)
            .AddTextBlockNewLine(2)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle4, true)
-           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle5, true)
-           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle6, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle4, true)
+           .AddTextBlockLine($"\"{Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmYesBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle5, true)
+           .AddTextBlockLine($"\"{Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmNoBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle6, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle7)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle7)
            .AddTextBlockNewLine(2)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote1, true, Microsoft.UI.Text.FontWeights.Bold, size: 12, opacity: 0.75d)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote2, size: 12, opacity: 0.75d),
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableFootnote1, true, Microsoft.UI.Text.FontWeights.Bold, size: 12, opacity: 0.75d)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableFootnote2, size: 12, opacity: 0.75d),
            0);
 
             if (getFileDetailPath != null)
             {
-                Button showFileDetails = UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Lang._Dialogs.SophonAdditionalPkgSeeDetailsBtn,
+                Button showFileDetails = UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgSeeDetailsBtn,
                                                                                           iconGlyph: "",
                                                                                           iconFontFamily: "FontAwesomeSolid",
                                                                                           buttonStyle: "AccentButtonStyle",
@@ -311,12 +311,12 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             ContentDialogResult confirmAdditionalTag = await SimpleDialogs.SpawnDialog(
-             isUpdate ? Locale.Lang._Dialogs.SophonAdditionalPkgAvailableUpdateTitle : Locale.Lang._Dialogs.SophonAdditionalPkgAvailableDownloadTitle,
+             isUpdate ? Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableUpdateTitle : Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableDownloadTitle,
              grid,
              ParentUI,
-             Locale.Lang._Misc.Cancel,
-             Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn,
-             Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn,
+             Locale.Current.Lang?._Misc?.Cancel,
+             Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmYesBtn,
+             Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmNoBtn,
              defaultButton: ContentDialogButton.Secondary,
              dialogTheme: ContentDialogTheme.Warning);
 
@@ -669,19 +669,19 @@ namespace CollapseLauncher.InstallManager.Base
 
             void UpdateCurrentDownloadStatus()
             {
-                string perFromToLocale = string.Format(Locale.Lang._Misc.PerFromTo,
+                string perFromToLocale = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
                                                        ProgressAllCountCurrent,
                                                        ProgressAllCountTotal);
-                Status.ActivityStatus = $"{Locale.Lang._Misc.Downloading}: {perFromToLocale}";
+                Status.ActivityStatus = $"{Locale.Current.Lang?._Misc?.Downloading}: {perFromToLocale}";
                 UpdateStatus();
             }
 
             void UpdateCurrentPatchStatus()
             {
-                string perFromToLocale = string.Format(Locale.Lang._Misc.PerFromTo,
+                string perFromToLocale = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
                                                        ProgressAllCountCurrent,
                                                        ProgressAllCountTotal);
-                Status.ActivityStatus = $"{Locale.Lang._Misc.ApplyingPatch}: {perFromToLocale}";
+                Status.ActivityStatus = $"{Locale.Current.Lang?._Misc?.ApplyingPatch}: {perFromToLocale}";
                 UpdateStatus();
             }
         }

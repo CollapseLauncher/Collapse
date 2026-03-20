@@ -39,11 +39,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public       string?       GameId                  { get; } = presetConfig.LauncherGameId;
         protected    PresetConfig? PresetConfig            { get; } = presetConfig;
 
-        public string? GameNameTranslation =>
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles);
-
-        public string? GameRegionTranslation =>
-            InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
+        public string? GameNameTranslation   => LauncherMetadataHelper.GetGameTitleTranslation(GameName);
+        public string? GameRegionTranslation => LauncherMetadataHelper.GetGameRegionTranslation(GameRegion);
 
         public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; protected set; }
         public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; protected set; }

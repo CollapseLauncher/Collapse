@@ -23,8 +23,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -33,7 +31,6 @@ using System.Threading.Tasks;
 using Windows.UI.Text;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
@@ -85,14 +82,14 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void CreateIntroWelcomeTextStack(Panel panel)
         {
-            if (!Lang._OOBEStartUpMenu.WelcomeTitleString.ContainsKey("Upper")
-                || !Lang._OOBEStartUpMenu.WelcomeTitleString.ContainsKey("Lower"))
+            if (!(Locale.Current.Lang?._OOBEStartUpMenu?.WelcomeTitleString.ContainsKey("Upper") ?? false)
+                || !(Locale.Current.Lang?._OOBEStartUpMenu?.WelcomeTitleString.ContainsKey("Lower") ?? false))
                 // If either Upper or Lower is not exist, then use the default one from XAML
                 return;
 
             // Assign the value from each dictionary
-            string[] upperTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Upper"];
-            string[] lowerTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Lower"];
+            string[] upperTexts = Locale.Current.Lang?._OOBEStartUpMenu?.WelcomeTitleString["Upper"] ?? [];
+            string[] lowerTexts = Locale.Current.Lang?._OOBEStartUpMenu?.WelcomeTitleString["Lower"] ?? [];
 
             // Initial StackPanel for both upper and lower
             StackPanel upperStackPanel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
@@ -108,8 +105,8 @@ namespace CollapseLauncher.Pages.OOBE
             panel.AddElementToStackPanel(lowerStackPanel);
         }
 
-        private void AddIntoTextToStackPanel(StackPanel panel, string[] texts, FontWeight weight, double size,
-                                             double     initialOpacity)
+        private static void AddIntoTextToStackPanel(StackPanel panel, string[] texts, FontWeight weight, double size,
+                                                    double     initialOpacity)
         {
             foreach (string textString in texts)
             {
@@ -263,16 +260,16 @@ namespace CollapseLauncher.Pages.OOBE
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex   = -1;
-            SelectCDN.PlaceholderText = Lang._OOBEStartUpMenu.LoadingCDNCheckboxPlaceholder;
+            SelectCDN.PlaceholderText = Locale.Current.Lang?._OOBEStartUpMenu?.LoadingCDNCheckboxPlaceholder;
             SelectCDN.ItemsSource = _cdnNameList
-                                   .Select(x => x + ' ' + Lang._OOBEStartUpMenu.LoadingCDNCheckboxCheckLatency)
+                                   .Select(x => x + ' ' + Locale.Current.Lang?._OOBEStartUpMenu?.LoadingCDNCheckboxCheckLatency)
                                    .ToList();
 
-            LoadingMessageHelper.SetMessage(Lang._OOBEStartUpMenu.LoadingInitializationTitle,
-                                            Lang._OOBEStartUpMenu.LoadingCDNCheckingSubitle);
+            LoadingMessageHelper.SetMessage(Locale.Current.Lang?._OOBEStartUpMenu?.LoadingInitializationTitle,
+                                            Locale.Current.Lang?._OOBEStartUpMenu?.LoadingCDNCheckingSubitle);
             LoadingMessageHelper.SetProgressBarState(0);
             LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "",
+            LoadingMessageHelper.ShowActionButton(Locale.Current.Lang?._OOBEStartUpMenu?.LoadingCDNCheckingSkipButton, "",
                                                   (_, _) =>
                                                   {
                                                       if (!_checkRecommendedCDNToken.IsDisposed) _checkRecommendedCDNToken.Cancel();
@@ -315,16 +312,16 @@ namespace CollapseLauncher.Pages.OOBE
             TextBlock[] cdnNameListWithLatency = new TextBlock[_latencies.Length];
             for (int i = 0; i < _latencies.Length; i++)
             {
-                string latencyString = _latencies[i] == long.MaxValue
-                    ? Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyUnknownFormat
-                    : string.Format(Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyFormat, _latencies[i]);
+                string? latencyString = _latencies[i] == long.MaxValue
+                    ? Locale.Current.Lang?._OOBEStartUpMenu?.CDNCheckboxItemLatencyUnknownFormat
+                    : string.Format(Locale.Current.Lang?._OOBEStartUpMenu?.CDNCheckboxItemLatencyFormat ?? "", _latencies[i]);
                 cdnNameListWithLatency[i] = new TextBlock();
                 cdnNameListWithLatency[i].Inlines.Add(new Run { Text = _cdnNameList[i] + latencyString });
                 if (i == _indexOfLatency)
                 {
                     cdnNameListWithLatency[i].Inlines.Add(new Run
                     {
-                        Text       = Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyRecommendedFormat,
+                        Text       = Locale.Current.Lang?._OOBEStartUpMenu?.CDNCheckboxItemLatencyRecommendedFormat,
                         FontWeight = FontWeights.SemiBold
                     });
                 }
@@ -377,25 +374,6 @@ namespace CollapseLauncher.Pages.OOBE
 
             obj.Scale   -= new Vector3(0.1f);
             obj.Opacity =  0.8f;
-        }
-
-        private void RefreshSelection()
-        {
-            SelectLang.SelectedIndex       = -1;
-            SelectLang.SelectedIndex       = SelectedLangIndex;
-            SelectWindowSize.SelectedIndex = -1;
-            SelectWindowSize.SelectedIndex = SelectedWindowSizeProfile;
-            SelectCDN.UpdateLayout();
-            SelectCDN.SelectedIndex = SelectedCDN;
-
-            UpdateBindings.Update();
-
-            int lastAppThemeIndex = SettingsAppThemeCombobox.SelectedIndex;
-            SettingsAppThemeCombobox.SelectedIndex = -1;
-            SettingsAppThemeCombobox.UpdateLayout();
-            SettingsAppThemeCombobox.SelectedIndex = lastAppThemeIndex;
-            Bindings.Update();
-            UpdateLayout();
         }
 
         private int SelectedWindowSizeProfile
@@ -665,76 +643,6 @@ namespace CollapseLauncher.Pages.OOBE
 
         #endregion
 
-        #region LanguageSelectionStuffs
-
-        private string LanguageFallback(string tag)
-        {
-            tag = tag.ToLower();
-            switch (tag)
-            {
-                // Traditional Chinese
-                case "zh-hant":
-                case "zh-hk":
-                case "zh-mo":
-                case "zh-tw":
-                    return "zh-tw";
-                // Portuguese, Portugal
-                case "pt-pt":
-                    return "pt-pt";
-            }
-
-            if (tag.Length < 2) return "en-us";
-            tag = tag[..2];
-            return LangFallbackDict.GetValueOrDefault(tag, "en-us");
-        }
-
-        private readonly Dictionary<string, string> LangFallbackDict = new()
-        {
-            { "en", "en-us" },
-            { "zh", "zh-cn" },
-            { "de", "de-de" },
-            { "es", "es-419" },
-            { "id", "id-id" },
-            { "ja", "ja-jp" },
-            { "ko", "ko-kr" },
-            { "pl", "pl-pl" },
-            { "pt", "pt-br" },
-            { "ru", "ru-ru" },
-            { "th", "th-th" },
-            { "vi", "vi-vn" }
-        };
-
-        private readonly ObservableCollection<string> LangList =
-            [.. LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})")];
-
-        private int SelectedLangIndex
-        {
-            get
-            {
-                var langID = GetAppConfigValue("AppLanguage").ToString() ??
-                             LanguageFallback(CultureInfo.InstalledUICulture.Name);
-                return LanguageNames[langID.ToLower()].LangIndex;
-            }
-            set
-            {
-                if (value < 0) return;
-                var langID = LanguageIDIndex[value].ToLower();
-                if (langID == GetAppConfigValue("AppLanguage").ToString()?.ToLower()) return;
-                SetAppConfigValue("AppLanguage", langID);
-                LoadLocale(langID);
-                PrintCDNList();
-
-                // Update the view
-                LogWriteLine("Updating the view...");
-                Bindings.Update();
-                LogWriteLine("Update bindings done.");
-                RefreshSelection();
-                LogWriteLine("Refresh controls done.");
-            }
-        }
-
-        #endregion
-
         #region CDNStuffs
 
         private CancellationTokenSourceWrapper _checkRecommendedCDNToken = new();
@@ -760,7 +668,7 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private readonly List<string> _cdnNameList = CDNList.Select(x => x.Name).ToList();
+        private readonly List<string> _cdnNameList = FallbackCDNUtil.CDNList.Select(x => x.Name).ToList();
 
         #endregion
 
@@ -777,7 +685,7 @@ namespace CollapseLauncher.Pages.OOBE
                     selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    var folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+                    var folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
                     if (!string.IsNullOrEmpty(folder))
                     {
                         AppGameFolder = folder;
@@ -788,7 +696,7 @@ namespace CollapseLauncher.Pages.OOBE
                     else
                     {
                         ToggleEnableNextPageButton(false);
-                        ErrMsg.Text = Lang._StartupPage.FolderNotSelected;
+                        ErrMsg.Text = Locale.Current.Lang?._StartupPage?.FolderNotSelected;
                     }
 
                     break;
@@ -817,15 +725,15 @@ namespace CollapseLauncher.Pages.OOBE
         {
             try
             {
-                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1,
-                                                Lang._StartupPage.Pg1LoadingSubitle1);
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._StartupPage?.Pg1LoadingTitle1,
+                                                Locale.Current.Lang?._StartupPage?.Pg1LoadingSubitle1);
                 LoadingMessageHelper.SetProgressBarState();
                 LoadingMessageHelper.SetProgressBarValue(100);
                 LoadingMessageHelper.ShowLoadingFrame();
 
                 await LauncherMetadataHelper.Initialize(false, false);
-                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1,
-                                                Lang._StartupPage.Pg1LoadingSubitle2);
+                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._StartupPage?.Pg1LoadingTitle1,
+                                                Locale.Current.Lang?._StartupPage?.Pg1LoadingSubitle2);
                 LoadingMessageHelper.SetProgressBarState(100, false);
                 LoadingMessageHelper.SetProgressBarValue(100);
                 await Task.Delay(2000);

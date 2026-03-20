@@ -33,13 +33,14 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         public sealed override void InitializeSettings()
         {
+            base.InitializeSettings();
+
             // Load Settings
             SettingsGraphics      = PersonalGraphicsSettingV2.Load(this);
             SettingsGraphicsGrade = GraphicsGrade.Load(this);
             SettingsPhysics       = PhysicsSimulation.Load(this);
             SettingsAudio         = PersonalAudioSetting.Load(this);
             SettingsScreen        = ScreenSettingData.Load(this);
-            base.InitializeSettings();
 
             // Load Preset
             PresetSettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJsonContext>.LoadPreset(GameNameType.Honkai, HonkaiSettingsJsonContext.Default.DictionaryStringPersonalGraphicsSettingV2);

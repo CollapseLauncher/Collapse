@@ -64,7 +64,7 @@ namespace CollapseLauncher
         public MarkdownFramePage()
         {
             InitializeComponent();
-            MarkdownContainer.Text = $"{Locale.Lang._FileCleanupPage.LoadingTitle}...";
+            MarkdownContainer.Text = $"{Locale.Current.Lang?._FileCleanupPage?.LoadingTitle}...";
             Current                = this;
         }
 

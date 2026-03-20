@@ -1,8 +1,8 @@
-﻿<!-- ReSharper disable Xaml.ConstructorWarning -->
-<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
-<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+﻿<!--  ReSharper disable Xaml.ConstructorWarning  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<!--  ReSharper disable Xaml.BindingWithContextNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="MinScrollBarStyle"
            TargetType="ScrollBar">
         <Setter Property="MinWidth" Value="{StaticResource ScrollBarSize}" />

@@ -12,7 +12,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -28,7 +27,7 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            Status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            Status.ActivityStatus            = Locale.Current.Lang?._GameRepairPage?.Status2;
             Status.IsProgressAllIndetermined = true;
 
             UpdateStatus();

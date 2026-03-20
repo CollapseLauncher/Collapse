@@ -1,6 +1,8 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.LocaleSourceGen;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -147,14 +149,14 @@ internal static class GamePropertyVault
         {
             if (gameProperty is { GameInstall.IsRunning: true })
             {
-                Locale.LocalizationParams.LangBackgroundNotification? bgNotification = Locale.Lang._BackgroundNotification;
+                LangParamsBackgroundNotification? bgNotification = Locale.Current.Lang?._BackgroundNotification;
                 string actTitle = string.Format(await gameProperty.GameVersion!.GetGameState() switch
                                                 {
-                                                    GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
-                                                    GameInstallStateEnum.NeedsUpdate => bgNotification.CategoryTitle_Updating,
-                                                    GameInstallStateEnum.InstalledHavePlugin => bgNotification.CategoryTitle_Updating,
-                                                    _ => bgNotification.CategoryTitle_Downloading
-                                                }, gameProperty.GameVersion.GamePreset.GameName);
+                                                    GameInstallStateEnum.InstalledHavePreload => bgNotification?.CategoryTitle_DownloadingPreload,
+                                                    GameInstallStateEnum.NeedsUpdate => bgNotification?.CategoryTitle_Updating,
+                                                    GameInstallStateEnum.InstalledHavePlugin => bgNotification?.CategoryTitle_Updating,
+                                                    _ => bgNotification?.CategoryTitle_Downloading
+                                                } ?? "", gameProperty.GameVersion.GamePreset.GameName);
 
                 string? actSubtitle = gameProperty.GameVersion.GamePreset.ZoneName;
                 BackgroundActivityManager.Attach(hashID, gameProperty.GameInstall, actTitle, actSubtitle);

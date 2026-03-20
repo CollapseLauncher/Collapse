@@ -38,7 +38,7 @@ public partial class MainPage
 {
     private ObservableCollection<UIElement> NotificationElementsCollection { get; }= [];
 
-    private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
+    private void NotificationInvoker_EventInvoker(object? sender, NotificationInvokerProp e)
     {
         if (e.IsCustomNotif)
         {
@@ -91,12 +91,12 @@ public partial class MainPage
             MsgId = 0,
             IsDisposable = false,
             Severity = NotifSeverity.Success,
-            Title = Locale.Lang._AppNotification.NotifFirstWelcomeTitle,
-            Message = string.Format(Locale.Lang._AppNotification.NotifFirstWelcomeSubtitle,
-                                    Locale.Lang._AppNotification.NotifFirstWelcomeBtn),
+            Title = Locale.Current.Lang?._AppNotification?.NotifFirstWelcomeTitle,
+            Message = string.Format(Locale.Current.Lang?._AppNotification?.NotifFirstWelcomeSubtitle ?? "",
+                                    Locale.Current.Lang?._AppNotification?.NotifFirstWelcomeBtn),
             OtherUIElement = GenerateNotificationButtonStartProcess("",
                                                                     "https://github.com/CollapseLauncher/Collapse/wiki",
-                                                                    Locale.Lang._AppNotification.NotifFirstWelcomeBtn)
+                                                                    Locale.Current.Lang?._AppNotification?.NotifFirstWelcomeBtn ?? "")
         });
 
         if (LauncherConfig.IsPreview)
@@ -107,12 +107,12 @@ public partial class MainPage
                 MsgId = -1,
                 IsDisposable = true,
                 Severity = NotifSeverity.Informational,
-                Title = Locale.Lang._AppNotification.NotifPreviewBuildUsedTitle,
-                Message = string.Format(Locale.Lang._AppNotification.NotifPreviewBuildUsedSubtitle,
-                                        Locale.Lang._AppNotification.NotifPreviewBuildUsedBtn),
+                Title = Locale.Current.Lang?._AppNotification?.NotifPreviewBuildUsedTitle,
+                Message = string.Format(Locale.Current.Lang?._AppNotification?.NotifPreviewBuildUsedSubtitle ?? "",
+                                        Locale.Current.Lang?._AppNotification?.NotifPreviewBuildUsedBtn),
                 OtherUIElement = GenerateNotificationButtonStartProcess("",
                                                                         "https://github.com/CollapseLauncher/Collapse/issues",
-                                                                        Locale.Lang._AppNotification.NotifPreviewBuildUsedBtn)
+                                                                        Locale.Current.Lang?._AppNotification?.NotifPreviewBuildUsedBtn ?? "")
             });
         }
 
@@ -248,8 +248,8 @@ public partial class MainPage
             if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion version))
             {
                 verString = version.VersionString;
-                SpawnNotificationPush(Locale.Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Locale.Lang._Misc.UpdateCompleteSubtitle,
+                SpawnNotificationPush(Locale.Current.Lang?._Misc?.UpdateCompleteTitle ?? "",
+                                      string.Format(Locale.Current.Lang?._Misc?.UpdateCompleteSubtitle ?? "",
                                                     version.ToString("n"),
                                                     LauncherConfig.IsPreview ? "Preview" : "Stable"),
                                       NotifSeverity.Success,
@@ -292,15 +292,15 @@ public partial class MainPage
 
                 // Create notification
                 NotificationContent toastContent = NotificationContent.Create()
-                                                                      .SetTitle(Locale.Lang._NotificationToast.LauncherUpdated_NotifTitle)
+                                                                      .SetTitle(Locale.Current.Lang?._NotificationToast?.LauncherUpdated_NotifTitle)
                                                                       .SetContent(
                                                                             string
-                                                                               .Format(Locale.Lang._NotificationToast.LauncherUpdated_NotifSubtitle,
+                                                                               .Format(Locale.Current.Lang?._NotificationToast?.LauncherUpdated_NotifSubtitle ?? "",
                                                                                     verString + (LauncherConfig.IsPreview
                                                                                         ? "-preview"
                                                                                         : ""),
-                                                                                    Locale.Lang._SettingsPage.PageTitle,
-                                                                                    Locale.Lang._SettingsPage.Update_SeeChangelog)
+                                                                                    Locale.Current.Lang?._SettingsPage?.PageTitle,
+                                                                                    Locale.Current.Lang?._SettingsPage?.Update_SeeChangelog)
                                                                            )
                                                                       .AddAppHeroImagePath(heroImage);
 
@@ -378,7 +378,7 @@ public partial class MainPage
                 {
                     Content = new TextBlock
                     {
-                        Text = Locale.Lang._MainPage.NotifNeverAsk,
+                        Text = Locale.Current.Lang?._MainPage?.NotifNeverAsk,
                         FontWeight = FontWeights.Medium
                     },
                     Tag = $"{msgId},{isAppNotif}"

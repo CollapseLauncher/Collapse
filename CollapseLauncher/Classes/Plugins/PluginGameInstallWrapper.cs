@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -115,8 +117,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         if (!string.IsNullOrEmpty(existingPath) && Directory.Exists(existingPath))
         {
             ContentDialogResult dialogResult = await SimpleDialogs.Dialog_MigrationChoiceDialog(existingPath,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.GameName, Locale.Lang._GameClientTitles) ?? _pluginPresetConfig.GameName,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.ZoneName, Locale.Lang._GameClientRegions) ?? _pluginPresetConfig.ZoneName,
+                LauncherMetadataHelper.GetGameTitleTranslation(_pluginPresetConfig.GameName) ?? _pluginPresetConfig.GameName,
+                LauncherMetadataHelper.GetGameRegionTranslation(_pluginPresetConfig.ZoneName) ?? _pluginPresetConfig.ZoneName,
                 nameof(MigrateFromLauncherType.Plugin),
                 MigrateFromLauncherType.Plugin,
                 true);
@@ -183,7 +185,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                     break;
                 // If secondary, then show folder picker dialog to choose the folder
                 case ContentDialogResult.Secondary:
-                    folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Lang._Dialogs.FolderDialogTitle1);
+                    folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
                     isChosen = !string.IsNullOrEmpty(folder);
                     break;
                 case ContentDialogResult.None:
@@ -324,15 +326,15 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             string stateString = delegateState switch
             {
-                InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                InstallProgressState.Idle => Locale.Lang._Misc.Idle,
-                InstallProgressState.Install => string.Format(Locale.Lang._Misc.Extracting + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Lang._Misc.Verifying + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Lang._Misc.Downloading : Locale.Lang._Misc.Updating) + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
-            };
+                InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                InstallProgressState.Idle => Locale.Current.Lang?._Misc?.Idle,
+                InstallProgressState.Install => string.Format(Locale.Current.Lang?._Misc?.Extracting + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang?._Misc?.Verifying + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang?._Misc?.Downloading : Locale.Current.Lang?._Misc?.Updating) + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
+            } ?? "";
 
             Status.ActivityStatus = stateString;
-            Status.ActivityAll = string.Format(Locale.Lang._Misc.PerFromTo, _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+            Status.ActivityAll = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
 
             UpdateStatus();
         }

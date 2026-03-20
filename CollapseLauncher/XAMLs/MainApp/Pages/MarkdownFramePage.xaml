@@ -5,7 +5,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource WebView2GridBackground}"
@@ -50,7 +50,7 @@
                     VerticalAlignment="Stretch"
                     Click="MarkdownOpenExternalBtn_Click"
                     CornerRadius="16"
-                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Dialogs.OpenInExternalBrowser}"
+                    ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._Dialogs.OpenInExternalBrowser}"
                     Visibility="Collapsed">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -65,7 +65,7 @@
                     x:FieldModifier="internal"
                     CornerRadius="16"
                     Style="{ThemeResource AccentButtonStyle}"
-                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Dialogs.CloseOverlay}">
+                    ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._Dialogs.CloseOverlay}">
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"

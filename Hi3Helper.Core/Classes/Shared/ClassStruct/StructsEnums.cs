@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+// ReSharper disable CheckNamespace
 
 namespace Hi3Helper.Shared.ClassStruct
 {

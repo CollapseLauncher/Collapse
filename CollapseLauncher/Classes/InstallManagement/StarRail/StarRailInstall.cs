@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -8,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -256,12 +256,12 @@ namespace CollapseLauncher.InstallManager.StarRail
         {
             return localeCode switch
                    {
-                       "zh-cn" => Lang._Misc.LangNameCN,
+                       "zh-cn" => Locale.Current.Lang?._Misc?.LangNameCN,
                        "zh-tw" => null, // ^-> use the same one as per referred by the API
-                       "en-us" => Lang._Misc.LangNameENUS,
-                       "ko-kr" => Lang._Misc.LangNameKR,
-                       "ja-jp" => Lang._Misc.LangNameJP,
-                       _ => base.GetLanguageDisplayByLocaleCode(localeCode, throwIfInvalid)
+                       "en-us" => Locale.Current.Lang?._Misc?.LangNameENUS,
+                       "ko-kr" => Locale.Current.Lang?._Misc?.LangNameKR,
+                       "ja-jp" => Locale.Current.Lang?._Misc?.LangNameJP,
+                       _       => base.GetLanguageDisplayByLocaleCode(localeCode, throwIfInvalid)
                    };
         }
 

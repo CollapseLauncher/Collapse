@@ -11,7 +11,7 @@
       xmlns:c="using:CollapseLauncher.XAMLs.Theme.CustomControls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
@@ -45,26 +45,22 @@
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
                     ShouldConstrainToRootBounds="False">
-            <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
-                            CommandParameter="True"
-                            Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE74E;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-            <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
-                            CommandParameter="False"
-                            Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
+            <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
                             ToolTipService.Placement="Left"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE78C;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                               Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}">
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardParentText, Mode=OneWay}">
                 <MenuFlyoutSubItem.Resources>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardForegroundOnly">Foreground</backgroundManager:FrameToCopyType>
                     <backgroundManager:FrameToCopyType x:Key="CopyToClipboardBackgroundOnly">Background</backgroundManager:FrameToCopyType>
@@ -76,68 +72,64 @@
                 <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardForegroundOnly}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}" />
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardOverlayTooltip, Mode=OneWay}" />
                 <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardBackgroundOnly}"
-                                Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
-                                CommandParameter="{StaticResource CopyToClipboardBoth}"
-                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}" />
+                <MenuFlyoutItem IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
             <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                               Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}">
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardParentText, Mode=OneWay}">
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xE77F;" />
                 </MenuFlyoutSubItem.Icon>
                 <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
                                 CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginOverlayImagePath, FallbackValue={x:Null}, Mode=OneWay}"
                                 IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
-                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"
-                                Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}" />
+                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
-                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
+                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16,8" />
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
-                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
+                                  Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE8D6;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalKeepPlayVideoWhenWindowUnfocused, Mode=TwoWay}"
-                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
+                                  Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusText, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}">
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_KeepPlayVideoOnUnfocusTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE786;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                                   IsChecked="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
-                                  Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
+                                  Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
-                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}">
+                                  ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}">
                 <ToggleMenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE7B3;" />
                 </ToggleMenuFlyoutItem.Icon>
             </ToggleMenuFlyoutItem>
             <MenuFlyoutSubItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                               Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}">
+                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}">
                 <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
                                      Text="2px" />
                 <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='4', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
@@ -145,11 +137,10 @@
                 <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
                                      Text="8px" />
                 <MenuFlyoutSeparator />
-                <RadioMenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"
-                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
-                                     Text="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
+                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                                     Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
-                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
         </MenuFlyout>
     </Page.Resources>
@@ -245,7 +236,7 @@
                                                    Margin="0,4,0,0"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.SpeedPlaceholder, Mode=OneWay}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 HorizontalAlignment="Center"
@@ -263,7 +254,7 @@
                                         <TextBlock x:Name="ProgressPrePerFileStatusSubtitle"
                                                    HorizontalAlignment="Right"
                                                    FontSize="12"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.PerFromToPlaceholder, Mode=OneWay}" />
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar x:Name="ProgressPrePerFileBar"
@@ -292,7 +283,7 @@
                                         <TextBlock x:Name="ProgressPreStatusSubtitle"
                                                    HorizontalAlignment="Left"
                                                    FontSize="12"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.PerFromToPlaceholder, Mode=OneWay}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 HorizontalAlignment="Center"
@@ -309,7 +300,7 @@
                                         <TextBlock HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.TimeRemain, Mode=OneWay}" />
                                         <TextBlock x:Name="ProgressPreTimeLeft"
                                                    Margin="0,4,0,0"
                                                    HorizontalAlignment="Right"
@@ -409,7 +400,7 @@
                                         <TextBlock HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._Misc.TimeRemain, Mode=OneWay}" />
                                         <TextBlock Margin="0,4,0,0"
                                                    HorizontalAlignment="Right"
                                                    FontSize="12"
@@ -474,7 +465,7 @@
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
                                                HorizontalTextAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.PauseDownloadBtn, Mode=OneWay}" />
                                     <FontIcon Grid.Column="1"
                                               HorizontalAlignment="Right"
                                               FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -504,7 +495,7 @@
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
                                                HorizontalTextAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.ResumeDownloadBtn, Mode=OneWay}" />
                                     <FontIcon Grid.Column="1"
                                               HorizontalAlignment="Right"
                                               FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -538,7 +529,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.DownloadBtn}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.DownloadBtn, Mode=OneWay}" />
                             <FontIcon Grid.Column="1"
                                       HorizontalAlignment="Right"
                                       FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -842,7 +833,7 @@
                                                        VerticalAlignment="Center"
                                                        FontSize="12"
                                                        FontWeight="SemiBold"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateBtn, Mode=OneWay}" />
+                                                       Text="{x:Bind helper:Locale.Current.Lang._WpfPackageContext.StartUpdateBtn, Mode=OneWay}" />
                                         </c:NonFaultyGrid>
                                     </c:NonFaultyButton>
                                 </c:NonFaultyGrid>
@@ -935,7 +926,7 @@
                                                        VerticalAlignment="Center"
                                                        FontSize="12"
                                                        FontWeight="SemiBold"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.CancelUpdateBtn, Mode=OneWay}" />
+                                                       Text="{x:Bind helper:Locale.Current.Lang._WpfPackageContext.CancelUpdateBtn, Mode=OneWay}" />
                                         </c:NonFaultyGrid>
                                     </c:NonFaultyButton>
                                 </c:NonFaultyGrid>
@@ -966,7 +957,7 @@
                                                        VerticalAlignment="Center"
                                                        FontSize="10"
                                                        FontWeight="SemiBold"
-                                                       Text="{x:Bind helper:Locale.Lang._WpfPackageContext.ReinstallToolBtn, Mode=OneWay}" />
+                                                       Text="{x:Bind helper:Locale.Current.Lang._WpfPackageContext.ReinstallToolBtn, Mode=OneWay}" />
                                         </c:NonFaultyGrid>
                                     </c:NonFaultyButton>
                                 </ItemsControl>
@@ -996,7 +987,7 @@
                                                VerticalAlignment="Center"
                                                FontSize="12"
                                                PointerPressed="WpfPackageCheckBoxText_OnPressed"
-                                               Text="{x:Bind helper:Locale.Lang._WpfPackageContext.StartUpdateAutomatically, Mode=OneWay}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._WpfPackageContext.StartUpdateAutomatically, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                 </c:NonFaultyGrid>
                             </c:NonFaultyGrid>
@@ -1284,7 +1275,7 @@
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
                     <c:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
-                                      Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
+                                      Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height, Mode=OneWay}"
                                       CornerRadius="8"
                                       CountdownProgressMargin="8"
                                       CountdownSmokeHeight="80"
@@ -1356,13 +1347,13 @@
                 </Grid>
                 <Grid x:Name="PostPanel"
                       Grid.Row="1"
-                      Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
-                      Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
+                      Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width, Mode=OneWay}"
+                      Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
                       Padding="8,6,8,0"
                       Translation="0,0,48"
-                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty}">
+                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty, Mode=OneWay}">
                     <Pivot HorizontalAlignment="Left"
-                           SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex}">
+                           SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex, Mode=OneWay}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
@@ -1373,15 +1364,15 @@
                                            extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Events, Mode=OneWay}" />
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible, Mode=OneWay}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataEventKind}"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataEventKind, Mode=OneWay}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -1433,7 +1424,7 @@
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
                                                    FontWeight="Black"
                                                    Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
@@ -1451,7 +1442,7 @@
                                            extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Notices, Mode=OneWay}" />
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
@@ -1511,7 +1502,7 @@
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
                                                    FontWeight="Black"
                                                    Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
@@ -1529,7 +1520,7 @@
                                            extension:UIElementExtensions.CursorType="Hand"
                                            FontSize="13"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Info, Mode=OneWay}" />
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
@@ -1589,7 +1580,7 @@
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
                                                    FontWeight="Black"
                                                    Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
@@ -1709,7 +1700,7 @@
                                Grid.Column="1"
                                FontSize="12"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               Text="{x:Bind helper:Locale.Current.Lang._Misc.PerFromToPlaceholder, Mode=OneWay}"
                                TextAlignment="Left" />
                 </Grid>
                 <Grid x:Name="SophonProgressStatusSizeDownloadedGrid"
@@ -1727,7 +1718,7 @@
                                Grid.Column="1"
                                FontSize="12"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               Text="{x:Bind helper:Locale.Current.Lang._Misc.PerFromToPlaceholder, Mode=OneWay}"
                                TextAlignment="Left" />
                 </Grid>
                 <StackPanel HorizontalAlignment="Center"
@@ -1756,7 +1747,7 @@
                     <TextBlock FontSize="9"
                                FontWeight="Bold"
                                Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
+                               Text="{x:Bind helper:Locale.Current.Lang._Misc.SpeedTextOnly, Mode=OneWay}"
                                TextAlignment="Center" />
                 </StackPanel>
                 <Grid Margin="0,2"
@@ -1792,7 +1783,7 @@
                            HorizontalAlignment="Center"
                            FontSize="10"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._Misc.TimeRemainHMSFormatPlaceholder, Mode=OneWay}" />
             </StackPanel>
             <Button x:Name="SophonProgressInformationButton"
                     Width="32"
@@ -1816,16 +1807,16 @@
                     <Flyout Placement="LeftEdgeAlignedBottom">
                         <StackPanel MaxWidth="370">
                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Title}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_Title, Mode=OneWay}" />
                             <TextBlock Margin="0,8,0,0"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_1}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_1, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                             <TextBlock Margin="0,8,0,0"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_2}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_2, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                             <MenuFlyoutSeparator Margin="0,8" />
                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_IndicatorTitle}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_IndicatorTitle, Mode=OneWay}" />
                             <Grid Margin="0,8,0,0"
                                   HorizontalAlignment="Stretch"
                                   ColumnSpacing="8"
@@ -1849,7 +1840,7 @@
                                            Margin="0,0,8,0"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator1}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_Indicator1, Mode=OneWay}"
                                            TextWrapping="WrapWholeWords" />
                                 <FontIcon Grid.Row="1"
                                           Grid.Column="0"
@@ -1862,7 +1853,7 @@
                                            Margin="0,0,8,0"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator2}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_Indicator2, Mode=OneWay}"
                                            TextWrapping="WrapWholeWords" />
                                 <FontIcon Grid.Row="0"
                                           Grid.Column="2"
@@ -1874,7 +1865,7 @@
                                            Grid.Column="3"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator3}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_Indicator3, Mode=OneWay}"
                                            TextWrapping="WrapWholeWords" />
                                 <FontIcon Grid.Row="1"
                                           Grid.Column="2"
@@ -1886,7 +1877,7 @@
                                            Grid.Column="3"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator4}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.SophonHelp_Indicator4, Mode=OneWay}"
                                            TextWrapping="WrapWholeWords" />
                             </Grid>
                         </StackPanel>
@@ -2016,7 +2007,7 @@
                 </Grid>
                 <TextBlock x:Name="ProgressStatusSubtitle"
                            HorizontalAlignment="Center"
-                           Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._Misc.PerFromToPlaceholder, Mode=OneWay}" />
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
@@ -2042,7 +2033,7 @@
                     <TextBlock FontSize="9"
                                FontWeight="Bold"
                                Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
+                               Text="{x:Bind helper:Locale.Current.Lang._Misc.SpeedTextOnly, Mode=OneWay}"
                                TextAlignment="Center" />
                 </StackPanel>
                 <Grid Margin="0,2"
@@ -2074,7 +2065,7 @@
                            HorizontalAlignment="Center"
                            FontSize="10"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._Misc.TimeRemainHMSFormatPlaceholder, Mode=OneWay}" />
                 <Grid x:Name="DownloadModeLabel"
                       Margin="0,8,0,0"
                       Padding="8,2"
@@ -2215,7 +2206,7 @@
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn, Mode=OneWay}" />
                         </Grid>
                     </Grid>
                 </Button.Content>
@@ -2239,7 +2230,7 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_OfficialText, Mode=OneWay}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
                                               ItemsSource="{Binding OfficialEntries, Mode=OneWay}">
@@ -2266,7 +2257,7 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_CommunityText, Mode=OneWay}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
                                               ItemsSource="{Binding CommunityEntries, Mode=OneWay}">
@@ -2327,7 +2318,7 @@
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettingsBtn, Mode=OneWay}" />
                         </Grid>
                     </Grid>
                 </Button.Content>
@@ -2343,7 +2334,7 @@
                                         Margin="16,16">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel1, Mode=OneWay}" />
                                 <Button x:Name="OpenGameFolderButton"
                                         Margin="0,8"
                                         HorizontalAlignment="Stretch"
@@ -2364,7 +2355,7 @@
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel1OpenGameFolder, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2387,7 +2378,7 @@
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel1OpenCacheFolder, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2410,7 +2401,7 @@
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2433,14 +2424,14 @@
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
-                                                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.Title, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
                                 </Button>
                                 <TextBlock Margin="0,8,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2, Mode=OneWay}" />
                                 <Button x:Name="RepairGameButton"
                                         Margin="0,8"
                                         HorizontalAlignment="Stretch"
@@ -2459,7 +2450,7 @@
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2RepairGame, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2481,7 +2472,7 @@
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2UninstallGame, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2503,7 +2494,7 @@
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ChangeGameLocation}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2ChangeGameLocation, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2525,7 +2516,7 @@
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2548,7 +2539,7 @@
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel2StopGame, Mode=OneWay}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>
@@ -2559,17 +2550,17 @@
                                 <TextBlock MinWidth="200"
                                            Margin="0,8,0,0"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionalSettings}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel3RegionalSettings, Mode=OneWay}" />
                                 <StackPanel>
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionRpc}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel3RegionRpc, Mode=OneWay}" />
                                     <ToggleSwitch x:Name="RegionRpcToggle"
                                                   IsEnabled="{x:Bind IsRpcEnabled_QS}"
                                                   IsOn="{x:Bind ToggleRegionPlayingRpc, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
@@ -2578,11 +2569,11 @@
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle, Mode=OneWay}" />
                                     <ToggleSwitch x:Name="UseCustomBGParamsSwitch"
                                                   IsOn="{Binding CurrentIsEnableCustomImage, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <Button x:Name="ChangeGameBGButton"
                                             Margin="0,8,0,8"
                                             HorizontalAlignment="Stretch"
@@ -2601,7 +2592,7 @@
                                                           Glyph="" />
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
-                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegion}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel3CustomBGRegion, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </Grid>
                                         </Button.Content>
@@ -2620,12 +2611,12 @@
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel3, Mode=OneWay}" />
                                     <ToggleSwitch x:Name="CustomStartupArgsSwitch"
                                                   Margin="0,0,0,8"
                                                   IsOn="{x:Bind UseCustomArgs, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBox x:Name="CustomArgsTextBox"
                                              Text="{x:Bind CustomArgsValue, Mode=TwoWay}"
                                              TextWrapping="Wrap" />
@@ -2637,46 +2628,46 @@
                                 <StackPanel x:Name="MiscPanel">
                                     <TextBlock Margin="0,8,0,8"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" />
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4, Mode=OneWay}" />
+                                    <TextBlock Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4ShowEventsPanel, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ShowEventsPanelToggle"
                                                   IsEnabled="False"
                                                   IsOn="{x:Bind IsShowSidePanel, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBlock Margin="0,8,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ScaleUpEventsPanel}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4ScaleUpEventsPanel, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ScaleUpEventsPanelToggle"
                                                   IsEnabled="False"
                                                   IsOn="{x:Bind pages:HomePage.IsEventsPanelScaleUp, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBlock Margin="0,8,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ShowSocialMediaPanelToggle"
                                                   IsEnabled="True"
                                                   IsOn="{x:Bind IsShowSocialMediaPanel, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBlock Margin="0,8,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowPlaytimeButton}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4ShowPlaytimeButton, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="PlaytimeVisibilityToggle"
                                                   IsEnabled="True"
                                                   IsOn="{x:Bind IsPlaytimeBtnVisible, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBlock Margin="0,8,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4SyncPlaytimeDatabase}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4SyncPlaytimeDatabase, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="PlaytimeDbSyncToggle"
                                                   IsEnabled="True"
                                                   IsOn="{x:Bind IsPlaytimeSyncDb, Mode=TwoWay}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                  OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <Rectangle Height="1"
                                                HorizontalAlignment="Stretch"
                                                Fill="Gray" />
@@ -2698,7 +2689,7 @@
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
                                                            FontWeight="Medium"
-                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </Grid>
                                         </Button.Content>
@@ -2721,7 +2712,7 @@
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
                                                            FontWeight="Medium"
-                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameSettings_Panel4AddToSteamBtn, Mode=OneWay}"
                                                            TextWrapping="Wrap" />
                                             </Grid>
                                         </Button.Content>
@@ -2771,7 +2762,7 @@
                                            VerticalAlignment="Center"
                                            FontWeight="Medium"
                                            HorizontalTextAlignment="Center"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameStatusPlaceholderComingSoonBtn, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button.Content>
@@ -2810,7 +2801,7 @@
                                            VerticalAlignment="Center"
                                            FontWeight="Medium"
                                            HorizontalTextAlignment="Center"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                                 <Grid Grid.Column="2"
                                       Width="64"
@@ -2852,7 +2843,7 @@
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
                                            HorizontalTextAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.InstallBtn, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                                 <Grid x:Name="InstallGameBtnAnimBackground"
                                       Grid.Column="1"
@@ -2889,7 +2880,7 @@
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
                                            HorizontalTextAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.UpdateBtn, Mode=OneWay}"
                                            TextTrimming="CharacterEllipsis" />
                                 <Grid x:Name="UpdateGameBtnAnimBackground"
                                       Grid.Column="1"
@@ -2926,7 +2917,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.StartBtn, Mode=OneWay}"
                                        TextTrimming="CharacterEllipsis" />
                             <Grid x:Name="StartGameBtnAnimBackground"
                                   Grid.Column="1"
@@ -2967,7 +2958,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.PauseCancelDownloadBtn, Mode=OneWay}"
                                        TextTrimming="CharacterEllipsis" />
                             <FontIcon Grid.Column="1"
                                       HorizontalAlignment="Right"
@@ -2996,7 +2987,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.ResumeDownloadBtn, Mode=OneWay}"
                                        TextTrimming="CharacterEllipsis" />
                             <FontIcon Grid.Column="1"
                                       HorizontalAlignment="Right"
@@ -3048,12 +3039,12 @@
                                        Grid.ColumnSpan="3"
                                        Margin="0,0,0,4"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_Title, Mode=OneWay}" />
                             <StackPanel Grid.Row="1"
                                         Grid.Column="0"
                                         HorizontalAlignment="Left">
                                 <TextBlock HorizontalAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_Daily, Mode=OneWay}" />
                                 <TextBlock x:Name="PlaytimeStatsDaily"
                                            HorizontalAlignment="Left"
                                            FontWeight="Bold"
@@ -3064,7 +3055,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left">
                                 <TextBlock HorizontalAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_Weekly, Mode=OneWay}" />
                                 <TextBlock x:Name="PlaytimeStatsWeekly"
                                            HorizontalAlignment="Left"
                                            FontWeight="Bold"
@@ -3075,7 +3066,7 @@
                                         Grid.Column="2"
                                         HorizontalAlignment="Left">
                                 <TextBlock HorizontalAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_Monthly, Mode=OneWay}" />
                                 <TextBlock x:Name="PlaytimeStatsMonthly"
                                            HorizontalAlignment="Left"
                                            FontWeight="Bold"
@@ -3087,13 +3078,13 @@
                                        Grid.ColumnSpan="3"
                                        Margin="0,12,0,4"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_LastSession, Mode=OneWay}" />
                             <StackPanel Grid.Row="3"
                                         Grid.Column="0"
                                         Grid.ColumnSpan="2"
                                         HorizontalAlignment="Left">
                                 <TextBlock HorizontalAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime, Mode=OneWay}" />
                                 <TextBlock x:Name="PlaytimeStatsLastPlayed"
                                            HorizontalAlignment="Left"
                                            FontWeight="Bold"
@@ -3104,7 +3095,7 @@
                                         Grid.Column="2"
                                         HorizontalAlignment="Left">
                                 <TextBlock HorizontalAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration, Mode=OneWay}" />
                                 <TextBlock x:Name="PlaytimeStatsLastSession"
                                            HorizontalAlignment="Left"
                                            FontWeight="Bold"
@@ -3147,7 +3138,7 @@
                             <StackPanel x:Name="PlaytimeIdleStack"
                                         Spacing="8">
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Panel1, Mode=OneWay}" />
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
@@ -3170,13 +3161,13 @@
                                                Margin="5,1,0,0"
                                                HorizontalAlignment="Center"
                                                FontSize="11"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Idle_Panel1Hours, Mode=OneWay}" />
                                     <TextBlock x:Name="PlaytimeMinutes"
                                                Width="55"
                                                Margin="19,1,0,0"
                                                HorizontalAlignment="Center"
                                                FontSize="11"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes, Mode=OneWay}" />
                                 </StackPanel>
                                 <Button x:Name="ChangePlaytimeButton"
                                         Margin="-4,0"
@@ -3200,7 +3191,7 @@
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Idle_ChangeBtn, Mode=OneWay}" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
@@ -3224,7 +3215,7 @@
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Idle_ResetBtn, Mode=OneWay}" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="SyncDbPlaytimeBtn"
@@ -3250,7 +3241,7 @@
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_SyncDb}" />
+                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Idle_SyncDb, Mode=OneWay}" />
                                     </Grid>
                                 </Button>
                             </StackPanel>
@@ -3259,12 +3250,12 @@
                                         Visibility="Collapsed">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Panel1, Mode=OneWay}" />
                                 <TextBlock Margin="0,0,0,8"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Running_Info1, Mode=OneWay}"
                                            TextWrapping="Wrap" />
                                 <TextBlock Margin="0,0,0,0"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.GamePlaytime_Running_Info2, Mode=OneWay}"
                                            TextWrapping="Wrap" />
                             </StackPanel>
                         </StackPanel>

@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -6,7 +7,6 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -69,7 +69,7 @@ internal static partial class AssetBundleExtension
 
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Video");
+            string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Video");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
@@ -130,7 +130,7 @@ internal static partial class AssetBundleExtension
                 // Update status
                 if (progressibleInstance != null)
                 {
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status14, entry.CgExtraKey);
+                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", entry.CgExtraKey);
                     progressibleInstance.Status.IsProgressAllIndetermined = true;
                     progressibleInstance.Status.IsProgressPerFileIndetermined = true;
                     progressibleInstance.UpdateStatus();

@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
@@ -28,7 +29,7 @@ namespace CollapseLauncher
             ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
                 Title               = dialogTitle,
-                CloseButtonText     = Locale.Lang!._Misc!.Cancel,
+                CloseButtonText     = Locale.Current.Lang?._Misc?.Cancel,
                 PrimaryButtonText   = null,
                 SecondaryButtonText = null,
                 DefaultButton       = ContentDialogButton.Primary,
@@ -40,14 +41,14 @@ namespace CollapseLauncher
             {
                 FontSize = 14d,
                 TextWrapping = TextWrapping.Wrap,
-                Text = Locale.Lang._FileMigrationProcess!.LocateFolderSubtitle
+                Text = Locale.Current.Lang?._FileMigrationProcess!.LocateFolderSubtitle
             }, 0, 2).WithHorizontalAlignment(HorizontalAlignment.Stretch);
 
             TextBox choosePathTextBox = mainGrid.AddElementToGridRow(new TextBox
             {
                 IsSpellCheckEnabled = false,
                 IsRightTapEnabled = false,
-                PlaceholderText = Locale.Lang._FileMigrationProcess.ChoosePathTextBoxPlaceholder,
+                PlaceholderText = Locale.Current.Lang?._FileMigrationProcess?.ChoosePathTextBoxPlaceholder,
                 Text = string.IsNullOrEmpty(outputPath) ? null : outputPath
             }, 1).WithMargin(0d, 12d, 0d, 0d)
             .WithMinWidth(256d)
@@ -56,7 +57,7 @@ namespace CollapseLauncher
 
             Button choosePathButton = mainGrid
                 .AddElementToGridRowColumn(UIElementExtensions
-                    .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
+                    .CreateButtonWithIcon<Button>(Locale.Current.Lang?._FileMigrationProcess?.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
                     1, 1).WithMargin(8d, 12d, 0d, 0d);
 
             InfoBar warningTextInfoBar = mainGrid.AddElementToGridRowColumn(new InfoBar
@@ -83,9 +84,9 @@ namespace CollapseLauncher
             void ToggleWarningText(string text = null, bool isError = true)
             {
                 bool canContinue = string.IsNullOrEmpty(text) || !isError;
-                mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang!._Misc!.Next : null;
+                mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Current.Lang?._Misc?.Next : null;
 
-                warningTextInfoBar.Title    = Locale.Lang!._FileMigrationProcess!.ChoosePathErrorTitle;
+                warningTextInfoBar.Title    = Locale.Current.Lang?._FileMigrationProcess?.ChoosePathErrorTitle;
                 warningTextInfoBar.Severity = canContinue ? !isError ? InfoBarSeverity.Warning : InfoBarSeverity.Success : InfoBarSeverity.Error;
                 warningTextInfoBar.IsOpen   = !canContinue;
                 warningTextInfoBar.Message  = text;
@@ -101,13 +102,13 @@ namespace CollapseLauncher
 
                 if (parentPathTrimmed.IsEmpty)
                 {
-                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathUnselected);
+                    ToggleWarningText(Locale.Current.Lang?._FileMigrationProcess?.ChoosePathErrorPathUnselected);
                     return;
                 }
 
                 if (inputPathTrimmed.Equals(parentPathTrimmed, StringComparison.OrdinalIgnoreCase))
                 {
-                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathIdentical);
+                    ToggleWarningText(Locale.Current.Lang?._FileMigrationProcess?.ChoosePathErrorPathIdentical);
                     return;
                 }
 
@@ -117,14 +118,14 @@ namespace CollapseLauncher
                     string.IsNullOrEmpty(pathRoot) ||
                     !Directory.Exists(pathRoot))
                 {
-                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNotExist);
+                    ToggleWarningText(Locale.Current.Lang?._FileMigrationProcess?.ChoosePathErrorPathNotExist);
                     return;
                 }
 
                 if (Directory.Exists(parentPath) &&
                     !ConverterTool.IsUserHasPermission(parentPath))
                 {
-                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNoPermission);
+                    ToggleWarningText(Locale.Current.Lang?._FileMigrationProcess?.ChoosePathErrorPathNoPermission);
                     return;
                 }
                 ToggleWarningText();
@@ -156,12 +157,12 @@ namespace CollapseLauncher
                 new TextBlock
                 {
                     FontWeight = FontWeights.Bold,
-                    Text = Locale.Lang!._FileMigrationProcess!.PathActivityPanelTitle
+                    Text = Locale.Current.Lang?._FileMigrationProcess?.PathActivityPanelTitle
                 });
             TextBlock pathActivitySubtitle = pathActivityPanel.AddElementToStackPanel(
                 new TextBlock
                 {
-                    Text = Locale.Lang._Misc!.Idle,
+                    Text = Locale.Current.Lang?._Misc!.Idle,
                     FontSize = 18d,
                     TextTrimming = TextTrimming.CharacterEllipsis
                 });
@@ -170,7 +171,7 @@ namespace CollapseLauncher
             TextBlock speedIndicator = mainGrid.AddElementToGridRow(
                 new TextBlock { FontWeight = FontWeights.Bold },
                 1);
-            Run speedIndicatorTitle = new Run { Text = Locale.Lang._FileMigrationProcess.SpeedIndicatorTitle, FontWeight = FontWeights.Medium };
+            Run speedIndicatorTitle = new Run { Text = Locale.Current.Lang?._FileMigrationProcess?.SpeedIndicatorTitle, FontWeight = FontWeights.Medium };
             Run speedIndicatorSubtitle = new Run { Text = "-" };
             speedIndicator!.Inlines!.Add(speedIndicatorTitle);
             speedIndicator!.Inlines!.Add(speedIndicatorSubtitle);
@@ -179,8 +180,8 @@ namespace CollapseLauncher
             TextBlock fileCountIndicator = mainGrid.AddElementToGridRow(
                 new TextBlock { FontWeight = FontWeights.Bold },
                 2);
-            Run fileCountIndicatorTitle = new Run { Text = Locale.Lang._FileMigrationProcess.FileCountIndicatorTitle, FontWeight = FontWeights.Medium };
-            Run fileCountIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
+            Run fileCountIndicatorTitle = new Run { Text = Locale.Current.Lang?._FileMigrationProcess?.FileCountIndicatorTitle, FontWeight = FontWeights.Medium };
+            Run fileCountIndicatorSubtitle = new Run { Text = Locale.Current.Lang?._Misc?.PerFromToPlaceholder };
             fileCountIndicator!.Inlines!.Add(fileCountIndicatorTitle);
             fileCountIndicator!.Inlines!.Add(fileCountIndicatorSubtitle);
 
@@ -192,7 +193,7 @@ namespace CollapseLauncher
                     HorizontalTextAlignment = TextAlignment.Right
                 },
                 1, 1).WithHorizontalAlignment(HorizontalAlignment.Right);
-            Run fileSizeIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
+            Run fileSizeIndicatorSubtitle = new Run { Text = Locale.Current.Lang?._Misc?.PerFromToPlaceholder };
             fileSizeIndicator!.Inlines!.Add(fileSizeIndicatorSubtitle);
 
             // Build progress percentage indicator

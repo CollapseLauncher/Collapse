@@ -69,8 +69,8 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalIsEnableCustomImageConfigKey, value);
-            OnPropertyChanged();
             InitializeCore();
+            OnPropertyChanged();
         }
     }
 
@@ -212,8 +212,8 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableCustomImageConfigKey, value);
-            OnPropertyChanged();
             InitializeCore();
+            OnPropertyChanged();
         }
     }
 
