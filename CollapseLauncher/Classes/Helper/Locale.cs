@@ -313,6 +313,7 @@ public partial class Locale : NotifyPropertyChanged
     private FileSystemWatcher? _langFileWatcher;
     private Timer?             _langReloadDebounce;
     private string?            _sourceLangFolder;
+    private volatile string?   _pendingChangedFile;
 
     /// <summary>
     /// Walk up from <see cref="LauncherConfig.AppLangFolder"/> (build output) looking for
@@ -338,6 +339,19 @@ public partial class Locale : NotifyPropertyChanged
     }
 
     /// <summary>
+    /// Given the build-output locale file path, find the corresponding file in the
+    /// source repo's Lang folder (matched by filename).
+    /// Returns the source path if found, otherwise the original path.
+    /// </summary>
+    private string ResolveSourcePath(string buildOutputPath)
+    {
+        if (_sourceLangFolder == null) return buildOutputPath;
+        string fileName = Path.GetFileName(buildOutputPath);
+        string candidate = Path.Combine(_sourceLangFolder, fileName);
+        return File.Exists(candidate) ? candidate : buildOutputPath;
+    }
+
+    /// <summary>
     /// Start watching the Lang folder for JSON changes. On save,
     /// re-deserializes the active locale via <see cref="TryLoadLocaleFrom(FileInfo)"/>
     /// which sets <see cref="Lang"/> and fires <see cref="NotifyPropertyChanged.PropertyChanged"/>,
@@ -352,8 +366,8 @@ public partial class Locale : NotifyPropertyChanged
 
         _langFileWatcher = new FileSystemWatcher(watchFolder, "*.json")
         {
-            NotifyFilter          = NotifyFilters.LastWrite,
-            IncludeSubdirectories = true,
+            NotifyFilter          = NotifyFilters.FileName | NotifyFilters.LastWrite,
+            IncludeSubdirectories = false,
             EnableRaisingEvents   = true
         };
 
@@ -361,29 +375,26 @@ public partial class Locale : NotifyPropertyChanged
         {
             try
             {
-                string? currentLangId = Lang?.LanguageID;
-                if (string.IsNullOrEmpty(currentLangId)) return;
+                // Grab the file that was changed
+                string? changedFile = _pendingChangedFile;
+                if (string.IsNullOrEmpty(changedFile)) return;
 
-                // Find the matching source file and reload it
-                string folder = _sourceLangFolder ?? LauncherConfig.AppLangFolder!;
-                foreach (string file in Directory.EnumerateFiles(folder, "*.json", SearchOption.AllDirectories))
+                // Determine what the current locale's source file should be
+                string? currentLocaleSourcePath = GetCurrentLocaleSourcePath();
+                if (currentLocaleSourcePath == null) return;
+
+                // Only reload if the changed file matches the current locale
+                if (!string.Equals(Path.GetFileName(changedFile),
+                                   Path.GetFileName(currentLocaleSourcePath),
+                                   StringComparison.OrdinalIgnoreCase))
                 {
-                    try
-                    {
-                        using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                        var baseData = fs.Deserialize(LocaleJsonContext.Default.LangParamsBase);
-                        if (baseData != null &&
-                            string.Equals(baseData.LanguageID, currentLangId, StringComparison.OrdinalIgnoreCase))
-                        {
-                            TryLoadLocaleFrom(new FileInfo(file));
-                            Logger.LogWriteLine($"[Locale::HotReload] Reloaded locale from: {file}", LogType.Scheme, true);
-                            return;
-                        }
-                    }
-                    catch { /* skip unreadable files */ }
+                    return;
                 }
 
-                Logger.LogWriteLine($"[Locale::HotReload] Could not find source file for '{currentLangId}'", LogType.Warning, true);
+                if (TryLoadLocaleFrom(new FileInfo(changedFile)))
+                {
+                    Logger.LogWriteLine($"[Locale::HotReload] Reloaded locale from: {changedFile}", LogType.Scheme, true);
+                }
             }
             catch (Exception ex)
             {
@@ -391,10 +402,36 @@ public partial class Locale : NotifyPropertyChanged
             }
         }, null, Timeout.Infinite, Timeout.Infinite);
 
-        _langFileWatcher.Changed += (_, _) =>
-            _langReloadDebounce.Change(300, Timeout.Infinite);
+        void OnFileEvent(object sender, FileSystemEventArgs e)
+        {
+            if (!e.FullPath.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) return;
+            _pendingChangedFile = e.FullPath;
+            _langReloadDebounce!.Change(300, Timeout.Infinite);
+        }
+
+        _langFileWatcher.Changed += OnFileEvent;
+        _langFileWatcher.Created += OnFileEvent;
+        _langFileWatcher.Renamed += (_, e) => OnFileEvent(_, e);
 
         Logger.LogWriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
+    }
+
+    /// <summary>
+    /// Get the source-folder file path for the currently loaded locale.
+    /// </summary>
+    private string? GetCurrentLocaleSourcePath()
+    {
+        // Find the metadata entry for the currently loaded language
+        string? currentLangId = Lang?.LanguageID;
+        if (string.IsNullOrEmpty(currentLangId)) return null;
+
+        LangParamsBase? meta = MetadataList.FirstOrDefault(
+            m => string.Equals(m.LanguageID, currentLangId, StringComparison.OrdinalIgnoreCase));
+
+        string? buildPath = meta?.LocaleSourcePath;
+        if (string.IsNullOrEmpty(buildPath)) return null;
+
+        return ResolveSourcePath(buildPath);
     }
 
     public void DisableLocaleHotReload()
@@ -404,6 +441,7 @@ public partial class Locale : NotifyPropertyChanged
         _langReloadDebounce?.Dispose();
         _langReloadDebounce = null;
         _sourceLangFolder = null;
+        _pendingChangedFile = null;
     }
 #endif
 }
