@@ -552,5 +552,19 @@
         </Grid>
         <Frame x:Name="WebView2Frame"
                x:FieldModifier="internal" />
+        <Border x:Name="DebugBadge"
+                Margin="0,52,0,0"
+                Padding="8,2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="#CCE81123"
+                CornerRadius="4,0,0,4"
+                IsHitTestVisible="False"
+                Visibility="Collapsed">
+            <TextBlock FontSize="11"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Text="DEBUG" />
+        </Border>
     </Grid>
 </Page>

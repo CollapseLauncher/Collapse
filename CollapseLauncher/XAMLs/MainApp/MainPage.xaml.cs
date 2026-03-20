@@ -141,6 +141,7 @@ namespace CollapseLauncher
                 VersionNumberIndicator.Text = LauncherUpdateHelper.LauncherCurrentVersionString;
                 #if DEBUG
                 VersionNumberIndicator.Text += "d";
+                DebugBadge.Visibility = Visibility.Visible;
                 #endif
                 if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
