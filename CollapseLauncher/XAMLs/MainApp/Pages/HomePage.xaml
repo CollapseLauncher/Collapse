@@ -102,6 +102,7 @@
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator Margin="16,8" />
             <ToggleMenuFlyoutItem DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
+                                  IsChecked="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}"
                                   ToolTipService.Placement="Left"
                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}">

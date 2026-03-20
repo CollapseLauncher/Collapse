@@ -194,6 +194,7 @@
                             <ToggleSwitch x:Name="AppBGMode"
                                           Margin="0,4,0,8"
                                           Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppBG_Checkbox, Mode=OneWay}"
+                                          DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}"
                                           IsOn="{Binding GlobalIsEnableCustomImage, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                           OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />

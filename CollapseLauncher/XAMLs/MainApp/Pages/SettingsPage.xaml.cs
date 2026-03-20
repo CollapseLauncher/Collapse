@@ -8,6 +8,9 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
+#if ENABLEUSERFEEDBACK
+using CollapseLauncher.Helper.Loading;
+#endif
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
@@ -15,9 +18,6 @@ using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-#if ENABLEUSERFEEDBACK
-using CollapseLauncher.Helper.Loading;
-#endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.EncTool;
