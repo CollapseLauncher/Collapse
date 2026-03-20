@@ -237,7 +237,7 @@
     "BgContextMenu_CopyFrameToClipboardParentText": "Salin Frame ke Clipboard",
     "BgContextMenu_CopyFrameToClipboardOverlayText": "Salin Frame Overlay Saja",
     "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Salin hanya layer overlay ke dalam bitmap frame ke clipboard.",
-    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Salin Frame Overlay Saja",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Salin Frame Background Saja",
     "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Salin hanya layer background ke dalam bitmap frame ke clipboard.",
     "BgContextMenu_CopyFrameToClipboardMergedText": "Salin dan Gabung Keduanya",
     "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Salin dan gabung layer overlay dan background ke dalam satu bitmap frame ke clipboard.",
