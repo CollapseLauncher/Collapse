@@ -2233,7 +2233,7 @@
                                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_OfficialText, Mode=OneWay}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
-                                              ItemsSource="{Binding OfficialEntries, Mode=OneWay}">
+                                              ItemsSource="{x:Bind CommunityToolContext.OfficialEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -2260,7 +2260,7 @@
                                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_CommunityText, Mode=OneWay}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
-                                              ItemsSource="{Binding CommunityEntries, Mode=OneWay}">
+                                              ItemsSource="{x:Bind CommunityToolContext.CommunityEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
