@@ -120,6 +120,9 @@ namespace CollapseLauncher.Pages
             Loaded += SettingsPage_Loaded;
             InitializeComponent();
 
+#if DEBUG
+            AboutDebugFlagIndicator.Visibility = Visibility.Visible;
+#endif
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
             DataContext = this;
 

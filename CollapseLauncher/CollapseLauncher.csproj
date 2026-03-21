@@ -14,7 +14,7 @@
         <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
         <Version>1.84.1</Version>
         <LangVersion>preview</LangVersion>

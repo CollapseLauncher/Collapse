@@ -35,6 +35,7 @@
         <conv:ByStringConverter x:Key="ByStringConverter" />
         <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
         <conv:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
+        <conv:RemoveNewLineStringConverter x:Key="RemoveNewLineStringConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -2178,57 +2179,223 @@
                             VerticalAlignment="Top">
                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About, Mode=OneWay}" />
-                    <Grid Margin="0,16,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="64" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Image Height="Auto"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Top"
-                               Source="ms-appx:///Assets/CollapseLauncherLogo.png" />
-                        <StackPanel Grid.Column="1"
-                                    Margin="16,0,0,0">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Collapse Launcher"
-                                               TextWrapping="Wrap" />
-                                    <TextBlock x:Name="AppVersionTextBlock"
-                                               Style="{ThemeResource BodyTextBlockStyle}"
-                                               Text=" 1.0.0"
-                                               TextWrapping="Wrap" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright1, Mode=OneWay}"
-                                               TextWrapping="Wrap" />
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright2, Mode=OneWay}"
-                                               TextWrapping="WrapWholeWords" />
-                                </StackPanel>
+                    <Grid MinHeight="100"
+                          MaxHeight="250"
+                          Padding="16"
+                          Margin="0,16,0,0"
+                          CornerRadius="8"
+                          RowSpacing="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Background="#FFF2E1"
+                              Grid.Row="0"
+                              Grid.RowSpan="4"
+                              Margin="-16"/>
+                        <Grid Grid.Row="0"
+                              HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0"
+                                   Grid.Row="0"
+                                   Height="48"
+                                   Stretch="Uniform"
+                                   HorizontalAlignment="Left"
+                                   Source="ms-appx:///Assets/CollapseLauncherLogo.png"/>
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Spacing="4">
+                                <Grid Background="DarkBlue"
+                                      Padding="8, 2"
+                                      CornerRadius="8"
+                                      Visibility="{x:Bind innerConfig:LauncherConfig.IsPreview, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                                    <TextBlock Text="Preview"
+                                               FontSize="10"
+                                               FontWeight="Bold"/>
+                                </Grid>
+                                <Grid Background="DarkOliveGreen"
+                                      Padding="8, 2"
+                                      CornerRadius="8"
+                                      Visibility="{x:Bind innerConfig:LauncherConfig.IsPreview, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                    <TextBlock Text="Stable"
+                                               FontSize="10"
+                                               FontWeight="Bold"/>
+                                </Grid>
+                                <Grid x:Name="AboutDebugFlagIndicator"
+                                      Background="DarkRed"
+                                      Padding="8, 2"
+                                      CornerRadius="8"
+                                      Visibility="Collapsed">
+                                    <TextBlock Text="Debug"
+                                               FontSize="10"
+                                               FontWeight="Bold"/>
+                                </Grid>
                             </StackPanel>
+                        </Grid>
+                        <TextBlock Grid.Row="1"
+                                   HorizontalAlignment="Left"
+                                   HorizontalTextAlignment="Left"
+                                   IsTextSelectionEnabled="True"
+                                   ext:TextBlockExtension.PreserveSpace="False"
+                                   ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="Black"
+                                   TextWrapping="Wrap">
+                            <Hyperlink NavigateUri="https://collapselauncher.com"
+                                       UnderlineStyle="None">
+                                <Run Text="Collapse Launcher"
+                                     FontWeight="Bold"
+                                     Foreground="OrangeRed" />
+                            </Hyperlink>
+                            <Run x:Name="AppVersionTextBlock"
+                                 Text="1.0.0"/>
+                            <LineBreak/>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright1, Mode=OneWay}"
+                                 FontWeight="Bold"
+                                 FontSize="12"/>
+                            <Run Text=" -"
+                                 FontSize="12"/>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright2, Mode=OneWay, Converter={StaticResource RemoveNewLineStringConverter}}"
+                                 FontSize="12"/>
+                        </TextBlock>
+                        <TextBlock Grid.Row="2"
+                                   HorizontalAlignment="Left"
+                                   HorizontalTextAlignment="Left"
+                                   IsTextSelectionEnabled="True"
+                                   ext:TextBlockExtension.PreserveSpace="False"
+                                   ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   FontSize="12"
+                                   Foreground="Black"
+                                   TextWrapping="Wrap">
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright3, Mode=OneWay}"/>
+                            <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
+                                       UnderlineStyle="None">
+                                <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.LicenseType, Mode=OneWay}"
+                                     FontWeight="Bold"
+                                     Foreground="OrangeRed"/>
+                            </Hyperlink>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright4, Mode=OneWay}"/>
+                        </TextBlock>
+                        <HyperlinkButton Grid.Row="3"
+                                         x:Name="GitVersionIndicatorHyperlink"
+                                         Background="OrangeRed"
+                                         Padding="4, 2">
+                            <Grid>
+                                <Grid Grid.Column="0"
+                                      Background="OrangeRed"
+                                      Opacity=".75"
+                                      Margin="-16"/>
+                                <TextBlock Foreground="White"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           x:Name="GitVersionIndicator"
+                                           Text="-"/>
+                            </Grid>
+                        </HyperlinkButton>
+                    </Grid>
+                    <Grid MinHeight="100"
+                          MaxHeight="250"
+                          Padding="16"
+                          Margin="0,16,0,0"
+                          CornerRadius="8"
+                          RowSpacing="8"
+                          Visibility="{x:Bind backgroundManager:ImageBackgroundManager.Shared.GlobalIsUseFFmpeg, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Background="#E9EEE9"
+                              Grid.Row="0"
+                              Grid.RowSpan="3"
+                              Margin="-16"/>
+                        <Grid Grid.Row="0"
+                              HorizontalAlignment="Left">
+                            <Image Grid.Row="0"
+                                   Height="26"
+                                   Stretch="Uniform"
+                                   Source="ms-appx:///Assets/FFmpegLogo.svg"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1"
+                                   HorizontalAlignment="Left"
+                                   HorizontalTextAlignment="Left"
+                                   IsTextSelectionEnabled="True"
+                                   ext:TextBlockExtension.PreserveSpace="False"
+                                   ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="Black"
+                                   TextWrapping="Wrap">
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegCopyright1, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="http://ffmpeg.org"
+                                       UnderlineStyle="None">
+                                <Run Text="FFmpeg"
+                                     FontWeight="Bold"
+                                     Foreground="DarkGreen" />
+                            </Hyperlink>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegCopyright2, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+                                       UnderlineStyle="None">
+                                <Run Text="LGPLv2.1"
+                                     FontWeight="Bold"
+                                     Foreground="DarkGreen" />
+                            </Hyperlink>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegCopyright3, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://github.com/ffmpeginteropx/FFmpegInteropX"
+                                       UnderlineStyle="None">
+                                <Run Text="FFmpegInteropX"
+                                     FontWeight="Bold"
+                                     Foreground="DarkGreen" />
+                            </Hyperlink>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegCopyright4, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="http://www.apache.org/licenses/LICENSE-2.0"
+                                       UnderlineStyle="None">
+                                <Run Text="Apache 2.0"
+                                     FontWeight="Bold"
+                                     Foreground="DarkGreen" />
+                            </Hyperlink>
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegCopyright5, Mode=OneWay}" />
+                        </TextBlock>
+                        <StackPanel Grid.Row="2">
+                            <HyperlinkButton NavigateUri="https://www.ffmpeg.org/donations.html"
+                                             Padding="8, 6"
+                                             Background="DarkGreen"
+                                             Shadow="{ThemeResource SharedShadow}"
+                                             Translation="0,0,8">
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0"
+                                          Grid.ColumnSpan="2"
+                                          Background="DarkGreen"
+                                          Opacity=".8"
+                                          Margin="-16"/>
+                                    <TextBlock Grid.Column="0"
+                                               Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_FFmpegDonate, Mode=OneWay}"
+                                               Foreground="White"
+                                               FontWeight="Bold"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"
+                                               Margin="0,-2,0,0"/>
+                                    <FontIcon Grid.Column="1"
+                                              Foreground="White"
+                                              HorizontalAlignment="Right"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="14"
+                                              Glyph="&#xf105;" />
+                                </Grid>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
-                    <TextBlock Margin="0,16,0,0"
-                               TextWrapping="Wrap">
-                        <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright3, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
-                                   UnderlineStyle="None">
-                            <Run FontWeight="Bold"
-                                 Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.LicenseType, Mode=OneWay}" />
-                        </Hyperlink>
-                        <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.About_Copyright4, Mode=OneWay}" />
-                    </TextBlock>
-                    <TextBlock HorizontalAlignment="Left"
-                               IsTextSelectionEnabled="True"
-                               Style="{ThemeResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap">
-                        <Hyperlink x:Name="GitVersionIndicatorHyperlink"
-                                   UnderlineStyle="None">
-                            <Run x:Name="GitVersionIndicator" />
-                        </Hyperlink>
-                    </TextBlock>
                     <StackPanel Margin="0,16,0,0">
                         <TextBlock Margin="0,8,0,8"
                                    HorizontalAlignment="Left"

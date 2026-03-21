@@ -1193,4 +1193,23 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+
+    public partial class RemoveNewLineStringConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            string? asString = value?.ToString();
+            if (string.IsNullOrEmpty(asString))
+            {
+                return value;
+            }
+
+            return asString.ReplaceLineEndings("");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
