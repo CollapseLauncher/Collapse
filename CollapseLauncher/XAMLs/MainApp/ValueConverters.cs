@@ -619,7 +619,7 @@ namespace CollapseLauncher.Pages
             CacheManager = new CDNCache
             {
                 IsUseAggressiveMode        = true,
-                CurrentCacheDir            = LauncherConfig.AppGameImgCachedFolder,
+                CurrentCacheDir            = $"Skip|{LauncherConfig.AppGameImgCachedFolder}",
                 Logger                     = ILoggerHelper.GetILogger(nameof(UrlToCachedImagePathConverter)),
                 MaxAcceptedCacheExpireTime = TimeSpan.FromDays(7)
             };
@@ -683,7 +683,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}", url);
+                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}\r\n{ex}", url, ex);
             }
         }
 
