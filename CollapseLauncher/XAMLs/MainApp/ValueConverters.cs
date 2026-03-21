@@ -906,7 +906,10 @@ namespace CollapseLauncher.Pages
                 throw new InvalidOperationException("Cannot get actual finite number");
             }
 
-            return TimeSpan.FromMilliseconds(valueAsDouble);
+            // HACK: Intentional. This to avoid video player to seek itself to 0 while slider
+            //       position is being reset, making it reset the video player as well.
+            //       Negated TimeSpan also marks that the trigger is to seek the video player position.
+            return -TimeSpan.FromMilliseconds(valueAsDouble);
         }
     }
 

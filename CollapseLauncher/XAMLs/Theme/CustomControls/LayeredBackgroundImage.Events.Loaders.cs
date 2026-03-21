@@ -380,8 +380,7 @@ public partial class LayeredBackgroundImage
                     {
                         sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
                         ffmpegMediaSource =
-                            await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom, ffmpegConfig,
-                                                                          windowId.Value);
+                            await FFmpegMediaSource.CreateFromStreamAsync(sourceStreamRandom, ffmpegConfig, windowId.Value);
                     }
                     else if (sourceUri != null)
                     {
@@ -466,6 +465,7 @@ public partial class LayeredBackgroundImage
         return true;
     }
 
+    [SkipLocalsInit]
     private static bool TryGetSourceHashCode(object? obj, out int hashCode)
     {
         Unsafe.SkipInit(out hashCode);

@@ -1186,7 +1186,7 @@
                                     LargeChange="5000"
                                     Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                                     Minimum="0"
-                                    SmallChange="500"
+                                    SmallChange="1000"
                                     Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}" />
                             <TextBlock Grid.Column="2"
                                        HorizontalAlignment="Center"
