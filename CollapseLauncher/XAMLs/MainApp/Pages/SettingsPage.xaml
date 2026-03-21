@@ -2203,10 +2203,10 @@
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="0"
                                    Grid.Row="0"
-                                   Height="48"
+                                   Height="36"
                                    Stretch="Uniform"
                                    HorizontalAlignment="Left"
-                                   Source="ms-appx:///Assets/CollapseLauncherLogo.png"/>
+                                   Source="ms-appx:///Assets/CollapseLauncherLogoWithTextDark.png"/>
                             <StackPanel Grid.Column="1"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Right"
