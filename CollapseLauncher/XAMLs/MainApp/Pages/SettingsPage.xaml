@@ -405,6 +405,7 @@
                                             <FontIcon Grid.Row="0"
                                                       Grid.Column="0"
                                                       FontSize="16"
+                                                      Glyph="&#xEB90;"
                                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
                                             <TextBlock Grid.Row="0"
                                                        Grid.Column="1"
@@ -435,6 +436,7 @@
                                             <FontIcon Grid.Row="0"
                                                       Grid.Column="0"
                                                       FontSize="16"
+                                                      Glyph="&#xE814;"
                                                       Foreground="{ThemeResource SystemFillColorCautionBrush}" />
                                             <TextBlock Grid.Row="0"
                                                        Grid.Column="1"
