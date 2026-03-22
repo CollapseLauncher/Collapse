@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.JsonConverter;
+﻿using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Interfaces.Class;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

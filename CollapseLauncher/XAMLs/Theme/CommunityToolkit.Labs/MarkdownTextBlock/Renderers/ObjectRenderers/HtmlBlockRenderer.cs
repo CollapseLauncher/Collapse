@@ -9,6 +9,7 @@ using Markdig.Syntax;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 

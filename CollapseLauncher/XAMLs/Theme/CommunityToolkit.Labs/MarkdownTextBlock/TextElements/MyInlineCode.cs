@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Media3D;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -15,15 +16,12 @@ internal class MyInlineCode : IAddChild
 {
     private readonly InlineUIContainer _inlineContainer;
 
-    public TextElement TextElement
-    {
-        get => _inlineContainer;
-    }
+    public TextElement TextElement => _inlineContainer;
 
-    public MyInlineCode(CodeInline codeInline, MarkdownConfig config)
+    public MyInlineCode(CodeInline codeInline)
     {
         _inlineContainer = new InlineUIContainer();
-        var border = new Border
+        Border border = new()
         {
             VerticalAlignment = VerticalAlignment.Bottom,
             Background        = MarkdownConfig.Themes.InlineCodeBackground,
@@ -32,12 +30,12 @@ internal class MyInlineCode : IAddChild
             CornerRadius = MarkdownConfig.Themes.InlineCodeCornerRadius,
             Padding      = MarkdownConfig.Themes.InlineCodePadding
         };
-        CompositeTransform3D transform = new CompositeTransform3D
+        CompositeTransform3D transform = new()
         {
             TranslateY = 4
         };
         border.Transform3D = transform;
-        var textBlock = new TextBlock
+        TextBlock textBlock = new()
         {
             FontFamily = MarkdownConfig.Themes.InlineCodeFontFamily,
             FontSize   = MarkdownConfig.Themes.InlineCodeFontSize,

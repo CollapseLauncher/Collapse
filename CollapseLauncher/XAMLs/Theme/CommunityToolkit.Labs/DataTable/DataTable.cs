@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 // ReSharper disable All
@@ -22,7 +23,7 @@ public partial class DataTable : Panel
     internal bool IsAnyColumnAuto => Children.Any(static e => e is DataColumn { CurrentWidth.GridUnitType: GridUnitType.Auto });
 
     // TODO: Check with Sergio if there's a better structure here, as I don't need a Dictionary like ConditionalWeakTable
-    internal HashSet<DataRow> Rows { get; private set; } = new();
+    internal HashSet<DataRow> Rows { get; private set; } = [];
 
     internal void ColumnResized()
     {

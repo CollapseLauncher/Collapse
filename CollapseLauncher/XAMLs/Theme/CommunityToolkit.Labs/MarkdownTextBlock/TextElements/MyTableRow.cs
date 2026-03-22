@@ -7,14 +7,15 @@ using Markdig.Extensions.Tables;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 // ReSharper disable All
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
 
 internal class MyTableRow : IAddChild
 {
-    private TableRow _tableRow;
-    private StackPanel _stackPanel;
-    private Paragraph _paragraph;
+    private          TableRow   _tableRow;
+    private readonly StackPanel _stackPanel;
+    private readonly Paragraph  _paragraph;
 
     public TextElement TextElement
     {
@@ -26,10 +27,14 @@ internal class MyTableRow : IAddChild
         _tableRow = tableRow;
         _paragraph = new Paragraph();
 
-        _stackPanel = new StackPanel();
-        _stackPanel.Orientation = Orientation.Horizontal;
-        var inlineUIContainer = new InlineUIContainer();
-        inlineUIContainer.Child = _stackPanel;
+        _stackPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal
+        };
+        var inlineUIContainer = new InlineUIContainer
+        {
+            Child = _stackPanel
+        };
         _paragraph.Inlines.Add(inlineUIContainer);
     }
 

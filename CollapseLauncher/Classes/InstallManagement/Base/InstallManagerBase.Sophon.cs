@@ -22,7 +22,6 @@ using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;

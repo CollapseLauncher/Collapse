@@ -7,7 +7,10 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Windows.Foundation;
+
 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
@@ -15,11 +18,11 @@ internal class DefaultSVGRenderer : ISVGRenderer
 {
     public async Task<Image> SvgToImage(string svgString)
     {
-        SvgImageSource svgImageSource = new SvgImageSource();
-        var image = new Image();
+        SvgImageSource svgImageSource = new();
+        Image          image          = new();
         // Create a MemoryStream object and write the SVG string to it
-        using (var memoryStream = new MemoryStream())
-            await using (var streamWriter = new StreamWriter(memoryStream))
+        using (MemoryStream memoryStream = new())
+            await using (StreamWriter streamWriter = new(memoryStream))
             {
                 await streamWriter.WriteAsync(svgString);
                 await streamWriter.FlushAsync();
@@ -33,7 +36,7 @@ internal class DefaultSVGRenderer : ISVGRenderer
 
         // Set the Source property of the Image control to the SvgImageSource object
         image.Source = svgImageSource;
-        var size = Extensions.GetSvgSize(svgString);
+        Size size = Extensions.GetSvgSize(svgString);
         if (size.Width != 0)
         {
             image.Width = size.Width;

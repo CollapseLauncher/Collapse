@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
@@ -16,6 +17,6 @@ internal class CodeInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, CodeIn
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-        renderer.WriteInline(new MyInlineCode(obj, renderer.Config));
+        renderer.WriteInline(new MyInlineCode(obj));
     }
 }

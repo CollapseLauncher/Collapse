@@ -2,7 +2,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;

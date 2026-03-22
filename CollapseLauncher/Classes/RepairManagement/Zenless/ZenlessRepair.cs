@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;

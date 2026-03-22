@@ -99,7 +99,7 @@ public partial class ImageBackgroundManager
                .Create<ImageCropper>(SetImageCropperProperties);
 
             // -- Register to close dialog if cancellation is triggered outside the event.
-            token.Register(() => dialog.Hide());
+            token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
             {
                 return (null, null, true);

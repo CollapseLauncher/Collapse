@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Extensions.TaskLists;
 using Markdig.Renderers;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Extensions;
 
@@ -16,7 +17,7 @@ internal class TaskListRenderer : MarkdownObjectRenderer<WinUIRenderer, TaskList
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (taskList == null) throw new ArgumentNullException(nameof(taskList));
 
-        var checkBox = new MyTaskListCheckBox(taskList);
+        MyTaskListCheckBox checkBox = new(taskList);
         renderer.WriteInline(checkBox);
     }
 }

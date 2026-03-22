@@ -1,7 +1,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Threading;

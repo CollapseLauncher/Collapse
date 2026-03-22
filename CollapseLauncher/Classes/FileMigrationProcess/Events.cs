@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
-using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.Threading;

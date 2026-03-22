@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Text;
 // ReSharper disable CommentTypo
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -18,23 +19,20 @@ internal class MyCodeBlock : IAddChild
 {
     private readonly Paragraph _paragraph;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
-    public MyCodeBlock(CodeBlock codeBlock, MarkdownConfig config)
+    public MyCodeBlock(CodeBlock codeBlock)
     {
         _paragraph = new Paragraph();
-        var container = new InlineUIContainer();
-        var border    = new Border
+        InlineUIContainer container = new();
+        Border border    = new()
         {
             Background   = (Brush)Application.Current.Resources["ExpanderHeaderBackground"],
             Padding      = MarkdownConfig.Themes.Padding,
             Margin       = MarkdownConfig.Themes.InternalMargin,
             CornerRadius = MarkdownConfig.Themes.CornerRadius
         };
-        var richTextBlock = new RichTextBlock();
+        RichTextBlock richTextBlock = new();
 
         if (codeBlock is FencedCodeBlock fencedCodeBlock)
         {
@@ -43,17 +41,17 @@ internal class MyCodeBlock : IAddChild
             //#else
             //            var formatter = new ColorCode.RichTextBlockFormatter(Extensions.GetOneDarkProStyle());
             //#endif
-            var stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
 
             // go through all the lines backwards and only add the lines to a stack if we have encountered the first non-empty line
             StringLine[]  lines                        = fencedCodeBlock.Lines.Lines;
             Stack<string> stack                        = new();
-            var           encounteredFirstNonEmptyLine = false;
+            bool           encounteredFirstNonEmptyLine = false;
             if (lines.Length != 0)
             {
-                for (var i = lines.Length - 1; i >= 0; i--)
+                for (int i = lines.Length - 1; i >= 0; i--)
                 {
-                    var line = lines[i];
+                    StringLine line = lines[i];
                     if (string.IsNullOrWhiteSpace(line.ToString()) && !encounteredFirstNonEmptyLine)
                     {
                         continue;
@@ -74,10 +72,10 @@ internal class MyCodeBlock : IAddChild
         }
         else
         {
-            foreach (var line in codeBlock.Lines.Lines)
+            foreach (StringLine line in codeBlock.Lines.Lines)
             {
-                var paragraph = new Paragraph();
-                var lineString = line.ToString();
+                Paragraph paragraph  = new();
+                string    lineString = line.ToString();
                 if (!string.IsNullOrWhiteSpace(lineString))
                 {
                     paragraph.Inlines.Add(new Run { Text = lineString });
