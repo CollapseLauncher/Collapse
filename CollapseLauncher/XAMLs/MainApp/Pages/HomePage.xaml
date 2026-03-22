@@ -80,9 +80,9 @@
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
-                                Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
                                 CommandParameter="{StaticResource CopyToClipboardBoth}"
+                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
@@ -139,7 +139,8 @@
                 <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
                                      Text="8px" />
                 <MenuFlyoutSeparator />
-                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                <RadioMenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"
+                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
                                      Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
