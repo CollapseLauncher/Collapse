@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -6,7 +7,6 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -72,8 +72,8 @@ namespace CollapseLauncher
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 UpdateAssetIndex,
-                string.Format(Lang!._CachesPage!.CachesStatusNeedUpdate!, ProgressAllCountFound, ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
-                Lang._CachesPage.CachesStatusUpToDate);
+                string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusNeedUpdate ?? "", ProgressAllCountFound, ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
+                Locale.Current.Lang?._CachesPage?.CachesStatusUpToDate ?? "");
         }
 
         public async Task StartUpdateRoutine(bool showInteractivePrompt = false)
@@ -95,9 +95,9 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            Status.IsCompleted = true;
-            Status.IsCanceled = false;
-            Status.ActivityStatus = Lang!._CachesPage!.CachesStatusUpToDate;
+            Status.IsCompleted    = true;
+            Status.IsCanceled     = false;
+            Status.ActivityStatus = Locale.Current.Lang?._CachesPage?.CachesStatusUpToDate;
 
             // Update status and progress
             UpdateAll();

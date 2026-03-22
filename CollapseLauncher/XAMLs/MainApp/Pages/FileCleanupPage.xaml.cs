@@ -1,10 +1,10 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -56,7 +56,7 @@ namespace CollapseLauncher.Pages
         public async Task InjectFileInfoSource(List<LocalFileInfo> fileInfoList, long assetTotalSize)
         {
             #if DEBUG
-            var s = new Stopwatch();
+            Stopwatch s = new();
             s.Start();
             #endif
             
@@ -84,8 +84,8 @@ namespace CollapseLauncher.Pages
                                tasks.AddRange(batches.Select(batch => 
                                  EnqueueOnDispatcherQueueAsync(() =>
                                         {
-                                            var sI = Stopwatch.StartNew();
-                                            foreach (var fileInfoInner in batch)
+                                            Stopwatch sI = Stopwatch.StartNew();
+                                            foreach (LocalFileInfo fileInfoInner in batch)
                                             {
                                                 backedFileInfoSourceList.Add(fileInfoInner);
                                                 localFileCollection.Remove(fileInfoInner);
@@ -139,13 +139,13 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                var s = new Stopwatch();
+                Stopwatch s = new();
                 if (ListViewTable.Items.Count > 1000)
                 {
                     LoadingMessageHelper.Initialize();
                     LoadingMessageHelper.ShowLoadingFrame();
-                    LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                    Locale.Lang._FileCleanupPage.LoadingSubtitle3);
+                    LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                                    Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle3);
                 }
             
                 await Task.Delay(100);
@@ -199,9 +199,9 @@ namespace CollapseLauncher.Pages
                                                         ? addedItems.Sum(x => x.FileSize)
                                                         : addedItems.Select(x => x.FileSize).ToArray().Sum());
 
-                var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
-                var removedSize = results[0];
-                var addedSize   = results[1];
+                long[] results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
+                long removedSize = results[0];
+                long addedSize   = results[1];
 
                 _selectedAssetsCount += addedItems.Count - removedItems.Count;
                 _assetSelectedSize   += addedSize - removedSize;
@@ -211,18 +211,18 @@ namespace CollapseLauncher.Pages
                                                         if (_selectedAssetsCount > 0)
                                                         {
                                                             ToggleCheckAllCheckBox.Content = string.Format(
-                                                                 Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
+                                                                 Locale.Current.Lang?._FileCleanupPage?.BottomCheckboxFilesSelected ?? "",
                                                                  _selectedAssetsCount,
                                                                  ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
                                                                  ConverterTool.SummarizeSizeSimple(_assetTotalSize));
                                                         }
                                                         else
                                                         {
-                                                            ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
+                                                            ToggleCheckAllCheckBox.Content = Locale.Current.Lang?._FileCleanupPage?.BottomCheckboxNoFileSelected;
                                                         }
 
                                                         DeleteSelectedFilesText.Text =
-                                                            string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
+                                                            string.Format(Locale.Current.Lang?._FileCleanupPage?.BottomButtonDeleteSelectedFiles ?? "", _selectedAssetsCount);
                                                         DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
 
                                                         ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == 0
@@ -238,7 +238,7 @@ namespace CollapseLauncher.Pages
 
         private Task EnqueueOnDispatcherQueueAsync(Action action)
         {
-            var tcs = new TaskCompletionSource();
+            TaskCompletionSource tcs = new();
             DispatcherQueue.TryEnqueue(() =>
                                        {
                                            try
@@ -283,23 +283,22 @@ namespace CollapseLauncher.Pages
                 TextAlignment = TextAlignment.Center,
                 TextWrapping = TextWrapping.WrapWholeWords
             }
-            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle1, true)
-            .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle2, deletionSource.Count),
+            .AddTextBlockLine(Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileSubtitle1, true)
+            .AddTextBlockLine(string.Format(Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileSubtitle2 ?? "", deletionSource.Count),
                               true, FontWeights.Medium)
-            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle3, true)
-            .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle4, ConverterTool.SummarizeSizeSimple(totalSize)),
+            .AddTextBlockLine(Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileSubtitle3, true)
+            .AddTextBlockLine(string.Format(Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileSubtitle4 ?? "", ConverterTool.SummarizeSizeSimple(totalSize)),
                               FontWeights.Medium)
             .AddTextBlockNewLine()
-            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle5);
+            .AddTextBlockLine(Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileSubtitle5);
 
             ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
-                                                                               Locale.Lang._FileCleanupPage
-                                                                                  .DialogDeletingFileTitle,
+                                                                               Locale.Current.Lang?._FileCleanupPage?.DialogDeletingFileTitle,
                                                                                textBlockMsg,
                                                                                this,
-                                                                               Locale.Lang._Misc.NoCancel,
-                                                                               Locale.Lang._Misc.YesContinue,
-                                                                               Locale.Lang._FileCleanupPage
+                                                                               Locale.Current.Lang?._Misc?.NoCancel,
+                                                                               Locale.Current.Lang?._Misc?.YesContinue,
+                                                                               Locale.Current.Lang?._FileCleanupPage?
                                                                                   .DialogMoveToRecycleBin,
                                                                                ContentDialogButton.Close,
                                                                                ContentDialogTheme.Warning);
@@ -313,8 +312,8 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
-                                            Locale.Lang._FileCleanupPage.DeleteSubtitle);
+            LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                            Locale.Current.Lang?._FileCleanupPage?.DeleteSubtitle);
             LoadingMessageHelper.ShowLoadingFrame();
 
             Stopwatch s = Stopwatch.StartNew();
@@ -327,7 +326,7 @@ namespace CollapseLauncher.Pages
                     List<string> toBeDeleted = await Task.Factory.StartNew(() => deletionSource
                                                                    .Select(x =>
                                                                            {
-                                                                               var localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                                                               FileInfo localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
                                                                                if (!isFileExist)
                                                                                {
                                                                                    return string.Empty;
@@ -343,7 +342,7 @@ namespace CollapseLauncher.Pages
                     {
 
                         // Execute the deletion process
-                        var recycleBinTask = Task.Factory.StartNew(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted, true));
+                        Task recycleBinTask = Task.Factory.StartNew(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted, true));
                         await recycleBinTask;
 
                         deleteSuccess = toBeDeleted.Count;
@@ -358,7 +357,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
                     using ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start();
-                    var                      options        = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
+                    ParallelOptions          options        = new() { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
                     Task deleteListTask = Task.Factory.StartNew(
                                                                 () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
                                                                 CancellationToken.None,
@@ -366,7 +365,7 @@ namespace CollapseLauncher.Pages
                                                                 TaskScheduler.Default);
 
                     List<LocalFileInfo> failedList     = [];
-                    Lock                failedListLock = new Lock();
+                    Lock                failedListLock = new();
 
                     Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
                                                                         await Task.Factory.StartNew(state =>
@@ -434,21 +433,21 @@ namespace CollapseLauncher.Pages
                 Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] The entire deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
             }
 
-            string diagTitle = dialogResult == ContentDialogResult.Primary
-                ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
-                : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
+            string diagTitle = (dialogResult == ContentDialogResult.Primary
+                ? Locale.Current.Lang?._FileCleanupPage?.DialogDeleteSuccessTitle
+                : Locale.Current.Lang?._FileCleanupPage?.DialogTitleMovedToRecycleBin) ?? "";
 
             await SimpleDialogs.SpawnDialog(diagTitle,
-                                            string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
+                                            string.Format(Locale.Current.Lang?._FileCleanupPage?.DialogDeleteSuccessSubtitle1 ?? "",
                                                           deleteSuccess)
                                             + (deleteFailed == 0
                                                 ? string.Empty
                                                 : ' ' +
                                                   string
-                                                     .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
+                                                     .Format(Locale.Current.Lang?._FileCleanupPage?.DialogDeleteSuccessSubtitle2 ?? "",
                                                              deleteFailed)),
                                             this,
-                                            Locale.Lang._Misc.OkayHappy,
+                                            Locale.Current.Lang?._Misc?.OkayHappy,
                                             null,
                                             null,
                                             ContentDialogButton.Close,

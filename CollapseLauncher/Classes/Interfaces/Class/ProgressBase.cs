@@ -36,7 +36,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Logger = Hi3Helper.Logger;
 // ReSharper disable AccessToDisposedClosure
-
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
@@ -166,10 +165,16 @@ internal abstract class ProgressBase : GamePropertyBase
 
     // Extension for IGameInstallManager
 
-    private const int RefreshInterval = 100;
+    private const int  RefreshInterval             = 100;
+    protected     nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
 
     public bool IsSophonInUpdateMode { get; protected set; }
     protected bool IsAllowExtractCorruptZip { get; set; }
+
+    ~ProgressBase()
+    {
+        SpeedLimiterService.FreeServiceContext(SpeedLimiterServiceContext);
+    }
 
 
     #region ProgressEventHandlers - Fetch
@@ -186,10 +191,8 @@ internal abstract class ProgressBase : GamePropertyBase
             return;
         }
 
-        // Calculate the clamped speed and timelapse
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
-
-        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded, speedClamped);
+        // Calculate the speed and timelapse
+        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded, speedAll);
         double   percentage   = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
         lock (Status)
@@ -197,7 +200,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // Update fetch status
             Status.IsProgressPerFileIndetermined = false;
             Status.IsProgressAllIndetermined     = false;
-            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(speedClamped));
+            Status.ActivityPerFile               = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle3 ?? "", ConverterTool.SummarizeSizeSimple(speedAll));
         }
 
         lock (Progress)
@@ -206,7 +209,7 @@ internal abstract class ProgressBase : GamePropertyBase
             Progress.ProgressPerFilePercentage = percentage;
             Progress.ProgressAllSizeCurrent    = downloadProgress.BytesDownloaded;
             Progress.ProgressAllSizeTotal      = downloadProgress.BytesTotal;
-            Progress.ProgressAllSpeed          = speedClamped;
+            Progress.ProgressAllSpeed          = speedAll;
             Progress.ProgressAllTimeLeft       = timeLeftSpan;
         }
 
@@ -230,10 +233,8 @@ internal abstract class ProgressBase : GamePropertyBase
             return;
         }
 
-        // Calculate the clamped speed and timelapse
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
-
-        TimeSpan timeLeftSpan      = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+        // Calculate the speed and timelapse
+        TimeSpan timeLeftSpan      = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
         double   percentagePerFile = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
         lock (Progress)
@@ -245,7 +246,7 @@ internal abstract class ProgressBase : GamePropertyBase
             Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
 
             // Calculate speed
-            Progress.ProgressAllSpeed    = speedClamped;
+            Progress.ProgressAllSpeed    = speedAll;
             Progress.ProgressAllTimeLeft = timeLeftSpan;
 
             // Update current progress percentages
@@ -261,10 +262,10 @@ internal abstract class ProgressBase : GamePropertyBase
             Status.IsProgressPerFileIndetermined = false;
 
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll     = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll     = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}";
 
@@ -302,8 +303,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
 
         // Calculate the clamped speed and timelapse
-        double   speedClamped = speedAll.ClampLimitedSpeedNumber();
-        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+        TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
         double   percentage   = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
 
         // Update current progress percentages and speed
@@ -314,11 +314,11 @@ internal abstract class ProgressBase : GamePropertyBase
 
         // Update current activity status
         Status.IsProgressAllIndetermined = false;
-        string timeLeftString             = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
-        Status.ActivityAll               = string.Format(Locale.Lang._Misc.Downloading + ": {0}/{1} ", ProgressAllCountCurrent,
+        string timeLeftString             = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", timeLeftSpan);
+        Status.ActivityAll               = string.Format(Locale.Current.Lang?._Misc?.Downloading + ": {0}/{1} ", ProgressAllCountCurrent,
                                                          ProgressAllCountTotal)
-                                           + string.Format($"({Locale.Lang._Misc.SpeedPerSec})",
-                                                           ConverterTool.SummarizeSizeSimple(speedClamped))
+                                           + string.Format($"({Locale.Current.Lang?._Misc?.SpeedPerSec})",
+                                                           ConverterTool.SummarizeSizeSimple(speedAll))
                                            + $" | {timeLeftString}";
 
         // Trigger update
@@ -350,9 +350,9 @@ internal abstract class ProgressBase : GamePropertyBase
             // Update current activity status
             Status.IsProgressAllIndetermined     = false;
             Status.IsProgressPerFileIndetermined = false;
-            Status.ActivityPerFile               = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle5,
+            Status.ActivityPerFile               = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle5 ?? "",
                                                                  ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll                   = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+            Status.ActivityAll                   = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                                  ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                                  ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal));
         }
@@ -399,11 +399,11 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Status)
         {
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
             // Update current activity status
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, 
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", 
                                                 ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), 
                                                 ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}";
         }
@@ -443,11 +443,11 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Status)
         {
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
             // Update current activity status
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
-            Status.ActivityAll     = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, 
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(Progress.ProgressAllSpeed));
+            Status.ActivityAll     = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "", 
                                                    ConverterTool.SummarizeSizeSimple(currentPosition), 
                                                    ConverterTool.SummarizeSizeSimple(totalReadSize)) + $" | {timeLeftString}";
         }
@@ -521,9 +521,6 @@ internal abstract class ProgressBase : GamePropertyBase
         // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
         _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
 
-        // Calculate the clamped speed for download and timelapse
-        double speedDownloadClamped = _sophonDownloadOnlySpeed.ClampLimitedSpeedNumber();
-
         if (!CheckIfNeedRefreshStopwatch())
         {
             return;
@@ -536,7 +533,7 @@ internal abstract class ProgressBase : GamePropertyBase
         Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
 
         Progress.ProgressAllSpeed     = speedAll;
-        Progress.ProgressPerFileSpeed = speedDownloadClamped;
+        Progress.ProgressPerFileSpeed = _sophonDownloadOnlySpeed;
 
         // Always change the status progress to determined
         Status.IsProgressAllIndetermined     = false;
@@ -581,8 +578,8 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
-            ? Locale.Lang._Misc.Updating
-            : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+            ? Locale.Current.Lang?._Misc?.Updating
+            : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                        ProgressAllCountTotal)}";
 
         UpdateStatus();
@@ -672,19 +669,18 @@ internal abstract class ProgressBase : GamePropertyBase
         lock (Progress)
         {
             // Assign speed with clamped value
-            double speedClamped = speedAll.ClampLimitedSpeedNumber();
 
             // Assign local sizes to progress
             Progress.ProgressAllSizeCurrent = ProgressAllSizeCurrent;
             Progress.ProgressAllSizeTotal = ProgressAllSizeTotal;
-            Progress.ProgressAllSpeed = speedClamped;
+            Progress.ProgressAllSpeed = speedAll;
             Progress.ProgressAllPercentage = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-            Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
+            Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
 
             // Update the status of per file size and current progress from Http client
             Progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
             Progress.ProgressPerFileSizeTotal = downloadProgress.BytesTotal;
-            Progress.ProgressPerFileSpeed = speedClamped;
+            Progress.ProgressPerFileSpeed = speedAll;
             Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
         }
         // Update the status
@@ -954,12 +950,12 @@ internal abstract class ProgressBase : GamePropertyBase
             Status.IsAssetEntryPanelShow = false;
 
             // Reset all total activity status
-            Status.ActivityStatus            = Locale.Lang._GameRepairPage.StatusNone;
-            Status.ActivityAll               = Locale.Lang._GameRepairPage.StatusNone;
+            Status.ActivityStatus            = Locale.Current.Lang?._GameRepairPage?.StatusNone;
+            Status.ActivityAll               = Locale.Current.Lang?._GameRepairPage?.StatusNone;
             Status.IsProgressAllIndetermined = false;
 
             // Reset all per-file activity status
-            Status.ActivityPerFile               = Locale.Lang._GameRepairPage.StatusNone;
+            Status.ActivityPerFile               = Locale.Current.Lang?._GameRepairPage?.StatusNone;
             Status.IsProgressPerFileIndetermined = false;
 
             // Reset all status indicators
@@ -1000,7 +996,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
 
         // Set total activity string as "Loading Indexes..."
-        Status.ActivityStatus = Locale.Lang._GameRepairPage.Status2;
+        Status.ActivityStatus = Locale.Current.Lang?._GameRepairPage?.Status2;
         UpdateStatus();
 
         string gamePath = GamePath;
@@ -1334,16 +1330,8 @@ internal abstract class ProgressBase : GamePropertyBase
             throw new InvalidOperationException("Both assetURL and secondaryURL cannot be empty! You must define one of them!");
         }
 
-        // For any instances that uses Burst Download and if the speed limiter is null when
-        // _isBurstDownloadEnabled set to false, then create the speed limiter instance
-        bool isUseSelfSpeedLimiter = !IsBurstDownloadEnabled;
-        DownloadSpeedLimiter? downloadSpeedLimiter = null;
-        if (isUseSelfSpeedLimiter)
-        {
-            // Create the speed limiter instance and register the listener
-            downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
-            LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
-        }
+        // Update 2026/02/22 - The download speed limiter is currently usable even on Burst Download Mode.
+        DownloadSpeedLimiter downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
         try
         {
@@ -1369,14 +1357,6 @@ internal abstract class ProgressBase : GamePropertyBase
             retrySecondary = true;
             assetURL       = null;
             goto StartOver;
-        }
-        finally
-        {
-            // If the self speed listener is used, then unregister the listener
-            if (isUseSelfSpeedLimiter && downloadSpeedLimiter != null)
-            {
-                LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
-            }
         }
     }
     #endregion
@@ -1412,7 +1392,7 @@ internal abstract class ProgressBase : GamePropertyBase
         using Stream stream = GetSingleOrSegmentedDownloadStream(asset);
 
 #if USENEWZIPDECOMPRESS
-        if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+        if (LauncherConfig.IsEnforceToUse7ZipOnExtract)
         {
             return GetArchiveUncompressedSizeNative7Zip(stream);
         }
@@ -1449,7 +1429,7 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         // Use ThreadObjectPool to cache the Streams and re-using it.
         using ThreadObjectPool<Stream> streamPool = new(
-            () => CreateStreamWithPos(0, 0, token),
+            () => CreateStreamWithPos(0),
             capacity: ThreadCount * 2, // Double the thread count for spare capacity
             isDisposeObjects: true);
 
@@ -1500,7 +1480,7 @@ internal abstract class ProgressBase : GamePropertyBase
             }
         }
 
-        Stream CreateStreamWithPos(long? start, long? _, CancellationToken innerToken)
+        Stream CreateStreamWithPos(long? start)
         {
             Stream stream = streamFactory();
             stream.Position = start ?? 0;

@@ -1,7 +1,7 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
@@ -30,7 +30,7 @@ internal static class RepairSharedUtility
         CancellationToken          token = default)
     {
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Sophon");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Sophon");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
@@ -64,13 +64,12 @@ internal static class RepairSharedUtility
         infoPairs.AddRange(infoPair
                           .OtherSophonBuildData?
                           .ManifestIdentityList
-                          .Where(x => !x.MatchingField
-                                        .ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
-                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField)) ?? []);
+                          .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !x.MatchingField.ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
+                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField!)) ?? []);
 
         foreach (SophonChunkManifestInfoPair pair in infoPairs)
         {
-            instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Sophon ({pair.MatchingField})");
+            instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"Sophon ({pair.MatchingField})");
             instance.Status.IsProgressAllIndetermined = true;
             instance.Status.IsIncludePerFileIndicator = false;
             instance.UpdateStatus();

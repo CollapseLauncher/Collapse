@@ -29,7 +29,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -414,7 +413,6 @@ public partial class HomePage
 
             CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
             CurrentGameProperty.GameSettings.SaveBaseSettings();
-            _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
             BGPathDisplay.Text = Path.GetFileName(regionBgPath);
         } 
@@ -795,7 +793,7 @@ public partial class HomePage
                 StartGameBtn.IsEnabled = false;
                 if (startGameBtnText != null && startGameBtnAnimatedIconGrid != null)
                 {
-                    startGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                    startGameBtnText.Text                = Locale.Current.Lang?._HomePage?.StartBtnRunning;
                     startGameBtnIcon.Glyph               = startGameBtnRunningIconGlyph;
                     startGameBtnAnimatedIconGrid.Opacity = 0;
                     startGameBtnIcon.Opacity             = 1;
@@ -826,7 +824,7 @@ public partial class HomePage
                         {
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
-                            startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                            startGameBtnText.Text = Locale.Current.Lang?._HomePage?.StartBtnRunning;
                             DateTime fromActivityOffset = currentGameProcess?.StartTime ?? pluginLaunchedGameTime;
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty.GamePreset;
@@ -872,7 +870,7 @@ public partial class HomePage
             _cachedIsGameRunning = false;
 
             StartGameBtn.IsEnabled = true;
-            startGameBtnText!.Text = Lang._HomePage.StartBtn;
+            startGameBtnText!.Text = Locale.Current.Lang?._HomePage?.StartBtn;
             startGameBtnIcon.Glyph = startGameBtnIconGlyph;
             if (startGameBtnAnimatedIconGrid != null)
             {

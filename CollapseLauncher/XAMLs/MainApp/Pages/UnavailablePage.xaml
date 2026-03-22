@@ -5,7 +5,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
     <Grid>
@@ -25,13 +25,13 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableTitle}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._Misc.FeatureUnavailableTitle}" />
             <TextBlock x:Name="Subtitle"
                        Margin="0,8,0,192"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableSubtitle}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._Misc.FeatureUnavailableSubtitle}" />
         </StackPanel>
     </Grid>
 </Page>

@@ -17,7 +17,7 @@
         <Description>Core module for Collapse Launcher</Description>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <IsAotCompatible>true</IsAotCompatible>
     </PropertyGroup>
 
@@ -42,8 +42,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
-      <PackageReference Include="Sentry" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+      <PackageReference Include="Sentry" Version="6.2.0" />
     </ItemGroup>
 
     <ItemGroup>

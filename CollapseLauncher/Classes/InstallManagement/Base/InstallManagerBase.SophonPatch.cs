@@ -12,6 +12,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -31,6 +32,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
@@ -113,7 +115,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Create a sophon download speed limiter instance
             SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
             // Get the patch assets to download
             (List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile) patchAssets =
@@ -252,27 +254,27 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 TextWrapping = TextWrapping.Wrap
             }
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle1, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle1, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(additionalDownloadSize), Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle2, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle2, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize + additionalDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle3)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle3)
            .AddTextBlockNewLine(2)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle4, true)
-           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle5, true)
-           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle6, true)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle4, true)
+           .AddTextBlockLine($"\"{Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmYesBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle5, true)
+           .AddTextBlockLine($"\"{Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmNoBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle6, true)
            .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle7)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableSubtitle7)
            .AddTextBlockNewLine(2)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote1, true, Microsoft.UI.Text.FontWeights.Bold, size: 12, opacity: 0.75d)
-           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote2, size: 12, opacity: 0.75d),
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableFootnote1, true, Microsoft.UI.Text.FontWeights.Bold, size: 12, opacity: 0.75d)
+           .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableFootnote2, size: 12, opacity: 0.75d),
            0);
 
             if (getFileDetailPath != null)
             {
-                Button showFileDetails = UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Lang._Dialogs.SophonAdditionalPkgSeeDetailsBtn,
+                Button showFileDetails = UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgSeeDetailsBtn,
                                                                                           iconGlyph: "",
                                                                                           iconFontFamily: "FontAwesomeSolid",
                                                                                           buttonStyle: "AccentButtonStyle",
@@ -309,14 +311,14 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             ContentDialogResult confirmAdditionalTag = await SimpleDialogs.SpawnDialog(
-             isUpdate ? Locale.Lang._Dialogs.SophonAdditionalPkgAvailableUpdateTitle : Locale.Lang._Dialogs.SophonAdditionalPkgAvailableDownloadTitle,
+             isUpdate ? Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableUpdateTitle : Locale.Current.Lang?._Dialogs?.SophonAdditionalPkgAvailableDownloadTitle,
              grid,
              ParentUI,
-             Locale.Lang._Misc.Cancel,
-             Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn,
-             Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn,
+             Locale.Current.Lang?._Misc?.Cancel,
+             Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmYesBtn,
+             Locale.Current.Lang?._Dialogs?.SophonAdditionalConfirmNoBtn,
              defaultButton: ContentDialogButton.Secondary,
-             dialogTheme: CustomControls.ContentDialogTheme.Warning);
+             dialogTheme: ContentDialogTheme.Warning);
 
             if (confirmAdditionalTag == ContentDialogResult.None)
                 throw new OperationCanceledException("Cancelling the download/update");
@@ -325,13 +327,13 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async Task<(List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile)>
-            GetAlterSophonPatchAssets(HttpClient httpClient,
-                                      string manifestUrl,
-                                      string downloadOverUrl,
-                                      List<string> matchingFields,
-                                      string updateVersionfrom,
+            GetAlterSophonPatchAssets(HttpClient                 httpClient,
+                                      string                     manifestUrl,
+                                      string                     downloadOverUrl,
+                                      List<string>               matchingFields,
+                                      string                     updateVersionfrom,
                                       SophonDownloadSpeedLimiter downloadLimiter,
-                                      CancellationToken token)
+                                      CancellationToken          token)
         {
             SophonChunkManifestInfoPair?      rootPatchManifest = null;
             SophonChunkManifestInfoPair?      rootMainManifest  = null;
@@ -505,7 +507,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                       }
 
                                                       string patchFilePath = Path.Combine(patchOutputDir, asset.PatchHash);
-                                                      FileInfo patchFileInfo = new FileInfo(patchFilePath);
+                                                      FileInfo patchFileInfo = new(patchFilePath);
 
                                                       if (!patchFileInfo.Exists)
                                                       {
@@ -667,19 +669,19 @@ namespace CollapseLauncher.InstallManager.Base
 
             void UpdateCurrentDownloadStatus()
             {
-                string perFromToLocale = string.Format(Locale.Lang._Misc.PerFromTo,
+                string perFromToLocale = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
                                                        ProgressAllCountCurrent,
                                                        ProgressAllCountTotal);
-                Status.ActivityStatus = $"{Locale.Lang._Misc.Downloading}: {perFromToLocale}";
+                Status.ActivityStatus = $"{Locale.Current.Lang?._Misc?.Downloading}: {perFromToLocale}";
                 UpdateStatus();
             }
 
             void UpdateCurrentPatchStatus()
             {
-                string perFromToLocale = string.Format(Locale.Lang._Misc.PerFromTo,
+                string perFromToLocale = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "",
                                                        ProgressAllCountCurrent,
                                                        ProgressAllCountTotal);
-                Status.ActivityStatus = $"{Locale.Lang._Misc.ApplyingPatch}: {perFromToLocale}";
+                Status.ActivityStatus = $"{Locale.Current.Lang?._Misc?.ApplyingPatch}: {perFromToLocale}";
                 UpdateStatus();
             }
         }

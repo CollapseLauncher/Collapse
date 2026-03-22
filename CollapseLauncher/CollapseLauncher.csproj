@@ -14,9 +14,9 @@
         <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.14</Version>
+        <Version>1.84.1</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -106,6 +106,11 @@
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(PublishAotSelf)' == 'true'">
+        <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(PublishAot)' != 'true'">
         <!--
         CET isn't working properly while debugging .NET 9 apps on Windows 10.
@@ -122,10 +127,9 @@
         
         <!-- Compilation and Optimization -->
         <Deterministic>true</Deterministic>
-        <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
-        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+        <OptimizationPreference>Size</OptimizationPreference>
         <IlcDisableReflection>false</IlcDisableReflection>
-        <OptimizationPreference>Speed</OptimizationPreference>
         <IlcDisableSingleFile>true</IlcDisableSingleFile>
         <IlcTrimMetadata>true</IlcTrimMetadata>
         <TrimMetadata>true</TrimMetadata>
@@ -164,8 +168,8 @@
     
     <ItemGroup Condition="'$(PublishAot)' == 'true'">
         <!-- Use additional linker arguments -->
-        <LinkerArg Include="/DEBUG:NONE" Condition="'$(Configuration)'!='Debug'" />
-        <LinkerArg Include="/LTCG" />
+        <LinkerArg Include="/DEBUG:NONE" />
+        <!-- <LinkerArg Include="/LTCG" /> -->
         
         <!-- Region: Libsql.Client -->
         <DirectPInvoke Include="csharp_bindings" />
@@ -218,9 +222,16 @@
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Version.lib" />
         <DirectPInvoke Include="ws2_32" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\WS2_32.lib" />
+
+        <!-- Region: Hi3Helper.Throttle -->
+        <!--
+        <DirectPInvoke Include="Lib\Hi3Helper.Throttle.dll" />
+        <NativeLibrary Include="StaticLib\Hi3Helper.Throttle.lib" />
+        -->
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
+        <DirectPInvoke Include="libomp140.x86_64.dll" />
         <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static.lib" />
         <!--
         These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
@@ -241,24 +252,41 @@
         <NativeLibrary Include="StaticLib\libwebpdemux.lib" />
         <DirectPInvoke Include="webpmux" />
         <NativeLibrary Include="StaticLib\libwebpmux.lib" />
-
-        <!-- Region: zstd (Decompressor only) -->
-        <DirectPInvoke Include="libzstd" />
-        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
-
         <!--
         These libraries are required by libwebp to resolve external calls.
         -->
         <NativeLibrary Include="StaticLib\libsharpyuv.lib" />
-        <NativeLibrary Include="StaticLib\libwebpdecoder.lib" />
+
+        <!-- Region: heif -->
+        <DirectPInvoke Include="heif" />
+        <NativeLibrary Include="StaticLib\heif.lib" />
+        <!--
+        These libraries are required by jxl to resolve external calls.
+        -->
+        <NativeLibrary Include="StaticLib\libdav1d.lib" />
+        <NativeLibrary Include="StaticLib\libde265.lib" />
+
+        <!-- Region: jxl -->
+        <DirectPInvoke Include="jxl" />
+        <NativeLibrary Include="StaticLib\jxl.lib" />
+        <!--
+        These libraries are required by jxl to resolve external calls.
+        -->
+        <NativeLibrary Include="StaticLib\jxl_cms.lib" />
+        <NativeLibrary Include="StaticLib\hwy.lib" />
+
+        <!-- Region: zstd (Decompressor only) -->
+        <DirectPInvoke Include="libzstd" />
+        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="FFmpegInteropX" Version="2.0.117-uwp9" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -268,12 +296,12 @@
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250402" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.251219" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.251219" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.251219" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.251219" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
@@ -283,24 +311,27 @@
         
         <PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Markdig.Signed" Version="0.44.0" />
-        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
+        <PackageReference Include="Markdig.Signed" Version="1.1.1" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3650.58" />
-        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
-        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3856.49" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="System.CommandLine" Version="2.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.1" />
+        <PackageReference Include="System.CommandLine" Version="2.0.5" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
+        <ProjectReference Include="..\Hi3Helper.LocaleSourceGen\Hi3Helper.LocaleSourceGen.csproj" />
         <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
@@ -318,7 +349,7 @@
 
     <ItemGroup>
 
-        <Content Include="Misc\InstallMediaPack.cmd">
+        <Content Include="Misc\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
 
@@ -348,6 +379,12 @@
         <Content Include="Lib\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+
+        <Compile Remove="StaticLib\buildScript\**" />
+        <EmbeddedResource Remove="StaticLib\buildScript\**" />
+        <None Remove="StaticLib\buildScript\**" />
+        <Page Remove="StaticLib\buildScript\**" />
+        <PRIResource Remove="StaticLib\buildScript\**" />
     </ItemGroup>
 
     <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
@@ -457,8 +494,8 @@
         <Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
     </Target>
 
-    <Target Name="PostBuild" AfterTargets="Build">
-        <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+    <Target Name="PostBuild-RemoveFiles" AfterTargets="PostBuildEvent">
+        <Exec Command="del /s $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-61.dll $(ProjectDir)$(OutDir)av*-59.dll $(ProjectDir)$(OutDir)av*-10.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
     </Target>
@@ -467,8 +504,8 @@
         <Exec Command="&quot;$(ProjectDir)StaticLib\7za.exe&quot; x &quot;$(ProjectDir)StaticLib\StaticLib.7z.001&quot; -o&quot;$(ProjectDir)StaticLib\&quot; -y" />
     </Target>
     
-    <Target Name="PostBuild" AfterTargets="Publish">
-        <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+    <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
+        <Exec Command="del /s $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-61.dll $(PublishDir)av*-59.dll $(PublishDir)av*-10.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
@@ -476,13 +513,18 @@
         <RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="Publish">
+    <Target Name="PostPublish-RemoveFiles" AfterTargets="Publish">
         <!-- Region: Libsql.Client -->
         <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'" />
 
         <!-- Region: waifu2x-ncnn-vulkan -->
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
+
+        <!-- Region: Hi3Helper.Throttle -->
+        <!--
+        <Delete Files="$(PublishDir)Lib\Hi3Helper.Throttle.dll" Condition="'$(PublishAot)' == 'true'" />
+        -->
 
         <!-- Region: libzstd -->
         <ItemGroup Condition="'$(PublishAot)' == 'true'">
@@ -518,21 +560,8 @@
         <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpmux.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)jxl.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)heif.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
-
-    <ItemGroup>
-      <Compile Update="Properties\Resources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="Properties\Resources.resx">
-        <Generator>PublicResXFileCodeGenerator</Generator>
-        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
 </Project>

@@ -121,7 +121,7 @@ public class LoggerConsole : LoggerBase
                                              bool               writeToLogFile          = false,
                                              bool               writeTimestampOnLogFile = true)
     {
-        WriteLineToStreamCore(StdOutStream, line, type);
+        WriteLineToStreamCore(StdOutStream, line, type, isBeginWithCarriageReturn: true);
 
         if (!writeToLogFile)
         {
@@ -141,6 +141,19 @@ public class LoggerConsole : LoggerBase
                                              bool                                 writeToLogFile = false,
                                              bool                                 writeTimestampOnLogFile = true)
     {
+#if NET10_0_OR_GREATER
+        try
+        {
+            LogWriteLine(interpolatedLine.Text,
+                         type,
+                         writeToLogFile,
+                         writeTimestampOnLogFile);
+        }
+        finally
+        {
+            interpolatedLine.Clear();
+        }
+#else
         ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
 
         try
@@ -151,6 +164,7 @@ public class LoggerConsole : LoggerBase
         {
             ClearInterpolateString(ref interpolatedLine);
         }
+#endif
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -191,6 +205,21 @@ public class LoggerConsole : LoggerBase
                                          bool                                 writeTypeTag            = false,
                                          bool                                 writeTimestampOnLogFile = true)
     {
+#if NET10_0_OR_GREATER
+        try
+        {
+            LogWrite(interpolatedLine.Text,
+                     type,
+                     appendNewLine,
+                     writeToLogFile,
+                     writeTypeTag,
+                     writeTimestampOnLogFile);
+        }
+        finally
+        {
+            interpolatedLine.Clear();
+        }
+#else
         ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
 
         try
@@ -201,6 +230,7 @@ public class LoggerConsole : LoggerBase
         {
             ClearInterpolateString(ref interpolatedLine);
         }
+#endif
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -262,7 +292,7 @@ public class LoggerConsole : LoggerBase
                                          isWriteTimestamp: writeTimestampOnLogFile,
                                          token: token).ConfigureAwait(false);
     }
-    #endregion
+#endregion
 
     protected override void DisposeCore(bool onlyReset = false)
     {

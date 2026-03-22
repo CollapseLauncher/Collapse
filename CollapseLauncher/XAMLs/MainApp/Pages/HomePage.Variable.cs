@@ -1,299 +1,286 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Statics;
-using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 
 #nullable enable
-namespace CollapseLauncher.Pages
+#pragma warning disable IDE0130
+namespace CollapseLauncher.Pages;
+
+public sealed partial class HomePage
 {
-    public sealed partial class HomePage
+    private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
+
+    private static ILauncherApi? CurrentGameLauncherApi => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+
+    private static HypLauncherBackgroundList? GameBackgroundData => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
+
+    private static HypLauncherContentKind? GameContentData => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
+
+    internal static List<HypLauncherSocialMediaContentData>? GameSocialMediaData => GameContentData?.SocialMedia;
+
+    private static List<HypLauncherMediaContentData>? GameNewsDataAll => GameContentData?.News;
+
+    internal static List<HypLauncherMediaContentData>? GameNewsDataEventKind => GameContentData?.NewsEventKind;
+
+    internal static List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind => GameContentData?.NewsAnnouncementKind;
+
+    internal static List<HypLauncherMediaContentData>? GameNewsDataInformationKind => GameContentData?.NewsInformationKind;
+
+    internal static List<HypLauncherCarouselContentData>? GameCarouselData => GameContentData?.Carousel;
+
+    private static HypGameInfoData? GameInfoDisplayField => CurrentGameLauncherApi?.LauncherGameInfoField;
+
+    private static bool IsGameStatusPreRegister =>
+        GameInfoDisplayField?.DisplayStatus ==
+        LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
+
+    private static bool IsGameStatusComingSoon =>
+        GameInfoDisplayField?.DisplayStatus ==
+        LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
+
+    internal static string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
+
+    internal static Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal static Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal static Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal static Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal static Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal static Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+
+    internal static Visibility IsPostInfoPanelAllEmpty  =>
+        IsPostEventPanelVisible == Visibility.Collapsed
+        && IsPostNoticePanelVisible == Visibility.Collapsed
+        && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
+
+    internal static int PostEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
+
+    internal static int DefaultPostPanelIndex
     {
-        private string GameDirPath
+        get
         {
-            get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
+            if (IsPostEventPanelVisible != Visibility.Collapsed)
+                return 0;
+
+            if (IsPostNoticePanelVisible != Visibility.Collapsed)
+                return 1;
+
+            return IsPostInfoPanelVisible != Visibility.Collapsed ? 2 : 0;
         }
+    }
 
-        private static ILauncherApi? CurrentGameLauncherApi
+    private static bool IsCarouselPanelAvailable => GameCarouselData?.Count > 0;
+
+    private static bool IsNewsPanelAvailable => GameNewsDataAll?.Count > 0;
+
+    private static bool IsSocialMediaPanelAvailable => GameSocialMediaData?.Count > 0;
+
+    internal static bool IsEventsPanelScaleUp
+    {
+        get
         {
-            get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+            bool ret = GetAppConfigValue("ScaleUpEventsPanel").ToBoolNullable() ?? true;
+            return ret;
         }
+        set => SetAndSaveConfigValue("ScaleUpEventsPanel", value);
+    }
 
-        private static HypLauncherBackgroundList? GameBackgroundData
+    internal bool IsPlaytimeBtnVisible
+    {
+        get
         {
-            get => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
+            bool v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
+            HidePlaytimeButton(!v);
+
+            return v;
         }
-
-        private static HypLauncherContentKind? GameContentData
+        set
         {
-            get => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
+            SetAndSaveConfigValue("ShowGamePlaytime", value);
+            HidePlaytimeButton(!value);
         }
+    }
 
-        internal static List<HypLauncherSocialMediaContentData>? GameSocialMediaData
+    internal bool IsShowSidePanel
+    {
+        get => GetAppConfigValue("ShowEventsPanel") &&
+               IsCarouselPanelAvailable &&
+               IsNewsPanelAvailable;
+        set
         {
-            get => GameContentData?.SocialMedia;
+            SetAndSaveConfigValue("ShowEventsPanel", value);
+            HideImageCarousel(!value);
         }
+    }
 
-        private static List<HypLauncherMediaContentData>? GameNewsDataAll
+    internal bool IsShowSocialMediaPanel
+    {
+        get => GetAppConfigValue("ShowSocialMediaPanel") &&
+               IsSocialMediaPanelAvailable;
+        set
         {
-            get => GameContentData?.News;
+            SetAndSaveConfigValue("ShowSocialMediaPanel", value);
+            HideSocialMediaPanel(!value);
         }
+    }
 
-        internal static List<HypLauncherMediaContentData>? GameNewsDataEventKind
+    internal bool IsPlaytimeSyncDb
+    {
+        get => CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false;
+        set
         {
-            get => GameContentData?.NewsEventKind;
-        }
-
-        internal static List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind
-        {
-            get => GameContentData?.NewsAnnouncementKind;
-        }
-
-        internal static List<HypLauncherMediaContentData>? GameNewsDataInformationKind
-        {
-            get => GameContentData?.NewsInformationKind;
-        }
-
-        internal static List<HypLauncherCarouselContentData>? GameCarouselData
-        {
-            get => GameContentData?.Carousel;
-        }
-
-        private static HypGameInfoData? GameInfoDisplayField
-        {
-            get => CurrentGameLauncherApi?.LauncherGameInfoField;
-        }
-
-        private static bool IsGameStatusPreRegister
-        {
-            get =>
-                GameInfoDisplayField?.DisplayStatus ==
-                LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
-        }
-
-        private static bool IsGameStatusComingSoon
-        {
-            get =>
-                GameInfoDisplayField?.DisplayStatus ==
-                LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
-        }
-
-        internal static string? GamePreRegisterLink
-        {
-            get => GameInfoDisplayField?.ReservationLink?.ClickLink;
-        }
-
-        internal static Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-
-        internal static Visibility IsPostInfoPanelAllEmpty  =>
-            IsPostEventPanelVisible == Visibility.Collapsed
-            && IsPostNoticePanelVisible == Visibility.Collapsed
-            && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
-
-        internal static int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
-
-        internal static Visibility CommunityToolsButtonVisibility
-        {
-            get => !IsCommunityToolsOfficialAvailable &&
-                   !IsCommunityToolsCommunityAvailable ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        internal static Visibility CommunityToolsOfficialGridVisibility
-        {
-            get => !IsCommunityToolsOfficialAvailable ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        private static bool IsCommunityToolsOfficialAvailable
-        {
-            get => (PageStatics.CommunityToolsProperty?.OfficialToolsList?.Count ?? 0) != 0;
-        }
-
-        internal static Visibility CommunityToolsCommunityGridVisibility
-        {
-            get => !IsCommunityToolsCommunityAvailable ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        private static bool IsCommunityToolsCommunityAvailable
-        {
-            get => (PageStatics.CommunityToolsProperty?.CommunityToolsList?.Count ?? 0) != 0;
-        }
-
-        internal static int DefaultPostPanelIndex
-        {
-            get
+            if (CurrentGameProperty.GameSettings == null)
             {
-                if (IsPostEventPanelVisible != Visibility.Collapsed)
-                    return 0;
-
-                if (IsPostNoticePanelVisible != Visibility.Collapsed)
-                    return 1;
-
-                return IsPostInfoPanelVisible != Visibility.Collapsed ? 2 : 0;
+                return;
             }
-        }
 
-        private static bool IsCarouselPanelAvailable
-        {
-            get => GameCarouselData?.Count > 0;
-        }
+            CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
+            CurrentGameProperty?.GameSettings?.SaveBaseSettings();
+            SyncDbPlaytimeBtn.IsEnabled = value;
 
-        private static bool IsNewsPanelAvailable
-        {
-            get => GameNewsDataAll?.Count > 0;
+            // Run DbSync if toggle is changed to enable
+            if (value) CurrentGameProperty?.GamePlaytime?.CheckDb();
         }
+    }
 
-        private static bool IsSocialMediaPanelAvailable
+    internal string NoNewsSplashMascot
+    {
+        get
         {
-            get => GameSocialMediaData?.Count > 0;
-        }
-
-        internal static bool IsEventsPanelScaleUp
-        {
-            get
+            GameNameType? gameType = CurrentGameProperty.GamePreset.GameType;
+            return gameType switch
             {
-                bool ret = GetAppConfigValue("ScaleUpEventsPanel").ToBoolNullable() ?? true;
-                return ret;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ScaleUpEventsPanel", value);
-            }
+                GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
+                GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
+                GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
+                _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+            };
         }
+    }
 
-        internal bool IsPlaytimeBtnVisible
+    internal int CurrentBannerIconHeight =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconHeight :
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconHeightHYP;
+
+    internal Thickness CurrentBannerIconMargin =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
+
+    internal int CurrentBannerIconColumn =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            1 :
+            0;
+
+    internal static int CurrentBannerIconColumnSpan => 1;
+
+    internal int CurrentBannerIconRow =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            1 :
+            0;
+
+    internal static int CurrentBannerIconRowSpan => 1;
+
+    internal HorizontalAlignment CurrentBannerIconHorizontalAlign =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
+
+    internal VerticalAlignment CurrentBannerIconVerticalAlign =>
+        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
+            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
+
+    private ImageBackgroundManager CurrentBackgroundManager => field ??= ImageBackgroundManager.Shared;
+
+    internal string? StartTooltipText
+    {
+        get
         {
-            get
-            {
-                bool v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
-                HidePlaytimeButton(!v);
-
-                return v;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ShowGamePlaytime", value);
-                HidePlaytimeButton(!value);
-            }
+            GameVersion? installed = CurrentGameProperty?.GameVersion?.GetGameExistingVersion();
+            return installed is null ? null : string.Format(Locale.Current.Lang?._HomePage?.StartGameTooltip ?? "", installed);
         }
+    }
 
-        internal bool IsShowSidePanel
+    internal string? InstallUpdateTooltipText
+    {
+        get
         {
-            get => GetAppConfigValue("ShowEventsPanel") &&
-                   IsCarouselPanelAvailable &&
-                   IsNewsPanelAvailable;
-            set
-            {
-                SetAndSaveConfigValue("ShowEventsPanel", value);
-                HideImageCarousel(!value);
-            }
-        }
+            if (CurrentGameProperty?.GameVersion == null)
+                return null;
 
-        internal bool IsShowSocialMediaPanel
-        {
-            get => GetAppConfigValue("ShowSocialMediaPanel") &&
-                   IsSocialMediaPanelAvailable;
-            set
+            GameInstallStateEnum state = Task.Run(async () => await CurrentGameProperty.GameVersion.GetGameState()).GetAwaiter().GetResult();
+            switch (state)
             {
-                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
-                HideSocialMediaPanel(!value);
-            }
-        }
-
-        internal bool IsPlaytimeSyncDb
-        {
-            get => CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false;
-            set
-            {
-                if (CurrentGameProperty.GameSettings == null)
+                case GameInstallStateEnum.NotInstalled:
                 {
-                    return;
+                    GameVersion? remote = CurrentGameProperty.GameVersion.GetGameVersionApi();
+                    return string.Format(Locale.Current.Lang?._HomePage?.InstallGameTooltip ?? "", remote);
                 }
-
-                CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
-                CurrentGameProperty?.GameSettings?.SaveBaseSettings();
-                SyncDbPlaytimeBtn.IsEnabled = value;
-                
-                // Run DbSync if toggle is changed to enable
-                if (value) CurrentGameProperty?.GamePlaytime?.CheckDb();
-            }
-        }
-
-        internal string NoNewsSplashMascot
-        {
-            get
-            {
-                GameNameType? gameType = CurrentGameProperty.GamePreset.GameType;
-                return gameType switch
+                case GameInstallStateEnum.NeedsUpdate:
                 {
-                    GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
-                    GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
-                    GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
-                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
-                };
+                    GameVersion? installed = CurrentGameProperty.GameVersion.GetGameExistingVersion();
+                    GameVersion? remote    = CurrentGameProperty.GameVersion.GetGameVersionApi();
+                    if (remote is null || installed == remote)
+                        return null;
+
+                    return installed is null
+                        ? string.Format(Locale.Current.Lang?._HomePage?.InstallGameTooltip ?? "", remote)
+                        : string.Format(Locale.Current.Lang?._HomePage?.UpdateGameTooltip ?? "",  installed, remote);
+                }
+                case GameInstallStateEnum.InstalledHavePlugin:
+                {
+                    StringBuilder tooltip = new();
+
+                    // SDK
+                    {
+                        GameVersion? installed = CurrentGameProperty.GameVersion.GetSdkVersionInstalled();
+                        GameVersion? remote    = CurrentGameProperty.GameVersion.GetSdkVersionApi();
+                        if (remote is not null && installed != remote)
+                        {
+                            tooltip.Append(installed is null
+                                               ? string.Format(Locale.Current.Lang?._HomePage?.InstallSdkTooltip ?? "", remote)
+                                               : string.Format(Locale.Current.Lang?._HomePage?.UpdateSdkUpdateTooltip ?? "", installed,
+                                                               remote));
+                        }
+                    }
+
+                    // Plugin
+                    {
+                        Dictionary<string, GameVersion> installedDict = CurrentGameProperty.GameVersion.GetPluginVersionsInstalled();
+                        List<HypPluginPackageInfo>      mismatchList  = CurrentGameProperty.GameVersion.GetMismatchPlugin();
+                        foreach (HypPluginPackageInfo mismatch in mismatchList)
+                        {
+                            if (tooltip.Length != 0)
+                                tooltip.Append('\n');
+
+                            GameVersion remote = mismatch.Version;
+                            tooltip.Append(!installedDict.TryGetValue(mismatch.PluginId!, out GameVersion installed)
+                                               ? string.Format(Locale.Current.Lang?._HomePage?.InstallPluginTooltip ?? "",
+                                                               mismatch.PluginId, remote)
+                                               : string.Format(Locale.Current.Lang?._HomePage?.UpdatePluginTooltip ?? "",
+                                                               mismatch.PluginId, installed, remote));
+                        }
+                    }
+
+                    return tooltip.Length == 0
+                        ? null : tooltip.ToString();
+                }
+                default:
+                    return null;
             }
-        }
-
-        internal int CurrentBannerIconHeight
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeight :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeightHYP;
-        }
-
-        internal Thickness CurrentBannerIconMargin
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
-        }
-
-        internal int CurrentBannerIconColumn
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   1 :
-                   0;
-        }
-
-        internal static int CurrentBannerIconColumnSpan
-        {
-            get => 1;
-        }
-
-        internal int CurrentBannerIconRow
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   1 :
-                   0;
-        }
-
-        internal static int CurrentBannerIconRowSpan
-        {
-            get => 1;
-        }
-
-        internal HorizontalAlignment CurrentBannerIconHorizontalAlign
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
-        }
-
-        internal VerticalAlignment CurrentBannerIconVerticalAlign
-        {
-            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
     }
 }

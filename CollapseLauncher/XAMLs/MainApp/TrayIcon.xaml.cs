@@ -15,7 +15,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 // Resharper disable all
@@ -43,17 +42,17 @@ namespace CollapseLauncher
 
         #region Locales
 
-        private static string _popupHelp1  => Lang._Misc.Taskbar_PopupHelp1;
-        private static string _popupHelp2  => Lang._Misc.Taskbar_PopupHelp2;
-        private static string _showApp     => Lang._Misc.Taskbar_ShowApp;
-        private static string _hideApp     => Lang._Misc.Taskbar_HideApp;
-        private static string _showConsole => Lang._Misc.Taskbar_ShowConsole;
-        private static string _hideConsole => Lang._Misc.Taskbar_HideConsole;
-        private static string _exitApp     => Lang._Misc.Taskbar_ExitApp;
+        private static string _popupHelp1  => Locale.Current.Lang?._Misc?.Taskbar_PopupHelp1;
+        private static string _popupHelp2  => Locale.Current.Lang?._Misc?.Taskbar_PopupHelp2;
+        private static string _showApp     => Locale.Current.Lang?._Misc?.Taskbar_ShowApp;
+        private static string _hideApp     => Locale.Current.Lang?._Misc?.Taskbar_HideApp;
+        private static string _showConsole => Locale.Current.Lang?._Misc?.Taskbar_ShowConsole;
+        private static string _hideConsole => Locale.Current.Lang?._Misc?.Taskbar_HideConsole;
+        private static string _exitApp     => Locale.Current.Lang?._Misc?.Taskbar_ExitApp;
 
         // ReSharper disable UnusedMember.Local
-        private readonly string _preview = Lang._Misc.BuildChannelPreview;
-        private readonly string _stable = Lang._Misc.BuildChannelStable;
+        private readonly string _preview = Locale.Current.Lang?._Misc?.BuildChannelPreview;
+        private readonly string _stable  = Locale.Current.Lang?._Misc?.BuildChannelStable;
         // ReSharper restore UnusedMember.Local
         #endregion
 
@@ -292,15 +291,14 @@ namespace CollapseLauncher
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
-                m_homePage?.CarouselStopScroll();
+                m_homePage?.StopCarouselSlideshow();
                 LogWriteLine("Main window is hidden!");
 
                 // Spawn the hidden to tray toast notification
-                ShowNotification(
-                    Lang._NotificationToast.WindowHiddenToTray_Title,
-                    Lang._NotificationToast.WindowHiddenToTray_Subtitle, NotificationIcon.None,
-                    null, false, false
-                    );
+                ShowNotification(Locale.Current.Lang?._NotificationToast?.WindowHiddenToTray_Title,
+                                 Locale.Current.Lang?._NotificationToast?.WindowHiddenToTray_Subtitle, NotificationIcon.None,
+                                 null, false, false
+                                );
             }
             else
             {
@@ -308,7 +306,7 @@ namespace CollapseLauncher
                 EfficiencyModeWrapper(false);
                 PInvoke.SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
-                m_homePage?.CarouselRestartScroll();
+                m_homePage?.StartCarouselSlideshow();
                 // Revert refresh rate to its default
                 RefreshRate = RefreshRateDefault;
                 LogWriteLine("Main window is shown!");

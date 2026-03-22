@@ -22,7 +22,18 @@ public partial class ImageCropper
     {
         if (Source != null)
         {
-            _restrictedCropRect = new Rect(0, 0, Source.PixelWidth, Source.PixelHeight);
+#nullable enable
+            BitmapSource?   asBitmap = Source as BitmapSource;
+            SvgImageSource? asSvg    = Source as SvgImageSource;
+
+            double pixelWidth  = asBitmap?.PixelWidth ?? asSvg?.RasterizePixelWidth ?? 0;
+            double pixelHeight = asBitmap?.PixelHeight ?? asSvg?.RasterizePixelHeight ?? 0;
+#nullable restore
+
+            if (double.IsInfinity(pixelWidth)) pixelWidth   = 0d;
+            if (double.IsInfinity(pixelHeight)) pixelHeight = 0d;
+
+            _restrictedCropRect = new Rect(0, 0, pixelWidth, pixelHeight);
             if (IsValidRect(_restrictedCropRect))
             {
                 _currentCroppedRect = KeepAspectRatio ? GetUniformRect(_restrictedCropRect, ActualAspectRatio) : _restrictedCropRect;

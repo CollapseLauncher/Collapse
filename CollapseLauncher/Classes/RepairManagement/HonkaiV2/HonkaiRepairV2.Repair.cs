@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using Hi3Helper;
+﻿using CollapseLauncher.Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
@@ -26,7 +25,7 @@ internal partial class HonkaiRepairV2
         ResetStatusAndProgress();
 
         // Set as completed
-        Status.ActivityStatus = Locale.Lang._GameRepairPage.Status7;
+        Status.ActivityStatus = Locale.Current.Lang?._GameRepairPage?.Status7;
 
         // Update status and progress
         UpdateAll();
@@ -51,8 +50,8 @@ internal partial class HonkaiRepairV2
         }
 
         int threadNum = IsBurstDownloadEnabled
-            ? 1
-            : ThreadForIONormalized;
+            ? ThreadForIONormalized
+            : 1;
 
         await Parallel.ForEachAsync(AssetIndex,
                                     new ParallelOptions
@@ -118,10 +117,9 @@ internal partial class HonkaiRepairV2
             return;
         }
 
-        double speedClamped = speedAll.ClampLimitedSpeedNumber();
         TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal,
                                                                ProgressAllSizeCurrent,
-                                                               speedClamped);
+                                                               speedAll);
 
         double percentPerFile = ProgressPerFileSizeCurrent != 0
             ? ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent)
@@ -139,7 +137,7 @@ internal partial class HonkaiRepairV2
             Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
 
             // Calculate speed
-            Progress.ProgressAllSpeed    = speedClamped;
+            Progress.ProgressAllSpeed    = speedAll;
             Progress.ProgressAllTimeLeft = timeLeftSpan;
 
             // Update current progress percentages
@@ -153,14 +151,14 @@ internal partial class HonkaiRepairV2
             Status.IsProgressPerFileIndetermined = false;
 
             // Set time estimation string
-            string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+            string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
-            Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedPerFile));
-            Status.ActivityAll = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+            Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(speedPerFile));
+            Status.ActivityAll = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal))
                                  + $" | {timeLeftString}"
-                                 + $" ({string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedAll))})";
+                                 + $" ({string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(speedAll))})";
 
             // Trigger update
             UpdateAll();

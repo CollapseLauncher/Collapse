@@ -1,5 +1,6 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -8,20 +9,20 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media;
 using System;
+using System.Buffers;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.Globalization.NumberFormatting;
-using Windows.Storage.Streams;
 
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable ConvertIfStatementToSwitchStatement
@@ -29,6 +30,16 @@ using Windows.Storage.Streams;
 
 namespace CollapseLauncher.Pages
 {
+    public static class StaticConverter<T> where T : IValueConverter, new()
+    {
+        public static T Shared { get; }
+
+        static StaticConverter()
+        {
+            Shared = new T();
+        }
+    }
+
     public partial class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string langInfo)
@@ -103,13 +114,13 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             long valBFromM = (long)(asDouble * (1 << 20));
             return valBFromM > 0 ?
-                string.Format(Locale.Lang._Misc.IsBytesMoreThanBytes, valBFromM, string.Format(Locale.Lang._Misc.SpeedPerSec, ConverterTool.SummarizeSizeSimple(valBFromM))) :
-                string.Format(Locale.Lang._Misc.IsBytesUnlimited);
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", ConverterTool.SummarizeSizeSimple(valBFromM))) :
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -124,13 +135,13 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             int valBFromM = (int)(asDouble * (1 << 20));
             return valBFromM > 0 ?
-                string.Format(Locale.Lang._Misc.IsBytesMoreThanBytes, valBFromM, ConverterTool.SummarizeSizeSimple(valBFromM)) :
-                string.Format(Locale.Lang._Misc.IsBytesUnlimited);
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, ConverterTool.SummarizeSizeSimple(valBFromM)) :
+                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -143,7 +154,7 @@ namespace CollapseLauncher.Pages
     {
         private const string Format = "{0:F5}";
         public string FormatDouble(double value) => string.Format(Format, value);
-        public double? ParseDouble(string text) => double.TryParse(text, out var dbl) ? dbl : null;
+        public double? ParseDouble(string text) => double.TryParse(text, out double dbl) ? dbl : null;
 
         public string FormatInt(long value) => throw new NotSupportedException();
         public string FormatUInt(ulong value) => throw new NotSupportedException();
@@ -166,6 +177,24 @@ namespace CollapseLauncher.Pages
                 padding = asDouble;
             }
             return (d - padding) / 2.0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class CountSingleToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is ICollection asCollection)
+            {
+                return asCollection.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            return value.TryGetDouble() < 2 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -243,7 +272,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientTitles);
+                return LauncherMetadataHelper.GetGameTitleTranslation(asString);
             }
 
             return value;
@@ -261,7 +290,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientRegions);
+                return LauncherMetadataHelper.GetGameRegionTranslation(asString);
             }
 
             return value;
@@ -279,7 +308,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return string.Format(Locale.Lang._SettingsPage.Plugin_AuthorBy, asString);
+                return string.Format(Locale.Current.Lang?._SettingsPage?.Plugin_AuthorBy ?? "", asString);
             }
 
             return value;
@@ -396,7 +425,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is not double asDouble)
             {
-                return Locale.Lang._Misc.IsBytesNotANumber;
+                return Locale.Current.Lang?._Misc?.IsBytesNotANumber;
             }
 
             TimeSpan span = TimeSpan.FromSeconds(asDouble);
@@ -427,7 +456,21 @@ namespace CollapseLauncher.Pages
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            double thisValue = value is not bool boolean || boolean ? 1.0d : 0d;
+            double thisValue = value is not bool boolean || boolean ? 1d : 0d;
+            return typeof(float) == targetType ? (float)thisValue : thisValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseBooleanToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double thisValue = value is not bool boolean || boolean ? 0d : 1d;
             return typeof(float) == targetType ? (float)thisValue : thisValue;
         }
 
@@ -508,7 +551,7 @@ namespace CollapseLauncher.Pages
     public partial class UpdateToVersionStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButton,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButton ?? "",
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
@@ -525,7 +568,7 @@ namespace CollapseLauncher.Pages
     public partial class UpdatingPercentageStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButtonUpdating,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButtonUpdating ?? "",
                              Math.Round((double)value, 2));
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -537,7 +580,7 @@ namespace CollapseLauncher.Pages
     public partial class PluginUpdatedToVersionStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusCompleted,
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusCompleted ?? "",
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
@@ -563,12 +606,12 @@ namespace CollapseLauncher.Pages
     }
 
 #nullable enable
-    public partial class UrlToCachedImageSourceConverter : IValueConverter
+    public partial class UrlToCachedImagePathConverter : IValueConverter
     {
         internal static         CDNCache   CacheManager;
         private static readonly HttpClient Client;
 
-        static UrlToCachedImageSourceConverter()
+        static UrlToCachedImagePathConverter()
         {
             Client = new HttpClientBuilder()
                     .UseLauncherConfig()
@@ -576,8 +619,8 @@ namespace CollapseLauncher.Pages
             CacheManager = new CDNCache
             {
                 IsUseAggressiveMode        = true,
-                CurrentCacheDir            = LauncherConfig.AppGameImgCachedFolder,
-                Logger                     = ILoggerHelper.GetILogger("UrlToCachedImageSourceConverter"),
+                CurrentCacheDir            = $"Skip|{LauncherConfig.AppGameImgCachedFolder}",
+                Logger                     = ILoggerHelper.GetILogger(nameof(UrlToCachedImagePathConverter)),
                 MaxAcceptedCacheExpireTime = TimeSpan.FromDays(7)
             };
             LauncherConfig.AppGameFolderChanged += AppGameFolderChanged;
@@ -594,142 +637,574 @@ namespace CollapseLauncher.Pages
 
         public object? Convert(object? value, Type targetType, object parameter, string language)
         {
-            if (value is Uri { IsFile: true } asUrl)
+            Uri?    sourceAsUri    = value as Uri;
+            string? sourceAsString = value as string;
+
+            if ((sourceAsUri == null &&
+                !string.IsNullOrEmpty(sourceAsString) &&
+                !Uri.TryCreate(sourceAsString, UriKind.Absolute, out sourceAsUri)) ||
+                sourceAsUri == null)
             {
-                return asUrl;
+                return value;
             }
 
             // Return if it's already a local path
-            string? stringUrl = value as string ?? (value as Uri)?.AbsolutePath;
-            if (string.IsNullOrEmpty(stringUrl) || stringUrl.Length < 3)
+            if (sourceAsUri.IsFile)
             {
-                return stringUrl;
+                return sourceAsUri;
             }
 
-            ReadOnlySpan<char> stringUrlSpan = stringUrl;
-
-            // If the image is .svg formatted, redirect to svg load routine.
-            if (stringUrlSpan.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            // Check if the file is already cached
+            if (CacheManager.TryGetAggressiveCachedFilePath(sourceAsUri, out sourceAsUri))
             {
-                return ConvertToSvgImageSource(stringUrl);
+                return sourceAsUri;
             }
 
-            if (stringUrl.IsPathLocal())
+            // Otherwise, download the file in background while also returns the origin URL temporarily.
+            new Thread(() => BeginBackgroundDownload(sourceAsUri))
             {
-                return stringUrl;
-            }
-
-            // Create BitmapImage instance, then lazy-load the resource in the background.
-            BitmapImage image = new();
-            _ = LoadLazyBitmap(image, stringUrl);
-
-            return image;
+                IsBackground = true
+            }.Start();
+            return sourceAsUri;
         }
 
-        private static SvgImageSource ConvertToSvgImageSource(string url)
+        private static async void BeginBackgroundDownload(Uri? url)
         {
-            SvgImageSource image = new();
-            _ = LoadLazySvg(image, url);
-
-            return image;
-        }
-
-        private static async Task LoadLazySvg(SvgImageSource image, string url)
-        {
-            Stream? resultStream;
-
-            // ReSharper disable once AsyncVoidMethod
-            async void ImageOnImageOpened(SvgImageSource sender, SvgImageSourceOpenedEventArgs e)
-            {
-                if (resultStream != null)
-                {
-                    await resultStream.DisposeAsync();
-#if DEBUG
-                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
-#endif
-                }
-
-                sender.Opened -= ImageOnImageOpened;
-            }
-
             try
             {
-                if (url.IsPathLocal() &&
-                    File.Exists(url))
+                if (url == null)
                 {
-                    resultStream = File.Open(url,
-                                             FileMode.Open,
-                                             FileAccess.Read,
-                                             FileShare.ReadWrite);
-                    IRandomAccessStream localStream = resultStream.AsRandomAccessStream();
-                    image.Opened += ImageOnImageOpened;
-
-                    await image.SetSourceAsync(localStream);
                     return;
                 }
 
-                CDNCacheResult result =
-                    await CacheManager
-                       .TryGetCachedStreamFrom(Client,
-                                               url,
-                                               null,
-                                               CancellationToken.None);
-
-                resultStream = result.Stream;
-                IRandomAccessStream stream = resultStream.AsRandomAccessStream();
-                image.Opened += ImageOnImageOpened;
-
-                await image.SetSourceAsync(stream);
+                CDNCacheResult result = await CacheManager.TryGetCachedStreamFrom(Client, url, token: CancellationToken.None);
+                await using Stream stream = result.Stream;
+                await stream.CopyToAsync(Stream.Null); // Copy over with CopyToStream in the background.
             }
             catch (Exception ex)
             {
-                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
-                                               LogType.Error,
-                                               true);
-                SentryHelper.ExceptionHandler(ex);
+                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}\r\n{ex}", url, ex);
             }
         }
 
-        private static async Task LoadLazyBitmap(BitmapImage image, string url)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            Stream? resultStream;
+            throw new NotImplementedException();
+        }
+    }
 
-            // ReSharper disable once AsyncVoidMethod
-            async void ImageOnImageOpened(object sender, RoutedEventArgs e)
+    public partial class StringIsNullOrEmptyToBooleanConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString &&
+                !string.IsNullOrEmpty(asString))
             {
-                if (resultStream != null)
+                return false;
+            }
+
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseStringIsNullOrEmptyToBooleanConverter : StringIsNullOrEmptyToBooleanConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+            => !(bool)base.Convert(value, targetType, parameter, language);
+    }
+
+    public partial class IsNumberEqualToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double number          = value.TryGetDouble();
+            double parameterNumber = parameter.TryGetDouble();
+
+            if (double.IsNaN(number) &&
+                double.IsNaN(parameterNumber))
+            {
+                return true;
+            }
+
+            double absTolerance = Math.Abs(number - parameterNumber);
+            return absTolerance < 1;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double parameterValue = parameter.TryGetDouble();
+            return GetDoubleValueTo(parameterValue, targetType);
+
+            static object GetDoubleValueTo(double value, Type targetType)
+            {
+                if (targetType == typeof(byte))
                 {
-                    await resultStream.DisposeAsync();
-#if DEBUG
-                    CacheManager.Logger?.LogDebug("Image Stream handler from: {path} has been loaded and disposed (Derived Stream: {type})", url, resultStream.GetType().Name);
-#endif
+                    return value.TryGetInteger<double, byte>();
                 }
 
-                image.ImageOpened -= ImageOnImageOpened;
-            }
+                if (targetType == typeof(sbyte))
+                {
+                    return value.TryGetInteger<double, sbyte>();
+                }
 
-            try
+                if (targetType == typeof(ushort))
+                {
+                    return value.TryGetInteger<double, ushort>();
+                }
+
+                if (targetType == typeof(short))
+                {
+                    return value.TryGetInteger<double, short>();
+                }
+
+                if (targetType == typeof(uint))
+                {
+                    return value.TryGetInteger<double, uint>();
+                }
+
+                if (targetType == typeof(int))
+                {
+                    return value.TryGetInteger<double, int>();
+                }
+
+                if (targetType == typeof(ulong))
+                {
+                    return value.TryGetInteger<double, ulong>();
+                }
+
+                if (targetType == typeof(long))
+                {
+                    return value.TryGetInteger<double, long>();
+                }
+
+                if (targetType == typeof(float))
+                {
+                    return (float)value;
+                }
+
+                return value;
+            }
+        }
+    }
+
+    public partial class IsContainsAnyNumbersToBooleanConverter : IValueConverter
+    {
+        private const           string             SeparatorsStr = ",}-/\\#;";
+        private static readonly SearchValues<char> Separators    = SearchValues.Create(SeparatorsStr);
+
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (parameter is not string asStringToSplit)
             {
-                CDNCacheResult result =
-                    await CacheManager
-                       .TryGetCachedStreamFrom(Client,
-                                               url,
-                                               null,
-                                               CancellationToken.None);
-
-                resultStream = result.Stream;
-                IRandomAccessStream stream = resultStream.AsRandomAccessStream(true);
-                image.ImageOpened += ImageOnImageOpened;
-
-                await image.SetSourceAsync(stream);
+                return false;
             }
-            catch (Exception ex)
+
+            ReadOnlySpan<char> stringSpan      = asStringToSplit;
+            int                entriesCountMin = stringSpan.CountAny(Separators) + 1;
+
+            Span<Range> entriesSpan = stackalloc Range[entriesCountMin];
+            int entriesCount = stringSpan.SplitAny(entriesSpan,
+                                                   SeparatorsStr,
+                                                   StringSplitOptions.RemoveEmptyEntries |
+                                                   StringSplitOptions.TrimEntries);
+
+            if (entriesCount == 0)
             {
-                await Logger.LogWriteLineAsync($"An error occurred while lazy-loading with cache for image: {url}\r\n{ex}",
-                                               LogType.Error,
-                                               true);
-                SentryHelper.ExceptionHandler(ex);
+                return false;
             }
+
+            Span<double> entries = stackalloc double[entriesCount];
+            for (int i = 0; i < entriesCount; i++)
+            {
+                if (!double.TryParse(stringSpan[entriesSpan[i]], out double result))
+                {
+                    return false;
+                }
+
+                entries[i] = result;
+            }
+
+            return entries.Contains(valueAsDouble);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseIsContainsAnyNumbersToBooleanConverter : IsContainsAnyNumbersToBooleanConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+            => !(bool)base.Convert(value, targetType, parameter, language);
+    }
+
+    public partial class TimeSpanToTimeStampStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            const string format         = "mm':'ss";
+            const string formatWithHour = "h':'mm':'ss";
+
+            if (value is not TimeSpan asTimeSpan)
+            {
+                double asDoubleMilliseconds = value.TryGetDouble();
+                if (!double.IsFinite(asDoubleMilliseconds))
+                {
+                    throw new InvalidOperationException("Value must be in forms of number and finite!");
+                }
+
+                asTimeSpan = TimeSpan.FromMilliseconds(asDoubleMilliseconds);
+            }
+
+            ReadOnlySpan<char> formatSpan = asTimeSpan.Hours > 0
+                ? formatWithHour
+                : format;
+
+            int        len              = (int)BitOperations.RoundUpToPowerOf2((uint)formatSpan.Length * 2);
+            Span<char> charFormatBuffer = stackalloc char[len];
+
+            if (!asTimeSpan.TryFormat(charFormatBuffer, out int bytesWritten, formatSpan))
+            {
+                throw new
+                    InvalidOperationException("Cannot format the TimeSpan as either the format string or value might be invalid");
+            }
+
+            return new string(charFormatBuffer[..bytesWritten]);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class TimeSpanToNumberMillisecondsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not TimeSpan asTimeSpan)
+            {
+                throw new InvalidOperationException("Type of the value must be a TimeSpan!");
+            }
+
+            double asValue = asTimeSpan.TotalMilliseconds;
+            return asValue.GetDoubleValueTo(targetType);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (!double.IsFinite(valueAsDouble))
+            {
+                throw new InvalidOperationException("Cannot get actual finite number");
+            }
+
+            // HACK: Intentional. This to avoid video player to seek itself to 0 while slider
+            //       position is being reset, making it reset the video player as well.
+            //       Negated TimeSpan also marks that the trigger is to seek the video player position.
+            return -TimeSpan.FromMilliseconds(valueAsDouble);
+        }
+    }
+
+    public partial class MediaAutoplayWindowOverrideConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (!WindowUtility.CurrentWindowIsVisible)
+            {
+                return false;
+            }
+
+            return value is true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class BackgroundParallaxPixelToComboBoxIndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            int amount = (int)value.TryGetDouble();
+            return amount switch
+            {
+                2 => 0,
+                4 => 1,
+                8 => 2,
+                _ => 3
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class TimeSpanMoreThan15SecondsToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double seconds = 0;
+            if (value is TimeSpan asTimeSpan)
+            {
+                seconds = asTimeSpan.TotalSeconds;
+            }
+            
+            if (value is DateTime asDateTime)
+            {
+                seconds = asDateTime.Second;
+            }
+
+            if (value is DateTimeOffset asDateTimeOffset)
+            {
+                seconds = asDateTimeOffset.Second;
+            }
+
+            if (value is double asDouble)
+            {
+                seconds = asDouble;
+            }
+
+            return seconds >= 15
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class SizeToRoundedCornerRadiusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueAsDouble = value.TryGetDouble();
+            if (double.IsFinite(valueAsDouble))
+            {
+                return new CornerRadius(valueAsDouble / 2);
+            }
+
+            if (value is Vector2 valueAsVector2)
+            {
+                valueAsDouble = valueAsVector2.X > valueAsVector2.Y
+                    ? valueAsVector2.Y
+                    : valueAsVector2.X;
+            }
+
+            if (value is System.Drawing.Size asDrawingSize)
+            {
+                valueAsDouble = asDrawingSize.Width > asDrawingSize.Height
+                    ? asDrawingSize.Height
+                    : asDrawingSize.Width;
+            }
+
+            if (value is Windows.Foundation.Size asFoundationSize)
+            {
+                valueAsDouble = asFoundationSize.Width > asFoundationSize.Height
+                    ? asFoundationSize.Height
+                    : asFoundationSize.Width;
+            }
+
+            return !double.IsFinite(valueAsDouble)
+                ? new CornerRadius()
+                : new CornerRadius(valueAsDouble / 2);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class FontPathLookupConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is FontFamily asFontFamily)
+            {
+                return asFontFamily;
+            }
+
+            if (value is string asString &&
+                FontCollections.TryGetFontFamily(asString, out FontFamily? fontFamily))
+            {
+                return fontFamily;
+            }
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class CountToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueDouble = value.TryGetDouble();
+            return double.IsFinite(valueDouble) && valueDouble > 0
+                ? 1d
+                : 0d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseCountToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueDouble = value.TryGetDouble();
+            return double.IsFinite(valueDouble) && valueDouble > 0
+                ? 0d
+                : 1d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringDictionaryToValueConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not Dictionary<string, string> asDictionary ||
+                parameter is not string lookupString)
+            {
+                return null;
+            }
+
+            return asDictionary.GetValueOrDefault(lookupString, lookupString);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameTitleComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not string asString)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientTitles",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   asString);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameRegionComboBoxTranslatedConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not PresetConfig presetConfig)
+            {
+                return value;
+            }
+
+            TextBlock textBlock = new()
+            {
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Current,
+                                   "Lang._GameClientRegions",
+                                   StaticConverter<StringDictionaryToValueConverter>.Shared,
+                                   BindingMode.OneWay,
+                                   UpdateSourceTrigger.Default,
+                                   presetConfig.ZoneName);
+
+            return textBlock;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class StringUppercaseConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language) =>
+            value?.ToString()?.ToUpper();
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameChannelToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, string language) =>
+            value switch
+            {
+                GameChannel gameChannel => gameChannel == GameChannel.Stable
+                    ? Visibility.Collapsed
+                    : Visibility.Visible,
+                _ => Visibility.Collapsed
+            };
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class RemoveNewLineStringConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            string? asString = value?.ToString();
+            if (string.IsNullOrEmpty(asString))
+            {
+                return value;
+            }
+
+            return asString.ReplaceLineEndings("");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

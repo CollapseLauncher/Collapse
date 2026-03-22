@@ -56,7 +56,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game AssetBundle
     private async Task FetchAssetFromGameAssetBundle(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        PresetConfig gamePresetConfig = GameVersionManager!.GamePreset;
+        PresetConfig gamePresetConfig = GameVersionManager.GamePreset;
         FinalizeBasicAssetsPath(assetIndex);
 
         // Get ignored assets from registry

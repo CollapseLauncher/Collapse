@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
@@ -39,8 +40,8 @@ namespace CollapseLauncher.FileDialogCOM
             if (!ConverterTool.IsUserHasPermission(dirPath))
             {
                 await SpawnInvalidDialog(
-                    Locale.Lang._Dialogs.InvalidGameDirNew2Title,
-                    Locale.Lang._Dialogs.InvalidGameDirNew2Subtitle,
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew2Title ?? "",
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew2Subtitle ?? "",
                     dirPath);
                 goto StartGet;
             }
@@ -48,8 +49,8 @@ namespace CollapseLauncher.FileDialogCOM
             if (IsRootPath(dirPath))
             {
                 await SpawnInvalidDialog(
-                    Locale.Lang._Dialogs.InvalidGameDirNew3Title,
-                    Locale.Lang._Dialogs.InvalidGameDirNew3Subtitle,
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew3Title ?? "",
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew3Subtitle ?? "",
                     dirPath);
                 goto StartGet;
             }
@@ -57,8 +58,8 @@ namespace CollapseLauncher.FileDialogCOM
             if (IsSystemDirPath(dirPath))
             {
                 await SpawnInvalidDialog(
-                    Locale.Lang._Dialogs.InvalidGameDirNew4Title,
-                    Locale.Lang._Dialogs.InvalidGameDirNew4Subtitle,
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew4Title ?? "",
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew4Subtitle ?? "",
                     dirPath);
                 goto StartGet;
             }
@@ -66,17 +67,17 @@ namespace CollapseLauncher.FileDialogCOM
             if (IsProgramDataPath(dirPath))
             {
                 await SpawnInvalidDialog(
-                    Locale.Lang._Dialogs.InvalidGameDirNew5Title,
-                    Locale.Lang._Dialogs.InvalidGameDirNew5Subtitle,
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew5Title ?? "",
+                    Locale.Current.Lang?._Dialogs?.InvalidGameDirNew5Subtitle ?? "",
                     dirPath);
                 goto StartGet;
             }
-
+                
             if (IsCollapseProgramPath(dirPath) || !CheckIfFolderIsValidLegacy(dirPath))
             {
                 await SpawnInvalidDialog(
-                    Locale.Lang._Dialogs.CannotUseAppLocationForGameDirTitle,
-                    Locale.Lang._Dialogs.CannotUseAppLocationForGameDirSubtitle,
+                    Locale.Current.Lang?._Dialogs?.CannotUseAppLocationForGameDirTitle ?? "",
+                    Locale.Current.Lang?._Dialogs?.CannotUseAppLocationForGameDirSubtitle ?? "",
                     dirPath,
                     true);
                 goto StartGet;
@@ -87,37 +88,36 @@ namespace CollapseLauncher.FileDialogCOM
                 return dirPath;
             }
 
-            await SpawnInvalidDialog(
-                                     Locale.Lang._Dialogs.InvalidGameDirNew6Title,
-                                     Locale.Lang._Dialogs.InvalidGameDirNew6Subtitle,
+            await SpawnInvalidDialog(Locale.Current.Lang?._Dialogs?.InvalidGameDirNew6Title ?? "",
+                                     Locale.Current.Lang?._Dialogs?.InvalidGameDirNew6Subtitle ?? "",
                                      dirPath);
             goto StartGet;
 
 
-            async Task SpawnInvalidDialog(string dialogTitle, string message, string selectedPath, bool isUseLegacyFormatting = false)
+            static async Task SpawnInvalidDialog(string dialogTitle, string message, string selectedPath, bool isUseLegacyFormatting = false)
             {
-                TextBlock textBlock = new TextBlock
+                TextBlock textBlock = new()
                 {
                     TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
                 };
                 textBlock.AddTextBlockLine(message)
                 .AddTextBlockNewLine(2)
-                .AddTextBlockLine(Locale.Lang._Dialogs.InvalidGameDirNewSubtitleSelectedPath, weight: FontWeights.Bold)
+                .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewSubtitleSelectedPath, weight: FontWeights.Bold)
                 .AddTextBlockNewLine()
                 .AddTextBlockLine(selectedPath);
                 if (!isUseLegacyFormatting)
                 {
                     textBlock.AddTextBlockNewLine(2)
-                             .AddTextBlockLine(Locale.Lang._Dialogs.InvalidGameDirNewSubtitleSelectOther);
+                             .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewSubtitleSelectOther);
                 }
 
                 await SimpleDialogs.SpawnDialog(
-                    isUseLegacyFormatting ? dialogTitle : string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat, dialogTitle),
+                    isUseLegacyFormatting ? dialogTitle : string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat ?? "", dialogTitle),
                     textBlock,
                     (WindowUtility.CurrentWindow as MainWindow)?.Content,
-                    Locale.Lang._Misc.Okay,
+                    Locale.Current.Lang?._Misc?.Okay,
                     defaultButton: ContentDialogButton.Close,
-                    dialogTheme: CustomControls.ContentDialogTheme.Error);
+                    dialogTheme: ContentDialogTheme.Error);
             }
         }
 

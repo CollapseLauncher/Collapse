@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 
@@ -138,13 +137,13 @@ internal static class DbHandler
             if (string.IsNullOrEmpty(Uri))
             {
                 IsEnabled = false;
-                throw new NullReferenceException($"DB_001 {Lang._SettingsPage.Database_Error_EmptyUri}");
+                throw new NullReferenceException($"DB_001 {Locale.Current.Lang?._SettingsPage?.Database_Error_EmptyUri}");
             }
                     
             if (string.IsNullOrEmpty(Token))
             {
                 IsEnabled = false;
-                throw new NullReferenceException($"DB_002 {Lang._SettingsPage.Database_Error_EmptyToken}");
+                throw new NullReferenceException($"DB_002 {Locale.Current.Lang?._SettingsPage?.Database_Error_EmptyToken}");
             }
                     
 

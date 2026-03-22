@@ -92,7 +92,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         protected override IRepair GetGameRepairInstance(string? versionString) =>
             new ZenlessRepair(ParentUI,
-                              GameVersionManager!,
+                              GameVersionManager,
                               (GameSettings as ZenlessSettings)!,
                               true,
                               versionString);

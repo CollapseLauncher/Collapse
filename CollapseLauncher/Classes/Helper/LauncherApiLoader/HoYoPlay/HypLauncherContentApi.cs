@@ -70,9 +70,9 @@ public class HypLauncherContentKind : HypApiIdentifiable
 
     public void ResetCachedNews()
     {
-        NewsEventKind = null;
-        NewsAnnouncementKind = null;
-        NewsInformationKind = null;
+        NewsEventKind        = [];
+        NewsAnnouncementKind = [];
+        NewsInformationKind  = [];
     }
 }
 
@@ -86,8 +86,8 @@ public partial class HypLauncherCarouselContentData : NotifyPropertyChanged
         get;
         init
         {
-            OnPropertyChanged();
             field = value;
+            OnPropertyChanged();
         }
     }
 
@@ -97,8 +97,8 @@ public partial class HypLauncherCarouselContentData : NotifyPropertyChanged
         get;
         init
         {
-            OnPropertyChanged();
             field = value;
+            OnPropertyChanged();
         }
     }
 
@@ -109,8 +109,8 @@ public partial class HypLauncherCarouselContentData : NotifyPropertyChanged
         get;
         init
         {
-            OnPropertyChanged();
             field = value;
+            OnPropertyChanged();
         }
     }
 }

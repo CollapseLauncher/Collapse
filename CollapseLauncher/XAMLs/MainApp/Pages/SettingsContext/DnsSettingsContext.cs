@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Helper;
-using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -36,7 +35,7 @@ namespace CollapseLauncher.Pages.SettingsContext
         {
             List<string> list = [];
             list.AddRange(HttpClientBuilder.DnsServerTemplate.Keys);
-            list.Add(Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection_SelectionCustom);
+            list.Add(Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ProviderSelection_SelectionCustom ?? "");
 
             return list;
         }
@@ -47,9 +46,9 @@ namespace CollapseLauncher.Pages.SettingsContext
             returnList.AddRange(Enum.GetValues<DnsConnectionType>()
                                     .Select(type => type switch
                                                     {
-                                                        DnsConnectionType.Udp => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionUdp,
-                                                        DnsConnectionType.DoH => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoH,
-                                                        DnsConnectionType.DoT => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoT,
+                                                        DnsConnectionType.Udp => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionUdp ?? "",
+                                                        DnsConnectionType.DoH => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionDoH ?? "",
+                                                        DnsConnectionType.DoT => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionDoT ?? "",
                                                         _ => type.ToString()
                                                     }));
 

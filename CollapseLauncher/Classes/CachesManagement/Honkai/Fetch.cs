@@ -15,7 +15,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable CommentTypo
@@ -127,7 +126,7 @@ namespace CollapseLauncher
         private async Task<(int, long)> FetchByType(CacheAssetType type, HttpClient client, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            Status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", type);
             Status.IsProgressAllIndetermined = true;
             Status.IsIncludePerFileIndicator = false;
             UpdateStatus();
@@ -282,7 +281,7 @@ namespace CollapseLauncher
                     if (content.DLM == 2)
                     {
                         // Update the status
-                        Status.ActivityStatus = string.Format(Lang._CachesPage.Status2, type, content.N);
+                        Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.Status2 ?? "", type, content.N);
                         Status.IsProgressAllIndetermined = true;
                         Status.IsProgressPerFileIndetermined = true;
                         UpdateStatus();

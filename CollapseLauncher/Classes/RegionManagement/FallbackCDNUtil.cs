@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Velopack.Sources;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+#pragma warning disable IDE0130
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -94,7 +95,7 @@ namespace CollapseLauncher
         private string GetRelativePathOnly(string url)
         {
             // Populate the CDN Base URLs if the field is null
-            _cdnBaseUrls ??= CDNList.Select(x => x.URLPrefix).ToArray();
+            _cdnBaseUrls ??= FallbackCDNUtil.CDNList.Select(x => x.URLPrefix).ToArray();
 
             // Get URL span and iterate through the CDN Base URLs
             ReadOnlySpan<char> urlSpan = url.AsSpan();
@@ -142,8 +143,54 @@ namespace CollapseLauncher
 
         private static HttpClient _clientNoCompression;
 
+
+        #region CDN List
+
+        public static List<CDNURLProperty> CDNList =>
+        [
+            new()
+            {
+                Name                   = "Cloudflare",
+                URLPrefix              = "https://r2.bagelnl.my.id/cl-cdn",
+                Description            = Locale.Current.Lang?._Misc?.CDNDescription_Cloudflare ?? "",
+                PartialDownloadSupport = true
+            },
+
+            new()
+            {
+                Name                   = "DigitalOcean",
+                URLPrefix              = "https://cdn.collapselauncher.com/cl-cdn",
+                Description            = Locale.Current.Lang?._Misc?.CDNDescription_DigitalOcean ?? "",
+                PartialDownloadSupport = true
+            },
+
+            new()
+            {
+                Name                   = "GitHub",
+                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
+                Description            = Locale.Current.Lang?._Misc?.CDNDescription_Github ?? "",
+                PartialDownloadSupport = true
+            },
+
+            new()
+            {
+                Name        = "GitLab",
+                URLPrefix   = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
+                Description = Locale.Current.Lang?._Misc?.CDNDescription_GitLab ?? ""
+            },
+
+            new()
+            {
+                Name        = "CNB",
+                URLPrefix   = "https://cnb.cool/CollapseLauncher/ReleaseRepo/-/git/raw/main/",
+                Description = Locale.Current.Lang?._Misc?.CDNDescription_CNB ?? ""
+            }
+        ];
+
+        #endregion
+
         // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         static FallbackCDNUtil()
         {
             InitializeHttpClient();

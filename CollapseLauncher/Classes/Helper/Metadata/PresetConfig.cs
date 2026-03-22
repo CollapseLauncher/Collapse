@@ -517,8 +517,8 @@ namespace CollapseLauncher.Helper.Metadata
         public bool IsRepairEnabled      { get; set; }
         public bool IsCacheUpdateEnabled { get; set; }
 #else
-        public bool IsRepairEnabled      { get; set; } = true;
-        public bool IsCacheUpdateEnabled { get; set; } = true;
+        public bool IsRepairEnabled      { get; set; }
+        public bool IsCacheUpdateEnabled { get; set; }
 #endif
         public bool? LauncherSpriteURLMultiLang { get; init; }
 
@@ -989,6 +989,12 @@ namespace CollapseLauncher.Helper.Metadata
                 addHandler(header.Key, header.Value);
             }
         }
+        #endregion
+
+        #region Overrides
+
+        public override string ToString() => $"{GameName} - {ZoneName}";
+
         #endregion
     }
 }

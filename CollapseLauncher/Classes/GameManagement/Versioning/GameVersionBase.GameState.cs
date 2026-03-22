@@ -1,9 +1,10 @@
-using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -319,30 +320,26 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return true;
             }
 
-            string? translatedGameTitle =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.GameName,
-                                                                        Locale.Lang._GameClientTitles);
-            string? translatedGameRegion =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.ZoneName,
-                                                                        Locale.Lang._GameClientRegions);
-            string gameNameTranslated = $"{translatedGameTitle} - {translatedGameRegion}";
+            string? translatedGameTitle  = LauncherMetadataHelper.GetGameTitleTranslation(GamePreset.GameName);
+            string? translatedGameRegion = LauncherMetadataHelper.GetGameRegionTranslation(GamePreset.ZoneName);
+            string  gameNameTranslated   = $"{translatedGameTitle} - {translatedGameRegion}";
 
             TextBlock textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
-                                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle1, true)
+                                 .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle1, true)
                                  .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
-                                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle2).AddTextBlockNewLine(2)
-                                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3)
-                                 .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold)
-                                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4)
-                                 .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold)
-                                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5);
+                                 .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle2).AddTextBlockNewLine(2)
+                                 .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle3)
+                                 .AddTextBlockLine(Locale.Current.Lang?._Misc?.YesContinue, FontWeights.SemiBold)
+                                 .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle4)
+                                 .AddTextBlockLine(Locale.Current.Lang?._Misc?.NoCancel, FontWeights.SemiBold)
+                                 .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalid_Subtitle5);
 
             ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
-                                                                               Locale.Lang._HomePage.GameStateInvalid_Title,
+                                                                               Locale.Current.Lang?._HomePage?.GameStateInvalid_Title,
                                                                                textBlock,
                                                                                uiParentElement,
-                                                                               Locale.Lang._Misc.NoCancel,
-                                                                               Locale.Lang._Misc.YesContinue,
+                                                                               Locale.Current.Lang?._Misc?.NoCancel,
+                                                                               Locale.Current.Lang?._Misc?.YesContinue,
                                                                                null,
                                                                                ContentDialogButton.Primary,
                                                                                ContentDialogTheme.Error
@@ -359,19 +356,19 @@ namespace CollapseLauncher.GameManagement.Versioning
             Reinitialize();
 
             textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
-                       .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle1, true)
+                       .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalidFixed_Subtitle1, true)
                        .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
-                       .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle2)
-                       .AddTextBlockLine(Locale.Lang._GameRepairPage.RepairBtn2Full, FontWeights.Bold)
-                       .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle3)
-                       .AddTextBlockLine(Locale.Lang._GameRepairPage.PageTitle, FontWeights.Bold)
-                       .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle4);
+                       .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalidFixed_Subtitle2)
+                       .AddTextBlockLine(Locale.Current.Lang?._GameRepairPage?.RepairBtn2Full, FontWeights.Bold)
+                       .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalidFixed_Subtitle3)
+                       .AddTextBlockLine(Locale.Current.Lang?._GameRepairPage?.PageTitle, FontWeights.Bold)
+                       .AddTextBlockLine(Locale.Current.Lang?._HomePage?.GameStateInvalidFixed_Subtitle4);
 
             _ = await SimpleDialogs.SpawnDialog(
-                                                Locale.Lang._HomePage.GameStateInvalidFixed_Title,
+                                                Locale.Current.Lang?._HomePage?.GameStateInvalidFixed_Title,
                                                 textBlock,
                                                 uiParentElement,
-                                                Locale.Lang._Misc.OkayHappy,
+                                                Locale.Current.Lang?._Misc?.OkayHappy,
                                                 null,
                                                 null,
                                                 ContentDialogButton.Close,

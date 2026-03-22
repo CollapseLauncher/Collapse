@@ -56,6 +56,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             base.InitializeSettings();
 
             SettingsScreen = ScreenManager.Load(this);
+            GeneralData?.Dispose();
             GeneralData = GeneralData.LoadWithMagic(
                 MagicReDo,
                 SettingsGameVersionManager.Create(GameVersionManager, ZZZSettingsConfigFile, "GENERAL_DATA.bin"),
@@ -64,7 +65,6 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         public override void ReloadSettings()
         {
-            GeneralData.Dispose();
             InitializeSettings();
         }
 

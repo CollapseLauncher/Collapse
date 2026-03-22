@@ -1,6 +1,7 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
+﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -130,13 +131,13 @@ internal abstract class ProgressBase<T1> : ProgressBase where T1 : IAssetIndexSu
 
         content.AddElementToStackPanel(new TextBlock
         {
-            Text = string.Format(Locale.Lang._InstallMgmt.RepairFilesRequiredSubtitle, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
+            Text = string.Format(Locale.Current.Lang?._InstallMgmt?.RepairFilesRequiredSubtitle ?? "", assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
             Margin = new Thickness(0, 0, 0, 16),
             TextWrapping = TextWrapping.Wrap
         });
         Button showBrokenFilesButton = content.AddElementToStackPanel(
             CollapseUIExtension.CreateButtonWithIcon<Button>(
-                Locale.Lang._InstallMgmt.RepairFilesRequiredShowFilesBtn,
+                Locale.Current.Lang?._InstallMgmt?.RepairFilesRequiredShowFilesBtn,
                 "\uf550",
                 "FontAwesomeSolid",
                 "AccentButtonStyle"
@@ -184,11 +185,11 @@ internal abstract class ProgressBase<T1> : ProgressBase where T1 : IAssetIndexSu
         if (totalSize == 0) return;
 
         ContentDialogResult result = await SimpleDialogs.SpawnDialog(
-            string.Format(Locale.Lang._InstallMgmt.RepairFilesRequiredTitle, assetIndex.Count),
+            string.Format(Locale.Current.Lang?._InstallMgmt?.RepairFilesRequiredTitle ?? "", assetIndex.Count),
             content,
             ParentUI,
-            Locale.Lang._Misc.Cancel,
-            Locale.Lang._Misc.YesResume,
+            Locale.Current.Lang?._Misc?.Cancel,
+            Locale.Current.Lang?._Misc?.YesResume,
             null,
             ContentDialogButton.Primary,
             ContentDialogTheme.Warning);

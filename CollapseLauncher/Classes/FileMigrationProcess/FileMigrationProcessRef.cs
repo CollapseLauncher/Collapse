@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 

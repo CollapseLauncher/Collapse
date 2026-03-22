@@ -4,7 +4,6 @@ using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
-using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,10 +24,6 @@ namespace CollapseLauncher
         private bool                    IsFileTransfer    { get; }
         private CancellationTokenSource TokenSource       { get; }
         private bool                    IsSameOutputDrive { get; set; }
-
-#nullable enable
-        private DispatcherQueue? DispatcherQueue => field ??= WindowUtility.CurrentDispatcherQueue;
-#nullable restore
 
         private long _currentSizeMoved;
         private long _currentFileCountMoved;
@@ -107,7 +102,7 @@ namespace CollapseLauncher
                 : Path.GetDirectoryName(inputPathInfo.FullName);
 
             if (string.IsNullOrEmpty(inputPathDir))
-                throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat,
                                                                   InputPath));
             
             DirectoryInfo outputPathDirInfo = new DirectoryInfo(inputPathDir);
@@ -231,7 +226,7 @@ namespace CollapseLauncher
                 // Update path display
                 UpdateCountProcessed(uiRef, inputFileRelativePath);
                 if (string.IsNullOrEmpty(outputNewFileDir))
-                    throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                    throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat ?? "",
                                                                       InputPath));
 
                 if (IsSameOutputDrive)

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using static Hi3Helper.Logger;
@@ -63,7 +64,7 @@ namespace CollapseLauncher
         public MarkdownFramePage()
         {
             InitializeComponent();
-            MarkdownContainer.Text = $"{Locale.Lang._FileCleanupPage.LoadingTitle}...";
+            MarkdownContainer.Text = $"{Locale.Current.Lang?._FileCleanupPage?.LoadingTitle}...";
             Current                = this;
         }
 
@@ -116,7 +117,7 @@ namespace CollapseLauncher
             try
             {
                 MarkdownPanel.Visibility  =  Visibility.Visible;
-                MarkdownPanel.Translation += Shadow32;
+                MarkdownPanel.Translation = new Vector3(0, 0, 32);
 
                 ChangeTitleDragArea.Change(DragAreaTemplate.Full);
 

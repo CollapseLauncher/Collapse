@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using System;
@@ -14,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
@@ -41,7 +41,7 @@ public sealed partial class UpdaterWindow
         InitializeComponent();
         InitializeWindowSettings();
 // ReSharper disable RedundantAssignment
-        var title = "Collapse Launcher Updater";
+        string title = "Collapse Launcher Updater";
         if (IsPreview)
             Title = title += "[PREVIEW]";
     #if DEBUG
@@ -58,17 +58,17 @@ public sealed partial class UpdaterWindow
     {
         try
         {
-            var newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                             "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
+            string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                                                "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
             progressBar.IsIndeterminate = true;
-            UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-            ActivityStatus.Text = Lang._UpdatePage.UpdateMessage1;
+            UpdateChannelLabel.Text     = m_arguments.Updater.UpdateChannel.ToString();
+            ActivityStatus.Text         = Locale.Current.Lang?._UpdatePage?.UpdateMessage1;
 
-            await using var metadataStream =
+            await using Stream metadataStream =
                 await
                     FallbackCDNUtil
                        .TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json");
-            var updateInfo =
+            AppUpdateVersionProp updateInfo =
                 await metadataStream.DeserializeAsync(AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp);
             NewVersionLabel.Text = updateInfo!.VersionString;
 
@@ -95,16 +95,16 @@ public sealed partial class UpdaterWindow
                                          m_arguments.Updater.UpdateChannel.ToString().ToLower());
             if (updateInfo.Version.HasValue)
             {
-                var ver = updateInfo.Version.Value;
-                Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
+                GameVersion ver = updateInfo.Version.Value;
+                Status.Text = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateStatus5 ?? "", ver.VersionString);
             }
 
-            ActivityStatus.Text = Lang._UpdatePage.UpdateMessage5;
+            ActivityStatus.Text = Locale.Current.Lang?._UpdatePage?.UpdateMessage5;
 
             await File.WriteAllTextAsync(newVerTagPath, updateInfo.VersionString);
 
             await Task.Delay(5000);
-            var applyUpdate = new Process
+            Process applyUpdate = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -132,13 +132,13 @@ public sealed partial class UpdaterWindow
                                     {
                                         progressBar.IsIndeterminate = false;
                                         progressBar.Value = e.ProgressPercentage;
-                                        ActivityStatus.Text = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+                                        ActivityStatus.Text = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateStatus3 ?? "", 1, 1);
                                         ActivitySubStatus.Text =
                                             $"{SummarizeSizeSimple(e.SizeDownloaded)} / {SummarizeSizeSimple(e.SizeToBeDownloaded)}";
 
                                         SpeedStatus.Text =
-                                            string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed));
-                                        TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeft);
+                                            string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", SummarizeSizeSimple(speed));
+                                        TimeEstimation.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", timeLeft);
                                     });
     }
 
