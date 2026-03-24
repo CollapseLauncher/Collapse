@@ -1,12 +1,13 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -24,11 +25,11 @@ namespace CollapseLauncher
 
     public class CommunityToolsProperty
     {
-        public Dictionary<GameNameType, List<CommunityToolsEntry>> OfficialToolsDictionary  { get; set; } = [];
-        public Dictionary<GameNameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; } = [];
+        public Dictionary<GameNameType, ObservableCollection<CommunityToolsEntry>> OfficialToolsDictionary  { get; set; } = [];
+        public Dictionary<GameNameType, ObservableCollection<CommunityToolsEntry>> CommunityToolsDictionary { get; set; } = [];
 
-        private readonly Dictionary<string, List<CommunityToolsEntry>> _officialToolsDictionaryPerProfileCache  = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, List<CommunityToolsEntry>> _communityToolsDictionaryPerProfileCache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ObservableCollection<CommunityToolsEntry>> _officialToolsDictionaryPerProfileCache  = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ObservableCollection<CommunityToolsEntry>> _communityToolsDictionaryPerProfileCache = new(StringComparer.OrdinalIgnoreCase);
 
         public void Clear()
         {
@@ -64,10 +65,10 @@ namespace CollapseLauncher
         {
             string profileName = config.ProfileName ?? throw new NullReferenceException("Game config's ProfileName field cannot be null!");
 
-            ref List<CommunityToolsEntry>? officialEntries =
+            ref ObservableCollection<CommunityToolsEntry>? officialEntries =
                 ref CollectionsMarshal.GetValueRefOrAddDefault(_officialToolsDictionaryPerProfileCache, profileName, out _);
 
-            ref List<CommunityToolsEntry>? communityEntries =
+            ref ObservableCollection<CommunityToolsEntry>? communityEntries =
                 ref CollectionsMarshal.GetValueRefOrAddDefault(_communityToolsDictionaryPerProfileCache, profileName, out _);
 
             officialEntries  ??= [];
@@ -96,24 +97,48 @@ namespace CollapseLauncher
         }
 
         private static void AddListBasedOnRegion(
-            List<CommunityToolsEntry>                           listToAdd,
-            Dictionary<GameNameType, List<CommunityToolsEntry>> source,
-            string                                              profileName)
+            ObservableCollection<CommunityToolsEntry>                           listToAdd,
+            Dictionary<GameNameType, ObservableCollection<CommunityToolsEntry>> source,
+            string                                                              profileName)
         {
-            listToAdd.AddRange(source.Values
-                                     .SelectMany(x => x)
-                                     .Where(entry => entry.Profiles.Contains(profileName)));
+            IEnumerable<CommunityToolsEntry> enumerator = source.Values
+                                                                .SelectMany(x => x)
+                                                                .Where(entry => entry.Profiles.Contains(profileName));
+
+            AddElementToBackedListFast(listToAdd, enumerator);
         }
 
         private static void AddOrUpdate(
-            Dictionary<GameNameType, List<CommunityToolsEntry>> toUpdate,
-            Dictionary<GameNameType, List<CommunityToolsEntry>> source)
+            Dictionary<GameNameType, ObservableCollection<CommunityToolsEntry>> toUpdate,
+            Dictionary<GameNameType, ObservableCollection<CommunityToolsEntry>> source)
         {
-            foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> kvp in source)
+            foreach (KeyValuePair<GameNameType, ObservableCollection<CommunityToolsEntry>> kvp in source)
             {
-                ref List<CommunityToolsEntry>? value = ref CollectionsMarshal.GetValueRefOrAddDefault(toUpdate, kvp.Key, out _);
-                (value ??= []).AddRange(kvp.Value);
+                ref ObservableCollection<CommunityToolsEntry>? value = ref CollectionsMarshal.GetValueRefOrAddDefault(toUpdate, kvp.Key, out _);
+                value ??= [];
+
+                AddElementToBackedListFast(value, kvp.Value);
             }
+        }
+
+        private static void AddElementToBackedListFast<T>(ObservableCollection<T> observableList,
+                                                          IEnumerable<T>          enumerable)
+        {
+            ref IList<T>? list = ref ObservableCollectionExtension<T>.GetBackedCollectionList(observableList);
+            if (list is List<T> asBackedList)
+            {
+                asBackedList.AddRange(enumerable);
+            }
+            else
+            {
+                foreach (T value in enumerable)
+                {
+                    observableList.Add(value);
+                }
+            }
+
+            // Notify changes
+            ObservableCollectionExtension<T>.RefreshAllEvents(observableList);
         }
     }
 
@@ -130,7 +155,7 @@ namespace CollapseLauncher
             }
         }
 
-        public List<CommunityToolsEntry> OfficialEntries
+        public ObservableCollection<CommunityToolsEntry> OfficialEntries
         {
             get;
             init
@@ -140,7 +165,7 @@ namespace CollapseLauncher
             }
         } = [];
 
-        public List<CommunityToolsEntry> CommunityEntries
+        public ObservableCollection<CommunityToolsEntry> CommunityEntries
         {
             get;
             init

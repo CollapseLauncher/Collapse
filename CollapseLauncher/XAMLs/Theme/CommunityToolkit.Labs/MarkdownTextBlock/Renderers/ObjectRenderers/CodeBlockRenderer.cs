@@ -5,6 +5,7 @@
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -12,7 +13,7 @@ internal class CodeBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, CodeBlo
 {
     protected override void Write(WinUIRenderer renderer, CodeBlock obj)
     {
-        var code = new MyCodeBlock(obj, renderer.Config);
+        MyCodeBlock code = new(obj);
         renderer.Push(code);
         renderer.Pop();
     }

@@ -22,6 +22,7 @@ file static class Fields
     public const string DllNameAvfilter   = "avfilter-10.dll";
     public const string DllNameAvformat   = "avformat-61.dll";
     public const string DllNameAvutil     = "avutil-59.dll";
+    public const string DllNamePostproc   = "postproc-58.dll";
     public const string DllNameSwresample = "swresample-5.dll";
     public const string DllNameSwscale    = "swscale-8.dll";
 }
@@ -113,21 +114,23 @@ public partial class ImageBackgroundManager
     {
         checkOnDirectory = FileUtility.GetFullyQualifiedPath(checkOnDirectory);
 
-        string dllPathAvcodec = Path.Combine(checkOnDirectory, Fields.DllNameAvcodec);
-        string dllPathAvdevice = Path.Combine(checkOnDirectory, Fields.DllNameAvdevice);
-        string dllPathAvfilter = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
-        string dllPathAvformat = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
-        string dllPathAvutil = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
+        string dllPathAvcodec    = Path.Combine(checkOnDirectory, Fields.DllNameAvcodec);
+        string dllPathAvdevice   = Path.Combine(checkOnDirectory, Fields.DllNameAvdevice);
+        string dllPathAvfilter   = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
+        string dllPathAvformat   = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
+        string dllPathAvutil     = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
+        string dllPathPostproc   = Path.Combine(checkOnDirectory, Fields.DllNamePostproc);
         string dllPathSwresample = Path.Combine(checkOnDirectory, Fields.DllNameSwresample);
-        string dllPathSwscale = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
+        string dllPathSwscale    = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
 
-        return FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvcodec, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvdevice, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil, out _, out exception) &&
+        return FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvcodec,    out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvdevice,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat,   out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil,     out _, out exception) &&
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathPostproc,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwresample, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale, out _, out exception);
+               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
     }
 
     internal static string[] GetFFmpegRequiredDllFilenames() =>
@@ -137,6 +140,7 @@ public partial class ImageBackgroundManager
         Fields.DllNameAvfilter,
         Fields.DllNameAvformat,
         Fields.DllNameAvutil,
+        Fields.DllNamePostproc,
         Fields.DllNameSwresample,
         Fields.DllNameSwscale
     ];
@@ -182,21 +186,23 @@ public partial class ImageBackgroundManager
             return false;
         }
 
-        string dllPathAvcodec = Path.Combine(sourceDir, Fields.DllNameAvcodec);
-        string dllPathAvdevice = Path.Combine(sourceDir, Fields.DllNameAvdevice);
-        string dllPathAvfilter = Path.Combine(sourceDir, Fields.DllNameAvfilter);
-        string dllPathAvformat = Path.Combine(sourceDir, Fields.DllNameAvformat);
-        string dllPathAvutil = Path.Combine(sourceDir, Fields.DllNameAvutil);
+        string dllPathAvcodec    = Path.Combine(sourceDir, Fields.DllNameAvcodec);
+        string dllPathAvdevice   = Path.Combine(sourceDir, Fields.DllNameAvdevice);
+        string dllPathAvfilter   = Path.Combine(sourceDir, Fields.DllNameAvfilter);
+        string dllPathAvformat   = Path.Combine(sourceDir, Fields.DllNameAvformat);
+        string dllPathAvutil     = Path.Combine(sourceDir, Fields.DllNameAvutil);
+        string dllPathPostproc   = Path.Combine(sourceDir, Fields.DllNamePostproc);
         string dllPathSwresample = Path.Combine(sourceDir, Fields.DllNameSwresample);
-        string dllPathSwscale = Path.Combine(sourceDir, Fields.DllNameSwscale);
+        string dllPathSwscale    = Path.Combine(sourceDir, Fields.DllNameSwscale);
 
-        return CreateSymbolLink(dllPathAvcodec, targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvdevice, targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvfilter, targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvformat, targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvutil, targetDir, out exception) &&
+        return CreateSymbolLink(dllPathAvcodec,    targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvdevice,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvfilter,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvformat,   targetDir, out exception) &&
+               CreateSymbolLink(dllPathAvutil,     targetDir, out exception) &&
+               CreateSymbolLink(dllPathPostproc,   targetDir, out exception) &&
                CreateSymbolLink(dllPathSwresample, targetDir, out exception) &&
-               CreateSymbolLink(dllPathSwscale, targetDir, out exception);
+               CreateSymbolLink(dllPathSwscale,    targetDir, out exception);
 
         static bool CreateSymbolLink(string filePath,
                                      string targetDirectory,

@@ -7,6 +7,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 using HtmlAgilityPack;
 using System.Linq;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
@@ -15,7 +16,7 @@ internal class HtmlWriter
     public static void WriteHtml(WinUIRenderer renderer, HtmlNodeCollection nodes)
     {
         if (nodes == null || nodes.Count == 0) return;
-        foreach (var node in nodes)
+        foreach (HtmlNode node in nodes)
         {
             if (node.NodeType == HtmlNodeType.Text)
             {
@@ -24,7 +25,7 @@ internal class HtmlWriter
             else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == HtmlElementType.Inline)
             {
                 // detect br here
-                var inlineTagName = node.Name.ToLower();
+                string inlineTagName = node.Name.ToLower();
                 if (inlineTagName == "br")
                 {
                     renderer.WriteInline(new MyLineBreak());
@@ -46,12 +47,12 @@ internal class HtmlWriter
                 }
                 else if (inlineTagName == "img")
                 {
-                    var image = new MyImage(node, renderer.Config);
+                    MyImage image = new(node, renderer.Config);
                     renderer.WriteInline(image);
                 }
                 else
                 {
-                    var inline = new MyInline();
+                    MyInline inline = new();
                     renderer.Push(inline);
                     WriteHtml(renderer, node.ChildNodes);
                     renderer.Pop();
@@ -60,7 +61,7 @@ internal class HtmlWriter
             else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == HtmlElementType.Block)
             {
                 IAddChild block;
-                var tag = node.Name.ToLower();
+                string tag = node.Name.ToLower();
                 if (tag == "details")
                 {
                     block = new MyDetails(node);
@@ -70,7 +71,7 @@ internal class HtmlWriter
                 }
                 else if (tag.IsHeading())
                 {
-                    var heading = new MyHeading(node, renderer.Config);
+                    MyHeading heading = new(node);
                     renderer.Push(heading);
                     WriteHtml(renderer, node.ChildNodes);
                 }

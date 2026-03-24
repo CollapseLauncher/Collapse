@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 // ReSharper disable All
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 

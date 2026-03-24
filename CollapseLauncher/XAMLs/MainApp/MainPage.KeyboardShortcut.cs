@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;

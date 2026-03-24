@@ -5,6 +5,7 @@
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 

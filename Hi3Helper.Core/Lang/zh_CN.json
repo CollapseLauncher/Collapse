@@ -589,12 +589,19 @@
     "ShareYourFeedbackBtn": "分享您的反馈",
 
     "About": "关于",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
-    "About_Copyright3": "采用",
+    "About_Copyright3": "采用 ",
     "About_Copyright4": "。版权所有。",
 
     "LicenseType": "MIT 许可证",
+
+    "About_FFmpegCopyright1": "本软件使用了 ",
+    "About_FFmpegCopyright2": " 的代码（采用 ",
+    "About_FFmpegCopyright3": " 许可），以及封装层 ",
+    "About_FFmpegCopyright4": "（采用 ",
+    "About_FFmpegCopyright5": " 许可）。",
+    "About_FFmpegDonate": "捐助 FFmpeg 项目",
 
     "Disclaimer": "免责声明",
     "Disclaimer1": "本程序与",

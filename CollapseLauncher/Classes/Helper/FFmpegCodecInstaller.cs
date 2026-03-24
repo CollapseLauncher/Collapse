@@ -2,10 +2,14 @@
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
+using Hi3Helper.Shared.Region;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -141,7 +145,7 @@ internal sealed partial class FFmpegCodecInstaller : ProgressBase, ICodecExtensi
 
     private async Task<UrlStatus> FindAvailableMirrors(HttpClient client, params string[] urls)
     {
-        foreach (string url in urls)
+        foreach (string url in urls.SelectMany(SelectManyUrlFromCdnMirrors))
         {
             Status.ActivityAll = $"Checking Mirror URL: {url}...";
 
@@ -153,5 +157,24 @@ internal sealed partial class FFmpegCodecInstaller : ProgressBase, ICodecExtensi
         }
 
         throw new HttpRequestException("No available mirrors are reachable!");
+    }
+
+    private static IEnumerable<string> SelectManyUrlFromCdnMirrors(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out _))
+        {
+            yield return url;
+            yield break;
+        }
+
+        CDNURLProperty preferredCdn = FallbackCDNUtil.GetPreferredCDN();
+        yield return preferredCdn.URLPrefix.CombineURLFromString(url);
+
+        foreach (CDNURLProperty otherCdn in FallbackCDNUtil
+                                           .CDNList
+                                           .Where(x => x != preferredCdn))
+        {
+            yield return otherCdn.URLPrefix.CombineURLFromString(url);
+        }
     }
 }

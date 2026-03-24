@@ -88,9 +88,6 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
             DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
 
-            _videoPlayerDurationTimerThread =
-                new Timer(UpdateMediaDurationTickView, this, TimeSpan.Zero, TimeSpan.FromSeconds(.5));
-
             _canvasDevice ??= CanvasDevice.GetSharedDevice();
             _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
                                                                 _canvasWidth,
@@ -176,10 +173,9 @@ public partial class LayeredBackgroundImage
             _videoPlayer.Pause();
 
             // Save last video player duration for later
-            if (_videoPlayer.CanSeek && TryGetSourceHashCode(BackgroundSource, out int sourceHashCode))
+            if (_videoPlayer.CanSeek)
             {
-                TimeSpan pos = _videoPlayer.Position;
-                _ = SharedLastMediaPosition.AddOrUpdate(sourceHashCode, _ => pos, (_, _) => pos);
+                _ = SaveMediaPosition(BackgroundSource, _videoPlayer.Position);
             }
 
             if (!UseSafeFrameRenderer)
@@ -218,8 +214,6 @@ public partial class LayeredBackgroundImage
                 Interlocked.Exchange(ref _canvasImageSource,  null);
                 Interlocked.Exchange(ref _canvasRenderTarget, null)?.Dispose();
             }
-
-            _videoPlayerDurationTimerThread?.Dispose();
 
             if (!UseSafeFrameRenderer)
             {

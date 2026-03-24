@@ -15,8 +15,10 @@ using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
 using Windows.Storage.Streams;
 // ReSharper disable AsyncVoidMethod
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -32,10 +34,7 @@ internal class MyImage : IAddChild
     private readonly double            _precedentHeight;
     private          bool              _loaded;
 
-    public TextElement TextElement
-    {
-        get => _container;
-    }
+    public TextElement TextElement => _container;
 
     public MyImage(LinkInline linkInline, Uri uri, MarkdownConfig config)
     {
@@ -43,7 +42,7 @@ internal class MyImage : IAddChild
         _imageProvider = config.ImageProvider;
         _svgRenderer = config.SVGRenderer ?? new DefaultSVGRenderer();
         Init();
-        var size = Extensions.GetMarkdownImageSize(linkInline);
+        Size size = Extensions.GetMarkdownImageSize(linkInline);
         if (size.Width != 0)
         {
             _precedentWidth = size.Width;
@@ -64,13 +63,13 @@ internal class MyImage : IAddChild
             htmlNode.GetAttributeValue("width", "0"),
             NumberStyles.Integer,
             CultureInfo.InvariantCulture,
-            out var width
+            out int width
         );
         int.TryParse(
             htmlNode.GetAttributeValue("height", "0"),
             NumberStyles.Integer,
             CultureInfo.InvariantCulture,
-            out var height
+            out int height
         );
         if (width > 0)
         {
@@ -115,7 +114,7 @@ internal class MyImage : IAddChild
                 if (contentType == "image/svg+xml")
                 {
                     string svgString = await response.Content.ReadAsStringAsync();
-                    var resImage = await _svgRenderer.SvgToImage(svgString);
+                    Image? resImage  = await _svgRenderer.SvgToImage(svgString);
                     if (resImage != null)
                     {
                         _image = resImage;
@@ -126,8 +125,8 @@ internal class MyImage : IAddChild
                 {
                     byte[] data = await response.Content.ReadAsByteArrayAsync();
                     // Create a BitmapImage for other supported formats
-                    BitmapImage bitmap = new BitmapImage();
-                    using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                    BitmapImage bitmap = new();
+                    using (InMemoryRandomAccessStream stream = new())
                     {
                         // Write the data to the stream
                         await stream.WriteAsync(data.AsBuffer());

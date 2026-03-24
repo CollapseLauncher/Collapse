@@ -266,7 +266,15 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public LayeredBackgroundImage? CurrentBackgroundElement => PresenterGrid?.Children.LastOrDefault() as LayeredBackgroundImage;
+    public LayeredBackgroundImage? CurrentBackgroundElement
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
 
     public bool CurrentSelectedBackgroundHasOverlayImage => !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginOverlayImagePath);
 

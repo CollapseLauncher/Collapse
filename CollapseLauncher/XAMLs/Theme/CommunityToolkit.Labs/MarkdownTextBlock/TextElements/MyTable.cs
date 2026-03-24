@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System.Linq;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -16,15 +17,12 @@ internal class MyTable : IAddChild
     private readonly Paragraph        _paragraph;
     private readonly MyTableUIElement _tableElement;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyTable(Table table)
     {
         _paragraph = new Paragraph();
-        var column = table.FirstOrDefault() is not TableRow row ? 0 : row.Count;
+        int column = table.FirstOrDefault() is not TableRow row ? 0 : row.Count;
 
         _tableElement = new MyTableUIElement
         (
@@ -34,7 +32,7 @@ internal class MyTable : IAddChild
             new SolidColorBrush(Colors.Gray)
         );
 
-        var inlineUIContainer = new InlineUIContainer
+        InlineUIContainer inlineUIContainer = new()
         {
             Child = _tableElement
         };
@@ -43,16 +41,14 @@ internal class MyTable : IAddChild
 
     public void AddChild(IAddChild child)
     {
-        if (child is MyTableCell cellChild)
-        {
-            var cell = cellChild.Container;
+        if (child is not MyTableCell cellChild) return;
+        Grid cell = cellChild.Container;
 
-            Grid.SetColumn(cell, cellChild.ColumnIndex);
-            Grid.SetRow(cell, cellChild.RowIndex);
-            Grid.SetColumnSpan(cell, cellChild.ColumnSpan);
-            Grid.SetRowSpan(cell, cellChild.RowSpan);
+        Grid.SetColumn(cell, cellChild.ColumnIndex);
+        Grid.SetRow(cell, cellChild.RowIndex);
+        Grid.SetColumnSpan(cell, cellChild.ColumnSpan);
+        Grid.SetRowSpan(cell, cellChild.RowSpan);
 
-            _tableElement.Children.Add(cell);
-        }
+        _tableElement.Children.Add(cell);
     }
 }

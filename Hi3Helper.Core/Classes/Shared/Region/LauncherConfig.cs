@@ -23,10 +23,30 @@ namespace Hi3Helper.Shared.Region
         public string Description            { get; init; }
         public bool   PartialDownloadSupport { get; init; }
 
-        public bool Equals(CDNURLProperty other)
-        {
-            return URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
-        }
+        public bool Equals(CDNURLProperty other) => other.GetHashCode() == GetHashCode();
+
+        public override int GetHashCode() => HashCode.Combine(URLPrefix, Name, PartialDownloadSupport);
+
+        public override bool Equals([NotNullWhen(true)] object? obj) =>
+            obj is CDNURLProperty asCdnProperty && Equals(asCdnProperty);
+
+        public static bool operator ==(CDNURLProperty from, CDNURLProperty to)
+            => from.Equals(to);
+
+        public static bool operator !=(CDNURLProperty from, CDNURLProperty to)
+            => !(from == to);
+
+        public static bool operator ==(object? from, CDNURLProperty to)
+            => to.Equals(from);
+
+        public static bool operator !=(object? from, CDNURLProperty to)
+            => !(from == to);
+
+        public static bool operator ==(CDNURLProperty from, object? to)
+            => from.Equals(to);
+
+        public static bool operator !=(CDNURLProperty from, object? to)
+            => !(from == to);
     }
     #endregion
 

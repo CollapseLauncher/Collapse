@@ -5,6 +5,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
@@ -13,16 +14,13 @@ internal class MyInline : IAddChild
     private readonly Paragraph         _paragraph;
     private readonly InlineUIContainer _inlineUIContainer;
 
-    public TextElement TextElement
-    {
-        get => _inlineUIContainer;
-    }
+    public TextElement TextElement => _inlineUIContainer;
 
     public MyInline()
     {
         _paragraph = new Paragraph();
         _inlineUIContainer = new InlineUIContainer();
-        RichTextBlock richTextBlock = new RichTextBlock();
+        RichTextBlock richTextBlock = new();
         richTextBlock.Blocks.Add(_paragraph);
 
         richTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;

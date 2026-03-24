@@ -8,6 +8,8 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+#pragma warning disable IDE0130
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 // ReSharper disable All
@@ -15,11 +17,11 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 [TemplatePart(Name = MarkdownContainerName, Type = typeof(Grid))]
 public partial class MarkdownTextBlock : Control
 {
-    private const string MarkdownContainerName = "MarkdownContainer";
-    private Grid? _container;
-    private MarkdownPipeline _pipeline;
-    private MyFlowDocument _document;
-    private WinUIRenderer? _renderer;
+    private const    string           MarkdownContainerName = "MarkdownContainer";
+    private          Grid?            _container;
+    private readonly MarkdownPipeline _pipeline;
+    private readonly MyFlowDocument   _document;
+    private          WinUIRenderer?   _renderer;
 
     private static readonly DependencyProperty ConfigProperty = DependencyProperty.Register(
         nameof(Config),
@@ -106,10 +108,7 @@ public partial class MarkdownTextBlock : Control
 
     private void Build()
     {
-        if (_renderer == null)
-        {
-            _renderer = new WinUIRenderer(_document, Config);
-        }
+        _renderer ??= new WinUIRenderer(_document, Config);
         _pipeline.Setup(_renderer);
         ApplyText(Text, false);
     }

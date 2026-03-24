@@ -589,12 +589,19 @@
     "ShareYourFeedbackBtn": "Share Your Feedback",
 
     "About": "About",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
-    "About_Copyright3": "Under",
+    "About_Copyright3": "Under ",
     "About_Copyright4": ". All rights reserved.",
 
     "LicenseType": "MIT License",
+
+    "About_FFmpegCopyright1": "This software uses code of ",
+    "About_FFmpegCopyright2": " licensed under the ",
+    "About_FFmpegCopyright3": " and ",
+    "About_FFmpegCopyright4": " as a wrapper under the ",
+    "About_FFmpegCopyright5": " license.",
+    "About_FFmpegDonate": "Donate to FFmpeg Project",
 
     "Disclaimer": "Disclaimer",
     "Disclaimer1": "This app is not affiliated with",

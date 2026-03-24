@@ -8,6 +8,7 @@ using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -21,14 +22,11 @@ internal class MyHyperlinkButton : IAddChild
 
     public bool IsHtml => _htmlNode != null;
 
-    public TextElement TextElement
-    {
-        get => _inlineUIContainer;
-    }
+    public TextElement TextElement => _inlineUIContainer;
 
     public MyHyperlinkButton(LinkInline linkInline, string? baseUrl)
     {
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
+        string? url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
         _linkInline = linkInline;
         Init(url, baseUrl);
     }
@@ -36,7 +34,7 @@ internal class MyHyperlinkButton : IAddChild
     public MyHyperlinkButton(HtmlNode htmlNode, string? baseUrl)
     {
         _htmlNode = htmlNode;
-        var url = htmlNode.GetAttributeValue("href", "#");
+        string url = htmlNode.GetAttributeValue("href", "#");
         Init(url, baseUrl);
     }
 
@@ -48,14 +46,11 @@ internal class MyHyperlinkButton : IAddChild
             Padding     = new Thickness(0),
             Margin      = new Thickness(0)
         };
-        if (IsHtml && _htmlNode != null)
+        if ((IsHtml && _htmlNode != null) || _linkInline != null)
         {
             _flowDoc = new MyFlowDocument();
         }
-        else if (_linkInline != null)
-        {
-            _flowDoc = new MyFlowDocument();
-        }
+
         _inlineUIContainer.Child = _hyperLinkButton;
         _hyperLinkButton.Content = _flowDoc?.RichTextBlock;
     }

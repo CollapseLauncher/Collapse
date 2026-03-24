@@ -619,7 +619,7 @@ namespace CollapseLauncher.Pages
             CacheManager = new CDNCache
             {
                 IsUseAggressiveMode        = true,
-                CurrentCacheDir            = LauncherConfig.AppGameImgCachedFolder,
+                CurrentCacheDir            = $"Skip|{LauncherConfig.AppGameImgCachedFolder}",
                 Logger                     = ILoggerHelper.GetILogger(nameof(UrlToCachedImagePathConverter)),
                 MaxAcceptedCacheExpireTime = TimeSpan.FromDays(7)
             };
@@ -683,7 +683,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}", url);
+                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}\r\n{ex}", url, ex);
             }
         }
 
@@ -906,7 +906,10 @@ namespace CollapseLauncher.Pages
                 throw new InvalidOperationException("Cannot get actual finite number");
             }
 
-            return TimeSpan.FromMilliseconds(valueAsDouble);
+            // HACK: Intentional. This to avoid video player to seek itself to 0 while slider
+            //       position is being reset, making it reset the video player as well.
+            //       Negated TimeSpan also marks that the trigger is to seek the video player position.
+            return -TimeSpan.FromMilliseconds(valueAsDouble);
         }
     }
 
@@ -1184,6 +1187,25 @@ namespace CollapseLauncher.Pages
                     : Visibility.Visible,
                 _ => Visibility.Collapsed
             };
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class RemoveNewLineStringConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            string? asString = value?.ToString();
+            if (string.IsNullOrEmpty(asString))
+            {
+                return value;
+            }
+
+            return asString.ReplaceLineEndings("");
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

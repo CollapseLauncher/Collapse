@@ -7,38 +7,31 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Block = Microsoft.UI.Xaml.Documents.Block;
 using Inline = Microsoft.UI.Xaml.Documents.Inline;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 public class MyFlowDocument : IAddChild
 {
-    private RichTextBlock _richTextBlock = new();
-
     // useless property
     public TextElement TextElement { get; set; } = new Run();
     //
 
-    public RichTextBlock RichTextBlock
-    {
-        get => _richTextBlock;
-        set => _richTextBlock = value;
-    }
+    public RichTextBlock RichTextBlock { get; set; } = new();
 
     public void AddChild(IAddChild child)
     {
         TextElement element = child.TextElement;
-        if (element != null)
+        if (element == null) return;
+        if (element is Block block)
         {
-            if (element is Block block)
-            {
-                _richTextBlock.Blocks.Add(block);
-            }
-            else if (element is Inline inline)
-            {
-                var paragraph = new Paragraph();
-                paragraph.Inlines.Add(inline);
-                _richTextBlock.Blocks.Add(paragraph);
-            }
+            RichTextBlock.Blocks.Add(block);
+        }
+        else if (element is Inline inline)
+        {
+            Paragraph paragraph = new();
+            paragraph.Inlines.Add(inline);
+            RichTextBlock.Blocks.Add(paragraph);
         }
     }
 }

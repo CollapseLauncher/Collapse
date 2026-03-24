@@ -8,6 +8,7 @@ using Markdig.Syntax;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Documents;
 // ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -18,16 +19,13 @@ internal class MyHeading : IAddChild
 
     public bool IsHtml => _htmlNode != null;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
-    public MyHeading(HeadingBlock headingBlock, MarkdownConfig config)
+    public MyHeading(HeadingBlock headingBlock)
     {
         _paragraph = new Paragraph();
 
-        var level = headingBlock.Level;
+        int level = headingBlock.Level;
         _paragraph.FontSize = level switch
         {
             1 => MarkdownConfig.Themes.H1FontSize,
@@ -56,12 +54,12 @@ internal class MyHeading : IAddChild
         });
     }
 
-    public MyHeading(HtmlNode htmlNode, MarkdownConfig config)
+    public MyHeading(HtmlNode htmlNode)
     {
         _htmlNode = htmlNode;
         _paragraph = new Paragraph();
 
-        var align = _htmlNode?.GetAttributeValue("align", "left");
+        string? align = _htmlNode?.GetAttributeValue("align", "left");
         _paragraph.TextAlignment = align switch
         {
             "left" => TextAlignment.Left,
@@ -71,7 +69,7 @@ internal class MyHeading : IAddChild
             _ => TextAlignment.Left
         };
 
-        var level = int.Parse(htmlNode.Name.Substring(1));
+        int level = int.Parse(htmlNode.Name.Substring(1));
         _paragraph.FontSize = level switch
         {
             1 => MarkdownConfig.Themes.H1FontSize,

@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -16,7 +17,7 @@ internal class HeadingRenderer : MarkdownObjectRenderer<WinUIRenderer, HeadingBl
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-        var paragraph = new MyHeading(obj, renderer.Config);
+        MyHeading paragraph = new(obj);
         renderer.Push(paragraph);
         renderer.WriteLeafInline(obj);
         renderer.Pop();

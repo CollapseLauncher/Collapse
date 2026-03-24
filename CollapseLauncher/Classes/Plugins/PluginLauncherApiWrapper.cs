@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Plugin.Core;

@@ -23,6 +23,8 @@ using Windows.UI.ViewManagement;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
@@ -328,9 +330,9 @@ public static partial class Extensions
 
     public static string ToAlphabetical(this int index)
     {
-        string alphabetical = "abcdefghijklmnopqrstuvwxyz";
-        int remainder = index;
-        StringBuilder stringBuilder = new StringBuilder();
+        const string  alphabetical  = "abcdefghijklmnopqrstuvwxyz";
+        int           remainder     = index;
+        StringBuilder stringBuilder = new();
         while (remainder != 0)
         {
             if (remainder > 26)
@@ -670,13 +672,13 @@ public static partial class Extensions
     public static SolidColorBrush GetAccentColorBrush()
     {
         // Create a UISettings object to get the accent color
-        UISettings uiSettings = new UISettings();
+        UISettings uiSettings = new();
 
         // Get the accent color as a Color value
         Color accentColor = uiSettings.GetColorValue(UIColorType.Accent);
 
         // Create a SolidColorBrush from the accent color
-        SolidColorBrush accentBrush = new SolidColorBrush(accentColor);
+        SolidColorBrush accentBrush = new(accentColor);
 
         return accentBrush;
     }

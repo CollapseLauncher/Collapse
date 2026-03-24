@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using Windows.Foundation;
 using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 // ReSharper disable All

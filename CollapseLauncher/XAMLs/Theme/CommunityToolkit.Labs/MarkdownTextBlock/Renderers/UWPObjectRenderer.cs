@@ -7,6 +7,7 @@ using Markdig.Renderers;
 using Markdig.Syntax;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers;
 

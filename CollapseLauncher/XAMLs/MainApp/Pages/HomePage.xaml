@@ -80,7 +80,9 @@
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardBackgroundTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyImageToClipboardCommand}"
+                                CommandParameter="{StaticResource CopyToClipboardBoth}"
+                                IsEnabled="{Binding CurrentSelectedBackgroundHasOverlayImage, Mode=OneWay}"
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyFrameToClipboardMergedTooltip, Mode=OneWay}" />
@@ -137,7 +139,8 @@
                 <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='8', Converter={StaticResource IsNumberEqualToBooleanConverter}, Mode=TwoWay}"
                                      Text="8px" />
                 <MenuFlyoutSeparator />
-                <RadioMenuFlyoutItem IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
+                <RadioMenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuSetCustomParallaxPixelsCommand}"
+                                     IsChecked="{Binding GlobalBackgroundParallaxPixelShift, ConverterParameter='2, 4, 8', Converter={StaticResource InverseIsContainsAnyNumbersToBooleanConverter}, Mode=OneWay}"
                                      Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomText, Mode=OneWay}"
                                      ToolTipService.Placement="Left"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftCustomTooltip, Mode=OneWay}" />
@@ -826,7 +829,7 @@
                                                       HorizontalAlignment="Stretch"
                                                       VerticalAlignment="Center"
                                                       FontSize="14"
-                                                      Glyph="&#xF0C5;" />
+                                                      Glyph="&#xE895;" />
                                             <TextBlock Grid.Column="0"
                                                        Margin="0,-1,0,0"
                                                        HorizontalAlignment="Stretch"
@@ -1046,7 +1049,7 @@
                                           Height="14"
                                           Margin="-5,-3"
                                           HorizontalAlignment="Center">
-                        <lottie:DownloadIcon Foreground="{Binding ElementName=WpfPackageReinstallBtn, Path=Foreground}" />
+                        <lottie:DownloadIcon Foreground="Black" />
                     </AnimatedVisualPlayer>
                 </c:NonFaultyGrid>
             </c:NonFaultyGrid>
@@ -1186,7 +1189,7 @@
                                     LargeChange="5000"
                                     Maximum="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}"
                                     Minimum="0"
-                                    SmallChange="500"
+                                    SmallChange="1000"
                                     Value="{Binding MediaDurationPosition, Mode=TwoWay, Converter={StaticResource TimeSpanToNumberMillisecondsConverter}}" />
                             <TextBlock Grid.Column="2"
                                        HorizontalAlignment="Center"
@@ -2233,7 +2236,7 @@
                                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_OfficialText, Mode=OneWay}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
-                                              ItemsSource="{Binding OfficialEntries, Mode=OneWay}">
+                                              ItemsSource="{x:Bind CommunityToolContext.OfficialEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -2260,7 +2263,7 @@
                                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.CommunityToolsBtn_CommunityText, Mode=OneWay}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
-                                              ItemsSource="{Binding CommunityEntries, Mode=OneWay}">
+                                              ItemsSource="{x:Bind CommunityToolContext.CommunityEntries, Mode=OneWay}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />

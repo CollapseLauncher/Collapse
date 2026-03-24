@@ -193,7 +193,7 @@ public static class ClipboardUtility
             return;
         }
 
-        DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => ds.Dispose());
+        DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, ds.Dispose);
     }
 
     private static double GetBitmapBitSize(DirectXPixelFormat pixelFormat)

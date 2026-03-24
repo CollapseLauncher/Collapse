@@ -171,6 +171,8 @@ public partial class ImageBackgroundManager
             BackgroundElevationPixels = 64d
         };
 
+        CurrentBackgroundElement = layerElement;
+
         if (!CurrentIsEnableCustomImage &&
             !GlobalIsEnableCustomImage)
         {
@@ -178,7 +180,6 @@ public partial class ImageBackgroundManager
                                       this,
                                       nameof(CurrentIsEnableBackgroundAutoPlay),
                                       bindingMode: BindingMode.OneWay,
-                                      sourceTrigger: UpdateSourceTrigger.PropertyChanged,
                                       converter: StaticConverter<MediaAutoplayWindowOverrideConverter>.Shared);
         }
         else
@@ -189,62 +190,52 @@ public partial class ImageBackgroundManager
         layerElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
                                   this,
                                   nameof(GlobalParallaxHoverSource),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
                                   this,
                                   nameof(GlobalIsBackgroundParallaxEffectEnabled),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
                                   this,
                                   nameof(GlobalBackgroundParallaxPixelShift),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
                                   this,
                                   nameof(GlobalBackgroundParallaxPixelShift),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
                                   this,
                                   nameof(GlobalBackgroundAudioEnabled),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
                                   this,
                                   nameof(GlobalBackgroundAudioVolume),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
                                   this,
                                   nameof(IsBackgroundElevated),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
                                   this,
                                   nameof(ForegroundOpacity),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
                                   this,
                                   nameof(SmokeOpacity),
-                                  bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.UseImageCacheProperty,
                                   context,
                                   nameof(context.ForceReload),
                                   bindingMode: BindingMode.OneWay,
-                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged,
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
         layerElement.Transitions.Add(new PopupThemeTransition());
@@ -252,9 +243,6 @@ public partial class ImageBackgroundManager
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
-
-        // Notify current displayed element change
-        OnPropertyChanged(nameof(CurrentBackgroundElement));
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
