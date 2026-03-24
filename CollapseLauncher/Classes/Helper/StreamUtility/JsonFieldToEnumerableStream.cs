@@ -16,8 +16,8 @@ namespace CollapseLauncher.Helper.StreamUtility
         private readonly byte[] _innerBuffer = new byte[16 << 10];
         private readonly char[] _searchStartValuesUtf16;
         private readonly byte[] _searchStartValuesUtf8;
-        private readonly char[] _searchEndValuesUtf16 = "]\r\n}".ToCharArray();
-        private readonly byte[] _searchEndValuesUtf8  = "]\r\n}"u8.ToArray();
+        private          int    _bracketDepth;
+        private          bool   _inString;
         private          bool   _isFieldStart;
         private          bool   _isFieldEnd;
 
@@ -95,24 +95,27 @@ namespace CollapseLauncher.Helper.StreamUtility
 
             await _redirectStream.WriteAsync(_innerBuffer.AsMemory(0, read), token);
 
-            int lastIndexOffset;
-            if (_isFieldStart && (lastIndexOffset = EnsureIsEnd(_innerBuffer)) > 0)
+            int offset = 0;
+            bool justFoundStart = false;
+            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer.AsSpan(0, read))) < 0)))
+                goto Start;
+            else if (offset > 0)
+                justFoundStart = true;
+
+            // On the first read that found start, skip the [ at offset (depth already set to 1).
+            // On subsequent reads, scan from byte 0.
+            int scanFrom = justFoundStart ? offset + 1 : offset;
+            int endOffset = FindArrayEnd(_innerBuffer.AsSpan(0, read), scanFrom);
+            if (endOffset > 0)
             {
-                _innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer.Span);
+                _innerBuffer.AsSpan(offset, endOffset - offset).CopyTo(buffer.Span);
                 _isFieldEnd = true;
-                return lastIndexOffset;
+                return endOffset - offset;
             }
 
-            int offset = 0;
-            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer)) < 0)))
-                goto Start;
-
-            bool isOneGoBufferLoadEnd = read < toRead && _isFieldStart && !_isFieldEnd;
-            ReadOnlySpan<byte> spanToCopy = isOneGoBufferLoadEnd ? _innerBuffer.AsSpan(offset, read - offset).TrimEnd((byte)'}')
-                : _innerBuffer.AsSpan(offset, read - offset);
-
-            spanToCopy.CopyTo(buffer.Span);
-            return isOneGoBufferLoadEnd ? spanToCopy.Length : read - offset;
+            // No end found yet, pass through what we have (depth already tracked by FindArrayEnd)
+            _innerBuffer.AsSpan(offset, read - offset).CopyTo(buffer.Span);
+            return read - offset;
         }
 
         private int InternalRead(Span<byte> buffer)
@@ -129,50 +132,92 @@ namespace CollapseLauncher.Helper.StreamUtility
 
             _redirectStream.Write(_innerBuffer, 0, read);
 
-            int lastIndexOffset;
-            if (_isFieldStart && (lastIndexOffset = EnsureIsEnd(_innerBuffer)) > 0)
+            int offset = 0;
+            bool justFoundStart = false;
+            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer.AsSpan(0, read))) < 0)))
+                goto Start;
+            else if (offset > 0)
+                justFoundStart = true;
+
+            // On the first read that found start, skip the [ at offset (depth already set to 1).
+            // On subsequent reads, scan from byte 0.
+            int scanFrom = justFoundStart ? offset + 1 : offset;
+            int endOffset = FindArrayEnd(_innerBuffer.AsSpan(0, read), scanFrom);
+            if (endOffset > 0)
             {
-                _innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer);
+                _innerBuffer.AsSpan(offset, endOffset - offset).CopyTo(buffer);
                 _isFieldEnd = true;
-                return lastIndexOffset;
+                return endOffset - offset;
             }
 
-            int offset = 0;
-            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer)) < 0)))
-                goto Start;
-
+            // No end found yet, pass through what we have (depth already tracked by FindArrayEnd)
             _innerBuffer.AsSpan(offset, read - offset).CopyTo(buffer);
             return read - offset;
         }
 
-        private int EnsureIsEnd(Span<byte> buffer)
+        /// <summary>
+        /// Scans the buffer starting at <paramref name="startOffset"/> tracking JSON bracket depth.
+        /// Returns the position after the closing <c>]</c> that brings depth to 0, or -1 if not found.
+        /// Must be called only after the opening <c>[</c> has been found (i.e. <c>_bracketDepth >= 1</c>).
+        /// Handles brackets inside JSON strings so nested arrays don't cause false matches.
+        /// </summary>
+        private int FindArrayEnd(ReadOnlySpan<byte> buffer, int startOffset)
         {
-            ReadOnlySpan<char> bufferAsChars = MemoryMarshal.Cast<byte, char>(buffer);
-
-            int lastIndexOfAnyUtf8 = buffer.LastIndexOf(_searchEndValuesUtf8);
-            if (lastIndexOfAnyUtf8 >= _searchEndValuesUtf8.Length)
+            for (int i = startOffset; i < buffer.Length; i++)
             {
-                return lastIndexOfAnyUtf8 + 1;
+                byte b = buffer[i];
+
+                if (_inString)
+                {
+                    // Skip escaped characters inside strings
+                    if (b == (byte)'\\')
+                    {
+                        i++; // skip next char
+                    }
+                    else if (b == (byte)'"')
+                    {
+                        _inString = false;
+                    }
+                    continue;
+                }
+
+                switch (b)
+                {
+                    case (byte)'"':
+                        _inString = true;
+                        break;
+                    case (byte)'[':
+                        _bracketDepth++;
+                        break;
+                    case (byte)']':
+                        _bracketDepth--;
+                        if (_bracketDepth == 0)
+                            return i + 1; // position after the closing ]
+                        break;
+                }
             }
 
-            int lastIndexOfAnyUtf16 = bufferAsChars.LastIndexOf(_searchEndValuesUtf16);
-            return lastIndexOfAnyUtf16 > 0 ? lastIndexOfAnyUtf16 + 1 : -1;
-
+            return -1;
         }
 
         private int EnsureIsStart(Span<byte> buffer)
         {
-            ReadOnlySpan<char> bufferAsChars = MemoryMarshal.Cast<byte, char>(buffer);
-
             int indexOfAnyUtf8 = buffer.IndexOf(_searchStartValuesUtf8);
-            if (indexOfAnyUtf8 >= _searchStartValuesUtf8.Length)
+            if (indexOfAnyUtf8 >= 0)
             {
+                _bracketDepth = 1; // We found the opening [
                 return indexOfAnyUtf8 + (_searchStartValuesUtf8.Length - 1);
             }
 
+            ReadOnlySpan<char> bufferAsChars = MemoryMarshal.Cast<byte, char>(buffer);
             int indexOfAnyUtf16 = bufferAsChars.IndexOf(_searchStartValuesUtf16);
-            return indexOfAnyUtf16 > 0 ? indexOfAnyUtf16 + (_searchStartValuesUtf16.Length - 1) : -1;
+            if (indexOfAnyUtf16 >= 0)
+            {
+                _bracketDepth = 1;
+                return indexOfAnyUtf16 + (_searchStartValuesUtf16.Length - 1);
+            }
 
+            return -1;
         }
 
         public override long Seek(long offset, SeekOrigin origin)
