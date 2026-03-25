@@ -52,37 +52,31 @@ public partial class SpeedLimiterService : NotifyPropertyChanged
     private const string GetSharedThrottleBytesExportName = "ThrottleServiceGetSharedThrottleBytes";
     private const string AddBytesOrWaitAsyncExportName    = "ThrottleServiceAddBytesOrWaitAsync";
 
-    [LibraryImport(LibName, EntryPoint = SetSharedThrottleBytesExportName)]
-    [return: MarshalAs(UnmanagedType.Error)]
-    private static partial int ThrottleServiceSetSharedThrottleBytes(long bytesPerSecond, in long burstBytes);
-
-    [LibraryImport(LibName, EntryPoint = GetSharedThrottleBytesExportName)]
-    private static partial void ThrottleServiceGetSharedThrottleBytes(ref long bytesPerSecond, ref long burstBytes);
-
-    [LibraryImport(LibName, EntryPoint = AddBytesOrWaitAsyncExportName)]
-    [return: MarshalAs(UnmanagedType.Error)]
-    private static partial int ThrottleServiceAddBytesOrWaitAsync(
-        nint     context,
-        long     readBytes,
-        nint     tokenHandle,
-        out nint asyncWaitHandle);
+    private static readonly unsafe delegate* unmanaged[Stdcall]<long, in long, int>              ThrottleServiceSetSharedThrottleBytes;
+    private static readonly unsafe delegate* unmanaged[Stdcall]<ref long, ref long, void>        ThrottleServiceGetSharedThrottleBytes;
+    private static readonly unsafe delegate* unmanaged[Stdcall]<nint, long, nint, out nint, int> ThrottleServiceAddBytesOrWaitAsync;
 
     public static SpeedLimiterService Shared { get; } = new();
 
-    public static readonly nint AddBytesOrWaitAsyncDelegatePtr;
     public static readonly nint SetSharedThrottleBytesDelegatePtr;
     public static readonly nint GetSharedThrottleBytesDelegatePtr;
+    public static readonly nint AddBytesOrWaitAsyncDelegatePtr;
 
-    static SpeedLimiterService()
+    [SkipLocalsInit]
+    static unsafe SpeedLimiterService()
     {
         if (!NativeLibrary.TryLoad(LibName, out nint libHandle))
         {
             throw new DllNotFoundException($"Failed to load {LibName} library!");
         }
 
-        LoadExport(libHandle, AddBytesOrWaitAsyncExportName,    out AddBytesOrWaitAsyncDelegatePtr);
         LoadExport(libHandle, SetSharedThrottleBytesExportName, out SetSharedThrottleBytesDelegatePtr);
         LoadExport(libHandle, GetSharedThrottleBytesExportName, out GetSharedThrottleBytesDelegatePtr);
+        LoadExport(libHandle, AddBytesOrWaitAsyncExportName,    out AddBytesOrWaitAsyncDelegatePtr);
+
+        ThrottleServiceSetSharedThrottleBytes = (delegate* unmanaged[Stdcall]<long, in long, int>)SetSharedThrottleBytesDelegatePtr;
+        ThrottleServiceGetSharedThrottleBytes = (delegate* unmanaged[Stdcall]<ref long, ref long, void>)GetSharedThrottleBytesDelegatePtr;
+        ThrottleServiceAddBytesOrWaitAsync    = (delegate* unmanaged[Stdcall]<nint, long, nint, out nint, int>)AddBytesOrWaitAsyncDelegatePtr;
 
         if (Shared.IsEnabled)
         {
@@ -130,7 +124,8 @@ public partial class SpeedLimiterService : NotifyPropertyChanged
         }
     }
 
-    private static void UpdateChanges()
+    [SkipLocalsInit]
+    private static unsafe void UpdateChanges()
     {
         const long burstMultiply = 2;
 
@@ -218,7 +213,7 @@ public partial class SpeedLimiterService : NotifyPropertyChanged
     /// <param name="readBytes">How many bytes consumed on current operation.</param>
     /// <param name="token">Cancellation token for the async operation.</param>
     [SkipLocalsInit]
-    public static ValueTask AddBytesOrWaitAsync(
+    public static unsafe ValueTask AddBytesOrWaitAsync(
         nint              context,
         long              readBytes,
         CancellationToken token = default)
