@@ -272,7 +272,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return LauncherMetadataHelper.GetGameTitleTranslation(asString);
+                return MetadataHelper.GetTranslatedTitle(asString);
             }
 
             return value;
@@ -290,7 +290,7 @@ namespace CollapseLauncher.Pages
         {
             if (value is string asString)
             {
-                return LauncherMetadataHelper.GetGameRegionTranslation(asString);
+                return MetadataHelper.GetTranslatedRegion(asString);
             }
 
             return value;

@@ -41,8 +41,7 @@ internal static class GamePropertyVault
         {
             // Try to reinitialize the game property into the vault if
             // the cached one is unavailable.
-            if (LauncherMetadataHelper.LauncherMetadataConfig?[CurrentGameName]?
-                   .TryGetValue(CurrentGameRegion, out PresetConfig? gamePreset) ?? false)
+            if (MetadataHelper.TryGetGameConfig(CurrentGameName, CurrentGameRegion, out PresetConfig? gamePreset))
             {
                 // Try register the game property and get its hash id
                 RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi!, CurrentGameName, CurrentGameRegion);
@@ -62,8 +61,7 @@ internal static class GamePropertyVault
 
     public static void LoadGameProperty(UIElement uiElementParent, ILauncherApi launcherApis, string gameName, string gameRegion)
     {
-        if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
-            .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
+        if (MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
         {
             LastGameHashID = LastGameHashID == 0 ? gamePreset.HashID : LastGameHashID;
             CurrentGameHashID = gamePreset.HashID;
@@ -81,8 +79,7 @@ internal static class GamePropertyVault
         CurrentGameRegion =   gameRegion;
         LastElementParent ??= uiElementParent;
 
-        if (!(LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
-               .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false))
+        if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
         {
             return;
         }

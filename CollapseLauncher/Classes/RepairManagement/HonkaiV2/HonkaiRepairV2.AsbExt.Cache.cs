@@ -141,7 +141,7 @@ internal static partial class AssetBundleExtension
     {
         int parallelThread = progressibleInstance.ThreadForIONormalized;
 
-        if (LauncherMetadataHelper.CurrentMasterKey?.Key == null)
+        if (MetadataHelper.CurrentMasterKey?.Key == null)
         {
             throw new
                 InvalidOperationException("Cannot call this method while CurrentMasterKey.Key config is not initialized!");
@@ -190,14 +190,14 @@ internal static partial class AssetBundleExtension
                 {
                     byte[] masterKey;
                     // Initialize Master key to decrypt the signature bytes (only if it's in ServeV3 format)
-                    if (DataCooker.IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey.Key))
+                    if (DataCooker.IsServeV3Data(MetadataHelper.CurrentMasterKey.Key))
                     {
-                        DataCooker.GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey.Key,
+                        DataCooker.GetServeV3DataSize(MetadataHelper.CurrentMasterKey.Key,
                                                       out long keyCompSize,
                                                       out long keyDecompressedSize);
 
                         masterKey = new byte[keyCompSize];
-                        DataCooker.ServeV3Data(LauncherMetadataHelper.CurrentMasterKey.Key,
+                        DataCooker.ServeV3Data(MetadataHelper.CurrentMasterKey.Key,
                                                masterKey,
                                                (int)keyCompSize,
                                                (int)keyDecompressedSize,
@@ -206,7 +206,7 @@ internal static partial class AssetBundleExtension
                     }
                     else // Use existed served bytes
                     {
-                        masterKey = LauncherMetadataHelper.CurrentMasterKey.Key;
+                        masterKey = MetadataHelper.CurrentMasterKey.Key;
                     }
 
                     // Use Collapse's MhyEncTool to get the salt from the last 8 bytes of the signature bytes.

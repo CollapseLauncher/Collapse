@@ -1038,9 +1038,9 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get translated fullname
             string translatedGameTitle =
-                LauncherMetadataHelper.GetGameTitleTranslation(GameVersionManager.GamePreset.GameName) ?? "";
+                MetadataHelper.GetTranslatedTitle(GameVersionManager.GamePreset.GameName) ?? "";
             string translatedGameRegion =
-                LauncherMetadataHelper.GetGameRegionTranslation(GameVersionManager.GamePreset.ZoneName) ?? "";
+                MetadataHelper.GetTranslatedRegion(GameVersionManager.GamePreset.ZoneName) ?? "";
             string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             // Check if the dialog result is Okay (Primary). If not, then return false
@@ -2395,7 +2395,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // If secondary option is selected, then do the directory migration
-            string translatedGameFullname = $"{LauncherMetadataHelper.GetGameTitleTranslation(GameVersionManager.GamePreset.GameName)} - {LauncherMetadataHelper.GetGameRegionTranslation(GameVersionManager.GamePreset.ZoneName)}";
+            string translatedGameFullname = $"{MetadataHelper.GetTranslatedTitle(GameVersionManager.GamePreset.GameName)} - {MetadataHelper.GetTranslatedRegion(GameVersionManager.GamePreset.ZoneName)}";
 
             FileMigrationProcess migrationProcessTool = await FileMigrationProcess.CreateJob(
              string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingMoveDirectoryTitle ?? "", translatedGameFullname),

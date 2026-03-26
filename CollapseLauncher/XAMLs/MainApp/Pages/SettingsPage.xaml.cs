@@ -265,7 +265,7 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
+                        Directory.Delete(MetadataHelper.LauncherMetadataDirectory, true);
                         MainEntryPoint.ForceRestart();
                     }
                     catch (Exception ex)

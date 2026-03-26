@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Plugins;
+using CollapseLauncher.Statics;
 using DiscordRPC;
 using DiscordRPC.Message;
 using Hi3Helper;
@@ -185,9 +186,9 @@ namespace CollapseLauncher.DiscordPresence
         public void SetupPresence()
         {
             if (!IsRpcEnabled) return;
-            
-            string? gameCategory        = GetAppConfigValue("GameCategory").ToString();
-            bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+
+            string? gameCategory        = MetadataHelper.GetLastSavedGameTitleOrDefault();
+            bool    isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
 
             if (isGameStatusEnabled)
             {
@@ -220,7 +221,7 @@ namespace CollapseLauncher.DiscordPresence
 
         private bool TryEnablePresenceIfPlugin()
         {
-            if (LauncherMetadataHelper.CurrentMetadataConfig
+            if (MetadataHelper.CurrentGameConfig
                 is not PluginPresetConfigWrapper asPluginPresetConfig)
             {
                 return false;
@@ -302,14 +303,14 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled, DateTime? activityOffset = null)
         {
-            string? curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            string? curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string curGameName   = MetadataHelper.CurrentGameTitleName;
+            string curGameRegion = MetadataHelper.CurrentGameRegionName;
 
             if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
                 return;
 
-            string? curGameNameTranslate   = LauncherMetadataHelper.GetGameTitleTranslation(curGameName);
-            string? curGameRegionTranslate = LauncherMetadataHelper.GetGameRegionTranslation(curGameRegion);
+            string? curGameNameTranslate   = MetadataHelper.GetTranslatedTitle(curGameName);
+            string? curGameRegionTranslate = MetadataHelper.GetTranslatedRegion(curGameRegion);
 
             if (TryBuildActivityGameStatusFromPlugin(activityName,
                                                      curGameNameTranslate,
@@ -327,7 +328,7 @@ namespace CollapseLauncher.DiscordPresence
                 State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {curGameRegionTranslate}",
                 Assets = new Assets
                 {
-                    LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
+                    LargeImageKey  = $"game-{MetadataHelper.CurrentGameConfig?.GameType.ToString().ToLower()}-logo",
                     LargeImageText = $"{curGameNameTranslate} - {curGameRegionTranslate}",
                     SmallImageKey  = "launcher-logo-new",
                     SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} "
@@ -350,8 +351,7 @@ namespace CollapseLauncher.DiscordPresence
         {
             Unsafe.SkipInit(out presence);
 
-            if (LauncherMetadataHelper.CurrentMetadataConfig
-                is not PluginPresetConfigWrapper asPluginPresetConfig ||
+            if (MetadataHelper.CurrentGameConfig is not PluginPresetConfigWrapper asPluginPresetConfig ||
                 !asPluginPresetConfig.DiscordPresenceContext.IsFeatureAvailable)
             {
                 return false;
@@ -393,14 +393,14 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName)
         {
-            string? curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            string? curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string curGameName   = MetadataHelper.CurrentGameTitleName;
+            string curGameRegion = MetadataHelper.CurrentGameRegionName;
 
             if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
                 return;
 
-            string? curGameNameTranslate   = LauncherMetadataHelper.GetGameTitleTranslation(curGameName);
-            string? curGameRegionTranslate = LauncherMetadataHelper.GetGameRegionTranslation(curGameRegion);
+            string? curGameNameTranslate   = MetadataHelper.GetTranslatedTitle(curGameName);
+            string? curGameRegionTranslate = MetadataHelper.GetTranslatedRegion(curGameRegion);
 
             if (TryBuildActivityAppStatusFromPlugin(activityName,
                                                     curGameNameTranslate,
@@ -416,7 +416,7 @@ namespace CollapseLauncher.DiscordPresence
                 State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {curGameRegionTranslate}",
                 Assets  = new Assets
                 {
-                    LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
+                    LargeImageKey  = $"game-{MetadataHelper.CurrentGameConfig?.GameType.ToString().ToLower()}-logo",
                     LargeImageText = curGameNameTranslate,
                     SmallImageKey  = "launcher-logo-new",
                     SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} "
@@ -434,8 +434,7 @@ namespace CollapseLauncher.DiscordPresence
         {
             Unsafe.SkipInit(out presence);
 
-            if (LauncherMetadataHelper.CurrentMetadataConfig
-                is not PluginPresetConfigWrapper asPluginPresetConfig ||
+            if (MetadataHelper.CurrentGameConfig is not PluginPresetConfigWrapper asPluginPresetConfig ||
                 !asPluginPresetConfig.DiscordPresenceContext.IsFeatureAvailable)
             {
                 return false;

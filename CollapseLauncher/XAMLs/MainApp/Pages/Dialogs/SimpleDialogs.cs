@@ -724,7 +724,7 @@ namespace CollapseLauncher.Dialogs
                        };
             }
 
-            string gameFullnameString = $"{LauncherMetadataHelper.GetGameTitleTranslation(gameTitle)} - {LauncherMetadataHelper.GetGameRegionTranslation(gameRegion)}";
+            string gameFullnameString = $"{MetadataHelper.GetTranslatedTitle(gameTitle)} - {MetadataHelper.GetTranslatedRegion(gameRegion)}";
 
             TextBlock contentTextBlock = new() { TextWrapping = TextWrapping.Wrap };
             contentTextBlock.AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.MigrateExistingInstallChoiceSubtitle1 ?? "",

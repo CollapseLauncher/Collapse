@@ -21,6 +21,7 @@ using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.IO;
 // ReSharper disable UnusedMember.Global
 
@@ -34,8 +35,7 @@ namespace CollapseLauncher
     {
         internal static GamePresetProperty Create(UIElement uiElementParent, ILauncherApi? launcherApis, string gameName, string gameRegion)
         {
-            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
-            if (gamePreset == null)
+            if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
             {
                 throw new NullReferenceException($"Cannot find game with name: {gameName} and region: {gameRegion} on the currently loaded metadata config!");
             }

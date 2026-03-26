@@ -253,8 +253,8 @@ internal partial class WpfPackageContext
             string gameName   = GameVersionManager.GameName;
             string regionName = GameVersionManager.GameRegion;
 
-            string gameNameTranslated   = LauncherMetadataHelper.GetGameTitleTranslation(gameName) ?? gameName;
-            string gameRegionTranslated = LauncherMetadataHelper.GetGameRegionTranslation(regionName) ?? regionName;
+            string gameNameTranslated   = MetadataHelper.GetTranslatedTitle(gameName);
+            string gameRegionTranslated = MetadataHelper.GetTranslatedRegion(regionName);
 
             string icon = await ImageLoaderHelper
                              .GetCachedSpritesAsync(WpfPackageIconUrl,

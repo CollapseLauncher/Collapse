@@ -142,7 +142,7 @@ namespace CollapseLauncher
 
             // Get a direct HTTP Stream
             await using Stream remoteStream = (await client.TryGetCachedStreamFrom(assetIndexURL, token: token)).Stream;
-            await using XORStream stream = new XORStream(remoteStream);
+            await using XORStream stream = new(remoteStream);
 
             // Build the asset index and return the count and size of each type
             (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex, token);
@@ -251,12 +251,12 @@ namespace CollapseLauncher
             // bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
-            BundleFile bundleFile = new BundleFile(stream);
-            SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.Stream);
+            BundleFile     bundleFile    = new(stream);
+            SerializedFile serializeFile = new(bundleFile.fileList!.FirstOrDefault()!.Stream);
 
             // Try to get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
-            TextAsset dataTextAsset = new TextAsset(dataRaw);
+            TextAsset dataTextAsset = new(dataRaw);
 
             // Initialize local HTTP client
             using HttpClient client = new HttpClientBuilder()
@@ -313,20 +313,20 @@ namespace CollapseLauncher
         {
             // Get the salt from the string and return as byte[]
             byte[] key;
-            if (DataCooker.IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
+            if (DataCooker.IsServeV3Data(MetadataHelper.CurrentMasterKey?.Key))
             {
-                DataCooker.GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
+                DataCooker.GetServeV3DataSize(MetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
                                               out long keyDecompressedSize);
                 key = new byte[keyCompSize];
-                DataCooker.ServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
+                DataCooker.ServeV3Data(MetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
                                        (int)keyDecompressedSize, out _);
             }
             else
             {
-                key = LauncherMetadataHelper.CurrentMasterKey?.Key;
+                key = MetadataHelper.CurrentMasterKey?.Key;
             }
 
-            MhyEncTool saltTool = new MhyEncTool(data, key);
+            MhyEncTool saltTool = new(data, key);
             return saltTool.GetSalt();
         }
 

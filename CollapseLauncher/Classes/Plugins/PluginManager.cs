@@ -25,7 +25,6 @@ internal static partial class PluginManager
 
     internal static async Task LoadPlugins(
         Dictionary<string, Dictionary<string, PresetConfig>> launcherMetadataConfig,
-        Dictionary<string, List<PresetConfig>>               launcherGameNameRegionCollection,
         Dictionary<string, Stamp>                            launcherMetadataStampDictionary)
     {
         DirectoryInfo directoryInfo = new(LauncherConfig.AppPluginFolder);
@@ -115,22 +114,14 @@ internal static partial class PluginManager
 
                         dict.TryAdd(gameRegion, currentConfig);
 
-                        ref List<PresetConfig>? gameRegions = ref CollectionsMarshal.GetValueRefOrAddDefault(launcherGameNameRegionCollection, gameName, out _);
-                        if (Unsafe.IsNullRef(ref gameRegions) || gameRegions == null)
-                        {
-                            gameRegions = [];
-                        }
-
-                        gameRegions.Add(currentConfig);
-
                         long stampTimestamp = long.Parse(pluginInfo.CreationDate?.ToString("yyyyMMddHHmmss") ?? "0");
                         _ = launcherMetadataStampDictionary.TryAdd($"{gameName} - {gameRegion}", new Stamp
                         {
                             GameName            = gameName,
                             GameRegion          = gameRegion,
-                            LastModifiedTimeUtc = pluginInfo.CreationDate ?? DateTime.MinValue,
                             LastUpdated         = stampTimestamp,
                             MetadataType        = MetadataType.PresetConfigPlugin,
+                            MetadataPath        = "",
                             PresetConfigVersion = pluginInfo.StandardVersion.ToString()
                         });
                     }

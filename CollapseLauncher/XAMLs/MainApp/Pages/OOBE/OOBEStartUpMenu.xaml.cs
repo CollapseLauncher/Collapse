@@ -731,7 +731,7 @@ namespace CollapseLauncher.Pages.OOBE
                 LoadingMessageHelper.SetProgressBarValue(100);
                 LoadingMessageHelper.ShowLoadingFrame();
 
-                await LauncherMetadataHelper.Initialize(false, false);
+                await MetadataHelper.InitializeAsync(false);
                 LoadingMessageHelper.SetMessage(Locale.Current.Lang?._StartupPage?.Pg1LoadingTitle1,
                                                 Locale.Current.Lang?._StartupPage?.Pg1LoadingSubitle2);
                 LoadingMessageHelper.SetProgressBarState(100, false);

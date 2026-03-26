@@ -51,8 +51,8 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
     public string? GameBiz    => null;
     public string? GameId     => null;
 
-    public string GameNameTranslation   => LauncherMetadataHelper.GetGameTitleTranslation(GameName) ?? GameName;
-    public string GameRegionTranslation => LauncherMetadataHelper.GetGameRegionTranslation(GameRegion) ?? GameRegion;
+    public string GameNameTranslation   => MetadataHelper.GetTranslatedTitle(GameName);
+    public string GameRegionTranslation => MetadataHelper.GetTranslatedRegion(GameRegion);
 
     public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; set; }
     public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; set; }

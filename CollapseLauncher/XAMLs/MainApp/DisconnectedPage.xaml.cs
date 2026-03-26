@@ -37,15 +37,15 @@ namespace CollapseLauncher
 
         private void InitializeRegionComboBox()
         {
-            string? gameTitle = LauncherConfig.GetAppConfigValue("GameCategory");
+            string? gameTitle = MetadataHelper.GetLastSavedGameTitleOrDefault();
 
-            List<string>       gameTitleList  = LauncherMetadataHelper.GetGameTitleList();
-            List<PresetConfig> gameRegionList = LauncherMetadataHelper.GetGameRegionList(gameTitle ?? "");
+            List<string>       gameTitleList  = MetadataHelper.CurrentGameTitleList;
+            List<PresetConfig> gameRegionList = MetadataHelper.GetGameRegionList(gameTitle);
 
             if (gameRegionList.Count == 0)
             {
                 gameTitle      = gameTitleList[0];
-                gameRegionList = LauncherMetadataHelper.GetGameRegionList(gameTitle);
+                gameRegionList = MetadataHelper.GetGameRegionList(gameTitle);
             }
 
             ComboBoxGameTitle.ItemsSource  = gameTitleList;
@@ -54,7 +54,7 @@ namespace CollapseLauncher
             int indexCategory = gameTitleList.IndexOf(gameTitle ?? "");
             if (indexCategory < 0) indexCategory = 0;
 
-            int indexRegion = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(gameTitle);
+            int indexRegion = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameTitle);
 
             ComboBoxGameTitle.SelectedIndex = indexCategory;
             ComboBoxGameRegion.SelectedIndex = indexRegion;
@@ -99,20 +99,19 @@ namespace CollapseLauncher
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem is not string asGameTitleString) return;
 
-            ComboBoxGameRegion.ItemsSource = LauncherMetadataHelper.GetGameRegionList(asGameTitleString);
-            ComboBoxGameRegion.SelectedIndex = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(asGameTitleString);
+            ComboBoxGameRegion.ItemsSource   = MetadataHelper.GetGameRegionList(asGameTitleString);
+            ComboBoxGameRegion.SelectedIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(asGameTitleString);
         }
 
-        private async void SetGameRegionChange(object sender, SelectionChangedEventArgs e)
+        private void SetGameRegionChange(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBoxGameTitle.SelectedValue is not string asGameTitleString) return;
             if (((ComboBox)sender).SelectedValue is not PresetConfig asGameRegionString) return;
 
-            _ = await LauncherMetadataHelper.GetMetadataConfig(asGameTitleString, asGameRegionString.ZoneName ?? "");
+            _ = MetadataHelper.GetAndSetCurrentConfig(asGameTitleString, asGameRegionString.ZoneName ?? "");
 
             // Set and Save CurrentRegion in AppConfig
-            LauncherConfig.SetAndSaveConfigValue("GameCategory", asGameTitleString);
-            LauncherMetadataHelper.SaveGameRegionIndex(asGameTitleString, asGameRegionString.ZoneName ?? "");
+            MetadataHelper.SaveGame(asGameTitleString, asGameRegionString.ZoneName ?? "");
         }
     }
 }

@@ -27,19 +27,19 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public const int           ExecutionTimeout        = 10;
         public const int           ExecutionTimeoutStep    = 5;
         public const int           ExecutionTimeoutAttempt = 5;
+        protected    PresetConfig? PresetConfig            { get; } = presetConfig;
         public       bool          IsPlugin                => false;
         public       bool          IsLoadingCompleted      { get; private set; }
         public       bool          IsForceRedirectToSophon { get; protected set; }
-        public       string?       GameBackgroundImg       { get => LauncherGameBackground?.Data?.BackgroundImageUrl; }
         public       string?       GameBackgroundImgLocal  { get; set; }
         public       string?       GameName                { get; } = gameName;
         public       string?       GameRegion              { get; } = gameRegion;
         public       string?       GameBiz                 { get; } = presetConfig.LauncherBizName;
         public       string?       GameId                  { get; } = presetConfig.LauncherGameId;
-        protected    PresetConfig? PresetConfig            { get; } = presetConfig;
+        public       string?       GameBackgroundImg       => LauncherGameBackground?.Data?.BackgroundImageUrl;
 
-        public string? GameNameTranslation   => LauncherMetadataHelper.GetGameTitleTranslation(GameName);
-        public string? GameRegionTranslation => LauncherMetadataHelper.GetGameRegionTranslation(GameRegion);
+        public string? GameNameTranslation   => MetadataHelper.GetTranslatedTitle(GameName);
+        public string? GameRegionTranslation => MetadataHelper.GetTranslatedRegion(GameRegion);
 
         public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; protected set; }
         public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; protected set; }

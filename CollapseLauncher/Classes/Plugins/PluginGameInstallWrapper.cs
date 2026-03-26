@@ -117,8 +117,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         if (!string.IsNullOrEmpty(existingPath) && Directory.Exists(existingPath))
         {
             ContentDialogResult dialogResult = await SimpleDialogs.Dialog_MigrationChoiceDialog(existingPath,
-                LauncherMetadataHelper.GetGameTitleTranslation(_pluginPresetConfig.GameName) ?? _pluginPresetConfig.GameName,
-                LauncherMetadataHelper.GetGameRegionTranslation(_pluginPresetConfig.ZoneName) ?? _pluginPresetConfig.ZoneName,
+                MetadataHelper.GetTranslatedTitle(_pluginPresetConfig.GameName),
+                MetadataHelper.GetTranslatedRegion(_pluginPresetConfig.ZoneName),
                 nameof(MigrateFromLauncherType.Plugin),
                 MigrateFromLauncherType.Plugin,
                 true);

@@ -35,7 +35,7 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool               IsLoadRegionComplete;
 
-        private static string RegionToChangeName => $"{LauncherMetadataHelper.GetGameTitleTranslation(LauncherMetadataHelper.CurrentMetadataConfigGameName)} - {LauncherMetadataHelper.GetGameRegionTranslation(LauncherMetadataHelper.CurrentMetadataConfigGameRegion)}";
+        private static string RegionToChangeName => MetadataHelper.GetCurrentTranslatedTitleRegion();
 
         private List<object> LastMenuNavigationItem;
         private List<object> LastFooterNavigationItem;
@@ -182,7 +182,10 @@ namespace CollapseLauncher
 
         private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)
         {
-            PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
+            if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig preset))
+            {
+                return;
+            }
 
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
@@ -390,21 +393,19 @@ namespace CollapseLauncher
                 ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion) return false;
 
             // Set and Save CurrentRegion in AppConfig
-            SetAndSaveConfigValue("GameCategory", gameTitle);
-            LauncherMetadataHelper.SaveGameRegionIndex(gameTitle, gameRegion.ZoneName);
+            MetadataHelper.SaveGame(gameTitle, gameRegion.ZoneName);
 
             // Load Game ConfigV2 List before loading the region
             Interlocked.Exchange(ref IsLoadRegionComplete, false);
-            PresetConfig Preset = await LauncherMetadataHelper.GetMetadataConfig(gameTitle, gameRegion.ZoneName);
 
             // Start region loading
             _ = ShowAsyncLoadingTimedOutPill();
-            if (!await LoadRegionFromCurrentConfigV2(Preset, gameTitle, gameRegion.ZoneName))
+            if (!await LoadRegionFromCurrentConfigV2(gameRegion, gameTitle, gameRegion.ZoneName))
             {
                 return false;
             }
 
-            LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
+            LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
         #if !DISABLEDISCORD
             if (AppDiscordPresence.IsRpcEnabled)
                 AppDiscordPresence.SetupPresence();

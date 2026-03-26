@@ -292,6 +292,11 @@ public partial class LayeredBackgroundImage
             return;
         }
 
+        if (DispatcherQueue.IsObjectDisposed())
+        {
+            return;
+        }
+
         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => SetValue(MediaDurationPositionProperty, sender.Position));
     }
 

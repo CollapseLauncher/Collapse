@@ -22,7 +22,7 @@ public sealed partial class HomePage
 {
     private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
 
-    private static ILauncherApi? CurrentGameLauncherApi => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+    private static ILauncherApi? CurrentGameLauncherApi => MetadataHelper.CurrentGameConfig?.GameLauncherApi;
 
     private static HypLauncherBackgroundList? GameBackgroundData => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
 

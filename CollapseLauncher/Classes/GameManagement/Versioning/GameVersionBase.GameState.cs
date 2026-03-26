@@ -320,8 +320,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return true;
             }
 
-            string? translatedGameTitle  = LauncherMetadataHelper.GetGameTitleTranslation(GamePreset.GameName);
-            string? translatedGameRegion = LauncherMetadataHelper.GetGameRegionTranslation(GamePreset.ZoneName);
+            string? translatedGameTitle  = MetadataHelper.GetTranslatedTitle(GamePreset.GameName);
+            string? translatedGameRegion = MetadataHelper.GetTranslatedRegion(GamePreset.ZoneName);
             string  gameNameTranslated   = $"{translatedGameTitle} - {translatedGameRegion}";
 
             TextBlock textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }

@@ -74,8 +74,10 @@ public partial class MainPage : Page
             int numIndex = 0;
             if (KbShortcutList != null)
             {
+                MetadataHelper.GetGameCounts(out int gameTitleCount, out int currentGameRegionCount);
+
                 VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                while (numIndex < LauncherMetadataHelper.CurrentGameNameCount)
+                while (numIndex < gameTitleCount)
                 {
                     KeyboardAccelerator keystroke = new()
                     {
@@ -97,7 +99,7 @@ public partial class MainPage : Page
 
                 numIndex    = 0;
                 keyModifier = KbShortcutList["RegionSelection"].Modifier;
-                while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
+                while (numIndex < currentGameRegionCount)
                 {
                     KeyboardAccelerator keystroke = new()
                     {
@@ -197,13 +199,13 @@ public partial class MainPage : Page
     private void RestoreCurrentRegion()
     {
         string       gameTitle     = GetAppConfigValue("GameCategory");
-        List<string> gameTitleList = LauncherMetadataHelper.GetGameTitleList();
+        List<string> gameTitleList = MetadataHelper.CurrentGameTitleList;
 
         int indexCategory = gameTitleList.IndexOf(gameTitle);
         if (indexCategory < 0)
             indexCategory = 0;
 
-        int indexRegion = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(gameTitle);
+        int indexRegion = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameTitle);
 
         ComboBoxGameTitle.SelectedIndex  = indexCategory;
         ComboBoxGameRegion.SelectedIndex = indexRegion;
@@ -231,7 +233,7 @@ public partial class MainPage : Page
             return;
         }
 
-        ComboBoxGameRegion.SelectedIndex = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(asGameTitleString);
+        ComboBoxGameRegion.SelectedIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(asGameTitleString);
         ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
 
         ChangeRegionConfirmBtn.IsEnabled          = false;

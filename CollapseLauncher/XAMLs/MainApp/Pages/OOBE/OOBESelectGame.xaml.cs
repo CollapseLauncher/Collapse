@@ -36,7 +36,7 @@ namespace CollapseLauncher.Pages.OOBE
         public OOBESelectGame()
         {
             InitializeComponent();
-            GameTitleComboBox.ItemsSource = LauncherMetadataHelper.GetGameTitleList();
+            GameTitleComboBox.ItemsSource = MetadataHelper.CurrentGameTitleList;
             BackgroundFrame.Navigate(typeof(OOBESelectGameBG));
             RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
@@ -45,10 +45,9 @@ namespace CollapseLauncher.Pages.OOBE
         {
             // Set and Save CurrentRegion in AppConfig
             if (GameTitleComboBox.SelectedValue is not string asGameTitleString) return;
-            if (GameRegionComboBox.SelectedValue is not PresetConfig asGameRegionString) return;
+            if (GameRegionComboBox.SelectedValue is not PresetConfig asGameRegionConfig) return;
 
-            SetAppConfigValue("GameCategory", asGameTitleString);
-            LauncherMetadataHelper.SaveGameRegionIndex(asGameTitleString, asGameRegionString.ZoneName ?? "");
+            MetadataHelper.SaveGame(asGameTitleString, asGameRegionConfig.ZoneName);
 
             (WindowUtility.CurrentWindow as MainWindow)?.RootFrame.Navigate(typeof(MainPage), null,
                                                          new SlideNavigationTransitionInfo
@@ -57,23 +56,21 @@ namespace CollapseLauncher.Pages.OOBE
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
             // Spawn welcome toast after clicking in
-            SpawnGreetingsToastNotification(asGameTitleString, asGameRegionString.ZoneName ?? "");
+            SpawnGreetingsToastNotification(asGameTitleString, asGameRegionConfig.ZoneName ?? "");
         }
 
         private static void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
         {
-            if (string.IsNullOrEmpty(gameTitle)
-                || string.IsNullOrEmpty(gameRegion))
+            if (string.IsNullOrEmpty(gameTitle) || string.IsNullOrEmpty(gameRegion))
             {
                 return;
             }
 
-            string gameTitleTranslated  = LauncherMetadataHelper.GetGameTitleTranslation(gameTitle) ?? gameTitle;
-            string gameRegionTranslated = LauncherMetadataHelper.GetGameRegionTranslation(gameRegion) ?? gameRegion;
+            string gameTitleTranslated  = MetadataHelper.GetTranslatedTitle(gameTitle);
+            string gameRegionTranslated = MetadataHelper.GetTranslatedRegion(gameRegion);
 
             // Get game preset config
-            if (!LauncherMetadataHelper.LauncherMetadataConfig.TryGetValue(gameTitle, out Dictionary<string, PresetConfig>? regionDict) ||
-                !regionDict.TryGetValue(gameRegion, out PresetConfig? gamePresetConfig))
+            if (!MetadataHelper.TryGetGameConfig(gameTitle, gameRegion, out PresetConfig? gamePresetConfig))
             {
                 return;
             }
@@ -156,8 +153,8 @@ namespace CollapseLauncher.Pages.OOBE
                     BarBGLoading.IsIndeterminate = true;
                     FadeBackground(1, 0.25);
 
-                    PresetConfig gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedTitle, SelectedRegion);
-                    if (await TryLoadGameDetails(gameConfig))
+                    if (MetadataHelper.TryGetGameConfig(SelectedTitle, SelectedRegion, out PresetConfig? gameConfig) &&
+                        await TryLoadGameDetails(gameConfig))
                     {
                         if (IsLoadDescription &&
                             Uri.TryCreate(_gamePosterPath, UriKind.Absolute, out Uri? posterPath))
@@ -221,7 +218,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             SelectedTitle = ((ComboBox)sender).SelectedValue as string;
             if (string.IsNullOrEmpty(SelectedTitle)) return;
-            GameRegionComboBox.ItemsSource = LauncherMetadataHelper.GetGameRegionList(SelectedTitle);
+            GameRegionComboBox.ItemsSource = MetadataHelper.GetGameRegionList(SelectedTitle);
             GameRegionComboBox.IsEnabled   = true;
             NextPage.IsEnabled             = false;
             NextPage.Opacity               = 0;

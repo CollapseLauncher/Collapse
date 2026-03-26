@@ -728,11 +728,12 @@ namespace CollapseLauncher.Dialogs
 
             public string GetKey(string dictionaryKey = "")
             {
+                MetadataHelper.GetGameCounts(out int gameTitleCount, out int currentGameRegionCount);
                 return dictionaryKey switch
                 {
-                    "GameSelection" => $"1 - {LauncherMetadataHelper.CurrentGameNameCount}",
-                    "RegionSelection" => $"1 - {LauncherMetadataHelper.CurrentGameRegionMaxCount}",
-                    _ => Key.ToString()
+                    "GameSelection"   => $"1 - {gameTitleCount}",
+                    "RegionSelection" => $"1 - {currentGameRegionCount}",
+                    _                 => Key.ToString()
                 };
             }
 

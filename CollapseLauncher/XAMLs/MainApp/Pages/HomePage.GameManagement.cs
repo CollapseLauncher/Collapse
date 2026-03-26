@@ -209,8 +209,7 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-
+            string gameNameLocale = MetadataHelper.GetCurrentTranslatedTitleRegion();
             WindowUtility.Tray_ShowNotification(
                                                 string.Format(Locale.Current.Lang?._NotificationToast?.GamePreloadCompleted_Title ?? "", gameNameLocale),
                                                 Locale.Current.Lang?._NotificationToast?.GenericClickNotifToGoBack_Subtitle ?? ""
@@ -354,7 +353,7 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+            string gameNameLocale = MetadataHelper.GetCurrentTranslatedTitleRegion();
             WindowUtility.Tray_ShowNotification(
                                                 string.Format(Locale.Current.Lang?._NotificationToast?.GameInstallCompleted_Title ?? "",
                                                               gameNameLocale),
@@ -841,7 +840,7 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale    = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+            string gameNameLocale    = MetadataHelper.GetCurrentTranslatedTitleRegion();
             string gameVersionString = CurrentGameProperty.GameVersion?.GetGameVersionApi()?.VersionString;
 
             WindowUtility.Tray_ShowNotification(

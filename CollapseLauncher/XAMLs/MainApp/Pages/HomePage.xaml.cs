@@ -109,8 +109,9 @@ namespace CollapseLauncher.Pages
             PageToken           = new CancellationTokenSourceWrapper();
             m_homePage          = this;
 
-            CommunityToolContext =
-                LauncherMetadataHelper.CommunityToolsProperty.GetContext(CurrentGameProperty.GamePreset);
+            CommunityToolContext = MetadataHelper
+                                  .CommunityToolsProperty
+                                  .GetContext(CurrentGameProperty.GamePreset);
 
             InitializeComponent();
             InitializeConsoleValues();

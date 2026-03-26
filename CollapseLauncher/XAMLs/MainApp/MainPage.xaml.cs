@@ -163,14 +163,14 @@ namespace CollapseLauncher
             Type page = typeof(HomePage);
 
             bool isCacheUpdaterMode = InnerLauncherConfig.m_appMode == InnerLauncherConfig.AppMode.Hi3CacheUpdater;
-            await LauncherMetadataHelper.Initialize(isCacheUpdaterMode);
+            await MetadataHelper.InitializeAsync(!isCacheUpdaterMode);
 
             if (!isCacheUpdaterMode) SetActivatedRegion();
 
             // Lock ChangeBtn for first start
             _lockRegionChangeBtn = true;
 
-            (PresetConfig presetConfig, string gameName, string gameRegion) = await LoadSavedGameSelection();
+            (PresetConfig presetConfig, string gameName, string gameRegion) = LoadSavedGameSelection();
             if (InnerLauncherConfig.m_appMode == InnerLauncherConfig.AppMode.Hi3CacheUpdater)
                 page = InnerLauncherConfig.m_appMode == InnerLauncherConfig.AppMode.Hi3CacheUpdater && presetConfig.GameType == GameNameType.Honkai ? typeof(CachesPage) : typeof(NotInstalledPage);
 
@@ -464,39 +464,26 @@ namespace CollapseLauncher
         #endregion
 
         #region Game Selector Method
-        private async Task<(PresetConfig, string, string)> LoadSavedGameSelection()
+        private (PresetConfig, string, string) LoadSavedGameSelection()
         {
-            List<string> gameTitles = LauncherMetadataHelper.GetGameTitleList();
-            string savedLastGameTitle = GetAppConfigValue("GameCategory").Value
-                                     ?? (gameTitles.Count == 0
-                                            ? throw new InvalidOperationException("Launcher has no game title available")
-                                            : gameTitles[0]);
+            string savedLastGameTitle  = MetadataHelper.GetLastSavedGameTitleOrDefault();
+            string savedLastGameRegion = MetadataHelper.GetLastSavedGameRegionOrDefault(savedLastGameTitle);
 
-            List<PresetConfig> gameRegions = LauncherMetadataHelper.GetGameRegionList(savedLastGameTitle);
+            int savedLastGameRegionIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(savedLastGameTitle);
 
-            // Fallback to default game title if no last game title is found.
-            if (gameRegions.Count == 0)
-            {
-                savedLastGameTitle = gameTitles[0];
-                gameRegions        = LauncherMetadataHelper.GetGameRegionList(savedLastGameTitle);
-            }
+            List<string>       currentGameTitles  = MetadataHelper.CurrentGameTitleList;
+            List<PresetConfig> currentGameRegions = MetadataHelper.GetGameRegionList(savedLastGameTitle);
 
-            int indexTitle                   = gameTitles.IndexOf(savedLastGameTitle);
-            int indexRegion                  = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(savedLastGameTitle);
-            if (indexTitle < 0) indexTitle   = 0;
-            if (indexRegion < 0) indexRegion = 0;
+            int indexTitle  = currentGameTitles.IndexOf(savedLastGameTitle);
 
-            savedLastGameTitle = gameTitles[indexTitle];
-            string savedLastGameRegion = gameRegions[indexRegion].ZoneName ?? "";
-
-            ComboBoxGameTitle.ItemsSource    = gameTitles;
-            ComboBoxGameRegion.ItemsSource   = gameRegions;
+            ComboBoxGameTitle.ItemsSource    = currentGameTitles;
+            ComboBoxGameRegion.ItemsSource   = currentGameRegions;
             ComboBoxGameTitle.SelectedIndex  = indexTitle;
-            ComboBoxGameRegion.SelectedIndex = indexRegion;
+            ComboBoxGameRegion.SelectedIndex = savedLastGameRegionIndex;
             _currentGameCategory             = indexTitle;
-            _currentGameRegion               = indexRegion;
+            _currentGameRegion               = savedLastGameRegionIndex;
 
-            return (await LauncherMetadataHelper.GetMetadataConfig(savedLastGameTitle, savedLastGameRegion), savedLastGameTitle, savedLastGameRegion);
+            return (MetadataHelper.GetAndSetCurrentConfig(savedLastGameTitle, savedLastGameRegion), savedLastGameTitle, savedLastGameRegion);
         }
         
         private void SetGameTitleChange(object sender, SelectionChangedEventArgs e)
@@ -504,12 +491,12 @@ namespace CollapseLauncher
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem is not string asGameTitleString) return;
 
-            ComboBoxGameRegion.ItemsSource   = LauncherMetadataHelper.GetGameRegionList(asGameTitleString);
-            ComboBoxGameRegion.SelectedIndex = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(asGameTitleString);
+            ComboBoxGameRegion.ItemsSource   = MetadataHelper.GetGameRegionList(asGameTitleString);
+            ComboBoxGameRegion.SelectedIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(asGameTitleString);
         }
 
         private bool _isDisableInstantRegionChangeTemporary = true;
-        private async void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
+        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
             if (_isDisableInstantRegionChangeTemporary) // Disabling instant change for the first start-up to avoid conflict
             {
@@ -532,7 +519,7 @@ namespace CollapseLauncher
             if (ComboBoxGameTitle.SelectedValue is not string asGameTitleString) return;
             if (((ComboBox)sender).SelectedValue is not PresetConfig asGameRegionString) return;
 
-            PresetConfig preset = await LauncherMetadataHelper.GetMetadataConfig(asGameTitleString, asGameRegionString.ZoneName ?? "");
+            PresetConfig preset = MetadataHelper.GetAndSetCurrentConfig(asGameTitleString, asGameRegionString.ZoneName ?? "");
 
             ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable
                 ? string.Format(Locale.Current.Lang?._MainPage?.RegionChangeWarnExper1 ?? "", preset.GameChannel)
@@ -561,7 +548,9 @@ namespace CollapseLauncher
         #region Metadata Update Method
         private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
-            bool isMetadataHasUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
+            Dictionary<string, Stamp> metadataUpdateDict  = await MetadataHelper.CheckMetadataUpdateAsync();
+            bool                      isMetadataHasUpdate = metadataUpdateDict.Count > 0;
+
             (List<(string, PluginManifest)> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
 
             if (!isMetadataHasUpdate && !isPluginHasUpdate)
@@ -702,7 +691,7 @@ namespace CollapseLauncher
 
                                             try
                                             {
-                                                await LauncherMetadataHelper.RunMetadataUpdate();
+                                                MetadataHelper.ApplyMetadataUpdate(metadataUpdateDict);
                                                 MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                                             }
                                             catch (Exception ex)
@@ -779,21 +768,21 @@ namespace CollapseLauncher
             ArgumentStartGame? args = InnerLauncherConfig.m_arguments.StartGame;
             if (args == null) return true;
 
-            string? oldGameCategory = GetAppConfigValue("GameCategory");
+            string oldGameCategory = MetadataHelper.GetLastSavedGameTitleOrDefault();
             string? gameName        = args.Game;
 
-            List<string>       gameTitleList        = LauncherMetadataHelper.GetGameTitleList();
-            List<PresetConfig> gameRegionCollection = LauncherMetadataHelper.GetGameRegionList(gameName);
+            List<string>       gameTitleList        = MetadataHelper.CurrentGameTitleList;
+            List<PresetConfig> gameRegionCollection = MetadataHelper.GetGameRegionList(gameName);
             if (gameRegionCollection.Count == 0)
             {
                 bool res = int.TryParse(args.Game, out int gameIndex);
                 if (!res || gameIndex < 0 || gameIndex >= gameTitleList.Count) return true;
 
                 gameName             = gameTitleList[gameIndex];
-                gameRegionCollection = LauncherMetadataHelper.GetGameRegionList(gameName);
+                gameRegionCollection = MetadataHelper.GetGameRegionList(gameName);
             }
 
-            SetAndSaveConfigValue("GameCategory", gameName);
+            MetadataHelper.SaveGame(gameName);
 
             if (args is not { Region: not null })
             {
@@ -809,12 +798,10 @@ namespace CollapseLauncher
                 gameRegion = gameRegionCollection[regionIndex];
             }
 
-            int          oldGameRegionIndex = LauncherMetadataHelper.GetGameRegionLastSavedIndexOrDefault(gameName);
+            int          oldGameRegionIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameName);
             PresetConfig oldGameRegion      = gameRegionCollection.ElementAt(oldGameRegionIndex);
 
-            SetAndSaveConfigValue("GameRegion", gameRegion.ZoneName);
-            LauncherMetadataHelper.SaveGameRegionIndex(gameName, gameRegion.ZoneName);
-
+            MetadataHelper.SaveGame(gameName, gameRegion.ZoneName);
             return oldGameCategory == gameName && oldGameRegion == gameRegion;
         }
 
@@ -830,7 +817,7 @@ namespace CollapseLauncher
                 _lockRegionChangeBtn        = true;
                 Interlocked.Exchange(ref IsLoadRegionComplete, false);
 
-                (PresetConfig preset, string gameName, string gameRegion) = await LoadSavedGameSelection();
+                (PresetConfig preset, string gameName, string gameRegion) = LoadSavedGameSelection();
 
                 _ = ShowAsyncLoadingTimedOutPill();
                 if (await LoadRegionFromCurrentConfigV2(preset, gameName, gameRegion))
