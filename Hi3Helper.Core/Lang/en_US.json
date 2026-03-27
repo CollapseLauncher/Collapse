@@ -1265,6 +1265,18 @@
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Custom Parallax Pixels (Min: {0}px, Max: {1}px)",
 
+    "StartupFFmpegInstallDialogTitle": "FFmpeg Installation is Required",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher has now require FFmpeg decoder (build 7.x) to be installed in order to play video background properly. Click on \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" to install FFmpeg from scratch or locate it from your existing installation, or click on \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" to keep using Windows Media Foundation built-in decoder.",
+    "StartupFFmpegInstallDialogSubtitle4": "Note:",
+    "StartupFFmpegInstallDialogSubtitle5": "Video background might displays garbaged/corrupted frame in certain game selection due to unsupported Color-space type by Windows Media Foundation built-in decoder. If you want to select FFmpeg to decode the video background later, you can go to the \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\" page, then find \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" section to enable and install the FFmpeg decoder.",
+    "StartupFFmpegInstallDialogInstallBtn": "Install & Use FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Use Built-in Decoder",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "Do not ask me to install FFmpeg again in the future",
+
     "Media_ExtNotSupported1": "Sorry but the file extension for the following background image/video file is not supported.",
     "Media_ExtNotSupported2": "File Path/URL: {0}",
     "Media_ExtNotSupportedTitle": "Background File is not Supported",

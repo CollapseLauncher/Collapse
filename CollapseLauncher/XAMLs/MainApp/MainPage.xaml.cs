@@ -111,6 +111,8 @@ namespace CollapseLauncher
         {
             try
             {
+                await ShowFFmpegInstallationDialog();
+
                 SubscribeEvents();
                 if (!IsShowRegionChangeWarning && IsInstantRegionChange)
                 {

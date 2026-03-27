@@ -1265,6 +1265,18 @@
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Pixel Parallax Kustom (Min: {0}px, Maks: {1}px)",
 
+    "StartupFFmpegInstallDialogTitle": "Instalasi FFmpeg Diperlukan",
+    "StartupFFmpegInstallDialogSubtitle1": "Dekoder FFmpeg (build 7.x) perlu dipasang untuk memutar video background dengan benar pada Collapse Launcher. Klik \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" untuk memasang FFmpeg dari awal atau mencari lokasi instalasi existing, atau klik \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" untuk tetap menggunakan dekoder bawaan Windows Media Foundation.",
+    "StartupFFmpegInstallDialogSubtitle4": "Catatan:",
+    "StartupFFmpegInstallDialogSubtitle5": "Beberapa background video pada beberapa game akan telihat rusak atau terdisplay dengan tidak benar dikarenakan Color-space yang tidak didukung oleh dekoder bawaan Windows Media Foundation. Apabila kamu ingin menggunakan FFmpeg untuk dekod background video nantinya, kamu bisa masuk ke \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\", lalu cari bagian \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" untuk memasang dan menggunakan dekoder FFmpeg.",
+    "StartupFFmpegInstallDialogInstallBtn": "Pasang & Pakai FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Pakai Dekoder Bawaan",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "Jangan tanya lagi untuk pasang FFmpeg",
+
     "Media_ExtNotSupported1": "Maaf tapi file extension untuk background gambar/video ini tidak didukung.",
     "Media_ExtNotSupported2": "Path/URL File: {0}",
     "Media_ExtNotSupportedTitle": "File Background Tidak Didukung",

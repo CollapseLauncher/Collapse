@@ -12,6 +12,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
@@ -30,6 +31,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1759,6 +1761,41 @@ namespace CollapseLauncher.Dialogs
             }
 
             void HideDialog() => DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(dialog.Hide);
+        }
+
+        internal static async Task<ContentDialogResult> Dialog_SpawnStartUpFFmpegInstallDialog()
+        {
+            const string doNotAskInstallFFmpegKey = "DoNotAskInstallFFmpeg";
+
+            StackPanel panel = new() { Spacing = 16 };
+            panel.AddElementToStackPanel(new TextBlock { TextWrapping = TextWrapping.Wrap }
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle1)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogInstallBtn, FontWeights.Bold)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle2)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogUseBuiltInBtn, FontWeights.Bold)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle3)
+                                        .AddTextBlockNewLine(2)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle4, FontWeights.Bold, size: 12d)
+                                        .AddTextBlockNewLine()
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle5, size: 12d)
+                                        .AddTextBlockLine(Locale.Current.Lang?._SettingsPage?.PageTitle, FontWeights.Bold, size: 12d)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle6, size: 12d)
+                                        .AddTextBlockLine(Locale.Current.Lang?._SettingsPage?.VideoBackground_UseFFmpeg, FontWeights.Bold, size: 12d)
+                                        .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogSubtitle7, size: 12d));
+
+            CheckBox checkBox = new() { Content = Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogDoNotAskInstall };
+            checkBox.Checked   += (_, _) => SetAndSaveConfigValue(doNotAskInstallFFmpegKey, true);
+            checkBox.Unchecked += (_, _) => SetAndSaveConfigValue(doNotAskInstallFFmpegKey, false);
+            checkBox.Scale     -= new Vector3(0.10f);
+
+            panel.AddElementToStackPanel(checkBox);
+
+            return await SpawnDialog(Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogTitle,
+                                     panel,
+                                     primaryText: Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogInstallBtn,
+                                     secondaryText: Locale.Current.Lang?._Dialogs?.StartupFFmpegInstallDialogUseBuiltInBtn,
+                                     defaultButton: ContentDialogButton.Primary,
+                                     dialogTheme: ContentDialogTheme.Warning);
         }
         
         internal static async Task<bool> Dialog_SpawnLicenseAgreementDialog(params string[] licenseDirsToView)
