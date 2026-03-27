@@ -21,56 +21,55 @@ namespace CollapseLauncher
 {
     internal class BackgroundActivityManager
     {
-        private static readonly ThemeShadow                          InfoBarShadow        = new();
-        private static readonly Dictionary<int, IBackgroundActivity> BackgroundActivities = new();
+        private static readonly ThemeShadow                                   InfoBarShadow        = new();
+        private static readonly Dictionary<PresetConfig, IBackgroundActivity> BackgroundActivities = new();
 
-        public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
+        public static void Attach(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            if (BackgroundActivities.ContainsKey(hashID))
+            if (!BackgroundActivities.TryAdd(presetConfig, activity))
             {
                 return;
             }
 
-            DispatcherQueueExtensions.TryEnqueue(() => AttachEventToNotification(hashID, activity, activityTitle,
-                                                     activitySubtitle));
-            BackgroundActivities.Add(hashID, activity);
+            DispatcherQueueExtensions.TryEnqueue(() => AttachEventToNotification(presetConfig, activity, activityTitle, activitySubtitle));
         #if DEBUG
-            Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
+            Logger.LogWriteLine($"Background activity for {presetConfig} has been attached", LogType.Debug, true);
         #endif
         }
 
-        public static void Detach(int hashID)
+        public static void Detach(PresetConfig presetConfig)
         {
-            if (BackgroundActivities.Remove(hashID))
+            if (BackgroundActivities.Remove(presetConfig))
             {
-                DetachEventFromNotification(hashID);
+                NotificationSender.RemoveCustomNotification(presetConfig.GetHashCode());
             #if DEBUG
-                Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
+                Logger.LogWriteLine($"Background activity for {presetConfig} has been detached", LogType.Debug, true);
                 return;
             #endif
             }
 
         #if DEBUG
-            Logger.LogWriteLine($"Cannot detach background activity with ID: {hashID} because it doesn't attached", LogType.Debug, true);
+            Logger.LogWriteLine($"Cannot detach background activity for {presetConfig} because it doesn't attached", LogType.Debug, true);
         #endif
         }
 
-        private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
+        private static void AttachEventToNotification(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
             Thickness containerNotClosableMargin = new(-28, -8, 24, 20);
             Thickness containerClosableMargin    = new(-28, -8, -28, 20);
 
+            Brush brush = UIElementExtensions.GetApplicationResource<Brush>("InfoBarAnnouncementBrush");
             InfoBar parentNotificationUI = new InfoBar
-                                     {
-                Tag = hashID,
-                Severity = InfoBarSeverity.Informational,
-                Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
-                IsOpen = true,
-                IsClosable = false,
-                Shadow = InfoBarShadow,
-                Title = activityTitle,
-                Message = activitySubtitle
-            }
+                                           {
+                                               Tag        = presetConfig.GetHashCode(),
+                                               Severity   = InfoBarSeverity.Informational,
+                                               Background = brush,
+                                               IsOpen     = true,
+                                               IsClosable = false,
+                                               Shadow     = InfoBarShadow,
+                                               Title      = activityTitle,
+                                               Message    = activitySubtitle
+                                           }
             .WithMargin(4d, 4d, 4d, 0)
             .WithCornerRadius(8);
             parentNotificationUI.Translation = new Vector3(0,0,32);
@@ -92,11 +91,10 @@ namespace CollapseLauncher
                 0
             );
 
-            GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             _ = progressLogoContainer.AddElementToStackPanel(
                 new Image
                 {
-                    Source = new BitmapImage(new Uri(currentGameProperty!.GameVersion!.GameType switch
+                    Source = new BitmapImage(new Uri(presetConfig.GameType switch
                     {
                         GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
                         GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
@@ -161,6 +159,7 @@ namespace CollapseLauncher
                 parentNotificationUI.IsOpen = false;
             };
 
+            bool isGameInstaller = activity is IGameInstallManager;
             Button settingsButton =
                 UIElementExtensions.CreateButtonWithIcon<Button>(
                     Locale.Current.Lang?._Dialogs?.DownloadSettingsTitle,
@@ -171,12 +170,20 @@ namespace CollapseLauncher
                 .WithHorizontalAlignment(HorizontalAlignment.Right)
                 .WithMargin(0d, 4d, 8d, 0d);
 
-            settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings(currentGameProperty);
+            if (isGameInstaller)
+            {
+                settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings((activity as IGameInstallManager)!);
+            }
+            else
+            {
+                settingsButton.Visibility = Visibility.Collapsed;
+            }
 
             StackPanel controlButtons = parentContainer.AddElementToStackPanel(
                 UIElementExtensions.CreateStackPanel(Orientation.Horizontal)
                     .WithHorizontalAlignment(HorizontalAlignment.Right)
             );
+
             controlButtons.AddElementToStackPanel(settingsButton, cancelButton);
 
             EventHandler<TotalPerFileProgress> progressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
@@ -239,12 +246,10 @@ namespace CollapseLauncher
             {
                 activity.ProgressChanged -= progressChangedEventHandler;
                 activity.StatusChanged -= statusChangedEventHandler;
-                Detach(hashID);
+                Detach(presetConfig);
             };
 
-            NotificationSender.SendCustomNotification(hashID, parentNotificationUI);
+            NotificationSender.SendCustomNotification(presetConfig.GetHashCode(), parentNotificationUI);
         }
-
-        private static void DetachEventFromNotification(int hashID) => NotificationSender.RemoveCustomNotification(hashID);
     }
 }

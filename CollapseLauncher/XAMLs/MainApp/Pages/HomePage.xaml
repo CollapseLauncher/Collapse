@@ -569,7 +569,7 @@
                               CanContentRenderOutsideBounds="True"
                               VerticalScrollBarVisibility="Hidden">
                     <ItemsControl IsTabStop="False"
-                                  ItemsSource="{x:Bind pages:HomePage.GameSocialMediaData}"
+                                  ItemsSource="{x:Bind GameSocialMediaData}"
                                   TabFocusNavigation="Once"
                                   UseSystemFocusVisuals="True"
                                   XYFocusKeyboardNavigation="Enabled">
@@ -1282,7 +1282,7 @@
                                       CornerRadius="8"
                                       CountdownProgressMargin="8"
                                       CountdownSmokeHeight="80"
-                                      ItemsSource="{x:Bind pages:HomePage.GameCarouselData, Mode=OneWay}"
+                                      ItemsSource="{x:Bind GameCarouselData, Mode=OneWay}"
                                       NextButtonMargin="-16"
                                       NextButtonVerticalAlignment="Center"
                                       PreviousButtonMargin="-16"
@@ -1354,9 +1354,9 @@
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
                       Padding="8,6,8,0"
                       Translation="0,0,48"
-                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty, Mode=OneWay}">
+                      Visibility="{x:Bind IsPostInfoPanelAllEmpty, Mode=OneWay}">
                     <Pivot HorizontalAlignment="Left"
-                           SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex, Mode=OneWay}">
+                           SelectedIndex="{x:Bind DefaultPostPanelIndex, Mode=OneWay}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
@@ -1372,10 +1372,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible, Mode=OneWay}">
+                                              Visibility="{x:Bind IsPostEventPanelVisible, Mode=OneWay}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataEventKind, Mode=OneWay}"
+                                                      ItemsSource="{x:Bind GameNewsDataEventKind, Mode=OneWay}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -1418,9 +1418,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind pages:HomePage.IsPostEventPanelEmpty}">
+                                            Visibility="{x:Bind IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -1450,10 +1450,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind pages:HomePage.IsPostNoticePanelVisible}">
+                                              Visibility="{x:Bind IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataAnnouncementKind}"
+                                                      ItemsSource="{x:Bind GameNewsDataAnnouncementKind}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -1496,9 +1496,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind pages:HomePage.IsPostNoticePanelEmpty}">
+                                            Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -1528,10 +1528,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind pages:HomePage.IsPostInfoPanelVisible}">
+                                              Visibility="{x:Bind IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataInformationKind}"
+                                                      ItemsSource="{x:Bind GameNewsDataInformationKind}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -1574,9 +1574,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind pages:HomePage.IsPostInfoPanelEmpty}">
+                                            Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -2644,7 +2644,7 @@
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ScaleUpEventsPanelToggle"
                                                   IsEnabled="False"
-                                                  IsOn="{x:Bind pages:HomePage.IsEventsPanelScaleUp, Mode=TwoWay}"
+                                                  IsOn="{x:Bind IsEventsPanelScaleUp, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                                   OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                     <TextBlock Margin="0,8,0,0"
@@ -2777,7 +2777,7 @@
                             extension:UIElementExtensions.UniformCornerRadius="-1"
                             Click="OpenButtonLinkFromTag"
                             Style="{ThemeResource AccentButtonStyle}"
-                            Tag="{x:Bind pages:HomePage.GamePreRegisterLink}"
+                            Tag="{x:Bind GamePreRegisterLink}"
                             Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">

@@ -7,7 +7,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,64 +18,49 @@ namespace CollapseLauncher.Statics;
 
 internal static class GamePropertyVault
 {
-    private static ConcurrentDictionary<int, GamePresetProperty> Vault { get; } = new();
+    private static Dictionary<PresetConfig, GamePresetProperty> Vault { get; } = new();
 
     private static UIElement? LastElementParent { get; set; }
-    private static int        LastGameHashID    { get; set; }
-    private static int        CurrentGameHashID { get; set; }
-    private static string?    CurrentGameName   { get; set; }
-    private static string?    CurrentGameRegion { get; set; }
 
     public static GamePresetProperty GetCurrentGameProperty()
     {
+        string currentGameTitle  = MetadataHelper.CurrentGameTitleName;
+        string currentGameRegion = MetadataHelper.CurrentGameRegionName;
+
+        if (!MetadataHelper.TryGetGameConfig(currentGameTitle, currentGameRegion, out PresetConfig? gamePreset))
+        {
+            throw new KeyNotFoundException($"Game is not loaded into the launcher! ({currentGameTitle} - {currentGameRegion})");
+        }
+
         // Get the cached game property from the vault
-        int hashId = CurrentGameHashID;
-        if (Vault.TryGetValue(hashId, out GamePresetProperty? value))
+        if (Vault.TryGetValue(gamePreset, out GamePresetProperty? value))
         {
             return value;
         }
 
         // If the cached one failed to be gathered, try to reinitialize the game property
-        if (!string.IsNullOrEmpty(CurrentGameName) && !string.IsNullOrEmpty(CurrentGameRegion))
+        if (!string.IsNullOrEmpty(currentGameTitle) && !string.IsNullOrEmpty(currentGameRegion))
         {
             // Try to reinitialize the game property into the vault if
             // the cached one is unavailable.
-            if (MetadataHelper.TryGetGameConfig(CurrentGameName, CurrentGameRegion, out PresetConfig? gamePreset))
-            {
-                // Try register the game property and get its hash id
-                RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi!, CurrentGameName, CurrentGameRegion);
-                int reRegisteredHashId = gamePreset.HashID;
+            RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi!, currentGameTitle, currentGameRegion);
 
-                // Try to get the value from the cache vault and return if we get one.
-                if (Vault.TryGetValue(reRegisteredHashId, out GamePresetProperty? reRegisteredValue))
-                {
-                    return reRegisteredValue;
-                }
+            // Try to get the value from the cache vault and return if we get one.
+            if (Vault.TryGetValue(gamePreset, out GamePresetProperty? reRegisteredValue))
+            {
+                return reRegisteredValue;
             }
         }
 
         // If all attempts failed, throw an exception.
-        throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
+        throw new KeyNotFoundException($"Cached region: {gamePreset} was not found in the vault!");
     }
 
-    public static void LoadGameProperty(UIElement uiElementParent, ILauncherApi launcherApis, string gameName, string gameRegion)
+    public static void RegisterGameProperty(UIElement    uiElementParent,
+                                            ILauncherApi launcherApis,
+                                            string       gameName,
+                                            string       gameRegion)
     {
-        if (MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
-        {
-            LastGameHashID = LastGameHashID == 0 ? gamePreset.HashID : LastGameHashID;
-            CurrentGameHashID = gamePreset.HashID;
-        }
-
-        RegisterGameProperty(uiElementParent, launcherApis, gameName, gameRegion);
-    }
-
-    private static void RegisterGameProperty(UIElement    uiElementParent,
-                                             ILauncherApi launcherApis,
-                                             string       gameName,
-                                             string       gameRegion)
-    {
-        CurrentGameName   =   gameName;
-        CurrentGameRegion =   gameRegion;
         LastElementParent ??= uiElementParent;
 
         if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
@@ -87,10 +71,10 @@ internal static class GamePropertyVault
         // This is disabled due to early Weak Reference by GC, causing the property
         // (especially the one with background activity) being garbage collected.
         // CleanupUnusedGameProperty();
-        if (Vault.TryGetValue(gamePreset.HashID, out GamePresetProperty? value))
+        if (Vault.TryGetValue(gamePreset, out GamePresetProperty? value))
         {
         #if DEBUG
-            Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
+            Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset}", LogType.Debug, true);
         #endif
             value.GameVersion?.Reinitialize();
             UpdateSentryState(value);
@@ -99,9 +83,9 @@ internal static class GamePropertyVault
 
         GamePresetProperty property = GamePresetProperty.Create(uiElementParent, launcherApis, gameName, gameRegion);
         UpdateSentryState(property);
-        _ = Vault.TryAdd(gamePreset.HashID, property);
+        _ = Vault.TryAdd(gamePreset, property);
     #if DEBUG
-        Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
+        Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property for preset: {gamePreset}", LogType.Debug, true);
     #endif
     }
 
@@ -139,37 +123,33 @@ internal static class GamePropertyVault
     }
     */
 
-    public static async Task AttachNotificationForCurrentGame(int hashID = int.MinValue)
+    public static async Task AttachNotificationForCurrentGame(PresetConfig presetConfig)
     {
-        if (hashID < 0) hashID = CurrentGameHashID;
-        if (Vault.TryGetValue(hashID, out GamePresetProperty? gameProperty))
+        if (Vault.TryGetValue(presetConfig, out GamePresetProperty? gameProperty) &&
+            gameProperty is { GameInstall.IsRunning: true })
         {
-            if (gameProperty is { GameInstall.IsRunning: true })
+            LangParamsBackgroundNotification? bgNotification = Locale.Current.Lang?._BackgroundNotification;
+            string actTitle = string.Format(await (gameProperty.GameVersion?.GetGameState() ?? ValueTask.FromResult(GameInstallStateEnum.NotInstalled)) switch
             {
-                LangParamsBackgroundNotification? bgNotification = Locale.Current.Lang?._BackgroundNotification;
-                string actTitle = string.Format(await gameProperty.GameVersion!.GetGameState() switch
-                                                {
-                                                    GameInstallStateEnum.InstalledHavePreload => bgNotification?.CategoryTitle_DownloadingPreload,
-                                                    GameInstallStateEnum.NeedsUpdate => bgNotification?.CategoryTitle_Updating,
-                                                    GameInstallStateEnum.InstalledHavePlugin => bgNotification?.CategoryTitle_Updating,
-                                                    _ => bgNotification?.CategoryTitle_Downloading
-                                                } ?? "", gameProperty.GameVersion.GamePreset.GameName);
+                GameInstallStateEnum.InstalledHavePreload => bgNotification?.CategoryTitle_DownloadingPreload,
+                GameInstallStateEnum.NeedsUpdate          => bgNotification?.CategoryTitle_Updating,
+                GameInstallStateEnum.InstalledHavePlugin  => bgNotification?.CategoryTitle_Updating,
+                _                                         => bgNotification?.CategoryTitle_Downloading
+            } ?? "", gameProperty.GameVersion?.GamePreset.GameName);
 
-                string? actSubtitle = gameProperty.GameVersion.GamePreset.ZoneName;
-                BackgroundActivityManager.Attach(hashID, gameProperty.GameInstall, actTitle, actSubtitle);
-            }
+            string? actSubtitle = gameProperty.GameVersion?.GamePreset.ZoneName;
+            BackgroundActivityManager.Attach(presetConfig, gameProperty.GameInstall, actTitle, actSubtitle);
         }
     }
 
-    public static void DetachNotificationForCurrentRegion(int hashID = int.MinValue)
+    public static void DetachNotificationForCurrentRegion(PresetConfig presetConfig)
     {
-        if (hashID < 0) hashID = CurrentGameHashID;
-        if (Vault.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);
+        if (Vault.ContainsKey(presetConfig)) BackgroundActivityManager.Detach(presetConfig);
     }
 
     public static void SafeDisposeVaults()
     {
-        int[] cachedPropertyKeys = Vault.Keys.ToArray();
+        PresetConfig[] cachedPropertyKeys = Vault.Keys.ToArray();
 
         int i = cachedPropertyKeys.Length;
         while (i > 0)
@@ -197,9 +177,8 @@ internal static class GamePropertyVault
 
         try
         {
-            foreach (KeyValuePair<int, GamePresetProperty> keyValuePair in Vault)
+            foreach (GamePresetProperty value in Vault.Values)
             {
-                GamePresetProperty value = keyValuePair.Value;
                 value.Dispose();
 #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Other preset property for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);

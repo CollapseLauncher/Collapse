@@ -903,7 +903,9 @@ public sealed partial class HomePage
     }
     
     private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e) 
-        => await Dialog_DownloadSettings(CurrentGameProperty);
+        => await (CurrentGameProperty.GameInstall is { } gameInstaller ?
+            Dialog_DownloadSettings(gameInstaller) :
+            Task.CompletedTask);
     #endregion
     
     #region Download Cancellation

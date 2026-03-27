@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -26,10 +26,6 @@ internal static partial class MetadataHelper
     private static readonly Dictionary<string, Stamp> StampMasterKeyDict     = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<string, Stamp> StampCommunityToolDict = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<string, Stamp> StampGameDict          = new(StringComparer.OrdinalIgnoreCase);
-
-    public static string        CurrentGameTitleName  = "";
-    public static string        CurrentGameRegionName = "";
-    public static PresetConfig? CurrentGameConfig     = null;
     #endregion
 
     #region Shared Static Properties
@@ -40,5 +36,8 @@ internal static partial class MetadataHelper
     internal static CommunityToolsProperty CommunityToolsProperty { get; } = new();
 
     internal static List<string> CurrentGameTitleList => [..ConfigGameDict.Keys];
+
+    internal static string CurrentGameTitleName  = "";
+    internal static string CurrentGameRegionName = "";
     #endregion
 }

@@ -2198,10 +2198,10 @@ namespace CollapseLauncher.Dialogs
 
         #endregion
 
-        internal static Task<ContentDialogResult> Dialog_DownloadSettings(GamePresetProperty currentGameProperty)
+        internal static Task<ContentDialogResult> Dialog_DownloadSettings(IGameInstallManager gameInstaller)
         {
             return SpawnDialog(Locale.Current.Lang?._Dialogs?.DownloadSettingsTitle,
-                               new DownloadSettings(currentGameProperty),
+                               new DownloadSettings(gameInstaller),
                                null,
                                Locale.Current.Lang?._Misc?.Close);
         }

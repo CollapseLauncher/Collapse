@@ -22,51 +22,51 @@ public sealed partial class HomePage
 {
     private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
 
-    private static ILauncherApi? CurrentGameLauncherApi => MetadataHelper.CurrentGameConfig?.GameLauncherApi;
+    private ILauncherApi? CurrentGameLauncherApi { get; }
 
-    private static HypLauncherBackgroundList? GameBackgroundData => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
+    private HypLauncherBackgroundList? GameBackgroundData => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
 
-    private static HypLauncherContentKind? GameContentData => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
+    private HypLauncherContentKind? GameContentData => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
 
-    internal static List<HypLauncherSocialMediaContentData>? GameSocialMediaData => GameContentData?.SocialMedia;
+    internal List<HypLauncherSocialMediaContentData>? GameSocialMediaData => GameContentData?.SocialMedia;
 
-    private static List<HypLauncherMediaContentData>? GameNewsDataAll => GameContentData?.News;
+    private List<HypLauncherMediaContentData>? GameNewsDataAll => GameContentData?.News;
 
-    internal static List<HypLauncherMediaContentData>? GameNewsDataEventKind => GameContentData?.NewsEventKind;
+    internal List<HypLauncherMediaContentData>? GameNewsDataEventKind => GameContentData?.NewsEventKind;
 
-    internal static List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind => GameContentData?.NewsAnnouncementKind;
+    internal List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind => GameContentData?.NewsAnnouncementKind;
 
-    internal static List<HypLauncherMediaContentData>? GameNewsDataInformationKind => GameContentData?.NewsInformationKind;
+    internal List<HypLauncherMediaContentData>? GameNewsDataInformationKind => GameContentData?.NewsInformationKind;
 
-    internal static List<HypLauncherCarouselContentData>? GameCarouselData => GameContentData?.Carousel;
+    internal List<HypLauncherCarouselContentData>? GameCarouselData => GameContentData?.Carousel;
 
-    private static HypGameInfoData? GameInfoDisplayField => CurrentGameLauncherApi?.LauncherGameInfoField;
+    private HypGameInfoData? GameInfoDisplayField => CurrentGameLauncherApi?.LauncherGameInfoField;
 
-    private static bool IsGameStatusPreRegister =>
+    private bool IsGameStatusPreRegister =>
         GameInfoDisplayField?.DisplayStatus ==
         LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
 
-    private static bool IsGameStatusComingSoon =>
+    private bool IsGameStatusComingSoon =>
         GameInfoDisplayField?.DisplayStatus ==
         LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
 
-    internal static string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
+    internal string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
 
-    internal static Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal static Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal static Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal static Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal static Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal static Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
 
-    internal static Visibility IsPostInfoPanelAllEmpty  =>
+    internal Visibility IsPostInfoPanelAllEmpty  =>
         IsPostEventPanelVisible == Visibility.Collapsed
         && IsPostNoticePanelVisible == Visibility.Collapsed
         && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
 
-    internal static int PostEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
+    internal int PostEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
 
-    internal static int DefaultPostPanelIndex
+    internal int DefaultPostPanelIndex
     {
         get
         {
@@ -80,13 +80,13 @@ public sealed partial class HomePage
         }
     }
 
-    private static bool IsCarouselPanelAvailable => GameCarouselData?.Count > 0;
+    private bool IsCarouselPanelAvailable => GameCarouselData?.Count > 0;
 
-    private static bool IsNewsPanelAvailable => GameNewsDataAll?.Count > 0;
+    private bool IsNewsPanelAvailable => GameNewsDataAll?.Count > 0;
 
-    private static bool IsSocialMediaPanelAvailable => GameSocialMediaData?.Count > 0;
+    private bool IsSocialMediaPanelAvailable => GameSocialMediaData?.Count > 0;
 
-    internal static bool IsEventsPanelScaleUp
+    internal bool IsEventsPanelScaleUp
     {
         get
         {
@@ -137,7 +137,7 @@ public sealed partial class HomePage
 
     internal bool IsPlaytimeSyncDb
     {
-        get => CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false;
+        get => CurrentGameProperty.GameSettings?.SettingsCollapseMisc?.IsSyncPlaytimeToDatabase ?? false;
         set
         {
             if (CurrentGameProperty.GameSettings == null)
@@ -145,12 +145,12 @@ public sealed partial class HomePage
                 return;
             }
 
-            CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
-            CurrentGameProperty?.GameSettings?.SaveBaseSettings();
+            CurrentGameProperty.GameSettings.SettingsCollapseMisc?.IsSyncPlaytimeToDatabase = value;
+            CurrentGameProperty.GameSettings.SaveBaseSettings();
             SyncDbPlaytimeBtn.IsEnabled = value;
 
             // Run DbSync if toggle is changed to enable
-            if (value) CurrentGameProperty?.GamePlaytime?.CheckDb();
+            if (value) CurrentGameProperty.GamePlaytime?.CheckDb();
         }
     }
 

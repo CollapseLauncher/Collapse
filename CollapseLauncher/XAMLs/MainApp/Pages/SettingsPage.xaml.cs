@@ -674,7 +674,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableDiscordGameStatus", value);
-                AppDiscordPresence.SetupPresence();
+                AppDiscordPresence.SetupPresence(null);
             }
         }
 

@@ -279,6 +279,7 @@ namespace CollapseLauncher
             },
             OtherContent = infoBarUI
         });
+
         public static void RemoveCustomNotification(int tagID) => Invoker.SendNotification(new NotificationInvokerProp
         {
             IsCustomNotif = true,

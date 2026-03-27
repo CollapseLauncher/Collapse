@@ -395,7 +395,7 @@
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
                            Visibility="{Binding ElementName=NewNotificationCountBadge, Path=Value, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
-                           Value="0" />
+                           Value="{x:Bind NotificationElementsCollection.Count, Mode=OneWay}" />
             </Grid>
             <Grid Grid.Column="7"
                   Height="31"

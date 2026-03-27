@@ -409,14 +409,6 @@ public partial class MainPage
     private void SpawnNotificationUI(int tagID, InfoBar notification)
     {
         Grid container = UIElementExtensions.CreateGrid().WithTag(tagID);
-        notification.Loaded += (_, _) =>
-                               {
-                                   if (!(ToggleNotificationPanelBtn.IsChecked ?? false))
-                                   {
-                                       NewNotificationCountBadge.Value++;
-                                   }
-                               };
-
         notification.Closed += (s, _) =>
                                {
                                    s.Translation = default;

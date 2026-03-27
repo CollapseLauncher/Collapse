@@ -201,20 +201,16 @@ namespace CollapseLauncher
         private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion, CancellationToken token)
         {
             // Attach notification for the current game and dispose statics
-            await GamePropertyVault.AttachNotificationForCurrentGame();
             await Task.Run(DisposeAllPageStatics, token);
 
             // Load region property (and potentially, cached one)
-            GamePropertyVault.LoadGameProperty(this,
-                                               preset.GameLauncherApi,
-                                               gameName,
-                                               gameRegion);
+            GamePropertyVault.RegisterGameProperty(this,
+                                                   preset.GameLauncherApi,
+                                                   gameName,
+                                                   gameRegion);
 
             // Spawn Region Notification
             _ = SpawnRegionNotification(preset.ProfileName);
-
-            // Detach notification from last region
-            GamePropertyVault.DetachNotificationForCurrentRegion();
         }
 
         private void DisposeAllPageStatics()
@@ -408,7 +404,7 @@ namespace CollapseLauncher
             LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
         #if !DISABLEDISCORD
             if (AppDiscordPresence.IsRpcEnabled)
-                AppDiscordPresence.SetupPresence();
+                AppDiscordPresence.SetupPresence(gameRegion);
         #endif
             return true;
 

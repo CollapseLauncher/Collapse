@@ -69,6 +69,7 @@ namespace CollapseLauncher.Pages
         #region Properties
 
         private GamePresetProperty             CurrentGameProperty  { get; }
+        private PresetConfig                   CurrentPresetConfig  { get; }
         private CancellationTokenSourceWrapper PageToken            { get; }
         private CommunityToolsContext          CommunityToolContext { get; }
 
@@ -105,18 +106,20 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
-            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            PageToken           = new CancellationTokenSourceWrapper();
-            m_homePage          = this;
+            m_homePage             = this;
+            PageToken              = new CancellationTokenSourceWrapper();
+            CurrentGameProperty    = GamePropertyVault.GetCurrentGameProperty();
+            CurrentPresetConfig    = CurrentGameProperty.GamePreset;
+            CurrentGameLauncherApi = CurrentPresetConfig.GameLauncherApi;
 
             CommunityToolContext = MetadataHelper
                                   .CommunityToolsProperty
                                   .GetContext(CurrentGameProperty.GamePreset);
 
+            RefreshRate = RefreshRateDefault;
+
             InitializeComponent();
             InitializeConsoleValues();
-
-            RefreshRate = RefreshRateDefault;
 
             InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
 
@@ -142,21 +145,13 @@ namespace CollapseLauncher.Pages
 
         private static bool NeedShowEventIcon => GetAppConfigValue("ShowEventsPanel").ToBool();
 
-        private void ReturnToHomePage()
-        {
-            PresetConfig presetConfig = GamePropertyVault.GetCurrentGameProperty().GamePreset;
-            if (presetConfig.HashID != CurrentGameProperty.GamePreset.HashID)
-            {
-                return;
-            }
-
-            MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
-        }
+        private static void ReturnToHomePage() => MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
+                GamePropertyVault.DetachNotificationForCurrentRegion(CurrentPresetConfig);
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
@@ -213,7 +208,7 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
-                    _ = CheckRunningGameInstance(CurrentGameProperty.GamePreset, PageToken.Token);
+                    _ = CheckRunningGameInstance(CurrentPresetConfig, PageToken.Token);
                     return;
                 }
 
@@ -326,6 +321,8 @@ namespace CollapseLauncher.Pages
             {
                 CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
             }
+
+            _ = GamePropertyVault.AttachNotificationForCurrentGame(CurrentPresetConfig);
         }
         #endregion
 

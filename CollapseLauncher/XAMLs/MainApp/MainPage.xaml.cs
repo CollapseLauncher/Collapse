@@ -185,7 +185,7 @@ namespace CollapseLauncher
                 bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
                 if (isEnableDiscord)
                 {
-                    InnerLauncherConfig.AppDiscordPresence.SetupPresence();
+                    InnerLauncherConfig.AppDiscordPresence.SetupPresence(presetConfig);
                 }
             }
 
@@ -826,7 +826,7 @@ namespace CollapseLauncher
                 {
                 #if !DISABLEDISCORD
                     if (InnerLauncherConfig.AppDiscordPresence.IsRpcEnabled && !sameRegion)
-                        InnerLauncherConfig.AppDiscordPresence.SetupPresence();
+                        InnerLauncherConfig.AppDiscordPresence.SetupPresence(preset);
                 #endif
                     InvokeLoadingRegionPopup(false);
                     LauncherFrame.BackStack.Clear();

@@ -196,7 +196,6 @@ internal static partial class MetadataHelper
         // Update current game title and region in metadata helper.
         Interlocked.Exchange(ref CurrentGameTitleName,  gameTitle);
         Interlocked.Exchange(ref CurrentGameRegionName, gameRegion);
-        Interlocked.Exchange(ref CurrentGameConfig,     gamePresetConfig);
         return gamePresetConfig;
     }
 
@@ -330,8 +329,6 @@ internal static partial class MetadataHelper
     }
 
     #endregion
-
-
 }
 
 file static class IndexUtil

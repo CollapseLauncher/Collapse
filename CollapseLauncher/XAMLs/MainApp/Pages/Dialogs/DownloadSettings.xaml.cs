@@ -1,18 +1,20 @@
-﻿using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Pages;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 
+#nullable enable
 namespace CollapseLauncher.Dialogs
 {
     public partial class DownloadSettings : UserControl
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty { get; }
-        private PostInstallBehaviour CurrentPostInstallBehaviour =>
-            CurrentGameProperty.GameInstall?.PostInstallBehaviour ?? PostInstallBehaviour.Nothing;
+        private IGameInstallManager CurrentGameInstaller { get; }
+
+        private PostInstallBehaviour CurrentPostInstallBehaviour => CurrentGameInstaller.PostInstallBehaviour;
 
         private int PostInstallShutdownTimeout
         {
@@ -21,9 +23,9 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        internal DownloadSettings(GamePresetProperty currentGameProperty)
+        internal DownloadSettings(IGameInstallManager gameInstaller)
         {
-            CurrentGameProperty = currentGameProperty;
+            CurrentGameInstaller = gameInstaller;
             InitializeComponent();
         }
 
@@ -37,7 +39,7 @@ namespace CollapseLauncher.Dialogs
 
         private void OnPostInstallBehaviourChange(object sender, SelectionChangedEventArgs e)
         {
-            CurrentGameProperty.GameInstall?.PostInstallBehaviour =
+            CurrentGameInstaller.PostInstallBehaviour =
                 (PostInstallBehaviour)PostInstallBox.SelectedIndex;
 
             ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is
