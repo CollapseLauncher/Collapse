@@ -281,17 +281,22 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     {
         using (_updateStatusLock.EnterScope())
         {
+            long downloadedBytes      = delegateProgress.DownloadedBytes;
+            long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
+
+            long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
+            double currentSpeed = CalculateSpeed(readDownload);
+
+            if (CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
             _updateProgressProperty.StateCount      = delegateProgress.StateCount;
             _updateProgressProperty.StateCountTotal = delegateProgress.TotalStateToComplete;
 
             _updateProgressProperty.AssetCount      = delegateProgress.DownloadedCount;
             _updateProgressProperty.AssetCountTotal = delegateProgress.TotalCountToDownload;
-
-            long downloadedBytes = delegateProgress.DownloadedBytes;
-            long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
-
-            long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
-            double currentSpeed = CalculateSpeed(readDownload);
 
             Progress.ProgressAllSizeCurrent = downloadedBytes;
             Progress.ProgressAllSizeTotal = downloadedBytesTotal;
@@ -303,11 +308,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Progress.ProgressAllPercentage = ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes);
 
             _updateProgressProperty.LastDownloaded = downloadedBytes;
-
-            if (CheckIfNeedRefreshStopwatch())
-            {
-                return;
-            }
 
             if (Status.IsProgressAllIndetermined)
             {
