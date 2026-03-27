@@ -3,16 +3,17 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
+using CollapseLauncher.Pages;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable IDE0130
@@ -53,6 +54,38 @@ namespace CollapseLauncher
         #endif
         }
 
+        private static IconElement GetGamePresetIcon(PresetConfig presetConfig)
+        {
+            string uri = presetConfig.GameType switch
+            {
+                GameNameType.Honkai   => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                GameNameType.Genshin  => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
+                GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
+                GameNameType.Zenless  => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
+                _                     => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+            };
+
+            if (presetConfig is not PluginPresetConfigWrapper pluginPresetConfig)
+            {
+                return new BitmapIcon
+                {
+                    UriSource = new Uri(uri)
+                };
+            }
+
+            PluginInfo              pluginInfo = pluginPresetConfig.PluginInfo;
+            GamePluginIconConverter converter  = StaticConverter<GamePluginIconConverter>.Shared;
+            if (converter.Convert(pluginInfo, null!, null!, "") is not IconElement iconElement)
+            {
+                return new BitmapIcon
+                {
+                    UriSource = new Uri(uri)
+                };
+            }
+
+            return iconElement;
+        }
+
         private static void AttachEventToNotification(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
             Thickness containerNotClosableMargin = new(-28, -8, 24, 20);
@@ -91,18 +124,7 @@ namespace CollapseLauncher
                 0
             );
 
-            _ = progressLogoContainer.AddElementToStackPanel(
-                new Image
-                {
-                    Source = new BitmapImage(new Uri(presetConfig.GameType switch
-                    {
-                        GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                        GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
-                        GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
-                        GameNameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                        _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
-                    }))
-                }.WithWidthAndHeight(64));
+            _ = progressLogoContainer.AddElementToStackPanel(GetGamePresetIcon(presetConfig).WithWidthAndHeight(64));
 
             StackPanel progressStatusContainer = parentGrid.AddElementToGridColumn(
                 UIElementExtensions.CreateStackPanel()
