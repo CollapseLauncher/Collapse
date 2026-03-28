@@ -1265,6 +1265,18 @@
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "设置自定义视差像素（最小：{0} 像素，最大：{1} 像素）",
 
+    "StartupFFmpegInstallDialogTitle": "需要安装 FFmpeg",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse 启动器现在需要安装 FFmpeg 解码器（7.x 版本）才能正常播放视频背景。点击“",
+    "StartupFFmpegInstallDialogSubtitle2": "”全新安装 FFmpeg 或从现有安装中定位它，或点击“",
+    "StartupFFmpegInstallDialogSubtitle3": "”继续使用 Windows Media Foundation 内置解码器。",
+    "StartupFFmpegInstallDialogSubtitle4": "注：",
+    "StartupFFmpegInstallDialogSubtitle5": "由于 Windows Media Foundation 内置解码器不支持某些色彩空间类型，在特定游戏选择界面中，视频背景可能会显示花屏或损坏的帧。如果您后续想选择使用 FFmpeg 来解码视频背景，可以前往“",
+    "StartupFFmpegInstallDialogSubtitle6": "”页面，然后找到“",
+    "StartupFFmpegInstallDialogSubtitle7": "”部分，启用并安装 FFmpeg 解码器。",
+    "StartupFFmpegInstallDialogInstallBtn": "安装并使用 FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "使用内置解码器",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "以后不再询问安装 FFmpeg",
+
     "Media_ExtNotSupported1": "很抱歉，以下背景图片/视频文件的文件扩展名不被支持。",
     "Media_ExtNotSupported2": "文件路径/URL：{0}",
     "Media_ExtNotSupportedTitle": "背景文件不被支持",
