@@ -1,7 +1,9 @@
 ﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
@@ -16,8 +18,10 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
+using CollapseLauncher.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -402,6 +406,12 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Status.IsCanceled = true;
             throw;
         }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageInstallation] Install/Update failed:\r\n{ex}", LogType.Error, true);
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            throw;
+        }
         finally
         {
             UnregisterPerFileProgressCallback();
@@ -631,19 +641,127 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         return new ValueTask<bool>(false);
     }
 
-    // TODO:
-    // Implement this after WuWa Plugin implementation is completed
-    public ValueTask CleanUpGameFiles(bool withDialog = true)
+    public async ValueTask CleanUpGameFiles(bool withDialog = true)
     {
-        // NOP
-        return new ValueTask();
+        string gameDirPath = GameManager.GameDirPath;
+        string tempDirPath = Path.Combine(gameDirPath, "TempPath");
+
+        if (!Directory.Exists(tempDirPath))
+            return;
+
+        // Collect temp files
+        DirectoryInfo tempDir = new DirectoryInfo(tempDirPath);
+        List<LocalFileInfo> tempFiles = [];
+        long totalSize = 0;
+
+        foreach (FileInfo file in tempDir.EnumerateFiles("*", SearchOption.AllDirectories))
+        {
+            LocalFileInfo localFile = new LocalFileInfo(file, gameDirPath);
+            tempFiles.Add(localFile);
+            totalSize += file.Length;
+        }
+
+        if (tempFiles.Count == 0)
+            return;
+
+        if (withDialog)
+        {
+            if (WindowUtility.CurrentWindow is MainWindow mainWindow)
+            {
+                mainWindow.OverlayFrame.BackStack?.Clear();
+                mainWindow.OverlayFrame.Navigate(typeof(NullPage));
+                mainWindow.OverlayFrame.Navigate(typeof(FileCleanupPage), null,
+                                                 new DrillInNavigationTransitionInfo());
+            }
+
+            if (FileCleanupPage.Current == null)
+                return;
+            await FileCleanupPage.Current.InjectFileInfoSource(tempFiles, totalSize);
+
+            LoadingMessageHelper.HideLoadingFrame();
+
+            FileCleanupPage.Current.MenuExitButton.Click   += ExitFromOverlay;
+            FileCleanupPage.Current.MenuReScanButton.Click += ExitFromOverlay;
+            FileCleanupPage.Current.MenuReScanButton.Click += async (_, _) =>
+                                                              {
+                                                                  await Task.Delay(250);
+                                                                  await CleanUpGameFiles();
+                                                              };
+            return;
+        }
+
+        // Delete directly without dialog
+        foreach (LocalFileInfo fileInfo in tempFiles)
+        {
+            TryDeleteReadOnlyFile(fileInfo.FullPath);
+        }
+
+        return;
+
+        static void ExitFromOverlay(object? sender, RoutedEventArgs args)
+        {
+            if (WindowUtility.CurrentWindow is not MainWindow mainWindow)
+                return;
+
+            mainWindow.OverlayFrame.GoBack();
+            mainWindow.OverlayFrame.BackStack?.Clear();
+        }
     }
 
-    // TODO:
-    // Implement this after WuWa Plugin implementation is completed
     public void UpdateCompletenessStatus(CompletenessStatus status)
     {
-        // NOP
+        switch (status)
+        {
+            case CompletenessStatus.Running:
+                IsRunning          = true;
+                Status.IsRunning   = true;
+                Status.IsCompleted = false;
+                Status.IsCanceled  = false;
+#if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+#endif
+                break;
+            case CompletenessStatus.Completed:
+                IsRunning          = false;
+                Status.IsRunning   = false;
+                Status.IsCompleted = true;
+                Status.IsCanceled  = false;
+                Status.IsProgressAllIndetermined     = false;
+                Status.IsProgressPerFileIndetermined = false;
+#if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
+                lock (Progress)
+                {
+                    Progress.ProgressAllPercentage     = 100f;
+                    Progress.ProgressPerFilePercentage = 100f;
+                }
+                break;
+            case CompletenessStatus.Cancelled:
+                IsRunning          = false;
+                Status.IsRunning   = false;
+                Status.IsCompleted = false;
+                Status.IsCanceled  = true;
+                Status.IsProgressAllIndetermined     = false;
+                Status.IsProgressPerFileIndetermined = false;
+#if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
+                break;
+            case CompletenessStatus.Idle:
+                IsRunning          = false;
+                Status.IsRunning   = false;
+                Status.IsCompleted = false;
+                Status.IsCanceled  = false;
+                Status.IsProgressAllIndetermined     = false;
+                Status.IsProgressPerFileIndetermined = false;
+#if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
+                break;
+        }
+
+        UpdateAll();
     }
 
     public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
