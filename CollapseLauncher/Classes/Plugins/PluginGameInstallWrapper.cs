@@ -319,6 +319,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Preload failed:\r\n{ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            throw;
         }
         finally
         {
