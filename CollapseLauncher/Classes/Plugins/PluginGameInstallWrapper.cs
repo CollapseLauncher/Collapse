@@ -481,15 +481,15 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             {
                 string stateString = delegateState switch
                 {
-                    InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Idle => Locale.Lang._Misc.Idle,
-                    InstallProgressState.Install => string.Format(Locale.Lang._Misc.Extracting + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Lang._Misc.Verifying + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Lang._Misc.Downloading : Locale.Lang._Misc.Updating) + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
+                    InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    InstallProgressState.Idle => Locale.Current.Lang._Misc.Idle,
+                    InstallProgressState.Install => string.Format(Locale.Current.Lang._Misc.Extracting + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang._Misc.Verifying + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang._Misc.Downloading : Locale.Current.Lang._Misc.Updating) + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
                 };
 
                 Status.ActivityStatus = stateString;
-                Status.ActivityAll = string.Format(Locale.Lang._Misc.PerFromTo, _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+                Status.ActivityAll = string.Format(Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
 
                 UpdateStatus();
             }
