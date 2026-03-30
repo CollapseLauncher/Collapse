@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
@@ -253,8 +253,8 @@ internal partial class WpfPackageContext
             string gameName   = GameVersionManager.GameName;
             string regionName = GameVersionManager.GameRegion;
 
-            string gameNameTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(gameName, Locale.Lang._GameClientTitles) ?? gameName;
-            string gameRegionTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(regionName, Locale.Lang._GameClientRegions) ?? regionName;
+            string gameNameTranslated   = MetadataHelper.GetTranslatedTitle(gameName);
+            string gameRegionTranslated = MetadataHelper.GetTranslatedRegion(regionName);
 
             string icon = await ImageLoaderHelper
                              .GetCachedSpritesAsync(WpfPackageIconUrl,
@@ -266,8 +266,8 @@ internal partial class WpfPackageContext
             NotificationContent toastContent =
                 NotificationContent
                    .Create()
-                   .SetTitle(string.Format(Locale.Lang._WpfPackageContext.NotifUpdateCompletedTitle, WpfPackageNameLocalized))
-                   .SetContent(string.Format(Locale.Lang._WpfPackageContext.NotifUpdateCompletedSubtitle,
+                   .SetTitle(string.Format(Locale.Current.Lang?._WpfPackageContext?.NotifUpdateCompletedTitle ?? "", WpfPackageNameLocalized))
+                   .SetContent(string.Format(Locale.Current.Lang?._WpfPackageContext?.NotifUpdateCompletedSubtitle ?? "",
                                              WpfPackageNameLocalized,
                                              gameNameTranslated,
                                              gameRegionTranslated,

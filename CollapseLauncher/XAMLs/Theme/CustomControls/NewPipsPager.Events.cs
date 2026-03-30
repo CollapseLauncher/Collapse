@@ -117,10 +117,10 @@ public partial class NewPipsPager
             return 0;
         }
 
-        double itemCountDisp      = Math.Round(remainedAvailSpace / buttonSize);
-        double itemCountDispClamp = itemCountDisp % 2 == 0 ? itemCountDisp - 1 : itemCountDisp;
+        double itemCountDisplay      = Math.Round(remainedAvailSpace / buttonSize);
+        double itemCountDisplayClamp = itemCountDisplay % 2 == 0 ? itemCountDisplay - 1 : itemCountDisplay;
 
-        return itemCountDispClamp * buttonSize;
+        return itemCountDisplayClamp * buttonSize;
     }
 
     #endregion

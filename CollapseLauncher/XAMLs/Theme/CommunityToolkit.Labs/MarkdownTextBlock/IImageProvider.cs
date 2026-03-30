@@ -4,6 +4,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 

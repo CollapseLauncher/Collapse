@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -16,14 +17,14 @@ internal class ListRenderer : MarkdownObjectRenderer<WinUIRenderer, ListBlock>
         if (renderer == null) throw new ArgumentException(nameof(renderer));
         if (listBlock == null) throw new ArgumentNullException(nameof(listBlock));
 
-        var list = new MyList(listBlock);
+        MyList list = new(listBlock);
 
         renderer.Push(list);
 
-        foreach (var item in listBlock)
+        foreach (Block item in listBlock)
         {
-            var listItemBlock = (ListItemBlock)item;
-            var listItem = new MyBlockContainer();
+            ListItemBlock listItemBlock = (ListItemBlock)item;
+            MyBlockContainer listItem = new();
             renderer.Push(listItem);
             renderer.WriteChildren(listItemBlock);
             renderer.Pop();

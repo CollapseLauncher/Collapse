@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Plugins;
 using DiscordRPC;
@@ -8,7 +9,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
@@ -47,7 +47,7 @@ namespace CollapseLauncher.DiscordPresence
                 field = value;
 
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
-                if (value) SetupPresence();
+                if (value) SetupPresence(null);
                 else DisablePresence();
             }
         }
@@ -146,7 +146,7 @@ namespace CollapseLauncher.DiscordPresence
             {
                 // Restart Discord RPC client
                 _firstTimeConnect = true;
-                SetupPresence();
+                SetupPresence(null);
             }
             else
             {
@@ -182,58 +182,49 @@ namespace CollapseLauncher.DiscordPresence
             _client = null;
         }
 
-        public void SetupPresence()
+        private static ulong GetDiscordPresenceId(PresetConfig presetConfig)
         {
-            if (!IsRpcEnabled) return;
-            
-            var gameCategory        = GetAppConfigValue("GameCategory").ToString();
-            var isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
-
-            if (isGameStatusEnabled)
+            return presetConfig.GameName switch
             {
-                switch (gameCategory)
-                {
-                    case "Honkai: Star Rail":
-                        EnablePresence(AppDiscordApplicationIDHsr);
-                        return;
-                    case "Honkai Impact 3rd":
-                        EnablePresence(AppDiscordApplicationIDHi3);
-                        return;
-                    case "Genshin Impact":
-                        EnablePresence(AppDiscordApplicationIDGi);
-                        return;
-                    case "Zenless Zone Zero":
-                        EnablePresence(AppDiscordApplicationIDZzz);
-                        return;
-                    default:
-                        if (TryEnablePresenceIfPlugin())
-                        {
-                            return;
-                        }
-                        Logger.LogWriteLine("Discord Presence (Unknown Game)", LogType.Error, true);
-                        break;
-                }
-            }
+                "Honkai: Star Rail" => AppDiscordApplicationIDHsr,
+                "Honkai Impact 3rd" => AppDiscordApplicationIDHi3,
+                "Genshin Impact"    => AppDiscordApplicationIDGi,
+                "Zenless Zone Zero" => AppDiscordApplicationIDZzz,
+                _                   => TryGetPresenceFromPlugin(presetConfig)
+            };
 
-            EnablePresence(AppDiscordApplicationID);
+            static ulong TryGetPresenceFromPlugin(PresetConfig presetConfig)
+            {
+                if (presetConfig is not PluginPresetConfigWrapper { DiscordPresenceContext : { IsFeatureAvailable: true } discordContext } ||
+                    discordContext.PresenceId == 0)
+                {
+                    return AppDiscordApplicationID; // Default
+                }
+
+                return discordContext.PresenceId;
+            }
         }
 
-        private bool TryEnablePresenceIfPlugin()
+        public void SetupPresence(PresetConfig? presetConfig)
         {
-            if (LauncherMetadataHelper.CurrentMetadataConfig
-                is not PluginPresetConfigWrapper asPluginPresetConfig)
+            bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus");
+            if (!IsRpcEnabled || !isGameStatusEnabled) return;
+
+            string gameTitle  = MetadataHelper.CurrentGameTitleName;
+            string gameRegion = MetadataHelper.CurrentGameRegionName;
+
+            if (presetConfig == null &&
+                !MetadataHelper.TryGetGameConfig(gameTitle, gameRegion, out presetConfig))
             {
-                return false;
+                return;
             }
 
-            if (!asPluginPresetConfig.DiscordPresenceContext.IsFeatureAvailable ||
-                asPluginPresetConfig.DiscordPresenceContext.PresenceId == 0)
+            if (GetDiscordPresenceId(presetConfig) is var presenceId && presenceId == 0)
             {
-                return false;
+                Logger.LogWriteLine("Discord Presence (Unknown Game)", LogType.Error, true);
             }
 
-            EnablePresence(asPluginPresetConfig.DiscordPresenceContext.PresenceId);
-            return true;
+            EnablePresence(presenceId);
         }
 
         public void SetActivity(ActivityType activity, DateTime? activityOffset = null)
@@ -248,33 +239,33 @@ namespace CollapseLauncher.DiscordPresence
                 case ActivityType.Play:
                     {
                         bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
-                        BuildActivityGameStatus(isGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play,
+                        BuildActivityGameStatus((isGameStatusEnabled ? Locale.Current.Lang?._Misc?.DiscordRP_InGame : Locale.Current.Lang?._Misc?.DiscordRP_Play) ?? "",
                                                 isGameStatusEnabled, activityOffset);
                         break;
                     }
                 case ActivityType.Update:
                     {
                         bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
-                        BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, isGameStatusEnabled);
+                        BuildActivityGameStatus(Locale.Current.Lang?._Misc?.DiscordRP_Update ?? "", isGameStatusEnabled);
                         break;
                     }
                 case ActivityType.Repair:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair);
+                    BuildActivityAppStatus(Locale.Current.Lang?._Misc?.DiscordRP_Repair ?? "");
                     break;
                 case ActivityType.Cache:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache);
+                    BuildActivityAppStatus(Locale.Current.Lang?._Misc?.DiscordRP_Cache ?? "");
                     break;
                 case ActivityType.GameSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings);
+                    BuildActivityAppStatus(Locale.Current.Lang?._Misc?.DiscordRP_GameSettings ?? "");
                     break;
                 case ActivityType.AppSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings);
+                    BuildActivityAppStatus(Locale.Current.Lang?._Misc?.DiscordRP_AppSettings ?? "");
                     break;
                 case ActivityType.Idle:
                     _lastPlayTime = null;
                     if (_cachedIsIdleEnabled)
                     {
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle);
+                        BuildActivityAppStatus(Locale.Current.Lang?._Misc?.DiscordRP_Idle ?? "");
                     }
                     else
                     {
@@ -285,7 +276,7 @@ namespace CollapseLauncher.DiscordPresence
                 default:
                     _presence = new RichPresence
                     {
-                        Details = Lang._Misc.DiscordRP_Default,
+                        Details = Locale.Current.Lang?._Misc?.DiscordRP_Default,
                         Assets = new Assets
                         {
                             LargeImageKey = "launcher-logo-new",
@@ -302,22 +293,22 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled, DateTime? activityOffset = null)
         {
-            var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string curGameName   = MetadataHelper.CurrentGameTitleName;
+            string curGameRegion = MetadataHelper.CurrentGameRegionName;
 
-            if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
+            if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion) ||
+                !MetadataHelper.TryGetGameConfig(curGameName, curGameRegion, out PresetConfig? presetConfig))
                 return;
 
-            var curGameNameTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
-            var curGameRegionTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
+            string curGameNameTranslate   = MetadataHelper.GetTranslatedTitle(curGameName);
+            string curGameRegionTranslate = MetadataHelper.GetTranslatedRegion(curGameRegion);
 
             if (TryBuildActivityGameStatusFromPlugin(activityName,
                                                      curGameNameTranslate,
                                                      curGameRegionTranslate,
                                                      isGameStatusEnabled,
                                                      activityOffset,
+                                                     presetConfig,
                                                      out _presence))
             {
                 return;
@@ -326,10 +317,10 @@ namespace CollapseLauncher.DiscordPresence
             _presence = new RichPresence
             {
                 Details = $"{activityName} {(!isGameStatusEnabled ? curGameNameTranslate : null)}",
-                State   = $"{Lang._Misc.DiscordRP_Region} {curGameRegionTranslate}",
+                State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {curGameRegionTranslate}",
                 Assets = new Assets
                 {
-                    LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
+                    LargeImageKey  = $"game-{presetConfig.GameType.ToString().ToLower()}-logo",
                     LargeImageText = $"{curGameNameTranslate} - {curGameRegionTranslate}",
                     SmallImageKey  = "launcher-logo-new",
                     SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} "
@@ -348,12 +339,12 @@ namespace CollapseLauncher.DiscordPresence
             string?                               translatedRegionName,
             bool                                  isGameStatusEnabled,
             DateTime?                             activityOffset,
+            PresetConfig                          presetConfig,
             [NotNullWhen(true)] out RichPresence? presence)
         {
             Unsafe.SkipInit(out presence);
 
-            if (LauncherMetadataHelper.CurrentMetadataConfig
-                is not PluginPresetConfigWrapper asPluginPresetConfig ||
+            if (presetConfig is not PluginPresetConfigWrapper asPluginPresetConfig ||
                 !asPluginPresetConfig.DiscordPresenceContext.IsFeatureAvailable)
             {
                 return false;
@@ -367,7 +358,7 @@ namespace CollapseLauncher.DiscordPresence
             presence = new RichPresence
             {
                 Details = $"{activityName} {(!isGameStatusEnabled ? translatedGameName : null)}",
-                State   = $"{Lang._Misc.DiscordRP_Region} {translatedRegionName}",
+                State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {translatedRegionName}",
                 Assets = new Assets
                 {
                     LargeImageKey  = largeIconUrl ?? CollapseLogoExt,
@@ -395,20 +386,20 @@ namespace CollapseLauncher.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName)
         {
-            var curGameName = LauncherMetadataHelper.CurrentMetadataConfigGameName;
-            var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+            string curGameName   = MetadataHelper.CurrentGameTitleName;
+            string curGameRegion = MetadataHelper.CurrentGameRegionName;
 
-            if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
+            if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion) ||
+                !MetadataHelper.TryGetGameConfig(curGameName, curGameRegion, out PresetConfig? presetConfig))
                 return;
 
-            var curGameNameTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
-            var curGameRegionTranslate =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
+            string curGameNameTranslate   = MetadataHelper.GetTranslatedTitle(curGameName);
+            string curGameRegionTranslate = MetadataHelper.GetTranslatedRegion(curGameRegion);
 
             if (TryBuildActivityAppStatusFromPlugin(activityName,
                                                     curGameNameTranslate,
                                                     curGameRegionTranslate,
+                                                    presetConfig,
                                                     out _presence))
             {
                 return;
@@ -417,10 +408,10 @@ namespace CollapseLauncher.DiscordPresence
             _presence = new RichPresence
             {
                 Details = activityName,
-                State   = $"{Lang._Misc.DiscordRP_Region} {curGameRegionTranslate}",
+                State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {curGameRegionTranslate}",
                 Assets  = new Assets
                 {
-                    LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
+                    LargeImageKey  = $"game-{presetConfig.GameType.ToString().ToLower()}-logo",
                     LargeImageText = curGameNameTranslate,
                     SmallImageKey  = "launcher-logo-new",
                     SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} "
@@ -434,12 +425,12 @@ namespace CollapseLauncher.DiscordPresence
             string                                activityName,
             string?                               translatedGameName,
             string?                               translatedRegionName,
+            PresetConfig                          presetConfig,
             [NotNullWhen(true)] out RichPresence? presence)
         {
             Unsafe.SkipInit(out presence);
 
-            if (LauncherMetadataHelper.CurrentMetadataConfig
-                is not PluginPresetConfigWrapper asPluginPresetConfig ||
+            if (presetConfig is not PluginPresetConfigWrapper asPluginPresetConfig ||
                 !asPluginPresetConfig.DiscordPresenceContext.IsFeatureAvailable)
             {
                 return false;
@@ -453,7 +444,7 @@ namespace CollapseLauncher.DiscordPresence
             presence = new RichPresence
             {
                 Details = activityName,
-                State   = $"{Lang._Misc.DiscordRP_Region} {translatedRegionName}",
+                State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {translatedRegionName}",
                 Assets  = new Assets
                 {
                     LargeImageKey  = largeIconUrl ?? CollapseLogoExt,

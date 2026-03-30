@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -16,7 +17,7 @@ internal class QuoteBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, QuoteB
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-        var quote = new MyQuote();
+        MyQuote quote = new();
 
         renderer.Push(quote);
         renderer.WriteChildren(obj);

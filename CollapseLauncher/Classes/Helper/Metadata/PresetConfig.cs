@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -489,7 +490,7 @@ namespace CollapseLauncher.Helper.Metadata
         public virtual string? ZoneLogoURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public virtual string? ZoneName { get; init; }
+        public virtual string? ZoneName { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public virtual string? ZonePosterURL { get; init; }
@@ -517,8 +518,8 @@ namespace CollapseLauncher.Helper.Metadata
         public bool IsRepairEnabled      { get; set; }
         public bool IsCacheUpdateEnabled { get; set; }
 #else
-        public bool IsRepairEnabled      { get; set; } = true;
-        public bool IsCacheUpdateEnabled { get; set; } = true;
+        public bool IsRepairEnabled      { get; set; }
+        public bool IsCacheUpdateEnabled { get; set; }
 #endif
         public bool? LauncherSpriteURLMultiLang { get; init; }
 
@@ -553,7 +554,7 @@ namespace CollapseLauncher.Helper.Metadata
             string.Format(PrefixRegGameConfig, VendorType, InternalGameNameInConfig);
 
         public         string? ActualGameDataLocation { get; set; }
-        public virtual int     HashID                 { get; set; }
+        public virtual int     HashID                 { get; init; }
 
         #endregion
 
@@ -994,6 +995,9 @@ namespace CollapseLauncher.Helper.Metadata
         #region Overrides
 
         public override string ToString() => $"{GameName} - {ZoneName}";
+
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
+        public override int GetHashCode() => HashCode.Combine(HashID, GameName, ZoneName, GameType, GameChannel);
 
         #endregion
     }

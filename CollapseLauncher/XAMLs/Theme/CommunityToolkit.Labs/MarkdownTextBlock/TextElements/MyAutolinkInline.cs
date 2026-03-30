@@ -5,6 +5,7 @@
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -20,7 +21,7 @@ internal class MyAutolinkInline(AutolinkInline autoLinkInline) : IAddChild
     {
         try
         {
-            var text = (MyInlineText)child;
+            MyInlineText text = (MyInlineText)child;
             ((Hyperlink)TextElement).Inlines.Add((Run)text.TextElement);
         }
         catch (Exception ex)

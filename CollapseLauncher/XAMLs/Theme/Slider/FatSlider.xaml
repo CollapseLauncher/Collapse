@@ -79,7 +79,7 @@
                              Color="Black" />
             <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideBackgroundThemeBrush"
                              Color="#80FFFFFF" />
             <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="#80FFFFFF" />
@@ -172,7 +172,7 @@
                              Color="{ThemeResource SystemColorButtonTextColor}" />
             <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
-            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
             <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
@@ -267,7 +267,7 @@
                              Color="Black" />
             <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideBackgroundThemeBrush"
                              Color="#80FFFFFF" />
             <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="#80FFFFFF" />

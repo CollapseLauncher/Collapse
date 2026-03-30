@@ -69,8 +69,8 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalIsEnableCustomImageConfigKey, value);
-            OnPropertyChanged();
             InitializeCore();
+            OnPropertyChanged();
         }
     }
 
@@ -212,8 +212,8 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(CurrentIsEnableCustomImageConfigKey, value);
-            OnPropertyChanged();
             InitializeCore();
+            OnPropertyChanged();
         }
     }
 
@@ -266,7 +266,15 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public LayeredBackgroundImage? CurrentBackgroundElement => PresenterGrid?.Children.LastOrDefault() as LayeredBackgroundImage;
+    public LayeredBackgroundImage? CurrentBackgroundElement
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
 
     public bool CurrentSelectedBackgroundHasOverlayImage => !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginOverlayImagePath);
 

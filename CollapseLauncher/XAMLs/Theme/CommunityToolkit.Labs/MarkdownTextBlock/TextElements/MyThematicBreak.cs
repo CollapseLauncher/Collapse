@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -14,17 +15,14 @@ internal class MyThematicBreak : IAddChild
 {
     private readonly Paragraph _paragraph;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyThematicBreak()
     {
         _paragraph = new Paragraph();
 
-        var inlineUIContainer = new InlineUIContainer();
-        var border            = new Border
+        InlineUIContainer inlineUIContainer = new();
+        Border border            = new()
         {
             Width               = 500,
             BorderThickness     = new Thickness(1),

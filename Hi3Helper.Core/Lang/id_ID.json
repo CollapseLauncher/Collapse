@@ -237,7 +237,7 @@
     "BgContextMenu_CopyFrameToClipboardParentText": "Salin Frame ke Clipboard",
     "BgContextMenu_CopyFrameToClipboardOverlayText": "Salin Frame Overlay Saja",
     "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Salin hanya layer overlay ke dalam bitmap frame ke clipboard.",
-    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Salin Frame Overlay Saja",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Salin Frame Background Saja",
     "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Salin hanya layer background ke dalam bitmap frame ke clipboard.",
     "BgContextMenu_CopyFrameToClipboardMergedText": "Salin dan Gabung Keduanya",
     "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Salin dan gabung layer overlay dan background ke dalam satu bitmap frame ke clipboard.",
@@ -589,12 +589,19 @@
     "ShareYourFeedbackBtn": "Bagikan Umpan-Balikmu",
 
     "About": "Tentang",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
-    "About_Copyright3": "Di bawah lisensi",
+    "About_Copyright3": "Di bawah lisensi ",
     "About_Copyright4": ". Hak cipta dilindungi.",
 
     "LicenseType": "Lisensi MIT",
+
+    "About_FFmpegCopyright1": "Perangkat lunak ini menggunakan code dari ",
+    "About_FFmpegCopyright2": " dan dilisensikan di bawah ",
+    "About_FFmpegCopyright3": " dan menggunakan ",
+    "About_FFmpegCopyright4": " sebagai wrapper di bawah lisensi ",
+    "About_FFmpegCopyright5": ".",
+    "About_FFmpegDonate": "Donasi ke Projek FFmpeg",
 
     "Disclaimer": "Sanggahan",
     "Disclaimer1": "Aplikasi ini tidak berkaitan dengan",
@@ -1257,6 +1264,18 @@
     "PostInstallBehaviour_EnumShutdown": "Matikan Komputer",
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Pixel Parallax Kustom (Min: {0}px, Maks: {1}px)",
+
+    "StartupFFmpegInstallDialogTitle": "Instalasi FFmpeg Diperlukan",
+    "StartupFFmpegInstallDialogSubtitle1": "Dekoder FFmpeg (build 7.x) perlu dipasang untuk memutar video background dengan benar pada Collapse Launcher. Klik \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" untuk memasang FFmpeg dari awal atau mencari lokasi instalasi existing, atau klik \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" untuk tetap menggunakan dekoder bawaan Windows Media Foundation.",
+    "StartupFFmpegInstallDialogSubtitle4": "Catatan:",
+    "StartupFFmpegInstallDialogSubtitle5": "Beberapa background video pada beberapa game akan telihat rusak atau terdisplay dengan tidak benar dikarenakan Color-space yang tidak didukung oleh dekoder bawaan Windows Media Foundation. Apabila kamu ingin menggunakan FFmpeg untuk dekod background video nantinya, kamu bisa masuk ke \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\", lalu cari bagian \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" untuk memasang dan menggunakan dekoder FFmpeg.",
+    "StartupFFmpegInstallDialogInstallBtn": "Pasang & Pakai FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Pakai Dekoder Bawaan",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "Jangan tanya lagi untuk pasang FFmpeg",
 
     "Media_ExtNotSupported1": "Maaf tapi file extension untuk background gambar/video ini tidak didukung.",
     "Media_ExtNotSupported2": "Path/URL File: {0}",

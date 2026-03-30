@@ -1,12 +1,15 @@
-﻿#nullable enable
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using Hi3Helper;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
+using Windows.Media.Playback;
 
+#nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
@@ -14,6 +17,8 @@ public partial class LayeredBackgroundImage
     #region Fields
 
     private CancellationTokenSource? _videoPlayerPlayPauseCts;
+    private long                     _videoPlayerPosRefreshLastTick = Environment.TickCount64;
+
     private enum VideoState
     {
         Paused,
@@ -272,6 +277,29 @@ public partial class LayeredBackgroundImage
 
     #region Duration Position Control
 
+    [SkipLocalsInit]
+    private void MediaDurationPosition_OnChangedBridge(MediaPlaybackSession sender, object args)
+    {
+        long thisTick = Environment.TickCount64;
+        long lastTick = _videoPlayerPosRefreshLastTick;
+
+        // Only updates a second at a time to avoid UI thread overhead due to extensive update.
+        if (thisTick - lastTick <= 1000 ||
+            Interlocked.CompareExchange(ref _videoPlayerPosRefreshLastTick,
+                                        thisTick,
+                                        lastTick) != lastTick)
+        {
+            return;
+        }
+
+        if (DispatcherQueue.IsObjectDisposed())
+        {
+            return;
+        }
+
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => SetValue(MediaDurationPositionProperty, sender.Position));
+    }
+
     private static void MediaDurationPosition_OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         try
@@ -282,16 +310,18 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            if (instance._videoPlayer != null! &&
-                instance._videoPlayer.CanSeek)
-            {
-                instance._videoPlayer.Position = value;
-            }
+            SaveMediaPosition(instance.BackgroundSource, value);
+            bool isParamForSeek = value < TimeSpan.Zero; // Mark for seeking to video player if negated
 
-            if (TryGetSourceHashCode(instance.BackgroundSource, out int hashCode))
+            // Skip if the value is not negated (not for seeking)
+            if (!isParamForSeek) return;
+
+            value = value.Negate();
+            if (value.TotalSeconds < 1) // Clamp to 1 second if clip is not zero but less than a second.
             {
-                SharedLastMediaPosition.AddOrUpdate(hashCode, _ => value, (_, _) => value);
+                value = TimeSpan.Zero;
             }
+            instance._videoPlayer.Position = value;
         }
         catch (Exception ex)
         {
@@ -299,6 +329,20 @@ public partial class LayeredBackgroundImage
                                 LogType.Error,
                                 true);
         }
+    }
+
+    [SkipLocalsInit]
+    private static bool SaveMediaPosition(object? source, TimeSpan timeSpan)
+    {
+        if (!TryGetSourceHashCode(source, out int hashCode))
+        {
+            return false;
+        }
+
+        ref TimeSpan span = ref CollectionsMarshal.GetValueRefOrAddDefault(SharedLastMediaPosition, hashCode, out _);
+        span = timeSpan;
+
+        return true;
     }
 
     #endregion

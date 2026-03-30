@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
@@ -20,11 +21,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.UI;
-using static Hi3Helper.Locale;
 
 using InnerExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable PartialTypeWithSinglePart
@@ -94,11 +95,11 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
             _layoutCloseButton?.EnableImplicitAnimation();
 
             // Assign dialog title image background
-            var relFilePath = @"Assets\\Images\\GamePoster\\headerposter_genshin.png";
+            string relFilePath = @"Assets\\Images\\GamePoster\\headerposter_genshin.png";
             try
             {
-                var currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                var gameNameType        = currentGameProperty.GamePreset.GameType;
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                GameNameType gameNameType        = currentGameProperty.GamePreset.GameType;
                 relFilePath = gameNameType switch
                                      {
                                          GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
@@ -167,8 +168,8 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
             // Find an overlay grid where the UI element will be spawn to
             _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
             // Get the count of the Rows and Column so it can be spanned across the grid.
-            var parentGridRowCount    = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
-            var parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
+            int parentGridRowCount    = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
+            int parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
             // Add the UI element to the grid
             _parentOverlayGrid?.AddElementToGridRowColumn(this,
                                                           0,
@@ -212,14 +213,14 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
         private void AssignLocalization()
         {
             // Assign locale for Text header, button, placeholders and stuffs...
-            _layoutTitleGridText?.BindProperty(TextBlock.TextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_DialogTitle));
-            _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
-            _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
-            SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Lang._Dialogs.UserFeedback_TextFieldRequired);
-            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Lang._Dialogs.UserFeedback_TextFieldMessageHeader, Lang._Dialogs.UserFeedback_TextFieldRequired);
-            _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_RatingText));
-            SetButtonPropertyTextLocale(_layoutPrimaryButton, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_SubmitBtn));
-            SetButtonPropertyTextLocale(_layoutCloseButton, Lang._Dialogs, nameof(Lang._Dialogs.UserFeedback_CancelBtn));
+            _layoutTitleGridText?.BindProperty(TextBlock.TextProperty, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_DialogTitle));
+            _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
+            _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Locale.Current.Lang?._Dialogs?.UserFeedback_TextFieldTitleHeader, Locale.Current.Lang?._Dialogs?.UserFeedback_TextFieldRequired);
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Locale.Current.Lang?._Dialogs?.UserFeedback_TextFieldMessageHeader, Locale.Current.Lang?._Dialogs?.UserFeedback_TextFieldRequired);
+            _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_RatingText));
+            SetButtonPropertyTextLocale(_layoutPrimaryButton, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_SubmitBtn));
+            SetButtonPropertyTextLocale(_layoutCloseButton, Locale.Current.Lang?._Dialogs!, nameof(Locale.Current.Lang._Dialogs.UserFeedback_CancelBtn));
         }
 
         private static void SetButtonPropertyTextLocale(Button? button, object localeObject, string nameOfLocale)
@@ -355,13 +356,13 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
 
     public static partial class UserFeedbackTemplate
     {
-        private static readonly string UserTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
-        private static readonly string EmailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+        private static string UserTemplate  => Locale.Current.Lang?._Misc?.ExceptionFeedbackTemplate_User ?? "";
+        private static string EmailTemplate => Locale.Current.Lang?._Misc?.ExceptionFeedbackTemplate_Email ?? "";
         
         public static readonly string FeedbackTemplate = $"""
                                                           {UserTemplate} 
                                                           {EmailTemplate} 
-                                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                                          {Locale.Current.Lang?._Misc?.ExceptionFeedbackTemplate_Message}
                                                           ------------------------------------
                                                           """;
         public record UserFeedbackTemplateResult(string User, string Email, string Message);
@@ -369,22 +370,22 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
         public static UserFeedbackTemplateResult? ParseTemplate(UserFeedbackResult feedbackResult)
         {
             // Parse username and email
-            var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            string[] msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
             if (msg.Length <= 4) return null; // Do not send feedback if format is not correct
             
-            var user     = msg[0].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
-            var email    = msg[1].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
-            var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+            string  user     = msg[0].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
+            string  email    = msg[1].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
+            string? feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
 
             if (string.IsNullOrEmpty(user)) user = "none";
 
             // Validate email
-            var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+            bool addr = MailAddress.TryCreate(email, out MailAddress? address);
             email = addr ? address!.Address : "user@collapselauncher.com";
 
             if (string.IsNullOrEmpty(feedback)) return null;
 
-            var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
+            string feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
             
             return new UserFeedbackTemplateResult(user, email, feedbackContent);
         } 

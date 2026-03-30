@@ -4,11 +4,18 @@
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
       xmlns:pages="using:CollapseLauncher.Pages"
       Background="Transparent"
       mc:Ignorable="d">
+    <Page.Resources>
+        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter" />
+        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter" />
+        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter" />
+        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter" />
+    </Page.Resources>
     <Grid Margin="32">
         <Grid x:Name="FrontGrid"
               Margin="16">
@@ -20,11 +27,11 @@
                         VerticalAlignment="Center">
                 <TextBlock FontSize="56"
                            FontWeight="Normal"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header1}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.Header1}" />
                 <TextBlock Margin="0,-24,0,0"
                            FontSize="72"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.Header2}" />
                 <!--  ReSharper disable once UnusedMember.Local  -->
                 <Button x:Name="ShowErrorBtn"
                         Margin="0,16,0,0"
@@ -45,7 +52,7 @@
                                    FontSize="20"
                                    FontWeight="Medium"
                                    HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.ShowErrorBtn}" />
                         <Grid Grid.Column="1"
                               Margin="4,0,0,0"
                               HorizontalAlignment="Center"
@@ -82,7 +89,7 @@
                                    FontSize="20"
                                    FontWeight="Medium"
                                    HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._DisconnectedPage.GoToAppSettingsBtn}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoToAppSettingsBtn}" />
                         <Grid Grid.Column="1"
                               Margin="4,0,0,0"
                               HorizontalAlignment="Center"
@@ -102,9 +109,9 @@
                 <TextBlock Margin="0,16,0,0"
                            FontSize="20"
                            Style="{ThemeResource TitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerTitle}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.RegionChangerTitle}" />
                 <TextBlock Margin="0,0,0,16"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.RegionChangerSubtitle}" />
                 <!--  ReSharper disable once UnusedMember.Local  -->
                 <Grid x:Name="ComboBoxGameGrid"
                       extension:UIElementExtensions.UniformCornerRadius="-1">
@@ -112,32 +119,60 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="ComboBoxGameCategory"
+                    <ComboBox x:Name="ComboBoxGameTitle"
                               HorizontalAlignment="Stretch"
                               Canvas.ZIndex="2"
                               CornerRadius="15,0,0,15"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
-                              SelectionChanged="SetGameCategoryChange"
-                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientTitles['Honkai Impact 3rd']}"
+                              SelectionChanged="SetGameTitleChange"
+                              Style="{ThemeResource DefaultComboBoxStyle}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <ComboBox x:Name="ComboBoxGameRegion"
                               Grid.Column="1"
                               HorizontalAlignment="Stretch"
                               Canvas.ZIndex="2"
                               CornerRadius="0,15,15,0"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._GameClientRegions['Southeast Asia']}"
                               SelectionChanged="SetGameRegionChange"
-                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                              Style="{ThemeResource DefaultComboBoxStyle}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="metadata:PresetConfig">
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="4">
+                                    <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}" />
+                                    <Grid Padding="4,0"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                          CornerRadius="4"
+                                          Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource TextBoxForegroundThemeBrush}"
+                                                   Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}" />
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
             </StackPanel>
             <TextBlock Grid.Column="0"
                        VerticalAlignment="Bottom"
                        FontSize="16"
                        Opacity="0.75">
-                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}" />
+                <Run Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.Footer1}" />
                 <Run FontWeight="Bold"
                      Foreground="{ThemeResource AccentColor}"
-                     Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}" />
-                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}" />
+                     Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.Footer2}" />
+                <Run Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.Footer3}" />
             </TextBlock>
             <Image Grid.Column="1"
                    Margin="32,0,0,0"
@@ -187,7 +222,7 @@
                                FontSize="14"
                                FontWeight="Medium"
                                HorizontalTextAlignment="Left"
-                               Text="{x:Bind helper:Locale.Lang._DisconnectedPage.GoBackOverlayFrameBtn}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoBackOverlayFrameBtn}" />
                 </Grid>
             </Button>
         </Grid>

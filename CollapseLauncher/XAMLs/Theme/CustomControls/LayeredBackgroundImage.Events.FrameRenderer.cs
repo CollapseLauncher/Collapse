@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -57,7 +57,7 @@ public partial class LayeredBackgroundImage
 
     #region Fields
 
-    private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
+    private static readonly Dictionary<int, TimeSpan> SharedLastMediaPosition = new();
 
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;
@@ -78,7 +78,6 @@ public partial class LayeredBackgroundImage
 
     private MediaPlayer              _videoPlayer    = null!;
     private nint                     _videoPlayerPtr = nint.Zero;
-    private Timer?                   _videoPlayerDurationTimerThread;
     private CancellationTokenSource? _videoPlayerFadeCts;
     private FFmpegMediaSource?       _videoFfmpegMediaSource;
     private long                     _videoToSkipFrames;
@@ -242,49 +241,7 @@ public partial class LayeredBackgroundImage
 
     #endregion
 
-    #region Video Duration and Frame Setter
-
-    private static void UpdateMediaDurationTickView(object? state)
-    {
-        try
-        {
-            LayeredBackgroundImage thisInstance = (LayeredBackgroundImage)state!;
-            if (thisInstance._videoPlayer == null!)
-            {
-                return;
-            }
-
-            if (thisInstance.DispatcherQueue?.HasThreadAccess ?? false)
-            {
-                Impl();
-                return;
-            }
-
-            thisInstance.DispatcherQueue?.TryEnqueue(Impl);
-            return;
-
-            void Impl()
-            {
-                try
-                {
-                    if (thisInstance._videoPlayer != null!)
-                    {
-                        thisInstance.SetValue(MediaDurationPositionProperty, thisInstance._videoPlayer.Position);
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::UpdateMediaDurationTickView] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-    }
+    #region Video Frame Setter
 
     private void SetRenderImageSource(ImageSource? renderSource)
     {
@@ -412,6 +369,8 @@ public partial class LayeredBackgroundImage
                         _videoPlayer.Position = lastPosition;
                     }
 
+                    _videoPlayer.PlaybackSession.PositionChanged += MediaDurationPosition_OnChangedBridge;
+
                     // INTENTIONAL: Skipping a blank frame after initialization.
                     try
                     {
@@ -481,11 +440,15 @@ public partial class LayeredBackgroundImage
     {
         try
         {
+            if (this.IsObjectDisposed())
+            {
+                return;
+            }
+
             token.Register(() =>
             {
                 Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
             });
-
             // Set events
             DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionOnPause?.Invoke();
@@ -502,6 +465,8 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
                     ? VideoPlayer_VideoFrameAvailableUnsafe
                     : VideoPlayer_VideoFrameAvailableSafe;
+
+                _videoPlayer.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
             }
 
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early

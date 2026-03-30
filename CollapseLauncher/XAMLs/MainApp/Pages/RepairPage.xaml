@@ -9,7 +9,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,7 +28,7 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                        Style="{ThemeResource TitleLargeTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.PageTitle}" />
             <Grid x:Name="RepairDataTableGrid"
                   Grid.Row="1"
                   VerticalAlignment="Stretch"
@@ -49,38 +49,38 @@
                             <datatable:DataTable Margin="12,0,0,8">
                                 <datatable:DataColumn MinWidth="128"
                                                       CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol1}"
                                                       DesiredWidth="5*"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
                                                       Tag="FileName" />
                                 <datatable:DataColumn CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol2}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
                                                       Tag="DataType" />
                                 <datatable:DataColumn MinWidth="128"
                                                       CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol3}"
                                                       DesiredWidth="7*"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
                                                       Tag="Source" />
                                 <datatable:DataColumn CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol4}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
                                                       Tag="FileSize" />
                                 <datatable:DataColumn CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol5}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
                                                       Tag="CurCRC" />
                                 <datatable:DataColumn CanResize="True"
-                                                      Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}"
+                                                      Content="{x:Bind helper:Locale.Current.Lang._GameRepairPage.ListCol6}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
@@ -131,7 +131,7 @@
                 <TextBlock x:Name="RepairStatus"
                            Margin="0,0,0,16"
                            FontSize="18"
-                           Text="{x:Bind helper:Locale.Lang._GameRepairPage.Status1}"
+                           Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.Status1}"
                            TextTrimming="CharacterEllipsis" />
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -143,13 +143,13 @@
                         <TextBlock Margin="0,0,0,8"
                                    FontSize="16"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._GameRepairPage.PerProgressTitle1}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.PerProgressTitle1}" />
                         <control:DockPanel HorizontalAlignment="Stretch"
                                            LastChildFill="False">
                             <TextBlock x:Name="RepairPerFileStatus"
                                        control:DockPanel.Dock="Left"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.StatusNone}" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                        Text="%" />
@@ -167,13 +167,13 @@
                         <TextBlock Margin="0,0,0,8"
                                    FontSize="16"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._GameRepairPage.TotalProgressTitle1}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.TotalProgressTitle1}" />
                         <control:DockPanel HorizontalAlignment="Stretch"
                                            LastChildFill="False">
                             <TextBlock x:Name="RepairTotalStatus"
                                        control:DockPanel.Dock="Left"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.StatusNone}" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                        Text="%" />
@@ -208,7 +208,7 @@
                                           Glyph="&#xf6e3;" />
                                 <TextBlock Margin="8,0"
                                            FontWeight="SemiBold"
-                                           Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn1}" />
                             </StackPanel>
                         </Button>
                         <SplitButton x:Name="CheckFilesBtn"
@@ -218,14 +218,14 @@
                                      Click="StartGameCheckSplitButton"
                                      CornerRadius="16"
                                      Tag="Fast"
-                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
+                                     ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
                                           Glyph="&#xf002;" />
                                 <TextBlock FontWeight="SemiBold"
-                                           Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2Quick}" />
                             </StackPanel>
                             <SplitButton.Flyout>
                                 <Flyout Placement="Top">
@@ -237,7 +237,7 @@
                                                 extension:UIElementExtensions.CursorType="Hand"
                                                 Click="StartGameCheck"
                                                 Tag="Fast"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
@@ -251,7 +251,7 @@
                                                 <TextBlock Grid.Column="0"
                                                            HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
-                                                           Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2Quick}" />
                                             </Grid>
                                         </Button>
                                         <Button x:Name="CheckFilesFullBtn"
@@ -261,7 +261,7 @@
                                                 Click="StartGameCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
@@ -275,7 +275,7 @@
                                                 <TextBlock Grid.Column="0"
                                                            HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
-                                                           Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Full}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._GameRepairPage.RepairBtn2Full}" />
                                             </Grid>
                                         </Button>
                                     </StackPanel>
@@ -292,7 +292,7 @@
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._Misc.Cancel}" />
                         </Button>
                     </Grid>
                     <StackPanel Grid.Column="0"

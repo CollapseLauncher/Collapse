@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using System.Collections.Generic;
 using Windows.UI.Text;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
@@ -17,15 +18,12 @@ internal class MyBlock : IAddChild
     private readonly Paragraph           _paragraph;
     private readonly List<RichTextBlock> _richTextBlocks;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyBlock(HtmlNode block)
     {
         _htmlNode = block;
-        var align = _htmlNode.GetAttributeValue("align", "left");
+        string align = _htmlNode.GetAttributeValue("align", "left");
         _richTextBlocks = [];
         _paragraph      = new Paragraph
         {
@@ -46,8 +44,8 @@ internal class MyBlock : IAddChild
         if (child.TextElement is Block blockChild)
         {
             _paragraph.Inlines.Add(new LineBreak());
-            var inlineUIContainer = new InlineUIContainer();
-            var richTextBlock = new RichTextBlock();
+            InlineUIContainer inlineUIContainer = new();
+            RichTextBlock     richTextBlock     = new();
             richTextBlock.Blocks.Add(blockChild);
             inlineUIContainer.Child = richTextBlock;
             _richTextBlocks.Add(richTextBlock);
@@ -66,7 +64,7 @@ internal class MyBlock : IAddChild
         {
             case "address":
                 _paragraph.FontStyle = FontStyle.Italic;
-                foreach (var richTextBlock in _richTextBlocks)
+                foreach (RichTextBlock richTextBlock in _richTextBlocks)
                 {
                     richTextBlock.FontStyle = FontStyle.Italic;
                 }

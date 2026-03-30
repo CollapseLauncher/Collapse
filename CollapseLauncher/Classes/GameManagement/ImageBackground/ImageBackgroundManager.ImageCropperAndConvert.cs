@@ -99,7 +99,7 @@ public partial class ImageBackgroundManager
                .Create<ImageCropper>(SetImageCropperProperties);
 
             // -- Register to close dialog if cancellation is triggered outside the event.
-            token.Register(() => dialog.Hide());
+            token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
             {
                 return (null, null, true);
@@ -143,10 +143,10 @@ public partial class ImageBackgroundManager
 
             void SetDialogProperties(ContentDialogOverlay element)
             {
-                element.Title                  = Locale.Lang._Misc.ImageCropperTitle;
+                element.Title                  = Locale.Current.Lang?._Misc?.ImageCropperTitle;
                 element.Content                = parentGrid;
-                element.SecondaryButtonText    = Locale.Lang._Misc.Cancel;
-                element.PrimaryButtonText      = Locale.Lang._Misc.OkayHappy;
+                element.SecondaryButtonText    = Locale.Current.Lang?._Misc?.Cancel;
+                element.PrimaryButtonText      = Locale.Current.Lang?._Misc?.OkayHappy;
                 element.DefaultButton          = ContentDialogButton.Primary;
                 element.IsPrimaryButtonEnabled = false;
 

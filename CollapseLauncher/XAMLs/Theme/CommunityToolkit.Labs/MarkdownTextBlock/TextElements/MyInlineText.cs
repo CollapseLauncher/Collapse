@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.UI.Xaml.Documents;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -13,10 +14,7 @@ internal class MyInlineText(string text) : IAddChild
         Text = text
     };
 
-    public TextElement TextElement
-    {
-        get => _run;
-    }
+    public TextElement TextElement => _run;
 
     public void AddChild(IAddChild child) { }
 }

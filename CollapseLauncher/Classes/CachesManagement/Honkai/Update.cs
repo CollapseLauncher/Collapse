@@ -12,7 +12,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
@@ -123,7 +122,7 @@ namespace CollapseLauncher
         {
             // Increment total count and update the status
             ProgressAllCountCurrent++;
-            Status.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._Misc?.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
             UpdateAll();
 
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!)

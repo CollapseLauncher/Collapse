@@ -8,6 +8,9 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
+#if ENABLEUSERFEEDBACK
+using CollapseLauncher.Helper.Loading;
+#endif
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
@@ -15,9 +18,6 @@ using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-#if ENABLEUSERFEEDBACK
-using CollapseLauncher.Helper.Loading;
-#endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -40,14 +40,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,7 +54,6 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
@@ -124,6 +120,9 @@ namespace CollapseLauncher.Pages
             Loaded += SettingsPage_Loaded;
             InitializeComponent();
 
+#if DEBUG
+            AboutDebugFlagIndicator.Visibility = Visibility.Visible;
+#endif
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
             DataContext = this;
 
@@ -167,17 +166,15 @@ namespace CollapseLauncher.Pages
                 InstantRegionToggleWarning.Visibility = Visibility.Visible;
 
             string switchToVer = IsPreview ? "Stable" : "Preview";
-            ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, switchToVer);
+            ChangeReleaseBtnText.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppChangeReleaseChannel, switchToVer);
 #if DISABLEDISCORD
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
-            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppBG_Note,
                                                      ImageLoaderHelper.SupportedImageFormats,
                                                      ImageLoaderHelper.SupportedVideoFormats
                                                     );
-
-            UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
 
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
@@ -199,11 +196,11 @@ namespace CollapseLauncher.Pages
             ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
         }
 
-        private string GitVersionIndicator_Builder()
+        private static string GitVersionIndicator_Builder()
         {
 #pragma warning disable CS0618, CS0162 // Type or member is obsolete
-            var branchName  = ThisAssembly.Git.Branch;
-            var commitShort = ThisAssembly.Git.Commit;
+            string branchName  = ThisAssembly.Git.Branch;
+            string commitShort = ThisAssembly.Git.Commit;
 
             // Add indicator if the commit is dirty
             // CS0162: Unreachable code detected
@@ -212,7 +209,7 @@ namespace CollapseLauncher.Pages
                 commitShort += '*';
             }
 
-            var outString =
+            string outString =
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
@@ -268,7 +265,7 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
+                        Directory.Delete(MetadataHelper.LauncherMetadataDirectory, true);
                         MainEntryPoint.ForceRestart();
                     }
                     catch (Exception ex)
@@ -444,14 +441,14 @@ namespace CollapseLauncher.Pages
         private void OpenChangelog(object sender, RoutedEventArgs e)
         {
 #nullable enable
-            var uri =
+            string uri =
                 $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
 
-            var mdParam = new MarkdownFramePage.MarkdownFramePageParams
+            MarkdownFramePage.MarkdownFramePageParams mdParam = new()
             {
                 MarkdownUriCdn = $"changelog_{(IsPreview ? "preview" : "stable")}.md",
                 WebUri         = uri,
-                Title          = Lang._SettingsPage.Update_ChangelogTitle
+                Title          = Locale.Current.Lang?._SettingsPage?.Update_ChangelogTitle
             };
             
             if (WindowUtility.CurrentWindow is MainWindow mainWindow)
@@ -479,9 +476,9 @@ namespace CollapseLauncher.Pages
         private async void ShareYourFeedbackClick(object sender, PointerRoutedEventArgs e)
         {
 #if ENABLEUSERFEEDBACK
-            var content = UserFeedbackTemplate.FeedbackTemplate;
+            string content = UserFeedbackTemplate.FeedbackTemplate;
             
-            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true)
+            UserFeedbackDialog userFeedbackDialog = new(XamlRoot, true)
             { 
                 Message   = content
             };
@@ -494,18 +491,18 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            var parsedFeedback       = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
-            var feedbackLoadingTitle = Lang._Misc.Feedback;
+            UserFeedbackTemplate.UserFeedbackTemplateResult parsedFeedback       = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
+            string feedbackLoadingTitle = Locale.Current.Lang?._Misc?.Feedback;
             
             // Show pseudo-loading message so user knows the feedback is being sent
             LoadingMessageHelper.Initialize();
-            LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+            LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSending);
             LoadingMessageHelper.ShowLoadingFrame();
             
             if (parsedFeedback == null)
             {
                 LogWriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
-                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                 await Task.Delay(1000);
                 LoadingMessageHelper.HideLoadingFrame();
                 return;
@@ -515,14 +512,14 @@ namespace CollapseLauncher.Pages
             {
                 // Hide the loading message after 200ms
                 await Task.Delay(500);
-                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSent);
                 await Task.Delay(1000);
                 LoadingMessageHelper.HideLoadingFrame();
             }
             else
             {
                 await Task.Delay(250);
-                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                 await Task.Delay(1000);
                 LoadingMessageHelper.HideLoadingFrame();
             }
@@ -616,7 +613,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 ToggleSendRemoteCrashData.IsEnabled = false;
-                ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Lang._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement);
+                ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Locale.Current.Lang?._SettingsPage?.Debug_SendRemoteCrashData_EnvVarDisablement);
                 return SentryHelper.IsEnabled;
             }
             set => SentryHelper.IsEnabled = value;
@@ -639,7 +636,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var e = AppDiscordPresence.IsRpcEnabled;
+                bool e = AppDiscordPresence.IsRpcEnabled;
                 ToggleDiscordGameStatus.IsEnabled = e;
                 if (e)
                 {
@@ -677,7 +674,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableDiscordGameStatus", value);
-                AppDiscordPresence.SetupPresence();
+                AppDiscordPresence.SetupPresence(null);
             }
         }
 
@@ -725,24 +722,24 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var tooltip = $"{Lang._SettingsPage.Waifu2X_Help}\r\n{Lang._SettingsPage.Waifu2X_Help2}";
+                string tooltip = $"{Locale.Current.Lang?._SettingsPage?.Waifu2X_Help}\r\n{Locale.Current.Lang?._SettingsPage?.Waifu2X_Help2}";
                 switch (ImageLoaderHelper.Waifu2XStatus)
                 {
                     case Waifu2XStatus.CpuMode:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
+                        tooltip += "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Warning_CpuMode;
                         break;
                     case Waifu2XStatus.D3DMappingLayers:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode +
-                                   "\n\n" + Lang._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
+                        tooltip += "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Warning_CpuMode +
+                                   "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Warning_D3DMappingLayers;
                         break;
                     case Waifu2XStatus.NotAvailable:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                        tooltip += "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Error_Loader;
                         break;
                     case Waifu2XStatus.TestNotPassed:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                        tooltip += "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Error_Output;
                         break;
                     case Waifu2XStatus.NotInitialized:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Initializing;
+                        tooltip += "\n\n" + Locale.Current.Lang?._SettingsPage?.Waifu2X_Initializing;
                         break;
                 }
 
@@ -797,86 +794,10 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("ExtractionThread", value);
         }
 
-        [field: AllowNull, MaybeNull]
-        public static List<LangMetadata> LanguageList
-        {
-            get
-            {
-                if (field != null)
-                {
-                    return field;
-                }
-
-                Dictionary<string, LangMetadata>.KeyCollection keys = LanguageNames.Keys;
-                int dataLen = keys.Count;
-
-                List<LangMetadata> metadataList = [];
-
-                CollectionsMarshal.SetCount(metadataList, dataLen);
-                Span<LangMetadata> metadataSpan = CollectionsMarshal.AsSpan(metadataList);
-
-                int index = 0;
-                foreach (string key in keys)
-                {
-                    ref LangMetadata metadata = ref CollectionsMarshal.GetValueRefOrNullRef(LanguageNames, key);
-                    if (Unsafe.IsNullRef(ref metadata))
-                    {
-                        continue;
-                    }
-
-                    metadataSpan[index] = metadata;
-                    ++index;
-                }
-
-                return field = metadataList;
-            }
-        }
-
-        public static int LanguageSelectedIndex
-        {
-            get
-            {
-                string key = GetAppConfigValue("AppLanguage").Value.ToLower();
-                return LanguageNames.TryGetValue(key, out LangMetadata name) ? name.LangIndex : 0;
-            }
-        }
-
         private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is not ComboBox combobox)
-            {
-                return;
-            }
-
-            if (e.AddedItems.FirstOrDefault()   is not LangMetadata asLangMetadataNew ||
-                e.RemovedItems.FirstOrDefault() is not LangMetadata asLangMetadataOld ||
-                asLangMetadataNew.LangID == asLangMetadataOld.LangID)
-            {
-                return;
-            }
-
-            string selectedKey = asLangMetadataNew.LangID;
-            SetAndSaveConfigValue("AppLanguage", selectedKey);
-            LoadLocale(selectedKey);
-            UpdateBindings.Update();
+            string selectedKey = Locale.Current.Lang.LanguageID;
             PluginManager.SetPluginLocaleId(selectedKey);
-
-            foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
-            {
-                if (comboBoxOthers == combobox)
-                    continue;
-
-                int lastSelected = comboBoxOthers.SelectedIndex;
-                comboBoxOthers.SelectedIndex = -1;
-                comboBoxOthers.SelectedIndex = lastSelected;
-            }
-
-            foreach (RadioButtons radioButtonOthers in this.FindDescendants().OfType<RadioButtons>())
-            {
-                int lastSelected = radioButtonOthers.SelectedIndex;
-                radioButtonOthers.SelectedIndex = -1;
-                radioButtonOthers.SelectedIndex = lastSelected;
-            }
 
             InitializeSettingsSearch();
         }
@@ -887,8 +808,8 @@ namespace CollapseLauncher.Pages
             UpdateLayout();
 
             string switchToVer = IsPreview ? "Stable" : "Preview";
-            ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, switchToVer);
-            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
+            ChangeReleaseBtnText.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppChangeReleaseChannel, switchToVer);
+            AppBGCustomizerNote.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppBG_Note,
                                                      ImageLoaderHelper.SupportedImageFormats,
                                                      ImageLoaderHelper.SupportedVideoFormats
                                                     );
@@ -920,8 +841,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        [field: AllowNull, MaybeNull]
-        private List<CDNURLProperty> CDNList { get => field ??= LauncherConfig.CDNList; }
+        private List<CDNURLProperty> CDNList { get => FallbackCDNUtil.CDNList; }
 
         private int SelectedCDN
         {
@@ -969,7 +889,7 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.IsShowRegionChangeWarning = value;
                 IsChangeRegionWarningNeedRestart         = true;
                 
-                var valueConfig = field;
+                bool valueConfig = field;
                 ChangeRegionToggleWarning.Visibility = value != valueConfig ? Visibility.Visible : Visibility.Collapsed;
                 PanelChangeRegionInstant.Visibility  = !value ? Visibility.Visible : Visibility.Collapsed;
             }
@@ -981,7 +901,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 IsInstantRegionNeedRestart = true;
-                var valueConfig = field;
+                bool valueConfig = field;
                 InstantRegionToggleWarning.Visibility = value != valueConfig ? Visibility.Visible : Visibility.Collapsed;
 
                 LauncherConfig.IsInstantRegionChange = value;
@@ -1152,7 +1072,7 @@ namespace CollapseLauncher.Pages
                     ProxyHostnameTextbox.SetForeground(fgbrush);
                     ProxyHostnameTextbox.SetBackground(brush);
                     ProxyHostnameTextboxError.Visibility = Visibility.Visible;
-                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_UrlInvalid;
+                    ProxyHostnameTextboxError.Text = Locale.Current.Lang?._SettingsPage?.NetworkSettings_ProxyWarn_UrlInvalid;
                     return;
                 }
 
@@ -1167,7 +1087,7 @@ namespace CollapseLauncher.Pages
                     ProxyHostnameTextbox.SetForeground(fgbrush);
                     ProxyHostnameTextbox.SetBackground(brush);
                     ProxyHostnameTextboxError.Visibility = Visibility.Visible;
-                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_NotSupported;
+                    ProxyHostnameTextboxError.Text = Locale.Current.Lang?._SettingsPage?.NetworkSettings_ProxyWarn_NotSupported;
                     return;
                 }
             }
@@ -1454,7 +1374,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var c = DbHandler.Uri;
+                string c = DbHandler.Uri;
                 _dbUrl = c;
                 return c;
             }  
@@ -1472,7 +1392,7 @@ namespace CollapseLauncher.Pages
                 DbUriTextBox.Text = value;
                 _dbUrl            = value;
 
-                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+                ShowDbWarningStatus(Locale.Current.Lang?._SettingsPage?.Database_Warning_PropertyChanged);
             }
         }
 
@@ -1480,7 +1400,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var c =  DbHandler.Token;
+                string c =  DbHandler.Token;
                 _dbToken = c;
                 return c;
             }
@@ -1490,7 +1410,7 @@ namespace CollapseLauncher.Pages
                 if (string.IsNullOrEmpty(value))
                     return;
 
-                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+                ShowDbWarningStatus(Locale.Current.Lang?._SettingsPage?.Database_Warning_PropertyChanged);
             }
         }
 
@@ -1517,15 +1437,15 @@ namespace CollapseLauncher.Pages
 
         private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            var t = sender as TextBox;
+            TextBox t = sender as TextBox;
             if (t == null) return;
 
-            var newGuid = t.Text;
+            string newGuid = t.Text;
             if (_currentDbGuid == newGuid) return; // Return if no change
             
             if (!string.IsNullOrEmpty(newGuid) && !Guid.TryParse(newGuid, out _))
             {
-                ShowDbWarningStatus(Lang._SettingsPage.Database_Error_InvalidGuid);
+                ShowDbWarningStatus(Locale.Current.Lang?._SettingsPage?.Database_Error_InvalidGuid);
                 return;
             }
 
@@ -1538,7 +1458,7 @@ namespace CollapseLauncher.Pages
                 _currentDbGuid = t.Text;
                 _dbUserId      = t.Text; // Store to temp prop
 
-                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+                ShowDbWarningStatus(Locale.Current.Lang?._SettingsPage?.Database_Warning_PropertyChanged);
             }
         }
 
@@ -1561,9 +1481,9 @@ namespace CollapseLauncher.Pages
             senderAsButtonBase.IsEnabled = false;
 
             // Store current value in local vars
-            var curUrl   = DbHandler.Uri;
-            var curToken = DbHandler.Token;
-            var curGuid  = DbHandler.UserId;
+            string curUrl   = DbHandler.Uri;
+            string curToken = DbHandler.Token;
+            string curGuid  = DbHandler.UserId;
 
             try
             {
@@ -1575,7 +1495,7 @@ namespace CollapseLauncher.Pages
                 DbHandler.Token  = _dbToken;
                 DbHandler.UserId = _dbUserId;
 
-                var r = Random.Shared.Next(100); // Generate random int for data verification
+                int r = Random.Shared.Next(100); // Generate random int for data verification
 
                 await DbHandler.Init(true, true); // Initialize database
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
@@ -1586,11 +1506,10 @@ namespace CollapseLauncher.Pages
 
                 // Show success bar status
                 ShowSuccess();
-                await SpawnDialog(
-                                  Lang._Misc.EverythingIsOkay,
-                                  Lang._SettingsPage.Database_ConnectionOk,
+                await SpawnDialog(Locale.Current.Lang?._Misc?.EverythingIsOkay,
+                                  Locale.Current.Lang?._SettingsPage?.Database_ConnectionOk,
                                   sender as UIElement,
-                                  Lang._Misc.Close,
+                                  Locale.Current.Lang?._Misc?.Close,
                                   null,
                                   null,
                                   ContentDialogButton.Close,
@@ -1601,20 +1520,19 @@ namespace CollapseLauncher.Pages
             {
                 // No need to revert the value if fails, user is asked to restart the app
                 ShowFailed(ex);
-                var res = await SpawnDialog(
-                                  Lang._Misc.MissingVcRedist,
-                                  Lang._Misc.MissingVcRedistSubtitle,
-                                  sender as UIElement,
-                                  Lang._Misc.Close,
-                                  Lang._Misc.Yes,
-                                  null,
-                                  ContentDialogButton.Primary,
-                                  ContentDialogTheme.Error);
+                ContentDialogResult res = await SpawnDialog(Locale.Current.Lang?._Misc?.MissingVcRedist,
+                                                            Locale.Current.Lang?._Misc?.MissingVcRedistSubtitle,
+                                                            sender as UIElement,
+                                                            Locale.Current.Lang?._Misc?.Close,
+                                                            Locale.Current.Lang?._Misc?.Yes,
+                                                            null,
+                                                            ContentDialogButton.Primary,
+                                                            ContentDialogTheme.Error);
                 if (res == ContentDialogResult.Primary)
                 {
                     await Task.Run(() =>
                                    {
-                                       ProcessStartInfo psi = new ProcessStartInfo
+                                       ProcessStartInfo psi = new()
                                        {
                                            FileName        = _explorerPath,
                                            Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
@@ -1633,7 +1551,7 @@ namespace CollapseLauncher.Pages
                 DbHandler.Token  = curToken;
                 DbHandler.UserId = curGuid;
                 
-                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+                Exception newEx = new(Locale.Current.Lang?._SettingsPage?.Database_ConnectFail, ex);
 
                 // Show exception
                 ShowFailed(ex);
@@ -1692,11 +1610,11 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            var g = Guid.CreateVersion7();
+            Guid g = Guid.CreateVersion7();
             DbUserIdTextBox.Text = g.ToString();
             _dbUserId            = g.ToString();
 
-            ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+            ShowDbWarningStatus(Locale.Current.Lang?._SettingsPage?.Database_Warning_PropertyChanged);
         }
         
         private void DbTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -1766,11 +1684,11 @@ namespace CollapseLauncher.Pages
 
         private void CollectSearchableControls(DependencyObject parent)
         {
-            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+            int childCount = VisualTreeHelper.GetChildrenCount(parent);
 
             for (int i = 0; i < childCount; i++)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
 
                 switch (child)
                 {
@@ -1865,8 +1783,8 @@ namespace CollapseLauncher.Pages
                     case FrameworkElement element:
                     {
                         // Try to find TextBlock inside the content
-                        var textBlocks = element.FindDescendants().OfType<TextBlock>();
-                        var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                        IEnumerable<TextBlock> textBlocks = element.FindDescendants().OfType<TextBlock>();
+                        TextBlock[]            enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
                         if (enumerable.Length != 0)
                         {
                             key = string.Join(" ", enumerable.Select(tb => tb.Text));
@@ -1918,7 +1836,7 @@ namespace CollapseLauncher.Pages
 
         private void ClearHighlighting()
         {
-            foreach (var control in _highlightedControls)
+            foreach (HighlightableControlProperty? control in _highlightedControls)
             {
                 control.ClearHighlight();
             }
@@ -1968,7 +1886,7 @@ namespace CollapseLauncher.Pages
                 return false;
 
             // Find and highlight matching controls
-            foreach (var (key, control) in _settingsControls)
+            foreach ((string? key, FrameworkElement? control) in _settingsControls)
             {
                 int indexOfQuery;
                 if ((indexOfQuery = key.IndexOf(query, StringComparison.OrdinalIgnoreCase)) < 0)
@@ -1983,8 +1901,8 @@ namespace CollapseLauncher.Pages
                 if (control is TextBlock textBlock)
                 {
                     // Create a highlighter or use an existing one (if any)
-                    TextHighlighter textHighlighter    = new TextHighlighter();
-                    TextRange       textHighlightRange = new TextRange(indexOfQuery, query.Length);
+                    TextHighlighter textHighlighter    = new();
+                    TextRange       textHighlightRange = new(indexOfQuery, query.Length);
 
                     // Assign the range and its color (for background and foreground)
                     textHighlighter.Ranges.Add(textHighlightRange);
@@ -2024,7 +1942,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            foreach (var control in backedList)
+            foreach (HighlightableControlProperty control in backedList)
             {
                 if (control == element)
                 {
@@ -2124,13 +2042,13 @@ namespace CollapseLauncher.Pages
 
         private void SettingsSearchBoxShortcutInit()
         {
-            KeyboardAccelerator previousAccelerator = new KeyboardAccelerator
+            KeyboardAccelerator previousAccelerator = new()
             {
                 Key       = Windows.System.VirtualKey.Enter,
                 Modifiers = Windows.System.VirtualKeyModifiers.Shift
             };
 
-            KeyboardAccelerator nextAccelerator = new KeyboardAccelerator
+            KeyboardAccelerator nextAccelerator = new()
             {
                 Key       = Windows.System.VirtualKey.Enter,
                 Modifiers = Windows.System.VirtualKeyModifiers.None
@@ -2149,7 +2067,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                var method = _dialogMethods.FirstOrDefault(m => m.Name == SelectedDialogMethodName);
+                MethodInfo? method = _dialogMethods.FirstOrDefault(m => m.Name == SelectedDialogMethodName);
                 if (method == null)
                 {
                     LogWriteLine("[DBG-DialogSpawner] No method found.", LogType.Debug);
@@ -2160,7 +2078,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[DBG-DialogSpawner] Parameters: {method.GetParameters().Length}", LogType.Debug);
                 LogWriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}",            LogType.Debug);
 
-                var parameters = method.GetParameters();
+                ParameterInfo[] parameters = method.GetParameters();
                 object[]? parameterValues = null;
                 if (parameters.Length > 0)
                 {
@@ -2173,7 +2091,7 @@ namespace CollapseLauncher.Pages
                 }
                 LogWriteLine("[DBG-DialogSpawner] Invoking method with parameters: " + 
                              (parameterValues != null ? string.Join(", ", parameterValues) : "None"), LogType.Debug);
-                var result = method.Invoke(null, parameterValues);
+                object? result = method.Invoke(null, parameterValues);
                 if (result is Task<ContentDialogResult> task)
                 {
                     await task;
@@ -2190,7 +2108,7 @@ namespace CollapseLauncher.Pages
                                   "Error",
                                   ex.ToString(),
                                   sender as UIElement,
-                                  Lang._Misc.Close,
+                                  Locale.Current.Lang?._Misc?.Close,
                                   null,
                                   null,
                                   ContentDialogButton.Close,
@@ -2200,34 +2118,34 @@ namespace CollapseLauncher.Pages
 
         private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
         {
-            var parameters = method.GetParameters();
-            var stackPanel = new StackPanel();
-            var controls   = new List<Control>();
+            ParameterInfo[] parameters = method.GetParameters();
+            StackPanel      stackPanel = new();
+            List<Control>   controls   = new();
 
-            foreach (var parameter in parameters)
+            foreach (ParameterInfo parameter in parameters)
             {
-                var textBox = new TextBox { Header = parameter.Name, PlaceholderText = parameter.ParameterType.Name };
+                TextBox textBox = new() { Header = parameter.Name, PlaceholderText = parameter.ParameterType.Name };
                 stackPanel.Children.Add(textBox);
                 controls.Add(textBox);
             }
 
-            var dialog = await SpawnDialog(
-                                           "Enter Parameters",
-                                           stackPanel,
-                                           null,
-                                           Lang._Misc.Cancel,
-                                           Lang._Misc.Okay,
-                                           null,
-                                           ContentDialogButton.Primary,
-                                           ContentDialogTheme.Success);
+            ContentDialogResult dialog = await SpawnDialog(
+                                                           "Enter Parameters",
+                                                           stackPanel,
+                                                           null,
+                                                           Locale.Current.Lang?._Misc?.Cancel,
+                                                           Locale.Current.Lang?._Misc?.Okay,
+                                                           null,
+                                                           ContentDialogButton.Primary,
+                                                           ContentDialogTheme.Success);
 
             if (dialog != ContentDialogResult.Primary)
                 return null;
             
-            var values = new object[parameters.Length];
+            object[] values = new object[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
             {
-                var text = ((TextBox)controls[i]).Text;
+                string? text = ((TextBox)controls[i]).Text;
                 values[i] = Convert.ChangeType(text, parameters[i].ParameterType);
             }
 
@@ -2246,9 +2164,9 @@ namespace CollapseLauncher.Pages
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                var filtered = DialogMethodNames
-                              .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
-                              .ToList();
+                List<string> filtered = DialogMethodNames
+                                       .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                                       .ToList();
                 sender.ItemsSource = filtered;
             }
         }
@@ -2307,10 +2225,10 @@ namespace CollapseLauncher.Pages
             try
             {
                 asButton.IsEnabled = false;
-                FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+                FullPageOverlay overlayMenu = new(new PluginManagerPage(), XamlRoot, true)
                 {
                     Size               = FullPageOverlaySize.Full,
-                    OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+                    OverlayTitleSource = () => Locale.Current.Lang?._PluginManagerPage?.PageTitle,
                     OverlayTitleIcon   = new FontIconSource
                     {
                         Glyph = "\uE912",

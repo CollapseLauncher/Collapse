@@ -7,6 +7,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -16,22 +17,13 @@ internal class MyTableCell : IAddChild
     private readonly Paragraph      _paragraph = new();
     private readonly MyFlowDocument _flowDocument;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public Grid Container { get; }
 
-    public int ColumnSpan
-    {
-        get => _tableCell.ColumnSpan;
-    }
+    public int ColumnSpan => _tableCell.ColumnSpan;
 
-    public int RowSpan
-    {
-        get => _tableCell.RowSpan;
-    }
+    public int RowSpan => _tableCell.RowSpan;
 
     public int ColumnIndex { get; }
 
@@ -44,7 +36,7 @@ internal class MyTableCell : IAddChild
         RowIndex = rowIndex;
         Container = new Grid();
 
-        _flowDocument                                       = new MyFlowDocument
+        _flowDocument = new MyFlowDocument
         {
             RichTextBlock =
             {

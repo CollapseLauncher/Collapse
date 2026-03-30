@@ -21,6 +21,7 @@ using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.IO;
 // ReSharper disable UnusedMember.Global
 
@@ -30,12 +31,11 @@ using System.IO;
 #nullable enable
 namespace CollapseLauncher
 {
-    internal sealed partial class GamePresetProperty : IDisposable
+    public sealed partial class GamePresetProperty : IDisposable
     {
         internal static GamePresetProperty Create(UIElement uiElementParent, ILauncherApi? launcherApis, string gameName, string gameRegion)
         {
-            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
-            if (gamePreset == null)
+            if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? gamePreset))
             {
                 throw new NullReferenceException($"Cannot find game with name: {gameName} and region: {gameRegion} on the currently loaded metadata config!");
             }
@@ -107,29 +107,17 @@ namespace CollapseLauncher
         internal IGameVersion?        GameVersion    { get; private set; }
         internal IGameInstallManager? GameInstall    { get; private set; }
         internal WpfPackageContext?   GameWpfContext { get; private set; }
-        internal PresetConfig         GamePreset     { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
+        internal PresetConfig         GamePreset     => GameVersion?.GamePreset ?? throw new NullReferenceException();
 
         private ILogger? GamePropLogger { get; set; }
 
-        internal string GameExecutableName
-        {
-            get => GamePreset.GameExecutableName ?? "";
-        }
+        internal string GameExecutableName => GamePreset.GameExecutableName ?? "";
 
-        internal string GameExecutableNameWithoutExtension
-        {
-            get => Path.GetFileNameWithoutExtension(GameExecutableName);
-        }
+        internal string GameExecutableNameWithoutExtension => Path.GetFileNameWithoutExtension(GameExecutableName);
 
-        private string GameExecutableDir
-        {
-            get => GameVersion?.GameDirPath ?? throw new NullReferenceException();
-        }
+        private string GameExecutableDir => GameVersion?.GameDirPath ?? throw new NullReferenceException();
 
-        private string GameExecutablePath
-        {
-            get => Path.Combine(GameExecutableDir, GameExecutableName);
-        }
+        private string GameExecutablePath => Path.Combine(GameExecutableDir, GameExecutableName);
 
         internal bool IsGameRunning
         {

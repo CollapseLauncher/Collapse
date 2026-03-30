@@ -4,7 +4,6 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -141,9 +140,9 @@ internal sealed partial class WindowsCodecInstaller : ProgressBase, ICodecExtens
         // ReSharper disable once StringLiteralTypo
         const string mirrorPath = "metadata/media_codecs/WindowsMinimalMediaExtension.zip";
 
-        return LauncherConfig.CDNList
-                             .Select(x => x.URLPrefix.CombineURLFromString(mirrorPath))
-                             .ToArray();
+        return FallbackCDNUtil.CDNList
+                              .Select(x => x.URLPrefix.CombineURLFromString(mirrorPath))
+                              .ToArray();
     }
 
     private async Task<UrlStatus> FindAvailableMirrors(HttpClient client, params string[] urls)

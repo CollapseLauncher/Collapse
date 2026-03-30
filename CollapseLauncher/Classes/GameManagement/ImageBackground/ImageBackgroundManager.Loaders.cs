@@ -21,6 +21,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
+// ReSharper disable IdentifierTypo
 
 // ReSharper disable CheckNamespace
 
@@ -32,10 +33,6 @@ public partial class ImageBackgroundManager
     #region Fields
 
     private CancellationTokenSource? _imageLoadingTokenSource;
-
-    private static IValueConverter BoolInvertConverter => field ??= new InverseBooleanConverter();
-
-    private static IValueConverter MediaAutoplayWindowOverrideConverter => field ??= new MediaAutoplayWindowOverrideConverter();
 
     #endregion
 
@@ -174,79 +171,78 @@ public partial class ImageBackgroundManager
             BackgroundElevationPixels = 64d
         };
 
+        CurrentBackgroundElement = layerElement;
+
         if (!CurrentIsEnableCustomImage &&
             !GlobalIsEnableCustomImage)
         {
-            layerElement.BindProperty(this,
+            layerElement.BindProperty(LayeredBackgroundImage.IsVideoAutoplayProperty,
+                                      this,
                                       nameof(CurrentIsEnableBackgroundAutoPlay),
-                                      LayeredBackgroundImage.IsVideoAutoplayProperty,
-                                      BindingMode.OneWay,
-                                      MediaAutoplayWindowOverrideConverter);
+                                      bindingMode: BindingMode.OneWay,
+                                      converter: StaticConverter<MediaAutoplayWindowOverrideConverter>.Shared);
         }
         else
         {
             layerElement.IsVideoAutoplay = WindowUtility.CurrentWindowIsVisible;
         }
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
+                                  this,
                                   nameof(GlobalParallaxHoverSource),
-                                  LayeredBackgroundImage.ParallaxHoverSourceProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
+                                  this,
                                   nameof(GlobalIsBackgroundParallaxEffectEnabled),
-                                  LayeredBackgroundImage.IsParallaxEnabledProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
+                                  this,
                                   nameof(GlobalBackgroundParallaxPixelShift),
-                                  LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
+                                  this,
                                   nameof(GlobalBackgroundParallaxPixelShift),
-                                  LayeredBackgroundImage.ParallaxVerticalShiftProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this, 
+        layerElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
+                                  this,
                                   nameof(GlobalBackgroundAudioEnabled),
-                                  LayeredBackgroundImage.IsAudioEnabledProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
+                                  this,
                                   nameof(GlobalBackgroundAudioVolume),
-                                  LayeredBackgroundImage.AudioVolumeProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
+                                  this,
                                   nameof(IsBackgroundElevated),
-                                  LayeredBackgroundImage.IsBackgroundElevatedProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
+                                  this,
                                   nameof(ForegroundOpacity),
-                                  LayeredBackgroundImage.ForegroundOpacityProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(this,
+        layerElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
+                                  this,
                                   nameof(SmokeOpacity),
-                                  LayeredBackgroundImage.SmokeOpacityProperty,
-                                  BindingMode.OneWay);
+                                  bindingMode: BindingMode.OneWay);
 
-        layerElement.BindProperty(context,
+        layerElement.BindProperty(LayeredBackgroundImage.UseImageCacheProperty,
+                                  context,
                                   nameof(context.ForceReload),
-                                  LayeredBackgroundImage.UseImageCacheProperty,
-                                  BindingMode.OneWay,
-                                  BoolInvertConverter);
+                                  bindingMode: BindingMode.OneWay,
+                                  converter: StaticConverter<InverseBooleanConverter>.Shared);
 
         layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
-
-        // Notify current displayed element change
-        OnPropertyChanged(nameof(CurrentBackgroundElement));
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)

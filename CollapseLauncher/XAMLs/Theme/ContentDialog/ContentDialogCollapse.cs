@@ -42,6 +42,7 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
             => ShowAsync(ContentDialogPlacement.Popup);
 
         private new IAsyncOperation<ContentDialogResult> ShowAsync(
+            // ReSharper disable once UnusedParameter.Local
             ContentDialogPlacement placement)
         {
             if (Title is not string titleString || Theme == ContentDialogTheme.Informational)

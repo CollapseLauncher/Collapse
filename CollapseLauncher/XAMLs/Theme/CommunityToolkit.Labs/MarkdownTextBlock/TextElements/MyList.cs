@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using RomanNumerals;
 using System.Globalization;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -20,15 +21,12 @@ internal class MyList : IAddChild
     private          int        _index = 1;
     private const    string     Dot   = "• ";
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyList(ListBlock listBlock)
     {
         _paragraph = new Paragraph();
-        InlineUIContainer container = new InlineUIContainer();
+        InlineUIContainer container = new();
         _stackPanel = new StackPanel();
 
         if (listBlock.IsOrdered)
@@ -50,7 +48,7 @@ internal class MyList : IAddChild
 
     public void AddChild(IAddChild child)
     {
-        var grid = new Grid();
+        Grid grid = new();
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         string bullet;
@@ -71,14 +69,14 @@ internal class MyList : IAddChild
         {
             bullet = Dot;
         }
-        var textBlock = new TextBlock
+        TextBlock textBlock = new()
         {
             Text = bullet
         };
         textBlock.SetValue(Grid.ColumnProperty, 0);
         textBlock.VerticalAlignment = VerticalAlignment.Top;
         grid.Children.Add(textBlock);
-        var flowDoc = new MyFlowDocument();
+        MyFlowDocument flowDoc = new();
         flowDoc.AddChild(child);
 
         flowDoc.RichTextBlock.SetValue(Grid.ColumnProperty, 1);

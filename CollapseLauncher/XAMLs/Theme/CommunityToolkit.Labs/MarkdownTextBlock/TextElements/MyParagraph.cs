@@ -5,6 +5,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -12,10 +13,7 @@ internal class MyParagraph : IAddChild
 {
     private readonly Paragraph _paragraph = new();
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public void AddChild(IAddChild child)
     {
@@ -25,8 +23,8 @@ internal class MyParagraph : IAddChild
         }
         else if (child.TextElement is Block blockChild)
         {
-            var inlineUIContainer = new InlineUIContainer();
-            var richTextBlock     = new RichTextBlock
+            InlineUIContainer inlineUIContainer = new();
+            RichTextBlock richTextBlock     = new()
             {
                 TextWrapping = TextWrapping.Wrap
             };

@@ -113,7 +113,7 @@
     "Initializing": "初期化中",
     "LoadingLauncherMetadata": "ランチャーのメタデータを読み込み中",
     "LoadingGameConfiguration": "ゲーム設定を読み込み中",
-    "LoadingBackgroundImage": "Loading Background Image"
+    "LoadingBackgroundImage": "背景画像を読み込み中"
   },
 
   "_HomePage": {
@@ -552,15 +552,15 @@
     "VideoBackground_IsEnableAudio": "音を出す",
     "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
     "VideoBackground_AudioVolume": "音量",
-    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
-    "VideoBackground_FFmpegInstallStatus": "Install Status:",
-    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
-    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
-    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
-    "VideoBackground_FFmpegInstallNote": "Note",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
-    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_UseFFmpeg": "動画のデコードにFFmpegを使う",
+    "VideoBackground_FFmpegInstallStatus": "インストール状態：",
+    "VideoBackground_FFmpegInstallStatus_Installed": "インストール済み",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "未インストール",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "新規インストールまたは既存インストールを参照",
+    "VideoBackground_FFmpegInstallNote": "注",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcherはバージョン7.xのFFmpegのみをサポートしています。その他バージョンのFFmpegは現在サポートされていません！",
+    "VideoBackground_FFmpegInstallLockedTitle": "FFmpegの変更がロックされています",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、再度\"新規インストールまたは既存インストールを参照\"ボタンを押してください。",
 
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
@@ -589,12 +589,19 @@
     "ShareYourFeedbackBtn": "フィードバックを送る",
 
     "About": "Collapse Launcherについて",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
-    "About_Copyright3": "Under",
+    "About_Copyright3": "Under ",
     "About_Copyright4": ". All rights reserved.",
 
     "LicenseType": "MIT License",
+
+    "About_FFmpegCopyright1": "This software uses code of ",
+    "About_FFmpegCopyright2": " licensed under the ",
+    "About_FFmpegCopyright3": " and ",
+    "About_FFmpegCopyright4": " as a wrapper under the ",
+    "About_FFmpegCopyright5": " license.",
+    "About_FFmpegDonate": "FFmpeg Projectを支援",
 
     "Disclaimer": "免責事項",
     "Disclaimer1": "当ランチャーは",

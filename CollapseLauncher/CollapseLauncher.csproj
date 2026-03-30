@@ -14,7 +14,7 @@
         <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
         <Version>1.84.1</Version>
         <LangVersion>preview</LangVersion>
@@ -104,6 +104,11 @@
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(PublishAotSelf)' == 'true'">
+        <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(PublishAot)' != 'true'">
@@ -326,6 +331,7 @@
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
+        <ProjectReference Include="..\Hi3Helper.LocaleSourceGen\Hi3Helper.LocaleSourceGen.csproj" />
         <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />

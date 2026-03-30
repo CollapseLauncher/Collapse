@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -173,8 +175,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         if (!string.IsNullOrEmpty(existingPath) && Directory.Exists(existingPath))
         {
             ContentDialogResult dialogResult = await SimpleDialogs.Dialog_MigrationChoiceDialog(existingPath,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.GameName, Locale.Lang._GameClientTitles) ?? _pluginPresetConfig.GameName,
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.ZoneName, Locale.Lang._GameClientRegions) ?? _pluginPresetConfig.ZoneName,
+                MetadataHelper.GetTranslatedTitle(_pluginPresetConfig.GameName),
+                MetadataHelper.GetTranslatedRegion(_pluginPresetConfig.ZoneName),
                 nameof(MigrateFromLauncherType.Plugin),
                 MigrateFromLauncherType.Plugin,
                 true);
@@ -241,7 +243,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                     break;
                 // If secondary, then show folder picker dialog to choose the folder
                 case ContentDialogResult.Secondary:
-                    folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Lang._Dialogs.FolderDialogTitle1);
+                    folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
                     isChosen = !string.IsNullOrEmpty(folder);
                     break;
                 case ContentDialogResult.None:

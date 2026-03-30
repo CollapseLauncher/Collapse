@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -99,8 +99,8 @@ namespace CollapseLauncher
 
             // Step 5: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.
-            string status3Msg = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusNeedUpdate : Locale.Lang._GameRepairPage.Status3;
-            string status4Msg = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusUpToDate : Locale.Lang._GameRepairPage.Status4;
+            string status3Msg = (IsCacheUpdateMode ? Locale.Current.Lang?._CachesPage?.CachesStatusNeedUpdate : Locale.Current.Lang?._GameRepairPage?.Status3) ?? "";
+            string status4Msg = (IsCacheUpdateMode ? Locale.Current.Lang?._CachesPage?.CachesStatusUpToDate : Locale.Current.Lang?._GameRepairPage?.Status4) ?? "";
             return SummarizeStatusAndProgress(AssetIndex,
                                               string.Format(status3Msg, ProgressAllCountFound, ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
                                               status4Msg);

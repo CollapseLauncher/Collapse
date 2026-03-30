@@ -7,6 +7,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
@@ -17,7 +18,7 @@ internal class LinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LinkIn
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (link == null) throw new ArgumentNullException(nameof(link));
 
-        var url = link.GetDynamicUrl != null ? link.GetDynamicUrl() : link.Url;
+        string? url = link.GetDynamicUrl != null ? link.GetDynamicUrl() : link.Url;
 
         if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
         {
@@ -26,7 +27,7 @@ internal class LinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LinkIn
 
         if (link.IsImage)
         {
-            var image = new MyImage(link, Labs.MarkdownTextBlock.Extensions.GetUri(url, renderer.Config.BaseUrl), renderer.Config);
+            MyImage image = new(link, Labs.MarkdownTextBlock.Extensions.GetUri(url, renderer.Config.BaseUrl), renderer.Config);
             renderer.WriteInline(image);
         }
         else
@@ -37,7 +38,7 @@ internal class LinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LinkIn
             }
             else
             {
-                var hyperlink = new MyHyperlink(link, renderer.Config.BaseUrl);
+                MyHyperlink hyperlink = new(link, renderer.Config.BaseUrl);
 
                 renderer.Push(hyperlink);
             }

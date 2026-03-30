@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
@@ -47,7 +46,7 @@ public sealed partial class HomePage
         if (CurrentGameProperty.GameInstall?.IsUseSophon ?? false)
         {
             DownloadModeLabelPreload.Visibility = Visibility.Visible;
-            DownloadModeLabelPreloadText.Text   = Lang._Misc.DownloadModeLabelSophon;
+            DownloadModeLabelPreloadText.Text   = Locale.Current.Lang?._Misc?.DownloadModeLabelSophon;
         }
 
         if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
@@ -69,8 +68,8 @@ public sealed partial class HomePage
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
             }
             ProgressPreButtonGrid.Visibility = Visibility.Visible;
-            PreloadDialogBox.Title           = Lang._HomePage.PreloadDownloadNotifbarTitle;
-            PreloadDialogBox.Message         = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+            PreloadDialogBox.Title           = Locale.Current.Lang?._HomePage?.PreloadDownloadNotifbarTitle;
+            PreloadDialogBox.Message         = Locale.Current.Lang?._HomePage?.PreloadDownloadNotifbarSubtitle;
 
             CurrentGameProperty.GameInstall.ProgressChanged += PreloadDownloadProgress;
             CurrentGameProperty.GameInstall.StatusChanged   += PreloadDownloadStatus;
@@ -84,8 +83,8 @@ public sealed partial class HomePage
         {
             if (CurrentGameProperty.GameVersion?.IsGameHasDeltaPatch() ?? false)
             {
-                PreloadDialogBox.Title    = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
-                PreloadDialogBox.Message  = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
+                PreloadDialogBox.Title    = string.Format(Locale.Current.Lang?._HomePage?.PreloadNotifDeltaDetectTitle ?? "", ver);
+                PreloadDialogBox.Message  = Locale.Current.Lang?._HomePage?.PreloadNotifDeltaDetectSubtitle;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 SpawnPreloadDialogBox();
                 return;
@@ -93,15 +92,15 @@ public sealed partial class HomePage
 
             if (!await CurrentGameProperty.GameInstall!.IsPreloadCompleted(PageToken.Token))
             {
-                PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifTitle, ver);
+                PreloadDialogBox.Title = string.Format(Locale.Current.Lang?._HomePage?.PreloadNotifTitle ?? "", ver);
             }
             else
             {
-                PreloadDialogBox.Title      = Lang._HomePage.PreloadNotifCompleteTitle;
-                PreloadDialogBox.Message    = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, ver);
+                PreloadDialogBox.Title      = Locale.Current.Lang?._HomePage?.PreloadNotifCompleteTitle;
+                PreloadDialogBox.Message    = string.Format(Locale.Current.Lang?._HomePage?.PreloadNotifCompleteSubtitle ?? "", ver);
                 PreloadDialogBox.IsClosable = true;
                 DownloadPreBtn.Content = UIElementExtensions.CreateIconTextGrid(
-                                                                                text: Lang._HomePage.PreloadNotifIntegrityCheckBtn,
+                                                                                text: Locale.Current.Lang?._HomePage?.PreloadNotifIntegrityCheckBtn,
                                                                                 iconGlyph: "",
                                                                                 iconFontFamily: "FontAwesomeSolid",
                                                                                 textWeight: FontWeights.Medium
@@ -165,8 +164,8 @@ public sealed partial class HomePage
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
             }
             ProgressPreButtonGrid.Visibility = Visibility.Visible;
-            PreloadDialogBox.Title           = Lang._HomePage.PreloadDownloadNotifbarTitle;
-            PreloadDialogBox.Message         = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+            PreloadDialogBox.Title           = Locale.Current.Lang?._HomePage?.PreloadDownloadNotifbarTitle;
+            PreloadDialogBox.Message         = Locale.Current.Lang?._HomePage?.PreloadDownloadNotifbarSubtitle;
 
             if (CurrentGameProperty.GameInstall != null)
             {
@@ -180,7 +179,7 @@ public sealed partial class HomePage
                     await CurrentGameProperty.GameInstall.StartPackageDownload(true);
 
                     PauseDownloadPreBtn.IsEnabled = false;
-                    PreloadDialogBox.Title        = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
+                    PreloadDialogBox.Title        = Locale.Current.Lang?._HomePage?.PreloadDownloadNotifbarVerifyTitle;
 
                     verifResult = await CurrentGameProperty.GameInstall.StartPackageVerification();
 
@@ -210,11 +209,10 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-
+            string gameNameLocale = MetadataHelper.GetCurrentTranslatedTitleRegion();
             WindowUtility.Tray_ShowNotification(
-                                                string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
-                                                Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
+                                                string.Format(Locale.Current.Lang?._NotificationToast?.GamePreloadCompleted_Title ?? "", gameNameLocale),
+                                                Locale.Current.Lang?._NotificationToast?.GenericClickNotifToGoBack_Subtitle ?? ""
                                                );
         }
         catch (OperationCanceledException)
@@ -261,10 +259,10 @@ public sealed partial class HomePage
                                         string downloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeTotal);
                                         string downloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeTotal);
 
-                                        ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadSizeString, downloadSizeString);
-                                        ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadPerSizeString, downloadPerSizeString);
-                                        ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, installDownloadSpeedString);
-                                        ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
+                                        ProgressPreStatusSubtitle.Text = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", installDownloadSizeString, downloadSizeString);
+                                        ProgressPrePerFileStatusSubtitle.Text = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", installDownloadPerSizeString, downloadPerSizeString);
+                                        ProgressPreStatusFooter.Text = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", installDownloadSpeedString);
+                                        ProgressPreTimeLeft.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", e.ProgressAllTimeLeft);
                                         ProgressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
                                         ProgressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
                                         ProgressPreBar.IsIndeterminate = false;
@@ -325,7 +323,7 @@ public sealed partial class HomePage
             if (CurrentGameProperty.GameInstall.IsUseSophon)
             {
                 DownloadModeLabel.Visibility = Visibility.Visible;
-                DownloadModeLabelText.Text   = Lang._Misc.DownloadModeLabelSophon;
+                DownloadModeLabelText.Text   = Locale.Current.Lang?._Misc?.DownloadModeLabelSophon;
             }
 
             int  verifResult;
@@ -355,12 +353,12 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+            string gameNameLocale = MetadataHelper.GetCurrentTranslatedTitleRegion();
             WindowUtility.Tray_ShowNotification(
-                                                string.Format(Lang._NotificationToast.GameInstallCompleted_Title,
+                                                string.Format(Locale.Current.Lang?._NotificationToast?.GameInstallCompleted_Title ?? "",
                                                               gameNameLocale),
                                                 string
-                                                   .Format(Lang._NotificationToast.GameInstallCompleted_Subtitle,
+                                                   .Format(Locale.Current.Lang?._NotificationToast?.GameInstallCompleted_Subtitle ?? "",
                                                            gameNameLocale)
                                                );
         }
@@ -385,10 +383,10 @@ public sealed partial class HomePage
             LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
         
-            await SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
-                              Lang._HomePage.InstallFolderRootSubtitle,
+            await SpawnDialog(Locale.Current.Lang?._HomePage?.InstallFolderRootTitle,
+                              Locale.Current.Lang?._HomePage?.InstallFolderRootSubtitle,
                               Content,
-                              Lang._Misc.Close,
+                              Locale.Current.Lang?._Misc?.Close,
                               null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
         }
         catch (NullReferenceException ex)
@@ -412,10 +410,10 @@ public sealed partial class HomePage
                                $"**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!" +
                                $"\r\n{ex}";
         
-            string exTitleLocalized = string.Format(Lang._HomePage.Exception_DownloadTimeout1, CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname);
+            string exTitleLocalized = string.Format(Locale.Current.Lang?._HomePage?.Exception_DownloadTimeout1 ?? "", CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname);
             string exMessageLocalized = string.Format($"{exTitleLocalized}\r\n\t" +
-                                                      $"{Lang._HomePage.Exception_DownloadTimeout2}\r\n\t" +
-                                                      $"{Lang._HomePage.Exception_DownloadTimeout3}");
+                                                      $"{Locale.Current.Lang?._HomePage?.Exception_DownloadTimeout2 ?? ""}\r\n\t" +
+                                                      $"{Locale.Current.Lang?._HomePage?.Exception_DownloadTimeout3 ?? ""}");
 
             LogWriteLine($"{exMessage}", LogType.Error, true);
             Exception newEx = new TimeoutException(exMessageLocalized, ex);
@@ -484,9 +482,9 @@ public sealed partial class HomePage
     {
         ProgressRing.Value = e.ProgressAllPercentage;
         ProgressRingPerFile.Value = e.ProgressPerFilePercentage;
-        ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
-        ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressAllSpeed));
-        ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
+        ProgressStatusSubtitle.Text = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
+        ProgressStatusFooter.Text = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", SummarizeSizeSimple(e.ProgressAllSpeed));
+        ProgressTimeLeft.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", e.ProgressAllTimeLeft);
     }
 
     private void GameInstallSophon_StatusChanged(object sender, TotalPerFileStatus e)
@@ -519,13 +517,13 @@ public sealed partial class HomePage
         SophonProgressRing.Value        = e.ProgressAllPercentage;
         SophonProgressRingPerFile.Value = e.ProgressPerFilePercentage;
 
-        SophonProgressStatusSizeTotalText.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
-        SophonProgressStatusSizeDownloadedText.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressPerFileSizeCurrent), SummarizeSizeSimple(e.ProgressPerFileSizeTotal));
+        SophonProgressStatusSizeTotalText.Text = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
+        SophonProgressStatusSizeDownloadedText.Text = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", SummarizeSizeSimple(e.ProgressPerFileSizeCurrent), SummarizeSizeSimple(e.ProgressPerFileSizeTotal));
     
-        SophonProgressStatusSpeedTotalText.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(Math.Max(e.ProgressAllSpeed, 0)));
-        SophonProgressStatusSpeedDownloadedText.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(Math.Max(e.ProgressPerFileSpeed, 0)));
+        SophonProgressStatusSpeedTotalText.Text = string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", SummarizeSizeSimple(Math.Max(e.ProgressAllSpeed, 0)));
+        SophonProgressStatusSpeedDownloadedText.Text = string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", SummarizeSizeSimple(Math.Max(e.ProgressPerFileSpeed, 0)));
 
-        SophonProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
+        SophonProgressTimeLeft.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", e.ProgressAllTimeLeft);
     }
 
     private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
@@ -594,7 +592,7 @@ public sealed partial class HomePage
     #region Game Management Buttons
     private void RepairGameButton_Click(object sender, RoutedEventArgs e)
     {
-        m_mainPage!.InvokeMainPageNavigateByTag("repair");
+        m_mainPage!.TryNavigateFrom(typeof(RepairPage));
     }
 
     private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
@@ -649,7 +647,7 @@ public sealed partial class HomePage
         catch (NotSupportedException ex)
         {
             LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
-            ex = new NotSupportedException(Lang._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath, ex);
+            ex = new NotSupportedException(Locale.Current.Lang?._HomePage?.GameSettings_Panel2MoveGameLocationGame_SamePath, ex);
             ErrorSender.SendException(ex, ErrorType.Warning);
         }
         catch (Exception ex)
@@ -663,7 +661,7 @@ public sealed partial class HomePage
     {
         try
         {
-            string newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+            string newPath = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
             if (string.IsNullOrEmpty(newPath) || newPath == CurrentGameProperty.GameVersion?.GameDirPath)
             {
                 return;
@@ -842,12 +840,12 @@ public sealed partial class HomePage
                 return;
             }
 
-            string gameNameLocale    = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+            string gameNameLocale    = MetadataHelper.GetCurrentTranslatedTitleRegion();
             string gameVersionString = CurrentGameProperty.GameVersion?.GetGameVersionApi()?.VersionString;
 
             WindowUtility.Tray_ShowNotification(
-                                                string.Format(Lang._NotificationToast.GameUpdateCompleted_Title,    gameNameLocale),
-                                                string.Format(Lang._NotificationToast.GameUpdateCompleted_Subtitle, gameNameLocale, gameVersionString)
+                                                string.Format(Locale.Current.Lang?._NotificationToast?.GameUpdateCompleted_Title ?? "",    gameNameLocale),
+                                                string.Format(Locale.Current.Lang?._NotificationToast?.GameUpdateCompleted_Subtitle ?? "", gameNameLocale, gameVersionString)
                                                );
         }
         catch (TaskCanceledException)
@@ -905,7 +903,9 @@ public sealed partial class HomePage
     }
     
     private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e) 
-        => await Dialog_DownloadSettings(CurrentGameProperty);
+        => await (CurrentGameProperty.GameInstall is { } gameInstaller ?
+            Dialog_DownloadSettings(gameInstaller) :
+            Task.CompletedTask);
     #endregion
     
     #region Download Cancellation

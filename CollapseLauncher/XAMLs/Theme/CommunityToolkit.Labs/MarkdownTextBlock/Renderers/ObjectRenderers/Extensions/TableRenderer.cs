@@ -5,8 +5,10 @@
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Extensions.Tables;
 using Markdig.Renderers;
+using Markdig.Syntax;
 using Microsoft.UI.Xaml;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Extensions;
 
@@ -17,22 +19,22 @@ public class TableRenderer : MarkdownObjectRenderer<WinUIRenderer, Table>
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (table == null) throw new ArgumentNullException(nameof(table));
 
-        var myTable = new MyTable(table);
+        MyTable myTable = new(table);
 
         renderer.Push(myTable);
 
-        for (var rowIndex = 0; rowIndex < table.Count; rowIndex++)
+        for (int rowIndex = 0; rowIndex < table.Count; rowIndex++)
         {
-            var rowObj = table[rowIndex];
-            var row = (TableRow)rowObj;
+            Block rowObj = table[rowIndex];
+            TableRow row = (TableRow)rowObj;
 
-            for (var i = 0; i < row.Count; i++)
+            for (int i = 0; i < row.Count; i++)
             {
-                var cellObj = row[i];
-                var cell = (TableCell)cellObj;
-                var textAlignment = TextAlignment.Left;
+                Block cellObj = row[i];
+                TableCell cell = (TableCell)cellObj;
+                TextAlignment textAlignment = TextAlignment.Left;
 
-                var columnIndex = i;
+                int columnIndex = i;
 
                 if (table.ColumnDefinitions.Count > 0)
                 {
@@ -50,7 +52,7 @@ public class TableRenderer : MarkdownObjectRenderer<WinUIRenderer, Table>
                     };
                 }
 
-                var myCell = new MyTableCell(cell, textAlignment, row.IsHeader, columnIndex, rowIndex);
+                MyTableCell myCell = new(cell, textAlignment, row.IsHeader, columnIndex, rowIndex);
 
                 renderer.Push(myCell);
                 renderer.Write(cell);

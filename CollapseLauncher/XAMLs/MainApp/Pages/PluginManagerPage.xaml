@@ -9,7 +9,7 @@
       xmlns:controls="using:Hi3Helper.CommunityToolkit.WinUI.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:media="using:CommunityToolkit.WinUI.Media"
@@ -55,7 +55,7 @@
                        VerticalAlignment="Center"
                        FontSize="36"
                        Style="{ThemeResource TitleTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginTitle}"
+                       Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginTitle}"
                        TextAlignment="Center"
                        TextWrapping="Wrap" />
             <Button x:Name="GoToPluginDownloadCatalogButton"
@@ -73,10 +73,10 @@
                     <TextBlock Grid.Column="0"
                                VerticalAlignment="Center"
                                FontSize="14">
-                        <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
+                        <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
                         <Run FontWeight="Bold"
-                             Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
-                        <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
+                             Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
+                        <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
                     </TextBlock>
                     <FontIcon Grid.Column="1"
                               FontSize="20"
@@ -108,7 +108,7 @@
                            Margin="8,0"
                            FontSize="24"
                            Style="{ThemeResource TitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelListViewTitle}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelListViewTitle}" />
                 <StackPanel Grid.Column="1">
                     <SplitButton Padding="2,2"
                                  VerticalAlignment="Bottom"
@@ -119,13 +119,13 @@
                             <MenuFlyout Placement="Bottom">
                                 <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                 Click="OnClickUpdateAndDownloadAllPlugin"
-                                                Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton2}">
+                                                Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewMainActionButton2}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE896;" />
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                                 <ToggleMenuFlyoutItem IsChecked="{x:Bind pages:PluginManagerPage.Context.IsEnableAutoUpdate, Mode=TwoWay}"
-                                                      Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton3}">
+                                                      Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewMainActionButton3}">
                                     <ToggleMenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE78B;" />
                                     </ToggleMenuFlyoutItem.Icon>
@@ -141,7 +141,7 @@
                                        Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontSize="12"
-                                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton1}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewMainActionButton1}"
                                        Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}" />
                             <FontIcon Grid.Column="1"
                                       Margin="4,4,8,4"
@@ -152,7 +152,7 @@
                                        Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontSize="12"
-                                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton1AltChecking}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewMainActionButton1AltChecking}"
                                        Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}" />
                             <ProgressRing Grid.Column="1"
                                           Width="12"
@@ -179,7 +179,7 @@
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnMarkForDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountRestored, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton1}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton1}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>
@@ -188,7 +188,7 @@
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnRestoreFromDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountUninstalled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton2}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton2}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE7A7;" />
                                         </MenuFlyoutItem.Icon>
@@ -197,7 +197,7 @@
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnEnableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountDisabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton3}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton3}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE930;" />
                                         </MenuFlyoutItem.Icon>
@@ -206,20 +206,20 @@
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnDisableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
                                                     IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton4}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton4}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xEA39;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSubItem IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}"
-                                                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton5}">
+                                                       Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton5}">
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon Glyph="&#xE895;" />
                                         </MenuFlyoutSubItem.Icon>
                                         <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                         Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateSelectedPluginsCommand}"
                                                         CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                        Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}">
+                                                        Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE895;" />
                                             </MenuFlyoutItem.Icon>
@@ -227,7 +227,7 @@
                                         <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                         Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateSelectedPluginsCommand}"
                                                         CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                        Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}">
+                                                        Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE896;" />
                                             </MenuFlyoutItem.Icon>
@@ -237,7 +237,7 @@
                                     <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCurrentPluginFolderCommand}"
                                                     CommandParameter="{x:Bind}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton6}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton6}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED43;" />
                                         </MenuFlyoutItem.Icon>
@@ -245,19 +245,19 @@
                                     <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCollapsePluginFolderCommand}"
                                                     CommandParameter="{x:Bind}"
-                                                    Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton7}">
+                                                    Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton7}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED25;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton8}">
+                                    <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButton8}">
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon Glyph="&#xE895;" />
                                         </MenuFlyoutSubItem.Icon>
                                         <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                         Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}"
+                                                        Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE895;" />
@@ -266,7 +266,7 @@
                                         <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                         Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}"
+                                                        Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE896;" />
@@ -275,7 +275,7 @@
                                         <MenuFlyoutItem extension:UIElementExtensions.CursorType="Hand"
                                                         Command="{x:Bind plugins:PluginManagerPageContext.OnDownloadUpdateCurrentPluginCommand}"
                                                         CommandParameter="{x:Bind}"
-                                                        Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonDownloadUpdate}"
+                                                        Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContextButtonDownloadUpdate}"
                                                         Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE896;" />
@@ -319,7 +319,7 @@
                                                            Margin="8,0,0,0"
                                                            VerticalAlignment="Center"
                                                            FontSize="12"
-                                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContentButton1}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContentButton1}" />
                                                 <FontIcon Grid.Column="1"
                                                           Margin="4,4,8,4"
                                                           FontSize="16"
@@ -365,7 +365,7 @@
                                                            Margin="8,0,0,0"
                                                            VerticalAlignment="Center"
                                                            FontSize="12"
-                                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContentButton2}" />
+                                                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemContentButton2}" />
                                                 <FontIcon Grid.Column="1"
                                                           Margin="4,4,8,4"
                                                           FontSize="16"
@@ -399,8 +399,8 @@
                                         <ToggleSwitch Grid.Column="2"
                                                       Margin="0,0,-20,-8"
                                                       IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
-                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                      OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
+                                                      OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}"
                                                       Scale="0.8,0.8,0.8" />
                                     </Grid>
                                 </controls:SettingsExpander.Content>
@@ -450,7 +450,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
                                                 <TextBlock Grid.Row="1"
@@ -458,7 +458,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
                                                 <TextBlock Grid.Row="2"
@@ -466,7 +466,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
                                                 <TextBlock Grid.Row="3"
@@ -474,7 +474,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
                                                 <TextBlock Grid.Row="4"
@@ -482,7 +482,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
                                                 <TextBlock Grid.Row="5"
@@ -490,7 +490,7 @@
                                                            HorizontalAlignment="Right"
                                                            FontSize="12"
                                                            Opacity=".75"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
                                                            TextAlignment="Right"
                                                            TextWrapping="Wrap" />
 
@@ -574,7 +574,7 @@
                                                                        Margin="0,-2,0,0"
                                                                        VerticalAlignment="Center"
                                                                        FontWeight="Bold"
-                                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied, Mode=OneWay}" />
+                                                                       Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied, Mode=OneWay}" />
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
@@ -606,7 +606,7 @@
                                            Margin="4"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailable, Mode=OneWay}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailable, Mode=OneWay}" />
                                 <Button Grid.Column="2"
                                         Padding="0"
                                         extension:UIElementExtensions.CursorType="Hand"
@@ -714,7 +714,7 @@
                                            Margin="4"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusChecking}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemUpdateStatusChecking}" />
                                 <ProgressRing Grid.Column="0"
                                               Width="12"
                                               Height="12"
@@ -739,7 +739,7 @@
                                            Margin="4"
                                            VerticalAlignment="Center"
                                            FontSize="12"
-                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusUpToDate}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewItemUpdateStatusUpToDate}" />
                                 <FontIcon Grid.Column="0"
                                           Margin="4"
                                           FontSize="16"
@@ -758,7 +758,7 @@
                 <TextBlock Grid.Column="0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
-                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewFooterWarning1}"
+                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterWarning1}"
                            TextWrapping="Wrap"
                            Visibility="{x:Bind RestartLauncherButton.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}" />
                 <Button x:Name="RestartLauncherButton"
@@ -780,7 +780,7 @@
                         <TextBlock Grid.Column="1"
                                    Margin="0,-1,0,0"
                                    FontSize="14"
-                                   Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewFooterRestartButton}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterRestartButton}" />
                     </Grid>
                 </Button>
             </Grid>
@@ -910,13 +910,13 @@
                                    HorizontalTextAlignment="Center"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap">
-                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle1}" />
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.RightPanelImportTitle1}" />
                             <Run FontWeight="Bold"
                                  Text=".zip" />
-                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle2}" />
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.RightPanelImportTitle2}" />
                             <Run FontWeight="Bold"
                                  Text="manifest.json" />
-                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle3}" />
+                            <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.RightPanelImportTitle3}" />
                         </TextBlock>
                         <TextBlock MaxWidth="420"
                                    Margin="16,0"
@@ -924,7 +924,7 @@
                                    FontSize="18"
                                    HorizontalTextAlignment="Center"
                                    Opacity=".5"
-                                   Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle4}"
+                                   Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.RightPanelImportTitle4}"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap" />
                     </StackPanel>
@@ -949,10 +949,10 @@
                 <TextBlock Grid.Column="0"
                            VerticalAlignment="Center"
                            FontSize="14">
-                    <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
+                    <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
                     <Run FontWeight="Bold"
-                         Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
-                    <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
+                    <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
                 </TextBlock>
                 <FontIcon Grid.Column="1"
                           FontSize="20"

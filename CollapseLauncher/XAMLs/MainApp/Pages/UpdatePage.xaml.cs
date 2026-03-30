@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
@@ -12,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Velopack;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable RedundantExtendsListEntry
@@ -39,7 +39,7 @@ namespace CollapseLauncher.Pages
         {
             ChangeTitleDragArea.Change(DragAreaTemplate.Full);
 
-            string channelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
+            string channelName = IsPreview ? Locale.Current.Lang?._Misc?.BuildChannelPreview : Locale.Current.Lang?._Misc?.BuildChannelStable;
             CurrentVersionLabel.Text = $"{LauncherUpdateHelper.LauncherCurrentVersionString}";
 
             if (LauncherUpdateHelper.AppUpdateVersionProp == null)
@@ -151,7 +151,7 @@ namespace CollapseLauncher.Pages
             int maxCount = 10;
             while (maxCount > 0)
             {
-                UpdateCountdownText.Text = string.Format(Lang._UpdatePage.UpdateCountdownMessage1, maxCount);
+                UpdateCountdownText.Text = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateCountdownMessage1 ?? "", maxCount);
                 await Task.Delay(1000, _tokenSource.Token);
                 maxCount--;
             }
@@ -159,7 +159,7 @@ namespace CollapseLauncher.Pages
 
         private async Task GetReleaseNote()
         {
-            ReleaseNotesBox.Text = Lang._UpdatePage.LoadingRelease;
+            ReleaseNotesBox.Text = Locale.Current.Lang?._UpdatePage?.LoadingRelease ?? "";
 
             try
             {
@@ -169,7 +169,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex);
-                ReleaseNotesBox.Text = string.Format(Lang._UpdatePage.LoadingReleaseFailed, ex);
+                ReleaseNotesBox.Text = string.Format(Locale.Current.Lang?._UpdatePage?.LoadingReleaseFailed ?? "", ex);
             }
         }
 
@@ -215,7 +215,7 @@ namespace CollapseLauncher.Pages
             {
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = e.ProgressPercentage;
-                TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                TimeEstimation.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", e.TimeLeft);
             });
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
+// ReSharper disable CheckNamespace
 
 namespace Hi3Helper.Shared.ClassStruct
 {

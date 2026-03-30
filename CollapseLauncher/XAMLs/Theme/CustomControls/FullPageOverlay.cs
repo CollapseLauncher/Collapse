@@ -1,12 +1,11 @@
 ﻿#nullable enable
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Shapes;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,9 +143,8 @@ public partial class FullPageOverlay : ContentControl
     {
         using (ThisThreadLock.EnterScope())
         {
-            Loaded                             += OnUILayoutLoaded;
-            Unloaded                           += OnUILayoutUnloaded;
-            UpdateBindingsInvoker.UpdateEvents += UpdateBindings;
+            Loaded   += OnUILayoutLoaded;
+            Unloaded += OnUILayoutUnloaded;
 
             if (LayoutCloseButton != null)
             {
@@ -159,9 +157,8 @@ public partial class FullPageOverlay : ContentControl
     {
         using (ThisThreadLock.EnterScope())
         {
-            Loaded                             -= OnUILayoutLoaded;
-            Unloaded                           -= OnUILayoutUnloaded;
-            UpdateBindingsInvoker.UpdateEvents -= UpdateBindings;
+            Loaded   -= OnUILayoutLoaded;
+            Unloaded -= OnUILayoutUnloaded;
 
             if (LayoutCloseButton != null)
             {
@@ -180,19 +177,13 @@ public partial class FullPageOverlay : ContentControl
         Hide();
     }
 
-    private void UpdateBindings(object? sender, EventArgs e)
-    {
-        ChangeTitleDragArea.UpdateLayout();
-        AssignBindings();
-    }
-
     private void AssignBindings()
     {
         // Binding close button text
         if (LayoutCloseButton is { Content: Grid asCloseButtonGrid } &&
             asCloseButtonGrid.Children.FirstOrDefault() is TextBlock asCloseButtonTextBlock)
         {
-            asCloseButtonTextBlock.BindProperty(TextBlock.TextProperty, Locale.Lang._Misc, nameof(Locale.Lang._Misc.CloseOverlay));
+            asCloseButtonTextBlock.BindProperty(TextBlock.TextProperty, Locale.Current.Lang?._Misc!, nameof(Locale.Current.Lang._Misc.CloseOverlay));
             asCloseButtonTextBlock.UpdateLayout();
         }
 

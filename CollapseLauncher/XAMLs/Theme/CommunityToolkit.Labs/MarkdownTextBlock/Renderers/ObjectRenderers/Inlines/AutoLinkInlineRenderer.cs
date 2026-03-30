@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
@@ -16,7 +17,7 @@ internal class AutoLinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, Au
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (link == null) throw new ArgumentNullException(nameof(link));
 
-        var url = link.Url;
+        string url = link.Url;
         if (link.IsEmail)
         {
             url = "mailto:" + url;
@@ -27,7 +28,7 @@ internal class AutoLinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, Au
             url = "#";
         }
 
-        var autolink = new MyAutolinkInline(link);
+        MyAutolinkInline autolink = new(link);
 
         renderer.Push(autolink);
 

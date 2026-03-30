@@ -5,12 +5,17 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      Background="Transparent"
-      mc:Ignorable="d">
+      xmlns:helper="using:CollapseLauncher.Helper"
+      xmlns:metadata="using:CollapseLauncher.Helper.Metadata"
+      xmlns:pages="using:CollapseLauncher.Pages"
+      Background="Transparent">
+    <Page.Resources>
+        <pages:GameTitleComboBoxTranslatedConverter x:Key="GameTitleComboBoxTranslatedConverter" />
+        <pages:GameRegionComboBoxTranslatedConverter x:Key="GameRegionComboBoxTranslatedConverter" />
+        <pages:StringUppercaseConverter x:Key="StringUppercaseConverter" />
+        <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter" />
+    </Page.Resources>
     <Grid>
         <Frame x:Name="BackgroundFrame"
                HorizontalAlignment="Stretch"
@@ -32,7 +37,7 @@
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2NextBtn}" />
                     <AnimatedIcon Width="24"
                                   MinHeight="{ThemeResource ComboBoxMinHeight}"
                                   Margin="0,-4,0,-8"
@@ -83,7 +88,7 @@
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtnNew}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2PrevBtnNew}" />
                 </StackPanel>
             </Button.Content>
         </Button>
@@ -104,46 +109,70 @@
                 <TextBlock Margin="0,0,0,32"
                            Foreground="{ThemeResource SystemAccentColor}"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Title}" />
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_1}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_3}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle1_3}" />
                 </TextBlock>
                 <TextBlock Margin="0,16,0,24"
                            Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_1}" />
                     <Run Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_3}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_4}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_5}" />
+                         Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_5}" />
                 </TextBlock>
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="GameCategorySelect"
-                              Width="192"
-                              extension:UIElementExtensions.CursorType="Hand"
-                              CornerRadius="16"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}"
-                              SelectionChanged="GameCategorySelect_SelectionChanged" />
-                    <ComboBox x:Name="GameRegionSelect"
-                              Width="192"
-                              Margin="16,0,0,0"
-                              extension:UIElementExtensions.CursorType="Hand"
-                              CornerRadius="16"
-                              IsEnabled="False"
-                              PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBoxRegion}"
-                              SelectionChanged="GameSelect_SelectionChanged" />
-                </StackPanel>
+                <ComboBox x:Name="GameTitleComboBox"
+                          extension:UIElementExtensions.CursorType="Hand"
+                          PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBox}"
+                          SelectionChanged="GameCategorySelect_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ComboBox x:Name="GameRegionComboBox"
+                          Width="192"
+                          Margin="16,0,0,0"
+                          extension:UIElementExtensions.CursorType="Hand"
+                          CornerRadius="16"
+                          IsEnabled="False"
+                          PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBoxRegion}"
+                          SelectionChanged="GameSelect_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="metadata:PresetConfig">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="4">
+                                <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}" />
+                                <Grid Padding="4,0"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                      CornerRadius="4"
+                                      Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource TextBoxForegroundThemeBrush}"
+                                               Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}" />
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </StackPanel>
         </Grid>
         <Grid x:Name="Overlay"

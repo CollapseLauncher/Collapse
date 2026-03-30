@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:helper="using:Hi3Helper"
+        xmlns:helper="using:CollapseLauncher.Helper"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d">
     <Grid>
@@ -23,20 +23,20 @@
                     <StackPanel>
                         <TextBlock FontWeight="Normal"
                                    Style="{ThemeResource TitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateTitle1}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateTitle1}" />
                         <TextBlock FontWeight="Bold"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateTitle2}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateTitle2}" />
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom">
                         <Grid>
                             <StackPanel Margin="0,4,0,0">
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateVersionTitle}" />
+                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateUpdateVersionTitle}" />
                                 <TextBlock>
                                     <Run x:Name="CurrentVersionLabel"
                                          FontWeight="Bold"
                                          Text="-" />
-                                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateVersionSeparator}" />
+                                    <Run Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateVersionSeparator}" />
                                     <Run x:Name="NewVersionLabel"
                                          FontWeight="Bold"
                                          Foreground="{ThemeResource AccentColor}"
@@ -45,12 +45,12 @@
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Right">
                                 <TextBlock HorizontalAlignment="Right"
-                                           Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateChannelTitle}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateUpdateChannelTitle}" />
                                 <TextBlock>
                                     <Run x:Name="UpdateChannelLabel"
                                          FontWeight="Bold"
                                          Foreground="{ThemeResource AccentColor}"
-                                         Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateChannelSubtitlePlaceholder}" />
+                                         Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateUpdateChannelSubtitlePlaceholder}" />
                                 </TextBlock>
                             </StackPanel>
                         </Grid>
@@ -67,14 +67,14 @@
                         <StackPanel Grid.ColumnSpan="3">
                             <TextBlock x:Name="Status"
                                        Margin="0,0,0,4"
-                                       Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateStatusTitle}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateUpdateStatusTitle}" />
                             <TextBlock x:Name="ActivityStatus"
                                        Margin="0,0,0,4"
-                                       Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateMiscIdle}"
+                                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateMiscIdle}"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="ActivitySubStatus"
                                        FontWeight="Bold"
-                                       Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadSizePlaceholder}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateDownloadSizePlaceholder}" />
                         </StackPanel>
                         <StackPanel x:Name="ProgressStatus"
                                     Grid.Column="1"
@@ -91,11 +91,11 @@
                             <TextBlock x:Name="SpeedStatus"
                                        Margin="0,0,0,4"
                                        HorizontalAlignment="Right"
-                                       Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadSpeedPlaceholder}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateDownloadSpeedPlaceholder}" />
                             <TextBlock x:Name="TimeEstimation"
                                        HorizontalAlignment="Right"
                                        FontWeight="Bold"
-                                       Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadTimeEstPlaceholder}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._UpdatePage.ApplyUpdateDownloadTimeEstPlaceholder}" />
                         </StackPanel>
                     </Grid>
                     <ProgressBar x:Name="progressBar"

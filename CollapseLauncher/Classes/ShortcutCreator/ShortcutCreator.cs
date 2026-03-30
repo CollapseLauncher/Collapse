@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Classes.Helper.Image;
 using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
@@ -11,7 +11,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
@@ -68,12 +67,8 @@ namespace CollapseLauncher.ShortcutUtils
 
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
-            string translatedGameTitle =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
-                                                                        Lang._GameClientTitles)!;
-            string translatedGameRegion =
-                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
-                                                                        Lang._GameClientRegions);
+            string translatedGameTitle = MetadataHelper.GetTranslatedTitle(preset.GameName);
+            string translatedGameRegion = MetadataHelper.GetTranslatedRegion(preset.ZoneName);
             string shortcutName = $"{translatedGameTitle} ({translatedGameRegion}) - Collapse Launcher.url".Replace(":", "");
             string url = $"collapse://open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
 
@@ -83,7 +78,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             string fullPath = Path.Combine(path, shortcutName);
 
-            using StreamWriter writer = new StreamWriter(fullPath, false);
+            using StreamWriter writer = new(fullPath, false);
             writer.WriteLine($"[InternetShortcut]\nURL={url}\nIconIndex=0\nIconFile={icon}");
         }
 
@@ -98,19 +93,19 @@ namespace CollapseLauncher.ShortcutUtils
             if (paths == null || paths.Length == 0)
                 return false;
 
-            CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
+            CancellationTokenSourceWrapper tokenSource = new();
 
-            LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", (_, _) =>
-            {
-                tokenSource.Cancel();
-                LogWriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
-            });
+            LoadingMessageHelper.ShowActionButton(Locale.Current.Lang?._Misc?.Cancel, "", (_, _) =>
+                                                  {
+                                                      tokenSource.Cancel();
+                                                      LogWriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
+                                                  });
 
             List<SteamShortcut> shortcuts = [];
 
             foreach (string path in paths)
             {
-                SteamShortcutParser parser = new SteamShortcutParser(path);
+                SteamShortcutParser parser = new(path);
 
                 string[] splitPath = path.Split('\\');
                 string userId = splitPath[^3];

@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using System.Linq;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
@@ -16,32 +17,27 @@ internal class MyDetails : IAddChild
     private readonly MyFlowDocument _flowDocument;
     private readonly Paragraph      _paragraph;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyDetails(HtmlNode details)
     {
-        var header = details.ChildNodes
-                            .FirstOrDefault(
-                                            x => x.Name == "summary" ||
-                                                 x.Name == "header");
+        HtmlNode header = details.ChildNodes
+                                 .FirstOrDefault(x => x.Name is "summary" or "header");
 
-        InlineUIContainer inlineUIContainer = new InlineUIContainer();
-        Expander          expander          = new Expander
+        InlineUIContainer inlineUIContainer = new();
+        Expander          expander          = new()
         {
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
-        _flowDocument                                   = new MyFlowDocument
+        _flowDocument = new MyFlowDocument
         {
             RichTextBlock =
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch
             }
         };
-        expander.Content                               = _flowDocument.RichTextBlock;
-        var headerBlock = new TextBlock
+        expander.Content = _flowDocument.RichTextBlock;
+        TextBlock headerBlock = new()
         {
             Text                = header?.InnerText,
             HorizontalAlignment = HorizontalAlignment.Stretch

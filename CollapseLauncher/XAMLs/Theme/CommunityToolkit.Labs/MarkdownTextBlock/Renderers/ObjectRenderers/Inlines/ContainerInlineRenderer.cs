@@ -4,6 +4,7 @@
 
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
@@ -11,7 +12,7 @@ internal class ContainerInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, C
 {
     protected override void Write(WinUIRenderer renderer, ContainerInline obj)
     {
-        foreach (var inline in obj)
+        foreach (Inline inline in obj)
         {
             renderer.Write(inline);
         }

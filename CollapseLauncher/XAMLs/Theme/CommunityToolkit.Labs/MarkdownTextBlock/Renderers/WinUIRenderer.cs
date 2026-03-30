@@ -71,9 +71,9 @@ public class WinUIRenderer : RendererBase
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
 
-        var          lines  = leafBlock.Lines;
+        StringLineGroup          lines  = leafBlock.Lines;
         StringLine[] slices = lines.Lines;
-        for (var i = 0; i < lines.Count; i++)
+        for (int i = 0; i < lines.Count; i++)
         {
             if (i != 0)
                 WriteInline(new MyLineBreak());
@@ -89,7 +89,7 @@ public class WinUIRenderer : RendererBase
 
     public void Pop()
     {
-        var popped = _stack.Pop();
+        IAddChild popped = _stack.Pop();
         _stack.Peek().AddChild(popped);
     }
 

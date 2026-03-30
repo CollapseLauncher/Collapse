@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -15,23 +16,20 @@ internal class MyQuote : IAddChild
     private readonly Paragraph      _paragraph;
     private readonly MyFlowDocument _flowDocument;
 
-    public TextElement TextElement
-    {
-        get => _paragraph;
-    }
+    public TextElement TextElement => _paragraph;
 
     public MyQuote()
     {
         _paragraph = new Paragraph();
 
         _flowDocument = new MyFlowDocument();
-        var inlineUIContainer = new InlineUIContainer();
+        InlineUIContainer inlineUIContainer = new();
 
-        var grid = new Grid();
+        Grid grid = new();
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
 
-        var bar = new Grid
+        Grid bar = new()
         {
             Width      = 4,
             Background = new SolidColorBrush(Colors.Gray)
@@ -41,7 +39,7 @@ internal class MyQuote : IAddChild
         bar.Margin = new Thickness(0, 0, 4, 0);
         grid.Children.Add(bar);
 
-        var rightGrid = new Grid
+        Grid rightGrid = new()
         {
             Padding = new Thickness(4)
         };

@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -16,7 +17,7 @@ internal class ParagraphRenderer : MarkdownObjectRenderer<WinUIRenderer, Paragra
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-        var paragraph = new MyParagraph();
+        MyParagraph paragraph = new();
         // set style
         renderer.Push(paragraph);
         renderer.WriteLeafInline(obj);

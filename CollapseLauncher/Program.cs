@@ -32,9 +32,9 @@ using Velopack;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
@@ -541,7 +541,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            bool isLtsc = IsWindowsLTSC();
+            bool isLtsc = IsWindowsLtsc();
             bool isRedstone5Update = Environment.OSVersion.Version.Build == 17763;
 
             if (isRedstone5Update)
@@ -566,7 +566,7 @@ namespace CollapseLauncher
 
             return;
 
-            static bool IsWindowsLTSC()
+            static bool IsWindowsLtsc()
             {
                 RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion");
                 if (key == null)
@@ -633,16 +633,23 @@ namespace CollapseLauncher
 
         private static void InitLocale()
         {
-            InitializeLocale();
+            Locale.Current.InitLocale();
             if (IsFirstInstall)
             {
-                LoadLocale(CultureInfo.CurrentUICulture.Name);
-                SetAppConfigValue("AppLanguage", Lang.LanguageID);
+                string localeFirstInstallName = CultureInfo.CurrentUICulture.Name;
+                SetAppConfigValue("AppLanguage", localeFirstInstallName);
             }
-            else
+
+            string? localeId = GetAppConfigValue("AppLanguage").ToString();
+
+            if (!Locale.Current.TryLoadLocaleFrom(localeId))
             {
-                LoadLocale(GetAppConfigValue("AppLanguage").ToString());
+                Locale.Current.TryLoadLocaleFrom(Locale.FallbackLocaleCode);
             }
+
+#if DEBUG
+            Locale.Current.EnableLocaleHotReload();
+#endif
 
             string? themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme))

@@ -113,7 +113,7 @@
     "Initializing": "Iniciando",
     "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
     "LoadingGameConfiguration": "Cargando Ajustes del Juego",
-    "LoadingBackgroundImage": "Loading Background Image"
+    "LoadingBackgroundImage": "Cargando Imagen de Fondo"
   },
 
   "_HomePage": {
@@ -552,15 +552,15 @@
     "VideoBackground_IsEnableAudio": "Permitir Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
-    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
-    "VideoBackground_FFmpegInstallStatus": "Install Status:",
-    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
-    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
-    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
-    "VideoBackground_FFmpegInstallNote": "Note",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
-    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_UseFFmpeg": "Usar FFmpeg para la decodificación de vídeo",
+    "VideoBackground_FFmpegInstallStatus": "Estado de la instalación:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Instalado",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Iniciar una nueva instalación o localizar asistente de instalación",
+    "VideoBackground_FFmpegInstallNote": "Aviso",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 7.x. Otras versiones de FFmpeg no son compatibles por el momento.",
+    "VideoBackground_FFmpegInstallLockedTitle": "Modificar la instalación de FFmpeg está bloqueada",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado actualmente para decodificar su fondo actual, para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", reinicia el launcher, vuelve a los ajustes y haz clic en \"Iniciar una nueva instalación o localizar asistente de instalación\"",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
@@ -589,12 +589,19 @@
     "ShareYourFeedbackBtn": "Compártenos tus comentarios",
 
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
     "LicenseType": "Licencia MIT",
+
+    "About_FFmpegCopyright1": "Este software utiliza código de ",
+    "About_FFmpegCopyright2": "licenciado bajo el",
+    "About_FFmpegCopyright3": "y ",
+    "About_FFmpegCopyright4": "como un wrapper bajo el ",
+    "About_FFmpegCopyright5": "licencia",
+    "About_FFmpegDonate": "Donar al proyecto FFmpeg",
 
     "Disclaimer": "Aviso",
     "Disclaimer1": "Esta aplicación no está afiliada con",
@@ -700,7 +707,7 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
     "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para descargar.",
     "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
@@ -1257,6 +1264,18 @@
     "PostInstallBehaviour_EnumShutdown": "Apagar Equipo",
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Establecer píxeles para paralaje (Mín: {0}px, Máx: {1}px)",
+
+    "StartupFFmpegInstallDialogTitle": "Se requiere FFmpeg instalado",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse requiere que el decodificador FFmpeg (versión 7.x) esté instalado para reproducir correctamente el vídeo de fondo. Haz clic en \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" para instalar FFmpeg desde cero o seleccionarlo de tu instalación actual, o haz clic en \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" para seguir usando el decodificador integrado de Windows Media Fundation ",
+    "StartupFFmpegInstallDialogSubtitle4": "Aviso:",
+    "StartupFFmpegInstallDialogSubtitle5": "Es posible que el vídeo de fondo muestre fotogramas distorsionados o dañados debido a que el decodificador integrado de Windows Media Foundation no admite ese tipo de espacio de color. Si deseas seleccionar FFmpeg para decodificar el fondo de vídeo, puedes ir a la pagina \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\", luego encontrar la sección \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" para habilitar e instalar el decodificador FFmpeg.",
+    "StartupFFmpegInstallDialogInstallBtn": "Instalar y usar FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Usar el decodificador integrado",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "No preguntar de nuevo sobre instalar FFmpeg en el futuro",
 
     "Media_ExtNotSupported1": "Lo sentimos, pero la extensión del archivo de imagen/vídeo de fondo no es compatible.",
     "Media_ExtNotSupported2": "Ruta del Archivo/URL: {0}",

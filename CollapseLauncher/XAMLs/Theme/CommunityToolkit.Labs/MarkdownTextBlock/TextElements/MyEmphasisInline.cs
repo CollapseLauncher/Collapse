@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Documents;
 using System;
 using Windows.UI.Text;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -18,10 +19,7 @@ internal class MyEmphasisInline : IAddChild
     private bool _isItalic;
     private bool _isStrikeThrough;
 
-    public TextElement TextElement
-    {
-        get => _span;
-    }
+    public TextElement TextElement => _span;
 
     public void AddChild(IAddChild child)
     {

@@ -13,12 +13,6 @@ public partial class NewPipsPager : Control
 
     ~NewPipsPager()
     {
-        if (!this.IsObjectDisposed())
-        {
-            Loaded   -= NewPipsPager_Loaded;
-            Unloaded -= NewPipsPager_Unloaded;
-        }
-
         UnapplyNavigationButtonEvents();
         UnapplyKeyPressEvents();
         UnapplyItemsRepeaterEvents();

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -58,7 +59,7 @@ namespace CollapseLauncher
         private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, asset.N[GamePath.Length..].AsSpan().Trim("\\/").ToString());
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status6 ?? "", asset.N[GamePath.Length..].AsSpan().Trim("\\/").ToString());
 
             // Increment current total count
             ProgressAllCountCurrent++;
@@ -68,7 +69,7 @@ namespace CollapseLauncher
             ProgressPerFileSizeCurrent = 0;
 
             // Get the file info
-            FileInfo fileInfo = new FileInfo(asset.N);
+            FileInfo fileInfo = new(asset.N);
 
             // Check if the file exist
             if (!fileInfo.Exists)

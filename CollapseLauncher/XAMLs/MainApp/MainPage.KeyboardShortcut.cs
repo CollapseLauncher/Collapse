@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -11,14 +12,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -49,14 +47,14 @@ public partial class MainPage : Page
             KbShortcutList = null;
 
             SpawnNotificationPush(
-                                  Lang._AppNotification.NotifKbShortcutTitle,
-                                  Lang._AppNotification.NotifKbShortcutSubtitle,
+                                  Locale.Current.Lang?._AppNotification?.NotifKbShortcutTitle ?? "",
+                                  Locale.Current.Lang?._AppNotification?.NotifKbShortcutSubtitle ?? "",
                                   NotifSeverity.Informational,
                                   -20,
                                   true,
                                   false,
                                   null,
-                                  NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (_, _) => ShowKeybinds_Invoked(null, null)),
+                                  NotificationPush.GenerateNotificationButton("", Locale.Current.Lang?._AppNotification?.NotifKbShortcutBtn, (_, _) => ShowKeybinds_Invoked(null, null)),
                                   true,
                                   true,
                                   true
@@ -76,10 +74,12 @@ public partial class MainPage : Page
             int numIndex = 0;
             if (KbShortcutList != null)
             {
+                MetadataHelper.GetGameCounts(out int gameTitleCount, out int currentGameRegionCount);
+
                 VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                while (numIndex < LauncherMetadataHelper.CurrentGameNameCount)
+                while (numIndex < gameTitleCount)
                 {
-                    KeyboardAccelerator keystroke = new KeyboardAccelerator
+                    KeyboardAccelerator keystroke = new()
                     {
                         Modifiers = keyModifier,
                         Key       = VirtualKey.Number1 + numIndex
@@ -87,7 +87,7 @@ public partial class MainPage : Page
                     keystroke.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
 
-                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator
+                    KeyboardAccelerator keystrokeNP = new()
                     {
                         Key = VirtualKey.NumberPad1 + numIndex
                     };
@@ -99,9 +99,9 @@ public partial class MainPage : Page
 
                 numIndex    = 0;
                 keyModifier = KbShortcutList["RegionSelection"].Modifier;
-                while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
+                while (numIndex < currentGameRegionCount)
                 {
-                    KeyboardAccelerator keystroke = new KeyboardAccelerator
+                    KeyboardAccelerator keystroke = new()
                     {
                         Modifiers = keyModifier,
                         Key       = VirtualKey.Number1 + numIndex
@@ -113,7 +113,7 @@ public partial class MainPage : Page
                 }
             }
 
-            KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator
+            KeyboardAccelerator keystrokeF5 = new()
             {
                 Key = VirtualKey.F5
             };
@@ -149,7 +149,7 @@ public partial class MainPage : Page
                     continue;
                 }
 
-                KeyboardAccelerator kbfunc = new KeyboardAccelerator
+                KeyboardAccelerator kbfunc = new()
                 {
                     Modifiers = KbShortcutList[func.Key].Modifier,
                     Key       = KbShortcutList[func.Key].Key
@@ -172,23 +172,25 @@ public partial class MainPage : Page
         if (CannotUseKbShortcuts || !IsLoadRegionComplete)
             return;
 
-        switch (PreviousTag)
+        if (!TryGetCurrentPageObject(out object typeOfPageObj))
         {
-            case "launcher":
+            return;
+        }
+
+        switch (typeOfPageObj)
+        {
+            case Type asPageType when asPageType == typeof(HomePage):
                 RestoreCurrentRegion();
                 ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
                 return;
-            case "settings":
+            case Type asPageType when asPageType == typeof(SettingsPage):
                 return;
-            default:
-                string itemTag = PreviousTag;
-                PreviousTag = "Empty";
-                NavigateInnerSwitch(itemTag);
-                if (LauncherFrame != null && LauncherFrame.BackStack is { Count: > 0 })
-                    LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
-                if (PreviousTagString is { Count: > 0 })
-                    PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
-                return;
+            case Type asPageType:
+                TryNavigateFrom(asPageType);
+                break;
+            case string asPageTypeTag:
+                TryNavigateFrom(asPageTypeTag);
+                break;
         }
     }
 
@@ -196,18 +198,17 @@ public partial class MainPage : Page
 
     private void RestoreCurrentRegion()
     {
-        string gameName = GetAppConfigValue("GameCategory")!;
-    #nullable enable
-        List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
-        _ = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+        string       gameTitle     = GetAppConfigValue("GameCategory");
+        List<string> gameTitleList = MetadataHelper.CurrentGameTitleList;
 
-        var indexCategory                    = gameNameCollection?.IndexOf(gameName) ?? -1;
-        if (indexCategory < 0) indexCategory = 0;
+        int indexCategory = gameTitleList.IndexOf(gameTitle);
+        if (indexCategory < 0)
+            indexCategory = 0;
 
-        var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
+        int indexRegion = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameTitle);
 
-        ComboBoxGameCategory.SelectedIndex = indexCategory;
-        ComboBoxGameRegion.SelectedIndex   = indexRegion;
+        ComboBoxGameTitle.SelectedIndex  = indexCategory;
+        ComboBoxGameRegion.SelectedIndex = indexRegion;
     }
 
     private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -218,21 +219,27 @@ public partial class MainPage : Page
         RestoreCurrentRegion();
             
         if (CannotUseKbShortcuts || !IsLoadRegionComplete
-                                 || index >= ComboBoxGameCategory.Items.Count
-                                 || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
+                                 || index >= ComboBoxGameTitle.Items.Count
+                                 || ComboBoxGameTitle.SelectedValue == ComboBoxGameTitle.Items[index]
            )
         {
             _disableInstantRegionChange = false;
             return;
         }
 
-        ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
-        ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue));
+        ComboBoxGameTitle.SelectedValue = ComboBoxGameTitle.Items[index];
+        if (ComboBoxGameTitle.SelectedValue is not string asGameTitleString)
+        {
+            return;
+        }
+
+        ComboBoxGameRegion.SelectedIndex = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(asGameTitleString);
         ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+
         ChangeRegionConfirmBtn.IsEnabled          = false;
         ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
         CannotUseKbShortcuts                      = true;
-        _disableInstantRegionChange                = false;
+        _disableInstantRegionChange               = false;
     }
 
     private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -270,21 +277,14 @@ public partial class MainPage : Page
     {
         if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
-        if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
-
-        NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-        NavigateInnerSwitch("launcher");
-
+        TryNavigateFrom(typeof(HomePage));
     }
 
     private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
-        if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
-
-        NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
-        Navigate(typeof(SettingsPage), "settings");
+        TryNavigateFrom(typeof(SettingsPage));
     }
 
     private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -295,10 +295,10 @@ public partial class MainPage : Page
 
     private void OpenPluginManager_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+        FullPageOverlay overlayMenu = new(new PluginManagerPage(), XamlRoot, true)
         {
             Size = FullPageOverlaySize.Full,
-            OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+            OverlayTitleSource = () => Locale.Current.Lang?._PluginManagerPage?.PageTitle,
             OverlayTitleIcon = new FontIconSource
             {
                 Glyph = "\uE912",
@@ -368,9 +368,9 @@ public partial class MainPage : Page
         {
             if (!IsGameInstalled()) return;
 
-            var gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
-                             CurrentGameProperty.GameVersion?.GameDirPath ?? 
-                             null;
+            string gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
+                                CurrentGameProperty.GameVersion?.GameDirPath ?? 
+                                null;
             
             if (string.IsNullOrEmpty(gameFolder)) return;
             LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
@@ -406,7 +406,7 @@ public partial class MainPage : Page
         try
         {
             Process[] gameProcess = Process.GetProcessesByName(gamePresetExecName.Split('.')[0]);
-            foreach (var p in gameProcess)
+            foreach (Process p in gameProcess)
             {
                 LogWriteLine($"Trying to stop game process {gamePresetExecName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                 p.Kill();
@@ -422,21 +422,15 @@ public partial class MainPage : Page
     {
         if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
-        if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
-
-        NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
-        NavigateInnerSwitch("repair");
+        TryNavigateFrom(typeof(RepairPage));
     }
 
     private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         if (!IsLoadRegionComplete || CannotUseKbShortcuts)
             return;
-        if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
-            return;
 
-        NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
-        NavigateInnerSwitch("caches");
+        TryNavigateFrom(typeof(CachesPage));
     }
 
     private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -444,25 +438,16 @@ public partial class MainPage : Page
         if (!IsLoadRegionComplete || CannotUseKbShortcuts)
             return;
 
-        if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
-            return;
-
-        NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
-        switch (CurrentGameProperty.GamePreset)
+        Type? typeOfPage = CurrentGameProperty.GamePreset.GameType switch
         {
-            case { GameType: GameNameType.Honkai }:
-                Navigate(typeof(HonkaiGameSettingsPage), "honkaigamesettings");
-                break;
-            case { GameType: GameNameType.Genshin }:
-                Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
-                break;
-            case { GameType: GameNameType.StarRail }:
-                Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
-                break;
-            case { GameType: GameNameType.Zenless }:
-                Navigate(typeof(ZenlessGameSettingsPage), "zenlessgamesettings");
-                break;
-        }
+            GameNameType.Honkai => typeof(HonkaiGameSettingsPage),
+            GameNameType.Genshin => typeof(GenshinGameSettingsPage),
+            GameNameType.StarRail => typeof(StarRailGameSettingsPage),
+            GameNameType.Zenless => typeof(ZenlessGameSettingsPage),
+            _ => null
+        };
+
+        TryNavigateFrom(typeOfPage);
     }
 
     private static bool AreShortcutsEnabled
@@ -470,7 +455,7 @@ public partial class MainPage : Page
         get => GetAppConfigValue("EnableShortcuts").ToBool(true);
     }
 
-    private void SettingsPage_KeyboardShortcutsEvent(object sender, int e)
+    private void SettingsPage_KeyboardShortcutsEvent(object? sender, int e)
     {
         switch (e)
         {

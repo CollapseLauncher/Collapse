@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Media3D;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -18,8 +19,8 @@ internal class MyTaskListCheckBox : IAddChild
 
     public MyTaskListCheckBox(TaskList taskList)
     {
-        var                  grid      = new Grid();
-        CompositeTransform3D transform = new CompositeTransform3D
+        Grid                  grid      = new();
+        CompositeTransform3D transform = new()
         {
             TranslateY = 2
         };
@@ -29,7 +30,7 @@ internal class MyTaskListCheckBox : IAddChild
         grid.Margin = new Thickness(2, 0, 2, 0);
         grid.BorderThickness = new Thickness(1);
         grid.BorderBrush = new SolidColorBrush(Colors.Gray);
-        FontIcon icon = new FontIcon
+        FontIcon icon = new()
         {
             FontSize            = 16,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -39,7 +40,7 @@ internal class MyTaskListCheckBox : IAddChild
         grid.Children.Add(taskList.Checked ? icon : new TextBlock());
         grid.Padding = new Thickness(0);
         grid.CornerRadius = new CornerRadius(2);
-        var inlineUIContainer = new InlineUIContainer
+        InlineUIContainer inlineUIContainer = new()
         {
             Child = grid
         };

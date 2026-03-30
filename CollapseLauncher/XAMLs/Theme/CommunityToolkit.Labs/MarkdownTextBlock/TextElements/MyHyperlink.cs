@@ -9,6 +9,7 @@ using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
 using System;
 using Inline = Microsoft.UI.Xaml.Documents.Inline;
+#pragma warning disable IDE0130
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -16,14 +17,11 @@ internal class MyHyperlink : IAddChild
 {
     private readonly Hyperlink _hyperlink;
 
-    public TextElement TextElement
-    {
-        get => _hyperlink;
-    }
+    public TextElement TextElement => _hyperlink;
 
     public MyHyperlink(LinkInline linkInline, string? baseUrl)
     {
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
+        string? url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
         _hyperlink = new Hyperlink
         {
             NavigateUri = Extensions.GetUri(url, baseUrl)
@@ -32,7 +30,7 @@ internal class MyHyperlink : IAddChild
 
     public MyHyperlink(HtmlNode htmlNode, string? baseUrl)
     {
-        var url = htmlNode.GetAttributeValue("href", "#");
+        string url = htmlNode.GetAttributeValue("href", "#");
         _hyperlink = new Hyperlink
         {
             NavigateUri = Extensions.GetUri(url, baseUrl)
@@ -41,17 +39,15 @@ internal class MyHyperlink : IAddChild
 
     public void AddChild(IAddChild child)
     {
-        if (child.TextElement is Inline inlineChild)
+        if (child.TextElement is not Inline inlineChild) return;
+        try
         {
-            try
-            {
-                _hyperlink.Inlines.Add(inlineChild);
-                // TODO: Add support for click handler
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"[MyHyperlink::AddChild()] Failed while adding inlines\r\n{ex}", LogType.Error, true);
-            }
+            _hyperlink.Inlines.Add(inlineChild);
+            // TODO: Add support for click handler
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[MyHyperlink::AddChild()] Failed while adding inlines\r\n{ex}", LogType.Error, true);
         }
     }
 }

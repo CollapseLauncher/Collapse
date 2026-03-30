@@ -569,8 +569,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                         ParentUI.DispatcherQueue.TryEnqueue(() =>
                                                         {
                                                             LoadingMessageHelper.SetMessage(
-                                                                 Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                                 string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
+                                                                 Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                                                 string.Format(Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle1 ?? "",
                                                                                count,
                                                                                ConverterTool.SummarizeSizeSimple(totalSize))
                                                                 );

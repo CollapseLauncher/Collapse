@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Sophon;
@@ -10,7 +11,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
 
@@ -97,8 +97,8 @@ namespace CollapseLauncher
             // either way, returns false.
             return SummarizeStatusAndProgress(
                 AssetIndex,
-                string.Format(Lang._GameRepairPage.Status3, ProgressAllCountFound, SummarizeSizeSimple(ProgressAllSizeFound)),
-                Lang._GameRepairPage.Status4);
+                string.Format(Locale.Current.Lang?._GameRepairPage?.Status3 ?? "", ProgressAllCountFound, SummarizeSizeSimple(ProgressAllSizeFound)),
+                Locale.Current.Lang?._GameRepairPage?.Status4 ?? "");
         }
 
         internal Task<List<PkgVersionProperties>> ResetAndFetchAssets()
@@ -133,9 +133,9 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            Status.IsCompleted = true;
-            Status.IsCanceled = false;
-            Status.ActivityStatus = Lang._GameRepairPage.Status7;
+            Status.IsCompleted    = true;
+            Status.IsCanceled     = false;
+            Status.ActivityStatus = Locale.Current.Lang?._GameRepairPage?.Status7;
 
             // Update status and progress
             UpdateAll();

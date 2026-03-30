@@ -79,9 +79,9 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     public string         PluginFileName { get; }
     public string         PluginKey      { get; }
     public PluginManifest PluginManifest { get; set; }
-    public string?        Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
-    public string?        Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
-    public string?        Author         => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoAuthorUnknown;
+    public string?        Name           => field ?? Locale.Current.Lang?._SettingsPage?.Plugin_PluginInfoNameUnknown;
+    public string?        Description    => field ?? Locale.Current.Lang?._SettingsPage?.Plugin_PluginInfoDescUnknown;
+    public string?        Author         => field ?? Locale.Current.Lang?._SettingsPage?.Plugin_PluginInfoAuthorUnknown;
     public DateTime?      CreationDate   => field ?? DateTime.MinValue;
 
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable

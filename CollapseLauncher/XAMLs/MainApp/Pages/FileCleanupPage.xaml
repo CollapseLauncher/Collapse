@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
       xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
+      xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:page="using:CollapseLauncher.Pages"
@@ -29,7 +29,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock Margin="0,0,0,16"
                        Style="{ThemeResource TitleLargeTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}" />
+                       Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.Title}" />
             <Button x:Name="MenuReScanButton"
                     Grid.Column="1"
                     extension:UIElementExtensions.CursorType="Hand"
@@ -45,7 +45,7 @@
                                    VerticalAlignment="Center"
                                    FontWeight="Medium"
                                    HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._FileCleanupPage.TopButtonRescan}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.TopButtonRescan}" />
                         <FontIcon Grid.Column="1"
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -87,7 +87,7 @@
                            VerticalAlignment="Center"
                            Opacity="0.6"
                            Style="{ThemeResource TitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._FileCleanupPage.NoFilesToBeDeletedText}" />
+                           Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.NoFilesToBeDeletedText}" />
             </Grid>
             <ListView x:Name="ListViewTable"
                       Grid.Row="0"
@@ -109,7 +109,7 @@
                             <datatable:DataColumn HorizontalAlignment="Stretch"
                                                   HorizontalContentAlignment="Stretch"
                                                   CanResize="False"
-                                                  Content="{x:Bind helper:Locale.Lang._FileCleanupPage.ListViewFieldFileName}"
+                                                  Content="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.ListViewFieldFileName}"
                                                   DesiredWidth="*"
                                                   FontSize="13"
                                                   FontWeight="Bold"
@@ -122,7 +122,7 @@
                                                   Tag="Filesize">
                                 <TextBlock Margin="0,4,20,4"
                                            HorizontalAlignment="Right"
-                                           Text="{x:Bind helper:Locale.Lang._FileCleanupPage.ListViewFieldFileSize}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.ListViewFieldFileSize}" />
                             </datatable:DataColumn>
                         </datatable:DataTable>
                     </Border>
@@ -205,7 +205,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.BottomButtonDeleteAllFiles}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._FileCleanupPage.BottomButtonDeleteAllFiles}" />
                             <FontIcon Grid.Column="1"
                                       HorizontalAlignment="Right"
                                       FontFamily="{ThemeResource FontAwesome}"

@@ -282,7 +282,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
     }
 
     private         int? _hashID;
-    public override int  HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
+    public override int  HashID => _hashID ??= HashCode.Combine(GameName, ZoneName);
 
 
     [field: AllowNull, MaybeNull]

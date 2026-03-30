@@ -14,7 +14,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -79,11 +78,10 @@ namespace CollapseLauncher.Pages
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    WindowUtility.Tray_ShowNotification(
-                        Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
-                        isNeedUpdate ?
-                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty.GameCache?.AssetEntry.Count) :
-                            Lang._NotificationToast.CacheUpdateCheckCompletedNotFound_Subtitle
+                    WindowUtility.Tray_ShowNotification(Locale.Current.Lang?._NotificationToast?.CacheUpdateCheckCompleted_Title ?? "",
+                        (isNeedUpdate ?
+                            string.Format(Locale.Current.Lang?._NotificationToast?.CacheUpdateCheckCompletedFound_Subtitle ?? "", CurrentGameProperty.GameCache?.AssetEntry.Count) :
+                            Locale.Current.Lang?._NotificationToast?.CacheUpdateCheckCompletedNotFound_Subtitle) ?? ""
                         );
                 }
             }
@@ -133,9 +131,8 @@ namespace CollapseLauncher.Pages
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    WindowUtility.Tray_ShowNotification(
-                                                        Lang._NotificationToast.CacheUpdateDownloadCompleted_Title,
-                                                        string.Format(Lang._NotificationToast.CacheUpdateDownloadCompleted_Subtitle, assetCount)
+                    WindowUtility.Tray_ShowNotification(Locale.Current.Lang?._NotificationToast?.CacheUpdateDownloadCompleted_Title ?? "",
+                                                        string.Format(Locale.Current.Lang?._NotificationToast?.CacheUpdateDownloadCompleted_Subtitle ?? "", assetCount)
                                                        );
                 }
             }
@@ -235,7 +232,7 @@ namespace CollapseLauncher.Pages
 
         private void ResetStatusAndButtonState()
         {
-            CachesStatus.Text = Lang._GameRepairPage.Status1;
+            CachesStatus.Text = Locale.Current.Lang?._GameRepairPage?.Status1;
 
             CancelBtn.IsEnabled = false;
             CheckUpdateBtn.Visibility = Visibility.Visible;
@@ -258,22 +255,22 @@ namespace CollapseLauncher.Pages
                 or GameInstallStateEnum.InstalledHavePlugin
                 or GameInstallStateEnum.GameBroken)
             {
-                Overlay.Visibility = Visibility.Visible;
+                Overlay.Visibility     = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = Lang._CachesPage.OverlayNotInstalledTitle;
-                OverlaySubtitle.Text = Lang._CachesPage.OverlayNotInstalledSubtitle;
+                OverlayTitle.Text      = Locale.Current.Lang?._CachesPage?.OverlayNotInstalledTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._CachesPage?.OverlayNotInstalledSubtitle;
             }
             else if (CurrentGameProperty.IsGameRunning)
             {
-                Overlay.Visibility = Visibility.Visible;
+                Overlay.Visibility     = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = Lang._CachesPage.OverlayGameRunningTitle;
-                OverlaySubtitle.Text = Lang._CachesPage.OverlayGameRunningSubtitle;
+                OverlayTitle.Text      = Locale.Current.Lang?._CachesPage?.OverlayGameRunningTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._CachesPage?.OverlayGameRunningSubtitle;
             }
             else
             {
             #if !DISABLEDISCORD
-                AppDiscordPresence?.SetActivity(ActivityType.Cache);
+                AppDiscordPresence.SetActivity(ActivityType.Cache);
             #endif
             }
         }
