@@ -604,6 +604,10 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             return downloadedSize >= totalSize;
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             Logger.LogWriteLine($"[PluginGameInstallWrapper::IsPreloadCompleted] Error checking preload status:\r\n{ex}", LogType.Error, true);
