@@ -118,6 +118,9 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     private unsafe void TryRegisterPerFileProgressCallback()
     {
+        if (_perFileProgressGcHandle.IsAllocated)
+            return;
+
         _perFileProgressDelegate = OnPerFileProgressCallback;
         _perFileProgressGcHandle = GCHandle.Alloc(_perFileProgressDelegate);
         nint callbackPtr = Marshal.GetFunctionPointerForDelegate(_perFileProgressDelegate);
