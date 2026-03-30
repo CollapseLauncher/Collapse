@@ -263,6 +263,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     public async Task StartPackageDownload(bool skipDialog = false)
     {
         ResetStatusAndProgressProperty();
+        bool isSuccess = false;
 
         try
         {
@@ -306,6 +307,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Awaiting preload task...", LogType.Debug, true);
             await asyncPreload.AsTask().ConfigureAwait(false);
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Preload task completed.", LogType.Debug, true);
+            isSuccess = true;
         }
         catch (OperationCanceledException)
         {
@@ -322,7 +324,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Entering finally block.", LogType.Debug, true);
             UnregisterPerFileProgressCallback();
-            Status.IsCompleted = true;
+            Status.IsCompleted = isSuccess;
             IsRunning          = false;
             UpdateStatus();
         }
@@ -340,6 +342,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         _updateProgressProperty.IsUpdateMode = await GameManager.GetGameState() == GameInstallStateEnum.NeedsUpdate;
 
         ResetStatusAndProgressProperty();
+        bool isSuccess = false;
 
         try
         {
@@ -391,6 +394,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             }
 
             await routineTask.ConfigureAwait(false);
+            isSuccess = true;
         }
         catch (OperationCanceledException)
         {
@@ -400,7 +404,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         finally
         {
             UnregisterPerFileProgressCallback();
-            Status.IsCompleted = true;
+            Status.IsCompleted = isSuccess;
             IsRunning = false;
             UpdateStatus();
         }
