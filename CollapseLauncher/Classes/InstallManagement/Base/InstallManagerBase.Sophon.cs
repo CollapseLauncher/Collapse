@@ -11,6 +11,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -21,7 +22,6 @@ using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -166,7 +166,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Create a sophon download speed limiter instance
                 SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                    SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                    SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                 // Reset status and progress properties
                 ResetStatusAndProgress();
@@ -234,10 +234,10 @@ namespace CollapseLauncher.InstallManager.Base
                     GameVersion? requestedVersion = gameState switch
                                                     {
                                                         GameInstallStateEnum.InstalledHavePreload =>
-                                                            GameVersionManager!
+                                                            GameVersionManager
                                                                .GetGameVersionApiPreload(),
-                                                        _ => GameVersionManager!.GetGameVersionApi()
-                                                    } ?? GameVersionManager!.GetGameVersionApi();
+                                                        _ => GameVersionManager.GetGameVersionApi()
+                                                    } ?? GameVersionManager.GetGameVersionApi();
 
                     // Add the tag query to the Url
                     requestedUrl += $"&tag={requestedVersion}";
@@ -472,9 +472,6 @@ namespace CollapseLauncher.InstallManager.Base
                             SophonLogger.LogHandler -= UpdateSophonLogHandler;
                         }
                         httpClient.Dispose();
-
-                        // Unsubscribe download limiter
-                        LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                     }
                 }
             }
@@ -575,7 +572,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
-            List<string> additionalMatchingFields = otherManifestIdentity.Select(x => x.MatchingField).ToList();
+            List<string> additionalMatchingFields = otherManifestIdentity
+                                                   .Where(x => !string.IsNullOrEmpty(x.MatchingField))
+                                                   .Select(x => x.MatchingField!).ToList();
 
             installManifest.AddRange(additionalMatchingFields.Select(matchingField => installManifestFirst.GetOtherManifestInfoPair(matchingField)));
             return;
@@ -686,7 +685,7 @@ namespace CollapseLauncher.InstallManager.Base
                 List<SophonAsset> sophonUpdateAssetList = [];
 
                 // Get the previous version details of the preload or the recent update.
-                GameVersion? requestedVersionFrom = GameVersionManager!.GetGameExistingVersion();
+                GameVersion? requestedVersionFrom = GameVersionManager.GetGameExistingVersion();
                 if (GameVersionManager.GamePreset.LauncherResourceChunksURL != null)
                 {
                     // Reassociate the URL if branch url exist
@@ -718,7 +717,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Create a sophon download speed limiter instance
                     SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                        SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                        SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
                     // Add base game diff data
                     bool isSuccess = await AddSophonDiffAssetsToList(
@@ -737,26 +736,26 @@ namespace CollapseLauncher.InstallManager.Base
 
                         // Spawn the confirmation dialog
                         ContentDialogResult fallbackResultConfirm = await SimpleDialogs.SpawnDialog(
-                            Locale.Lang._Dialogs.SophonIncrementUpdateUnavailTitle,
+                            Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailTitle,
                             new TextBlock
                             {
                                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
                             }
-                            .AddTextBlockLine(string.Format(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle1, requestedVersionFrom.ToString()))
-                            .AddTextBlockLine(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle2, Microsoft.UI.Text.FontWeights.Bold)
-                            .AddTextBlockLine(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle3)
+                            .AddTextBlockLine(string.Format(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle1 ?? "", requestedVersionFrom.ToString()))
+                            .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle2, Microsoft.UI.Text.FontWeights.Bold)
+                            .AddTextBlockLine(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle3)
                             .AddTextBlockNewLine(2)
                             .AddTextBlockLine(
-                                string.Format(Locale.Lang._Dialogs.SophonIncrementUpdateUnavailSubtitle4,
-                                              Locale.Lang._Misc.YesContinue,
-                                              Locale.Lang._Misc.NoCancel),
+                                string.Format(Locale.Current.Lang?._Dialogs?.SophonIncrementUpdateUnavailSubtitle4 ?? "",
+                                              Locale.Current.Lang?._Misc?.YesContinue,
+                                              Locale.Current.Lang?._Misc?.NoCancel),
                                 Microsoft.UI.Text.FontWeights.Bold,
                                 10),
                             ParentUI,
-                            Locale.Lang._Misc.NoCancel,
-                            Locale.Lang._Misc.YesContinue,
+                            Locale.Current.Lang?._Misc?.NoCancel,
+                            Locale.Current.Lang?._Misc?.YesContinue,
                             defaultButton: ContentDialogButton.Primary,
-                            dialogTheme: CustomControls.ContentDialogTheme.Warning);
+                            dialogTheme: ContentDialogTheme.Warning);
 
                         // If cancelled, then throw
                         if (ContentDialogResult.Primary != fallbackResultConfirm)
@@ -868,23 +867,14 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.IsProgressPerFileIndetermined = false;
                 Status.IsProgressAllIndetermined     = false;
                 Status.ActivityStatus = $"{(IsSophonInUpdateMode && !isPreloadMode
-                    ? Locale.Lang._Misc.UpdatingAndApplying
-                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+                    ? Locale.Current.Lang?._Misc?.UpdatingAndApplying
+                    : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
-
-                ConcurrentDictionary<SophonAsset, byte> processingAsset = new();
 
                 // Set the delegate function for the download action
                 async ValueTask Action(HttpClient localHttpClient, SophonAsset asset)
                 {
-                    if (!processingAsset.TryAdd(asset, 0))
-                    {
-                        Logger.LogWriteLine($"Found duplicate operation for {asset.AssetName}! Skipping...",
-                                            LogType.Warning, true);
-                        return;
-                    }
-
                     if (isPreloadMode)
                     {
                         // If preload mode, then only download the chunks
@@ -902,11 +892,12 @@ namespace CollapseLauncher.InstallManager.Base
                     await asset.WriteUpdateAsync(localHttpClient, gamePath, gamePath, chunkPath, canDeleteChunks,
                                                  parallelChunksOptions, UpdateSophonFileTotalProgress,
                                                  UpdateSophonFileDownloadProgress, UpdateSophonDownloadStatus);
-                    processingAsset.Remove(asset, out _);
                 }
 
                 // Enumerate in parallel and process the assets
-                await Parallel.ForEachAsync(sophonUpdateAssetList.Where(x => !x.IsDirectory),
+                await Parallel.ForEachAsync(sophonUpdateAssetList
+                                           .Where(x => !x.IsDirectory)
+                                           .ToHashSet(),
                                             parallelOptions,
                                             (asset, _) => Action(httpClient, asset));
 
@@ -1099,8 +1090,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<string> additionalPackageMatchingFields =
                 manifestPair.OtherSophonBuildData!.ManifestIdentityList
-                            .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
-                            .Select(x => x.MatchingField)
+                            .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                            .Select(x => x.MatchingField!)
                             .WhereMatchPattern(x => x, true, excludeMatchingFieldsPattern)
                             .ToList();
 
@@ -1111,6 +1102,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             foreach (string matchingField in additionalPackageMatchingFields)
             {
+                if (string.IsNullOrEmpty(matchingField))
+                {
+                    continue;
+                }
+
                 await AddSophonDiffAssetsToList(httpClient,
                                                 requestedUrlFrom,
                                                 requestedUrlTo,
@@ -1282,9 +1278,9 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual int GetSophonLocaleCodeIndex(SophonManifestBuildData sophonData, string lookupName)
         {
-            List<string> localeList = sophonData.ManifestIdentityList
+            List<string?> localeList = sophonData.ManifestIdentityList
                                                 .Where(x => IsValidLocaleCode(x.MatchingField))
-                                                .Select(x => x.MatchingField.ToLower())
+                                                .Select(x => x.MatchingField?.ToLower())
                                                 .ToList();
 
             int index = localeList.IndexOf(lookupName);
@@ -1297,8 +1293,8 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (SophonManifestBuildIdentity identity in sophonData.ManifestIdentityList)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string localeCode = identity.MatchingField.ToLower();
-                if (!IsValidLocaleCode(localeCode))
+                string? localeCode = identity.MatchingField?.ToLower();
+                if (string.IsNullOrEmpty(localeCode) || !IsValidLocaleCode(localeCode))
                 {
                     continue;
                 }

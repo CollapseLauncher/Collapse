@@ -1,17 +1,20 @@
-﻿using Hi3Helper.Shared.Region;
+﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Pages;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 
+#nullable enable
 namespace CollapseLauncher.Dialogs
 {
     public partial class DownloadSettings : UserControl
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty { get; }
-        private PostInstallBehaviour CurrentPostInstallBehaviour =>
-            CurrentGameProperty.GameInstall?.PostInstallBehaviour ?? PostInstallBehaviour.Nothing;
+        private IGameInstallManager CurrentGameInstaller { get; }
+
+        private PostInstallBehaviour CurrentPostInstallBehaviour => CurrentGameInstaller.PostInstallBehaviour;
 
         private int PostInstallShutdownTimeout
         {
@@ -20,59 +23,23 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        #region Download Speed Limiter Properties
-        private bool IsUseDownloadSpeedLimiter
+        internal DownloadSettings(IGameInstallManager gameInstaller)
         {
-            get
-            {
-                bool value = LauncherConfig.IsUseDownloadSpeedLimiter;
-                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
-                if (value)
-                    LauncherConfig.IsBurstDownloadModeEnabled = false;
-                return value;
-            }
-            set
-            {
-                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
-                if (value)
-                    LauncherConfig.IsBurstDownloadModeEnabled = false;
-                LauncherConfig.IsUseDownloadSpeedLimiter = value;
-            }
-        }
-
-        private double DownloadSpeedLimit
-        {
-            get
-            {
-                double val = LauncherConfig.DownloadSpeedLimit;
-                double valDividedM = val / (1 << 20);
-                return valDividedM;
-            }
-            set
-            {
-                long valBfromM = (long)(value * (1 << 20));
-
-                LauncherConfig.DownloadSpeedLimit = Math.Max(valBfromM, 0);
-            }
-        }
-        #endregion
-
-        internal DownloadSettings(GamePresetProperty currentGameProperty)
-        {
-            CurrentGameProperty = currentGameProperty;
+            CurrentGameInstaller = gameInstaller;
             InitializeComponent();
         }
 
         private void Control_Loaded(object sender, RoutedEventArgs e)
         {
             PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
-            if (MainPage.PreviousTag == "settings")
+            if ((InnerLauncherConfig.m_mainPage?.TryGetCurrentPageObject(out object? typeOfPageObj) ?? false) &&
+                typeOfPageObj is Type asPageType && asPageType == typeof(SettingsPage))
                 NetworkSettings.Visibility = Visibility.Collapsed;
         }
 
         private void OnPostInstallBehaviourChange(object sender, SelectionChangedEventArgs e)
         {
-            CurrentGameProperty.GameInstall?.PostInstallBehaviour =
+            CurrentGameInstaller.PostInstallBehaviour =
                 (PostInstallBehaviour)PostInstallBox.SelectedIndex;
 
             ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is

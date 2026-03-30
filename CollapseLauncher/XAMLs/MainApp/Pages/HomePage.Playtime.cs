@@ -1,4 +1,5 @@
 using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -11,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 // ReSharper disable InconsistentNaming
@@ -67,7 +67,7 @@ public partial class HomePage
         try
         {
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
-            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDbSyncing;
+            SyncDbPlaytimeBtnText.Text   = Locale.Current.Lang?._HomePage?.GamePlaytime_Idle_SyncDbSyncing;
             if (CurrentGameProperty.GamePlaytime != null)
             {
                 await CurrentGameProperty.GamePlaytime.CheckDb(true);
@@ -80,11 +80,11 @@ public partial class HomePage
             await Task.Delay(500);
             
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf00c"; // Completed (check)
-            SyncDbPlaytimeBtnText.Text   = Lang._Misc.Completed + "!";
+            SyncDbPlaytimeBtnText.Text   = Locale.Current.Lang?._Misc?.Completed + "!";
             await Task.Delay(1000);
             
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
-            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+            SyncDbPlaytimeBtnText.Text   = Locale.Current.Lang?._HomePage?.GamePlaytime_Idle_SyncDb;
         }
         catch (Exception ex)
         {
@@ -92,7 +92,7 @@ public partial class HomePage
             ErrorSender.SendException(ex);
                 
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
-            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+            SyncDbPlaytimeBtnText.Text   = Locale.Current.Lang?._HomePage?.GamePlaytime_Idle_SyncDb;
         }
         finally
         {
@@ -116,11 +116,11 @@ public partial class HomePage
                                        HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
                                        MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-                                       string lastPlayed = Lang._HomePage.GamePlaytime_Stats_NeverPlayed;
+                                       string lastPlayed = Locale.Current.Lang?._HomePage?.GamePlaytime_Stats_NeverPlayed;
                                        if (playtime.LastPlayed != null)
                                        {
                                            DateTime? last = playtime.LastPlayed?.ToLocalTime();
-                                           lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
+                                           lastPlayed = string.Format(Locale.Current.Lang?._HomePage?.GamePlaytime_DateDisplay ?? "", last?.Day,
                                                                       last?.Month, last?.Year, last?.Hour, last?.Minute);
                                        }
 
@@ -132,7 +132,7 @@ public partial class HomePage
                                    });
         return;
 
-        static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
+        static string FormatTimeStamp(TimeSpan time) => string.Format(Locale.Current.Lang?._HomePage?.GamePlaytime_Display ?? "", time.Days * 24 + time.Hours, time.Minutes);
     }
 
     private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)

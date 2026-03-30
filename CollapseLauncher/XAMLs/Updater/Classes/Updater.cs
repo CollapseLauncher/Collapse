@@ -19,7 +19,6 @@ using Velopack.Locators;
 using Velopack.Logging;
 using Velopack.Sources;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -88,7 +87,7 @@ public partial class Updater
     {
         if (token.IsCancellationRequested) return false;
 
-        _status.Status = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+        _status.Status = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateStatus3 ?? "", 1, 1);
         UpdateStatus();
         UpdateProgress();
         _updateStopwatch = Stopwatch.StartNew();
@@ -98,8 +97,8 @@ public partial class Updater
             _newVersionTag = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
             if (IsCurrentHasLatestVersion(_newVersionTag.VersionString))
             {
-                _status.Status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
-                _status.Message = Lang._UpdatePage.UpdateMessage4;
+                _status.Status = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateStatus4 ?? "", LauncherUpdateHelper.LauncherCurrentVersionString);
+                _status.Message = Locale.Current.Lang?._UpdatePage?.UpdateMessage4;
                 UpdateStatus();
 
                 await Task.Delay(3000, token);
@@ -257,8 +256,8 @@ public partial class Updater
         string needInnoLogUpdatePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                                                     "AppData", "LocalLow", "CollapseLauncher", "_NeedInnoLogUpdate");
 
-        _status.Status = string.Format(Lang._UpdatePage.UpdateStatus5 + $" {Lang._UpdatePage.UpdateMessage5}",
-                                      _newVersionTag.VersionString);
+        _status.Status = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateStatus5 + $" {Locale.Current.Lang?._UpdatePage?.UpdateMessage5}",
+                                       _newVersionTag.VersionString);
         UpdateStatus();
 
         _progress = new UpdaterProgress(_updateStopwatch, 100, 100);

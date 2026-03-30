@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameSettingsUniversal : IGameSettingsExportable
+    public interface IGameSettingsUniversal : IGameSettingsExportable
     {
         BaseScreenSettingData SettingsScreen         { get; }
         CollapseScreenSetting SettingsCollapseScreen { get; }
@@ -17,7 +17,7 @@ namespace CollapseLauncher.Interfaces
     }
 
 #nullable enable
-    internal interface IGameSettingsExportable
+    public interface IGameSettingsExportable
     {
         RegistryKey? RegistryRoot { get; }
 

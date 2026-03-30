@@ -112,7 +112,8 @@
     "NavigationUtilities": "Utilidades",
     "Initializing": "Iniciando",
     "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
-    "LoadingGameConfiguration": "Cargando Ajustes del Juego"
+    "LoadingGameConfiguration": "Cargando Ajustes del Juego",
+    "LoadingBackgroundImage": "Cargando Imagen de Fondo"
   },
 
   "_HomePage": {
@@ -139,6 +140,13 @@
     "PauseCancelDownloadBtn": "Pausar/Cancelar",
     "PauseCancelBtn": "Pausar/Cancelar",
     "DownloadBtn": "Descargar el Juego",
+    "StartGameTooltip": "Lanzar Juego: v{0}",
+    "InstallGameTooltip": "Instalar Juego: v{0}",
+    "UpdateGameTooltip": "Actualizar Juego: v{0} -> v{1}",
+    "InstallSdkTooltip": "Instalar SDK: v{0}",
+    "UpdateSdkUpdateTooltip": "Actualizar SDK: v{0} -> v{1}",
+    "InstallPluginTooltip": "Instalar Plugin: {0} v{1}",
+    "UpdatePluginTooltip": "Actualizar Plugin: {0} v{1} -> v{2}",
 
     "GameStatusPlaceholderComingSoonBtn": "Próximamente",
     "GameStatusPlaceholderPreRegisterBtn": "¡Pre-regístrate ahora!",
@@ -220,7 +228,35 @@
     "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados.",
 
     "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
-    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo."
+    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo.",
+
+    "BgContextMenu_SaveCurrentBgText": "Guardar Imagen Actual",
+    "BgContextMenu_SaveCurrentBgTooltip": "Guardar los archivos tanto del overlay actual (si está disponible) como la imagen/vídeo de fondo.",
+    "BgContextMenu_SaveAllBgText": "Guardar Todas Las Imágenes",
+    "BgContextMenu_SaveAllBgTooltip": "Guardar todos los archivos de fondo disponibles tanto del overlay (si está disponible) como de la capa de imagen/vídeo de fondo.",
+    "BgContextMenu_CopyFrameToClipboardParentText": "Copiar Fotograma actual al portapapeles",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "Copiar Solo Fotograma el Overlay",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Copiar solo el Fotograma de la capa del bitmap al portapapeles.",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Copiar Solo Fotograma del Fondo",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Copiar al portapapeles solo el fotograma del bitmap de la capa del fondo.",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "Copiar Combinado",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Combinar y copiar al portapapeles el fotograma del bitmap del overlay y la capa de fondo.",
+    "BgContextMenu_CopyUrlToClipboardParentText": "Copiar URL/Ruta al portapapeles",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "Copiar URL/ruta del Overlay",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "Copiar solo el URL/ruta de la capa del Overlay.",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "Copiar URL/ruta del Fondo",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Copiar solo el URL/ruta de la capa del Fondo.",
+    "BgContextMenu_EnableAudioText": "Habilitar audio de vídeo",
+    "BgContextMenu_EnableAudioTooltip": "Habilita el audio mientras se reproduce el vídeo de fondo.",
+    "BgContextMenu_KeepPlayVideoOnUnfocusText": "Reproducir video en segundo plano",
+    "BgContextMenu_KeepPlayVideoOnUnfocusTooltip": "Continuar reproduciendo el video en silencio, incluso si la ventana no está enfocada. Cuando se desactiva, el video se detendrá por completo.",
+    "BgContextMenu_EnableParallaxText": "Habilitar efecto de paralaje",
+    "BgContextMenu_EnableParallaxTooltip": "Habilita el efecto de paralaje en el fondo al pasar el cursor por el launcher.",
+    "BgContextMenu_ParallaxPixelShiftParentText": "Desplazamiento de píxeles del paralaje",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "Personalizada",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "Establece la cantidad de píxeles que se van a desplazar.",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "Guardar Fondo actual a una carpeta",
+    "BgContextMenu_FolderSelectSaveAllBg": "Guarda todos los fondos actuales a una carpeta"
   },
 
   "_GameRepairPage": {
@@ -425,7 +461,11 @@
     "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
     "Advanced_GLC_PreLaunch_Delay": "Retrasar Inicio del Juego (ms)",
     "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
-    "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego"
+    "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego",
+
+    "Advanced_RunWithExplorerAsParent_Title": "Iniciar Juego con Explorer como Proceso Principal",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "Desactivar para compatibilidad con Steam Input y Overlay",
+    "Advanced_RunWithExplorerAsParent_Warning": "ADVERTENCIA: ¡Los inicios de sesión pueden bloquearse cuando se desactiva!"
   },
 
   "_SettingsPage": {
@@ -512,6 +552,15 @@
     "VideoBackground_IsEnableAudio": "Permitir Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
+    "VideoBackground_UseFFmpeg": "Usar FFmpeg para la decodificación de vídeo",
+    "VideoBackground_FFmpegInstallStatus": "Estado de la instalación:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Instalado",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Iniciar una nueva instalación o localizar asistente de instalación",
+    "VideoBackground_FFmpegInstallNote": "Aviso",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 7.x. Otras versiones de FFmpeg no son compatibles por el momento.",
+    "VideoBackground_FFmpegInstallLockedTitle": "Modificar la instalación de FFmpeg está bloqueada",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado actualmente para decodificar su fondo actual, para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", reinicia el launcher, vuelve a los ajustes y haz clic en \"Iniciar una nueva instalación o localizar asistente de instalación\"",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
@@ -540,12 +589,19 @@
     "ShareYourFeedbackBtn": "Compártenos tus comentarios",
 
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
     "LicenseType": "Licencia MIT",
+
+    "About_FFmpegCopyright1": "Este software utiliza código de ",
+    "About_FFmpegCopyright2": "licenciado bajo el",
+    "About_FFmpegCopyright3": "y ",
+    "About_FFmpegCopyright4": "como un wrapper bajo el ",
+    "About_FFmpegCopyright5": "licencia",
+    "About_FFmpegDonate": "Donar al proyecto FFmpeg",
 
     "Disclaimer": "Aviso",
     "Disclaimer1": "Esta aplicación no está afiliada con",
@@ -651,8 +707,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
     "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga. Esta opción no puede utilizarse junto con la opción",
-    "FileDownloadSettings_SpeedLimitHelp5": ".",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para descargar.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Solo para la Instalación, Reparación y actualización de Caché del juego.",
@@ -1128,6 +1184,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
+    "SteamShortcutCreationSuccessSubtitle8": " Adicionalmente, la opción \"Iniciar Juego con Explorer como Proceso Principal\" en los ajustes avanzados debe estar desactivada.",
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
     "SteamShortcutTitle": "Acceso directo de Steam",
@@ -1204,7 +1261,75 @@
     "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
     "PostInstallBehaviour_EnumHibernate": "Hibernar",
     "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
-    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo"
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Establecer píxeles para paralaje (Mín: {0}px, Máx: {1}px)",
+
+    "StartupFFmpegInstallDialogTitle": "Se requiere FFmpeg instalado",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse requiere que el decodificador FFmpeg (versión 7.x) esté instalado para reproducir correctamente el vídeo de fondo. Haz clic en \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" para instalar FFmpeg desde cero o seleccionarlo de tu instalación actual, o haz clic en \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" para seguir usando el decodificador integrado de Windows Media Fundation ",
+    "StartupFFmpegInstallDialogSubtitle4": "Aviso:",
+    "StartupFFmpegInstallDialogSubtitle5": "Es posible que el vídeo de fondo muestre fotogramas distorsionados o dañados debido a que el decodificador integrado de Windows Media Foundation no admite ese tipo de espacio de color. Si deseas seleccionar FFmpeg para decodificar el fondo de vídeo, puedes ir a la pagina \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\", luego encontrar la sección \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" para habilitar e instalar el decodificador FFmpeg.",
+    "StartupFFmpegInstallDialogInstallBtn": "Instalar y usar FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Usar el decodificador integrado",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "No preguntar de nuevo sobre instalar FFmpeg en el futuro",
+
+    "Media_ExtNotSupported1": "Lo sentimos, pero la extensión del archivo de imagen/vídeo de fondo no es compatible.",
+    "Media_ExtNotSupported2": "Ruta del Archivo/URL: {0}",
+    "Media_ExtNotSupportedTitle": "El archivo de fondo no es compatible.",
+    "Media_ImageWICNotSupported1": "Lo sentimos, pero la imagen de fondo no es compatible con el componente de creación de imágenes de Windows (WIC sigla en ingles). Asegúrate de haber instalado el decodificador desde la Microsoft Store.",
+    "Media_ImageWICNotSupportedTitle": "El archivo de imagen de fondo no es compatible",
+    "Media_VideoMFNotSupportedFormatTypeUnknown": "Desconocido",
+    "Media_VideoMFNotSupported1": "Collapse a detectado que el video de fondo no se puede reproducir debido a la falta de un decodificador. Mas detalles:",
+    "Media_VideoMFNotSupported2": "Video Codec FourCC: {0}",
+    "Media_VideoMFNotSupported3": "Video Codec GUID: {0}",
+    "Media_VideoMFNotSupported4": "Audio Codec GUID: {0}",
+    "Media_VideoMFNotSupported5": "¿Se puede reproducir video/audio?: (Video: {0} | Audio: {1})",
+    "Media_VideoMFNotSupported6": "Te sugerimos instalar los \"Media Foundation video/audio codecs\" haciendo click en \"{0}\" o usar FFmpeg haciendo click en el boton \"{1}\"",
+    "Media_VideoMFNotSupported7": "Aviso:",
+    "Media_VideoMFNotSupported8": "Le recomendamos que utilices FFmpeg, ya que es compatible con una amplia gama de códecs de video/audio además de contar con decodificación por HW (dependiendo de su hardware).",
+    "Media_VideoMFNotSupportedTitle": "El archivo de video de fondo no es compatible.",
+    "Media_VideoMFNotSupportedCopyDetailsBtn": "Copiar Detalles",
+    "Media_VideoMFNotSupportedInstallMFCodecsBtn": "Instalar Media Foundation Codecs",
+    "Media_VideoMFNotSupportedInstallFFmpegBtn": "Instalar y usar FFmpeg",
+
+    "Media_VideoMFCodecPrepareTitle": "Preparando Media Foundation Codecs",
+    "Media_VideoMFCodecPrepare1": "Collapse requiere códecs adicionales de \"Windows Media Foundation\" para reproducir videos de fondo u otros medios. Este proceso puede provocar falso positivos por parte de su antivirus, ya que utilizamos PowerShell para la instalación de estos códecs, por lo que le recomendamos desactivar su antivirus durante unos instantes.",
+    "Media_VideoMFCodecPrepare2": "Estos códecs adicionales solo incluyen compatibilidad limitada con formatos de video/audio, entre los que se incluyen:",
+    "Media_VideoMFCodecPrepare3": "    • VP9, AV1 (Video)",
+    "Media_VideoMFCodecPrepare4": "    • Vorbis, Opus (Audio)",
+    "Media_VideoMFCodecPrepare5": "Es posible que tengas que reiniciar manualmente tu computadora una vez completada la instalación. Haz clic en \"",
+    "Media_VideoMFCodecPrepare6": "\" para continuar.",
+    "Media_VideoMFCodecPrepareInstallBtn": "Instalar Media Foundation Codecs",
+    "Media_VideoMFCodecInstalledTitle": "¡Los códecs de Windows Media Foundation han sido instalados!",
+    "Media_VideoMFCodecInstalled1": "Los códecs de Windows Media Foundation se instalaron correctamente. Por favor, reinicia tu equipo para que los códecs funcionen.",
+    "Media_VideoMFCodecInstallingTitle": "Instalando Windows Media Foundation Codecs",
+
+    "Media_VideoFFmpegCodecPrepareTitle": "Preparando FFmpeg",
+    "Media_VideoFFmpegCodecPrepare1": "Collapse requiere FFmpeg para reproducir videos de fondo u otros medios. Puede descargar o utilizar un instalación existente.",
+    "Media_VideoFFmpegCodecPrepare2": "Para continuar, haz clic en \"",
+    "Media_VideoFFmpegCodecPrepare3": "\" para descargar e instalar una versión nueva de FFmpeg o haga clic en \"",
+    "Media_VideoFFmpegCodecPrepare4": "\" para localizar una carpeta que contenga la instalación de FFmpeg.",
+    "Media_VideoFFmpegCodecPrepareInstallBtn": "Descargar e instalar FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateBtn": "Localizar y usar una instalación existente",
+    "Media_VideoFFmpegCodecPrepareLocateDialog": "Seleccione la carpeta de instalación existente de FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateFailedTitle": "No se pudo encontrar una instalación existente de FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateFailed1": "Collapse no pudo encontrar una instalación existente de FFmpeg en esta ubicación:",
+    "Media_VideoFFmpegCodecPrepareLocateFailed2": "Aviso:",
+    "Media_VideoFFmpegCodecPrepareLocateFailed3": "Asegúrate de tener los siguientes archivos .dll: ",
+    "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "¡Instalación Existente de FFmpeg Detectada!",
+    "Media_VideoFFmpegCodecPrepareLocateSuccess1": "Se a encontrado una instalación existente de FFmpeg en esta ubicación:",
+    "Media_VideoFFmpegCodecInstallingTitle": "Instalando FFmpeg",
+
+    "Agreement_ThirdPartyAgreementPreambleTitle": "Preámbulo",
+    "Agreement_ThirdPartyAgreementPreamble1": "Collapse utiliza la siguiente biblioteca para habilitar una o varias de sus funciones.",
+    "Agreement_ThirdPartyAgreementPreamble2": "Respetamos al propietario(s) de la siguiente biblioteca y, por lo tanto, cumplimos todas las normas mencionadas en este acuerdo.",
+    "Agreement_ThirdPartyAgreementPreamble3": "Haz clic en \"",
+    "Agreement_ThirdPartyAgreementPreamble4": "\" para continuar, o \"",
+    "Agreement_ThirdPartyAgreementPreamble5": "\" para cancelar."
   },
 
   "_FileMigrationProcess": {

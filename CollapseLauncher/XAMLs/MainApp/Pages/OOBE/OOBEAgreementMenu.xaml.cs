@@ -17,13 +17,7 @@ namespace CollapseLauncher.Pages.OOBE
             Title = title;
         }
 
-        internal string Text
-        {
-            get
-            {
-                return !File.Exists(FilePath) ? $"### Failed to read the file\n**{FilePath}**" : File.ReadAllText(FilePath);
-            }
-        }
+        internal          string         Text     => !File.Exists(FilePath) ? $"### Failed to read the file\n**{FilePath}**" : File.ReadAllText(FilePath);
         internal          string         Title    { get; }
         private           string         FilePath { get; }
         internal readonly MarkdownConfig MarkdownConfig = new();

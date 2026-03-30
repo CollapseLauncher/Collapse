@@ -323,6 +323,14 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual GameVersion? GetGameVersionApi() => GameVersionAPI;
 
         public virtual GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
+
+        public virtual GameVersion? GetSdkVersionInstalled() => SdkVersionInstalled;
+
+        public virtual GameVersion? GetSdkVersionApi() => SdkVersionAPI;
+
+        public virtual Dictionary<string, GameVersion> GetPluginVersionsInstalled() => PluginVersionsInstalled;
+
+        public virtual List<HypPluginPackageInfo> GetMismatchPlugin() => MismatchPlugin;
         #endregion
 
         #region Game Info Methods

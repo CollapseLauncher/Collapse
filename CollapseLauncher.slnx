@@ -50,6 +50,9 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
+  <Project Path="Hi3Helper.LocaleSourceGen/Hi3Helper.LocaleSourceGen.csproj">
+    <Platform Project="x64" />
+  </Project>
   <Project Path="Hi3Helper.Plugin.Core/Hi3Helper.Plugin.Core.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
@@ -65,6 +68,9 @@
   <Project Path="Hi3Helper.Sophon/Hi3Helper.Sophon.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.SourceGen/Hi3Helper.SourceGen.csproj">
+    <BuildType Solution="Publish|*" Project="Release" />
   </Project>
   <Project Path="Hi3Helper.TaskScheduler/Hi3Helper.TaskScheduler.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
@@ -89,5 +95,11 @@
   <Project Path="SevenZipExtractor/SevenZipExtractor/SevenZipExtractor.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
+  </Project>
+  <Project Path="TLFixer/TLFixer.csproj" Id="5b59dd8f-24ee-4bec-91db-1e95b51f46a7">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+    <Build Solution="Publish|*" Project="false" />
+    <Build Solution="Release|*" Project="false" />
   </Project>
 </Solution>

@@ -1,13 +1,13 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
+﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -25,11 +25,11 @@ namespace CollapseLauncher
 
             if (FileDialogHelper.IsRootPath(outputPath))
             {
-                await SimpleDialogs.SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
-                                  Lang._HomePage.InstallFolderRootSubtitle,
-                                  null,
-                                  Lang._Misc.Close,
-                                  null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
+                await SimpleDialogs.SpawnDialog(Locale.Current.Lang?._HomePage?.InstallFolderRootTitle,
+                                                Locale.Current.Lang?._HomePage?.InstallFolderRootSubtitle,
+                                                null,
+                                                Locale.Current.Lang?._Misc?.Close,
+                                                null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
                 return null;
             }
 

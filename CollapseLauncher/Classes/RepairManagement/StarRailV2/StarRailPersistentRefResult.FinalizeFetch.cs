@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -36,7 +37,7 @@ internal partial class StarRailPersistentRefResult
         }
 
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "ChangeLuaPathInfo.bytes");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "ChangeLuaPathInfo.bytes");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
@@ -142,7 +143,7 @@ internal partial class StarRailPersistentRefResult
         }
 
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "BinaryVersion.bytes");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "BinaryVersion.bytes");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();

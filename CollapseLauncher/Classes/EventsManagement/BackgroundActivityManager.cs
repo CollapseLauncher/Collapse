@@ -3,17 +3,17 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
+using CollapseLauncher.Pages;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using static Hi3Helper.Locale;
+using System.Numerics;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable IDE0130
@@ -22,59 +22,90 @@ namespace CollapseLauncher
 {
     internal class BackgroundActivityManager
     {
-        private static readonly ThemeShadow                          InfoBarShadow        = new();
-        private static readonly Dictionary<int, IBackgroundActivity> BackgroundActivities = new();
+        private static readonly ThemeShadow                                   InfoBarShadow        = new();
+        private static readonly Dictionary<PresetConfig, IBackgroundActivity> BackgroundActivities = new();
 
-        public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
+        public static void Attach(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            if (BackgroundActivities.ContainsKey(hashID))
+            if (!BackgroundActivities.TryAdd(presetConfig, activity))
             {
                 return;
             }
 
-            WindowUtility.CurrentDispatcherQueue?
-                .TryEnqueue(() => AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle));
-            BackgroundActivities.Add(hashID, activity);
+            DispatcherQueueExtensions.TryEnqueue(() => AttachEventToNotification(presetConfig, activity, activityTitle, activitySubtitle));
         #if DEBUG
-            Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
+            Logger.LogWriteLine($"Background activity for {presetConfig} has been attached", LogType.Debug, true);
         #endif
         }
 
-        public static void Detach(int hashID)
+        public static void Detach(PresetConfig presetConfig)
         {
-            if (BackgroundActivities.Remove(hashID))
+            if (BackgroundActivities.Remove(presetConfig))
             {
-                DetachEventFromNotification(hashID);
+                NotificationSender.RemoveCustomNotification(presetConfig.GetHashCode());
             #if DEBUG
-                Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
+                Logger.LogWriteLine($"Background activity for {presetConfig} has been detached", LogType.Debug, true);
                 return;
             #endif
             }
 
         #if DEBUG
-            Logger.LogWriteLine($"Cannot detach background activity with ID: {hashID} because it doesn't attached", LogType.Debug, true);
+            Logger.LogWriteLine($"Cannot detach background activity for {presetConfig} because it doesn't attached", LogType.Debug, true);
         #endif
         }
 
-        private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
+        private static IconElement GetGamePresetIcon(PresetConfig presetConfig)
         {
-            Thickness containerNotClosableMargin = new Thickness(-28, -8, 24, 20);
-            Thickness containerClosableMargin = new Thickness(-28, -8, -28, 20);
+            string uri = presetConfig.GameType switch
+            {
+                GameNameType.Honkai   => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                GameNameType.Genshin  => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
+                GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
+                GameNameType.Zenless  => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
+                _                     => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+            };
 
-            InfoBar parentNotificationUI = new InfoBar
-                                     {
-                Tag = hashID,
-                Severity = InfoBarSeverity.Informational,
-                Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
-                IsOpen = true,
-                IsClosable = false,
-                Shadow = InfoBarShadow,
-                Title = activityTitle,
-                Message = activitySubtitle
+            if (presetConfig is not PluginPresetConfigWrapper pluginPresetConfig)
+            {
+                return new BitmapIcon
+                {
+                    UriSource = new Uri(uri)
+                };
             }
+
+            PluginInfo              pluginInfo = pluginPresetConfig.PluginInfo;
+            GamePluginIconConverter converter  = StaticConverter<GamePluginIconConverter>.Shared;
+            if (converter.Convert(pluginInfo, null!, null!, "") is not IconElement iconElement)
+            {
+                return new BitmapIcon
+                {
+                    UriSource = new Uri(uri)
+                };
+            }
+
+            return iconElement;
+        }
+
+        private static void AttachEventToNotification(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
+        {
+            Thickness containerNotClosableMargin = new(-28, -8, 24, 20);
+            Thickness containerClosableMargin    = new(-28, -8, -28, 20);
+
+            Brush brush = UIElementExtensions.GetApplicationResource<Brush>("InfoBarAnnouncementBrush");
+            InfoBar parentNotificationUI = new InfoBar
+                                           {
+                                               Tag        = presetConfig.GetHashCode(),
+                                               Severity   = InfoBarSeverity.Informational,
+                                               Background = brush,
+                                               IsOpen     = true,
+                                               IsClosable = false,
+                                               Shadow     = InfoBarShadow,
+                                               Title      = activityTitle,
+                                               Message    = activitySubtitle
+                                           }
             .WithMargin(4d, 4d, 4d, 0)
             .WithCornerRadius(8);
-            parentNotificationUI.Translation = LauncherConfig.Shadow32;
+            parentNotificationUI.Translation = new Vector3(0,0,32);
 
             StackPanel parentContainer = UIElementExtensions.CreateStackPanel()
                 .WithMargin(parentNotificationUI.IsClosable ? containerClosableMargin : containerNotClosableMargin);
@@ -93,19 +124,7 @@ namespace CollapseLauncher
                 0
             );
 
-            GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            _ = progressLogoContainer.AddElementToStackPanel(
-                new Image
-                {
-                    Source = new BitmapImage(new Uri(currentGameProperty!.GameVersion!.GameType switch
-                    {
-                        GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                        GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
-                        GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
-                        GameNameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                        _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
-                    }))
-                }.WithWidthAndHeight(64));
+            _ = progressLogoContainer.AddElementToStackPanel(GetGamePresetIcon(presetConfig).WithWidthAndHeight(64));
 
             StackPanel progressStatusContainer = parentGrid.AddElementToGridColumn(
                 UIElementExtensions.CreateStackPanel()
@@ -124,34 +143,33 @@ namespace CollapseLauncher
             TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
-                Text = Lang!._BackgroundNotification!.LoadingTitle
+                Text = Locale.Current.Lang?._BackgroundNotification?.LoadingTitle
             });
             TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }, 1);
 
             TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 0, 1);
             TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
-                Text = Lang._BackgroundNotification.Placeholder
+                Text = Locale.Current.Lang?._BackgroundNotification?.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 1, 1);
 
             ProgressBar progressBar = progressStatusContainer.AddElementToStackPanel(
                 new ProgressBar { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true });
 
             Button cancelButton =
-                UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Lang._HomePage!.PauseCancelDownloadBtn,
-                    "",
-                    "FontAwesomeSolid",
-                    "AccentButtonStyle"
+                UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Current.Lang?._HomePage?.PauseCancelDownloadBtn,
+                                                                 "",
+                                                                 "FontAwesomeSolid",
+                                                                 "AccentButtonStyle"
                 )
                 .WithHorizontalAlignment(HorizontalAlignment.Right)
                 .WithMargin(0d, 4d, 0d, 0d);
@@ -163,9 +181,10 @@ namespace CollapseLauncher
                 parentNotificationUI.IsOpen = false;
             };
 
+            bool isGameInstaller = activity is IGameInstallManager;
             Button settingsButton =
                 UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Lang._Dialogs!.DownloadSettingsTitle,
+                    Locale.Current.Lang?._Dialogs?.DownloadSettingsTitle,
                     "\uf013",
                     "FontAwesomeSolid",
                     "AccentButtonStyle"
@@ -173,20 +192,28 @@ namespace CollapseLauncher
                 .WithHorizontalAlignment(HorizontalAlignment.Right)
                 .WithMargin(0d, 4d, 8d, 0d);
 
-            settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings(currentGameProperty);
+            if (isGameInstaller)
+            {
+                settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings((activity as IGameInstallManager)!);
+            }
+            else
+            {
+                settingsButton.Visibility = Visibility.Collapsed;
+            }
 
             StackPanel controlButtons = parentContainer.AddElementToStackPanel(
                 UIElementExtensions.CreateStackPanel(Orientation.Horizontal)
                     .WithHorizontalAlignment(HorizontalAlignment.Right)
             );
+
             controlButtons.AddElementToStackPanel(settingsButton, cancelButton);
 
             EventHandler<TotalPerFileProgress> progressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args!.ProgressAllPercentage;
-                progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
-                progressRightTitle.Text = string.Format(Lang._Misc!.TimeRemainHMSFormat!, args.ProgressAllTimeLeft);
-                progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressAllPercentage);
+                progressLeftSubtitle.Text = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
+                progressRightTitle.Text = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", args.ProgressAllTimeLeft);
+                progressRightSubtitle.Text = string.Format(Locale.Current.Lang?._UpdatePage?.UpdateHeader1 + " {0}%", args.ProgressAllPercentage);
             });
 
             EventHandler<TotalPerFileStatus> statusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
@@ -199,7 +226,7 @@ namespace CollapseLauncher
                     settingsButton.IsEnabled = false;
                     controlButtons.Visibility = Visibility.Collapsed;
                     parentNotificationUI.Severity = InfoBarSeverity.Error;
-                    parentNotificationUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error!, activityTitle);
+                    parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Error!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
                 }
@@ -209,7 +236,7 @@ namespace CollapseLauncher
                     settingsButton.IsEnabled = false;
                     controlButtons.Visibility = Visibility.Collapsed;
                     parentNotificationUI.Severity = InfoBarSeverity.Success;
-                    parentNotificationUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed!, activityTitle);
+                    parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Completed!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
                 }
@@ -241,12 +268,10 @@ namespace CollapseLauncher
             {
                 activity.ProgressChanged -= progressChangedEventHandler;
                 activity.StatusChanged -= statusChangedEventHandler;
-                Detach(hashID);
+                Detach(presetConfig);
             };
 
-            NotificationSender.SendCustomNotification(hashID, parentNotificationUI);
+            NotificationSender.SendCustomNotification(presetConfig.GetHashCode(), parentNotificationUI);
         }
-
-        private static void DetachEventFromNotification(int hashID) => NotificationSender.RemoveCustomNotification(hashID);
     }
 }

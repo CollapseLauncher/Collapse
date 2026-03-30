@@ -10,10 +10,12 @@ using System.Text;
 using System.Threading;
 
 // ReSharper disable IdentifierTypo
-using ZstdDecompressStream = ZstdNet.DecompressionStream;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable StringLiteralTypo
+using ZstdDecompressStream = ZstdNet.DecompressionStream;
+#pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.Helper.Metadata
 {
     internal enum CompressionType : byte
@@ -28,7 +30,7 @@ namespace CollapseLauncher.Helper.Metadata
         private const long CollapseSignature     = 7310310183885631299;
         private const int  AllowedBufferPoolSize = 1 << 20; // 1 MiB
 
-        private static          RSA  _rsaInstance;
+        private static          RSA? _rsaInstance;
         private static readonly Lock RsaDecryptLock = new();
 
         internal static string ServeV3Data(string data)
@@ -62,7 +64,8 @@ namespace CollapseLauncher.Helper.Metadata
             return signature == CollapseSignature;
         }
 
-        internal static void GetServeV3DataSize(ReadOnlySpan<byte> data, out long compressedSize,
+        internal static void GetServeV3DataSize(ReadOnlySpan<byte> data,
+                                                out long           compressedSize,
                                                 out long           decompressedSize)
         {
             if (data.Length < 32)
@@ -83,15 +86,18 @@ namespace CollapseLauncher.Helper.Metadata
             isUseEncryption = (byte)(attribNumber >> 8) == 1;
         }
 
-        internal static void ServeV3Data(ReadOnlySpan<byte> data,             Span<byte> outData, int compressedSize,
-                                         int                decompressedSize, out int    dataWritten)
+        internal static void ServeV3Data(ReadOnlySpan<byte> data,
+                                         Span<byte>         outData,
+                                         int                compressedSize,
+                                         int                decompressedSize,
+                                         out int            dataWritten)
         {
             GetServeV3Attribute(data, out CompressionType compressionType, out bool isUseEncryption);
             const int readOffset = sizeof(long) * 4;
 
             ReadOnlySpan<byte> dataRawBuffer     = data[readOffset..];
-            byte[]             decryptedDataSpan = null;
-            int                encBitLength      = LauncherMetadataHelper.CurrentMasterKey?.BitSize ?? 0;
+            byte[]?            decryptedDataSpan = null;
+            int                encBitLength      = MetadataHelper.CurrentMasterKey?.BitSize ?? 0;
 
             bool isDecryptPoolAllowed = dataRawBuffer.Length <= AllowedBufferPoolSize;
             bool isDecryptPoolUsed    = false;
@@ -100,7 +106,7 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 if (isUseEncryption)
                 {
-                    if (LauncherMetadataHelper.CurrentMasterKey == null)
+                    if (MetadataHelper.CurrentMasterKey == null)
                         throw new NullReferenceException("Master key is null or empty!");
 
                     decryptedDataSpan = isDecryptPoolAllowed
@@ -114,17 +120,20 @@ namespace CollapseLauncher.Helper.Metadata
                         {
                             _rsaInstance = RSA.Create();
                             byte[] key;
-                            if (IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
+                            if (IsServeV3Data(MetadataHelper.CurrentMasterKey.Key))
                             {
-                                GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
+                                GetServeV3DataSize(MetadataHelper.CurrentMasterKey.Key, out long keyCompSize,
                                                    out long keyDecompSize);
                                 key = new byte[keyCompSize];
-                                ServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
-                                            (int)keyDecompSize,                           out _);
+                                ServeV3Data(MetadataHelper.CurrentMasterKey.Key,
+                                            key,
+                                            (int)keyCompSize,
+                                            (int)keyDecompSize,
+                                            out _);
                             }
                             else
                             {
-                                key = LauncherMetadataHelper.CurrentMasterKey?.Key;
+                                key = MetadataHelper.CurrentMasterKey.Key ?? throw new InvalidOperationException("Master key content is missing");
                             }
 
                             _rsaInstance.ImportRSAPrivateKey(key, out _);
@@ -186,7 +195,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         private static int DecompressDataFromBrotli(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
         {
-            BrotliDecoder decoder = new BrotliDecoder();
+            BrotliDecoder decoder = new();
 
             int offset = 0;
             int decompressedWritten = 0;
@@ -198,12 +207,9 @@ namespace CollapseLauncher.Helper.Metadata
                 offset += dataConsumedWritten;
             }
 
-            if (decompressedSize != decompressedWritten)
-            {
-                throw new DataMisalignedException("Decompressed data is misaligned!");
-            }
-
-            return decompressedWritten;
+            return decompressedSize != decompressedWritten
+                ? throw new DataMisalignedException("Decompressed data is misaligned!")
+                : decompressedWritten;
         }
 
         private static unsafe int DecompressDataFromZstd(Span<byte> outData, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
@@ -215,9 +221,9 @@ namespace CollapseLauncher.Helper.Metadata
 
                     byte[] buffer = new byte[4 << 10];
 
-                    using UnmanagedMemoryStream inputStream = new UnmanagedMemoryStream(inputBuffer, dataRawBuffer.Length);
-                    using UnmanagedMemoryStream outputStream = new UnmanagedMemoryStream(outputBuffer, outData.Length);
-                    using ZstdDecompressStream decompStream = new ZstdDecompressStream(inputStream);
+                    using UnmanagedMemoryStream inputStream  = new(inputBuffer, dataRawBuffer.Length);
+                    using UnmanagedMemoryStream outputStream = new(outputBuffer, outData.Length);
+                    using ZstdDecompressStream  decompStream = new(inputStream);
 
                     int read;
                     while ((read = decompStream.Read(buffer)) > 0)
@@ -226,12 +232,9 @@ namespace CollapseLauncher.Helper.Metadata
                         decompressedWritten += read;
                     }
 
-                    if (decompressedSize != decompressedWritten)
-                    {
-                        throw new DataMisalignedException("Decompressed data is misaligned!");
-                    }
-
-                    return decompressedWritten;
+                    return decompressedSize != decompressedWritten
+                        ? throw new DataMisalignedException("Decompressed data is misaligned!")
+                        : decompressedWritten;
                 }
         }
     }

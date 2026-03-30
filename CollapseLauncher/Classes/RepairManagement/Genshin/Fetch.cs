@@ -22,7 +22,6 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace
@@ -37,7 +36,7 @@ namespace CollapseLauncher
         private async Task<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            Status.ActivityStatus = Lang._GameRepairPage.Status2;
+            Status.ActivityStatus            = Locale.Current.Lang?._GameRepairPage?.Status2;
             Status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
@@ -349,7 +348,7 @@ namespace CollapseLauncher
             
             Status.IsProgressPerFileIndetermined = false;
             Status.ActivityPerFile =
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
+                string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle3 ?? "", SummarizeSizeSimple(speed));
 
             // Update fetch progress
             lock (Progress)

@@ -1,5 +1,6 @@
-﻿using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml.Controls;
@@ -121,14 +122,14 @@ namespace CollapseLauncher
 
             string errStr = $"Free Space on {outputDriveInfo.Name} is not sufficient! (Free space: {outputDriveInfo.TotalFreeSpace}, Req. Space: {_totalFileSize}, Drive: {outputDriveInfo.Name})";
             Logger.LogWriteLine(errStr, LogType.Error, true);
-            await SimpleDialogs.SpawnDialog(string.Format(Locale.Lang!._Dialogs!.OperationErrorDiskSpaceInsufficientTitle!, outputDriveInfo.Name),
-                                            string.Format(Locale.Lang._Dialogs.OperationErrorDiskSpaceInsufficientMsg!,
+            await SimpleDialogs.SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.OperationErrorDiskSpaceInsufficientTitle ?? "", outputDriveInfo.Name),
+                                            string.Format(Locale.Current.Lang?._Dialogs?.OperationErrorDiskSpaceInsufficientMsg ?? "",
                                                           ConverterTool.SummarizeSizeSimple(outputDriveInfo.TotalFreeSpace),
                                                           ConverterTool.SummarizeSizeSimple(_totalFileSize),
                                                           outputDriveInfo.Name),
                                             null,
                                             null,
-                                            Locale.Lang._Misc!.Okay,
+                                            Locale.Current.Lang?._Misc?.Okay,
                                             null,
                                             ContentDialogButton.Primary,
                                             ContentDialogTheme.Error

@@ -112,7 +112,8 @@
     "NavigationUtilities": "ยูทิลิตี้",
     "Initializing": "กำลังเริ่มต้น",
     "LoadingLauncherMetadata": "กำลังโหลดข้อมูลเมตาของ Launcher",
-    "LoadingGameConfiguration": "กำลังโหลดตั้งค่าเกม"
+    "LoadingGameConfiguration": "กำลังโหลดตั้งค่าเกม",
+    "LoadingBackgroundImage": "Loading Background Image"
   },
 
   "_HomePage": {
@@ -139,6 +140,13 @@
     "PauseCancelDownloadBtn": "หยุดชั่วคราว/ยกเลิก",
     "PauseCancelBtn": "หยุดชั่วคราว/ยกเลิก",
     "DownloadBtn": "ดาวน์โหลดเกม",
+    "StartGameTooltip": "Start Game: v{0}",
+    "InstallGameTooltip": "Install Game: v{0}",
+    "UpdateGameTooltip": "Update Game: v{0} -> v{1}",
+    "InstallSdkTooltip": "Install SDK: v{0}",
+    "UpdateSdkUpdateTooltip": "Update SDK: v{0} -> v{1}",
+    "InstallPluginTooltip": "Install Plugin: {0} v{1}",
+    "UpdatePluginTooltip": "Update Plugin: {0} v{1} -> v{2}",
 
     "GameStatusPlaceholderComingSoonBtn": "เร็วๆ นี้",
     "GameStatusPlaceholderPreRegisterBtn": "ลงทะเบียนล่วงหน้าตอนนี้!",
@@ -152,6 +160,7 @@
     "GameSettings_Panel2RepairGame": "ซ่อมแซมเกม",
     "GameSettings_Panel2UninstallGame": "ถอนการติดตั้งเกม",
     "GameSettings_Panel2ConvertVersion": "แปลงเวอร์ชั่นเกม",
+    "GameSettings_Panel2ChangeGameLocation": "เปลี่ยนตำแหน่งที่เก็บเกม",
     "GameSettings_Panel2MoveGameLocationGame": "ย้ายตำแหน่งที่เก็บเกม",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "ไม่สามารถย้ายเกมไปยังไดรฟ์ของคุณได้!\r \nโปรดสร้างโฟลเดอร์แล้วลองอีกครั้ง",
     "GameSettings_Panel2StopGame": "บังคับปิดเกม",
@@ -219,7 +228,35 @@
     "GameStateInvalidFixed_Subtitle4": "\" เมนูเพื่อให้แน่ใจว่าไฟล์ทั้งหมดได้รับการตรวจสอบแล้ว",
 
     "InstallFolderRootTitle": "ระบุไดรฟ์รูทแล้ว!",
-    "InstallFolderRootSubtitle": "ไม่สามารถติดตั้งเกมลงในรูทไดรฟ์ของคุณได้! โปรดสร้างโฟลเดอร์ใหม่แล้วลองอีกครั้ง"
+    "InstallFolderRootSubtitle": "ไม่สามารถติดตั้งเกมลงในรูทไดรฟ์ของคุณได้! โปรดสร้างโฟลเดอร์ใหม่แล้วลองอีกครั้ง",
+
+    "BgContextMenu_SaveCurrentBgText": "บันทึกไฟล์ภาพปัจจุบัน",
+    "BgContextMenu_SaveCurrentBgTooltip": "บันทึกไฟล์ทั้งภาพซ้อนทับปัจจุบัน (ถ้ามี) และเลเยอร์ภาพ/วิดีโอพื้นหลัง",
+    "BgContextMenu_SaveAllBgText": "บันทึกไฟล์ภาพทั้งหมด",
+    "BgContextMenu_SaveAllBgTooltip": "บันทึกไฟล์พื้นหลังทั้งหมดที่มีอยู่ ทั้งไฟล์ภาพซ้อนทับ (ถ้ามี) และไฟล์ภาพ/วิดีโอพื้นหลัง",
+    "BgContextMenu_CopyFrameToClipboardParentText": "คัดลอกเฟรมปัจจุบันไปยังคลิปบอร์ด",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "คัดลอกเฉพาะกรอบโอเวอร์เลย์",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "คัดลอกเฉพาะกรอบภาพบิตแมปของเลเยอร์โอเวอร์เลย์ลงในคลิปบอร์ด",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "คัดลอกเฉพาะกรอบพื้นหลัง",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "คัดลอกเฉพาะกรอบภาพบิตแมปของเลเยอร์พื้นหลังลงในคลิปบอร์ด",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "คัดลอกและผสานแล้ว",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "รวมและคัดลอกกรอบภาพบิตแมปของเลเยอร์โอเวอร์เลย์และเลเยอร์พื้นหลังลงในคลิปบอร์ด",
+    "BgContextMenu_CopyUrlToClipboardParentText": "คัดลอก URL/เส้นทางไปยังคลิปบอร์ด",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "คัดลอก URL/พาธของโอเวอร์เลย์",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "คัดลอกเฉพาะ URL/Path ของเลเยอร์โอเวอร์เลย์เท่านั้น",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "คัดลอก URL/เส้นทาง ของภาพพื้นหลัง",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "คัดลอกเฉพาะ URL/Path ของเลเยอร์พื้นหลังเท่านั้น",
+    "BgContextMenu_EnableAudioText": "เปิดใช้งานเสียงในวิดีโอ",
+    "BgContextMenu_EnableAudioTooltip": "เปิดใช้งานเสียงขณะเล่นวิดีโอในพื้นหลัง",
+    "BgContextMenu_KeepPlayVideoOnUnfocusText": "Keep Play Video When Unfocused",
+    "BgContextMenu_KeepPlayVideoOnUnfocusTooltip": "Keep play video background with muted audio even if the window is unfocused. When disabled, the video background will be completely paused.",
+    "BgContextMenu_EnableParallaxText": "เปิดใช้งานเอฟเฟกต์พาราแลกซ์",
+    "BgContextMenu_EnableParallaxTooltip": "เปิดใช้งานเอฟเฟกต์พาราแล็กซ์บนพื้นหลังขณะเลื่อนเคอร์เซอร์ไปรอบๆ บริเวณตัวเรียกใช้งาน",
+    "BgContextMenu_ParallaxPixelShiftParentText": "การเลื่อนพิกเซลพาราแล็กซ์",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "กำหนดเอง",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "ตั้งค่าจำนวนพิกเซลที่จะเลื่อนตามต้องการ",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "บันทึกภาพพื้นหลังปัจจุบันลงในโฟลเดอร์",
+    "BgContextMenu_FolderSelectSaveAllBg": "บันทึกภาพพื้นหลังทั้งหมดที่มีอยู่ลงในโฟลเดอร์"
   },
 
   "_GameRepairPage": {
@@ -424,7 +461,11 @@
     "Advanced_GLC_PreLaunch_Exit": "บังคับปิดกระบวนการที่เปิดอยู่เมื่อปิด/หยุดเกม",
     "Advanced_GLC_PreLaunch_Delay": "หน่วงเวลาการเปิดเกม (มิลลิวินาที)",
     "Advanced_GLC_PostExit_Title": "คำสั่งหลังจบเกม",
-    "Advanced_GLC_PostExit_Subtitle": "คำสั่งที่จะดำเนินการหลังจากเกมปิด"
+    "Advanced_GLC_PostExit_Subtitle": "คำสั่งที่จะดำเนินการหลังจากเกมปิด",
+
+    "Advanced_RunWithExplorerAsParent_Title": "เริ่มเกมโดยให้ Explorer เป็นกระบวนการหลัก",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "ปิดใช้งานเพื่อความเข้ากันได้กับ Steam Input และ Overlay",
+    "Advanced_RunWithExplorerAsParent_Warning": "คำเตือน: การเข้าสู่ระบบเกมอาจถูกบล็อกเมื่อปิดใช้งาน!"
   },
 
   "_SettingsPage": {
@@ -511,6 +552,15 @@
     "VideoBackground_IsEnableAudio": "เปิดใช้งานเสียง",
     "VideoBackground_IsEnableAcrylicBackground": "ใช้เอฟเฟกต์ Acrylic ขณะใช้พื้นหลังวิดีโอ",
     "VideoBackground_AudioVolume": "ระดับเสียง",
+    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegInstallStatus": "Install Status:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
+    "VideoBackground_FFmpegInstallNote": "Note",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
+    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
 
     "Update": "ตรวจสอบการอัปเดต",
     "Update_CurVer": "เวอร์ชันปัจจุบัน",
@@ -539,9 +589,9 @@
     "ShareYourFeedbackBtn": "แบ่งปันความคิดเห็นของคุณ",
 
     "About": "เกี่ยวกับ",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": "neon-nyan, Cry0, bagusnl, \r\nshatyuka & gablm",
-    "About_Copyright3": "ต่ำกว่า",
+    "About_Copyright3": "ต่ำกว่า ",
     "About_Copyright4": " สงวนลิขสิทธิ์ทั้งหมด",
 
     "LicenseType": "ใบอนุญาต MIT",
@@ -650,8 +700,8 @@
     "FileDownloadSettings_SpeedLimitHelp1": "ค่าเริ่มต้น:",
     "FileDownloadSettings_SpeedLimitHelp2": "ช่วงค่าจำกัดความเร็ว:",
     "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "จำกัดแบนด์วิดท์สูงสุดที่อนุญาตสำหรับการดาวน์โหลด การตั้งค่านี้ไม่สามารถใช้ร่วมกับ",
-    "FileDownloadSettings_SpeedLimitHelp5": "การตั้งค่า.",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "ตัวดาวน์โหลดที่จัดสรรล่วงหน้าใหม่",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "สำหรับการติดตั้งเกม, ซ่อมแซมเกม และอัปเดตแคชเท่านั้น",
@@ -738,13 +788,13 @@
   "_PluginManagerPage": {
     "PageTitle": "เมนูจัดการปลั๊กอิน",
 
-    "FileDialogTitle": " นำเข้า Collapse Launcher ปลั๊กอิน",
+    "FileDialogTitle": "\u00A0นำเข้า Collapse Launcher ปลั๊กอิน",
     "FileDialogFileFilter1": "ปลั๊กอินสำหรับ Collapse Launcher",
 
-    "LeftPanelNoPluginTitle": "คุณยังไม่ได้โหลดปลั๊กอินใด ๆ ",
-    "LeftPanelNoPluginButton1": "ไปที่",
+    "LeftPanelNoPluginTitle": "เฮ้ คุณยังไม่ได้โหลดปลั๊กอินเลย!",
+    "LeftPanelNoPluginButton1": "ไปยัง",
     "LeftPanelNoPluginButton2": "รายการดาวน์โหลดปลั๊กอิน",
-    "LeftPanelNoPluginButton3": "หน้า",
+    "LeftPanelNoPluginButton3": "เพื่อหน้ารับเพิ่มเติม!",
 
     "LeftPanelListViewTitle": "ข้อมูลของปลั๊กอินที่ถูกโหลด",
 
@@ -779,10 +829,10 @@
     "ListViewFooterWarning1": "คุณต้องรีสตาร์ทตัวเปิดโปรแกรมเพื่อให้การเปลี่ยนแปลงมีผล!",
     "ListViewFooterRestartButton": "รีสตาร์ทตัวเปิดโปรแกรม",
 
-    "RightPanelImportTitle1": "ลาก",
+    "RightPanelImportTitle1": "คลิกเพื่อเพิ่ม",
     "RightPanelImportTitle2": "หรือ",
     "RightPanelImportTitle3": "ที่นี่",
-    "RightPanelImportTitle4": "หรือคลิกที่กล่องนี้เพื่อนำเข้าปลั๊กอิน"
+    "RightPanelImportTitle4": "ตรงไหนก็ได้ในกล่องนี้!"
   },
 
   "_Misc": {
@@ -1127,6 +1177,7 @@
     "SteamShortcutCreationSuccessSubtitle5": "• ทางลัดใหม่จะแสดงขึ้นหลังจาก Steam โหลดซ้ำเท่านั้น",
     "SteamShortcutCreationSuccessSubtitle6": "• หากต้องการใช้ Steam overlay Steam จะต้องถูกเรียกใช้ในฐานะผู้ดูแลระบบ และ Collapse จะต้องปิดสนิท หรือเปิดใช้งานตัวเลือก \"Multiple Instances\" ในการตั้งค่า",
     "SteamShortcutCreationSuccessSubtitle7": "• หากเกมไม่ได้ติดตั้ง/อัปเดต Collapse จะพยายามติดตั้ง/อัปเดต โปรดทราบว่ากล่องโต้ตอบที่เกี่ยวข้องกับกระบวนการเหล่านี้จะยังคงแสดงอยู่",
+    "SteamShortcutCreationSuccessSubtitle8": "นอกจากนี้ ต้องปิดใช้งานตัวเลือก \"เริ่มเกมโดยให้ Explorer เป็นกระบวนการหลัก\" ในส่วนการตั้งค่าขั้นสูงของภูมิภาคด้วย",
     "SteamShortcutCreationFailureTitle": "โฟลเดอร์ข้อมูล Steam ไม่ถูกต้อง",
     "SteamShortcutCreationFailureSubtitle": "ไม่สามารถหาโฟลเดอร์ userdata ที่ถูกต้องได้\n\nโปรดตรวจสอบให้แน่ใจว่าได้เข้าสู่ระบบไคลเอนต์ Steam อย่างน้อยหนึ่งครั้งก่อนที่จะพยายามใช้ฟังก์ชันนี้",
     "SteamShortcutTitle": "ทางลัด Steam",
@@ -1203,7 +1254,63 @@
     "PostInstallBehaviour_EnumStartGame": "เริ่มเกม",
     "PostInstallBehaviour_EnumHibernate": "Hibernate",
     "PostInstallBehaviour_EnumRestart": "รีสตาร์ทเครื่องคอมพิวเตอร์",
-    "PostInstallBehaviour_EnumShutdown": "ปิดเครื่องคอมพิวเตอร์"
+    "PostInstallBehaviour_EnumShutdown": "ปิดเครื่องคอมพิวเตอร์",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "ตั้งค่าพิกเซลพาราแลกซ์แบบกำหนดเอง (ต่ำสุด: {0} พิกเซล, สูงสุด: {1} พิกเซล)",
+
+    "Media_ExtNotSupported1": "Sorry but the file extension for the following background image/video file is not supported.",
+    "Media_ExtNotSupported2": "File Path/URL: {0}",
+    "Media_ExtNotSupportedTitle": "Background File is not Supported",
+    "Media_ImageWICNotSupported1": "Sorry but the following background image file is not supported by internal Windows Imaging Component (WIC) decoder. Make sure you have installed the decoder from Microsoft Store.",
+    "Media_ImageWICNotSupportedTitle": "Image Background File is not Supported",
+    "Media_VideoMFNotSupportedFormatTypeUnknown": "Unknown",
+    "Media_VideoMFNotSupported1": "Collapse Launcher has detected that the video background cannot be played due to missing decoder with details below:",
+    "Media_VideoMFNotSupported2": "Video Codec FourCC: {0}",
+    "Media_VideoMFNotSupported3": "Video Codec GUID: {0}",
+    "Media_VideoMFNotSupported4": "Audio Codec GUID: {0}",
+    "Media_VideoMFNotSupported5": "Can Play Video/Audio?: (Video: {0} | Audio: {1})",
+    "Media_VideoMFNotSupported6": "We suggest you to install required Media Foundation video/audio codecs by clicking \"{0}\" or use FFmpeg by clicking \"{1}\" button below.",
+    "Media_VideoMFNotSupported7": "Note:",
+    "Media_VideoMFNotSupported8": "We strongly recommend you to use FFmpeg as it broadly supports wide range of video/audio codecs and HW Decoding capability (depends on your hardware).",
+    "Media_VideoMFNotSupportedTitle": "Video Background Codec is not Supported",
+    "Media_VideoMFNotSupportedCopyDetailsBtn": "Copy Details",
+    "Media_VideoMFNotSupportedInstallMFCodecsBtn": "Install Media Foundation Codecs",
+    "Media_VideoMFNotSupportedInstallFFmpegBtn": "Install & Use FFmpeg",
+
+    "Media_VideoMFCodecPrepareTitle": "Preparing Windows Media Foundation Codecs",
+    "Media_VideoMFCodecPrepare1": "Collapse Launcher requires additional Windows Media Foundation codec to play background videos or other media. This process might trigger false detection by your anti-virus as we uses powershell to invoke these additional codecs installation, so please disable your anti-virus for a brief moment.",
+    "Media_VideoMFCodecPrepare2": "These additional codecs only includes support for limited video / audio formats, including:",
+    "Media_VideoMFCodecPrepare3": "    • VP9, AV1 (for Video)",
+    "Media_VideoMFCodecPrepare4": "    • Vorbis, Opus (for Audio)",
+    "Media_VideoMFCodecPrepare5": "You may require to restart your computer manually once the installation is completed. Click on \"",
+    "Media_VideoMFCodecPrepare6": "\" to proceed.",
+    "Media_VideoMFCodecPrepareInstallBtn": "Install Media Foundation Codecs",
+    "Media_VideoMFCodecInstalledTitle": "Windows Media Foundation Codecs has been Installed!",
+    "Media_VideoMFCodecInstalled1": "Windows Media Foundation Codecs has been installed successfully. Please manually restart your computer to make the codecs work.",
+    "Media_VideoMFCodecInstallingTitle": "Installing Windows Media Foundation Codecs",
+
+    "Media_VideoFFmpegCodecPrepareTitle": "Preparing FFmpeg",
+    "Media_VideoFFmpegCodecPrepare1": "Collapse Launcher requires FFmpeg to play background videos or other media. You can either download or use your existing installation.",
+    "Media_VideoFFmpegCodecPrepare2": "To continue, Click on \"",
+    "Media_VideoFFmpegCodecPrepare3": "\" to download and install a fresh installation of FFmpeg or Click on \"",
+    "Media_VideoFFmpegCodecPrepare4": "\" to locate a folder containing FFmpeg installation.",
+    "Media_VideoFFmpegCodecPrepareInstallBtn": "Download and Install FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateBtn": "Locate & Use Existing Install",
+    "Media_VideoFFmpegCodecPrepareLocateDialog": "Select your existing FFmpeg installation folder",
+    "Media_VideoFFmpegCodecPrepareLocateFailedTitle": "Cannot Find Existing FFmpeg Installation",
+    "Media_VideoFFmpegCodecPrepareLocateFailed1": "Collapse Launcher cannot find an existing installation of FFmpeg in this directory:",
+    "Media_VideoFFmpegCodecPrepareLocateFailed2": "Note:",
+    "Media_VideoFFmpegCodecPrepareLocateFailed3": "Make sure you have these following .dll files:",
+    "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "Existing FFmpeg Installation is Detected!",
+    "Media_VideoFFmpegCodecPrepareLocateSuccess1": "We've found an existing FFmpeg installation on this directory:",
+    "Media_VideoFFmpegCodecInstallingTitle": "Installing FFmpeg",
+
+    "Agreement_ThirdPartyAgreementPreambleTitle": "Preamble",
+    "Agreement_ThirdPartyAgreementPreamble1": "Collapse Launcher utilizes the following library to enable one or more of its feature.",
+    "Agreement_ThirdPartyAgreementPreamble2": "We are respecting the owner(s) of the following library and hence, following any rules mentioned within this agreement.",
+    "Agreement_ThirdPartyAgreementPreamble3": "Click on \"",
+    "Agreement_ThirdPartyAgreementPreamble4": "\" to continue or \"",
+    "Agreement_ThirdPartyAgreementPreamble5": "\" to cancel."
   },
 
   "_FileMigrationProcess": {
@@ -1608,6 +1715,7 @@
     "General_OpenNotifTray": "เปิดถาดการแจ้งเตือน",
     "General_ReloadRegion": "โหลดหน้าปัจจุบันซ้ำ",
     "General_ReloadRegion_Desc": "การกด F5 เป็นอีกทางเลือกหนึ่งของทางลัดนี้.\nโปรดทราบว่าการโหลดหน้าแรกซ้ำจะเป็นการโหลดภูมิภาคใหม่.",
+    "General_OpenPluginManager": "เปิดเมนูจัดการปลั๊กอินโอเวอร์เลย์",
 
     "Switch_Title": "เกมด่วน/การเปลี่ยนแปลงภูมิภาค",
     "Switch_Subtitle": "หมายเหตุ: ปุ่มลัดตามลำดับตัวเลือก",
@@ -1658,6 +1766,19 @@
     "Japan": "ญี่ปุ่น",
     "Bilibili": "Bilibili",
     "Google Play": "Google Play"
+  },
+
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "เริ่มอัปเดต",
+    "CancelUpdateBtn": "ยกเลิกอัปเดต",
+    "ReinstallToolBtn": "ติดตั้งอีกครั้ง",
+    "StartUpdateAutomatically": "เริ่มการอัปเดตอัตโนมัติ",
+    "NotifUpdateCompletedTitle": "{0} ได้รับการอัปเดตแล้ว",
+    "NotifUpdateCompletedSubtitle": "เครื่องมือ: {0} สำหรับเกมของคุณ: {1} - {2} ได้รับการอัปเดตเป็นเวอร์ชัน v{3}"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "เครื่องมือสร้างเนื้อหา"
   },
 
   "_OOBEAgreementMenu": {
@@ -1731,6 +1852,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(ทดลอง)",
     "Graphics_ColorFilter": "ความเข้มตัวกรองสี",
     "Graphics_RenderRes": "ความละเอียดในการเรนเดอร์",
     "Graphics_EffectsQ": "คุณภาพเอฟเฟกต์",
@@ -1741,7 +1863,18 @@
     "Audio_PlaybackDev_Headphones": "หูฟัง",
     "Audio_PlaybackDev_Speakers": "ลำโพง",
     "Audio_PlaybackDev_TV": "ทีวี",
-    "Audio_Ambient": "ระดับเสียงรบกวนรอบข้าง"
+    "Audio_Ambient": "ระดับเสียงรบกวนรอบข้าง",
+    "AdvancedGraphics_Title": "การตั้งค่ากราฟิกขั้นสูง",
+    "AdvancedGraphics_Tooltip1": "ฟีเจอร์บางอย่างจะสามารถใช้งานได้ก็ต่อเมื่อคุณมีการ์ดจอ Nvidia ตระกูล GeForce RTX และเปิดใช้งาน DirectX 12 API แล้วเท่านั้น",
+    "AdvancedGraphics_Tooltip2": "โปรดทราบว่าฟีเจอร์ใด ๆ ที่มีอยู่ในส่วนนี้เป็นเพียงคุณสมบัติในการทดลอง EXPERIMENTAL โปรดใช้งานด้วยความเสี่ยงของคุณเอง",
+    "AdvancedGraphics_UseDirectX12API": "ใช้ DirectX 12 API",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Ray Tracing Quality",
+    "AdvancedGraphics_SuperScaling": "Super Scaling",
+    "AdvancedGraphics_SuperScalingQ": "Super Scaling Priority",
+    "AdvancedGraphics_SuperScalingQ_Performance": "ประสิทธิภาพ",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "สมดุล",
+    "AdvancedGraphics_SuperScalingQ_Quality": "คุณภาพ"
   },
 
   "_NotificationToast": {

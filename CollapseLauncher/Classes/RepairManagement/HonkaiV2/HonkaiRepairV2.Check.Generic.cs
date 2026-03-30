@@ -60,7 +60,7 @@ internal partial class HonkaiRepairV2
         CancellationToken    token                        = default)
     {
         // Update activity status
-        Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, asset.N);
+        Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status6 ?? "", asset.N);
 
         // Increment current total count
         Interlocked.Increment(ref ProgressAllCountCurrent);

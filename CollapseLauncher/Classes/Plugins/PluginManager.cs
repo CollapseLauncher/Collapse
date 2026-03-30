@@ -24,11 +24,10 @@ internal static partial class PluginManager
     public static readonly Dictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
 
     internal static async Task LoadPlugins(
-        Dictionary<string, Dictionary<string, PresetConfig>?> launcherMetadataConfig,
-        Dictionary<string, List<string>?>                     launcherGameNameRegionCollection,
-        Dictionary<string, Stamp>                             launcherMetadataStampDictionary)
+        Dictionary<string, Dictionary<string, PresetConfig>> launcherMetadataConfig,
+        Dictionary<string, Stamp>                            launcherMetadataStampDictionary)
     {
-        DirectoryInfo directoryInfo = new DirectoryInfo(LauncherConfig.AppPluginFolder);
+        DirectoryInfo directoryInfo = new(LauncherConfig.AppPluginFolder);
         if (!directoryInfo.Exists)
         {
             directoryInfo.Create();
@@ -115,22 +114,14 @@ internal static partial class PluginManager
 
                         dict.TryAdd(gameRegion, currentConfig);
 
-                        ref List<string>? gameRegions = ref CollectionsMarshal.GetValueRefOrAddDefault(launcherGameNameRegionCollection, gameName, out _);
-                        if (Unsafe.IsNullRef(ref gameRegions) || gameRegions == null)
-                        {
-                            gameRegions = [];
-                        }
-
-                        gameRegions.Add(gameRegion);
-
                         long stampTimestamp = long.Parse(pluginInfo.CreationDate?.ToString("yyyyMMddHHmmss") ?? "0");
                         _ = launcherMetadataStampDictionary.TryAdd($"{gameName} - {gameRegion}", new Stamp
                         {
-                            GameName = gameName,
-                            GameRegion = gameRegion,
-                            LastModifiedTimeUtc = pluginInfo.CreationDate ?? DateTime.MinValue,
-                            LastUpdated = stampTimestamp,
-                            MetadataType = MetadataType.PresetConfigPlugin,
+                            GameName            = gameName,
+                            GameRegion          = gameRegion,
+                            LastUpdated         = stampTimestamp,
+                            MetadataType        = MetadataType.PresetConfigPlugin,
+                            MetadataPath        = "",
                             PresetConfigVersion = pluginInfo.StandardVersion.ToString()
                         });
                     }

@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
@@ -35,7 +34,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            Status.ActivityStatus = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusUpToDate : Locale.Lang._GameRepairPage.Status7;
+            Status.ActivityStatus = IsCacheUpdateMode ? Locale.Current.Lang?._CachesPage?.CachesStatusUpToDate : Locale.Current.Lang?._GameRepairPage?.Status7;
 
             // Update status and progress
             UpdateAll();
@@ -226,10 +225,9 @@ namespace CollapseLauncher
                 return;
             }
 
-            double speedClamped = speedAll.ClampLimitedSpeedNumber();
             TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal,
                                                                    ProgressAllSizeCurrent,
-                                                                   speedClamped);
+                                                                   speedAll);
 
             double percentPerFile = ProgressPerFileSizeCurrent != 0
                 ? ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent)
@@ -247,7 +245,7 @@ namespace CollapseLauncher
                 Progress.ProgressAllSizeTotal = ProgressAllSizeTotal;
 
                 // Calculate speed
-                Progress.ProgressAllSpeed = speedClamped;
+                Progress.ProgressAllSpeed = speedAll;
                 Progress.ProgressAllTimeLeft = timeLeftSpan;
 
                 // Update current progress percentages
@@ -261,14 +259,14 @@ namespace CollapseLauncher
                 Status.IsProgressPerFileIndetermined = false;
 
                 // Set time estimation string
-                string timeLeftString = string.Format(Locale.Lang._Misc.TimeRemainHMSFormat, Progress.ProgressAllTimeLeft);
+                string timeLeftString = string.Format(Locale.Current.Lang?._Misc?.TimeRemainHMSFormat ?? "", Progress.ProgressAllTimeLeft);
 
-                Status.ActivityPerFile = string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedPerFile));
-                Status.ActivityAll = string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2,
+                Status.ActivityPerFile = string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(speedPerFile));
+                Status.ActivityAll = string.Format(Locale.Current.Lang?._GameRepairPage?.PerProgressSubtitle2 ?? "",
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent),
                                                    ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal))
                                      + $" | {timeLeftString}"
-                                     + $" ({string.Format(Locale.Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(speedAll))})";
+                                     + $" ({string.Format(Locale.Current.Lang?._Misc?.Speed ?? "", ConverterTool.SummarizeSizeSimple(speedAll))})";
 
                 // Trigger update
                 UpdateAll();

@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser;
@@ -53,7 +53,7 @@ internal static partial class AssetBundleExtension
     {
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Block Files");
+            string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Block Files");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
         progressibleInstance.UpdateStatus();

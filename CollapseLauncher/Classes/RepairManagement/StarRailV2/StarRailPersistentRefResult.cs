@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.JsonConverter;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement.StarRail.Struct;
 using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
@@ -407,7 +408,7 @@ internal partial class StarRailPersistentRefResult
         }
 
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Game Index: {index.FileName}");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"Game Index: {index.FileName}");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
@@ -456,7 +457,7 @@ internal partial class StarRailPersistentRefResult
         }
 
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Game Metadata: {index.FileName}");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"Game Metadata: {index.FileName}");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
@@ -700,7 +701,7 @@ internal class StarRailRefMainInfo
         CancellationToken token          = default)
     {
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Game Ref: {Path.GetFileNameWithoutExtension(url)}");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"Game Ref: {Path.GetFileNameWithoutExtension(url)}");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();
@@ -738,7 +739,7 @@ internal class StarRailRefMainInfo
         where TParser : StarRailBinaryData
     {
         // Set total activity string as "Fetching Caches Type: <type>"
-        instance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, $"Game Ref: {Path.GetFileNameWithoutExtension(url)}");
+        instance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"Game Ref: {Path.GetFileNameWithoutExtension(url)}");
         instance.Status.IsProgressAllIndetermined = true;
         instance.Status.IsIncludePerFileIndicator = false;
         instance.UpdateStatus();

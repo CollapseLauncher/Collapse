@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -148,7 +148,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            Status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status6 ?? "", asset.remoteName);
 
             // Increment current total count
             ProgressAllCountCurrent++;

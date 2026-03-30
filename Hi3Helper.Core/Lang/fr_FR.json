@@ -27,7 +27,7 @@
     "ChooseFolderDialogTitle": "Localiser le dossier",
     "FolderInsufficientPermission": "Permissions refusées ! Merci de choisir un autre dossier.",
     "FolderNotSelected": "Aucun dossier choisi. Merci de sélectionner un dossier !",
-    "OverlayPrepareFolderSubtitle": "Application de la/des permission(s) nécessaire(s)...",
+    "OverlayPrepareFolderSubtitle": "Application des permissions nécessaires…",
     "OverlayPrepareFolderTitle": "Préparation du dossier d'application",
     "PageTitle": "Page de démarrage",
     "Pg1LoadingSubitle1": "Préparation d'une liste des jeux supportés pour vous…",
@@ -112,7 +112,8 @@
     "NavigationUtilities": "Utilitaires",
     "Initializing": "Initialisation",
     "LoadingLauncherMetadata": "Chargement des métadonnées du launcher",
-    "LoadingGameConfiguration": "Chargement de la configuration du jeu"
+    "LoadingGameConfiguration": "Chargement de la configuration du jeu",
+    "LoadingBackgroundImage": "Loading Background Image"
   },
 
   "_HomePage": {
@@ -139,6 +140,13 @@
     "PauseCancelDownloadBtn": "Mettre en pause/Annuler",
     "PauseCancelBtn": "Mettre en pause/Annuler",
     "DownloadBtn": "Télécharger",
+    "StartGameTooltip": "Démarrer le jeu (v{0})",
+    "InstallGameTooltip": "Installer le jeu (v{0})",
+    "UpdateGameTooltip": "Mettre à jour le jeu (v{0} → v{1})",
+    "InstallSdkTooltip": "Installer le SDK (v{0})",
+    "UpdateSdkUpdateTooltip": "Mettre le SDK à jour (v{0} → v{1})",
+    "InstallPluginTooltip": "Installer le plugin ({0} v{1})",
+    "UpdatePluginTooltip": "Mettre le plugin à jour ({0} v{1} → v{2})",
 
     "GameStatusPlaceholderComingSoonBtn": "Bientôt",
     "GameStatusPlaceholderPreRegisterBtn": "Se préinscrire !",
@@ -178,7 +186,7 @@
     "GamePlaytime_Idle_SyncDb": "Synchroniser",
     "GamePlaytime_Idle_SyncDbSyncing": "Synchronisation…",
     "GamePlaytime_Running_Info1": "Une instance de ce jeu est actuellement en cours, la durée de jeu ne peut donc pas être modifiée.",
-    "GamePlaytime_Running_Info2": "Sachez que la fermeture complète de Collapse interrompt le suivi de la durée de jeu (sauvegarde de ce qui a été joué jusqu'à ce point).",
+    "GamePlaytime_Running_Info2": "Notez que la fermeture complète de Collapse interrompt le suivi de la durée de jeu (sauvegarde de ce qui a été joué jusqu'à ce point).",
     "GamePlaytime_Display": "{0} h {1:00} min",
     "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
     "GamePlaytime_Stats_Title": "Statistiques de temps de jeu",
@@ -186,7 +194,7 @@
     "GamePlaytime_Stats_LastSession": "Dernière session",
     "GamePlaytime_Stats_LastSession_StartTime": "Date",
     "GamePlaytime_Stats_LastSession_Duration": "Durée",
-    "GamePlaytime_Stats_Daily": "Ajourd'hui",
+    "GamePlaytime_Stats_Daily": "Aujourd'hui",
     "GamePlaytime_Stats_Weekly": "Semaine",
     "GamePlaytime_Stats_Monthly": "Mois",
 
@@ -220,7 +228,35 @@
     "GameStateInvalidFixed_Subtitle4": " » afin de s'assurer que les fichiers sont valides.",
 
     "InstallFolderRootTitle": "Racine du disque fournie !",
-    "InstallFolderRootSubtitle": "Impossible d'installer le jeu à la racine de votre disque ! Veuillez créer un nouveau dossier et réessayez."
+    "InstallFolderRootSubtitle": "Impossible d'installer le jeu à la racine de votre disque ! Veuillez créer un nouveau dossier et réessayez.",
+
+    "BgContextMenu_SaveCurrentBgText": "Sauvegarder l'arrière-plan actuel",
+    "BgContextMenu_SaveCurrentBgTooltip": "Sauvegarde dans un dossier l'image ou la vidéo d'arrière-plan actuel ainsi que son calque de surimpression (si disponible).",
+    "BgContextMenu_SaveAllBgText": "Sauvegarder tous les arrière-plans",
+    "BgContextMenu_SaveAllBgTooltip": "Sauvegarde dans un dossier toutes les images et vidéos d'arrière-plan ainsi que leur calque de surimpression (si disponible).",
+    "BgContextMenu_CopyFrameToClipboardParentText": "Copier la trame actuelle dans le presse-papiers",
+    "BgContextMenu_CopyFrameToClipboardOverlayText": "Calque de surimpression uniquement",
+    "BgContextMenu_CopyFrameToClipboardOverlayTooltip": "Copie la trame du calque de surimpression sous forme de bitmap dans le presse-papiers.",
+    "BgContextMenu_CopyFrameToClipboardBackgroundText": "Calque d'arrière-plan uniquement",
+    "BgContextMenu_CopyFrameToClipboardBackgroundTooltip": "Copie la trame du calque d'arrière-plan sous forme de bitmap dans le presse-papiers.",
+    "BgContextMenu_CopyFrameToClipboardMergedText": "Fusionner et copier",
+    "BgContextMenu_CopyFrameToClipboardMergedTooltip": "Fusionne et copie les deux couches de l'arrière-plan sous forme de bitmap dans le presse-papiers.",
+    "BgContextMenu_CopyUrlToClipboardParentText": "Copier l'URL ou le chemin dans le presse-papiers",
+    "BgContextMenu_CopyUrlToClipboardOverlayText": "Copier l'URL ou le chemin du calque de surimpression",
+    "BgContextMenu_CopyUrlToClipboardOverlayTooltip": "Copie uniquement l'URL ou le chemin du calque de surimpression dans le presse-papiers.",
+    "BgContextMenu_CopyUrlToClipboardBackgroundText": "Copier l'URL ou chemin du claque d'arrière-plan",
+    "BgContextMenu_CopyUrlToClipboardBackgroundTooltip": "Copie uniquement l'URL ou le chemin du calque d'arrière-plan dans le presse-papiers.",
+    "BgContextMenu_EnableAudioText": "Activer l'audio de la vidéo",
+    "BgContextMenu_EnableAudioTooltip": "Active l'audio lors de la lecture de l'arrière-plan vidéo.",
+    "BgContextMenu_KeepPlayVideoOnUnfocusText": "Continuer de lire la vidéo lorsque la fenêtre est inactive",
+    "BgContextMenu_KeepPlayVideoOnUnfocusTooltip": "Continue de lire l'arrière-plan vidéo avec l'audio coupé lorsque la vidéo n'est plus active. Si cette option est désactivée, l'arrière-plan vidéo se mettra en pause.",
+    "BgContextMenu_EnableParallaxText": "Activer l'effet de parallaxe",
+    "BgContextMenu_EnableParallaxTooltip": "Active un effet de parallaxe sur l'arrière-plan lors du survol de la fenêtre du launcher.",
+    "BgContextMenu_ParallaxPixelShiftParentText": "Intensité de l'effet de parallaxe",
+    "BgContextMenu_ParallaxPixelShiftCustomText": "Personnalisé",
+    "BgContextMenu_ParallaxPixelShiftCustomTooltip": "Définit l'intensité de l'effet de parallaxe en pixels.",
+    "BgContextMenu_FolderSelectSaveCurrentBg": "Sauvegarder l'arrière-plan actuel dans un dossier",
+    "BgContextMenu_FolderSelectSaveAllBg": "Sauvegarder tous les arrière-plans dans un dossier"
   },
 
   "_GameRepairPage": {
@@ -425,7 +461,11 @@
     "Advanced_GLC_PreLaunch_Exit": "Forcer l'arrêt du processus lancé lorsque le jeu est fermé/arrêté",
     "Advanced_GLC_PreLaunch_Delay": "Retarder le lancement du jeu (ms)",
     "Advanced_GLC_PostExit_Title": "Commandes post-sortie",
-    "Advanced_GLC_PostExit_Subtitle": "Commandes à exécuter après la fermeture du jeu"
+    "Advanced_GLC_PostExit_Subtitle": "Commandes à exécuter après la fermeture du jeu",
+
+    "Advanced_RunWithExplorerAsParent_Title": "Lancer le jeu avec « explorer.exe » comme processus parent",
+    "Advanced_RunWithExplorerAsParent_Subtitle": "Désactivez cette option pour assurer la compatibilité avec Steam Input et l'overlay Steam.",
+    "Advanced_RunWithExplorerAsParent_Warning": "ATTENTION : La connexion au jeu peut être bloquée si cette option est désactivée !"
   },
 
   "_SettingsPage": {
@@ -512,6 +552,15 @@
     "VideoBackground_IsEnableAudio": "Activer l'audio",
     "VideoBackground_IsEnableAcrylicBackground": "Activer les effets Acrylic lors de l'utilisation d'un arrière-plan vidéo",
     "VideoBackground_AudioVolume": "Volume de l'audio",
+    "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegInstallStatus": "Install Status:",
+    "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
+    "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
+    "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
+    "VideoBackground_FFmpegInstallNote": "Note",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
+    "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
 
     "Update": "État des mises à jour",
     "Update_CurVer": "Version actuelle :",
@@ -540,9 +589,9 @@
     "ShareYourFeedbackBtn": "Faites-nous part de votre avis",
 
     "About": "À propos",
-    "About_Copyright1": "© 2022-2025",
+    "About_Copyright1": "© 2022-2026",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka et gablm",
-    "About_Copyright3": "Sous",
+    "About_Copyright3": "Sous ",
     "About_Copyright4": ". Tous droits réservés.",
 
     "LicenseType": "Licence MIT",
@@ -593,9 +642,9 @@
 
     "NetworkSettings_Proxy_Hostname": "Nom d'hôte du serveur mandataire",
     "NetworkSettings_Proxy_HostnameHelp1": "Représente l'URL du serveur mandataire à utiliser.",
-    "NetworkSettings_Proxy_HostnameHelp2": "Collapse ne supporte actuellement que les serveurs mandataires de type",
+    "NetworkSettings_Proxy_HostnameHelp2": "Seuls les serveurs mandataires de type",
     "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS et SOCKS4/4a/5",
-    "NetworkSettings_Proxy_HostnameHelp4": ".",
+    "NetworkSettings_Proxy_HostnameHelp4": "sont supportés par Collapse.",
 
     "NetworkSettings_ProxyWarn_UrlInvalid": "L'URL saisie n'est pas valide !",
     "NetworkSettings_ProxyWarn_NotSupported": "Le schéma de serveur mandataire n'est pas supporté ! Collapse ne supporte que les types « http:// », « https:// », « socks4:// », « socks4a:// » et « socks5:// »",
@@ -610,7 +659,7 @@
     "NetworkSettings_Proxy_PasswordPlaceholder": "Mot de passe",
     "NetworkSettings_Proxy_PasswordHelp1": "Valeur par défaut :",
     "NetworkSettings_Proxy_PasswordHelp2": "[Vide]",
-    "NetworkSettings_Proxy_PasswordHelp3": "Laissez ce champ vide si votre serveur mandataire ne requiert pas d'authentification",
+    "NetworkSettings_Proxy_PasswordHelp3": "Laissez ce champ vide si votre serveur mandataire ne requiert pas d'authentification.",
 
     "NetworkSettings_ProxyTest_Button": "Tester la connectivité du serveur mandataire",
     "NetworkSettings_ProxyTest_ButtonChecking": "Vérification de la connectivité…",
@@ -650,16 +699,16 @@
     "FileDownloadSettings_SpeedLimit_NumBox": "Limite de vitesse (en Mio)",
     "FileDownloadSettings_SpeedLimitHelp1": "Valeur par défaut :",
     "FileDownloadSettings_SpeedLimitHelp2": "Plage de valeurs :",
-    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 Mio/s",
-    "FileDownloadSettings_SpeedLimitHelp4": "Limite l'utilisation maximale de la bande passante pour le téléchargement. Le paramètre «",
-    "FileDownloadSettings_SpeedLimitHelp5": "» ne peut être utilisé si la limitation de bande passante est activée.",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 ~ 1 000 Mio/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limite l'utilisation maximale de la bande passante pour le téléchargement.",
+    "FileDownloadSettings_SpeedLimitHelp5": "",
 
     "FileDownloadSettings_NewPreallocChunk_Title": "Nouveau téléchargeur avec préallocation",
     "FileDownloadSettings_NewPreallocChunk_Subtitle": "Uniquement pour l'installation, la réparation et la mise à jour des caches du jeu.",
     "FileDownloadSettings_NewPreallocChunk_NumBox": "Taille des fragments (en Mio)",
     "FileDownloadSettings_NewPreallocChunkHelp1": "Valeur par défaut :",
     "FileDownloadSettings_NewPreallocChunkHelp2": "Plage de valeurs :",
-    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 Mio",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 ~ 32 Mio",
     "FileDownloadSettings_NewPreallocChunkHelp4": "Lorsque ce paramètre est activé, le téléchargeur va préallouer dynamiquement la taille du fichier pendant que celui-ci le télécharge.",
     "FileDownloadSettings_NewPreallocChunkHelp5": "Cela permet au téléchargeur de directement écrire les fragments de données du fichier sans le scinder en plusieurs fichiers distincts.",
     "FileDownloadSettings_NewPreallocChunkHelp6": "Lorsque ce paramètre est désactivé, le launcher utilisera l'ancienne méthode où les fragments seront écrits dans des fichiers séparés. Les paramètres «",
@@ -744,7 +793,7 @@
 
     "LeftPanelNoPluginTitle": "Hé ! Vous n'avez aucun plugin chargé…",
     "LeftPanelNoPluginButton1": "Accéder au",
-    "LeftPanelNoPluginButton2": "catalogue de téléchargement de plugins",
+    "LeftPanelNoPluginButton2": "catalogue de plugins",
     "LeftPanelNoPluginButton3": "pour en obtenir plus!",
 
     "LeftPanelListViewTitle": "Informations sur les plugins chargés",
@@ -782,8 +831,8 @@
 
     "RightPanelImportTitle1": "Importer le",
     "RightPanelImportTitle2": "ou le",
-    "RightPanelImportTitle3": "ici",
-    "RightPanelImportTitle4": "Cliquez sur cette boîte pour l'installer !"
+    "RightPanelImportTitle3": "d'un plugin à installer",
+    "RightPanelImportTitle4": "Cliquez ici pour procéder à l'installation !"
   },
 
   "_Misc": {
@@ -806,7 +855,7 @@
     "EverythingIsOkay": "Tout est en ordre !",
     "Cancel": "Annuler",
     "Close": "Fermer",
-    "CloseOverlay": "Fermer l'overlay",
+    "CloseOverlay": "Fermer",
     "UseCurrentDir": "Utiliser le dossier actuel",
     "UseDefaultDir": "Utiliser le dossier par défaut",
     "MoveToDifferentDir": "Déplacer vers un emplacement différent",
@@ -879,11 +928,11 @@
     "BuildChannelStable": "Stable",
 
     "CDNDescription_Github": "Le dépôt officiel (principal) du launcher",
-    "CDNDescription_DigitalOcean": "Un miroir du dépôt officiel (principal) propulsé par DigitalOcean",
-    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) propulsé par le seau Cloudflare R2",
-    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) propulsé par BitBucket",
-    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) propulsé par GitLab",
-    "CDNDescription_CNB": "Un miroir du dépôt officiel (principal) propulsé par CNB",
+    "CDNDescription_DigitalOcean": "Un miroir du dépôt officiel (principal) hébergé sur DigitalOcean",
+    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé sur le seau Cloudflare R2",
+    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur BitBucket",
+    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab",
+    "CDNDescription_CNB": "Un miroir du dépôt officiel (principal) hébergé sur CNB",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -922,7 +971,7 @@
     "IsBytesNotANumber": "= NaN",
 
     "MissingVcRedist": "Redistribuable Visual C/C++ manquant",
-    "MissingVcRedistSubtitle": "Vous devez installer le redistribuable Visual C/C++ pour exécuter cette fonction. Voulez-vous le télécharger maintenant ?\r\nRemarque : Cela ouvrira une fenêtre de navigateur et téléchargera un fichier depuis le site de Microsoft. Veuillez exécuter le programme d'installation après l'avoir téléchargé, puis redémarrez Collapse et réessayez.\r\nSi l'erreur persiste malgré l'installation du redistribuable, veuillez soumettre un rapport de bug.",
+    "MissingVcRedistSubtitle": "Vous devez installer le redistribuable Visual C/C++ pour exécuter cette fonction. Voulez-vous le télécharger maintenant ?\r\nRemarque : Cela ouvrira une fenêtre de navigateur et téléchargera un fichier depuis le site de Microsoft. Veuillez exécuter le programme d'installation après l'avoir téléchargé, puis redémarrez Collapse et réessayez.\r\nSi l'erreur persiste malgré l'installation du redistribuable, veuillez soumettre un rapport de bug.",
     "ExceptionFeedbackBtn": "Dites-nous ce qu'il s'est passé",
     "ExceptionFeedbackBtn_Unavailable": "Le rapport de plantage est désactivé ou n'est pas disponible",
     "ExceptionFeedbackBtn_FeedbackSent": "Vos commentaires ont été envoyés !",
@@ -1053,7 +1102,7 @@
     "ChangePlaytimeTitle": "Modifier le temps de jeu ?",
     "ChangePlaytimeSubtitle": "Modifier votre temps de jeu signifie remplacer la valeur actuelle par celle que vous venez de saisir.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous n'êtes pas en jeu.",
     "ResetPlaytimeTitle": "Réinitialisation du temps de jeu",
-    "ResetPlaytimeSubtitle": "Réinitialiser votre temps de jeu signifie remettre à 0 le compteur de temps de jeu et toutes les statistiques associées. ",
+    "ResetPlaytimeSubtitle": "Réinitialiser votre temps de jeu signifie remettre à 0 le compteur de temps de jeu et toutes les statistiques associées. Il s'agit d'une action ",
     "ResetPlaytimeSubtitle2": "destructrice",
     "ResetPlaytimeSubtitle3": ", ce qui signifie que vous ne pouvez pas revenir en arrière une fois confirmée.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous n'êtes pas en jeu.",
     "InvalidPlaytimeTitle": "Un problème est survenu lors de l'enregistrement du temps de jeu de cette session",
@@ -1128,6 +1177,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • Les nouveaux raccourcis ne seront affichés qu'après le redémarrage de Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Afin d'utiliser l'overlay Steam, Steam doit être exécuté en tant qu'administrateur et Collapse doit être complètement fermé ou d'avoir l'option « Multiple instances » activée dans les paramètres.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si le jeu n'est pas installé/à jour, Collapse essaiera de l'installer/mettre à jour. Notez que les boîtes de dialogue liés à ces processus seront toujours affichées.",
+    "SteamShortcutCreationSuccessSubtitle8": "   De plus, l'option « Lancer le jeu avec \"explorer.exe\" comme processus parent » doit être désactivé dans les paramètres avancés de la région.",
     "SteamShortcutCreationFailureTitle": "Dossier de données Steam invalide",
     "SteamShortcutCreationFailureSubtitle": "Il n'a pas été possible de trouver un dossier de données utilisateur valide.\r\n\r\nVeuillez vous assurer de vous être connecté au moins une fois à votre client Steam avant d'essayer d'utiliser cette fonctionnalité.",
     "SteamShortcutTitle": "Raccourci Steam",
@@ -1143,7 +1193,7 @@
     "DbGenerateUid_Content": "Modifier l'ID utilisateur actuel peut entraîner une perte des données associées si vous le perdez.",
 
     "SophonIncrementUpdateUnavailTitle": "Mise à jour incrémentielle indisponible : Version trop ancienne !",
-    "SophonIncrementUpdateUnavailSubtitle1": "La version de votre jeu: {0}",
+    "SophonIncrementUpdateUnavailSubtitle1": "La version de votre jeu (v{0})",
     "SophonIncrementUpdateUnavailSubtitle2": "est trop ancienne",
     "SophonIncrementUpdateUnavailSubtitle3": " et la mise à jour incrémentielle à partir de celle-ci n'est pas disponible. Il est cependant possible de mettre à jour le jeu en effectuant un nouveau téléchargement au complet de celui-ci.",
     "SophonIncrementUpdateUnavailSubtitle4": "Cliquez sur « {0} » pour procéder à la mise à jour complète ou sur « {1} » pour annuler le processus.",
@@ -1186,7 +1236,7 @@
     "UserFeedback_SubmitBtn_Completed": "Commentaires envoyés !",
     "UserFeedback_SubmitBtn_Cancelled": "Annulé !",
 
-    "PluginManagerUpdateAvailableTitle": "Vous avez {0} plugin(s) en attente de mise à jour",
+    "PluginManagerUpdateAvailableTitle": "Mise à jour disponible pour {0} plugin(s)",
     "PluginManagerUpdateAvailableSubtitle1": "{0} plugin(s) demandent a être mis à jour. Vous devez redémarrer votre launcher afin d'appliquer la mise à jour des plugins suivants :",
     "PluginManagerUpdateAvailableSubtitle2": "Voulez-vous redémarrer le launcher ?",
     "PluginManagerUpdateAvailableCancelBtn": "Plus tard",
@@ -1204,7 +1254,63 @@
     "PostInstallBehaviour_EnumStartGame": "Démarrer le jeu",
     "PostInstallBehaviour_EnumHibernate": "Mettre en veille prolongée",
     "PostInstallBehaviour_EnumRestart": "Redémarrer l'ordinateur",
-    "PostInstallBehaviour_EnumShutdown": "Éteindre l'ordinateur"
+    "PostInstallBehaviour_EnumShutdown": "Éteindre l'ordinateur",
+
+    "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Intensité de l'effet de parallaxe en pixels (Min : {0} px, Max : {1} px)",
+
+    "Media_ExtNotSupported1": "Désolé, le format de l'image ou de la vidéo d'arrière-plan n'est pas supporté.",
+    "Media_ExtNotSupported2": "Emplacement : {0}",
+    "Media_ExtNotSupportedTitle": "Fichier d'arrière-plan non supporté",
+    "Media_ImageWICNotSupported1": "Désolé, le fichier d'arrière-plan n'est pas supporté par le décodeur natif Windows Imaging Component (WIC). Assurez-vous d'avoir installé le décodeur depuis le Microsoft Store.",
+    "Media_ImageWICNotSupportedTitle": "Fichier image d'arrière-plan non supporté",
+    "Media_VideoMFNotSupportedFormatTypeUnknown": "Inconnu",
+    "Media_VideoMFNotSupported1": "Collapse Launcher a détecté que la vidéo d'arrière-plan ne peut être lue en raison de codecs manquants :",
+    "Media_VideoMFNotSupported2": "Code FourCC : {0}",
+    "Media_VideoMFNotSupported3": "GUID codec vidéo : {0}",
+    "Media_VideoMFNotSupported4": "GUID codec audio : {0}",
+    "Media_VideoMFNotSupported5": "La vidéo/l'audio peut être lue ? (Vidéo : {0} · Audio : {1})",
+    "Media_VideoMFNotSupported6": "Nous nous suggérons d'installer les codecs audio/video Media Foundation en cliquant sur « {0} », ou d'utiliser FFmpeg en cliquant sur « {1} ».",
+    "Media_VideoMFNotSupported7": "Note :",
+    "Media_VideoMFNotSupported8": "Nous vous recommandons fortement FFmpeg en raison d'un plus large support de codecs.",
+    "Media_VideoMFNotSupportedTitle": "Codec de la vidéo d'arrière-plan non supporté",
+    "Media_VideoMFNotSupportedCopyDetailsBtn": "Copier les détails",
+    "Media_VideoMFNotSupportedInstallMFCodecsBtn": "Installer les codecs Media Foundation",
+    "Media_VideoMFNotSupportedInstallFFmpegBtn": "Installer et Utiliser FFmpeg",
+
+    "Media_VideoMFCodecPrepareTitle": "Préparation des codecs Windows Media Foundation",
+    "Media_VideoMFCodecPrepare1": "Collapse Launcher nécessite les codecs additionnels Windows Media Foundation pour lire les vidéos d'arrière-plan ou d'autres médias. Ce processus peut déclencher un faux positif de la part de votre solution antivirus en raison de l'implication de PowerShell pour l'installation. Si cela arrive, désactivez temporairement votre antivirus.",
+    "Media_VideoMFCodecPrepare2": "Ces codecs additionnels inclus un support limité de formats audio/vidéo, incluant :",
+    "Media_VideoMFCodecPrepare3": "    • VP9, AV1 (pour la vidéo)",
+    "Media_VideoMFCodecPrepare4": "    • Vorbis, Opus (pour l'audio)",
+    "Media_VideoMFCodecPrepare5": "Il se peut que vous deviez redémarrer votre appareil manuellement une fois le processus d'installation achevé. Cliquez sur «",
+    "Media_VideoMFCodecPrepare6": "» pour commencer l'installation.",
+    "Media_VideoMFCodecPrepareInstallBtn": "Installation des codecs Windows Media Foundation",
+    "Media_VideoMFCodecInstalledTitle": "Codecs Windows Media Foundation installés !",
+    "Media_VideoMFCodecInstalled1": "Les codecs Windows Media Foundation ont été installés avec succès. Veuillez redémarrer manuellement votre appareil pour que les modifications soient prises en compte.",
+    "Media_VideoMFCodecInstallingTitle": "Installation des codecs Windows Media Foundation…",
+
+    "Media_VideoFFmpegCodecPrepareTitle": "Préparation de FFmpeg",
+    "Media_VideoFFmpegCodecPrepare1": "Collapse Launcher nécessite FFmpeg pour lire les vidéos d'arrière-plan ou d'autres médias. Vous pouvez soit le télécharger ou utiliser votre installation existante.",
+    "Media_VideoFFmpegCodecPrepare2": "Pour continuer, cliquez sur «",
+    "Media_VideoFFmpegCodecPrepare3": "» pour télécharger et installer une copie propre de FFmpeg, ou cliquez sur «",
+    "Media_VideoFFmpegCodecPrepare4": "» pour localiser le dossier d'une installation existante.",
+    "Media_VideoFFmpegCodecPrepareInstallBtn": "Télécharger et installer",
+    "Media_VideoFFmpegCodecPrepareLocateBtn": "Utiliser une installation existante",
+    "Media_VideoFFmpegCodecPrepareLocateDialog": "Sélectionnez votre installation existante de FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateFailedTitle": "Impossible de trouver FFmpeg",
+    "Media_VideoFFmpegCodecPrepareLocateFailed1": "Collapse Launcher n'a pas pu trouver l'installation de FFmpeg dans le dossier.",
+    "Media_VideoFFmpegCodecPrepareLocateFailed2": "Note :",
+    "Media_VideoFFmpegCodecPrepareLocateFailed3": "Assurez-vous que vous avez les fichiers *.dll suivants :",
+    "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "Installation de FFmpeg détectée",
+    "Media_VideoFFmpegCodecPrepareLocateSuccess1": "Une installation de FFmpeg a été détectée dans le dossier suivant :",
+    "Media_VideoFFmpegCodecInstallingTitle": "Installation de FFmpeg…",
+
+    "Agreement_ThirdPartyAgreementPreambleTitle": "Préambule",
+    "Agreement_ThirdPartyAgreementPreamble1": "Collapse Launcher utilise la librairie suivante pour permettre à certaines fonctionnalités de fonctionner.",
+    "Agreement_ThirdPartyAgreementPreamble2": "Nous respectons le(s) propriétaire(s) de la librairie suivante et, par conséquent, nous nous conformons à toutes les règles mentionnées dans le présent accord.",
+    "Agreement_ThirdPartyAgreementPreamble3": "Cliquez sur «",
+    "Agreement_ThirdPartyAgreementPreamble4": "» pour continuer ou sur «",
+    "Agreement_ThirdPartyAgreementPreamble5": "» pour annuler."
   },
 
   "_FileMigrationProcess": {
@@ -1215,7 +1321,7 @@
     "ChoosePathTextBoxPlaceholder": "Choisir le chemin cible…",
     "ChoosePathButton": "Choisir la cible",
     "ChoosePathErrorTitle": "Une erreur est survenue !",
-    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel !\r\nVeuillez choisir un autre emplacement !",
+    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel.\r\nVeuillez choisir un autre emplacement !",
     "ChoosePathErrorPathUnselected": "Veuillez choisir la destination avant de continuer !",
     "ChoosePathErrorPathNotExist": "Le chemin n'existe pas !",
     "ChoosePathErrorPathNoPermission": "Vous n'avez pas la permission d'accéder à cet emplacement ! Veuillez choisir un autre emplacement !"
@@ -1652,7 +1758,7 @@
   },
 
   "_GameClientRegions": {
-    "Southeast Asia": "Asie du Sud-Ouest",
+    "Southeast Asia": "Asie du Sud-Est",
     "Global": "Global",
     "Mainland China": "Chine continentale",
     "TW/HK/MO": "TW/HK/MO",
