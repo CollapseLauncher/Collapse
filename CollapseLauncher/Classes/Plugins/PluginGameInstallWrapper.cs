@@ -294,6 +294,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 5/5: StartPreloadAsync...", LogType.Debug, true);
             TryRegisterPerFileProgressCallback();
+            Status.IsIncludePerFileIndicator = _hasPerFileProgress;
+            UpdateStatus();
 
             _gameInstaller.StartPreloadAsync(
                 _updateProgressDelegate,
@@ -363,6 +365,8 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
             TryRegisterPerFileProgressCallback();
+            Status.IsIncludePerFileIndicator = _hasPerFileProgress;
+            UpdateStatus();
 
             Task routineTask;
             if (_updateProgressProperty.IsUpdateMode)
