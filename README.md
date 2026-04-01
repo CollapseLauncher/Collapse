@@ -162,6 +162,7 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://souta.cc"><img src="https://avatars.githubusercontent.com/u/18072048?v=4?s=100" width="100px;" alt="Souta"/><br /><sub><b>Souta</b></sub></a><br /><a href="#translation-CatSouta" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/perfectdelusions"><img src="https://avatars.githubusercontent.com/u/272893080?v=4?s=100" width="100px;" alt="perfectdelusions"/><br /><sub><b>perfectdelusions</b></sub></a><br /><a href="#translation-perfectdelusions" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
