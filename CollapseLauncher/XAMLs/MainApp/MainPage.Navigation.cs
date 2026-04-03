@@ -49,7 +49,8 @@ public partial class MainPage : Page
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.FooterMenuItems.Clear();
 
-            IGameVersion? CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
+            GamePresetProperty gameProperty            = GetCurrentGameProperty();
+            IGameVersion?      CurrentGameVersionCheck = gameProperty.GameVersion;
 
             FontIcon IconLauncher     = new() { Glyph = "" };
             FontIcon IconRepair       = new() { Glyph = "" };
