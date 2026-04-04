@@ -363,7 +363,12 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         if (!Handle.TryGetExportUnsafe("SetPerFileProgressCallback", out nint setCallbackP))
             return;
 
-        ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(nint.Zero);
+        HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(nint.Zero);
+        if (Marshal.GetExceptionForHR(hr) is { } exception)
+        {
+            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to unregister per-file progress callback: {hr} {exception}",
+                                LogType.Error, true);
+        }
     }
 
     internal async Task Initialize(CancellationToken token = default)
