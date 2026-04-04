@@ -156,6 +156,9 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         // IMPORTANT: Called from NativeAOT plugin across reverse P/Invoke. Must never throw.
         try
         {
+            if (progress == null)
+                return;
+
             long downloaded = progress->PerFileDownloadedBytes;
             long total = progress->PerFileTotalBytes;
 
