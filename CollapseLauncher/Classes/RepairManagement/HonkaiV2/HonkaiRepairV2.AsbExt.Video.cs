@@ -1,12 +1,12 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.Cache;
+using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -14,11 +14,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using CGMetadataHashId = Hi3Helper.EncTool.Parser.Cache.HashID;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
@@ -32,6 +29,7 @@ namespace CollapseLauncher.RepairManagement;
 internal static partial class AssetBundleExtension
 {
     internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video\";
+    internal const string MetadataFilename = "107438912";
 
     internal static async Task<List<FilePropertiesRemote>>
         GetVideoAssetListAsync<T>(
@@ -57,11 +55,11 @@ internal static partial class AssetBundleExtension
                                                token);
 
         CacheAssetInfo? cgMetadataFile = assetInfoList
-           .FirstOrDefault(x => x.Asset.N.EndsWith(CGMetadataHashId.CgMetadataFilename));
+           .FirstOrDefault(x => x.Asset.N.EndsWith(MetadataFilename));
 
         if (cgMetadataFile == null)
         {
-            Logger.LogWriteLine($"[AssetBundleExtension::GetVideoAssetListAsync] Cannot find CG Metadata file with Asset ID: {CGMetadataHashId.CgMetadataFilename}",
+            Logger.LogWriteLine($"[AssetBundleExtension::GetVideoAssetListAsync] Cannot find CG Metadata file with Asset ID: {MetadataFilename}",
                                 LogType.Error,
                                 true);
             return [];
@@ -83,36 +81,36 @@ internal static partial class AssetBundleExtension
         cgFileStreamMemory.Position = 0;
 
         await using CacheStream dechipheredCgStream =
-            new CacheStream(cgFileStreamMemory, preSeed: cgMetadataFile.MhyMersenneTwisterSeed);
+            new(cgFileStreamMemory, preSeed: cgMetadataFile.MhyMersenneTwisterSeed);
 
         List<FilePropertiesRemote> cgEntries = [];
         await Parallel
-           .ForEachAsync(CGMetadata.Enumerate(dechipheredCgStream, Encoding.UTF8),
+           .ForEachAsync(KianaCgMetadata.Parse(dechipheredCgStream),
                          new ParallelOptions
                          {
-                             CancellationToken      = token,
+                             CancellationToken = token,
                              MaxDegreeOfParallelism = parallelThread
                          },
                          ImplCheckAndAdd);
 
         return cgEntries;
 
-        async ValueTask ImplCheckAndAdd(CGMetadata entry, CancellationToken innerToken)
+        async ValueTask ImplCheckAndAdd(KeyValuePair<int, KianaCgMetadata> entry, CancellationToken innerToken)
         {
-            if (entry.InStreamingAssets ||
-                ignoredCgHashset.Contains(entry.CgSubCategory))
+            if (entry.Value.DownloadMode == CGDownloadMode.DownloadTipAlways ||
+                ignoredCgHashset.Contains(entry.Value.SubCategoryId))
             {
                 return;
             }
 
-            string assetName = gameLanguageType == AudioLanguageType.Japanese
-                ? entry.CgPathHighBitrateJP
-                : entry.CgPathHighBitrateCN;
+            string assetName = (gameLanguageType == AudioLanguageType.Japanese
+                ? entry.Value.PathJp
+                : entry.Value.PathCn) ?? throw new NullReferenceException();
             assetName += ".usm";
 
             long assetFilesize = gameLanguageType == AudioLanguageType.Japanese
-                ? entry.FileSizeHighBitrateJP
-                : entry.FileSizeHighBitrateCN;
+                ? entry.Value.SizeJp
+                : entry.Value.SizeCn;
 
             foreach (string baseUrl in gameServerInfo.ExternalAssetUrls)
             {
@@ -130,25 +128,28 @@ internal static partial class AssetBundleExtension
                 // Update status
                 if (progressibleInstance != null)
                 {
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status14, entry.CgExtraKey);
+                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status14, assetName);
                     progressibleInstance.Status.IsProgressAllIndetermined = true;
                     progressibleInstance.Status.IsProgressPerFileIndetermined = true;
                     progressibleInstance.UpdateStatus();
                 }
 
-                UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
-                Logger.LogWriteLine($"The CG asset: {assetName} " +
-                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
-                if (!urlStatus.IsSuccessStatusCode)
+                if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV)
                 {
-                    continue;
+                    UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
+                    Logger.LogWriteLine($"The CG asset: {assetName} " +
+                                        (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                    if (!urlStatus.IsSuccessStatusCode)
+                    {
+                        continue;
+                    }
+
+                    if (urlStatus.FileSize > 0)
+                    {
+                        assetFilesize = urlStatus.FileSize;
+                    }
                 }
 
-                if (urlStatus.FileSize > 0)
-                {
-                    assetFilesize = urlStatus.FileSize;
-                }
-                
                 lock (cgEntries)
                 {
                     cgEntries.Add(new FilePropertiesRemote

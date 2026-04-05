@@ -2,19 +2,15 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.Cache;
+using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Sophon;
-using Hi3Helper.Sophon.Structs;
 using Microsoft.Win32;
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -56,7 +52,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game AssetBundle
     private async Task FetchAssetFromGameAssetBundle(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        PresetConfig gamePresetConfig = GameVersionManager!.GamePreset;
+        PresetConfig gamePresetConfig = GameVersionManager.GamePreset;
         FinalizeBasicAssetsPath(assetIndex);
 
         // Get ignored assets from registry
@@ -280,7 +276,7 @@ internal partial class HonkaiRepairV2
         {
             string relativePath = Path.Combine(AssetBundleExtension.RelativePathVideo, asset.N);
             ConverterTool.NormalizePathInplaceNoTrim(relativePath);
-            if (asset.AssociatedObject is CGMetadata { InStreamingAssets: false })
+            if (asset.AssociatedObject is KianaCgMetadata { DownloadMode: CGDownloadMode.DownloadTipAlways })
             {
                 versionStreamWriter.WriteLine($"Video/{asset.N}\t1");
             }
@@ -385,8 +381,8 @@ internal partial class HonkaiRepairV2
             string relativePath = Path.Combine(AssetBundleExtension.RelativePathBlock, asset.N);
             asset.N = relativePath;
 
-            if (asset.BlockPatchInfo is {} patchInfo &&
-                patchInfo.PatchPairs.FirstOrDefault() is {} patchPair)
+            if (asset.BlockPatchInfo is { } patchInfo &&
+                patchInfo.PatchPairs.FirstOrDefault() is { } patchPair)
             {
                 oldBlockNames.Add(Path.Combine(AssetBundleExtension.RelativePathBlock, patchPair.OldName));
             }
