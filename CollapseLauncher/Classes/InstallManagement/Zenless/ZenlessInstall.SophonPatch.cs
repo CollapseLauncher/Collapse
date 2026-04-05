@@ -1,11 +1,9 @@
-﻿using Hi3Helper.Sophon;
-using Hi3Helper.Sophon.Infos;
+﻿using Hi3Helper;
 using Hi3Helper.Sophon.Structs;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
@@ -16,14 +14,6 @@ namespace CollapseLauncher.InstallManager.Zenless
     internal partial class ZenlessInstall
     {
         private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
-
-        // ReSharper disable once StringLiteralTypo
-        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfo>k__BackingField")]
-        private static extern ref SophonChunksInfo GetChunkAssetChunksInfo(SophonAsset element);
-
-        // ReSharper disable once StringLiteralTypo
-        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfoAlt>k__BackingField")]
-        private static extern ref SophonChunksInfo GetChunkAssetChunksInfoAlt(SophonAsset element);
 
         public override async Task FilterAssetList<T>(
             List<T>           itemList,
@@ -67,6 +57,8 @@ namespace CollapseLauncher.InstallManager.Zenless
                 if (asset is SophonIdentifiableProperty { MatchingField: { } assetMatchingField } &&
                     exceptMatchFieldHashSet.Contains(assetMatchingField))
                 {
+                    Logger.LogWriteLine($"[ZenlessInstall::FilterSophonAsset] Asset: {asset} is ignored due to marked as deleted asset.",
+                                        writeToLog: true);
                     continue;
                 }
 
