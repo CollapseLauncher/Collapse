@@ -23,7 +23,6 @@ file static class Fields
     public const string DllNameAvfilter   = "avfilter-10.dll";
     public const string DllNameAvformat   = "avformat-61.dll";
     public const string DllNameAvutil     = "avutil-59.dll";
-    public const string DllNamePostproc   = "postproc-58.dll";
     public const string DllNameSwresample = "swresample-5.dll";
     public const string DllNameSwscale    = "swscale-8.dll";
 }
@@ -180,7 +179,6 @@ public partial class ImageBackgroundManager
         string dllPathAvfilter   = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
         string dllPathAvformat   = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
         string dllPathAvutil     = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
-        string dllPathPostproc   = Path.Combine(checkOnDirectory, Fields.DllNamePostproc);
         string dllPathSwresample = Path.Combine(checkOnDirectory, Fields.DllNameSwresample);
         string dllPathSwscale    = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
 
@@ -189,7 +187,6 @@ public partial class ImageBackgroundManager
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil,     out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathPostproc,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwresample, out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
     }
@@ -201,7 +198,6 @@ public partial class ImageBackgroundManager
         Fields.DllNameAvfilter,
         Fields.DllNameAvformat,
         Fields.DllNameAvutil,
-        Fields.DllNamePostproc,
         Fields.DllNameSwresample,
         Fields.DllNameSwscale
     ];
@@ -258,7 +254,6 @@ public partial class ImageBackgroundManager
         string dllPathAvfilter   = Path.Combine(sourceDir, Fields.DllNameAvfilter);
         string dllPathAvformat   = Path.Combine(sourceDir, Fields.DllNameAvformat);
         string dllPathAvutil     = Path.Combine(sourceDir, Fields.DllNameAvutil);
-        string dllPathPostproc   = Path.Combine(sourceDir, Fields.DllNamePostproc);
         string dllPathSwresample = Path.Combine(sourceDir, Fields.DllNameSwresample);
         string dllPathSwscale    = Path.Combine(sourceDir, Fields.DllNameSwscale);
 
@@ -267,7 +262,6 @@ public partial class ImageBackgroundManager
                CreateSymbolLink(dllPathAvfilter,   targetDir, out exception) &&
                CreateSymbolLink(dllPathAvformat,   targetDir, out exception) &&
                CreateSymbolLink(dllPathAvutil,     targetDir, out exception) &&
-               CreateSymbolLink(dllPathPostproc,   targetDir, out exception) &&
                CreateSymbolLink(dllPathSwresample, targetDir, out exception) &&
                CreateSymbolLink(dllPathSwscale,    targetDir, out exception);
 
