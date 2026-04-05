@@ -147,7 +147,10 @@ namespace CollapseLauncher.Pages
 
         private void ReturnToHomePage()
         {
-            if (!IsLoaded)
+            if (!(m_mainPage?.TryGetCurrentPageObject(out object typeOfPage) ?? false) ||
+                typeOfPage is not Type asTypePage ||
+                asTypePage != typeof(HomePage) ||
+                GamePropertyVault.GetCurrentGameProperty() != CurrentGameProperty)
             {
                 return;
             }

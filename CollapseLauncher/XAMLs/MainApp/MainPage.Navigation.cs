@@ -327,8 +327,6 @@ public partial class MainPage : Page
                     pageType = typeof(NotInstalledPage);
                 }
 
-
-                int previousStackLimit = LauncherFrame.CacheSize;
                 LauncherFrame.Navigate(pageType, null, transitionInfo ?? new DrillInNavigationTransitionInfo());
                 
                 if (isForceLoad)
