@@ -5,7 +5,7 @@ using CollapseLauncher.RepairManagement;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.Cache;
+using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
@@ -276,7 +276,7 @@ internal partial class HonkaiRepairV2
         {
             string relativePath = Path.Combine(AssetBundleExtension.RelativePathVideo, asset.N);
             ConverterTool.NormalizePathInplaceNoTrim(relativePath);
-            if (asset.AssociatedObject is CGMetadata { InStreamingAssets: false })
+            if (asset.AssociatedObject is KianaCgMetadata { DownloadMode: CGDownloadMode.DownloadTipAlways })
             {
                 versionStreamWriter.WriteLine($"Video/{asset.N}\t1");
             }
