@@ -250,20 +250,7 @@ namespace CollapseLauncher
         private void MainFrameChangerInvoker_FrameEvent(object? sender, MainFrameProperties e)
         {
             InnerLauncherConfig.m_appCurrentFrameName = e.FrameTo.Name;
-
-            int previousStackLimit = LauncherFrame.CacheSize;
-            if (e.RequireCacheReset)
-            {
-                LauncherFrame.BackStack.Clear();
-                LauncherFrame.CacheSize            = 0;
-                NavigationViewControl.SelectedItem = null;
-            }
-
             TryNavigateFrom(e.FrameTo, e.Transition, e.RequireCacheReset);
-            if (e.RequireCacheReset)
-            {
-                LauncherFrame.CacheSize = previousStackLimit;
-            }
         }
 
         private void MainFrameChangerInvoker_FrameGoBackEvent(object? sender, EventArgs e)

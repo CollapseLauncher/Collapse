@@ -7,11 +7,13 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 
 // ReSharper disable StringLiteralTypo
@@ -67,23 +69,24 @@ namespace CollapseLauncher
 
             if (presetConfig is not PluginPresetConfigWrapper pluginPresetConfig)
             {
-                return new BitmapIcon
-                {
-                    UriSource = new Uri(uri)
-                };
+                return Create(uri);
             }
 
             PluginInfo              pluginInfo = pluginPresetConfig.PluginInfo;
             GamePluginIconConverter converter  = StaticConverter<GamePluginIconConverter>.Shared;
             if (converter.Convert(pluginInfo, null!, null!, "") is not IconElement iconElement)
             {
-                return new BitmapIcon
-                {
-                    UriSource = new Uri(uri)
-                };
+                return Create(uri);
             }
 
             return iconElement;
+
+            static BitmapIcon Create(string uri)
+                => new()
+                {
+                    UriSource        = new Uri(uri),
+                    ShowAsMonochrome = false
+                };
         }
 
         private static void AttachEventToNotification(PresetConfig presetConfig, IBackgroundActivity activity, string activityTitle, string activitySubtitle)

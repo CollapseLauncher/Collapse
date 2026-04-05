@@ -560,7 +560,7 @@
     "VideoBackground_FFmpegInstallNote": "Note",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
     "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your background. To change your existing installation, please disable the \"Use FFmpeg for Video Decoding\" feature first, then restart your launcher and come back to this setting.",
 
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",

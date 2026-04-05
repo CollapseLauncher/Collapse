@@ -1910,7 +1910,56 @@ namespace CollapseLauncher.Dialogs
                                 closeText: Locale.Current.Lang?._Misc?.IDoNotAcceptAgreement,
                                 primaryText: Locale.Current.Lang?._Misc?.IAcceptAgreement,
                                 defaultButton: ContentDialogButton.Primary,
-                                dialogTheme: ContentDialogTheme.Informational);
+                                dialogTheme: ContentDialogTheme.Informational,
+                                onLoaded: (sender, _) =>
+                                {
+                                    if (sender is not ContentDialog dialog)
+                                        return;
+
+                                    // Disable the primary ("I accept") button until user scrolls to the bottom
+                                    dialog.IsPrimaryButtonEnabled = false;
+
+                                    // The ContentDialog wraps its Content in a ScrollViewer.
+                                    // Find it and listen for scroll changes.
+                                    ScrollViewer? sv = dialog.FindDescendant<ScrollViewer>();
+                                    if (sv == null)
+                                        return;
+
+                                    sv.ViewChanged += OnViewChanged;
+
+                                    // If content is short enough to not need scrolling,
+                                    // enable the button after layout completes.
+                                    sv.SizeChanged += OnSizeChanged;
+
+                                    void OnSizeChanged(object s, SizeChangedEventArgs e)
+                                    {
+                                        if (s is not ScrollViewer scrollViewer)
+                                            return;
+
+                                        if (scrollViewer.ScrollableHeight < 1)
+                                        {
+                                            dialog.IsPrimaryButtonEnabled = true;
+                                            scrollViewer.ViewChanged -= OnViewChanged;
+                                            scrollViewer.SizeChanged -= OnSizeChanged;
+                                        }
+                                    }
+
+                                    void OnViewChanged(object s, ScrollViewerViewChangedEventArgs args)
+                                    {
+                                        if (args.IsIntermediate)
+                                            return;
+
+                                        if (s is not ScrollViewer scrollViewer)
+                                            return;
+
+                                        if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 40)
+                                        {
+                                            dialog.IsPrimaryButtonEnabled = true;
+                                            scrollViewer.ViewChanged -= OnViewChanged;
+                                            scrollViewer.SizeChanged -= OnSizeChanged;
+                                        }
+                                    }
+                                });
                 if (result == ContentDialogResult.None)
                 {
                     return false;
