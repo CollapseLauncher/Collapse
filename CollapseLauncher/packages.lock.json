@@ -312,8 +312,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.34.0",
-        "contentHash": "a5US9akiNczS5kC7qBqYqJmnxHVQDITZD6GRRbwGHk/oa17EwOGE3PHIWFVeHTqCctq8mVjLSelwsxCkYYBinA=="
+        "resolved": "3.34.1",
+        "contentHash": "212vdYxRuVopGE5bess6Jg5oXWyizA6hcLPTI7G+qA4PthQEvfeof3njT+7VSY5v/+O0P22xTydiP5fSJJpGEA=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -528,7 +528,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.34.0, )",
+          "Google.Protobuf": "[3.34.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[10.0.5, )"
