@@ -145,7 +145,14 @@ namespace CollapseLauncher.Pages
 
         private static bool NeedShowEventIcon => GetAppConfigValue("ShowEventsPanel").ToBool();
 
-        private static void ReturnToHomePage() => MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
+        private void ReturnToHomePage()
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage), true);
+        }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

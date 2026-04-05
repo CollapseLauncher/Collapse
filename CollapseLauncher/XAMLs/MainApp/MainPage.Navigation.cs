@@ -13,6 +13,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -36,6 +38,31 @@ using static Hi3Helper.Logger;
 #nullable enable
 namespace CollapseLauncher;
 
+file static class NavigationExtension
+{
+    public static void Add<TItem>(this IList<object> list, string localePropertyPath, string? iconGlyph = null, object? tag = null)
+        where TItem : NavigationViewItemBase, new()
+    {
+        TItem item = new() { Tag = tag };
+        item.BindNavigationViewItemText(Locale.Current, localePropertyPath);
+
+        if (item is NavigationViewItem asItem && iconGlyph != null)
+        {
+            asItem.Icon = new FontIcon { Glyph = iconGlyph };
+        }
+
+        list.Add(item);
+    }
+
+    public static void Add<TItem, TPage>(this IList<object> list, string localePropertyPath, string? iconGlyph = null)
+        where TItem : NavigationViewItemBase, new()
+        where TPage : notnull
+    {
+        Type navigationType = typeof(TPage);
+        list.Add<TItem>(localePropertyPath, iconGlyph, navigationType);
+    }
+}
+
 public partial class MainPage : Page
 {
     private void InitializeNavigationItems(bool ResetSelection = true)
@@ -52,57 +79,47 @@ public partial class MainPage : Page
             GamePresetProperty gameProperty            = GetCurrentGameProperty();
             IGameVersion?      CurrentGameVersionCheck = gameProperty.GameVersion;
 
-            FontIcon IconLauncher     = new() { Glyph = "" };
-            FontIcon IconRepair       = new() { Glyph = "" };
-            FontIcon IconCaches       = new() { Glyph = m_isWindows11 ? "" : "" };
-            FontIcon IconGameSettings = new() { Glyph = "" };
-            FontIcon IconAppSettings  = new() { Glyph = "" };
-            FontIcon IconFilesCleanup = new() { Glyph = "" };
+            FontIcon iconAppSettings = new() { Glyph = "" };
+            string   cachePageGlyph  = m_isWindows11 ? "" : "";
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
                 if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconCaches, Tag = typeof(CachesPage) }.BindNavigationViewItemText(Locale.Current, "Lang._CachesPage.PageTitle"));
+                    NavigationViewControl.MenuItems.Add<NavigationViewItem, CachesPage>("Lang._CachesPage.PageTitle", cachePageGlyph);
                 }
                 return;
             }
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconLauncher, Tag = typeof(HomePage) }.BindNavigationViewItemText(Locale.Current, "Lang._HomePage.PageTitle"));
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader().BindNavigationViewItemText(Locale.Current, "Lang._MainPage.NavigationUtilities"));
+            NavigationViewControl.MenuItems.Add<NavigationViewItem, HomePage>("Lang._HomePage.PageTitle", "");
+            NavigationViewControl.MenuItems.Add<NavigationViewItemHeader>("Lang._MainPage.NavigationUtilities");
 
             if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconRepair, Tag = typeof(RepairPage) }.BindNavigationViewItemText(Locale.Current, "Lang._GameRepairPage.PageTitle"));
+                NavigationViewControl.MenuItems.Add<NavigationViewItem, RepairPage>("Lang._GameRepairPage.PageTitle", "");
             }
 
             if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem { Icon = IconCaches, Tag = typeof(CachesPage) }.BindNavigationViewItemText(Locale.Current, "Lang._CachesPage.PageTitle"));
+                NavigationViewControl.MenuItems.Add<NavigationViewItem, CachesPage>("Lang._CachesPage.PageTitle", cachePageGlyph);
             }
 
-            switch (CurrentGameVersionCheck?.GameType)
+            Type? gspPageType = CurrentGameVersionCheck?.GameType switch
             {
-                case GameNameType.Honkai:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = typeof(HonkaiGameSettingsPage) }.BindNavigationViewItemText(Locale.Current, "Lang._GameSettingsPage.PageTitle"));
-                    break;
-                case GameNameType.StarRail:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = typeof(StarRailGameSettingsPage) }.BindNavigationViewItemText(Locale.Current, "Lang._StarRailGameSettingsPage.PageTitle"));
-                    break;
-                case GameNameType.Genshin:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = typeof(GenshinGameSettingsPage) }.BindNavigationViewItemText(Locale.Current, "Lang._GenshinGameSettingsPage.PageTitle"));
-                    break;
-                case GameNameType.Zenless:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconGameSettings, Tag = typeof(ZenlessGameSettingsPage) }.BindNavigationViewItemText(Locale.Current, "Lang._GameSettingsPage.PageTitle"));
-                    break;
-            }
+                GameNameType.Honkai   => typeof(HonkaiGameSettingsPage),
+                GameNameType.StarRail => typeof(StarRailGameSettingsPage),
+                GameNameType.Genshin  => typeof(GenshinGameSettingsPage),
+                GameNameType.Zenless  => typeof(ZenlessGameSettingsPage),
+                _                     => null
+            };
 
-            NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem { Icon = IconFilesCleanup, Tag = "filescleanup"}.BindNavigationViewItemText(Locale.Current, "Lang._FileCleanupPage.Title"));
+            NavigationViewControl.FooterMenuItems.Add<NavigationViewItem>("Lang._GameSettingsPage.PageTitle", "", gspPageType);
+            NavigationViewControl.FooterMenuItems.Add<NavigationViewItem>("Lang._FileCleanupPage.Title", "", "filescleanup");
 
             if (NavigationViewControl.SettingsItem is NavigationViewItem settingsItem)
             {
-                settingsItem.Tag = typeof(SettingsPage);
-                settingsItem.Icon = IconAppSettings;
+                settingsItem.Tag  = typeof(SettingsPage);
+                settingsItem.Icon = iconAppSettings;
                 _                 = settingsItem.BindNavigationViewItemText(Locale.Current, "Lang._SettingsPage.PageTitle");
             }
 
@@ -126,7 +143,7 @@ public partial class MainPage : Page
                         break;
                 }
             }
-            AttachShadowNavigationPanelItem(IconAppSettings);
+            AttachShadowNavigationPanelItem(iconAppSettings);
 
             if (ResetSelection)
             {
@@ -310,7 +327,15 @@ public partial class MainPage : Page
                     pageType = typeof(NotInstalledPage);
                 }
 
+
+                int previousStackLimit = LauncherFrame.CacheSize;
                 LauncherFrame.Navigate(pageType, null, transitionInfo ?? new DrillInNavigationTransitionInfo());
+                
+                if (isForceLoad)
+                {
+                    LauncherFrame.BackStack.Clear();
+                    LauncherFrame.CacheSize = 0;
+                }
                 break;
             }
             case "filescleanup":
