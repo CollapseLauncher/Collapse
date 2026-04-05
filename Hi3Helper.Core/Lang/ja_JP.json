@@ -560,7 +560,7 @@
     "VideoBackground_FFmpegInstallNote": "注",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcherはバージョン7.xのFFmpegのみをサポートしています。その他バージョンのFFmpegは現在サポートされていません！",
     "VideoBackground_FFmpegInstallLockedTitle": "FFmpegの変更がロックされています",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、再度\"新規インストールまたは既存インストールを参照\"ボタンを押してください。",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、設定を変更し直してください。",
 
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
