@@ -31,6 +31,20 @@ internal static partial class AssetBundleExtension
     internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video\";
     internal const string MetadataFilename  = "107438912";
 
+    internal static void RemoveUnlistedVideoAssetFromList(this List<FilePropertiesRemote> originList,
+                                                          List<FilePropertiesRemote>      assetListFromVideo)
+    {
+        List<FilePropertiesRemote> originOthersListOnly = originList.Where(x => x.FT != FileType.Video).ToList();
+        List<FilePropertiesRemote> originVideoListOnly = originList.Where(x => x.FT == FileType.Video).ToList();
+        originList.Clear();
+        originList.AddRange(originOthersListOnly);
+
+        HashSet<string> assetListVideoDict =
+            assetListFromVideo.Select(x => x.N).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        originList.AddRange(originVideoListOnly.Where(originVideoAsset => assetListVideoDict.Contains(originVideoAsset.N)));
+    }
+
     internal static async Task<List<FilePropertiesRemote>>
         GetVideoAssetListAsync<T>(
             this HttpClient   assetBundleHttpClient,
@@ -47,12 +61,12 @@ internal static partial class AssetBundleExtension
 
         HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
         List<CacheAssetInfo> assetInfoList =
-            await GetCacheAssetBundleListAsync(assetBundleHttpClient,
-                                               presetConfig,
-                                               gameServerInfo,
-                                               CacheAssetType.Data,
-                                               progressibleInstance,
-                                               token);
+            await assetBundleHttpClient
+               .GetCacheAssetBundleListAsync(presetConfig,
+                                             gameServerInfo,
+                                             CacheAssetType.Data,
+                                             progressibleInstance,
+                                             token);
 
         CacheAssetInfo? cgMetadataFile = assetInfoList
            .FirstOrDefault(x => x.Asset.N.EndsWith(MetadataFilename));
@@ -97,8 +111,7 @@ internal static partial class AssetBundleExtension
 
         async ValueTask ImplCheckAndAdd(KeyValuePair<int, KianaCgMetadata> entry, CancellationToken innerToken)
         {
-            if (entry.Value.DownloadMode == CGDownloadMode.DownloadTipAlways ||
-                ignoredCgHashset.Contains(entry.Value.SubCategoryId))
+            if (ignoredCgHashset.Contains(entry.Value.SubCategoryId))
             {
                 return;
             }
@@ -116,14 +129,6 @@ internal static partial class AssetBundleExtension
             {
                 string assetUrl = (isUseHttpRepairOverride ? "http://" : "https://") + baseUrl;
                 assetUrl = assetUrl.CombineURLFromString("Video", assetName);
-
-                // If the file has no appoinment schedule (like non-birthday CG), then return true
-                /*
-                if (entry.AppointmentDownloadScheduleID == 0)
-                {
-                    goto AddCgEntry; // I love goto. Dun ask me why :>
-                }
-                */
 
                 // Update status
                 if (progressibleInstance != null)
@@ -158,7 +163,7 @@ internal static partial class AssetBundleExtension
                         N                = assetName,
                         RN               = assetUrl,
                         S                = assetFilesize,
-                        AssociatedObject = entry
+                        AssociatedObject = entry.Value
                     });
                 }
                 return;

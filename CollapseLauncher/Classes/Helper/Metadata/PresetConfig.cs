@@ -82,11 +82,12 @@ namespace CollapseLauncher.Helper.Metadata
 
     public class GameInstallFileInfo
     {
-        public string   GameDataFolderName     { get; init; } = string.Empty;
-        public string[] FilesToDelete          { get; init; } = [];
-        public string[] FoldersToDelete        { get; init; } = [];
-        public string[] FoldersToKeepInData    { get; init; } = [];
-        public string[] FilesCleanupIgnoreList { get; init; } = [];
+        public string   GameDataFolderName               { get; init; } = string.Empty;
+        public string[] FilesToDelete                    { get; init; } = [];
+        public string[] FoldersToDelete                  { get; init; } = [];
+        public string[] FoldersToKeepInData              { get; init; } = [];
+        public string[] FilesCleanupIgnoreList           { get; init; } = [];
+        public string[] CacheUpdateUnusedFilesIgnoreList { get; init; } = [];
     }
 
     public class SophonChunkUrls
