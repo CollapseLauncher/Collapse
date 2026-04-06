@@ -560,7 +560,7 @@
     "VideoBackground_FFmpegInstallNote": "备注：",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse 启动器仅支持 FFmpeg 7.x 版本。其他版本的 FFmpeg 暂不支持！",
     "VideoBackground_FFmpegInstallLockedTitle": "更改 FFmpeg 安装已被锁定",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg 目前被用来解码您当前的背景。要更改您现有的安装，请先禁用“使用 FFmpeg 进行视频解码”功能，重启您的启动器，返回到这项设置并点击“开始新安装或定位向导”按钮。",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg 目前被用来解码您的背景。要更改您现有的安装，请先禁用“使用 FFmpeg 进行视频解码”功能，然后重启您的启动器，再返回到这项设置。",
 
     "Update": "检查更新",
     "Update_CurVer": "当前版本：",
