@@ -309,7 +309,7 @@ namespace CollapseLauncher.Helper.StreamUtility
         /// </summary>
         /// <param name="dir">The directory to remove.</param>
         /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
-        public static void DeleteEmptyDirectory(this string dir, bool recursive = false)
+        public static bool DeleteEmptyDirectory(this string dir, bool recursive = false)
             => new DirectoryInfo(dir).DeleteEmptyDirectory(recursive);
 
         /// <summary>
@@ -317,20 +317,34 @@ namespace CollapseLauncher.Helper.StreamUtility
         /// </summary>
         /// <param name="dir">The directory to remove.</param>
         /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
-        public static void DeleteEmptyDirectory(this DirectoryInfo dir, bool recursive = false)
+        public static bool DeleteEmptyDirectory(this DirectoryInfo dir, bool recursive = false)
         {
-            if (recursive)
+            try
             {
-                foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                if (!dir.Exists)
                 {
-                    childDir.DeleteEmptyDirectory();
+                    return true;
                 }
-            }
 
-            FindFiles.TryIsDirectoryEmpty(dir.FullName, out bool isEmpty);
-            if (isEmpty)
+                if (recursive)
+                {
+                    foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                    {
+                        childDir.DeleteEmptyDirectory();
+                    }
+                }
+
+                FindFiles.TryIsDirectoryEmpty(dir.FullName, out bool isEmpty);
+                if (isEmpty)
+                {
+                    dir.Delete(true);
+                }
+
+                return true;
+            }
+            catch
             {
-                dir.Delete(true);
+                return false;
             }
         }
 
