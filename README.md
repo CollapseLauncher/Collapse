@@ -8,9 +8,9 @@
 
 ##### GI Nahida Background Credit: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![de](https://img.shields.io/badge/README-de-red.svg)](Docs/README.localized/README.id-id.md)
+[![de](https://img.shields.io/badge/README-de-red.svg)](Docs/README.localized/README.de-de.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](Docs/README.localized/README.fr-fr.md)
-[![id](https://img.shields.io/badge/README-id-red.svg)](Docs/README.localized/README.de-de.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](Docs/README.localized/README.id-id.md)
 [![jp](https://img.shields.io/badge/README-jp-red.svg)](Docs/README.localized/README.ja-jp.md)
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](Docs/README.localized/README.pt-pt.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](Docs/README.localized/README.ru-ru.md)

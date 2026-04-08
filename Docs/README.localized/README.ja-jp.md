@@ -5,9 +5,9 @@
 ##### ヘッダー背景画像クレジット: [Rafa](https://www.pixiv.net/artworks/102448848)
 
 [![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
-[![de](https://img.shields.io/badge/README-de-red.svg)](README.id-id.md)
+[![de](https://img.shields.io/badge/README-de-red.svg)](README.de-de.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
-[![id](https://img.shields.io/badge/README-id-red.svg)](README.de-de.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
 [![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
