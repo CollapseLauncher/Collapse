@@ -240,7 +240,6 @@ public partial class ImageBackgroundManager
                                   bindingMode: BindingMode.OneWay,
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
-        layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
 
@@ -249,6 +248,7 @@ public partial class ImageBackgroundManager
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
     {
+        layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded -= LayerElementOnLoaded;
 
         if (PresenterGrid?.Children.Count > 1)

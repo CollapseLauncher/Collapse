@@ -291,7 +291,6 @@ public partial class LayeredBackgroundImage
             image.BindProperty(instance, horizontalAlignmentProperty, HorizontalAlignmentProperty, BindingMode.OneWay);
             image.BindProperty(instance, verticalAlignmentProperty,   VerticalAlignmentProperty,   BindingMode.OneWay);
 
-            image.Transitions.Add(new ContentThemeTransition());
             grid.Children.Add(image);
 
             image.Tag         =  (grid, instance);

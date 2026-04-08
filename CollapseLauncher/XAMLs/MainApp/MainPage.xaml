@@ -29,7 +29,11 @@
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
-                                                   MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}" />
+                                                   MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}">
+                <customControls:LayeredBackgroundImage.Transitions>
+                    <PopupThemeTransition/>
+                </customControls:LayeredBackgroundImage.Transitions>
+            </customControls:LayeredBackgroundImage>
         </Grid>
         <Grid HorizontalAlignment="Left"
               VerticalAlignment="Top"
