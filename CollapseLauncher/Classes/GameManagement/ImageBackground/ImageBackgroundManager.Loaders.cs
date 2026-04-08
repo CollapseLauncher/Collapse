@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Animation;
 using PhotoSauce.MagicScaler;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,27 +35,30 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private void LoadImageAtIndex(int index, CancellationToken token) =>
-        new Thread(() => LoadImageAtIndexCore(index, token))
+    private void LoadImageAtIndex(int index, CancellationToken token)
+    {
+        if (ImageContextSources.Count <= index ||
+            index < 0 ||
+            IsBackgroundLoading)
         {
-            IsBackground = true
-        }.Start();
+            return;
+        }
 
-    private async void LoadImageAtIndexCore(int index, CancellationToken token)
+        IsBackgroundLoading = true;
+        new Thread(() => LoadImageAtIndexCore(index, token).ConfigureAwait(false))
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.Lowest
+        }.UnsafeStart();
+    }
+
+    private async Task LoadImageAtIndexCore(int index, CancellationToken token)
     {
         Stopwatch? stopwatch = null;
         try
         {
             bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
-
             stopwatch = Stopwatch.StartNew();
-            if (ImageContextSources.Count <= index ||
-                index < 0)
-            {
-                return;
-            }
-
-            IsBackgroundLoading = true;
 
             // -- Notify changes on context menu properties
             DispatcherQueueExtensions
@@ -78,24 +80,24 @@ public partial class ImageBackgroundManager
             Unsafe.SkipInit(out Uri? downloadedOverlayUri);
             if (Uri.TryCreate(context.OverlayImagePath, UriKind.Absolute, out Uri? overlayImageUri))
             {
-                downloadedOverlayUri      = await GetLocalOrDownloadedFilePath(overlayImageUri, token);
-                (downloadedOverlayUri, _) = await GetNativeOrDecodedImagePath(downloadedOverlayUri, token);
+                downloadedOverlayUri      = await GetLocalOrDownloadedFilePath(overlayImageUri, token).ConfigureAwait(false);
+                (downloadedOverlayUri, _) = await GetNativeOrDecodedImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
             }
 
             // -- Download background.
             Unsafe.SkipInit(out Uri? downloadedBackgroundUri);
             if (Uri.TryCreate(context.BackgroundImagePath, UriKind.Absolute, out Uri? backgroundImageUri))
             {
-                downloadedBackgroundUri      = await GetLocalOrDownloadedFilePath(backgroundImageUri, token);
-                (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token);
+                downloadedBackgroundUri      = await GetLocalOrDownloadedFilePath(backgroundImageUri, token).ConfigureAwait(false);
+                (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
             }
 
             // -- Download static background.
             Unsafe.SkipInit(out Uri? downloadedBackgroundStaticUri);
             if (Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out Uri? backgroundStaticImageUri))
             {
-                downloadedBackgroundStaticUri      = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token);
-                (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token);
+                downloadedBackgroundStaticUri      = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token).ConfigureAwait(false);
+                (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
             }
 
             // Try to use static bg URL if normal bg is not available.
@@ -108,9 +110,9 @@ public partial class ImageBackgroundManager
             // -- Get upscaled image file if Waifu2X is enabled
             if (GlobalIsWaifu2XEnabled)
             {
-                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri,    token);
-                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token);
-                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token);
+                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
+                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
+                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
             }
 
             token.ThrowIfCancellationRequested();
@@ -247,10 +249,15 @@ public partial class ImageBackgroundManager
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
     {
-        List<UIElement> lastElements = PresenterGrid?.Children.ToList() ?? [];
-        foreach (UIElement element in lastElements.Where(element => element != layerElement))
+        layerElement.ImageLoaded -= LayerElementOnLoaded;
+
+        if (PresenterGrid?.Children.Count > 1)
         {
-            PresenterGrid?.Children.Remove(element);
+            UIElement? lastElement = PresenterGrid?.Children.LastOrDefault();
+            foreach (UIElement element in PresenterGrid?.Children.Where(element => element != lastElement) ?? [])
+            {
+                PresenterGrid?.Children.Remove(element);
+            }
         }
 
         if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
@@ -263,7 +270,6 @@ public partial class ImageBackgroundManager
         {
             CurrentBackgroundIsSeekable = isDisplayControl;
         }
-        layerElement.ImageLoaded -= LayerElementOnLoaded;
     }
 
     private static bool TryGetUpscaledFilePath(string     inputFilePath,

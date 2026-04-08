@@ -18,6 +18,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
+// ReSharper disable IdentifierTypo
+#pragma warning disable IDE0051
+#pragma warning disable CS8321 // Local function is declared but never used
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -220,14 +223,19 @@ public partial class LayeredBackgroundImage
                 DisposeAndPauseVideoView();
             }
 
-            InnerLoadDetached();
+            _ = InnerLoadDetached().ConfigureAwait(false);
             lastMediaType = mediaType;
             return;
 
-            async void InnerLoadDetached()
+            async Task InnerLoadDetached()
             {
                 try
                 {
+                    if (!IsLoaded || grid.IsObjectDisposed())
+                    {
+                        return;
+                    }
+
                     // ReSharper disable once ConvertIfStatementToSwitchStatement
                     if (mediaType == MediaSourceType.Image &&
                         await LoadImageFromSourceAsync(source,
@@ -353,8 +361,8 @@ public partial class LayeredBackgroundImage
             // Set-ups Video Player upfront
             instance.InitializeVideoPlayer();
 
-            bool        useFfmpeg = instance.UseFfmpegDecoder;
-            MediaPlayer player    = instance._videoPlayer;
+            bool         useFfmpeg = instance.UseFfmpegDecoder;
+            MediaPlayer? player    = instance._videoPlayer;
 
             // Assign media source using FFmpeg.
             if (useFfmpeg)
@@ -367,7 +375,10 @@ public partial class LayeredBackgroundImage
                     {
                         Video =
                         {
-                            MaxDecoderThreads = (uint)Environment.ProcessorCount
+                            MaxDecoderThreads     = (uint)Environment.ProcessorCount,
+                            VideoOutputAllow10bit = true,
+                            VideoOutputAllowBgra8 = true,
+                            VideoOutputAllowNv12  = true
                         }
                     };
 
@@ -384,10 +395,7 @@ public partial class LayeredBackgroundImage
                     }
                     else if (sourceUri != null)
                     {
-                        string sourceUriStr = sourceUri.IsFile ? sourceUri.LocalPath : sourceUri.ToString();
-                        ffmpegMediaSource = sourceUri.IsFile
-                            ? await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr, ffmpegConfig, windowId.Value)
-                            : await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr, ffmpegConfig, windowId.Value);
+                        ffmpegMediaSource = await CreateFFmpegSourceFromUri(sourceUri, ffmpegConfig, windowId.Value);
                     }
 
                     // Yeet
@@ -410,7 +418,7 @@ public partial class LayeredBackgroundImage
 
                         // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
                         Interlocked.Exchange(ref instance._isVideoInitialized, 0);
-                        player.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                        player?.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
                             ? instance.VideoPlayer_VideoFrameAvailableUnsafe
                             : instance.VideoPlayer_VideoFrameAvailableSafe;
 
@@ -444,11 +452,11 @@ public partial class LayeredBackgroundImage
                 if (sourceStream != null)
                 {
                     IRandomAccessStream sourceStreamRandom = sourceStream.AsRandomAccessStream(true);
-                    player.SetStreamSource(sourceStreamRandom);
+                    player?.SetStreamSource(sourceStreamRandom);
                 }
                 else if (sourceUri != null)
                 {
-                    instance._videoPlayer.SetUriSource(sourceUri);
+                    instance._videoPlayer?.SetUriSource(sourceUri);
                 }
                 else
                 {
@@ -493,6 +501,11 @@ public partial class LayeredBackgroundImage
 
         void Impl()
         {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
             // Update Media Duration and Update Binding to it.
             SetValue(MediaDurationProperty, sender.NaturalDuration);
             SetValue(IsCurrentMediaSeekableProperty, sender.CanSeek);
@@ -640,6 +653,26 @@ public partial class LayeredBackgroundImage
         {
             grid.Children.Remove(element);
         }
+    }
+
+    #endregion
+
+    #region URI to Stream Source Creator
+
+    private static async Task<FFmpegMediaSource> CreateFFmpegSourceFromUri(Uri               uri,
+                                                                           MediaSourceConfig sourceConfig,
+                                                                           ulong             windowId)
+    {
+        string             sourceUriStr = uri.IsFile ? uri.LocalPath : uri.ToString();
+        FFmpegMediaSource? source       = null;
+
+        if (!uri.IsFile)
+        {
+            source = await FFmpegMediaSource.CreateFromUriAsync(sourceUriStr, sourceConfig, windowId);
+        }
+
+        source ??= await FFmpegMediaSource.CreateFromFileAsync(sourceUriStr, sourceConfig, windowId);
+        return source ?? throw new InvalidOperationException("Cannot create stream. This shouldn't happen!");
     }
 
     #endregion

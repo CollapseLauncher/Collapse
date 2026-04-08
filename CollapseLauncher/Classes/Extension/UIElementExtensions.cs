@@ -49,8 +49,14 @@ namespace CollapseLauncher.Extension
                                  localePropertyName,
                                  sourceTrigger: UpdateSourceTrigger.PropertyChanged);
 
-            if (element is not NavigationViewItem) return element;
+            return element is not NavigationViewItem ?
+                element :
+                element.BindTooltipToLocale(localeObjBinding, localePropertyName);
+        }
 
+        internal static T BindTooltipToLocale<T>(this T element, object? localeObjBinding, string localePropertyName)
+            where T : DependencyObject
+        {
             TextBlock tooltipTextBlock = new();
             tooltipTextBlock.BindProperty(TextBlock.TextProperty,
                                           localeObjBinding,

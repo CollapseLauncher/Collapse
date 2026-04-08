@@ -1,10 +1,10 @@
-﻿#nullable enable
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media.Animation;
 using System.Threading;
 using Windows.Foundation;
+#nullable enable
 
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
@@ -14,7 +14,7 @@ public partial class PanelSlideshow
     #region Events
 
     public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<UIElement>>?            ItemChanged;
-    public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<Theme.ManagedUIElementList>>? ItemsChanged;
+    public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<ManagedUIElementList>>? ItemsChanged;
     public event TypedEventHandler<PanelSlideshow, ChangedStructItemArgs<int>>?                  ItemIndexChanged;
     public event TypedEventHandler<PanelSlideshow, ChangedObjectItemArgs<Transition>>?           ItemTransitionChanged;
 
@@ -31,9 +31,9 @@ public partial class PanelSlideshow
     /// <summary>
     /// List of elements to be displayed in the slideshow.
     /// </summary>
-    public Theme.ManagedUIElementList Items
+    public ManagedUIElementList Items
     {
-        get => (Theme.ManagedUIElementList)GetValue(ItemsProperty);
+        get => (ManagedUIElementList)GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
     }
 
@@ -148,8 +148,8 @@ public partial class PanelSlideshow
     #region Dependency Properties
 
     public static readonly DependencyProperty ItemsProperty =
-        DependencyProperty.Register(nameof(Items), typeof(Theme.ManagedUIElementList), typeof(PanelSlideshow),
-                                    new PropertyMetadata(new Theme.ManagedUIElementList(), Items_OnChange));
+        DependencyProperty.Register(nameof(Items), typeof(ManagedUIElementList), typeof(PanelSlideshow),
+                                    new PropertyMetadata(new ManagedUIElementList(), Items_OnChange));
 
     public static readonly DependencyProperty ItemProperty =
         DependencyProperty.Register(nameof(Item), typeof(UIElement), typeof(PanelSlideshow),

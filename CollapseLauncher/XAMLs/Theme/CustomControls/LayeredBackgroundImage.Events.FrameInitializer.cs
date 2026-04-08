@@ -57,7 +57,7 @@ public partial class LayeredBackgroundImage
     {
         try
         {
-            double currentCanvasWidth = playbackSession.NaturalVideoWidth;
+            double currentCanvasWidth  = playbackSession.NaturalVideoWidth;
             double currentCanvasHeight = playbackSession.NaturalVideoHeight;
 
             _canvasWidth      = (int)currentCanvasWidth;
@@ -66,12 +66,11 @@ public partial class LayeredBackgroundImage
 
             // In some occasion, MediaPlayer reportedly 0x0px size which causes E_INVALIDARG while rendering frame
             // if FFmpeg source is used. So, use size reported by FFmpeg instead.
-            if (_canvasRenderSize == default && _videoFfmpegMediaSource != null)
-            {
-                _canvasWidth      = _videoFfmpegMediaSource.CurrentVideoStream.PixelWidth;
-                _canvasHeight     = _videoFfmpegMediaSource.CurrentVideoStream.PixelHeight;
-                _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
-            }
+            if (_canvasRenderSize != default || _videoFfmpegMediaSource == null) return;
+
+            _canvasWidth      = _videoFfmpegMediaSource.CurrentVideoStream.PixelWidth;
+            _canvasHeight     = _videoFfmpegMediaSource.CurrentVideoStream.PixelHeight;
+            _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
         }
         catch (Exception ex)
         {
@@ -183,9 +182,9 @@ public partial class LayeredBackgroundImage
                 NullifyMediaPlayerNativePointers();
             }
 
-            // ReSharper disable once ConstantConditionalAccessQualifier
-            Interlocked.Exchange(ref _videoPlayer,            null!)?.Dispose();
             Interlocked.Exchange(ref _videoFfmpegMediaSource, null)?.Dispose();
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            Interlocked.Exchange(ref _videoPlayer, null!)?.Dispose();
 
             DisposeRenderTarget(disposeRenderImageSource);
         }
@@ -197,9 +196,6 @@ public partial class LayeredBackgroundImage
         }
         finally
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
             Interlocked.Exchange(ref _isVideoInitialized, 0);
         }
     }

@@ -28,6 +28,7 @@
     <Page.Resources>
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+        <pages:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImagePathConverter" />
@@ -1098,6 +1099,7 @@
                     <c:NewPipsPager x:Name="MultiBackgroundPipsPager"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    IsEnabled="{Binding IsBackgroundLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
                                     ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
                                     ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
                                     NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"

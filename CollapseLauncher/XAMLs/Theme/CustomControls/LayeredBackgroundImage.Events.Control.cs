@@ -321,7 +321,7 @@ public partial class LayeredBackgroundImage
             {
                 value = TimeSpan.Zero;
             }
-            instance._videoPlayer.Position = value;
+            instance._videoPlayer?.Position = value;
         }
         catch (Exception ex)
         {

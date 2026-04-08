@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using WinRT;
 
@@ -34,7 +35,7 @@ namespace CollapseLauncher.Extension
         /// Check whether a WinRT object has been disposed.
         /// </summary>
         /// <returns><see langword="true"/> if object is already disposed. Otherwise, <see langword="false"/>.</returns>
-        internal static bool IsObjectDisposed(this IWinRTObject? winRtObject)
+        internal static bool IsObjectDisposed([NotNullWhen(false)] this IWinRTObject? winRtObject)
         {
             if (winRtObject == null)
             {
