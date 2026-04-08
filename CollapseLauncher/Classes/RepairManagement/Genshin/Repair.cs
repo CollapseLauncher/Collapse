@@ -20,6 +20,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 
+#nullable enable
 namespace CollapseLauncher
 {
     internal partial class GenshinRepair
@@ -45,7 +46,15 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
             // Get the Dispatcher Query
-            QueryProperty queryProperty = await GetCachedDispatcherQuery(downloadClient.GetHttpClient(), token);
+            QueryProperty? queryProperty = null;
+            try
+            {
+                queryProperty = await GetCachedDispatcherQuery(downloadClient.GetHttpClient(), token);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error has occurred while parsing Persistent Manifests! {ex}", LogType.Warning, true);
+            }
 
             // Iterate repair asset
             ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
@@ -96,7 +105,10 @@ namespace CollapseLauncher
                 }
             }
 
-            await SavePersistentRevision(queryProperty, token);
+            if (queryProperty != null)
+            {
+                await SavePersistentRevision(queryProperty, token);
+            }
 
             // Duplicate ctable.dat to ctable_streaming.dat
             string   streamingAssetsPath = Path.Combine(GamePath,            $"{ExecPrefix}_Data", "StreamingAssets");
@@ -156,7 +168,7 @@ namespace CollapseLauncher
                 if (isUseSophonDownload)
                 {
                     ReadOnlySpan<char> splittedPath = asset.AssetIndex.remoteName.TrimStart('\\');
-                    if (!SophonAssetDictRefLookup.TryGetValue(splittedPath, out SophonAsset downloadAsSophon))
+                    if (!SophonAssetDictRefLookup.TryGetValue(splittedPath, out SophonAsset? downloadAsSophon))
                     {
                         throw new InvalidOperationException($"Asset {splittedPath} is marked as \"SophonGeneric\" but it wasn't included in the manifest");
                     }
