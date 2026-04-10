@@ -449,8 +449,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "6.3.0",
-        "contentHash": "PwcF5yIzcKuhd/3BOxU3QHJA5/xYiuSNSaSpXi2kR3x7ONKel73xi49GfYvRg4mbMN1gRjxduqxQL6iRNNWqBA=="
+        "resolved": "6.3.1",
+        "contentHash": "EomIkD+OmI9xCupBNVmKYUbxLnhzP5kRFAuDY52nEHXbOLt327eC2kScmO6HntkT+LVI4k6RnP3RmYpTSKo2Pw=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -522,7 +522,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[6.3.0, )"
+          "Sentry": "[6.3.1, )"
         }
       },
       "hi3helper.enctool": {
