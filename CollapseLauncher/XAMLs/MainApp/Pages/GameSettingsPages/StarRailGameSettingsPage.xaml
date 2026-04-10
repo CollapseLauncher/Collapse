@@ -10,7 +10,6 @@
                            xmlns:helper="using:CollapseLauncher.Helper"
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                            xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
-                           CacheMode="BitmapCache"
                            Loaded="InitializeSettings"
                            NavigationCacheMode="Enabled"
                            mc:Ignorable="d">

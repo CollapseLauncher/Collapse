@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helper="using:CollapseLauncher.Helper"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             CacheMode="BitmapCache"
              Loaded="Control_Loaded"
              mc:Ignorable="d">
     <UserControl.Resources>

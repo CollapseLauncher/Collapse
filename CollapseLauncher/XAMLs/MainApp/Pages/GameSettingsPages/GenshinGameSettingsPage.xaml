@@ -12,7 +12,6 @@
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                            xmlns:static="using:CollapseLauncher.GameSettings.Genshin"
                            xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
-                           CacheMode="BitmapCache"
                            Loaded="InitializeSettings"
                            NavigationCacheMode="Enabled"
                            mc:Ignorable="d">

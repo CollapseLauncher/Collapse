@@ -10,7 +10,6 @@
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      CacheMode="BitmapCache"
       Loaded="InitializeLoaded"
       NavigationCacheMode="Disabled"
       Unloaded="Page_Unloaded"
