@@ -549,11 +549,11 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        Image_ImageOpened(sender, e);
         if (!parentGrid.Item2.IsVideoAutoplay) return;
 
         Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
         parentGrid.Item2.InitializeAndPlayVideoView();
+        Image_ImageOpened(sender, e);
     }
 
     private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)

@@ -163,6 +163,9 @@ namespace CollapseLauncher.Helper.Animation
 
                 switch (element)
                 {
+                    case Viewbox { Child: { } viewBoxContent }:
+                        viewBoxContent.EnableImplicitAnimation(true, easingFunction);
+                        break;
                     case Button { Content: UIElement buttonContent }:
                         buttonContent.EnableImplicitAnimation(true, easingFunction);
                         break;

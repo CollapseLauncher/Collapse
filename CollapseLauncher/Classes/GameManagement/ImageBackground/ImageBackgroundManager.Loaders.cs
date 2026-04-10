@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
 
@@ -240,10 +241,17 @@ public partial class ImageBackgroundManager
                                   bindingMode: BindingMode.OneWay,
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
-        layerElement.ImageLoaded += LayerElementOnLoaded;
+        layerElement.ImageLoaded       += LayerElementOnLoaded;
+        layerElement.CanvasSizeChanged += LayerElementCanvasSizeChanged;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
+    }
+
+    private void LayerElementCanvasSizeChanged(LayeredBackgroundImage layerElement, Size size)
+    {
+        CurrentElementWidth  = size.Width;
+        CurrentElementHeight = size.Height;
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
@@ -257,6 +265,10 @@ public partial class ImageBackgroundManager
             foreach (UIElement element in PresenterGrid?.Children.Where(element => element != lastElement) ?? [])
             {
                 PresenterGrid?.Children.Remove(element);
+                if (element is LayeredBackgroundImage asLayeredImage)
+                {
+                    asLayeredImage.CanvasSizeChanged -= LayerElementCanvasSizeChanged;
+                }
             }
         }
 

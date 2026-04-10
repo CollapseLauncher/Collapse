@@ -7,6 +7,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.SentryHelper;
+using Microsoft.UI.Xaml;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -20,6 +21,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using WinRT;
 using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -78,6 +80,19 @@ namespace CollapseLauncher.Helper.Metadata
         Sophon = Legacy,
         HoYoPlay,
         Plugin
+    }
+
+    [GeneratedBindableCustomProperty]
+    public partial class GameEventButtonPosition
+    {
+        [JsonConverter(typeof(JsonStringEnumConverter<HorizontalAlignment>))]
+        public HorizontalAlignment HorizontalAlignment { get; init; } = HorizontalAlignment.Left;
+
+        [JsonConverter(typeof(JsonStringEnumConverter<VerticalAlignment>))]
+        public VerticalAlignment VerticalAlignment { get; init; } = VerticalAlignment.Top;
+
+        public Thickness Position { get; init; } = new(256, 596, 0, 0);
+        public double    VSize    { get; init; } = 80d;
     }
 
     public class GameInstallFileInfo
@@ -538,6 +553,8 @@ namespace CollapseLauncher.Helper.Metadata
         public DateTime LastModifiedFile { get; set; }
 
         public GameInstallFileInfo? GameInstallFileInfo { get; init; }
+
+        public GameEventButtonPosition GameEventButtonPosition { get => field ??= new GameEventButtonPosition(); init; }
 
         #endregion
 

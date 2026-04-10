@@ -19,7 +19,6 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -143,8 +142,6 @@ namespace CollapseLauncher.Pages
             barWidth = (consoleWidth - 22) / 2 - 1;
         }
 
-        private static bool NeedShowEventIcon => GetAppConfigValue("ShowEventsPanel").ToBool();
-
         private void ReturnToHomePage()
         {
             if (!(m_mainPage?.TryGetCurrentPageObject(out object typeOfPage) ?? false) ||
@@ -178,8 +175,6 @@ namespace CollapseLauncher.Pages
                 if (!DbConfig.DbEnabled ||
                     !(CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false))
                     SyncDbPlaytimeBtn.IsEnabled = false;
-
-                TryLoadEventPanelImage();
 
                 if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
@@ -334,30 +329,6 @@ namespace CollapseLauncher.Pages
 
             _ = GamePropertyVault.AttachNotificationForCurrentGame(CurrentPresetConfig);
         }
-        #endregion
-
-        #region EventPanel
-
-        private static IValueConverter ImageUrlCacheConverter;
-
-        private void TryLoadEventPanelImage()
-        {
-            // Get the url and article image path
-            // Set event icon props
-            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-
-            ImageEventImg.BindProperty(GameBackgroundData,
-                                       nameof(HypLauncherBackgroundList.FeaturedEventIconUrl),
-                                       Image.SourceProperty,
-                                       BindingMode.OneWay,
-                                       ImageUrlCacheConverter ??= new UrlToCachedImagePathConverter());
-
-            ImageEventImg.BindProperty(GameBackgroundData,
-                                       nameof(HypLauncherBackgroundList.FeaturedEventIconClickLink),
-                                       TagProperty,
-                                       BindingMode.OneWay);
-        }
-
         #endregion
 
         #region Carousel
@@ -597,13 +568,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Event Image
-        private async void HideImageEventImg(bool hide)
+        private static void HideImageEventImg(bool hide)
         {
-            //if (!NeedShowEventIcon) return;
-
-            if (!hide)
-                ImageEventImgGrid.Visibility = Visibility.Visible;
-
             Storyboard      storyboard       = new();
             DoubleAnimation OpacityAnimation = new()
             {
@@ -612,15 +578,11 @@ namespace CollapseLauncher.Pages
                 Duration = new Duration(TimeSpan.FromSeconds(0.10))
             };
 
-            Storyboard.SetTarget(OpacityAnimation, ImageEventImgGrid);
+            Storyboard.SetTarget(OpacityAnimation, m_mainPage?.ImageEventImg);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
 
             storyboard.Begin();
-
-            await Task.Delay(100);
-
-            ImageEventImgGrid.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
         #endregion
 
@@ -673,14 +635,6 @@ namespace CollapseLauncher.Pages
 
             // Open the URL and spawn WebView2 window
             SpawnWebView2.SpawnWebView2Window(tagProperty[0], Content);
-        }
-
-        private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
-        {
-            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
-            object ImageTag = ((Image)sender).Tag;
-            if (ImageTag == null) return;
-            SpawnWebView2.SpawnWebView2Window((string)ImageTag, Content);
         }
         #endregion
 
