@@ -516,7 +516,8 @@ public partial class ImageBackgroundManager
                 OriginBackgroundImagePath = imagePath,
                 BackgroundImagePath       = resultBackgroundPath,
                 ForceReload               = true, // Request force reload (skip cache)
-                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath)
+                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath),
+                IsCustom                  = true
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
