@@ -3,7 +3,7 @@
 :: set Toolchain=-T ClangCL
 set Toolchain=-T ClangCL
 :: Either can be Release (/O2 /Ob2), MinSizeRel (/O1 /Ob1) or RelWithDebInfo (/O2 /Ob1 /Zi)
-set BuildType=MinSizeRel
+set BuildType=Release
 set OutputDir=%~dp0..\
 set RuntimeLibrary=MultiThreaded
 
