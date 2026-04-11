@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -56,15 +57,19 @@ namespace CollapseLauncher.InstallManager.StarRail
             List<T> listFiltered = [];
             foreach (T patchAsset in itemList)
             {
-                if (itemPathSelector(patchAsset) is not {} filePath)
+                if (itemPathSelector(patchAsset) is not { } filePath)
                 {
                     listFiltered.Add(patchAsset);
                     continue;
                 }
 
+                ConverterTool.NormalizePathInplaceNoTrim(filePath);
+
                 int indexOfAny = filePath.IndexOfAny(searchValues);
                 if (indexOfAny >= 0)
                 {
+                    Logger.LogWriteLine($"[StarRailInstall::FilterAssetList] Asset: {patchAsset} is ignored due to marked as deleted asset.",
+                                        writeToLog: true);
                     continue;
                 }
 
@@ -90,12 +95,9 @@ namespace CollapseLauncher.InstallManager.StarRail
                 line = line[(firstIndexOf + first.Length)..];
                 int endIndexOf = line.IndexOf(end);
 
-                if (endIndexOf <= 0)
-                {
-                    return ReadOnlySpan<char>.Empty;
-                }
-
-                return line[..endIndexOf];
+                return endIndexOf <= 0
+                    ? ReadOnlySpan<char>.Empty
+                    : line[..endIndexOf];
             }
         }
 

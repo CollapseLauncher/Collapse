@@ -58,15 +58,6 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private readonly SearchValues<string> _unusedSearchValues = SearchValues.Create([
-            "output_log",
-            "Crashes",
-            "Verify.txt",
-            "APM",
-            "FBData",
-            "asb.dat"
-        ], StringComparison.OrdinalIgnoreCase);
-
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
             // Directory info and if the directory doesn't exist, return
@@ -76,13 +67,25 @@ namespace CollapseLauncher
                 return;
             }
 
+            SearchValues<string> unusedSearchValues = SearchValues
+               .Create(GameVersionManager.GamePreset.GameInstallFileInfo?.CacheUpdateUnusedFilesIgnoreList
+                    ?? [
+                           "output_log",
+                           "Crashes",
+                           "Verify.txt",
+                           "APM",
+                           "FBData",
+                           "asb.dat",
+                           "MiHoYoSDK.log"
+                       ], StringComparison.OrdinalIgnoreCase);
+
             // Iterate the file contained in the _gamePath
             foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories)
                 .EnumerateNoReadOnly())
             {
                 ReadOnlySpan<char> filePath = fileInfo.FullName;
 
-                if (filePath.ContainsAny(_unusedSearchValues)
+                if (filePath.ContainsAny(unusedSearchValues)
                  || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
                     continue;

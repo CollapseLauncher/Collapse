@@ -2,19 +2,15 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.Cache;
+using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Sophon;
-using Hi3Helper.Sophon.Structs;
 using Microsoft.Win32;
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -56,7 +52,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game AssetBundle
     private async Task FetchAssetFromGameAssetBundle(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        PresetConfig gamePresetConfig = GameVersionManager!.GamePreset;
+        PresetConfig gamePresetConfig = GameVersionManager.GamePreset;
         FinalizeBasicAssetsPath(assetIndex);
 
         // Get ignored assets from registry
@@ -87,6 +83,7 @@ internal partial class HonkaiRepairV2
 
         #region Fetch Video Assets from AssetBundle
         List<FilePropertiesRemote> assetListFromVideo = [];
+        List<FilePropertiesRemote> assetListFromVideoOnlyDownloadable = [];
         Task assetListFromVideoTask =
             HttpClientAssetBundle
                .GetVideoAssetListAsync(gamePresetConfig,
@@ -97,6 +94,7 @@ internal partial class HonkaiRepairV2
                .GetResultFromAction(result =>
                                     {
                                         assetListFromVideo.AddRange(result);
+                                        assetListFromVideoOnlyDownloadable.AddRange(result.Where(x => ((KianaCgMetadata)x.AssociatedObject).DownloadMode == CGDownloadMode.DownloadTipOnce));
                                         FinalizeVideoAssetsPath(assetListFromVideo);
                                     });
         #endregion
@@ -148,9 +146,18 @@ internal partial class HonkaiRepairV2
                            assetListFromBlockTask);
         #endregion
 
+        #region Remove Video Assets from base
+
+        if (!IsMainAssetOnlyMode && !IsCacheMode)
+        {
+            assetIndex.RemoveUnlistedVideoAssetFromList(assetListFromVideo);
+        }
+
+        #endregion
+
         // Finalize the asset index list by overriding it from above additional sources.
         FinalizeBaseAssetIndex(assetIndex,
-                               assetListFromVideo,
+                               assetListFromVideoOnlyDownloadable,
                                assetListFromAudio,
                                assetListFromBlock);
     }
@@ -159,6 +166,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game Cache Files
     private static Task FetchAssetFromGameCacheFiles(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
+        // TODO: Use it for altering assets for Cache Update mode
         return Task.CompletedTask;
     }
     #endregion
@@ -280,7 +288,7 @@ internal partial class HonkaiRepairV2
         {
             string relativePath = Path.Combine(AssetBundleExtension.RelativePathVideo, asset.N);
             ConverterTool.NormalizePathInplaceNoTrim(relativePath);
-            if (asset.AssociatedObject is CGMetadata { InStreamingAssets: false })
+            if (asset.AssociatedObject is KianaCgMetadata { DownloadMode: CGDownloadMode.DownloadTipOnce })
             {
                 versionStreamWriter.WriteLine($"Video/{asset.N}\t1");
             }
@@ -379,14 +387,14 @@ internal partial class HonkaiRepairV2
         CancellationToken          token)
     {
         // Block assets replacement and add
-        HashSet<string> oldBlockNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> oldBlockNames = new(StringComparer.OrdinalIgnoreCase);
         foreach (FilePropertiesRemote asset in targetAssetList)
         {
             string relativePath = Path.Combine(AssetBundleExtension.RelativePathBlock, asset.N);
             asset.N = relativePath;
 
-            if (asset.BlockPatchInfo is {} patchInfo &&
-                patchInfo.PatchPairs.FirstOrDefault() is {} patchPair)
+            if (asset.BlockPatchInfo is { } patchInfo &&
+                patchInfo.PatchPairs.FirstOrDefault() is { } patchPair)
             {
                 oldBlockNames.Add(Path.Combine(AssetBundleExtension.RelativePathBlock, patchPair.OldName));
             }
