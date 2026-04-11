@@ -3,7 +3,9 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -49,6 +51,39 @@ internal partial class HonkaiRepairV2
                                         token)).IsHashMatched;
     }
 
+    /// <summary>
+    /// Check actual remote size asset from the actual URL.<br/>
+    /// <br/>
+    /// Note: This method only works on <see cref="FileType.Video"/> asset type with URL defined.
+    /// Otherwise, the method will immediately returns <see langword="true"/>.
+    /// </summary>
+    private async ValueTask<bool> TryIsAssetRemoteSizeEquals(
+        FilePropertiesRemote asset,
+        FileInfo             fileInfo,
+        bool                 useFastCheck,
+        CancellationToken    token = default)
+    {
+        if (!fileInfo.Exists)
+        {
+            return false;
+        }
+
+        if (asset.FT != FileType.Video ||
+            string.IsNullOrEmpty(asset.RN) ||
+            useFastCheck)
+        {
+            return true;
+        }
+
+        UrlStatus status = await HttpClientAssetBundle.GetCachedUrlStatus(asset.RN, token);
+        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyways
+        {
+            return true;
+        }
+
+        return fileInfo.Exists && status.FileSize == fileInfo.Length;
+    }
+
     private async Task<(bool IsHashMatched, int HashSize)> IsHashMatchedAuto(
         FilePropertiesRemote asset,
         byte[]               hashBuffer,
@@ -78,6 +113,12 @@ internal partial class HonkaiRepairV2
 
         if (!isAssetExist || (assetFileInfo.Length != asset.S && !isSkipSizeCheck))
         {
+            // Try alternate check for video
+            if (await TryIsAssetRemoteSizeEquals(asset, assetFileInfo, useFastCheck, token))
+            {
+                return (true, hashSize);
+            }
+
             Interlocked.Add(ref ProgressAllSizeCurrent, asset.S);
             if (addAssetIfBroken)
             {

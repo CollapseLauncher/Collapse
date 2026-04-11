@@ -28,6 +28,7 @@
     <Page.Resources>
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+        <pages:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImagePathConverter" />
@@ -169,21 +170,6 @@
               Background="Transparent"
               ContextFlyout="{StaticResource BackgroundContextMenuFlyout}"
               DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}" />
-        <Grid x:Name="ImageEventImgGrid"
-              Grid.Row="{x:Bind CurrentBannerIconRow}"
-              Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
-              Grid.Column="{x:Bind CurrentBannerIconColumn}"
-              Grid.ColumnSpan="{x:Bind pages:HomePage.CurrentBannerIconColumnSpan}"
-              Height="{x:Bind CurrentBannerIconHeight}"
-              Margin="{x:Bind CurrentBannerIconMargin}"
-              HorizontalAlignment="{x:Bind CurrentBannerIconHorizontalAlign}"
-              VerticalAlignment="{x:Bind CurrentBannerIconVerticalAlign}"
-              Visibility="Collapsed">
-            <Grid x:Name="ImageEventImgShadow" />
-            <Image x:Name="ImageEventImg"
-                   extension:UIElementExtensions.CursorType="Hand"
-                   PointerPressed="ClickImageEventSpriteLink" />
-        </Grid>
         <InfoBar x:Name="PreloadDialogBox"
                  Title=""
                  Grid.Row="0"
@@ -1098,6 +1084,7 @@
                     <c:NewPipsPager x:Name="MultiBackgroundPipsPager"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    IsEnabled="{Binding IsBackgroundLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
                                     ItemIndex="{Binding CurrentSelectedBackgroundIndex, Mode=TwoWay}"
                                     ItemsCount="{Binding CurrentBackgroundCount, Mode=OneWay}"
                                     NextButtonStyle="{ThemeResource NewPipsPagerNextPageButtonMediumStyle}"

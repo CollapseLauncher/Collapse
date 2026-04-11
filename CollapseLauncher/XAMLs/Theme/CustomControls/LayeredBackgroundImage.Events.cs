@@ -2,8 +2,11 @@
 using CollapseLauncher.Helper;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Windows.Foundation;
@@ -13,6 +16,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 public partial class LayeredBackgroundImage
 {
     public event Action<LayeredBackgroundImage>? ImageLoaded;
+    public event Action<LayeredBackgroundImage, Size>? CanvasSizeChanged;
 
     #region Fields
 
@@ -381,9 +385,28 @@ public partial class LayeredBackgroundImage
         {
             ImageLoaded?.Invoke(this);
         }
+
+        // Update canvas width/height property
+        UIElement? canvasElement = _foregroundGrid.Children.LastOrDefault() // Favor foreground first
+                               ?? _backgroundGrid.Children.LastOrDefault();
+
+        Size size = default;
+        if (canvasElement is Image image)
+        {
+            if (image.Source is BitmapSource asBitmapSource)
+            {
+                size = new Size(asBitmapSource.PixelWidth, asBitmapSource.PixelHeight);
+            }
+            else
+            {
+                size = image.RenderSize;
+            }
+        }
+
+        SetValue(CanvasWidthProperty,  size.Width);
+        SetValue(CanvasHeightProperty, size.Height);
+        CanvasSizeChanged?.Invoke(this, size);
     }
-
-
 
     #endregion
 

@@ -49,9 +49,9 @@ public partial class LayeredBackgroundImage
 
     #region Direct Function Table Call Delegates
 
-    private static unsafe delegate* unmanaged[Stdcall]<nint, uint, in Rect, out nint, int> _functionTableBeginDraw;
-    private static unsafe delegate* unmanaged[Stdcall]<nint, nint, in Rect, int>           _functionTableDrawImage;
-    private static unsafe delegate* unmanaged[Stdcall]<nint, int>                          _functionTableDispose;
+    private static unsafe delegate* unmanaged[Stdcall]<nint, uint, ref readonly Rect, out nint, int> _functionTableBeginDraw;
+    private static unsafe delegate* unmanaged[Stdcall]<nint, nint, ref readonly Rect, int>           _functionTableDrawImage;
+    private static unsafe delegate* unmanaged[Stdcall]<nint, int>                                    _functionTableDispose;
 
     #endregion
 
@@ -76,7 +76,7 @@ public partial class LayeredBackgroundImage
     private int  _canvasHeight;
     private Rect _canvasRenderSize;
 
-    private MediaPlayer              _videoPlayer    = null!;
+    private MediaPlayer?             _videoPlayer;
     private nint                     _videoPlayerPtr = nint.Zero;
     private CancellationTokenSource? _videoPlayerFadeCts;
     private FFmpegMediaSource?       _videoFfmpegMediaSource;
@@ -193,7 +193,7 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            _videoPlayer.CopyFrameToVideoSurface(_canvasRenderTarget);
+            _videoPlayer?.CopyFrameToVideoSurface(_canvasRenderTarget);
             ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
             ds?.DrawImage(_canvasRenderTarget);
         }
@@ -450,7 +450,7 @@ public partial class LayeredBackgroundImage
                 Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
             });
             // Set events
-            DispatcherQueue.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
+            DispatcherQueue?.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionOnPause?.Invoke();
 
             if (_videoPlayer == null!)
@@ -516,8 +516,8 @@ public partial class LayeredBackgroundImage
                                double            volumeFadeResolutionMs = 10d,
                                CancellationToken token                  = default)
     {
-        _videoPlayer.Volume = 0;
-        _videoPlayer.Play();
+        _videoPlayer?.Volume = 0;
+        _videoPlayer?.Play();
         SetValue(IsVideoPlayProperty, true);
 
         actionAfterPause?.Invoke();
@@ -535,7 +535,7 @@ public partial class LayeredBackgroundImage
 
         void ActionAfterPauseInject()
         {
-            _videoPlayer.Pause();
+            _videoPlayer?.Pause();
             DispatcherQueueExtensions.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionAfterPause?.Invoke();
         }

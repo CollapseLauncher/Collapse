@@ -133,46 +133,50 @@
                     <Run FontWeight="Normal"
                          Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2Subtitle2_5}" />
                 </TextBlock>
-                <ComboBox x:Name="GameTitleComboBox"
-                          extension:UIElementExtensions.CursorType="Hand"
-                          PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBox}"
-                          SelectionChanged="GameCategorySelect_SelectionChanged">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="x:String">
-                            <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <ComboBox x:Name="GameRegionComboBox"
-                          Width="192"
-                          Margin="16,0,0,0"
-                          extension:UIElementExtensions.CursorType="Hand"
-                          CornerRadius="16"
-                          IsEnabled="False"
-                          PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBoxRegion}"
-                          SelectionChanged="GameSelect_SelectionChanged">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="metadata:PresetConfig">
-                            <StackPanel Orientation="Horizontal"
-                                        Spacing="4">
-                                <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}" />
-                                <Grid Padding="4,0"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      Background="{ThemeResource TextBoxBackgroundThemeBrush}"
-                                      CornerRadius="4"
-                                      Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
-                                    <TextBlock HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               FontSize="10"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource TextBoxForegroundThemeBrush}"
-                                               Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}" />
-                                </Grid>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox x:Name="GameTitleComboBox"
+                              extension:UIElementExtensions.CursorType="Hand"
+                              Width="192"
+                              CornerRadius="16"
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBox}"
+                              SelectionChanged="GameCategorySelect_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ContentPresenter Content="{Binding Converter={StaticResource GameTitleComboBoxTranslatedConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox x:Name="GameRegionComboBox"
+                              Width="192"
+                              Margin="16,0,0,0"
+                              extension:UIElementExtensions.CursorType="Hand"
+                              CornerRadius="16"
+                              IsEnabled="False"
+                              PlaceholderText="{x:Bind helper:Locale.Current.Lang._StartupPage.Pg2ComboBoxRegion}"
+                              SelectionChanged="GameSelect_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="metadata:PresetConfig">
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="4">
+                                    <ContentPresenter Content="{Binding Converter={StaticResource GameRegionComboBoxTranslatedConverter}}" />
+                                    <Grid Padding="4,0"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Background="{ThemeResource TextBoxBackgroundThemeBrush}"
+                                          CornerRadius="4"
+                                          Visibility="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource GameChannelToVisibilityConverter}}">
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource TextBoxForegroundThemeBrush}"
+                                                   Text="{x:Bind GameChannel, Mode=OneWay, Converter={StaticResource StringUppercaseConverter}}" />
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
         </Grid>
         <Grid x:Name="Overlay"

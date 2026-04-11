@@ -5,10 +5,11 @@
 ##### Автор GI фона с Нахидой: [Rafa](https://www.pixiv.net/en/users/3970196)
 
 [![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
-[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
-[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
-[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
+[![de](https://img.shields.io/badge/README-de-red.svg)](README.de-de.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
 [![zh](https://img.shields.io/badge/README-zh-red.svg)](README.zh-cn.md)
 

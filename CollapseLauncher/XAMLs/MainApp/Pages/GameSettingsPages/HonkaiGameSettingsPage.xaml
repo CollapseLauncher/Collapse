@@ -9,7 +9,6 @@
                            xmlns:extension="using:CollapseLauncher.Extension"
                            xmlns:helper="using:CollapseLauncher.Helper"
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                           CacheMode="BitmapCache"
                            Loaded="InitializeSettings"
                            NavigationCacheMode="Enabled"
                            mc:Ignorable="d">

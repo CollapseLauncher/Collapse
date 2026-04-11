@@ -98,17 +98,18 @@ public partial class ImageBackgroundManager
                 return false;
             }
 
-            // -- If custom FFmpeg path is set but FFmpeg is not available,
-            //    Try to resolve the symbolic link path again.
-            // -- Check for custom FFmpeg path availability first. If not available, skip.
-            result = (IsFFmpegAvailable(customFFmpegDirPath, out exception) &&
-                      // -- Re-link FFmpeg symbolic link
-                      TryLinkFFmpegLibrary(customFFmpegDirPath, curDir, out exception)) ||
-                     // -- If custom FFmpeg path is not avail, then try to find one from EnvVar (this might be a bit expensive).
-                     //    If found, the GlobalCustomFFmpegPath will be updated to the found path.
-                     (TryFindFFmpegInstallFromEnvVar(out string? envVarPath, out exception) && TryLinkFFmpegLibrary(envVarPath, curDir, out exception));
-            
-            return result;
+            // -- 1. Check from custom path first. If it exists, then pass.
+            if (!string.IsNullOrEmpty(customFFmpegDirPath) &&
+                IsFFmpegAvailable(customFFmpegDirPath, out exception) &&
+                TryLinkFFmpegLibrary(customFFmpegDirPath, curDir, out exception))
+            {
+                return result = true;
+            }
+
+            // -- 2. Find one from environment variables. If it exists, then pass.
+            //       Otherwise, return false.
+            return result = TryFindFFmpegInstallFromEnvVar(out string? envVarPath, out exception) &&
+                            TryLinkFFmpegLibrary(envVarPath, curDir, out exception);
         }
         finally
         {
@@ -180,7 +181,6 @@ public partial class ImageBackgroundManager
         string dllPathAvfilter   = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
         string dllPathAvformat   = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
         string dllPathAvutil     = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
-        string dllPathPostproc   = Path.Combine(checkOnDirectory, Fields.DllNamePostproc);
         string dllPathSwresample = Path.Combine(checkOnDirectory, Fields.DllNameSwresample);
         string dllPathSwscale    = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
 
@@ -189,7 +189,6 @@ public partial class ImageBackgroundManager
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil,     out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathPostproc,   out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwresample, out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
     }
@@ -201,7 +200,6 @@ public partial class ImageBackgroundManager
         Fields.DllNameAvfilter,
         Fields.DllNameAvformat,
         Fields.DllNameAvutil,
-        Fields.DllNamePostproc,
         Fields.DllNameSwresample,
         Fields.DllNameSwscale
     ];
@@ -262,14 +260,24 @@ public partial class ImageBackgroundManager
         string dllPathSwresample = Path.Combine(sourceDir, Fields.DllNameSwresample);
         string dllPathSwscale    = Path.Combine(sourceDir, Fields.DllNameSwscale);
 
-        return CreateSymbolLink(dllPathAvcodec,    targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvdevice,   targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvfilter,   targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvformat,   targetDir, out exception) &&
-               CreateSymbolLink(dllPathAvutil,     targetDir, out exception) &&
-               CreateSymbolLink(dllPathPostproc,   targetDir, out exception) &&
-               CreateSymbolLink(dllPathSwresample, targetDir, out exception) &&
-               CreateSymbolLink(dllPathSwscale,    targetDir, out exception);
+        bool result =
+            CreateSymbolLink(dllPathAvcodec,    targetDir, out exception) &&
+            CreateSymbolLink(dllPathAvdevice,   targetDir, out exception) &&
+            CreateSymbolLink(dllPathAvfilter,   targetDir, out exception) &&
+            CreateSymbolLink(dllPathAvformat,   targetDir, out exception) &&
+            CreateSymbolLink(dllPathAvutil,     targetDir, out exception) &&
+            CreateSymbolLink(dllPathSwresample, targetDir, out exception) &&
+            CreateSymbolLink(dllPathSwscale,    targetDir, out exception);
+
+        // Additionally, link postproc if it exists.
+        // Since some non-free/GPL custom build (if used by the user) still requires postproc library to exist if enabled on build.
+        // Without it, some build might fail to run.
+        if (result && FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathPostproc, out string? resolvedOptDllPostproc, out exception))
+        {
+            return result && CreateSymbolLink(resolvedOptDllPostproc, targetDir, out exception);
+        }
+
+        return result;
 
         static bool CreateSymbolLink(string filePath,
                                      string targetDirectory,

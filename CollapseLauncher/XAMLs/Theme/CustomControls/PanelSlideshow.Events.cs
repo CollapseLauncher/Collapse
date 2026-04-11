@@ -32,9 +32,9 @@ public partial class PanelSlideshow
 
     private void Items_OnChange(DependencyPropertyChangedEventArgs e)
     {
-        Theme.ManagedUIElementList? oldList = e.OldValue as Theme.ManagedUIElementList;
-        Theme.ManagedUIElementList? newList = e.NewValue as Theme.ManagedUIElementList;
-        ItemsChanged?.Invoke(this, new ChangedObjectItemArgs<Theme.ManagedUIElementList>(oldList, newList));
+        ManagedUIElementList? oldList = e.OldValue as ManagedUIElementList;
+        ManagedUIElementList? newList = e.NewValue as ManagedUIElementList;
+        ItemsChanged?.Invoke(this, new ChangedObjectItemArgs<ManagedUIElementList>(oldList, newList));
     }
 
     private static void ItemIndex_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)

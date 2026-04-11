@@ -4,6 +4,8 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
@@ -23,10 +25,12 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
@@ -34,6 +38,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI;
+using WinRT;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable StringLiteralTypo
@@ -43,8 +48,22 @@ using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 #nullable enable
 namespace CollapseLauncher
 {
-    public partial class MainPage
+    [GeneratedBindableCustomProperty]
+    public partial class MainPage : INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // ReSharper disable once UnusedMember.Local
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
         #region Properties
         private bool _lockRegionChangeBtn;
         private bool _disableInstantRegionChange;
@@ -57,6 +76,26 @@ namespace CollapseLauncher
         internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
         internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
         internal ImageBackgroundManager CurrentBackgroundManager => ImageBackgroundManager.Shared;
+
+        public HypLauncherBackgroundList? CurrentGameBackgroundData
+        {
+            get
+            {
+                ILauncherApi?              api  = CurrentPresetConfig?.GameLauncherApi;
+                HypLauncherBackgroundList? data = api?.LauncherGameBackground?.Data;
+                return data;
+            }
+        }
+
+        public bool NeedShowEventIcon
+        {
+            get => GetAppConfigValue("ShowEventsPanel");
+            set
+            {
+                SetAndSaveConfigValue("ShowEventsPanel", value);
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -80,6 +119,7 @@ namespace CollapseLauncher
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBGRegionGrid, GridBGNotifBtn, NotificationPanelClearAllGrid);
+                ImageEventImgViewBox.EnableElementVisibilityAnimation();
             }
             catch (Exception ex)
             {
@@ -250,20 +290,7 @@ namespace CollapseLauncher
         private void MainFrameChangerInvoker_FrameEvent(object? sender, MainFrameProperties e)
         {
             InnerLauncherConfig.m_appCurrentFrameName = e.FrameTo.Name;
-
-            int previousStackLimit = LauncherFrame.CacheSize;
-            if (e.RequireCacheReset)
-            {
-                LauncherFrame.BackStack.Clear();
-                LauncherFrame.CacheSize            = 0;
-                NavigationViewControl.SelectedItem = null;
-            }
-
             TryNavigateFrom(e.FrameTo, e.Transition, e.RequireCacheReset);
-            if (e.RequireCacheReset)
-            {
-                LauncherFrame.CacheSize = previousStackLimit;
-            }
         }
 
         private void MainFrameChangerInvoker_FrameGoBackEvent(object? sender, EventArgs e)
@@ -881,5 +908,17 @@ namespace CollapseLauncher
             }
         }
         #endregion
+
+        private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement asUiElement ||
+                !e.GetCurrentPoint(asUiElement).Properties.IsLeftButtonPressed ||
+                asUiElement.Tag is not string url)
+            {
+                return;
+            }
+
+            SpawnWebView2.SpawnWebView2Window(url, Content);
+        }
     }
 }

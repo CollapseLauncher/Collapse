@@ -560,7 +560,7 @@
     "VideoBackground_FFmpegInstallNote": "注",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcherはバージョン7.xのFFmpegのみをサポートしています。その他バージョンのFFmpegは現在サポートされていません！",
     "VideoBackground_FFmpegInstallLockedTitle": "FFmpegの変更がロックされています",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、再度\"新規インストールまたは既存インストールを参照\"ボタンを押してください。",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、設定を変更し直してください。",
 
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
@@ -1264,6 +1264,18 @@
     "PostInstallBehaviour_EnumShutdown": "PCをシャットダウン",
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "視差エフェクトのピクセル数（最小：{0}px、最大： {1}px）",
+
+    "StartupFFmpegInstallDialogTitle": "FFmpegのインストールが必要です",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcherで動画背景を正常に再生するためには、FFmpeg（バージョン7.x）のインストールが必要です。\"",
+    "StartupFFmpegInstallDialogSubtitle2": "\"をクリックしてFFmpegを新規インストールするか、\"",
+    "StartupFFmpegInstallDialogSubtitle3": "\"をクリックしてWindows Media Foundationデコーダーを使用し続けるか選んでください。",
+    "StartupFFmpegInstallDialogSubtitle4": "注：",
+    "StartupFFmpegInstallDialogSubtitle5": "Windows Media Foundationデコーダーでサポートされていない色空間タイプが原因で、特定のゲームを選択したとき、動画背景の表示が乱れる場合があります。動画背景のデコーダーを後からFFmpegに変更したい場合は、\"",
+    "StartupFFmpegInstallDialogSubtitle6": "\"のページから”",
+    "StartupFFmpegInstallDialogSubtitle7": "\"のセクションを参照して、FFmpegをインストールしてください。",
+    "StartupFFmpegInstallDialogInstallBtn": "FFmpegをインストールして使用",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "ビルトインデコーダーを使う",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "今後、FFmpegのインストールを要求しない",
 
     "Media_ExtNotSupported1": "申し訳ありませんが、以下の拡張子の背景画像/動画ファイルはサポートされていません。",
     "Media_ExtNotSupported2": "ファイルのパス/URL：{0}",

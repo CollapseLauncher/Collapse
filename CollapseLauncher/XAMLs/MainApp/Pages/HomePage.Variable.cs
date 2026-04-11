@@ -121,6 +121,7 @@ public sealed partial class HomePage
         {
             SetAndSaveConfigValue("ShowEventsPanel", value);
             HideImageCarousel(!value);
+            InnerLauncherConfig.m_mainPage?.NeedShowEventIcon = value;
         }
     }
 

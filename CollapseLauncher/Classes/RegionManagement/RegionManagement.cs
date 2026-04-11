@@ -20,10 +20,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 
+#nullable enable
 namespace CollapseLauncher
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -32,8 +32,10 @@ namespace CollapseLauncher
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
     public sealed partial class MainPage
     {
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private bool               IsLoadRegionComplete;
+        public  GamePresetProperty? CurrentGameProperty { get; set; }
+        private bool                IsLoadRegionComplete;
+
+        public PresetConfig? CurrentPresetConfig => CurrentGameProperty?.GamePreset;
 
         private static string RegionToChangeName => MetadataHelper.GetCurrentTranslatedTitleRegion();
 
@@ -53,13 +55,13 @@ namespace CollapseLauncher
             
             CancellationTokenSourceWrapper tokenSource = new();
 
-            string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
-            bool runResult = await preset.GameLauncherApi
+            string regionToChangeName = $"{preset.GameLauncherApi?.GameNameTranslation} - {preset.GameLauncherApi?.GameRegionTranslation}";
+            bool runResult = await (preset.GameLauncherApi?
                                          .LoadAsync(BeforeLoadRoutine,
                                                     AfterLoadRoutine,
                                                     ActionOnTimeOutRetry,
                                                     OnErrorRoutine,
-                                                    tokenSource.Token);
+                                                    tokenSource.Token) ?? ValueTask.FromResult(false));
             
             RegionLoadingStatus.Remove((gameName, gameRegion));
             return runResult;
@@ -127,6 +129,12 @@ namespace CollapseLauncher
                                                              preset.GameLauncherApi.LauncherGameBackground,
                                                              presenterGrid: BackgroundPresenterGrid,
                                                              token: token);
+
+                    DispatcherQueueExtensions.TryEnqueue(() =>
+                    {
+                        OnPropertyChanged(nameof(CurrentPresetConfig));
+                        OnPropertyChanged(nameof(CurrentGameBackgroundData));
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -182,7 +190,7 @@ namespace CollapseLauncher
 
         private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)
         {
-            if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig preset))
+            if (!MetadataHelper.TryGetGameConfig(gameName, gameRegion, out PresetConfig? preset))
             {
                 return;
             }
@@ -205,12 +213,12 @@ namespace CollapseLauncher
 
             // Load region property (and potentially, cached one)
             GamePropertyVault.RegisterGameProperty(this,
-                                                   preset.GameLauncherApi,
+                                                   preset.GameLauncherApi!,
                                                    gameName,
                                                    gameRegion);
 
             // Spawn Region Notification
-            _ = SpawnRegionNotification(preset.ProfileName);
+            _ = SpawnRegionNotification(preset.ProfileName ?? "");
         }
 
         private void DisposeAllPageStatics()
@@ -234,7 +242,7 @@ namespace CollapseLauncher
                     await Task.Delay(250);
                 }
 
-                if (NotificationData.RegionPush == null) return;
+                if (NotificationData?.RegionPush == null) return;
                 List<NotificationProp> regionPushCopy = new(NotificationData.RegionPush);
 
                 foreach (NotificationProp Entry in regionPushCopy)
@@ -293,7 +301,7 @@ namespace CollapseLauncher
         {
             try
             {
-                (sender as Button).IsEnabled = false;
+                (sender as Button)?.IsEnabled = false;
                 if (!IsLoadRegionComplete)
                 {
                     return;
@@ -396,7 +404,7 @@ namespace CollapseLauncher
 
             // Start region loading
             _ = ShowAsyncLoadingTimedOutPill();
-            if (!await LoadRegionFromCurrentConfigV2(gameRegion, gameTitle, gameRegion.ZoneName))
+            if (!await LoadRegionFromCurrentConfigV2(gameRegion, gameTitle, gameRegion.ZoneName ?? ""))
             {
                 return false;
             }
@@ -428,7 +436,7 @@ namespace CollapseLauncher
                 LauncherFrame.BackStack.Clear();
             }
 
-            (sender as Button).IsEnabled = !IsHide;
+            (sender as Button)?.IsEnabled = !IsHide;
         }
 
         private async Task ShowAsyncLoadingTimedOutPill(CancellationToken token = default)
@@ -445,7 +453,7 @@ namespace CollapseLauncher
                 if (!IsLoadRegionComplete &&
                     !token.IsCancellationRequested)
                 {
-                    InvokeLoadingRegionPopup(true, Locale.Current.Lang?._MainPage?.RegionLoadingTitle, RegionToChangeName);
+                    InvokeLoadingRegionPopup(true, Locale.Current.Lang?._MainPage?.RegionLoadingTitle ?? "", RegionToChangeName);
                 }
             }
             catch (Exception ex)
@@ -455,7 +463,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Message = null)
+        private static void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string? Title = null, string? Message = null)
         {
             if (ShowLoadingMessage)
             {

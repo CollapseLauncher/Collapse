@@ -300,6 +300,26 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public double CurrentElementWidth
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double CurrentElementHeight
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     /// <summary>
     /// The collection of image context sources.<br/><br/>
     /// Notes to Dev:<br/>
@@ -395,7 +415,8 @@ public partial class ImageBackgroundManager
                         {
                             OriginBackgroundImagePath = bgPlaceholderPath,
                             BackgroundImagePath       = bgPlaceholderPath,
-                            IsVideo                   = IsVideoMediaFileExtensionSupported(bgPlaceholderPath)
+                            IsVideo                   = IsVideoMediaFileExtensionSupported(bgPlaceholderPath),
+                            IsCustom                  = true
                         });
                         return;
                     }
@@ -495,7 +516,8 @@ public partial class ImageBackgroundManager
                 OriginBackgroundImagePath = imagePath,
                 BackgroundImagePath       = resultBackgroundPath,
                 ForceReload               = true, // Request force reload (skip cache)
-                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath)
+                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath),
+                IsCustom                  = true
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
@@ -638,6 +660,12 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     }
 
     public bool IsVideo
+    {
+        get;
+        init;
+    }
+
+    public bool IsCustom
     {
         get;
         init;

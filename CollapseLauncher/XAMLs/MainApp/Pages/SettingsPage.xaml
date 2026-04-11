@@ -17,7 +17,6 @@
       xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
-      CacheMode="BitmapCache"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"

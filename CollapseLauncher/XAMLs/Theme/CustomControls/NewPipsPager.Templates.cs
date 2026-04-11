@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading;
@@ -60,6 +61,7 @@ public partial class NewPipsPager
         Loaded   += NewPipsPager_Loaded;
         Unloaded += NewPipsPager_Unloaded;
 
+        ApplyNavigationButtonLocaleBind();
         ApplyNavigationButtonEvents();
         ApplyInitialTemplates();
         ApplyKeyPressEvents();
@@ -69,7 +71,13 @@ public partial class NewPipsPager
     private void ApplyInitialTemplates()
     {
         _pipsPagerItemsRepeater.ItemsSource ??= _itemsDummy;
-        Orientation_OnChange((NewPipsPager)this, Orientation);
+        Orientation_OnChange(this, Orientation);
+    }
+
+    private void ApplyNavigationButtonLocaleBind()
+    {
+        _previousPageButton.BindTooltipToLocale(Locale.Current, "Lang._Misc.Prev");
+        _nextPageButton.BindTooltipToLocale(Locale.Current, "Lang._Misc.Next");
     }
 
     private void ApplyNavigationButtonEvents()

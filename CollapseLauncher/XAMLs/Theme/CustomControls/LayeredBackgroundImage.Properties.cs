@@ -210,6 +210,10 @@ public partial class LayeredBackgroundImage
         set;
     }
 
+    public double CanvasWidth => (double)GetValue(CanvasWidthProperty);
+
+    public double CanvasHeight => (double)GetValue(CanvasHeightProperty);
+
     #endregion
 
     #region Fields
@@ -423,6 +427,18 @@ public partial class LayeredBackgroundImage
                                     typeof(string),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(null!));
+
+    public static readonly DependencyProperty CanvasWidthProperty =
+        DependencyProperty.Register(nameof(CanvasWidth),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(0d));
+
+    public static readonly DependencyProperty CanvasHeightProperty =
+        DependencyProperty.Register(nameof(CanvasHeight),
+                                    typeof(double),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(0d));
 
     #endregion
 }
