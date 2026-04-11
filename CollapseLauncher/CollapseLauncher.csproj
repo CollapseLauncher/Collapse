@@ -498,6 +498,7 @@
         <Exec Command="del /s $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-61.dll $(ProjectDir)$(OutDir)av*-59.dll $(ProjectDir)$(OutDir)av*-10.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
+        <RemoveDir Directories="$(OutDir)Lib\linux-x64" Condition="Exists('$(OutDir)Lib\linux-x64')" />
     </Target>
 
     <Target Name="PreBuild-NativeAOTStaticLib" BeforeTargets="PreBuildEvent" Condition="'$(PublishAot)' == 'true'">
@@ -510,6 +511,7 @@
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+        <RemoveDir Directories="$(PublishDir)Lib\linux-x64" Condition="Exists('$(PublishDir)Lib\linux-x64')" />
         <RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
