@@ -1322,7 +1322,7 @@
     "Media_VideoFFmpegCodecPrepareLocateFailed3": "以下の.dllファイルが存在するか確認してください：",
     "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "インストール済みのFFmpegを検出しました！",
     "Media_VideoFFmpegCodecPrepareLocateSuccess1": "以下のディレクトリでインストール済みのFFmpegが見つかりました。",
-    "Media_VideoFFmpegCodecInstallingTitle": "インストール済みのFFmpeg",
+    "Media_VideoFFmpegCodecInstallingTitle": "FFmpegをインストール中",
 
     "Agreement_ThirdPartyAgreementPreambleTitle": "前置き",
     "Agreement_ThirdPartyAgreementPreamble1": "Collapse Launcherは、機能の一部またはすべてを実現するために、以下のライブラリを利用しています。",
