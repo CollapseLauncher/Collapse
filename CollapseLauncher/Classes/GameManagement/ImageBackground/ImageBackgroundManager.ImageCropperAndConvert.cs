@@ -98,6 +98,12 @@ public partial class ImageBackgroundManager
             ImageCropper cropper = UIElementExtensions
                .Create<ImageCropper>(SetImageCropperProperties);
 
+            // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
+            if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
+            {
+                return (overlayUrlOrPath, backgroundUrlOrPath, false);
+            }
+
             // -- Register to close dialog if cancellation is triggered outside the event.
             token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
@@ -184,6 +190,22 @@ public partial class ImageBackgroundManager
         {
             return (null, null, true);
         }
+    }
+
+    private static async Task<bool> CanOpenCropOverlay(Uri imagePath, bool isSvg, ImageCropper cropper, CancellationToken token)
+    {
+        if (isSvg)
+        {
+            // SVG has no fixed source pixel size before rasterization, so keep existing behavior.
+            return true;
+        }
+
+        WriteableBitmap sourceBitmap = new(1, 1);
+        await using Stream sourceStream = await OpenStreamFromFileOrUrl(imagePath, token);
+        using IRandomAccessStream randomStream = sourceStream.AsRandomAccessStream(true);
+        await sourceBitmap.SetSourceAsync(randomStream);
+
+        return cropper.CanCropSource(sourceBitmap.PixelWidth, sourceBitmap.PixelHeight);
     }
 
     /// <summary>
