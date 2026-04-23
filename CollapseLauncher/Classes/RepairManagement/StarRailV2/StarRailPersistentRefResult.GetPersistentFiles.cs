@@ -97,7 +97,7 @@ internal partial class StarRailPersistentRefResult
                                 BaseDirs.StreamingVideo,
                                 BaseDirs.PersistentVideo,
                                 BaseUrls.Video,
-                                BaseUrls.Video,
+                                BaseUrls.VideoPersistent,
                                 true,
                                 fileList,
                                 unusedAssets,
@@ -111,7 +111,7 @@ internal partial class StarRailPersistentRefResult
                                 BaseDirs.StreamingAudio,
                                 BaseDirs.PersistentAudio,
                                 BaseUrls.Audio,
-                                BaseUrls.Audio,
+                                BaseUrls.AudioPersistent,
                                 true,
                                 fileList,
                                 unusedAssets,
@@ -139,6 +139,34 @@ internal partial class StarRailPersistentRefResult
                                 unusedAssets,
                                 oldDic,
                                 Metadata.RawResV.DataList);
+        }
+
+        if (Metadata.DesignV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingDesignData,
+                                BaseDirs.PersistentDesignData,
+                                BaseUrls.DesignData,
+                                BaseUrls.DesignData,
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.DesignV.DataList);
+        }
+
+        if (Metadata.NativeDataV != null)
+        {
+            AddAdditionalAssets(gameDirPath,
+                                BaseDirs.StreamingNativeData,
+                                BaseDirs.PersistentNativeData,
+                                BaseUrls.NativeData,
+                                BaseUrls.NativeData,
+                                false,
+                                fileList,
+                                unusedAssets,
+                                oldDic,
+                                Metadata.NativeDataV.DataList);
         }
 
         if (Metadata.CacheLua != null)
@@ -300,7 +328,7 @@ internal partial class StarRailPersistentRefResult
                 CRCArray         = asset.MD5Checksum,
                 FT               = StarRailRepairV2.DetermineFileTypeFromExtension(asset.Filename ?? ""),
                 IsHasHashMark    = isHashMarked,
-                AssociatedObject = asset
+                AssociatedObject = asset,
             };
             fileDic.TryAdd(relPathInPersistent, file);
             fileList.Add(file);
