@@ -11,6 +11,8 @@ using Hi3Helper.EncTool.Proto.StarRail;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
@@ -374,6 +376,20 @@ internal partial class StarRailPersistentRefResult
                                                               aDirRawRes,
                                                               token);
 
+        // Perform URL test & swap for Audio and Video
+        await baseUrl.TestAndSwapUrlAsync(client,
+                                          mainUrlAsbAlt.CombineURLFromString("AudioBlock"),
+                                          () => metadataAudioV?.DataList.FirstOrDefault(x => x.Filename?.EndsWith(".pck", StringComparison.OrdinalIgnoreCase) ?? false),
+                                          context => context.Audio,
+                                          (context, replace) => context.Audio = replace,
+                                          token);
+        await baseUrl.TestAndSwapUrlAsync(client,
+                                          mainUrlAsbAlt.CombineURLFromString("Video"),
+                                          () => metadataVideoV?.DataList.FirstOrDefault(x => x.Filename?.EndsWith(".usm", StringComparison.OrdinalIgnoreCase) ?? false),
+                                          context => context.Video,
+                                          (context, replace) => context.Video = replace,
+                                          token);
+
         return new StarRailPersistentRefResult
         {
             BaseDirs = baseDirs,
@@ -598,19 +614,65 @@ internal partial class StarRailPersistentRefResult
     public class AssetBaseUrls
     {
         public required Dictionary<string, string> GatewayKvp         { get; set; }
-        public required string                     DesignData         { get; set; }
+        public required string                     DesignData         { get; init; }
         public required string                     Archive            { get; set; }
         public required string                     Audio              { get; set; }
         public required string                     AsbBlock           { get; set; }
         public required string                     AsbBlockPersistent { get; set; }
-        public required string                     NativeData         { get; set; }
+        public required string                     NativeData         { get; init; }
         public required string                     Video              { get; set; }
-        public required string                     RawRes             { get; set; }
+        public required string                     RawRes             { get; init; }
 
-        public string? CacheLua  { get; set; }
-        public string? CacheIFix { get; set; }
+        public string? CacheLua  { get; init; }
+        public string? CacheIFix { get; init; }
 
         public void SwapAsbPersistentUrl() => (AsbBlock, AsbBlockPersistent) = (AsbBlockPersistent, AsbBlock);
+
+        public async Task TestAndSwapUrlAsync(
+            HttpClient                          client,
+            string                              urlBaseAlt,
+            Func<StarRailAssetGenericFileInfo?> testAssetSelector,
+            Func<AssetBaseUrls, string>         propertySelector,
+            Action<AssetBaseUrls, string>       propertyModifier,
+            CancellationToken                   token)
+        {
+            if (testAssetSelector() is not {} firstAssetToTest ||
+                firstAssetToTest.Filename == null)
+            {
+                return;
+            }
+
+            bool   isRetry       = false;
+            string rootUrlToTest = propertySelector(this);
+
+            Test:
+            string    testUrl       = rootUrlToTest.CombineURLFromString(firstAssetToTest.Filename);
+            UrlStatus testUrlStatus = await client.GetCachedUrlStatus(testUrl, token);
+
+            switch (testUrlStatus.IsSuccessStatusCode)
+            {
+                // If status is success and retry is requested, then swap the Audio property
+                case true when isRetry:
+                    propertyModifier(this, urlBaseAlt);
+                    return;
+                // If status still fails and retry is requested, throw.
+                case false when isRetry:
+                    throw new
+                        HttpRequestException($"Both Base URLs: {Audio} or {urlBaseAlt} doesn't contain a correct location of the audio files.",
+                                             null,
+                                             testUrlStatus.StatusCode);
+            }
+
+            // If status is 404 (Not Found), start swapping the URL
+            if (testUrlStatus is { IsSuccessStatusCode: false, StatusCode: HttpStatusCode.NotFound } && !isRetry)
+            {
+                isRetry       = true;
+                rootUrlToTest = urlBaseAlt;
+                goto Test;
+            }
+            
+            // If status is already successful, do nothing.
+        }
     }
 
     public class AssetMetadata

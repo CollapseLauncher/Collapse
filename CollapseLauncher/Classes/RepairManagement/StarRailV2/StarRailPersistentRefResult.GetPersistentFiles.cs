@@ -294,12 +294,13 @@ internal partial class StarRailPersistentRefResult
 
             FilePropertiesRemote file = new()
             {
-                RN            = url,
-                N             = relPathInPersistent,
-                S             = asset.FileSize,
-                CRCArray      = asset.MD5Checksum,
-                FT            = StarRailRepairV2.DetermineFileTypeFromExtension(asset.Filename ?? ""),
-                IsHasHashMark = isHashMarked
+                RN               = url,
+                N                = relPathInPersistent,
+                S                = asset.FileSize,
+                CRCArray         = asset.MD5Checksum,
+                FT               = StarRailRepairV2.DetermineFileTypeFromExtension(asset.Filename ?? ""),
+                IsHasHashMark    = isHashMarked,
+                AssociatedObject = asset
             };
             fileDic.TryAdd(relPathInPersistent, file);
             fileList.Add(file);
