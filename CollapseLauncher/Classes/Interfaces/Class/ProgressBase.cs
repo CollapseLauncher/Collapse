@@ -1341,8 +1341,8 @@ internal abstract class ProgressBase : GamePropertyBase
         if (isUseSelfSpeedLimiter)
         {
             // Create the speed limiter instance and register the listener
-            downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
-            LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
+            // downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+            // LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
         }
 
         try
@@ -1375,7 +1375,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If the self speed listener is used, then unregister the listener
             if (isUseSelfSpeedLimiter && downloadSpeedLimiter != null)
             {
-                LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
+                // LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
             }
         }
     }
