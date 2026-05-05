@@ -16,9 +16,9 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 
 /// <summary>
-/// Star Rail Signatureless Metadata parser for LuaV, DesignV. This parser is read-only and cannot be written back.<br/>
+/// Star Rail Signatureless Metadata parser. This parser is read-only and cannot be written back.<br/>
 /// </summary>
-public sealed class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
+public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
 {
     public StarRailAssetSignaturelessMetadata() : this(null)
     {

@@ -159,6 +159,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData!.ManifestIdentityList
                                                                                    .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                                                   .Where(x => x.MatchingField == null || !IsVoicePackMatchingField(x.MatchingField))
                                                                                    .ToList();
 
             if (otherManifestIdentity.Count == 0)
@@ -671,7 +672,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string perFromToLocale = string.Format(Locale.Lang._Misc.PerFromTo,
                                                        ProgressAllCountCurrent,
                                                        ProgressAllCountTotal);
-                Status.ActivityStatus = $"{Locale.Lang._Misc.Downloading}: {perFromToLocale}";
+                Status.ActivityStatus = $"{(IsSophonInPreloadVerifyMode ? Locale.Lang?._Misc?.Verifying : Locale.Lang?._Misc?.Downloading)}: {perFromToLocale}";
                 UpdateStatus();
             }
 

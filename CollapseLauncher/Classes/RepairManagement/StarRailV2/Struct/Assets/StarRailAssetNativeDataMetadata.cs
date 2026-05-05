@@ -157,7 +157,7 @@ public sealed class StarRailAssetNativeDataMetadata : StarRailAssetBinaryMetadat
         }
     }
 
-    public class Metadata : StarRailAssetGenericFileInfo
+    public class Metadata : StarRailAssetFlaggable
     {
         public static Span<byte> Parse(Span<byte>         filenameBuffer,
                                        ref FileInfoStruct assetInfo,

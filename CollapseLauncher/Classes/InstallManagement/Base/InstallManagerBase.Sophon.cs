@@ -541,6 +541,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<SophonManifestBuildIdentity> otherManifestIdentity = installManifestFirst.OtherSophonBuildData!.ManifestIdentityList
                .Where(x => !commonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+               .Where(x => x.MatchingField == null || !IsVoicePackMatchingField(x.MatchingField))
                .ToList();
 
             if (otherManifestIdentity.Count == 0)
@@ -653,8 +654,9 @@ namespace CollapseLauncher.InstallManager.Base
                 ResetStatusAndProgress();
 
                 // Set the progress bar to indetermined
-                IsSophonInUpdateMode = !isPreloadMode;
-                Status.IsIncludePerFileIndicator = !isPreloadMode;
+                IsSophonInUpdateMode                 = !isPreloadMode;
+                IsSophonInPreloadVerifyMode          = isPreloadMode && _isSophonPreloadCompleted;
+                Status.IsIncludePerFileIndicator     = !isPreloadMode;
                 Status.IsProgressPerFileIndetermined = true;
                 Status.IsProgressAllIndetermined = true;
                 UpdateStatus();
@@ -867,8 +869,8 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.IsProgressPerFileIndetermined = false;
                 Status.IsProgressAllIndetermined = false;
                 Status.ActivityStatus = $"{(IsSophonInUpdateMode && !isPreloadMode
-                    ? Locale.Lang._Misc.UpdatingAndApplying
-                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+                    ? Locale.Lang?._Misc?.UpdatingAndApplying
+                    : isSophonPreloadCompleted ? Locale.Lang?._Misc?.Verifying : Locale.Lang?._Misc?.Downloading)}: {string.Format(Locale.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
 
@@ -1086,6 +1088,7 @@ namespace CollapseLauncher.InstallManager.Base
                 manifestPair.OtherSophonBuildData!.ManifestIdentityList
                             .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                             .Select(x => x.MatchingField!)
+                            .Where(x => !IsVoicePackMatchingField(x))
                             .WhereMatchPattern(x => x, true, excludeMatchingFieldsPattern)
                             .ToList();
 
@@ -1264,6 +1267,23 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return Math.Clamp(n, 4, 128);
+        }
+
+        private bool IsVoicePackMatchingField(string matchingField)
+        {
+            // Check regular locale code: zh-cn, en-us, etc.
+            if (IsValidLocaleCode(matchingField))
+                return true;
+
+            // Also check for "mini-xx-xx" format (e.g., mini-zh-cn, mini-en-us)
+            const string miniPrefix = "mini-";
+            if (matchingField.Length > miniPrefix.Length &&
+                matchingField.StartsWith(miniPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return IsValidLocaleCode(matchingField.AsSpan(miniPrefix.Length));
+            }
+
+            return false;
         }
 
         #endregion
