@@ -583,8 +583,8 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
-            ? Locale.Current.Lang?._Misc?.Updating
-            : IsSophonInPreloadVerifyMode ? Locale.Current.Lang?._Misc?.Verifying : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
+            ? Locale.Lang?._Misc?.Updating
+            : IsSophonInPreloadVerifyMode ? Locale.Lang?._Misc?.Verifying : Locale.Lang?._Misc?.Downloading)}: {string.Format(Locale.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                ProgressAllCountTotal)}";
         UpdateStatus();
     }
