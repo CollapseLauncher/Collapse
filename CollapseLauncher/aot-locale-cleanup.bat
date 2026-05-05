@@ -12,12 +12,15 @@ call :deleteDir bn-IN
 call :deleteDir bs-Latn-BA
 call :deleteDir ca-ES
 call :deleteDir ca-Es-VALENCIA
+call :deleteDir cs
 call :deleteDir cs-CZ
 call :deleteDir cy-GB
 call :deleteDir da-DK
+call :deleteDir de
 call :deleteDir de-DE
 call :deleteDir el-GR
 call :deleteDir en-GB
+call :deleteDir es
 call :deleteDir es-ES
 call :deleteDir es-MX
 call :deleteDir et-EE
@@ -25,6 +28,7 @@ call :deleteDir eu-ES
 call :deleteDir fa-IR
 call :deleteDir fi-FI
 call :deleteDir fil-PH
+call :deleteDir fr
 call :deleteDir fr-CA
 call :deleteDir fr-FR
 call :deleteDir ga-IE
@@ -38,13 +42,16 @@ call :deleteDir hu-HU
 call :deleteDir hy-AM
 call :deleteDir id-ID
 call :deleteDir is-IS
+call :deleteDir it
 call :deleteDir it-IT
+call :deleteDir ja
 call :deleteDir ja-JP
 call :deleteDir ka-GE
 call :deleteDir kk-KZ
 call :deleteDir km-KH
 call :deleteDir kn-IN
 call :deleteDir kok-IN
+call :deleteDir ko
 call :deleteDir ko-KR
 call :deleteDir lb-LU
 call :deleteDir lo-LA
@@ -62,11 +69,13 @@ call :deleteDir nl-NL
 call :deleteDir nn-NO
 call :deleteDir or-IN
 call :deleteDir pa-IN
+call :deleteDir pl
 call :deleteDir pl-PL
 call :deleteDir pt-BR
 call :deleteDir pt-PT
 call :deleteDir quz-PE
 call :deleteDir ro-RO
+call :deleteDir ru
 call :deleteDir ru-RU
 call :deleteDir sk-SK
 call :deleteDir sl-SI
@@ -78,6 +87,7 @@ call :deleteDir sv-SE
 call :deleteDir ta-IN
 call :deleteDir te-IN
 call :deleteDir th-TH
+call :deleteDir tr
 call :deleteDir tr-TR
 call :deleteDir tt-RU
 call :deleteDir ug-CN
@@ -86,6 +96,8 @@ call :deleteDir ur-PK
 call :deleteDir uz-Latn-UZ
 call :deleteDir vi-VN
 call :deleteDir zh-CN
+call :deleteDir zh-Hans
+call :deleteDir zh-Hant
 call :deleteDir zh-TW
 goto :EOF
 

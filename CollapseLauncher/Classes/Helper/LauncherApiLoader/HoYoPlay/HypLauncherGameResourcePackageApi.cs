@@ -65,7 +65,7 @@ public class HypPackageData
     public long PackageDecompressSize { get; init; }
 
     [JsonPropertyName("md5")]
-    [JsonConverter(typeof(HexStringToArrayJsonConverter<byte>))]
+    [JsonConverter(typeof(BytesStringToArrayJsonConverter))]
     public byte[]? PackageMD5Hash { get; init; }
 
     [JsonIgnore]

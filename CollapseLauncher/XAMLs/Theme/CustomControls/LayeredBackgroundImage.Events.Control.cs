@@ -339,6 +339,11 @@ public partial class LayeredBackgroundImage
             return false;
         }
 
+        if (timeSpan.Ticks < 0)
+        {
+            timeSpan = timeSpan.Negate();
+        }
+
         ref TimeSpan span = ref CollectionsMarshal.GetValueRefOrAddDefault(SharedLastMediaPosition, hashCode, out _);
         span = timeSpan;
 

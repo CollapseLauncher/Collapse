@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using FFmpegInteropX;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -28,6 +29,12 @@ public partial class LayeredBackgroundImage
     {
         get => (bool)GetValue(UseFfmpegDecoderProperty);
         set => SetValue(UseFfmpegDecoderProperty, value);
+    }
+
+    public VideoDecoderMode FfmpegDecoderMode
+    {
+        get => (VideoDecoderMode)GetValue(FfmpegDecoderModeProperty);
+        set => SetValue(FfmpegDecoderModeProperty, value);
     }
 
     public bool IsAudioEnabled
@@ -253,6 +260,12 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(false));
+
+    public static readonly DependencyProperty FfmpegDecoderModeProperty =
+        DependencyProperty.Register(nameof(FfmpegDecoderMode),
+                                    typeof(VideoDecoderMode),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(VideoDecoderMode.Automatic));
 
     public static readonly DependencyProperty AudioVolumeProperty =
         DependencyProperty.Register(nameof(AudioVolume),

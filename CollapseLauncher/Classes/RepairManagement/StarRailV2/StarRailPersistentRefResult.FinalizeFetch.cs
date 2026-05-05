@@ -62,7 +62,7 @@ internal partial class StarRailPersistentRefResult
         tempStream.Position = 0;
 
         // -- Parse manifest and get the first asset from stock metadata
-        StarRailAssetSignaturelessMetadata metadataLuaV = new(".bytes");
+        StarRailAssetBytesSignaturelessMetadata metadataLuaV = new();
         await metadataLuaV.ParseAsync(tempStream, true, token);
 
         // -- Get stock dictionary asset

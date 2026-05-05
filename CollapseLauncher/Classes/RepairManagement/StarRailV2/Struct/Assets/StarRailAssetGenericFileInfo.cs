@@ -48,7 +48,7 @@ public class StarRailAssetGenericFileInfo
     /// The MD5 hash checksum of the file.
     /// </summary>
     [JsonPropertyName("Md5")]
-    [JsonConverter(typeof(HexStringToArrayJsonConverter<byte>))]
+    [JsonConverter(typeof(BytesStringToArrayJsonConverter))]
     public required byte[] MD5Checksum { get; init; }
 
     public override string ToString() =>

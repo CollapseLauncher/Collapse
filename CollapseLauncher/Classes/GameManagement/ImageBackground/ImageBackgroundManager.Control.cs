@@ -52,10 +52,18 @@ public partial class ImageBackgroundManager
         {
             CurrentIsEnableBackgroundAutoPlay = true;
         }
+        
+        // Alter to load static image if it has one instead of pausing.
+        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
+        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
+        if (isUserRequest && hasStaticImage && context != null)
+        {
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, CancellationToken.None);
+        }
 
         // Force to restore autoplay status to true.
         CurrentBackgroundElement?.SetValue(LayeredBackgroundImage.IsVideoAutoplayProperty, true);
-
+        
         Interlocked.Exchange(ref _isPausedByUser, false);
         CurrentBackgroundElement?.Play();
     }
@@ -66,6 +74,15 @@ public partial class ImageBackgroundManager
         {
             Interlocked.Exchange(ref _isPausedByUser, true);
             CurrentIsEnableBackgroundAutoPlay = false;
+        }
+        
+        // Alter to load static image if it has one instead of pausing.
+        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
+        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
+        if (isUserRequest && hasStaticImage && context != null)
+        {
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, true, CancellationToken.None);
+            return;
         }
 
         CurrentBackgroundElement?.Pause();

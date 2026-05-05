@@ -1514,6 +1514,7 @@ namespace CollapseLauncher.Dialogs
                 return false;
             }
 
+            var ffmpegLibNames = ImageBackgroundManager.Shared.GlobalFFmpegLibraryNames;
             string? foundFfmpegDir = null;
             if (result == ContentDialogResult.Secondary)
             {
@@ -1523,7 +1524,7 @@ namespace CollapseLauncher.Dialogs
                     goto StartOver;
                 }
 
-                foundFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(ffmpegDir);
+                foundFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(ffmpegDir, ffmpegLibNames);
                 if (string.IsNullOrEmpty(foundFfmpegDir))
                 {
                     await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
@@ -1561,6 +1562,7 @@ namespace CollapseLauncher.Dialogs
             {
                 if (!ImageBackgroundManager.TryLinkFFmpegLibrary(foundFfmpegDir,
                                                                  Directory.GetCurrentDirectory(),
+                                                                 ffmpegLibNames,
                                                                  out Exception? ex))
                 {
                     ErrorSender.SendException(ex);

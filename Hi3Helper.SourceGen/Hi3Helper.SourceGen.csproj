@@ -9,12 +9,31 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <IsAotCompatible>false</IsAotCompatible>
+
+        <Version>0.0.3</Version>
+        <AssemblyVersion>0.0.3</AssemblyVersion>
+        <DebugType>embedded</DebugType>
+        
+        <!-- NuGet Packing -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <AssemblyName>Hi3Helper.SourceGen</AssemblyName>
+        <AssemblyTitle>Hi3Helper.SourceGen</AssemblyTitle>
+        <Description>A source generator library used by Collapse Launcher project.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2026 Collapse Project Team, Kemal Setya Adhi (neon-nyan)</Copyright>
+        <Authors>neon-nyan</Authors>
+        <PackageId>Hi3Helper.SourceGen</PackageId>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" PrivateAssets="all" />
-        <PackageReference Include="System.Text.Json" Version="10.0.5" />
+        <PackageReference Include="System.Text.Json" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>

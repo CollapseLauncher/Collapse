@@ -132,14 +132,13 @@
                         x:FieldModifier="internal"
                         extension:UIElementExtensions.CursorType="Hand"
                         PointerPressed="ClickImageEventSpriteLink"
-                        DataContext="{x:Bind CurrentGameBackgroundData, Mode=OneWay}"
                         HorizontalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.HorizontalAlignment, Mode=OneWay}"
                         VerticalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VerticalAlignment, Mode=OneWay}"
                         Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VSize, Mode=OneWay}"
                         Margin="{x:Bind CurrentPresetConfig.GameEventButtonPosition.Position, Mode=OneWay}"
                         Visibility="{x:Bind NeedShowEventIcon, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
-                        Source="{Binding FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"
-                        Tag="{Binding FeaturedEventIconClickLink, Mode=OneWay}"/>
+                        Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"
+                        Tag="{x:Bind CurrentGameBackgroundData.FeaturedEventIconClickLink, Mode=OneWay}"/>
                 </Grid>
             </Grid>
         </Viewbox>

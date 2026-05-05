@@ -7,6 +7,8 @@
                           TintColor="#EEEEEE"
                           TintLuminosityOpacity="0.9"
                           TintOpacity="0.4" />
+            <x:Double x:Key="LayeredBackgroundImageContentOpacity">1</x:Double>
+            <x:Double x:Key="LayeredBackgroundImageHighContrastBackdropOpacity">0</x:Double>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Default">
             <AcrylicBrush x:Key="LayeredBackgroundImageSmokeBackground"
@@ -14,6 +16,14 @@
                           TintColor="#222222"
                           TintLuminosityOpacity="0.7"
                           TintOpacity="0.0" />
+            <x:Double x:Key="LayeredBackgroundImageContentOpacity">1</x:Double>
+            <x:Double x:Key="LayeredBackgroundImageHighContrastBackdropOpacity">0</x:Double>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="LayeredBackgroundImageSmokeBackground"
+                            ResourceKey="SystemColorWindowColorBrush" />
+            <x:Double x:Key="LayeredBackgroundImageContentOpacity">1</x:Double>
+            <x:Double x:Key="LayeredBackgroundImageHighContrastBackdropOpacity">0</x:Double>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

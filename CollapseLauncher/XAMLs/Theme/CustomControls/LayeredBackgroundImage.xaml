@@ -36,6 +36,7 @@
                         <Grid x:Name="ElevateGrid"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
+                              Opacity="{ThemeResource LayeredBackgroundImageContentOpacity}"
                               extension:UIElementExtensions.IsTranslationEnabled="True">
                             <Grid x:Name="ParallaxGrid"
                                   HorizontalAlignment="Stretch"
@@ -64,6 +65,12 @@
                                 <BrushTransition Duration="0:0:0.2" />
                             </Grid.BackgroundTransition>
                         </Grid>
+                        <!--  Solid backdrop shown only in High Contrast mode, replaces the game background image  -->
+                        <Grid x:Name="HighContrastBackdrop"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="{ThemeResource SystemColorWindowColorBrush}"
+                              Opacity="{ThemeResource LayeredBackgroundImageHighContrastBackdropOpacity}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

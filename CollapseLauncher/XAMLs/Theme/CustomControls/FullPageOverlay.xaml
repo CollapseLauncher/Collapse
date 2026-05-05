@@ -23,6 +23,13 @@
                           TintLuminosityOpacity="0.8"
                           TintOpacity="0.0" />
         </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="SmokeBackgroundBrush"
+                             Opacity="0.8"
+                             Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="ContentBackgroundAcrylicBrush"
+                             Color="{ThemeResource SystemColorWindowColor}" />
+        </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
     <StaticResource x:Key="BackgroundBrush"

@@ -34,13 +34,14 @@ public partial class LayeredBackgroundImage
                 IsLoopingEnabled          = true,
                 IsVideoFrameServerEnabled = true,
                 Volume                    = AudioVolume.GetClampedVolume(),
-                IsMuted                   = !IsAudioEnabled
+                IsMuted                   = !IsAudioEnabled,
+                CommandManager            = { IsEnabled = false }
             };
             Interlocked.Exchange(ref _videoPlayer, player);
 
             player.MediaOpened += InitializeVideoFrameOnMediaOpened;
 
-            if (!UseSafeFrameRenderer)
+            if (!_useSafeFrameRenderer)
             {
                 ((IWinRTObject)player).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
             }
@@ -80,7 +81,7 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private void InitializeRenderTarget()
+    private unsafe void InitializeRenderTarget()
     {
         try
         {
@@ -98,45 +99,41 @@ public partial class LayeredBackgroundImage
                                                            _canvasHeight,
                                                            96f);
 
-            Interlocked.Exchange(ref UseSafeFrameRenderer, false);
-            if (UseSafeFrameRenderer)
+            Interlocked.Exchange(ref _useSafeFrameRenderer, false);
+            if (_useSafeFrameRenderer)
             {
                 return;
             }
 
             _canvasRenderTargetNativePtr = ((IWinRTObject)_canvasRenderTarget).NativeObject.ThisPtr;
             _canvasImageSourceNativePtr  = ((IWinRTObject)_canvasImageSource).NativeObject.ThisPtr;
-
+            
             ((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(typeof(IDirect3DSurface).GUID, out _canvasRenderTargetAsSurfacePtr);
 
-            unsafe
+            try
             {
-                try
+                if (_functionTableBeginDraw == null ||
+                    _functionTableDrawImage == null ||
+                    _functionTableDispose == null)
                 {
-                    if (_functionTableBeginDraw == null ||
-                        _functionTableDrawImage == null ||
-                        _functionTableDispose == null)
-                    {
-                        SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(
-                         _canvasImageSourceNativePtr,
-                         _canvasRenderTargetNativePtr,
-                         out _functionTableBeginDraw,
-                         out _functionTableDrawImage,
-                         out _functionTableDispose,
-                         in _canvasRenderSize);
-                    }
+                    SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
+                                                                               _canvasRenderTargetNativePtr,
+                                                                               out _functionTableBeginDraw,
+                                                                               out _functionTableDrawImage,
+                                                                               out _functionTableDispose,
+                                                                               in _canvasRenderSize);
                 }
-                catch (Exception e)
-                {
-                    Interlocked.Exchange(ref UseSafeFrameRenderer, true); // Fallback
+            }
+            catch (Exception e)
+            {
+                Interlocked.Exchange(ref _useSafeFrameRenderer, true); // Fallback
 
-                    _functionTableBeginDraw = null;
-                    _functionTableDrawImage = null;
-                    _functionTableDispose   = null;
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
-                                        LogType.Error,
-                                        true);
-                }
+                _functionTableBeginDraw = null;
+                _functionTableDrawImage = null;
+                _functionTableDispose   = null;
+                Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
+                                    LogType.Error,
+                                    true);
             }
         }
         catch (Exception e)
@@ -177,7 +174,7 @@ public partial class LayeredBackgroundImage
                 _ = SaveMediaPosition(BackgroundSource, _videoPlayer.Position);
             }
 
-            if (!UseSafeFrameRenderer)
+            if (!_useSafeFrameRenderer)
             {
                 NullifyMediaPlayerNativePointers();
             }
@@ -211,7 +208,7 @@ public partial class LayeredBackgroundImage
                 Interlocked.Exchange(ref _canvasRenderTarget, null)?.Dispose();
             }
 
-            if (!UseSafeFrameRenderer)
+            if (!_useSafeFrameRenderer)
             {
                 NullifyRenderTargetNativePointers();
             }

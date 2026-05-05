@@ -1,6 +1,6 @@
-﻿#nullable enable
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -10,6 +10,8 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Windows.Foundation;
+using Windows.Media.Playback;
+#nullable enable
 
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
@@ -406,6 +408,12 @@ public partial class LayeredBackgroundImage
         SetValue(CanvasWidthProperty,  size.Width);
         SetValue(CanvasHeightProperty, size.Height);
         CanvasSizeChanged?.Invoke(this, size);
+    }
+
+    private void NotifyVideoLoaded(MediaPlayer sender, object args)
+    {
+        sender.VideoFrameAvailable -= NotifyVideoLoaded;
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, NotifyImageLoaded);
     }
 
     #endregion

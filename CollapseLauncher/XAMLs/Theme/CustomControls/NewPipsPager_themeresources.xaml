@@ -20,6 +20,12 @@
                           FallbackColor="#FFFFFF"
                           TintColor="#FFFFFF" />
         </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="NewPipsPageButtonBackground"
+                            ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="NewPipsPageButtonForeground"
+                            ResourceKey="SystemColorHighlightTextColorBrush" />
+        </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
     <x:Double x:Key="PipsPagerButtonSize">28</x:Double>

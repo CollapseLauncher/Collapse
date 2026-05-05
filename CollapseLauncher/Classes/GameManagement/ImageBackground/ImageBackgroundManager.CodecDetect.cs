@@ -16,7 +16,7 @@ public partial class ImageBackgroundManager
 {
     #region Codec Checks
 
-    private async Task<(bool IsSupported, bool IsVideo)> CheckCodecOrSpawnDialog(Uri? fileUri)
+    private async ValueTask<(bool IsSupported, bool IsVideo)> CheckCodecOrSpawnDialog(Uri? fileUri)
     {
         // -- Cancel if null
         if (fileUri == null)

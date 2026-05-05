@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
     "VideoBackground_AudioVolume": "音量",
     "VideoBackground_UseFFmpeg": "動画のデコードにFFmpegを使う",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpegデコーディングモード",
     "VideoBackground_FFmpegInstallStatus": "インストール状態：",
     "VideoBackground_FFmpegInstallStatus_Installed": "インストール済み",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "未インストール",
@@ -993,7 +994,9 @@
     "FeedbackSendFailure": "送信に失敗しました！ログ/コンソールで詳細を確認してください。",
 
     "Tag_Deprecated": "非推奨",
-    "Generic_GameFeatureDeprecation": "ゲーム側の仕様変更が原因で、この機能の使用は推奨できなくなりました。今後削除する予定です。使用した場合、予期せぬ動作を引き起こす可能性があります。"
+    "Generic_GameFeatureDeprecation": "ゲーム側の仕様変更が原因で、この機能の使用は推奨できなくなりました。今後削除する予定です。使用した場合、予期せぬ動作を引き起こす可能性があります。",
+
+    "DescriptionNotAvailable": "説明はありません。"
   },
 
   "_BackgroundNotification": {
@@ -1322,7 +1325,7 @@
     "Media_VideoFFmpegCodecPrepareLocateFailed3": "以下の.dllファイルが存在するか確認してください：",
     "Media_VideoFFmpegCodecPrepareLocateSuccessTitle": "インストール済みのFFmpegを検出しました！",
     "Media_VideoFFmpegCodecPrepareLocateSuccess1": "以下のディレクトリでインストール済みのFFmpegが見つかりました。",
-    "Media_VideoFFmpegCodecInstallingTitle": "インストール済みのFFmpeg",
+    "Media_VideoFFmpegCodecInstallingTitle": "FFmpegをインストール中",
 
     "Agreement_ThirdPartyAgreementPreambleTitle": "前置き",
     "Agreement_ThirdPartyAgreementPreamble1": "Collapse Launcherは、機能の一部またはすべてを実現するために、以下のライブラリを利用しています。",
@@ -1798,6 +1801,20 @@
 
   "_WpfPackageName": {
     "Genshin Impact": "星々の箱庭"
+  },
+
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "自動",
+    "AutomaticSystemDecoder": "システムデコーダーを自動的に使用",
+    "ForceSystemDecoder": "システムデコーダーを強制的に使用",
+    "ForceFFmpegSoftwareDecoder": "FFmpegデコーダーを強制的に使用"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "利用可能なデコーダーのうち最適なものを自動的に選択します（ハードウェアアクセラレーションデコーダーが優先されます）。",
+    "AutomaticSystemDecoder": "”自動”と同じですが、FFmpegは利用可能な場合はビルトインシステムデコーダーを使用してデコードします。",
+    "ForceSystemDecoder": "FFmpegは、FFmpegライブラリ内で利用可能なデコーダーの代わりに、強制的にビルトインシステムデコーダーを使用します。デコーダーが利用できない場合、または適切に動画を再生できない場合は、このモードで再生するためにWindows Media Foundationコーデックを追加でインストールする必要がある場合があります。",
+    "ForceFFmpegSoftwareDecoder": "”自動”と同じですが、FFmpegはハードウェアアクセラレーションデコーダーの代わりにソフトウェアベースのデコーダーを強制的に使用します。"
   },
 
   "_OOBEAgreementMenu": {

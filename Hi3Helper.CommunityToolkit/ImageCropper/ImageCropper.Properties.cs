@@ -28,12 +28,24 @@ public partial class ImageCropper
     /// </summary>
     public Rect CroppedRegion => _currentCroppedRect;
 
+    /// <summary>
+    /// Checks whether the provided source pixel size can be cropped.
+    /// </summary>
+    /// <param name="pixelWidth">Source width in pixels.</param>
+    /// <param name="pixelHeight">Source height in pixels.</param>
+    /// <returns>True when the source meets the minimum crop size.</returns>
+    public bool CanCropSource(double pixelWidth, double pixelHeight)
+    {
+        var minCropSize = MinCropSize;
+        return pixelWidth >= minCropSize.Width && pixelHeight >= minCropSize.Height;
+    }
+
     private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var target = (ImageCropper)d;
         if (e.NewValue is BitmapSource bitmap)
         {
-            if (bitmap.PixelWidth < target.MinCropSize.Width || bitmap.PixelHeight < target.MinCropSize.Height)
+            if (!target.CanCropSource(bitmap.PixelWidth, bitmap.PixelHeight))
             {
                 target.Source = null;
                 throw new ArgumentException("The resolution of the image is too small!");

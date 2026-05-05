@@ -2,6 +2,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
+using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -19,6 +20,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Numerics;
 using System.Threading;
@@ -1210,6 +1212,61 @@ namespace CollapseLauncher.Pages
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public partial class ObjectToLocaleKvpConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, string language)
+        {
+            if (value is not Dictionary<string, string> asKvp)
+            {
+                return parameter;
+            }
+
+            string? paramStr = parameter?.ToString();
+            if (paramStr == null ||
+                !asKvp.TryGetValue(paramStr, out string? localizedValue))
+            {
+                return parameter;
+            }
+
+            return localizedValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
+
+    public partial class FFmpegVideoDecoderModeToIndexConverter : EnumToIndexConverter<VideoDecoderMode>;
+
+    public partial class EnumToIndexConverter<TEnum> : IValueConverter
+        where TEnum : struct, Enum
+    {
+        private static List<TEnum> _enums = [.. Enum.GetValues<TEnum>()];
+
+        public object? Convert(object? value, Type targetType, object parameter, string language)
+        {
+            if (value is not TEnum asEnum ||
+                !Enum.IsDefined(asEnum))
+            {
+                asEnum = default;
+            }
+
+            int indexOf = _enums.IndexOf(asEnum);
+            return indexOf < 0 || indexOf > _enums.Count - 1 ? default : indexOf;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not int asIndex ||
+                asIndex < 0 ||
+                asIndex > _enums.Count - 1)
+            {
+                return default(TEnum);
+            }
+
+            return _enums[asIndex];
         }
     }
 }

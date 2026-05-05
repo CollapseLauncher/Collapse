@@ -29,6 +29,9 @@
             <Thickness x:Key="ContentDialogSeparatorThickness">0,0,0,1</Thickness>
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="SmokeFillColorCollapseBrush"
+                             Opacity="0.8"
+                             Color="{ThemeResource SystemColorWindowColor}" />
             <StaticResource x:Key="ContentDialogForeground"
                             ResourceKey="SystemColorWindowTextColorBrush" />
             <StaticResource x:Key="ContentDialogBackground"

@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Animation;
 using PhotoSauce.MagicScaler;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,7 +23,6 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
-
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -36,7 +36,7 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private void LoadImageAtIndex(int index, CancellationToken token)
+    private void LoadImageAtIndex(int index, bool forceLoadToStatic, CancellationToken token)
     {
         if (ImageContextSources.Count <= index ||
             index < 0 ||
@@ -46,14 +46,14 @@ public partial class ImageBackgroundManager
         }
 
         IsBackgroundLoading = true;
-        new Thread(() => LoadImageAtIndexCore(index, token).ConfigureAwait(false))
+        new Thread(async () => await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false))
         {
             IsBackground = true,
             Priority = ThreadPriority.Lowest
         }.UnsafeStart();
     }
 
-    private async Task LoadImageAtIndexCore(int index, CancellationToken token)
+    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token)
     {
         Stopwatch? stopwatch = null;
         try
@@ -126,10 +126,18 @@ public partial class ImageBackgroundManager
             }
 
             // -- Read Color Accent information from current background context.
-            new Thread(GetMediaAccentColor)
+            new Thread(async context => await GetMediaAccentColor(context).ConfigureAwait(false))
             {
                 IsBackground = true
-            }.Start((downloadedBackgroundUri, isUseFFmpeg));
+            }.UnsafeStart((downloadedBackgroundUri, isUseFFmpeg));
+
+            // Try to force loading static image if requested.
+            if (forceLoadToStatic && downloadedBackgroundStaticUri != null)
+            {
+                isVideo                       = false;
+                downloadedBackgroundUri       = downloadedBackgroundStaticUri;
+                downloadedBackgroundStaticUri = null;
+            }
 
             // -- Use UI thread and load image layer
             DispatcherQueueExtensions
@@ -189,6 +197,11 @@ public partial class ImageBackgroundManager
         {
             layerElement.IsVideoAutoplay = WindowUtility.CurrentWindowIsVisible;
         }
+
+        layerElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
+                                  this,
+                                  nameof(GlobalFFmpegDecodingMode),
+                                  bindingMode: BindingMode.OneWay);
 
         layerElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
                                   this,
@@ -256,19 +269,17 @@ public partial class ImageBackgroundManager
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
     {
-        layerElement.Transitions.Add(new PopupThemeTransition());
         layerElement.ImageLoaded -= LayerElementOnLoaded;
+        layerElement.Transitions.Add(new PopupThemeTransition());
 
-        if (PresenterGrid?.Children.Count > 1)
+        UIElement? lastElement = PresenterGrid?.Children.LastOrDefault();
+        List<UIElement> elementToRemove = PresenterGrid?.Children.Where(element => element != lastElement).ToList() ?? [];
+        foreach (UIElement element in elementToRemove)
         {
-            UIElement? lastElement = PresenterGrid?.Children.LastOrDefault();
-            foreach (UIElement element in PresenterGrid?.Children.Where(element => element != lastElement) ?? [])
+            PresenterGrid?.Children.Remove(element);
+            if (element is LayeredBackgroundImage asLayeredImage)
             {
-                PresenterGrid?.Children.Remove(element);
-                if (element is LayeredBackgroundImage asLayeredImage)
-                {
-                    asLayeredImage.CanvasSizeChanged -= LayerElementCanvasSizeChanged;
-                }
+                asLayeredImage.CanvasSizeChanged -= LayerElementCanvasSizeChanged;
             }
         }
 
@@ -350,7 +361,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private async void GetMediaAccentColor(object? context)
+    private async Task GetMediaAccentColor(object? context)
     {
         try
         {
@@ -359,7 +370,8 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo);
+            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
+                                                   .ConfigureAwait(false);
             ColorAccentChanged?.Invoke(color);
         }
         catch (Exception ex)

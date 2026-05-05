@@ -1,11 +1,14 @@
 ﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.FFmpegPInvoke;
 using CollapseLauncher.Helper.StreamUtility;
+using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -15,26 +18,51 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.GameManagement.ImageBackground;
 
-#region File Exclusive Fields
-file static class Fields
-{
-    public const string DllNameAvcodec    = "avcodec-61.dll";
-    public const string DllNameAvdevice   = "avdevice-61.dll";
-    public const string DllNameAvfilter   = "avfilter-10.dll";
-    public const string DllNameAvformat   = "avformat-61.dll";
-    public const string DllNameAvutil     = "avutil-59.dll";
-    public const string DllNamePostproc   = "postproc-58.dll";
-    public const string DllNameSwresample = "swresample-5.dll";
-    public const string DllNameSwscale    = "swscale-8.dll";
-}
-#endregion
-
 public partial class ImageBackgroundManager
 {
     #region Shared/Static Properties and Fields
 
-    private const string GlobalIsUseFFmpegConfigKey      = "GlobalIsUseFFmpeg";
-    private const string GlobalFFmpegCustomPathConfigKey = "GlobalFFmpegCustomPath";
+    private const string GlobalIsUseFFmpegConfigKey        = "GlobalIsUseFFmpeg";
+    private const string GlobalFFmpegVersionToUseConfigKey = "GlobalFFmpegVersionToUse";
+    private const string GlobalFFmpegCustomPathConfigKey   = "GlobalFFmpegCustomPath";
+    private const string GlobalFFmpegDecodingModeConfigKey = "GlobalFFmpegDecodingMode";
+
+    public VideoDecoderMode[] AvailableFFmpegDecodingModes => field ??= Enum.GetValues<VideoDecoderMode>();
+
+    public int GlobalFFmpegVersionToUse
+    {
+        get
+        {
+            int version = LauncherConfig.GetAppConfigValue(GlobalFFmpegVersionToUseConfigKey);
+            return FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(version) ?
+                version :
+                FFmpegPInvoke.FFmpegVersionLibNames.Keys.FirstOrDefault();
+        }
+        set
+        {
+            if (!FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(value))
+            {
+                return;
+            }
+
+            LauncherConfig.SetAndSaveConfigValue(GlobalFFmpegVersionToUseConfigKey, value);
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(GlobalFFmpegLibraryNames)); // Notify FFmpeg library names update too.
+        }
+    }
+
+    public FFmpegPInvoke.FFmpegLibraryNames GlobalFFmpegLibraryNames
+    {
+        get
+        {
+            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out var names))
+            {
+                return names;
+            }
+
+            return FFmpegPInvoke.FFmpegVersionLibNames.Values.FirstOrDefault();
+        }
+    }
 
     public bool GlobalIsUseFFmpeg
     {
@@ -56,7 +84,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public bool GlobalIsFFmpegAvailable => IsFFmpegAvailable(Directory.GetCurrentDirectory(), out _);
+    public bool GlobalIsFFmpegAvailable => IsFFmpegAvailable(Directory.GetCurrentDirectory(), GlobalFFmpegLibraryNames, out _);
 
     public bool GlobalIsFFmpegCurrentlyUsed
     {
@@ -64,6 +92,31 @@ public partial class ImageBackgroundManager
         set
         {
             field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public VideoDecoderMode GlobalFFmpegDecodingMode
+    {
+        get
+        {
+            string? value = LauncherConfig.GetAppConfigValue(GlobalFFmpegDecodingModeConfigKey);
+            if (Enum.TryParse<VideoDecoderMode>(value, out var result))
+            {
+                return result;
+            }
+
+            return default;
+        }
+        set
+        {
+            if (!Enum.IsDefined(value))
+            {
+                value = default;
+            }
+
+            string valueStr = value.ToString();
+            LauncherConfig.SetAndSaveConfigValue(GlobalFFmpegDecodingModeConfigKey, valueStr);
             OnPropertyChanged();
         }
     }
@@ -89,8 +142,10 @@ public partial class ImageBackgroundManager
                 return false;
             }
 
+            var names = GlobalFFmpegLibraryNames;
+
             string  curDir              = Directory.GetCurrentDirectory();
-            bool    isFFmpegAvailable   = IsFFmpegAvailable(curDir, out exception);
+            bool    isFFmpegAvailable   = IsFFmpegAvailable(curDir, names, out exception);
             string? customFFmpegDirPath = GlobalCustomFFmpegPath;
 
             if (isFFmpegAvailable)
@@ -100,16 +155,16 @@ public partial class ImageBackgroundManager
 
             // -- 1. Check from custom path first. If it exists, then pass.
             if (!string.IsNullOrEmpty(customFFmpegDirPath) &&
-                IsFFmpegAvailable(customFFmpegDirPath, out exception) &&
-                TryLinkFFmpegLibrary(customFFmpegDirPath, curDir, out exception))
+                IsFFmpegAvailable(customFFmpegDirPath, names, out exception) &&
+                TryLinkFFmpegLibrary(customFFmpegDirPath, curDir, names, out exception))
             {
                 return result = true;
             }
 
             // -- 2. Find one from environment variables. If it exists, then pass.
             //       Otherwise, return false.
-            return result = TryFindFFmpegInstallFromEnvVar(out string? envVarPath, out exception) &&
-                            TryLinkFFmpegLibrary(envVarPath, curDir, out exception);
+            return result = TryFindFFmpegInstallFromEnvVar(names, out string ? envVarPath, out exception) &&
+                            TryLinkFFmpegLibrary(envVarPath, curDir, names, out exception);
         }
         finally
         {
@@ -122,7 +177,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    internal bool TryFindFFmpegInstallFromEnvVar([NotNullWhen(true)] out string? path, out Exception? exception)
+    internal bool TryFindFFmpegInstallFromEnvVar(FFmpegPInvoke.FFmpegLibraryNames libraries, [NotNullWhen(true)] out string? path, out Exception? exception)
     {
         return FindIn(EnvironmentVariableTarget.User,    out path, out exception) ||
                FindIn(EnvironmentVariableTarget.Machine, out path, out exception);
@@ -152,7 +207,7 @@ public partial class ImageBackgroundManager
                     string thisPath = envVarPath.ToString();
 
                     if (!Path.IsPathFullyQualified(thisPath) ||
-                        !IsFFmpegAvailable(thisPath, out exception)) continue;
+                        !IsFFmpegAvailable(thisPath, libraries, out exception)) continue;
 
                     innerPath              = thisPath;
                     GlobalCustomFFmpegPath = thisPath; // Set as custom path
@@ -165,6 +220,7 @@ public partial class ImageBackgroundManager
     }
 
     internal static bool IsFFmpegAvailable(string? checkOnDirectory,
+                                           FFmpegPInvoke.FFmpegLibraryNames libraries,
                                            [NotNullWhen(false)]
                                            out Exception? exception)
     {
@@ -176,13 +232,13 @@ public partial class ImageBackgroundManager
 
         checkOnDirectory = FileUtility.GetFullyQualifiedPath(checkOnDirectory);
 
-        string dllPathAvcodec    = Path.Combine(checkOnDirectory, Fields.DllNameAvcodec);
-        string dllPathAvdevice   = Path.Combine(checkOnDirectory, Fields.DllNameAvdevice);
-        string dllPathAvfilter   = Path.Combine(checkOnDirectory, Fields.DllNameAvfilter);
-        string dllPathAvformat   = Path.Combine(checkOnDirectory, Fields.DllNameAvformat);
-        string dllPathAvutil     = Path.Combine(checkOnDirectory, Fields.DllNameAvutil);
-        string dllPathSwresample = Path.Combine(checkOnDirectory, Fields.DllNameSwresample);
-        string dllPathSwscale    = Path.Combine(checkOnDirectory, Fields.DllNameSwscale);
+        string dllPathAvcodec    = Path.Combine(checkOnDirectory, libraries.Codec);
+        string dllPathAvdevice   = Path.Combine(checkOnDirectory, libraries.Device);
+        string dllPathAvfilter   = Path.Combine(checkOnDirectory, libraries.Filter);
+        string dllPathAvformat   = Path.Combine(checkOnDirectory, libraries.Format);
+        string dllPathAvutil     = Path.Combine(checkOnDirectory, libraries.Util);
+        string dllPathSwresample = Path.Combine(checkOnDirectory, libraries.Resample);
+        string dllPathSwscale    = Path.Combine(checkOnDirectory, libraries.Scale);
 
         return FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvcodec,    out _, out exception) &&
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvdevice,   out _, out exception) &&
@@ -193,29 +249,32 @@ public partial class ImageBackgroundManager
                FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
     }
 
-    internal static string[] GetFFmpegRequiredDllFilenames() =>
-    [
-        Fields.DllNameAvcodec,
-        Fields.DllNameAvdevice,
-        Fields.DllNameAvfilter,
-        Fields.DllNameAvformat,
-        Fields.DllNameAvutil,
-        Fields.DllNameSwresample,
-        Fields.DllNameSwscale
-    ];
+    internal static string[] GetFFmpegRequiredDllFilenames()
+    {
+        var names = Shared.GlobalFFmpegLibraryNames;
+        return [
+            names.Codec,
+            names.Device,
+            names.Filter,
+            names.Format,
+            names.Util,
+            names.Resample,
+            names.Scale
+        ];
+    }
 
-    internal static string? FindFFmpegInstallFolder(string checkOnDirectory)
+    internal static string? FindFFmpegInstallFolder(string checkOnDirectory, FFmpegPInvoke.FFmpegLibraryNames libraries)
     {
         try
         {
-            if (IsFFmpegAvailable(checkOnDirectory, out _))
+            if (IsFFmpegAvailable(checkOnDirectory, libraries, out _))
             {
                 return checkOnDirectory;
             }
 
             foreach (string dirPath in FileUtility.EnumerateDirectoryRecursive(checkOnDirectory))
             {
-                if (IsFFmpegAvailable(dirPath, out _))
+                if (IsFFmpegAvailable(dirPath, libraries, out _))
                 {
                     return dirPath;
                 }
@@ -232,6 +291,7 @@ public partial class ImageBackgroundManager
     public static bool TryLinkFFmpegLibrary(
         string? sourceDir,
         string? targetDir,
+        FFmpegPInvoke.FFmpegLibraryNames libraries,
         [NotNullWhen(false)]
         out Exception? exception)
     {
@@ -251,14 +311,14 @@ public partial class ImageBackgroundManager
             return false;
         }
 
-        string dllPathAvcodec    = Path.Combine(sourceDir, Fields.DllNameAvcodec);
-        string dllPathAvdevice   = Path.Combine(sourceDir, Fields.DllNameAvdevice);
-        string dllPathAvfilter   = Path.Combine(sourceDir, Fields.DllNameAvfilter);
-        string dllPathAvformat   = Path.Combine(sourceDir, Fields.DllNameAvformat);
-        string dllPathAvutil     = Path.Combine(sourceDir, Fields.DllNameAvutil);
-        string dllPathPostproc   = Path.Combine(sourceDir, Fields.DllNamePostproc);
-        string dllPathSwresample = Path.Combine(sourceDir, Fields.DllNameSwresample);
-        string dllPathSwscale    = Path.Combine(sourceDir, Fields.DllNameSwscale);
+        string dllPathAvcodec    = Path.Combine(sourceDir, libraries.Codec);
+        string dllPathAvdevice   = Path.Combine(sourceDir, libraries.Device);
+        string dllPathAvfilter   = Path.Combine(sourceDir, libraries.Filter);
+        string dllPathAvformat   = Path.Combine(sourceDir, libraries.Format);
+        string dllPathAvutil     = Path.Combine(sourceDir, libraries.Util);
+        string dllPathPostproc   = Path.Combine(sourceDir, libraries.PostProc);
+        string dllPathSwresample = Path.Combine(sourceDir, libraries.Resample);
+        string dllPathSwscale    = Path.Combine(sourceDir, libraries.Scale);
 
         bool result =
             CreateSymbolLink(dllPathAvcodec,    targetDir, out exception) &&

@@ -169,6 +169,7 @@ internal abstract class ProgressBase : GamePropertyBase
     protected     nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
 
     public bool IsSophonInUpdateMode { get; protected set; }
+    public bool IsSophonInPreloadVerifyMode { get; protected set; }
     protected bool IsAllowExtractCorruptZip { get; set; }
 
     ~ProgressBase()
@@ -579,9 +580,8 @@ internal abstract class ProgressBase : GamePropertyBase
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
             ? Locale.Current.Lang?._Misc?.Updating
-            : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
-                                                       ProgressAllCountTotal)}";
-
+            : IsSophonInPreloadVerifyMode ? Locale.Current.Lang?._Misc?.Verifying : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
+                                               ProgressAllCountTotal)}";
         UpdateStatus();
     }
 

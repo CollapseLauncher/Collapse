@@ -4,11 +4,11 @@
     ".NETFramework,Version=v4.6.2": {
       "Costura.Fody": {
         "type": "Direct",
-        "requested": "[6.0.0, )",
-        "resolved": "6.0.0",
-        "contentHash": "3Uriu9GJABMivG0wXMJs6NQ7FNE3pylir1gZEBAWDvpii3cnrmxXnOG44MMDuIVOIk/Xhef7WZFsaCNV+py9qA==",
+        "requested": "[6.1.0, )",
+        "resolved": "6.1.0",
+        "contentHash": "11W5jOuFqZreNfzYK4MDMBgJlVGyOgcKxKvaxnrBByABXsLEjug5P288pdk8kFOv7dw9BQI0o00FvqfZY/o8Jg==",
         "dependencies": {
-          "Fody": "6.8.2"
+          "Fody": "6.9.3"
         }
       },
       "Fody": {

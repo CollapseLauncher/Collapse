@@ -16,11 +16,12 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.1</Version>
+        <Version>1.84.2</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
         <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+        <WindowsSdkPackageVersion>10.0.26100.84</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
@@ -46,6 +47,12 @@
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(DefineConstants.Contains('NET11_0_OR_GREATER'))">
+        <!-- .NET 11-preview3 features -->
+        <Features>runtime-async=on</Features>
+        <EnablePreviewFeatures>true</EnablePreviewFeatures>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -106,11 +113,6 @@
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(PublishAotSelf)' == 'true'">
-        <PublishAot>true</PublishAot>
-        <PublishTrimmed>true</PublishTrimmed>
-    </PropertyGroup>
-
     <PropertyGroup Condition="'$(PublishAot)' != 'true'">
         <!--
         CET isn't working properly while debugging .NET 9 apps on Windows 10.
@@ -156,7 +158,7 @@
 
         <!-- Instruction Sets -->
         <!-- x86-64-v2: base, sse, sse2, sse3, ssse3, sse4.1, sse4.2 -->
-        <IlcInstructionSet>x86-64-v2</IlcInstructionSet>
+        <!-- <IlcInstructionSet>x86-64-v2</IlcInstructionSet> -->
         
         <!-- Security thingymajig -->
         <!-- Disabling CFG for now due to stupid rust(y) libs which depends on CC compiler that don't even support CFG
@@ -284,9 +286,9 @@
         <PackageReference Include="FFmpegInteropX" Version="2.0.117-uwp9" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -311,21 +313,20 @@
         
         <PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Markdig.Signed" Version="1.1.2" />
+        <PackageReference Include="Markdig.Signed" Version="1.1.3" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
-        <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3856.49" />
-        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.0.1" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="System.CommandLine" Version="2.0.5" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.5" />
+        <PackageReference Include="System.CommandLine" Version="2.0.7" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.7" />
     </ItemGroup>
 
     <ItemGroup>
@@ -387,16 +388,15 @@
         <PRIResource Remove="StaticLib\buildScript\**" />
     </ItemGroup>
 
-    <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
-        <ItemGroup>
-            <!-- Descriptor for all classes that cannot be trimmed -->
-            <!-- We used to have a bunch of entries listed here. But due to some issues that might be caused by unwanted trimming behavior, we decided to
-                 just leave the TrimmerRootDescriptor applied.
-            -->
-            <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
-            
-            <!-- Trimmable submodule assemblies -->
-            <!-- Disabled on 2025/09/08
+    <ItemGroup Condition="'$(PublishAot)' == 'true'">
+        <!-- Descriptor for all classes that cannot be trimmed -->
+        <!-- We used to have a bunch of entries listed here. But due to some issues that might be caused by unwanted trimming behavior, we decided to
+             just leave the TrimmerRootDescriptor applied.
+        -->
+        <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+
+        <!-- Trimmable submodule assemblies -->
+        <!-- Disabled on 2025/09/08
             <TrimmableAssembly Include="ColorThief" />
             <TrimmableAssembly Include="DiscordRPC" />
             <TrimmableAssembly Include="Hi3Helper.Core" />
@@ -407,12 +407,12 @@
             <TrimmableAssembly Include="InnoSetupHelper" />
             <TrimmableAssembly Include="SevenZipExtractor" />
             <TrimmableAssembly Include="SharpHDiffPatch.Core" />
-            -->
+        -->
 
-            <!-- Untrimmable submodule assemblies-->
+        <!-- Untrimmable submodule assemblies-->
 
-            <!-- Additional assemblies -->
-            <!-- Disabled on 2025/09/08
+        <!-- Additional assemblies -->
+        <!-- Disabled on 2025/09/08
             <TrimmableAssembly Include="ColorCode.Core" />
             <TrimmableAssembly Include="ColorCode.WinUI" />
             <TrimmableAssembly Include="CommunityToolkit.Common" />
@@ -465,9 +465,9 @@
             <TrimmableAssembly Include="WinRT.Runtime" />
             <TrimmableAssembly Include="WinUIEdit" />
             <TrimmableAssembly Include="ZstdSharp" />
-            -->
+        -->
 
-            <!--
+        <!--
             <TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
             <TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
             <TrimmerRootAssembly Include="ImageEx" />
@@ -486,9 +486,8 @@
             <TrimmerRootAssembly Include="SquirrelLib" />
             <TrimmerRootAssembly Include="System.CommandLine.NamingConventionBinder" />
             <TrimmerRootAssembly Include="WinRT.Runtime" />
-            -->
-        </ItemGroup>
-    </Target>
+        -->
+    </ItemGroup>
 
     <Target Name="PreBuild-TaskSheduler" BeforeTargets="PreBuildEvent" Inputs="$(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj;@(ProjectReference->'%(FullPath)')" Outputs="$(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe">
         <Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />

@@ -43,6 +43,16 @@
             <StaticResource x:Key="SmokeGridOverlayBackground"
                             ResourceKey="SmokeFillColorCollapseBrush" />
         </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="AcrylicTitleGridBackground"
+                             Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="AcrylicInputGridBackground"
+                             Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="AcrylicConfirmationGridBackground"
+                             Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="SmokeGridOverlayBackground"
+                            ResourceKey="SmokeFillColorCollapseBrush" />
+        </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
     <StaticResource x:Key="BackgroundBrush"

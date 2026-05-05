@@ -69,9 +69,6 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
-  <Project Path="Hi3Helper.SourceGen/Hi3Helper.SourceGen.csproj">
-    <BuildType Solution="Publish|*" Project="Release" />
-  </Project>
   <Project Path="Hi3Helper.TaskScheduler/Hi3Helper.TaskScheduler.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />

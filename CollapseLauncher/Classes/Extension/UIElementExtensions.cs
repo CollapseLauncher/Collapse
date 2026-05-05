@@ -54,14 +54,16 @@ namespace CollapseLauncher.Extension
                 element.BindTooltipToLocale(localeObjBinding, localePropertyName);
         }
 
-        internal static T BindTooltipToLocale<T>(this T element, object? localeObjBinding, string localePropertyName)
+        internal static T BindTooltipToLocale<T>(this T element, object? localeObjBinding, string localePropertyName, IValueConverter? converter = null, object? converterParameter = null)
             where T : DependencyObject
         {
             TextBlock tooltipTextBlock = new();
             tooltipTextBlock.BindProperty(TextBlock.TextProperty,
                                           localeObjBinding,
                                           localePropertyName,
-                                          sourceTrigger: UpdateSourceTrigger.PropertyChanged);
+                                          sourceTrigger: UpdateSourceTrigger.PropertyChanged,
+                                          converter: converter,
+                                          converterParameter: converterParameter);
 
             ToolTipService.SetToolTip(element, tooltipTextBlock);
             return element;

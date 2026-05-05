@@ -297,25 +297,25 @@ namespace CollapseLauncher
             return isBeginValid && isEndValid;
         }
 
+        private async void ChangeRegion(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ToggleChangeRegionBtn(sender, true);
+                ChangeRegionInstant();
+            }
+            finally
+            {
+                ToggleChangeRegionBtn(sender, false);
+            }
+        }
+
         private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
         {
             try
             {
                 (sender as Button)?.IsEnabled = false;
-                if (!IsLoadRegionComplete)
-                {
-                    return;
-                }
-
-                _lockRegionChangeBtn = true;
-                _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
-                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
-                await LoadRegionRootButton();
-                InvokeLoadingRegionPopup(false);
-
-                MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
-                                                     ? typeof(CachesPage)
-                                                     : typeof(HomePage), true);
+                ChangeRegionInstant();
             }
             catch (Exception ex)
             {
@@ -324,7 +324,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                _lockRegionChangeBtn = false;
+                (sender as Button)?.IsEnabled = true;
             }
         }
 
@@ -341,7 +341,6 @@ namespace CollapseLauncher
                 _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
                 _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
                 await LoadRegionRootButton();
-                InvokeLoadingRegionPopup(false);
 
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater
                                                      ? typeof(CachesPage)
@@ -355,39 +354,7 @@ namespace CollapseLauncher
             finally
             {
                 _lockRegionChangeBtn = false;
-            }
-        }
-
-        private async void ChangeRegion(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (!IsLoadRegionComplete)
-                {
-                    return;
-                }
-
-                // Disable ChangeRegionBtn and hide flyout
-                _lockRegionChangeBtn = true;
-                ToggleChangeRegionBtn(sender, true);
-                if (!await LoadRegionRootButton())
-                {
-                    return;
-                }
-
-                // Finalize loading
-                ToggleChangeRegionBtn(sender, false);
-                _currentGameCategory = ComboBoxGameTitle.SelectedIndex;
-                _currentGameRegion   = ComboBoxGameRegion.SelectedIndex;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed while changing region with normal method\r\n{ex}", LogType.Error, true);
-                await SentryHelper.ExceptionHandlerAsync(ex);
-            }
-            finally
-            {
-                _lockRegionChangeBtn = false;
+                InvokeLoadingRegionPopup(false);
             }
         }
 

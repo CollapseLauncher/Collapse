@@ -345,6 +345,14 @@
                                                             <SolidColorBrush x:Key="ButtonBackgroundPressed"
                                                                              Color="#70FF0000" />
                                                         </ResourceDictionary>
+                                                        <ResourceDictionary x:Key="HighContrast">
+                                                            <StaticResource x:Key="ButtonBackground"
+                                                                            ResourceKey="SystemColorButtonFaceColorBrush" />
+                                                            <StaticResource x:Key="ButtonBackgroundPointerOver"
+                                                                            ResourceKey="SystemColorHighlightColorBrush" />
+                                                            <StaticResource x:Key="ButtonBackgroundPressed"
+                                                                            ResourceKey="SystemColorHighlightColorBrush" />
+                                                        </ResourceDictionary>
                                                         <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                                     </ResourceDictionary.ThemeDictionaries>
                                                 </ResourceDictionary>

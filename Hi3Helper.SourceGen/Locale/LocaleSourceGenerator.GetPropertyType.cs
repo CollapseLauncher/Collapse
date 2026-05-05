@@ -14,6 +14,7 @@ public partial class LocaleSourceGenerator
     private const string DefaultRetTypeString = "string.Empty";
     private const string DefaultRetTypeDict   = "[]";
 
+    private static readonly string ClassNameAsDictStringStringPrefix = "_DictKvp";
     private static readonly HashSet<string> ClassNamesAsDictStringString = [
         "_GameClientTitles",
         "_GameClientRegions",
@@ -34,7 +35,9 @@ public partial class LocaleSourceGenerator
             // Check for object types
             case JsonValueKind.Object:
                 // If the property type is the language section itself, then return its own type instead.
-                if (property.Name[0] == '_' && !ClassNamesAsDictStringString.Contains(property.Name))
+                if (property.Name[0] == '_' &&
+                    !(ClassNamesAsDictStringString.Contains(property.Name) ||
+                      property.Name.StartsWith(ClassNameAsDictStringStringPrefix, StringComparison.OrdinalIgnoreCase)))
                 {
                     typeName           = $"{classNamePrefix}{property.Name.Substring(1)}";
                     defaultValueSyntax = "default";

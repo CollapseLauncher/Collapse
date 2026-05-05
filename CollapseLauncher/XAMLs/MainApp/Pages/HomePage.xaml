@@ -572,7 +572,6 @@
                                         Margin="4,4"
                                         Padding="8"
                                         extension:UIElementExtensions.CursorType="Hand"
-                                        BorderThickness="0"
                                         Click="OpenSocMedLink"
                                         Content="{Binding}"
                                         CornerRadius="12"

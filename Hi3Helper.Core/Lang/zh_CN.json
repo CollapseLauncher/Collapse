@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "使用视频背景时使用亚克力效果",
     "VideoBackground_AudioVolume": "音量",
     "VideoBackground_UseFFmpeg": "使用 FFmpeg 进行视频解码",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg 解码模式",
     "VideoBackground_FFmpegInstallStatus": "安装状态：",
     "VideoBackground_FFmpegInstallStatus_Installed": "已安装",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "未安装",
@@ -993,7 +994,9 @@
     "FeedbackSendFailure": "发送反馈失败！请检查日志或控制台以获取更多信息。",
 
     "Tag_Deprecated": "废弃",
-    "Generic_GameFeatureDeprecation": "因不可预见的游戏变化，该功能已被弃用，并将在未来移除。使用此功能可能会导致意料外的行为。"
+    "Generic_GameFeatureDeprecation": "因不可预见的游戏变化，该功能已被弃用，并将在未来移除。使用此功能可能会导致意料外的行为。",
+
+    "DescriptionNotAvailable": "描述不可用。"
   },
 
   "_BackgroundNotification": {
@@ -1798,6 +1801,20 @@
 
   "_WpfPackageName": {
     "Genshin Impact": "千星沙箱"
+  },
+
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "自动",
+    "AutomaticSystemDecoder": "自动使用系统解码器",
+    "ForceSystemDecoder": "强制使用系统解码器",
+    "ForceFFmpegSoftwareDecoder": "强制使用 FFmpeg 软件解码器"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "自动选择最佳可用解码器（如果可用，将优先选用硬件加速解码器）。",
+    "AutomaticSystemDecoder": "与“自动”模式相同，但如果可用，FFmpeg 将使用内置的系统解码器进行解码。",
+    "ForceSystemDecoder": "FFmpeg 将强制使用内置的系统解码器，而非 FFmpeg 库中自带的解码器。如果该解码器不可用，您可能需要安装额外的 Windows Media Foundation 编解码器才能在此模式下播放视频，否则可能无法正常播放。",
+    "ForceFFmpegSoftwareDecoder": "与“自动”模式相同，但 FFmpeg 将强制使用软件解码器，而非硬件加速解码器。"
   },
 
   "_OOBEAgreementMenu": {

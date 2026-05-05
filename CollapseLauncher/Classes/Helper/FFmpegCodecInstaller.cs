@@ -113,7 +113,7 @@ internal sealed partial class FFmpegCodecInstaller : ProgressBase, ICodecExtensi
                               extractFolder,
                               token);
 
-        string innerFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(extractFolder) ??
+        string innerFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(extractFolder, ImageBackgroundManager.Shared.GlobalFFmpegLibraryNames) ??
                                 throw new FileNotFoundException("Library files are not found!");
 
         foreach (string dllFile in Directory.EnumerateFiles(innerFfmpegDir, "*.dll", SearchOption.TopDirectoryOnly))

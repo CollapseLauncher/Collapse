@@ -251,6 +251,16 @@
                                         <StaticResource x:Key="WindowCaptionButtonStrokePressed"
                                                         ResourceKey="CloseButtonStrokePressed" />
                                     </ResourceDictionary>
+                                    <ResourceDictionary x:Key="HighContrast">
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                                        ResourceKey="SystemColorHighlightColorBrush" />
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
+                                                        ResourceKey="SystemColorHighlightColorBrush" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
+                                                        ResourceKey="SystemColorHighlightTextColorBrush" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePressed"
+                                                        ResourceKey="SystemColorHighlightTextColorBrush" />
+                                    </ResourceDictionary>
                                     <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                 </ResourceDictionary.ThemeDictionaries>
                             </ResourceDictionary>

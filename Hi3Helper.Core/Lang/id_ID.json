@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Gunakan Efek Akrilik saat menggunakan Latar Belakang Video",
     "VideoBackground_AudioVolume": "Volume Suara",
     "VideoBackground_UseFFmpeg": "Gunakan FFmpeg untuk Decoding Video",
+    "VideoBackground_FFmpegVideoDecodingMethod": "Mode Decoding FFmpeg",
     "VideoBackground_FFmpegInstallStatus": "Status Install:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Terinstall",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Tidak Terinstall",
@@ -993,7 +994,9 @@
     "FeedbackSendFailure": "Gagal mengirimkan umpan balik! Cek log/console untuk info lebih lanjut.",
 
     "Tag_Deprecated": "Tidak berlaku",
-    "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan."
+    "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan.",
+
+    "DescriptionNotAvailable": "Deskripsi tidak tersedia."
   },
 
   "_BackgroundNotification": {
@@ -1798,6 +1801,20 @@
 
   "_WpfPackageName": {
     "Genshin Impact": "Uji-Reka Miliastra"
+  },
+
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "Otomatis",
+    "AutomaticSystemDecoder": "Otomatis dengan Decoder Sistem",
+    "ForceSystemDecoder": "Paksa Gunakan Decoder Sistem",
+    "ForceFFmpegSoftwareDecoder": "Paksa Gunakan Decoder Software FFmpeg"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "Secara otomatis memilih decoder terbaik yang tersedia (Hardware-accelerated Decoder akan diutamakan jika ada).",
+    "AutomaticSystemDecoder": "Sama seperti Otomatis, tetapi FFmpeg akan menggunakan Decoder Sistem bawaan untuk men-decode jika ada.",
+    "ForceSystemDecoder": "FFmpeg akan memaksa menggunakan Decoder Sistem ketimbang decoder yang ada pada library FFmpeg. Kamu perlu memasang codec Windows Media Foundation tambahan untuk memutar video dengan mode ini atau video tidak dapat diputar dengan benar.",
+    "ForceFFmpegSoftwareDecoder": "Sama seperti Otomatis, tetapi FFmpeg akan memaksa menggunakan Software Decoder alih-alih yang dipercepat perangkat keras."
   },
 
   "_OOBEAgreementMenu": {

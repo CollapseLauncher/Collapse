@@ -377,7 +377,8 @@ public partial class LayeredBackgroundImage
                             MaxDecoderThreads     = (uint)Environment.ProcessorCount,
                             VideoOutputAllow10bit = true,
                             VideoOutputAllowBgra8 = true,
-                            VideoOutputAllowNv12  = true
+                            VideoOutputAllowNv12  = true,
+                            VideoDecoderMode      = instance.FfmpegDecoderMode
                         }
                     };
 
@@ -417,7 +418,7 @@ public partial class LayeredBackgroundImage
 
                         // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
                         Interlocked.Exchange(ref instance._isVideoInitialized, 0);
-                        player?.VideoFrameAvailable -= !instance.UseSafeFrameRenderer
+                        player?.VideoFrameAvailable -= !instance._useSafeFrameRenderer
                             ? instance.VideoPlayer_VideoFrameAvailableUnsafe
                             : instance.VideoPlayer_VideoFrameAvailableSafe;
 

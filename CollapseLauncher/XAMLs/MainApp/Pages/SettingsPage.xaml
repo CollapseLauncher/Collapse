@@ -15,6 +15,7 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
+      xmlns:ffmpegInterop="using:FFmpegInteropX"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
       Loaded="Page_Loaded"
@@ -35,6 +36,8 @@
         <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
         <conv:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <conv:RemoveNewLineStringConverter x:Key="RemoveNewLineStringConverter" />
+        <conv:FFmpegVideoDecoderModeToIndexConverter x:Key="FFmpegVideoDecoderModeToIndexConverter" />
+        <conv:ObjectToLocaleKvpConverter x:Key="ObjectToLocaleKvpConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -450,6 +453,37 @@
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
+                                <ComboBox x:Name="VideoCodecFfmpegDecodingMethod"
+                                          CornerRadius="14"
+                                          IsEnabled="{Binding GlobalIsFFmpegAvailable, Mode=OneWay}"
+                                          ItemsSource="{x:Bind FFmpegDecodingModeSelectionItems, Mode=OneWay}"
+                                          Margin="0,8,0,0"
+                                          Visibility="{Binding ElementName=VideoCodecUseFfmpeg, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
+                                          SelectedIndex="{Binding GlobalFFmpegDecodingMode, Mode=TwoWay, Converter={StaticResource FFmpegVideoDecoderModeToIndexConverter}}">
+                                    <ComboBox.Header>
+                                        <StackPanel Orientation="Horizontal"
+                                                    Spacing="8">
+                                            <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_FFmpegVideoDecodingMethod, Mode=OneWay}"/>
+                                            <Button Width="24"
+                                                    Height="24"
+                                                    Padding="0"
+                                                    CornerRadius="4"
+                                                    Style="{ThemeResource AcrylicButtonStyle}">
+                                                <Button.Content>
+                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                              FontSize="10"
+                                                              Glyph="&#x3f;" />
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout Placement="Right">
+                                                        <ItemsRepeater ItemsSource="{x:Bind FFmpegDecodingModeHelpItems, Mode=OneWay}"
+                                                                       Margin="0,-8"/>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </StackPanel>
+                                    </ComboBox.Header>
+                                </ComboBox>
                             </StackPanel>
                             <TextBlock Margin="0,16,0,8"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -808,6 +842,14 @@
                                                                      Color="#A0FF0000" />
                                                     <SolidColorBrush x:Key="ButtonBackgroundPressed"
                                                                      Color="#70FF0000" />
+                                                </ResourceDictionary>
+                                                <ResourceDictionary x:Key="HighContrast">
+                                                    <StaticResource x:Key="ButtonBackground"
+                                                                    ResourceKey="SystemColorButtonFaceColorBrush" />
+                                                    <StaticResource x:Key="ButtonBackgroundPointerOver"
+                                                                    ResourceKey="SystemColorHighlightColorBrush" />
+                                                    <StaticResource x:Key="ButtonBackgroundPressed"
+                                                                    ResourceKey="SystemColorHighlightColorBrush" />
                                                 </ResourceDictionary>
                                                 <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                             </ResourceDictionary.ThemeDictionaries>

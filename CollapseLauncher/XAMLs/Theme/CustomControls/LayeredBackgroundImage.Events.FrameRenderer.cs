@@ -43,7 +43,7 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    public bool UseSafeFrameRenderer;
+    private bool _useSafeFrameRenderer;
 
     #endregion
 
@@ -62,7 +62,6 @@ public partial class LayeredBackgroundImage
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;
     private nint                _canvasRenderTargetAsSurfacePtr;
-
 
     private int _isBlockVideoFrameDraw = 1;
     private int _isVideoFrameDrawInProgress;
@@ -110,8 +109,8 @@ public partial class LayeredBackgroundImage
             }
 
             SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr,
-                                                            _canvasRenderTargetAsSurfacePtr,
-                                                            in _canvasRenderSize);
+                                                            _canvasRenderTargetAsSurfacePtr);
+            
             drawingSessionPpv = SwapChainPanelHelper
                .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
                                         _canvasRenderTargetNativePtr,
@@ -195,7 +194,7 @@ public partial class LayeredBackgroundImage
 
             _videoPlayer?.CopyFrameToVideoSurface(_canvasRenderTarget);
             ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
-            ds?.DrawImage(_canvasRenderTarget);
+            ds?.DrawImage(_canvasRenderTarget, _canvasRenderSize);
         }
         // Device lost error. If happened, reinitialize render target
         catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
@@ -400,6 +399,9 @@ public partial class LayeredBackgroundImage
                     }
                 }
 
+                // 2026/04/19: Now the VideoFrameAvailable handle is used to notify NotifyVideoLoaded -> NotifyImageLoaded.
+                _videoPlayer.VideoFrameAvailable += NotifyVideoLoaded;
+
                 PlayVideoView(ActionVideoAfterPlay,
                               volumeFadeDurationMs,
                               volumeFadeResolutionMs,
@@ -407,11 +409,9 @@ public partial class LayeredBackgroundImage
 
                 void ActionVideoAfterPlay()
                 {
-                    _videoPlayer.VideoFrameAvailable += !UseSafeFrameRenderer
+                    _videoPlayer.VideoFrameAvailable += !_useSafeFrameRenderer
                         ? VideoPlayer_VideoFrameAvailableUnsafe
                         : VideoPlayer_VideoFrameAvailableSafe;
-
-                    NotifyImageLoaded();
                 }
             }
             else if (BackgroundSource != null)
@@ -462,7 +462,7 @@ public partial class LayeredBackgroundImage
             if (disposeVideoPlayer)
             {
                 // Unsubscribe early to avoid wasted skipped frames.
-                _videoPlayer.VideoFrameAvailable -= !UseSafeFrameRenderer
+                _videoPlayer.VideoFrameAvailable -= !_useSafeFrameRenderer
                     ? VideoPlayer_VideoFrameAvailableUnsafe
                     : VideoPlayer_VideoFrameAvailableSafe;
 

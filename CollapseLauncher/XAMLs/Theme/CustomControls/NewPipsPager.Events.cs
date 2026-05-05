@@ -374,6 +374,9 @@ public partial class NewPipsPager
 
     private void NewPipsPager_Unloaded(object sender, RoutedEventArgs e)
     {
+        UnapplyNavigationButtonEvents();
+        UnapplyKeyPressEvents();
+        UnapplyItemsRepeaterEvents();
         _pipsPagerItemsRepeater.ItemsSource = null;
     }
 

@@ -98,6 +98,12 @@ public partial class ImageBackgroundManager
             ImageCropper cropper = UIElementExtensions
                .Create<ImageCropper>(SetImageCropperProperties);
 
+            // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
+            if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
+            {
+                return (overlayUrlOrPath, backgroundUrlOrPath, false);
+            }
+
             // -- Register to close dialog if cancellation is triggered outside the event.
             token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
@@ -183,6 +189,41 @@ public partial class ImageBackgroundManager
         catch (OperationCanceledException)
         {
             return (null, null, true);
+        }
+    }
+
+    private static Task<bool> CanOpenCropOverlay(Uri imagePath, bool isSvg, ImageCropper cropper, CancellationToken token)
+    {
+        if (isSvg)
+        {
+            // SVG has no fixed source pixel size before rasterization, so keep existing behavior.
+            return Task.FromResult(true);
+        }
+
+        TaskCompletionSource<bool> tcs = new();
+        DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, Impl);
+        return tcs.Task;
+
+        async void Impl()
+        {
+            try
+            {
+                await using Stream sourceStream = await OpenStreamFromFileOrUrl(imagePath, token);
+                using IRandomAccessStream randomStream = sourceStream.AsRandomAccessStream(true);
+
+                WriteableBitmap sourceBitmap = new(1, 1);
+                await sourceBitmap.SetSourceAsync(randomStream);
+
+                tcs.SetResult(cropper.CanCropSource(sourceBitmap.PixelWidth, sourceBitmap.PixelHeight));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(token);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
         }
     }
 

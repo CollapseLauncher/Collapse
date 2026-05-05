@@ -21,6 +21,12 @@
                 <GradientStop Offset="1" Color="#E0000000" />
             </LinearGradientBrush>
         </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="SlideshowButtonBackground"
+                            ResourceKey="SystemColorButtonFaceColorBrush" />
+            <SolidColorBrush x:Key="SlideshowProgressBarSmokeBackground"
+                             Color="Transparent" />
+        </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
     <x:String x:Key="SlideshowPreviousButtonGlyph">&#xE96F;</x:String>

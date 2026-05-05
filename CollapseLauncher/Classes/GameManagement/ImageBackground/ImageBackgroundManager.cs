@@ -2,8 +2,10 @@
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
+using Google.Protobuf.WellKnownTypes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -27,7 +29,8 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 
 [GeneratedBindableCustomProperty]
 public partial class ImageBackgroundManager
-    : NotifyPropertyChanged
+    : NotifyPropertyChanged,
+      INotifyAllPropertyChanged
 {
     internal static ImageBackgroundManager Shared => field ??= new ImageBackgroundManager();
 
@@ -250,7 +253,7 @@ public partial class ImageBackgroundManager
 
             LauncherConfig.SetAndSaveConfigValue(CurrentSelectedBackgroundIndexKey, value);
             OnPropertyChanged();
-            LoadImageAtIndex(value, CancellationToken.None);
+            LoadImageAtIndex(value, false, CancellationToken.None);
         }
     }
 
@@ -586,7 +589,7 @@ public partial class ImageBackgroundManager
         OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
         OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
         OnPropertyChanged(nameof(CurrentBackgroundCount));
-        LoadImageAtIndex(CurrentSelectedBackgroundIndex, token);
+        LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, token);
     }
 #pragma warning restore CA1068
 
@@ -611,6 +614,12 @@ public partial class ImageBackgroundManager
     {
         Interlocked.Exchange(ref _previousContextHash, 0);
         ImageContextSources.Clear();
+    }
+
+    void INotifyAllPropertyChanged.NotifyAllChanged()
+    {
+        OnPropertyChanged(nameof(GlobalFFmpegDecodingMode));
+        OnPropertyChanged(nameof(AvailableFFmpegDecodingModes));
     }
 }
 

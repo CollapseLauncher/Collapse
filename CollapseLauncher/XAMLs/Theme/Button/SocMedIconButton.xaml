@@ -16,6 +16,7 @@
                              Color="#77000000" />
             <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled"
                              Color="#11000000" />
+            <Thickness x:Key="SocMedButtonBorderThickness">0</Thickness>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"
@@ -28,6 +29,21 @@
                              Color="#77FFFFFF" />
             <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled"
                              Color="#11FFFFFF" />
+            <Thickness x:Key="SocMedButtonBorderThickness">0</Thickness>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"
+                             Color="Transparent" />
+            <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent"
+                             Color="Transparent" />
+            <StaticResource x:Key="SolidColorBrushBackgroundHover"
+                            ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="SolidColorBrushBackgroundPressed"
+                            ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="SolidColorBrushBackgroundDisabled"
+                            ResourceKey="SystemColorGrayTextColorBrush" />
+            <StaticResource x:Key="SocMedButtonBorderThickness"
+                            ResourceKey="ButtonBorderThemeThickness" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
@@ -39,7 +55,7 @@
         <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
         <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
         <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />
+        <Setter Property="BorderThickness" Value="{ThemeResource SocMedButtonBorderThickness}" />
         <Setter Property="Padding" Value="{ThemeResource ButtonPadding}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
