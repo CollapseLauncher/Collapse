@@ -159,6 +159,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData!.ManifestIdentityList
                                                                                    .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                                                   .Where(x => x.MatchingField == null || !IsVoicePackMatchingField(x.MatchingField))
                                                                                    .ToList();
 
             if (otherManifestIdentity.Count == 0)
