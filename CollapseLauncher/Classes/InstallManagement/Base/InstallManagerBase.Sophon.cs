@@ -654,8 +654,9 @@ namespace CollapseLauncher.InstallManager.Base
                 ResetStatusAndProgress();
 
                 // Set the progress bar to indetermined
-                IsSophonInUpdateMode = !isPreloadMode;
-                Status.IsIncludePerFileIndicator = !isPreloadMode;
+                IsSophonInUpdateMode                 = !isPreloadMode;
+                IsSophonInPreloadVerifyMode          = isPreloadMode && _isSophonPreloadCompleted;
+                Status.IsIncludePerFileIndicator     = !isPreloadMode;
                 Status.IsProgressPerFileIndetermined = true;
                 Status.IsProgressAllIndetermined = true;
                 UpdateStatus();
@@ -868,8 +869,8 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.IsProgressPerFileIndetermined = false;
                 Status.IsProgressAllIndetermined = false;
                 Status.ActivityStatus = $"{(IsSophonInUpdateMode && !isPreloadMode
-                    ? Locale.Lang._Misc.UpdatingAndApplying
-                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
+                    ? Locale.Current.Lang?._Misc?.UpdatingAndApplying
+                    : isSophonPreloadCompleted ? Locale.Current.Lang?._Misc?.Verifying : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                                       ProgressAllCountTotal)}";
                 UpdateStatus();
 

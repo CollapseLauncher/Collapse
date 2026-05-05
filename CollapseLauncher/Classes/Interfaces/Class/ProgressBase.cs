@@ -169,6 +169,7 @@ internal abstract class ProgressBase : GamePropertyBase
     private const int RefreshInterval = 100;
 
     public bool IsSophonInUpdateMode { get; protected set; }
+    public bool IsSophonInPreloadVerifyMode { get; protected set; }
     protected bool IsAllowExtractCorruptZip { get; set; }
 
 
@@ -581,10 +582,9 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
-            ? Locale.Lang._Misc.Updating
-            : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, ProgressAllCountCurrent,
-                                                       ProgressAllCountTotal)}";
-
+            ? Locale.Current.Lang?._Misc?.Updating
+            : IsSophonInPreloadVerifyMode ? Locale.Current.Lang?._Misc?.Verifying : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
+                                               ProgressAllCountTotal)}";
         UpdateStatus();
     }
 
