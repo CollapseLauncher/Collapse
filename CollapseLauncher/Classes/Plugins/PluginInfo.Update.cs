@@ -325,7 +325,7 @@ public partial class PluginInfo
         {
             string  filePath = Path.Combine(outputDir, asset.FilePath);
             string? fileDir  = Path.GetDirectoryName(filePath);
-            string  fileUrl  = cdnBaseUrl.CombineUrlFromString(asset.FilePath);
+            string  fileUrl  = cdnBaseUrl.CombineUrlFromString(asset.FilePath.Replace('\\', '/'));
 
             if (!string.IsNullOrEmpty(fileDir))
             {
@@ -350,6 +350,7 @@ public partial class PluginInfo
                     // ReSharper disable once AccessToDisposedClosure
                     // Reason: The httpClient will never get disposed until the method is done being executed.
                     await httpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead, innerToken);
+                response.EnsureSuccessStatusCode();
                 await using Stream     responseStream = await response.Content.ReadAsStreamAsync(innerToken);
                 await using FileStream fileStream     = File.Create(filePath);
 

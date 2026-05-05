@@ -471,7 +471,7 @@
         "type": "Project",
         "dependencies": {
           "H.NotifyIcon": "[1.0.0, )",
-          "Microsoft.WindowsAppSDK": "[2.0.1, )"
+          "Microsoft.WindowsAppSDK": "[2.0.0-experimental7, )"
         }
       },
       "hi3helper.core": {
@@ -544,8 +544,8 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.251219, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1839, )",
-          "Microsoft.WindowsAppSDK": "[2.0.1, )"
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1721, )",
+          "Microsoft.WindowsAppSDK": "[2.0.0-experimental7, )"
         }
       },
       "innosetuphelper": {
