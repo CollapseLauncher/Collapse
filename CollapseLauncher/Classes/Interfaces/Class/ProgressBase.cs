@@ -1388,6 +1388,31 @@ internal abstract class ProgressBase : GamePropertyBase
         urlNoScheme       =  url[indexOfSchemeMark..];
         return scheme + urlNoScheme;
     }
+
+    [return: NotNullIfNotNull(nameof(url))]
+    internal string? GetHttpsOrHttpOverrideUrl(string? url)
+    {
+        const string schemeStart = "://";
+
+        if (string.IsNullOrEmpty(url))
+        {
+            return url;
+        }
+
+        string scheme = IsForceHttpOverride ? "http://" : "https://";
+        if (url.StartsWith(scheme, StringComparison.OrdinalIgnoreCase))
+        {
+            return url;
+        }
+
+        string urlNoScheme       = url;
+        int    indexOfSchemeMark = url.IndexOf(schemeStart, StringComparison.OrdinalIgnoreCase);
+        if (indexOfSchemeMark < 0) return scheme + urlNoScheme;
+        
+        indexOfSchemeMark += schemeStart.Length;
+        urlNoScheme       =  url[indexOfSchemeMark..];
+        return scheme + urlNoScheme;
+    }
     #endregion
 
     #region Stream and Archive Tools
