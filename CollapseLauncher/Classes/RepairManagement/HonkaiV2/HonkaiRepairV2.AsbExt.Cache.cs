@@ -74,7 +74,7 @@ internal static partial class AssetBundleExtension
 
             // Update Progress
             progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", cacheType);
+                string.Format(Locale.Lang?._CachesPage?.CachesStatusFetchingType ?? "", cacheType);
             progressibleInstance.Status.IsProgressAllIndetermined = true;
             progressibleInstance.Status.IsIncludePerFileIndicator = false;
 

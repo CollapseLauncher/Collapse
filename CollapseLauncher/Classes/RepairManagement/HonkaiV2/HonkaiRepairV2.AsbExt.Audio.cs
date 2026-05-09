@@ -95,7 +95,7 @@ internal static partial class AssetBundleExtension
                 goto AddAsset; // I love goto. Dun ask me why :>
             }
 
-            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status15 ?? "", audioAsset.Path);
+            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang?._GameRepairPage?.Status15 ?? "", audioAsset.Path);
             progressibleInstance.Status.IsProgressAllIndetermined = true;
             progressibleInstance.Status.IsProgressPerFileIndetermined = true;
             progressibleInstance.UpdateStatus();
