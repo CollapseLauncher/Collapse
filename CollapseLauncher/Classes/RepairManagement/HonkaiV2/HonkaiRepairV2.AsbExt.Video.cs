@@ -128,7 +128,7 @@ internal static partial class AssetBundleExtension
             string assetUrl = baseUrl.CombineURLFromString("Video", assetName);
 
             // Update status
-            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", assetName);
+            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang?._GameRepairPage?.Status14 ?? "", assetName);
             progressibleInstance.Status.IsProgressAllIndetermined = true;
             progressibleInstance.Status.IsProgressPerFileIndetermined = true;
             progressibleInstance.UpdateStatus();
