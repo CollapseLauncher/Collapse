@@ -9,14 +9,18 @@ using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Sophon;
 using Microsoft.Win32;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable StringLiteralTypo
@@ -113,7 +117,8 @@ internal partial class HonkaiRepairV2
                .GetResultFromAction(async result =>
                                     {
                                         assetListFromAudio.AddRange(result);
-                                        await FinalizeAudioAssetsPath(assetListFromAudio,
+                                        await FinalizeAudioAssetsPath(assetIndex,
+                                                                      assetListFromAudio,
                                                                       senadinaResult.Audio,
                                                                       token);
                                     });
@@ -296,7 +301,8 @@ internal partial class HonkaiRepairV2
         }
     }
 
-    private async Task FinalizeAudioAssetsPath(List<FilePropertiesRemote> assetList,
+    private async Task FinalizeAudioAssetsPath(List<FilePropertiesRemote> originAssetList,
+                                               List<FilePropertiesRemote> assetList,
                                                SenadinaFileIdentifier?    audioManifestIdentifier,
                                                CancellationToken          token)
     {
@@ -310,14 +316,18 @@ internal partial class HonkaiRepairV2
                                               .FirstOrDefault(x => x.Name.StartsWith("AUDIO_Default"));
 
         string audioBasePath = Path.Combine(GamePath, AssetBundleExtension.RelativePathAudio);
+        FilePropertiesRemote? audioDefaultManifestAsset = originAssetList.FirstOrDefault(x => x.N.EndsWith("AUDIO_Default_manifest.m"));
 
-        if (audioDefaultAsset != null)
+        // Edit: 2026-05-07
+        // Starting from 8.8, AUDIO_Default_manifest.m must expect to be existed. So, if the file is missing or hash doesn't match,
+        // perform download in the background. Then write AUDIO_Default_Version.txt after.
+        string audioDefaultVersionPath = Path.Combine(audioBasePath, "AUDIO_Default_Version.txt");
+        string audioDefaultManifestPath = Path.Combine(audioBasePath, "AUDIO_Default_manifest.m");
+        if (await EnsureAudioDefaultManifestExisted(HttpClientGeneric, audioDefaultManifestAsset, audioDefaultManifestPath, token))
         {
-            ulong  audioDefaultAssetHash      = GetLongFromHashStr(audioDefaultAsset.HashString);
-            byte[] audioDefaultManifestBuffer = new byte[16];
-            audioDefaultAsset.Hash.CopyTo(audioDefaultManifestBuffer);
-            await File.WriteAllTextAsync(Path.Combine(audioBasePath, "AUDIO_Default_Version.txt"), $"{gameVersion}\t{audioDefaultAssetHash}", token);
-            await File.WriteAllBytesAsync(Path.Combine(audioBasePath, "AUDIO_Default_manifest.m"), audioDefaultManifestBuffer, token);
+            byte[] manifestContent = File.ReadAllBytes(audioDefaultManifestPath);
+            ulong audioDefaultAssetHash = BinaryPrimitives.ReadUInt64BigEndian(manifestContent.AsSpan(0, 8));
+            await File.WriteAllTextAsync(audioDefaultVersionPath, $"{gameVersion}\t{audioDefaultAssetHash}", token);
         }
 
         // Create Versioning file.
@@ -378,6 +388,46 @@ internal partial class HonkaiRepairV2
             }
             asset.N = relativePath;
         }
+    }
+
+    private async Task<bool> EnsureAudioDefaultManifestExisted(
+        HttpClient client,
+        FilePropertiesRemote? audioDefaultManifestAsset,
+        string audioDefaultManifestPath,
+        CancellationToken token)
+    {
+        if (audioDefaultManifestAsset == null)
+        {
+            return false;
+        }
+
+        // Check current hash first. If not match, delete and redownload.
+        if (File.Exists(audioDefaultManifestPath))
+        {
+            byte[] hashRemote = audioDefaultManifestAsset.CRCArray;
+            byte[] hashLocal = hashRemote.Length == 8 ?
+                await GetHashAsync<XxHash64>(audioDefaultManifestPath, false, false, token) :
+                await GetCryptoHashAsync<MD5>(audioDefaultManifestPath, null, false, false, token);
+
+            if (!IsBytesEqualReversible(hashRemote, hashLocal))
+            {
+                new FileInfo(audioDefaultManifestPath).TryDeleteFile();
+            }
+        }
+
+        if (!File.Exists(audioDefaultManifestPath))
+        {
+            if (audioDefaultManifestAsset.AssociatedObject is SophonAsset)
+            {
+                await RepairAssetGenericSophonType(audioDefaultManifestAsset, token);
+            }
+            else
+            {
+                await RepairAssetGenericType(client, audioDefaultManifestAsset, token);
+            }
+        }
+
+        return true;
     }
 
     private async Task FinalizeBlockAssetsPath(

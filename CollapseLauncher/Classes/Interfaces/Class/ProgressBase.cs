@@ -24,6 +24,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
@@ -1358,6 +1359,31 @@ internal abstract class ProgressBase : GamePropertyBase
             assetURL       = null;
             goto StartOver;
         }
+    }
+
+    [return: NotNullIfNotNull(nameof(url))]
+    internal string? GetHttpsOrHttpOverrideUrl(string? url)
+    {
+        const string schemeStart = "://";
+
+        if (string.IsNullOrEmpty(url))
+        {
+            return url;
+        }
+
+        string scheme = IsForceHttpOverride ? "http://" : "https://";
+        if (url.StartsWith(scheme, StringComparison.OrdinalIgnoreCase))
+        {
+            return url;
+        }
+
+        string urlNoScheme       = url;
+        int    indexOfSchemeMark = url.IndexOf(schemeStart, StringComparison.OrdinalIgnoreCase);
+        if (indexOfSchemeMark < 0) return scheme + urlNoScheme;
+        
+        indexOfSchemeMark += schemeStart.Length;
+        urlNoScheme       =  url[indexOfSchemeMark..];
+        return scheme + urlNoScheme;
     }
     #endregion
 

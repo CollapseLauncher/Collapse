@@ -58,8 +58,6 @@ internal static partial class AssetBundleExtension
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
         progressibleInstance.UpdateStatus();
 
-        bool isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
-
         await using Stream xmfMetaCurrentFileStream  = senadinaResults.XmfMeta?.fileStream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
         await using Stream xmfPatchCurrentFileStream = senadinaResults.XmfPatch?.fileStream ?? throw new NullReferenceException("Senadina BlockPatch Identifier Stream cannot be null!");
 
@@ -106,15 +104,18 @@ internal static partial class AssetBundleExtension
             ref BlockPatchInfo patchInfoRef =
                 ref CollectionsMarshal.GetValueRefOrNullRef(patchInfos, xmfBlock.BlockName);
 
+            string asbBaseUrl = progressibleInstance.GetRandomAsbBaseUrl(gameServerInfo);
+            string assetUrl =
+                asbBaseUrl.CombineURLFromString($"StreamingAsb/{baseUrlVersionPrefix}/pc/HD/asb", xmfBlock.BlockName);
+
             FilePropertiesRemote asset = new()
             {
                 AssociatedObject = xmfBlock,
-                CRC = Path.GetFileNameWithoutExtension(xmfBlock.BlockName),
-                FT  = FileType.Block,
-                RN = GetRandomBaseUrl(gameServerInfo)
-                   .CombineURLFromString($"StreamingAsb/{baseUrlVersionPrefix}/pc/HD/asb", xmfBlock.BlockName),
-                N = xmfBlock.BlockName,
-                S = xmfBlock.Size
+                CRC              = Path.GetFileNameWithoutExtension(xmfBlock.BlockName),
+                FT               = FileType.Block,
+                RN               = assetUrl,
+                N                = xmfBlock.BlockName,
+                S                = xmfBlock.Size
             };
             assetList.Add(asset);
 
@@ -128,12 +129,20 @@ internal static partial class AssetBundleExtension
         }
 
         return assetList;
+    }
 
-        string GetRandomBaseUrl(KianaDispatch kianaDispatch)
-        {
-            string selectedUrl = kianaDispatch.ExternalAssetUrls.RandomSelectSingle();
-            return isUseHttpRepairOverride ? "http://" : "https://" + selectedUrl;
-        }
+    internal static string GetRandomAsbBaseUrl<T>(this ProgressBase<T> instance, KianaDispatch kianaDispatch)
+        where T : IAssetIndexSummary
+    {
+        string selectedUrl = kianaDispatch.ExternalAssetUrls.RandomSelectSingle();
+        return instance.GetHttpsOrHttpOverrideUrl(selectedUrl);
+    }
+
+    internal static string GetRandomCacheBaseUrl<T>(this ProgressBase<T> instance, KianaDispatch kianaDispatch)
+        where T : IAssetIndexSummary
+    {
+        string selectedUrl = kianaDispatch.AssetBundleUrls.RandomSelectSingle();
+        return instance.GetHttpsOrHttpOverrideUrl(selectedUrl);
     }
 
     internal static bool GetBlockPatchUrlProperty(

@@ -59,74 +59,58 @@ internal static partial class AssetBundleExtension
 
         string gameLanguage = presetConfig.GetGameLanguage() ?? "en";
 
-        Exception? lastException = null;
-        foreach (string assetBundleBaseUrl in gameServerInfo.AssetBundleUrls)
+        string               baseUrl                = progressibleInstance.GetRandomCacheBaseUrl(gameServerInfo);
+        string               assetBundleUrlTemplate = baseUrl.CombineURLFromString("/{0}/editor_compressed/");
+        List<CacheAssetInfo> assetInfoList          = [];
+
+        foreach (CacheAssetType cacheType in Enum.GetValues<CacheAssetType>().Where(x => cacheAssetType?.HasFlag(x) ?? false))
         {
-            try
-            {
-                string assetBundleUrlTemplate = assetBundleBaseUrl.CombineURLFromString("/{0}/editor_compressed/");
-                foreach (CacheAssetType cacheType in Enum.GetValues<CacheAssetType>()
-                                                         .Where(x => cacheAssetType?.HasFlag(x) ?? false))
-                {
-                    string typeAsString = cacheType.ToString().ToLowerInvariant();
-                    string baseAssetUrl = string.Format(assetBundleUrlTemplate, typeAsString);
+            string typeAsString = cacheType.ToString().ToLowerInvariant();
+            string baseAssetUrl = string.Format(assetBundleUrlTemplate, typeAsString);
 
-                    string indexFileUrl = baseAssetUrl.CombineURLFromString("{0}Version.unity3d");
-                    indexFileUrl = string.Format(indexFileUrl, cacheType == CacheAssetType.Data ? "Data" : "Resource");
+            string indexFileUrl = baseAssetUrl.CombineURLFromString("{0}Version.unity3d");
+            indexFileUrl = string.Format(indexFileUrl, cacheType == CacheAssetType.Data ? "Data" : "Resource");
 
-                    // Update Progress
-                    progressibleInstance.Status.ActivityStatus =
-                        string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", cacheType);
-                    progressibleInstance.Status.IsProgressAllIndetermined = true;
-                    progressibleInstance.Status.IsIncludePerFileIndicator = false;
+            // Update Progress
+            progressibleInstance.Status.ActivityStatus =
+                string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", cacheType);
+            progressibleInstance.Status.IsProgressAllIndetermined = true;
+            progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
-                    progressibleInstance.UpdateStatus();
+            progressibleInstance.UpdateStatus();
 
-                    Logger.LogWriteLine($"[AssetBundleExtension::GetCacheAssetBundleListAsync] Fetching ASB Cache Asset Type: {cacheType} from: {indexFileUrl}",
-                                        LogType.Default,
-                                        true);
+            Logger.LogWriteLine($"[AssetBundleExtension::GetCacheAssetBundleListAsync] Fetching ASB Cache Asset Type: {cacheType} from: {indexFileUrl}",
+                                LogType.Default,
+                                true);
 
-                    // Get cached stream and copy over to MemoryStream
-                    await using Stream indexFileStream =
-                        (await assetBundleHttpClient.TryGetCachedStreamFrom(indexFileUrl, token: token))
-                       .Stream;
-                    await using MemoryStream indexFileMemoryStream = new();
-                    await indexFileStream.CopyToAsync(indexFileMemoryStream, token);
-                    indexFileMemoryStream.Position = 0;
+            // Get cached stream and copy over to MemoryStream
+            await using Stream indexFileStream =
+                (await assetBundleHttpClient.TryGetCachedStreamFrom(indexFileUrl, token: token))
+               .Stream;
+            await using MemoryStream indexFileMemoryStream = new();
+            await indexFileStream.CopyToAsync(indexFileMemoryStream, token);
+            indexFileMemoryStream.Position = 0;
 
-                    await using XORStream indexFileDeXorStream = new(indexFileMemoryStream);
+            await using XORStream indexFileDeXorStream = new(indexFileMemoryStream);
 
-                    List<CacheAssetInfo> assetInfoList =
-                        await DeserializeCacheAssetListAsync(assetBundleHttpClient,
-                                                             indexFileDeXorStream,
-                                                             baseAssetUrl,
-                                                             gameLanguage,
-                                                             cacheType,
-                                                             progressibleInstance,
-                                                             token);
+            assetInfoList.AddRange(
+                await assetBundleHttpClient.DeserializeCacheAssetListAsync(indexFileDeXorStream,
+                                                                           baseAssetUrl,
+                                                                           gameLanguage,
+                                                                           cacheType,
+                                                                           progressibleInstance,
+                                                                           token));
 
-                    Logger.LogWriteLine($"""
-                                         [AssetBundleExtension::GetCacheAssetBundleListAsync] ASB Cache Asset Type {cacheType}!
-                                                                                                   Total Size: {assetInfoList.Sum(x => x.Asset.CS)}
-                                                                                                   Count: {assetInfoList.Count}
-                                         """,
-                                        LogType.Default,
-                                        true);
-
-                    return assetInfoList;
-                }
-            }
-            catch when (token.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch (Exception e) when (!token.IsCancellationRequested)
-            {
-                lastException = e;
-            }
+            Logger.LogWriteLine($"""
+                                 [AssetBundleExtension::GetCacheAssetBundleListAsync] ASB Cache Asset Type {cacheType}!
+                                                                                           Total Size: {assetInfoList.Sum(x => x.Asset.CS)}
+                                                                                           Count: {assetInfoList.Count}
+                                 """,
+                                LogType.Default,
+                                true);
         }
 
-        throw lastException ?? new InvalidOperationException("No game server was reachable");
+        return assetInfoList;
     }
 
     private static async Task<List<CacheAssetInfo>> DeserializeCacheAssetListAsync<T>(
@@ -335,6 +319,11 @@ internal static partial class AssetBundleExtension
         {
             throw new NullReferenceException("GameGatewayDefault cannot be empty on the game preset");
         }
+
+#if DEBUG
+        // Assign Dispatcher Logger for Debug
+        KianaDispatch.DebugLogger = ILoggerHelper.GetILogger("KianaDispatch");
+#endif
 
         Exception? lastException = null;
         for (int i = 0; i < presetConfig.GameDispatchArrayURL?.Count; i++)

@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -19,6 +20,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher
 {
@@ -35,6 +37,11 @@ namespace CollapseLauncher
                 .SetUserAgent(UserAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
+
+#if DEBUG
+            // Assign Dispatcher Logger for Debug
+            KianaDispatch.DebugLogger = ILoggerHelper.GetILogger("KianaDispatch");
+#endif
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
             await BuildGameRepoURL(httpClientNew, token);
@@ -96,13 +103,14 @@ namespace CollapseLauncher
                     string key = GameVersionManager.GamePreset.DispatcherKey;
 
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(client,
-                                                               baseURL,
-                                                               GameVersionManager.GamePreset.GameDispatchURLTemplate,
-                                                               GameVersionManager.GamePreset.GameDispatchChannelName,
-                                                               key,
-                                                               GameVersion.VersionArray,
-                                                               token);
+                    if (GameVersionManager.GamePreset is { GameDispatchURLTemplate: not null, GameDispatchChannelName: not null })
+                        dispatch = await KianaDispatch.GetDispatch(client,
+                                                                   baseURL,
+                                                                   GameVersionManager.GamePreset.GameDispatchURLTemplate,
+                                                                   GameVersionManager.GamePreset.GameDispatchChannelName,
+                                                                   key,
+                                                                   GameVersion.VersionArray,
+                                                                   token);
                     lastException = null;
                     break;
                 }
@@ -116,12 +124,11 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            GameGateway =
-                await KianaDispatch.GetGameserver(client, dispatch!, GameVersionManager.GamePreset.GameGatewayDefault!, token);
+            GameGateway = await KianaDispatch.GetGameserver(client, dispatch!, GameVersionManager.GamePreset.GameGatewayDefault!, token);
             GameRepoURL = BuildAssetBundleURL(GameGateway);
         }
 
-        private static string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
+        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(this.GetRandomCacheBaseUrl(gateway), "/{0}/editor_compressed/");
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, HttpClient client, List<CacheAsset> assetIndex, CancellationToken token)
         {
@@ -132,7 +139,7 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Get the asset index properties
-            string baseURL = string.Format(GameRepoURL!, type.ToString().ToLowerInvariant());
+            string baseURL = string.Format(BuildAssetBundleURL(GameGateway), type.ToString().ToLowerInvariant());
             string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d"),
                                                  type == CacheAssetType.Data ? "Data" : "Resource");
 
@@ -149,25 +156,6 @@ namespace CollapseLauncher
 
             return returnValue;
         }
-
-        /*
-        private void BuildDataPatchConfig(MemoryStream stream, List<CacheAsset> assetIndex)
-        {
-            // Reset position
-            stream.Position = 0;
-
-            // Initialize manifest file
-            CachePatchManifest manifest = new CachePatchManifest(stream, true);
-
-            for (int i = 0; i < assetIndex.Count; i++)
-            {
-                if (assetIndex[i].DataType == CacheAssetType.Data)
-                {
-                    CachePatchInfo info = manifest.PatchAsset.Where(x => IsArrayMatch(x.NewHashSHA1, assetIndex[i].CRCArray)).FirstOrDefault();
-                }
-            }
-        }
-        */
 
         private IEnumerable<CacheAsset> EnumerateCacheTextAsset(CacheAssetType type, IEnumerable<string> enumerator, string baseUrl)
         {
@@ -287,7 +275,7 @@ namespace CollapseLauncher
                         UpdateStatus();
 
                         // Check for the URL availability and is not available, then skip.
-                        var urlStatus = await client.GetURLStatusCode(content.ConcatURL, cancellationToken);
+                        UrlStatus urlStatus = await client.GetURLStatusCode(content.ConcatURL, cancellationToken);
                         LogWriteLine($"The Cache {type} asset: {content.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
                         if (!urlStatus.IsSuccessStatusCode) return;
@@ -342,21 +330,5 @@ namespace CollapseLauncher
         }
 
         public KianaDispatch GetCurrentGateway() => GameGateway;
-
-        public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(HttpClient client, CacheAssetType type, CancellationToken token)
-        {
-            // Initialize asset index for the return
-            List<CacheAsset> returnAsset = [];
-
-            // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(client, token);
-
-            // Fetch the progress
-            _ = await FetchByType(type, client, returnAsset, token);
-
-            // Return the list and base asset bundle repo URL
-            return (returnAsset, GameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(GameGateway),
-                    LuckyNumber);
-        }
     }
 }

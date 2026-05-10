@@ -15,7 +15,6 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
-      xmlns:ffmpegInterop="using:FFmpegInteropX"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
       Loaded="Page_Loaded"
@@ -37,7 +36,6 @@
         <conv:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <conv:RemoveNewLineStringConverter x:Key="RemoveNewLineStringConverter" />
         <conv:FFmpegVideoDecoderModeToIndexConverter x:Key="FFmpegVideoDecoderModeToIndexConverter" />
-        <conv:ObjectToLocaleKvpConverter x:Key="ObjectToLocaleKvpConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -1645,10 +1643,10 @@
                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppCDNRepository, Mode=OneWay}" />
                             <StackPanel Margin="0,0,0,16">
                                 <RadioButtons x:Name="AppCDNSelection"
-                                              ItemsSource="{x:Bind CDNList, Mode=OneWay}"
+                                              DataContext="{x:Bind CdnSelectionContext, Mode=OneWay}"
+                                              ItemsSource="{Binding CDNList, Mode=OneWay}"
                                               MaxColumns="3"
-                                              SelectedIndex="{x:Bind SelectedCDN, Mode=OneWay}"
-                                              SelectionChanged="AppCDNSelection_SelectionChanged">
+                                              SelectedIndex="{Binding SelectedCDN, Mode=TwoWay}">
                                     <RadioButtons.ItemTemplate>
                                         <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                             <Grid MinWidth="110"

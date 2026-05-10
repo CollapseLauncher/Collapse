@@ -59,6 +59,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -75,6 +76,29 @@ using CollapseLauncher.Interfaces;
 
 namespace CollapseLauncher.Pages
 {
+    public partial class CDNSelectionContext : NotifyPropertyChanged
+    {
+        public ObservableCollection<CDNURLProperty> CDNList => [..FallbackCDNUtil.CDNList];
+
+        public int SelectedCDN
+        {
+            get => GetAppConfigValue("CurrentCDN");
+            set
+            {
+                if (value < 0 ||
+                    value > CDNList.Count - 1 ||
+                    SelectedCDN == value)
+                {
+                    return;
+                }
+
+                SetAndSaveConfigValue("CurrentCDN", value);
+                OnPropertyChanged();
+            }
+        }
+    }
+    
+    [GeneratedBindableCustomProperty]
     public sealed partial class SettingsPage : Page
     {
         #region Properties
@@ -94,6 +118,7 @@ namespace CollapseLauncher.Pages
         private readonly List<MethodInfo>                                   _dialogMethods;
         private          List<string>                                       DialogMethodNames        { get; }
         public           string                                             SelectedDialogMethodName { get; set; }
+        private          CDNSelectionContext                                CdnSelectionContext      { get; } = new();
 
         private List<TextBlock> FFmpegDecodingModeSelectionItems { get; } = BuildFFmpegDecodingModeSelectionItems();
         private List<StackPanel> FFmpegDecodingModeHelpItems { get; } = BuildFFmpegDecodingModeHelpItems();
@@ -108,8 +133,8 @@ namespace CollapseLauncher.Pages
         public SettingsPage()
         {
             // This is a waste of memory because it initalizes the list even if DEBUG is not defined.
-            _dialogMethods = new List<MethodInfo>();
-            DialogMethodNames = new List<string>();
+            _dialogMethods    = [];
+            DialogMethodNames = [];
 #if DEBUG
             _dialogMethods = typeof(SimpleDialogs)
                             .GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -811,27 +836,6 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
         }
 
-        private void UpdateBindingsEvents(object sender, EventArgs e)
-        {
-            Bindings.Update();
-            UpdateLayout();
-
-            string switchToVer = IsPreview ? "Stable" : "Preview";
-            ChangeReleaseBtnText.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppChangeReleaseChannel, switchToVer);
-            AppBGCustomizerNote.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppBG_Note,
-                                                     ImageLoaderHelper.SupportedImageFormats,
-                                                     ImageLoaderHelper.SupportedVideoFormats
-                                                    );
-
-            string url = GetAppConfigValue("HttpProxyUrl");
-            ValidateHttpProxyUrl(url);
-
-            _dnsSettingsContext.ExternalDnsConnectionTypeList = null;
-            _dnsSettingsContext.ExternalDnsProviderList       = null;
-            CustomDnsConnectionTypeComboBox.UpdateLayout();
-            CustomDnsProviderListComboBox.UpdateLayout();
-        }
-
         private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
         private int SelectedWindowSizeProfile
         {
@@ -848,34 +852,6 @@ namespace CollapseLauncher.Pages
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
                 SaveAppConfig();
             }
-        }
-
-        private List<CDNURLProperty> CDNList { get => FallbackCDNUtil.CDNList; }
-
-        private int SelectedCDN
-        {
-            get
-            {
-                int value = GetAppConfigValue("CurrentCDN");
-                return value;
-            }
-        }
-
-        private void AppCDNSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.FirstOrDefault() is not CDNURLProperty asCdnUrlNew)
-            {
-                return;
-            }
-
-            int indexAt = CDNList.IndexOf(asCdnUrlNew);
-            if (indexAt < 0)
-            {
-                return;
-            }
-
-            SetAppConfigValue("CurrentCDN", indexAt);
-            SaveAppConfig();
         }
 
         private bool IsIncludeGameLogs

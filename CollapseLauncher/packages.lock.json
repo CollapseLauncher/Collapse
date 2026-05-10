@@ -456,8 +456,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "6.4.1",
-        "contentHash": "2Q2ySa5PfCB11S91qQFPJNRqPlRB5rUDtpc1B4DnecvwW5cWO7W9C3+J7K0xGfHKfUZP5pglkYmxrn+alJ7zXA=="
+        "resolved": "6.5.0",
+        "contentHash": "EuC4Da4WcC8eE8d+AHoDGLK0wfyrQ/OYeNghDnR9dc3q/jDUadqXsJtEsq8U9Dt+VG6lCg0K8AoksheCVe3q8w=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -520,7 +520,7 @@
         "type": "Project",
         "dependencies": {
           "H.NotifyIcon": "[1.0.0, )",
-          "Microsoft.WindowsAppSDK": "[2.0.0-experimental7, )"
+          "Microsoft.WindowsAppSDK": "[2.0.1, )"
         }
       },
       "hi3helper.core": {
@@ -529,7 +529,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.251115.2, )",
-          "Sentry": "[6.4.1, )"
+          "Sentry": "[6.5.0, )"
         }
       },
       "hi3helper.enctool": {
@@ -600,8 +600,8 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.251219, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1721, )",
-          "Microsoft.WindowsAppSDK": "[2.0.0-experimental7, )"
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1839, )",
+          "Microsoft.WindowsAppSDK": "[2.0.1, )"
         }
       },
       "innosetuphelper": {

@@ -346,7 +346,6 @@ namespace CollapseLauncher
             {
                 CodecManager.Configure(codecs =>
                                        {
-                                           codecs.UseWicCodecs(WicCodecPolicy.BuiltIn);
                                            codecs.UseLibwebp();
                                            codecs.UseLibheif();
                                            codecs.UseLibjxl();
@@ -699,34 +698,20 @@ namespace CollapseLauncher
                 return args;
             }
 
-            int indexOfArg = -1;
-            string[] restArgs = args.Length == 1 ? [] : new string[args.Length - 1];
-
-            // Copy other args and find restart arg
-            for (int i = 0; i < args.Length; i++)
-            {
-                string currentArg = args[i];
-                if (currentArg.StartsWith(restartedFromPidArgKey, StringComparison.OrdinalIgnoreCase))
-                {
-                    indexOfArg = i;
-                    continue;
-                }
-                restArgs[i < indexOfArg ? i : i - 1] = currentArg;
-            }
-
-            if (indexOfArg < 0)
+            string firstArg = args[0];
+            if (!firstArg.StartsWith(restartedFromPidArgKey, StringComparison.OrdinalIgnoreCase))
             {
                 return args;
             }
 
-            ReadOnlySpan<char> restartParentPidArg = args[indexOfArg];
-            ReadOnlySpan<char> restartParentPid = ConverterTool.GetSplit(restartParentPidArg, 1, ":,#$;");
+            string[] otherArgs = args.Length > 1 ? args[1..] : [];
+            ReadOnlySpan<char> restartParentPid = ConverterTool.GetSplit(firstArg, 1, ":,#$;");
 
             // Check for PID. If exist, then kill.
             if (!int.TryParse(restartParentPid, out int parentPid) ||
                 !ProcessChecker.IsProcessExist(parentPid))
             {
-                return restArgs;
+                return otherArgs;
             }
 
             Console.WriteLine($"Waiting to kill parent process: {parentPid}");
@@ -734,7 +719,7 @@ namespace CollapseLauncher
             parentProcess.Kill();
             parentProcess.WaitForExit();
 
-            return restArgs;
+            return otherArgs;
         }
     }
 }

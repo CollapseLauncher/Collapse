@@ -55,9 +55,8 @@ internal static partial class AssetBundleExtension
             CancellationToken token        = default)
         where T : IAssetIndexSummary
     {
-        bool              isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
-        AudioLanguageType gameLanguageType        = GetCurrentGameAudioLanguage(presetConfig);
-        int               parallelThread          = Math.Clamp(progressibleInstance.ThreadForIONormalized * 4, 16, 64);
+        AudioLanguageType gameLanguageType = GetCurrentGameAudioLanguage(presetConfig);
+        int               parallelThread   = Math.Clamp(progressibleInstance.ThreadForIONormalized * 4, 16, 64);
 
         HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
         List<CacheAssetInfo> assetInfoList =
@@ -90,7 +89,7 @@ internal static partial class AssetBundleExtension
         await using Stream cgFileStream =
             (await assetBundleHttpClient.TryGetCachedStreamFrom(cgMetadataFile.AssetUrl, token: token))
            .Stream;
-        await using MemoryStream cgFileStreamMemory = new MemoryStream();
+        await using MemoryStream cgFileStreamMemory = new();
         await progressibleInstance.DoCopyStreamProgress(cgFileStream, cgFileStreamMemory, token: token);
         cgFileStreamMemory.Position = 0;
 
@@ -125,51 +124,42 @@ internal static partial class AssetBundleExtension
                 ? entry.Value.SizeJp
                 : entry.Value.SizeCn;
 
-            foreach (string baseUrl in gameServerInfo.ExternalAssetUrls)
+            string baseUrl  = progressibleInstance.GetRandomAsbBaseUrl(gameServerInfo);
+            string assetUrl = baseUrl.CombineURLFromString("Video", assetName);
+
+            // Update status
+            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", assetName);
+            progressibleInstance.Status.IsProgressAllIndetermined = true;
+            progressibleInstance.Status.IsProgressPerFileIndetermined = true;
+            progressibleInstance.UpdateStatus();
+
+            if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV)
             {
-                string assetUrl = (isUseHttpRepairOverride ? "http://" : "https://") + baseUrl;
-                assetUrl = assetUrl.CombineURLFromString("Video", assetName);
-
-                // Update status
-                if (progressibleInstance != null)
+                UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
+                Logger.LogWriteLine($"The CG asset: {assetName} " +
+                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                if (!urlStatus.IsSuccessStatusCode)
                 {
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", assetName);
-                    progressibleInstance.Status.IsProgressAllIndetermined = true;
-                    progressibleInstance.Status.IsProgressPerFileIndetermined = true;
-                    progressibleInstance.UpdateStatus();
+                    throw new HttpRequestException("No Asset bundle URLs were reachable");
                 }
 
-                if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV)
+                if (urlStatus.FileSize > 0)
                 {
-                    UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
-                    Logger.LogWriteLine($"The CG asset: {assetName} " +
-                                        (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
-                    if (!urlStatus.IsSuccessStatusCode)
-                    {
-                        continue;
-                    }
-
-                    if (urlStatus.FileSize > 0)
-                    {
-                        assetFilesize = urlStatus.FileSize;
-                    }
+                    assetFilesize = urlStatus.FileSize;
                 }
-                
-                lock (cgEntries)
-                {
-                    cgEntries.Add(new FilePropertiesRemote
-                    {
-                        FT               = FileType.Video,
-                        N                = assetName,
-                        RN               = assetUrl,
-                        S                = assetFilesize,
-                        AssociatedObject = entry.Value
-                    });
-                }
-                return;
             }
 
-            throw new HttpRequestException("No Asset bundle URLs were reachable");
+            lock (cgEntries)
+            {
+                cgEntries.Add(new FilePropertiesRemote
+                {
+                    FT               = FileType.Video,
+                    N                = assetName,
+                    RN               = assetUrl,
+                    S                = assetFilesize,
+                    AssociatedObject = entry.Value
+                });
+            }
         }
     }
 }

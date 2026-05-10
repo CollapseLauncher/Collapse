@@ -57,88 +57,74 @@ internal static partial class AssetBundleExtension
 
         progressibleInstance.UpdateStatus();
 
-        bool              isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
-        AudioLanguageType gameLanguageType        = GetCurrentGameAudioLanguage(presetConfig);
+        AudioLanguageType gameLanguageType = GetCurrentGameAudioLanguage(presetConfig);
+        string            baseUrl          = progressibleInstance.GetRandomAsbBaseUrl(gameServerInfo);
+        string baseAudioUrl =
+            baseUrl.CombineURLFromString($"Audio/Windows/{gameVersion.Major}_{gameVersion.Minor}/{gameServerInfo
+               .Manifest
+               .ManifestAudio
+               .ManifestAudioRevision}");
 
-        Exception? lastException = null;
-        foreach (string baseAsbUrl in gameServerInfo.ExternalAssetUrls)
+        await using Stream manifestStream = audioFileIdentifier.fileStream ?? throw new NullReferenceException("Senadina Audio Identifier Stream cannot be null!");
+        KianaAudioManifest manifestData =
+            new(manifestStream, gameVersion.VersionArrayManifest);
+
+        List<FilePropertiesRemote> assetList = [];
+        await Parallel.ForEachAsync(manifestData.AudioAssets,
+                                    new ParallelOptions
+                                    {
+                                        CancellationToken = token,
+                                        MaxDegreeOfParallelism = parallelThread
+                                    },
+                                    ImplCheckAndAdd);
+
+        return assetList;
+
+        async ValueTask ImplCheckAndAdd(ManifestAssetInfo audioAsset, CancellationToken innerToken)
         {
-            try
+            // Eliminate removed audio assets or not matching language.
+            if ((audioAsset.Language != gameLanguageType &&
+                audioAsset.Language != AudioLanguageType.Common) ||
+                ignoredAudioHashset.Contains(audioAsset.PckType))
             {
-                string baseAudioAssetUrl = ((isUseHttpRepairOverride ? "http://" : "https://") + baseAsbUrl)
-                   .CombineURLFromString($"Audio/Windows/{gameVersion.Major}_{gameVersion.Minor}/{gameServerInfo
-                                            .Manifest
-                                            .ManifestAudio
-                                            .ManifestAudioRevision}");
-
-                await using Stream manifestStream = audioFileIdentifier.fileStream ?? throw new NullReferenceException("Senadina Audio Identifier Stream cannot be null!");
-                KianaAudioManifest manifestData =
-                    new(manifestStream, gameVersion.VersionArrayManifest);
-
-                List<FilePropertiesRemote> assetList = [];
-                await Parallel.ForEachAsync(manifestData.AudioAssets,
-                                            new ParallelOptions
-                                            {
-                                                CancellationToken      = token,
-                                                MaxDegreeOfParallelism = parallelThread
-                                            },
-                                            ImplCheckAndAdd);
-
-                return assetList;
-
-                async ValueTask ImplCheckAndAdd(ManifestAssetInfo audioAsset, CancellationToken innerToken)
-                {
-                    // Eliminate removed audio assets or not matching language.
-                    if ((audioAsset.Language != gameLanguageType &&
-                        audioAsset.Language != AudioLanguageType.Common) ||
-                        ignoredAudioHashset.Contains(audioAsset.PckType))
-                    {
-                        return;
-                    }
-
-                    if (audioAsset.NeedMap)
-                    {
-                        goto AddAsset; // I love goto. Dun ask me why :>
-                    }
-
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status15 ?? "", audioAsset.Path);
-                    progressibleInstance.Status.IsProgressAllIndetermined = true;
-                    progressibleInstance.Status.IsProgressPerFileIndetermined = true;
-                    progressibleInstance.UpdateStatus();
-
-                    string    assetUrl  = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path);
-                    UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
-                    Logger.LogWriteLine($"The audio asset: {audioAsset.Path} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
-
-                    if (!urlStatus.IsSuccessStatusCode)
-                    {
-                        return;
-                    }
-
-                AddAsset:
-                    lock (assetList)
-                    {
-                        assetList.Add(new FilePropertiesRemote
-                        {
-                            IsPatchApplicable = audioAsset.IsHasPatch,
-                            AssociatedObject  = audioAsset,
-                            AudioPatchInfo    = audioAsset.PatchInfo,
-                            CRC               = audioAsset.HashString,
-                            FT                = FileType.Audio,
-                            RN                = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path),
-                            N                 = audioAsset.Name + ".pck",
-                            S                 = audioAsset.Size
-                        });
-                    }
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (audioAsset.NeedMap)
             {
-                lastException = e;
+                goto AddAsset; // I love goto. Dun ask me why :>
+            }
+
+            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status15 ?? "", audioAsset.Path);
+            progressibleInstance.Status.IsProgressAllIndetermined = true;
+            progressibleInstance.Status.IsProgressPerFileIndetermined = true;
+            progressibleInstance.UpdateStatus();
+
+            string assetUrl = baseAudioUrl.CombineURLFromString(audioAsset.Path);
+            UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
+            Logger.LogWriteLine($"The audio asset: {audioAsset.Path} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+
+            if (!urlStatus.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("No Asset bundle URLs were reachable");
+            }
+
+        AddAsset:
+            lock (assetList)
+            {
+                assetList.Add(new FilePropertiesRemote
+                {
+                    IsPatchApplicable = audioAsset.IsHasPatch,
+                    AssociatedObject = audioAsset,
+                    AudioPatchInfo = audioAsset.PatchInfo,
+                    CRC = audioAsset.HashString,
+                    FT = FileType.Audio,
+                    RN = baseAudioUrl.CombineURLFromString(audioAsset.Path),
+                    N = audioAsset.Name + ".pck",
+                    S = audioAsset.Size
+                });
             }
         }
-
-        throw lastException ?? new HttpRequestException("No Asset bundle URLs were reachable");
     }
 
     internal static bool GetAudioPatchUrlProperty(
