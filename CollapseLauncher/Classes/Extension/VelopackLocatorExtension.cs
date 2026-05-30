@@ -5,7 +5,6 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
-using NuGet.Versioning;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -34,12 +33,8 @@ namespace CollapseLauncher.Extension
             // its custom AUMID
             IVelopackLogger? logger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
 
-            Process currentProcess = Process.GetCurrentProcess();
-
-            WindowsVelopackLocator locator =
-                new(currentProcess.MainModule!.FileName,
-                    (uint)currentProcess.Id,
-                    logger);
+            DefaultProcessImpl     procDefault = new(logger);
+            WindowsVelopackLocator locator     = new(procDefault, logger);
             // HACK: Always ensure to set the AUMID field null so it won't
             //       set the AUMID to its own.
             locator.GetLocatorAumidField() = null;
