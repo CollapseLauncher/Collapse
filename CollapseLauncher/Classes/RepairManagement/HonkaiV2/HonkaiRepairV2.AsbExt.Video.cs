@@ -7,6 +7,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -57,6 +58,8 @@ internal static partial class AssetBundleExtension
     {
         AudioLanguageType gameLanguageType = GetCurrentGameAudioLanguage(presetConfig);
         int               parallelThread   = Math.Clamp(progressibleInstance.ThreadForIONormalized * 4, 16, 64);
+
+        GameVersion currentVersion = progressibleInstance.GameVersion;
 
         HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
         List<CacheAssetInfo> assetInfoList =
@@ -133,14 +136,16 @@ internal static partial class AssetBundleExtension
             progressibleInstance.Status.IsProgressPerFileIndetermined = true;
             progressibleInstance.UpdateStatus();
 
-            if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV)
+            if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV ||
+                IsCgOnCurrentVersionOrPresent(assetName, currentVersion))
             {
                 UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
                 Logger.LogWriteLine($"The CG asset: {assetName} " +
-                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") +
+                                    $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
                 if (!urlStatus.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("No Asset bundle URLs were reachable");
+                    return;
                 }
 
                 if (urlStatus.FileSize > 0)
@@ -161,5 +166,9 @@ internal static partial class AssetBundleExtension
                 });
             }
         }
+
+        static bool IsCgOnCurrentVersionOrPresent(string assetName, GameVersion gameVersion) =>
+            GameVersion.TryParse(assetName.GetSplit(0, '_'), out GameVersion fileVersion) &&
+            fileVersion >= gameVersion;
     }
 }
