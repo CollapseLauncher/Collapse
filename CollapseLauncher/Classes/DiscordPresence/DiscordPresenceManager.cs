@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Plugins;
 using DiscordRPC;
+using DiscordRPC.Entities;
 using DiscordRPC.Message;
 using Hi3Helper;
 using System;
@@ -139,9 +140,9 @@ namespace CollapseLauncher.DiscordPresence
             Logger.LogWriteLine("Discord Presence is Enabled!");
         }
 
-        private void OnReady(object? _, ReadyMessage msg)
+        private void OnReady(object? sender, ReadyMessage? msg)
         {
-            Logger.LogWriteLine($"Connected to Discord with user {msg.User.Username}");
+            Logger.LogWriteLine($"Connected to Discord with user {msg?.User?.Username}");
             if (!_firstTimeConnect)
             {
                 // Restart Discord RPC client
@@ -161,9 +162,9 @@ namespace CollapseLauncher.DiscordPresence
             }
         }
 
-        private static void OnPresenceUpdate(object? _, PresenceMessage msg)
+        private static void OnPresenceUpdate(object? sender, PresenceMessage? msg)
         {
-            if (msg.Presence == null)
+            if (msg?.Presence == null)
             {
                 Logger.LogWriteLine("Activity cleared!");
             }
