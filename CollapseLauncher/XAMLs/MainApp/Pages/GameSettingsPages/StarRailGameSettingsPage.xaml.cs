@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Dialogs;
-using CollapseLauncher.Helper;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -10,9 +10,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;

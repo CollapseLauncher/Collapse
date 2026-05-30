@@ -13,6 +13,8 @@ using CollapseLauncher.Helper.Loading;
 #endif
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
@@ -58,8 +60,6 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Interfaces.Class;
 
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault

@@ -6,10 +6,11 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
-using Hi3Helper.Win32.Screen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,9 +19,8 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using Hi3Helper.SentryHelper;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable AsyncVoidMethod

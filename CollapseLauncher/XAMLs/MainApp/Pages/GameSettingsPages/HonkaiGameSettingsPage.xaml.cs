@@ -9,10 +9,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
+using WinRT;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
-using WinRT;
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;

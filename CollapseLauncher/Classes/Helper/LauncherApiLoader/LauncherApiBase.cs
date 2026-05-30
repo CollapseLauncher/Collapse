@@ -3,9 +3,9 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.SentryHelper;
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
