@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.RegistryUtils;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -9,7 +10,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
-using RegistryUtils;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -81,8 +81,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
     {
         if (gameRegistryKeyPath != null)
         {
-            RegistryMonitor            =  new RegistryMonitor(gameRegistryKeyPath);
-            RegistryMonitor.RegChanged += OnRegistryChanged;
+            RegistryMonitor = new RegistryMonitor(gameRegistryKeyPath);
         }
 
         Settings = settings;
@@ -110,12 +109,15 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
     protected virtual void OnLoaded(object? sender, RoutedEventArgs args)
     {
         Settings?.ReloadSettings();
+        
+        RegistryMonitor?.RegChanged += OnRegistryChanged;
         RegistryMonitor?.Start();
     }
 
     protected virtual void OnUnloaded(object? sender, RoutedEventArgs args)
     {
         RegistryMonitor?.Stop();
+        RegistryMonitor?.RegChanged -= OnRegistryChanged;
     }
 
     protected virtual void OnApplyButtonClick(object sender, RoutedEventArgs args)
