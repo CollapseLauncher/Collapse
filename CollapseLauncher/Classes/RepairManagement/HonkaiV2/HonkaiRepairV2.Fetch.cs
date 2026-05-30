@@ -319,14 +319,20 @@ internal partial class HonkaiRepairV2
         FilePropertiesRemote? audioDefaultManifestAsset = originAssetList.FirstOrDefault(x => x.N.EndsWith("AUDIO_Default_manifest.m"));
 
         // Edit: 2026-05-07
-        // Starting from 8.8, AUDIO_Default_manifest.m must expect to be existed. So, if the file is missing or hash doesn't match,
+        // Starting from 8.8, AUDIO_Default_manifest.m must be present. So, if the file is missing or hash doesn't match,
         // perform download in the background. Then write AUDIO_Default_Version.txt after.
-        string audioDefaultVersionPath = Path.Combine(audioBasePath, "AUDIO_Default_Version.txt");
+        // 
+        // Edit: 2026-05-30
+        // So turns out, I was an idiot. The audioDefaultAssetHash wasn't actually generated from the hash of the AUDIO_Default_manifest.m,
+        // but it was the first 8 bytes of the hash of the AUDIO_Default file itself, being read as a Big-Endian UInt64.
+        // I was a bit exagerated while looking at the reversed code and I thought it was reading the hash from the .m file LMFAO.
+        string audioDefaultVersionPath  = Path.Combine(audioBasePath, "AUDIO_Default_Version.txt");
         string audioDefaultManifestPath = Path.Combine(audioBasePath, "AUDIO_Default_manifest.m");
-        if (await EnsureAudioDefaultManifestExisted(HttpClientGeneric, audioDefaultManifestAsset, audioDefaultManifestPath, token))
+        if (audioDefaultAsset != null &&
+            await EnsureAudioDefaultManifestExisted(HttpClientGeneric, audioDefaultManifestAsset, audioDefaultManifestPath, token))
         {
-            byte[] manifestContent       = await File.ReadAllBytesAsync(audioDefaultManifestPath, token);
-            ulong  audioDefaultAssetHash = BinaryPrimitives.ReadUInt64BigEndian(manifestContent.AsSpan(0, 8));
+            ReadOnlySpan<byte> defaultHashBytes      = audioDefaultAsset.Hash;
+            ulong              audioDefaultAssetHash = BinaryPrimitives.ReadUInt64BigEndian(defaultHashBytes[..8]);
             await File.WriteAllTextAsync(audioDefaultVersionPath, $"{gameVersion}\t{audioDefaultAssetHash}", token);
         }
 
