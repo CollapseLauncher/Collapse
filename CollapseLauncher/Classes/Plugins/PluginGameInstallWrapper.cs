@@ -504,17 +504,17 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             using (_updateStatusLock.EnterScope())
             {
-                string stateString = delegateState switch
+                string? stateString = delegateState switch
                 {
-                    InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Idle => Locale.Current.Lang._Misc.Idle,
-                    InstallProgressState.Install => string.Format(Locale.Current.Lang._Misc.Extracting + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang._Misc.Verifying + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang._Misc.Downloading : Locale.Current.Lang._Misc.Updating) + ": " + Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
+                    InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    InstallProgressState.Idle => Locale.Current.Lang?._Misc?.Idle,
+                    InstallProgressState.Install => string.Format(Locale.Current.Lang?._Misc?.Extracting + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang?._Misc?.Verifying + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                    _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang?._Misc?.Downloading : Locale.Current.Lang?._Misc?.Updating) + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
                 };
 
                 Status.ActivityStatus = stateString;
-                Status.ActivityAll = string.Format(Locale.Current.Lang._Misc.PerFromTo, _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+                Status.ActivityAll = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
 
                 UpdateStatus();
             }
@@ -534,7 +534,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                             LogType.Default, true);
 
         // Get the information about the disk
-        DriveInfo driveInfo = new DriveInfo(gamePath);
+        DriveInfo driveInfo = new(gamePath);
 
         // Push log regarding disk space
         Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
@@ -652,13 +652,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             return;
 
         // Collect temp files
-        DirectoryInfo tempDir = new DirectoryInfo(tempDirPath);
+        DirectoryInfo       tempDir   = new(tempDirPath);
         List<LocalFileInfo> tempFiles = [];
-        long totalSize = 0;
+        long                totalSize = 0;
 
         foreach (FileInfo file in tempDir.EnumerateFiles("*", SearchOption.AllDirectories))
         {
-            LocalFileInfo localFile = new LocalFileInfo(file, gameDirPath);
+            LocalFileInfo localFile = new(file, gameDirPath);
             tempFiles.Add(localFile);
             totalSize += file.Length;
         }

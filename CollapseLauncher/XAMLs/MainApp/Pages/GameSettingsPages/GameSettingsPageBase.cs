@@ -16,10 +16,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI;
 using WinRT;
-
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 // ReSharper disable AsyncVoidMethod
-
-#pragma warning disable IDE0290 uSePriMarY cOnsTrucTor pl3asE. Bro... STFU! Who TF gave them idea to have this useless design pattern??!!
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -33,7 +32,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
     public event PropertyChangedEventHandler? PropertyChanged;
 
     // ReSharper disable once UnusedMember.Local
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         // Raise the PropertyChanged event, passing the name of the property whose value has changed.
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -280,5 +279,12 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
     {
         Logger.LogWriteLine("[GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
         DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
+    }
+
+    protected void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        // clamp for negative value when clearing the number box
+        if ((int)sender.Value < 0)
+            sender.Value = 0;
     }
 }

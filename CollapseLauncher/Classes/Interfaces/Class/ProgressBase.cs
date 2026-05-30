@@ -688,7 +688,7 @@ internal abstract class ProgressBase : GamePropertyBase
         UpdateAll();
     }
 
-    protected virtual void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
+    protected virtual void HttpClientDownloadProgressAdapter(object? sender, DownloadEvent e)
     {
         // Set the progress bar not undetermined
         Status.IsProgressPerFileIndetermined = false;

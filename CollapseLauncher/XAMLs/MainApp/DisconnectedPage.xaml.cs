@@ -2,7 +2,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;

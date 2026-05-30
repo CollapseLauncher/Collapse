@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
-using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;

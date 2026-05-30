@@ -22,7 +22,7 @@ namespace CollapseLauncher.FileDialogCOM
         /// <param name="title">The title of the folder dialog</param>
         /// <param name="checkOverride">Override path check and returns the actual string</param>
         /// <returns>If <seealso cref="string"/> is empty, then it's cancelled. Otherwise, returns a selected path</returns>
-        internal static async Task<string> GetRestrictedFolderPathDialog(string? title = null, Func<string, Task<string>>? checkOverride = null)
+        internal static async Task<string> GetRestrictedFolderPathDialog(string? title = null, Func<string, Task<string?>>? checkOverride = null)
         {
         StartGet:
             string dirPath = await FileDialogNative.GetFolderPicker(title);

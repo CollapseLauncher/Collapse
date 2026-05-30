@@ -1,5 +1,4 @@
-﻿using System;
-namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
+﻿namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 
 public struct AVRational
 {

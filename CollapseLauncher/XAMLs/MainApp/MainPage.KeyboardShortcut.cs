@@ -31,6 +31,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
+#nullable enable
 namespace CollapseLauncher;
 
 using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs>;
@@ -172,7 +173,7 @@ public partial class MainPage : Page
         if (CannotUseKbShortcuts || !IsLoadRegionComplete)
             return;
 
-        if (!TryGetCurrentPageObject(out object typeOfPageObj))
+        if (!TryGetCurrentPageObject(out object? typeOfPageObj))
         {
             return;
         }
@@ -198,8 +199,13 @@ public partial class MainPage : Page
 
     private void RestoreCurrentRegion()
     {
-        string       gameTitle     = GetAppConfigValue("GameCategory");
+        string?      gameTitle     = GetAppConfigValue("GameCategory");
         List<string> gameTitleList = MetadataHelper.CurrentGameTitleList;
+
+        if (gameTitle == null)
+        {
+            return;
+        }
 
         int indexCategory = gameTitleList.IndexOf(gameTitle);
         if (indexCategory < 0)
@@ -309,14 +315,14 @@ public partial class MainPage : Page
         _ = overlayMenu.ShowAsync();
     }
 
-    private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath!;
+    private string? GameDirPath => CurrentGameProperty?.GameVersion?.GameDirPath;
     private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         if (!IsGameInstalled()) return;
 
-        string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion?.GamePreset.GameType switch
+        string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty?.GameVersion?.GamePreset.GameType switch
                                                                            {
-                                                                               GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty.GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                                                                               GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty?.GameVersion?.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                                                                                _ => "ScreenShot"
                                                                            });
 
@@ -368,10 +374,10 @@ public partial class MainPage : Page
         {
             if (!IsGameInstalled()) return;
 
-            string gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
-                                CurrentGameProperty.GameVersion?.GameDirPath ?? 
-                                null;
-            
+            string? gameFolder = CurrentGameProperty?.GameVersion?.GameDirAppDataPath ??
+                                 CurrentGameProperty?.GameVersion?.GameDirPath ??
+                                 null;
+
             if (string.IsNullOrEmpty(gameFolder)) return;
             LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
             await Task.Run(() =>
@@ -394,7 +400,7 @@ public partial class MainPage : Page
 
     private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        if (!CurrentGameProperty.IsGameRunning) return;
+        if (!(CurrentGameProperty?.IsGameRunning ?? false)) return;
 
         PresetConfig gamePreset         = CurrentGameProperty.GameVersion?.GamePreset!;
         string?      gamePresetExecName = gamePreset.GameExecutableName;
@@ -438,7 +444,7 @@ public partial class MainPage : Page
         if (!IsLoadRegionComplete || CannotUseKbShortcuts)
             return;
 
-        Type? typeOfPage = CurrentGameProperty.GamePreset.GameType switch
+        Type? typeOfPage = CurrentGameProperty?.GamePreset.GameType switch
         {
             GameNameType.Honkai => typeof(HonkaiGameSettingsPage),
             GameNameType.Genshin => typeof(GenshinGameSettingsPage),

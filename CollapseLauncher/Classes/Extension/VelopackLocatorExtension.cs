@@ -6,7 +6,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;

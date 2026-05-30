@@ -21,7 +21,6 @@ using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
 using System.IO;
 // ReSharper disable UnusedMember.Global
 

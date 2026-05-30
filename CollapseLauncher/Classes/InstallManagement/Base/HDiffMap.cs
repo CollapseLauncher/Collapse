@@ -38,7 +38,7 @@ namespace CollapseLauncher.InstallManagement.Base
 
         [JsonPropertyName("source_file_name")]
         [JsonConverter(typeof(NormalizedPathStringConverter))]
-        public string? SourceFileName { get; set; }
+        public required string SourceFileName { get; set; }
 
         [JsonPropertyName("source_file_size")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]

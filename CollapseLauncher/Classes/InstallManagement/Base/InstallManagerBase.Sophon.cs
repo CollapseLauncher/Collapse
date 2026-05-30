@@ -1191,6 +1191,11 @@ namespace CollapseLauncher.InstallManager.Base
             string[]                   excludeMatchingFieldsPattern,
             SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
+            if (_gameAudioLangListPath == null)
+            {
+                return;
+            }
+            
             // Get the main VO language name from Id
             string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
 

@@ -39,8 +39,8 @@ namespace CollapseLauncher
 
         private static string RegionToChangeName => MetadataHelper.GetCurrentTranslatedTitleRegion();
 
-        private List<object> LastMenuNavigationItem;
-        private List<object> LastFooterNavigationItem;
+        private List<object>? LastMenuNavigationItem;
+        private List<object>? LastFooterNavigationItem;
 
         private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
 
@@ -86,17 +86,17 @@ namespace CollapseLauncher
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     // If explicit cancel was triggered, restore the navigation menu item then return false
-                    foreach (object item in LastMenuNavigationItem)
+                    foreach (object item in LastMenuNavigationItem ?? [])
                     {
                         NavigationViewControl.MenuItems.Add(item);
                     }
-                    foreach (object item in LastFooterNavigationItem)
+                    foreach (object item in LastFooterNavigationItem ?? [])
                     {
                         NavigationViewControl.FooterMenuItems.Add(item);
                     }
                     NavigationViewControl.IsSettingsVisible = true;
-                    LastMenuNavigationItem.Clear();
-                    LastFooterNavigationItem.Clear();
+                    LastMenuNavigationItem?.Clear();
+                    LastFooterNavigationItem?.Clear();
                     m_arguments.StartGame?.Play = false;
 
                     ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
@@ -297,7 +297,7 @@ namespace CollapseLauncher
             return isBeginValid && isEndValid;
         }
 
-        private async void ChangeRegion(object sender, RoutedEventArgs e)
+        private async void ChangeRegion(object? sender, RoutedEventArgs? e)
         {
             try
             {
@@ -310,7 +310,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
+        private async void ChangeRegionNoWarning(object? sender, RoutedEventArgs? e)
         {
             try
             {
@@ -358,10 +358,11 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task<bool> LoadRegionRootButton()
+        private async Task LoadRegionRootButton()
         {
             if (ComboBoxGameTitle.SelectedValue is not string gameTitle ||
-                ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion) return false;
+                ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion)
+                return;
 
             // Set and Save CurrentRegion in AppConfig
             MetadataHelper.SaveGame(gameTitle, gameRegion.ZoneName);
@@ -373,7 +374,7 @@ namespace CollapseLauncher
             _ = ShowAsyncLoadingTimedOutPill();
             if (!await LoadRegionFromCurrentConfigV2(gameRegion, gameTitle, gameRegion.ZoneName ?? ""))
             {
-                return false;
+                return;
             }
 
             LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
@@ -381,11 +382,9 @@ namespace CollapseLauncher
             if (AppDiscordPresence.IsRpcEnabled)
                 AppDiscordPresence.SetupPresence(gameRegion);
         #endif
-            return true;
-
         }
 
-        private void ToggleChangeRegionBtn(in object sender, bool IsHide)
+        private void ToggleChangeRegionBtn(object? sender, bool IsHide)
         {
             if (IsHide)
             {

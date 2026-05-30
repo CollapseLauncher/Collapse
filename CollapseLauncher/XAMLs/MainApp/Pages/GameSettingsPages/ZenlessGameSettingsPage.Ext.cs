@@ -7,29 +7,22 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
-// ReSharper disable CommentTypo
-
 // ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+#pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.Pages
 {
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    public partial class ZenlessGameSettingsPage : INotifyPropertyChanged
+    public partial class ZenlessGameSettingsPage
     {
-        #region Methods
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        // ReSharper disable once UnusedMember.Local
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #region Fields
+        private ZenlessSettings? SettingsThis { get => field ??= Settings as ZenlessSettings; }
+        #endregion
 
+        #region Methods
         private GraphicsPresetOption? oldPreset;
         private void PresetSelector(object sender, SelectionChangedEventArgs _)
         {
@@ -135,10 +128,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsFullscreenEnabled
         {
-            get => ((ZenlessSettings)Settings).SettingsScreen.isfullScreen;
+            get => SettingsThis?.SettingsScreen.isfullScreen ?? false;
             set
             {
-                ((ZenlessSettings)Settings).SettingsScreen.isfullScreen = value;
+                SettingsThis?.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled = false;
@@ -157,10 +150,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsBorderlessEnabled
         {
-            get => ((ZenlessSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen;
+            get => SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen ?? false;
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen = value;
+                SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled = false;
@@ -178,10 +171,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsCustomResolutionEnabled
         {
-            get => ((ZenlessSettings)Settings).SettingsCollapseScreen.UseCustomResolution;
+            get => SettingsThis?.SettingsCollapseScreen.UseCustomResolution ?? false;
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseScreen.UseCustomResolution = value;
+                SettingsThis?.SettingsCollapseScreen.UseCustomResolution = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -212,10 +205,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsExclusiveFullscreenEnabled
         {
-            get => IsFullscreenEnabled && ((ZenlessSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen;
+            get => IsFullscreenEnabled && (SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen ?? false);
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen = value;
+                SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = false;
@@ -228,14 +221,14 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public bool IsCanResizableWindow => !((ZenlessSettings)Settings).SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
+        public bool IsCanResizableWindow => !(SettingsThis?.SettingsScreen.isfullScreen ?? false) && !IsExclusiveFullscreenEnabled;
 
         public bool IsResizableWindow
         {
-            get => ((ZenlessSettings)Settings).SettingsCollapseScreen.UseResizableWindow;
+            get => SettingsThis?.SettingsCollapseScreen.UseResizableWindow ?? false;
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseScreen.UseResizableWindow = value;
+                SettingsThis?.SettingsCollapseScreen.UseResizableWindow = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = true;
@@ -248,18 +241,18 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public bool IsCanCustomResolution => ((ZenlessSettings)Settings).SettingsCollapseScreen.UseResizableWindow && !IsExclusiveFullscreenEnabled;
+        public bool IsCanCustomResolution => (SettingsThis?.SettingsCollapseScreen.UseResizableWindow ?? false) && !IsExclusiveFullscreenEnabled;
 
         public int ResolutionW
         {
-            get => ((ZenlessSettings)Settings).SettingsScreen.sizeRes.Width;
-            set => ((ZenlessSettings)Settings).SettingsScreen.sizeRes = new Size(value, ResolutionH);
+            get => SettingsThis?.SettingsScreen.sizeRes.Width ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(value, ResolutionH);
         }
 
         public int ResolutionH
         {
-            get => ((ZenlessSettings)Settings).SettingsScreen.sizeRes.Height;
-            set => ((ZenlessSettings)Settings).SettingsScreen.sizeRes = new Size(ResolutionW, value);
+            get => SettingsThis?.SettingsScreen.sizeRes.Height ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(ResolutionW, value);
         }
 
         public bool IsCanResolutionWH => IsCustomResolutionEnabled;
@@ -268,7 +261,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string res = ((ZenlessSettings)Settings).SettingsScreen.sizeResString;
+                string? res = SettingsThis?.SettingsScreen.sizeResString;
                 if (!string.IsNullOrEmpty(res))
                 {
                     return res;
@@ -292,7 +285,7 @@ namespace CollapseLauncher.Pages
 
                 // Get index of the resolution and clamp it to the valid index if possible (to default as 0).
                 // [Added from @bagusnl docs] Usually, the game will use -1 as its arbitrary value (SMH)
-                int res      = ((ZenlessSettings)Settings).GeneralData?.ResolutionIndex ?? 0;
+                int res      = SettingsThis?.GeneralData?.ResolutionIndex ?? 0;
                 int indexRes = ScreenResolutionIsFullscreenIdx.Count < res || res < 0 ? 0 : res;
 
                 // Get the value from Fullscreen index of the resolution
@@ -320,7 +313,7 @@ namespace CollapseLauncher.Pages
                 IsFullscreenEnabled = isFullscreen;
 
                 // Set the resolution index
-                ((ZenlessSettings)Settings).GeneralData.ResolutionIndex = value;
+                SettingsThis?.GeneralData.ResolutionIndex = value;
             }
         }
         #endregion
@@ -328,17 +321,17 @@ namespace CollapseLauncher.Pages
         #region Misc
         public bool IsGameBoost
         {
-            get => Settings?.SettingsCollapseMisc?.UseGameBoost ?? false;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.UseGameBoost = value;
+            get => SettingsThis?.SettingsCollapseMisc?.UseGameBoost ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.UseGameBoost = value;
         }
         
         public bool IsMobileMode
         {
-            get => Settings?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
+            get => SettingsThis?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseMisc.LaunchMobileMode = value;
-                ((ZenlessSettings)Settings).GeneralData.LocalUILayoutPlatform =
+                SettingsThis?.SettingsCollapseMisc.LaunchMobileMode = value;
+                SettingsThis?.GeneralData.LocalUILayoutPlatform =
                     value ? LocalUiLayoutPlatform.Mobile : LocalUiLayoutPlatform.PC;
             }
             
@@ -350,13 +343,13 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = Settings?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
+                bool value = SettingsThis?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
             {
-                ((ZenlessSettings)Settings).SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings = value;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
             }
         }
@@ -365,7 +358,7 @@ namespace CollapseLauncher.Pages
         {
             get 
             {
-                bool value = Settings?.SettingsCollapseMisc?.UseGamePreLaunchCommand ?? false;
+                bool value = SettingsThis?.SettingsCollapseMisc?.UseGamePreLaunchCommand ?? false;
 
                 if (value)
                 {
@@ -395,60 +388,53 @@ namespace CollapseLauncher.Pages
                     GameLaunchDelay.IsEnabled           = false;
                 }
 
-                ((ZenlessSettings)Settings).SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
             }
         }
 
         public string PreLaunchCommand
         {
-            get => Settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.GamePreLaunchCommand = value;
+            get => SettingsThis?.SettingsCollapseMisc?.GamePreLaunchCommand ?? string.Empty;
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand = value;
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
-            get => Settings?.SettingsCollapseMisc?.GamePreLaunchExitOnGameStop ?? false;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+            get => SettingsThis?.SettingsCollapseMisc?.GamePreLaunchExitOnGameStop ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
         public int LaunchDelay
         {
-            get => Settings?.SettingsCollapseMisc?.GameLaunchDelay ?? 0;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.GameLaunchDelay = value;
+            get => SettingsThis?.SettingsCollapseMisc?.GameLaunchDelay ?? 0;
+            set => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay = value;
         }
         
         public bool IsUsePostExitCommand
         {
             get 
             {
-                bool value = Settings?.SettingsCollapseMisc?.UseGamePostExitCommand ?? false;
+                bool value = SettingsThis?.SettingsCollapseMisc?.UseGamePostExitCommand ?? false;
                 PostExitCommandTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
                 PostExitCommandTextBox.IsEnabled = value;
-                ((ZenlessSettings)Settings).SettingsCollapseMisc.UseGamePostExitCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
 
         public string PostExitCommand
         {
-            get => Settings?.SettingsCollapseMisc?.GamePostExitCommand;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.GamePostExitCommand = value;
-        }
-
-        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-        {
-            // clamp for negative value when clearing the number box
-            if ((int)sender.Value < 0)
-                sender.Value = 0;
+            get => SettingsThis?.SettingsCollapseMisc?.GamePostExitCommand ?? string.Empty;
+            set => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand = value;
         }
 
         public bool RunWithExplorerAsParent
         {
-            get => ((ZenlessSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent;
-            set => ((ZenlessSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent = value;
+            get => SettingsThis?.SettingsCollapseMisc?.RunWithExplorerAsParent ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent = value;
         }
         #endregion
 
@@ -457,170 +443,172 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var v = (int)((ZenlessSettings)Settings).GeneralData.DeviceLanguageType;
+                int v = (int)(SettingsThis?.GeneralData.DeviceLanguageType ?? default);
                 return v <= 0 ? 1 : v;
             }
-            set => ((ZenlessSettings)Settings).GeneralData.DeviceLanguageType = (LanguageText)value;
+            set => SettingsThis?.GeneralData.DeviceLanguageType = (LanguageText)value;
         }
 
         public int Lang_Audio
         {
             get
             {
-                var v = (int)((ZenlessSettings)Settings).GeneralData.DeviceLanguageVoiceType;
+                int v = (int)(SettingsThis?.GeneralData.DeviceLanguageVoiceType ?? default);
                 return v <= 0 ? 1 : v;
             }
-            set => ((ZenlessSettings)Settings).GeneralData.DeviceLanguageVoiceType = (LanguageVoice)value;
+            set => SettingsThis?.GeneralData.DeviceLanguageVoiceType = (LanguageVoice)value;
         }
         #endregion
 
         #region Graphics Settings - GENERAL_DATA > SystemSettingDataMap
         public bool EnableVSync
         {
-            get => ((ZenlessSettings)Settings).GeneralData?.VSync ?? false;
-            set => ((ZenlessSettings)Settings).GeneralData.VSync = value;
+            get => SettingsThis?.GeneralData?.VSync ?? false;
+            set => SettingsThis?.GeneralData.VSync = value;
         }
         
         public int Graphics_Preset
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.GraphicsPreset;
-            set => ((ZenlessSettings)Settings).GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
+            get => (int)(SettingsThis?.GeneralData.GraphicsPreset ?? default);
+            set => SettingsThis?.GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
         }
         
         public int Graphics_RenderRes
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.RenderResolution;
-            set => ((ZenlessSettings)Settings).GeneralData.RenderResolution = (RenderResOption)value;
+            get => (int)(SettingsThis?.GeneralData.RenderResolution ?? default);
+            set => SettingsThis?.GeneralData.RenderResolution = (RenderResOption)value;
         }
         
         public int Graphics_Shadow
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.ShadowQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.ShadowQuality = (QualityOption3)value;
+            get => (int)(SettingsThis?.GeneralData.ShadowQuality ?? default);
+            set => SettingsThis?.GeneralData.ShadowQuality = (QualityOption3)value;
         }
         
         public int Graphics_AntiAliasing
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.AntiAliasing;
-            set => ((ZenlessSettings)Settings).GeneralData.AntiAliasing = (AntiAliasingOption)value;
+            get => (int)(SettingsThis?.GeneralData.AntiAliasing ?? default);
+            set => SettingsThis?.GeneralData.AntiAliasing = (AntiAliasingOption)value;
         }
         
         public int Graphics_VolFog
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.VolumetricFogQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.VolumetricFogQuality = (QualityOption4)value;
+            get => (int)(SettingsThis?.GeneralData.VolumetricFogQuality ?? default);
+            set => SettingsThis?.GeneralData.VolumetricFogQuality = (QualityOption4)value;
         }
 
         public bool Graphics_Bloom
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Bloom;
-            set => ((ZenlessSettings)Settings).GeneralData.Bloom = value;
+            get => SettingsThis?.GeneralData.Bloom ?? false;
+            set => SettingsThis?.GeneralData.Bloom = value;
         }
 
         public bool Graphics_MotionBlur
         {
-            get => ((ZenlessSettings)Settings).GeneralData.MotionBlur;
-            set => ((ZenlessSettings)Settings).GeneralData.MotionBlur = value;
+            get => SettingsThis?.GeneralData.MotionBlur ?? false;
+            set => SettingsThis?.GeneralData.MotionBlur = value;
         }
 
         public int Graphics_Reflection
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.ReflectionQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.ReflectionQuality = (QualityOption4)value;
+            get => (int)(SettingsThis?.GeneralData.ReflectionQuality ?? default);
+            set => SettingsThis?.GeneralData.ReflectionQuality = (QualityOption4)value;
         }
         
         public int Graphics_Effects
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.FxQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.FxQuality = (QualityOption5)value;
+            get => (int)(SettingsThis?.GeneralData.FxQuality ?? default);
+            set => SettingsThis?.GeneralData.FxQuality = (QualityOption5)value;
         }
 
         public int Graphics_ColorFilter
         {
-            get => ((ZenlessSettings)Settings).GeneralData.ColorFilter;
-            set => ((ZenlessSettings)Settings).GeneralData.ColorFilter = value;
+            get => SettingsThis?.GeneralData.ColorFilter ?? 0;
+            set => SettingsThis?.GeneralData.ColorFilter = value;
         }
         
         public int Graphics_Character
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.CharacterQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.CharacterQuality = (QualityOption2)value;
+            get => (int)(SettingsThis?.GeneralData.CharacterQuality ?? default);
+            set => SettingsThis?.GeneralData.CharacterQuality = (QualityOption2)value;
         }
 
         public bool Graphics_Distortion
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Distortion;
-            set => ((ZenlessSettings)Settings).GeneralData.Distortion = value;
+            get => SettingsThis?.GeneralData.Distortion ?? false;
+            set => SettingsThis?.GeneralData.Distortion = value;
         }
         
         public int Graphics_Shading
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.ShadingQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.ShadingQuality = (QualityOption3)value;
+            get => (int)(SettingsThis?.GeneralData.ShadingQuality ?? default);
+            set => SettingsThis?.GeneralData.ShadingQuality = (QualityOption3)value;
         }
         
         public int Graphics_Environment
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.EnvironmentQuality;
-            set => ((ZenlessSettings)Settings).GeneralData.EnvironmentQuality = (QualityOption2)value;
+            get => (int)(SettingsThis?.GeneralData.EnvironmentQuality ?? default);
+            set => SettingsThis?.GeneralData.EnvironmentQuality = (QualityOption2)value;
         }
         
         public int Graphics_AnisotropicSampling
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.AnisotropicSampling;
-            set => ((ZenlessSettings)Settings).GeneralData.AnisotropicSampling = (AnisotropicSamplingOption)value;
+            get => (int)(SettingsThis?.GeneralData.AnisotropicSampling ?? default);
+            set => SettingsThis?.GeneralData.AnisotropicSampling = (AnisotropicSamplingOption)value;
         }
 
         public int Graphics_GlobalIllumination
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.GlobalIllumination;
-            set => ((ZenlessSettings)Settings).GeneralData.GlobalIllumination = (QualityOption3)value;
+            get => (int)(SettingsThis?.GeneralData.GlobalIllumination ?? default);
+            set => SettingsThis?.GeneralData.GlobalIllumination = (QualityOption3)value;
         }
 
         public int Graphics_Fps
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.Fps;
-            set => ((ZenlessSettings)Settings).GeneralData.Fps = (FpsOption)value;
+            get => (int)(SettingsThis?.GeneralData.Fps ?? default);
+            set => SettingsThis?.GeneralData.Fps = (FpsOption)value;
         }
 
-        /// <inheritdoc cref="Game((ZenlessSettings)Settings).Zenless.GeneralData.HiPrecisionCharaAnim"/>
+        /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
         public int Graphics_HiPreCharaAnim
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.HiPrecisionCharaAnim;
-            set => ((ZenlessSettings)Settings).GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
+            get => (int)(SettingsThis?.GeneralData.HiPrecisionCharaAnim ?? default);
+            set => SettingsThis?.GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
         }
 
         public bool AdvancedGraphics_UseDirectX12Api
         {
-            get => ((ZenlessSettings)Settings).SettingsCollapseScreen.GameGraphicsAPI == 4;
-            set => ((ZenlessSettings)Settings).SettingsCollapseScreen.GameGraphicsAPI = value ? 4 : 3;
+            get => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI == 4;
+            set => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI = value ? 4 : 3;
         }
 
         public bool AdvancedGraphics_UseRayTracing
         {
-            get => ((ZenlessSettings)Settings).GeneralData.RayTracing_Enabled;
-            set => ((ZenlessSettings)Settings).GeneralData.RayTracing_Enabled = value;
+            get => SettingsThis?.GeneralData.RayTracing_Enabled ?? false;
+            set => SettingsThis?.GeneralData.RayTracing_Enabled = value;
         }
 
         public int AdvancedGraphics_RayTracingQuality
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.RayTracing_Quality;
-            set => ((ZenlessSettings)Settings).GeneralData.RayTracing_Quality = (QualityOption3)value;
+            get => (int)(SettingsThis?.GeneralData.RayTracing_Quality ?? default);
+            set => SettingsThis?.GeneralData.RayTracing_Quality = (QualityOption3)value;
         }
 
         public int AdvancedGraphics_SuperResolutionOption
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.SuperResolution_Option;
-            set => ((ZenlessSettings)Settings).GeneralData.SuperResolution_Option = (SuperResolutionScalingOption)value;
+            get => (int)(SettingsThis?.GeneralData.SuperResolution_Option ?? default);
+            set => SettingsThis?.GeneralData.SuperResolution_Option = (SuperResolutionScalingOption)value;
         }
 
         public int AdvancedGraphics_SuperResolutionQuality
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.SuperResolution_Quality;
-            set => ((ZenlessSettings)Settings).GeneralData.SuperResolution_Quality = (SuperResolutionScalingQuality)value;
+            get => (int)(SettingsThis?.GeneralData.SuperResolution_Quality ?? default);
+            set => SettingsThis?.GeneralData.SuperResolution_Quality = (SuperResolutionScalingQuality)value;
         }
 
+        // ReSharper disable once IdentifierTypo
         private static bool? _isDeviceHasRTXGPU;
+        // ReSharper disable once IdentifierTypo
         public bool IsDeviceHasRTXGPU
         {
             get
@@ -652,44 +640,44 @@ namespace CollapseLauncher.Pages
 
         public int Audio_VolMain
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_MainVolume;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_MainVolume = value;
+            get => SettingsThis?.GeneralData.Audio_MainVolume ?? 0;
+            set => SettingsThis?.GeneralData.Audio_MainVolume = value;
         }
 
         public int Audio_VolMusic
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_MusicVolume;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_MusicVolume = value;
+            get => SettingsThis?.GeneralData.Audio_MusicVolume ?? 0;
+            set => SettingsThis?.GeneralData.Audio_MusicVolume = value;
         }
 
         public int Audio_VolDialog
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_DialogVolume;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_DialogVolume = value;
+            get => SettingsThis?.GeneralData.Audio_DialogVolume ?? 0;
+            set => SettingsThis?.GeneralData.Audio_DialogVolume = value;
         }
 
         public int Audio_VolSfx
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_SfxVolume;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_SfxVolume = value;
+            get => SettingsThis?.GeneralData.Audio_SfxVolume ?? 0;
+            set => SettingsThis?.GeneralData.Audio_SfxVolume = value;
         }
 
         public int Audio_VolAmbient
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_AmbientVolume;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_AmbientVolume = value;
+            get => SettingsThis?.GeneralData.Audio_AmbientVolume ?? 0;
+            set => SettingsThis?.GeneralData.Audio_AmbientVolume = value;
         }
 
         public int Audio_PlaybackDevice
         {
-            get => (int)((ZenlessSettings)Settings).GeneralData.Audio_PlaybackDevice;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_PlaybackDevice = (AudioPlaybackDevice)value;
+            get => (int)(SettingsThis?.GeneralData.Audio_PlaybackDevice ?? default);
+            set => SettingsThis?.GeneralData.Audio_PlaybackDevice = (AudioPlaybackDevice)value;
         }
 
         public bool Audio_MuteOnMinimize
         {
-            get => ((ZenlessSettings)Settings).GeneralData.Audio_MuteOnMinimize;
-            set => ((ZenlessSettings)Settings).GeneralData.Audio_MuteOnMinimize = value;
+            get => SettingsThis?.GeneralData.Audio_MuteOnMinimize ?? false;
+            set => SettingsThis?.GeneralData.Audio_MuteOnMinimize = value;
         }
         #endregion
     }

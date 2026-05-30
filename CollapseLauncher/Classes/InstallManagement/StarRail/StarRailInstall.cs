@@ -104,7 +104,7 @@ namespace CollapseLauncher.InstallManager.StarRail
             bool                      doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
-            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false, true))
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager!, false, true))
             {
                 // Assign the game package to delta-patch requirement list
                 // and start the additional patching process (like Audio patch, etc)

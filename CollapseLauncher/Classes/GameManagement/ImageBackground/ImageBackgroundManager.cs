@@ -5,7 +5,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Google.Protobuf.WellKnownTypes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
