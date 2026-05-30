@@ -71,7 +71,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #region Public Methods
 
-        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage)
         {
             IsRunning = true;
 

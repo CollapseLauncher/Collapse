@@ -46,7 +46,17 @@ public partial class ImageBackgroundManager
         }
 
         IsBackgroundLoading = true;
-        new Thread(async () => await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false))
+        new Thread(async void () =>
+        {
+            try
+            {
+                await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWriteLine($"{e}", LogType.Error, true);
+            }
+        })
         {
             IsBackground = true,
             Priority = ThreadPriority.Lowest
@@ -126,7 +136,17 @@ public partial class ImageBackgroundManager
             }
 
             // -- Read Color Accent information from current background context.
-            new Thread(async context => await GetMediaAccentColor(context).ConfigureAwait(false))
+            new Thread(async void (ctx) =>
+            {
+                try
+                {
+                    await GetMediaAccentColor(ctx).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWriteLine($"{e}", LogType.Error, true);
+                }
+            })
             {
                 IsBackground = true
             }.UnsafeStart((downloadedBackgroundUri, isUseFFmpeg));
@@ -356,7 +376,7 @@ public partial class ImageBackgroundManager
                                                                     FileAccess.Write,
                                                                     FileShare.ReadWrite);
 
-            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper._waifu2X));
+            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
             pipeline.WriteOutput(outputFileStream);
         }
     }

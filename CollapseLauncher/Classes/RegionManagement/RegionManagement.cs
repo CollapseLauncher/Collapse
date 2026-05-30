@@ -297,7 +297,7 @@ namespace CollapseLauncher
             return isBeginValid && isEndValid;
         }
 
-        private async void ChangeRegion(object? sender, RoutedEventArgs? e)
+        private void ChangeRegion(object? sender, RoutedEventArgs? e)
         {
             try
             {

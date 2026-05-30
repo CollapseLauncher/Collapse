@@ -258,8 +258,8 @@ namespace CollapseLauncher
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
-                if (LoggerConsole.ConsoleHandle == IntPtr.Zero) return;
+                nint consoleWindowHandle = PInvoke.GetConsoleWindow();
+                if (LoggerConsole.ConsoleHandle == nint.Zero) return;
                 if (PInvoke.IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
@@ -281,7 +281,7 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleMainVisibility(bool forceShow = false)
         {
-            IntPtr mainWindowHandle = WindowUtility.CurrentWindowPtr;
+            nint mainWindowHandle = WindowUtility.CurrentWindowPtr;
             var    isVisible        = PInvoke.IsWindowVisible(mainWindowHandle);
 
             if (isVisible && !forceShow)
@@ -318,8 +318,8 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleAllVisibility()
         {
-            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
-            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
+            nint consoleWindowHandle = PInvoke.GetConsoleWindow();
+            nint mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             bool   isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
 
             bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && PInvoke.IsWindowVisible(consoleWindowHandle);
@@ -345,8 +345,8 @@ namespace CollapseLauncher
         // ReSharper disable once MemberCanBePrivate.Global
         public void BringToForeground()
         {
-            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
-            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
+            nint mainWindowHandle    = WindowUtility.CurrentWindowPtr;
+            nint consoleWindowHandle = PInvoke.GetConsoleWindow();
 
             bool isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
 
@@ -388,8 +388,8 @@ namespace CollapseLauncher
             }
             
             // Force refresh all text based on their respective window state
-            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
-            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
+            nint consoleWindowHandle = PInvoke.GetConsoleWindow();
+            nint mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             
             bool isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
             bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && PInvoke.IsWindowVisible(consoleWindowHandle);
@@ -438,7 +438,7 @@ namespace CollapseLauncher
         public void ShowNotification(string           title,
                                      string           message,
                                      NotificationIcon icon             = NotificationIcon.None,
-                                     IntPtr?          customIconHandle = null,
+                                     nint?          customIconHandle = null,
                                      bool             largeIcon        = false,
                                      bool             sound            = true,
                                      bool             respectQuietTime = true,

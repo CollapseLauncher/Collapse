@@ -720,7 +720,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsCompleted = false;
                 Status.IsCanceled  = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Update);
 #endif
                 break;
             case CompletenessStatus.Completed:
@@ -731,7 +731,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                 lock (Progress)
                 {
@@ -747,7 +747,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                 break;
             case CompletenessStatus.Idle:
@@ -758,7 +758,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                 break;
         }

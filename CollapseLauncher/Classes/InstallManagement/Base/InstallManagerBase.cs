@@ -615,7 +615,7 @@ namespace CollapseLauncher.InstallManager.Base
         //                  or the verification can't be started because the download never being performed first
         //        1      -> Continue to the next step (all passes)
         //       -1      -> Cancel the operation
-        public virtual async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        public virtual async ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage)
         {
             // Skip routine if sophon is use
             GameInstallStateEnum gameState = await GameVersionManager.GetGameState();
@@ -712,7 +712,7 @@ namespace CollapseLauncher.InstallManager.Base
                     case ContentDialogResult.Secondary: // To proceed on extracting the file even it's corrupted
                         string fileName = Path.GetFileName(asset.PathOutput);
                         ContentDialogResult installCorruptDialogResult =
-                            await Dialog_GameInstallCorruptedDataAnyway(fileName ?? "", asset.Size);
+                            await Dialog_GameInstallCorruptedDataAnyway(fileName, asset.Size);
                         // If cancel is pressed, then cancel the whole process
                         if (installCorruptDialogResult == ContentDialogResult.None)
                         {
@@ -1469,12 +1469,12 @@ namespace CollapseLauncher.InstallManager.Base
 
                     bool isSuccess = false;
 
-                    FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName ?? ""))
+                    FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName))
                                          .StripAlternateDataStream().EnsureNoReadOnly(out bool isSourceExist);
                     string sourcePathDir = sourcePath.DirectoryName ?? "";
                     FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
                                         .StripAlternateDataStream().EnsureNoReadOnly(out bool isPatchExist);
-                    string targetPathBasedOnSource = Path.Combine(sourcePathDir ?? "", Path.GetFileName(entry.TargetFileName ?? ""));
+                    string targetPathBasedOnSource = Path.Combine(sourcePathDir, Path.GetFileName(entry.TargetFileName ?? ""));
                     FileInfo targetPath = new FileInfo(targetPathBasedOnSource)
                                          .EnsureCreationOfDirectory()
                                          .StripAlternateDataStream()
@@ -1793,7 +1793,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      });
                     while (listReader.ReadLine() is {} currentLine)
                     {
-                        var    prop = currentLine?.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+                        PkgVersionProperties? prop = currentLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
                         if (prop == null)
                         {
@@ -2231,7 +2231,7 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task StartSteamMigration()
         {
             // Get game repair instance and if it's null, then return;
-            string? latestGameVersionString = GameVersionManager?.GetGameVersionApi()?.VersionString;
+            string? latestGameVersionString = GameVersionManager.GetGameVersionApi()?.VersionString;
             if (string.IsNullOrEmpty(latestGameVersionString))
                 return;
 
@@ -2451,7 +2451,7 @@ namespace CollapseLauncher.InstallManager.Base
         private bool TryGetExistingBHI3LPath(ref string OutputPath)
         {
             // If the preset doesn't have BetterHi3Launcher registry ver info, then return false
-            if (GameVersionManager?.GamePreset.BetterHi3LauncherVerInfoReg == null)
+            if (GameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg == null)
             {
                 return false;
             }
@@ -2577,7 +2577,7 @@ namespace CollapseLauncher.InstallManager.Base
             const string pluginKeyEnd   = "_version";
 
             // Get the plugin resource list and if it's empty, return
-            List<HypPluginPackageInfo> pluginResourceList = GameVersionManager?.GetGamePluginZip() ?? [];
+            List<HypPluginPackageInfo> pluginResourceList = GameVersionManager.GetGamePluginZip() ?? [];
             if (pluginResourceList.Count == 0)
             {
                 return;
@@ -2757,30 +2757,39 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async ValueTask AddMainResourceVersionList(
+        protected virtual ValueTask AddMainResourceVersionList(
             GamePackageResult        packageResult,
             List<GameInstallPackage> packageList,
             bool                     isSkipMainPackage = false)
         {
-            // If the main package is not skipped, then add it.
-            // Otherwise, ignore it.
-            if (isSkipMainPackage)
+            try
             {
-                return;
-            }
-
-            foreach (HypPackageData asset in packageResult.MainPackage)
-            {
-                // Try add the package into the list
-                GameInstallPackage package = new GameInstallPackage(asset, GamePath)
+                // If the main package is not skipped, then add it.
+                // Otherwise, ignore it.
+                if (isSkipMainPackage)
                 {
-                    PackageType = GameInstallPackageType.General
-                };
+                    return ValueTask.CompletedTask;
+                }
 
-                // Add the main package
-                packageList.Add(package);
-                LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})",
-                             LogType.Default, true);
+                foreach (HypPackageData asset in packageResult.MainPackage)
+                {
+                    // Try add the package into the list
+                    GameInstallPackage package = new GameInstallPackage(asset, GamePath)
+                    {
+                        PackageType = GameInstallPackageType.General
+                    };
+
+                    // Add the main package
+                    packageList.Add(package);
+                    LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})",
+                                 LogType.Default, true);
+                }
+
+                return ValueTask.CompletedTask;
+            }
+            catch (Exception exception)
+            {
+                return ValueTask.FromException(exception);
             }
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -3219,7 +3228,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsCompleted = false;
                     Status.IsCanceled  = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Update);
 #endif
                     break;
                 case CompletenessStatus.Completed:
@@ -3230,7 +3239,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                     // HACK: Fix the progress not achieving 100% while completed
                     lock (Progress)
@@ -3247,7 +3256,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                     break;
                 case CompletenessStatus.Idle:
@@ -3258,7 +3267,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
                     break;
             }

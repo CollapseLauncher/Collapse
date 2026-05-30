@@ -52,7 +52,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Public Methods
 
-        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage)
         {
             IsRunning = true;
 
@@ -80,8 +80,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                                GameVersionManager,
                                GameSettings!,
                                versionString,
-                               true,
-                               false);
+                               true);
 #nullable restore
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null,

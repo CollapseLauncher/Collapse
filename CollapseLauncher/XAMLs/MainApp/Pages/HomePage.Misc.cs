@@ -55,24 +55,22 @@ public partial class HomePage
     {
         try
         {
-            using (Process collapseProcess = Process.GetCurrentProcess())
-            {
-                collapseProcess.PriorityBoostEnabled = false;
-                collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
-                LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
-                             $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
+            using Process collapseProcess = Process.GetCurrentProcess();
+            collapseProcess.PriorityBoostEnabled = false;
+            collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
+            LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
+                         $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
 
-                double lastSlideshowDuration = ImageCarouselEventSlideshow.SlideshowDuration;
-                ImageCarouselEventSlideshow.SlideshowDuration = 0; // Stop slideshow duration completely
-                await processAwaiter(CancellationToken.None);
+            double lastSlideshowDuration = ImageCarouselEventSlideshow.SlideshowDuration;
+            ImageCarouselEventSlideshow.SlideshowDuration = 0; // Stop slideshow duration completely
+            await processAwaiter(CancellationToken.None);
 
-                collapseProcess.PriorityBoostEnabled = true;
-                collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
-                LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
-                             $"PriorityBoost is on, carousel is started", LogType.Default, true);
+            collapseProcess.PriorityBoostEnabled = true;
+            collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
+            LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
+                         $"PriorityBoost is on, carousel is started", LogType.Default, true);
 
-                ImageCarouselEventSlideshow.SlideshowDuration = lastSlideshowDuration;
-            }
+            ImageCarouselEventSlideshow.SlideshowDuration = lastSlideshowDuration;
         }
         catch (Exception ex)
         {

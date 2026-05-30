@@ -2171,11 +2171,11 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
+        private static async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
         {
             ParameterInfo[] parameters = method.GetParameters();
             StackPanel      stackPanel = new();
-            List<Control>   controls   = new();
+            List<Control>   controls   = [];
 
             foreach (ParameterInfo parameter in parameters)
             {

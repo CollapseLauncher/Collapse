@@ -20,11 +20,11 @@ namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 /// </summary>
 public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
 {
-    public StarRailAssetSignaturelessMetadata() : this(null)
+    protected StarRailAssetSignaturelessMetadata() : this(null)
     {
     }
 
-    public StarRailAssetSignaturelessMetadata(string? customAssetExtension = null)
+    protected StarRailAssetSignaturelessMetadata(string? customAssetExtension = null)
         : base(0,
                256,
                0, // Leave the rest of it to 0 as this metadata has non-consistent header struct

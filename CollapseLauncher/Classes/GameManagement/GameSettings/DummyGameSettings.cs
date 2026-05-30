@@ -7,11 +7,6 @@ namespace CollapseLauncher.GameSettings;
 
 internal class DummyGameSettings : SettingsBase
 {
-    public DummyGameSettings()
-    {
-
-    }
-
     public override string GetLaunchArguments(GamePresetProperty property)
     {
         StringBuilder parameter = new(1024);

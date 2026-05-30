@@ -90,7 +90,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             get
             {
-                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager?.GamePreset.LauncherResourceChunksURL == null)
+                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager.GamePreset.LauncherResourceChunksURL == null)
                 {
                     return false;
                 }
@@ -188,7 +188,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the requested URL and version based on current state.
-                if (GameVersionManager?
+                if (GameVersionManager
                    .GamePreset
                    .LauncherResourceChunksURL != null)
                 {
@@ -577,7 +577,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                    .Where(x => !string.IsNullOrEmpty(x.MatchingField))
                                                    .Select(x => x.MatchingField!).ToList();
 
-            installManifest.AddRange(additionalMatchingFields.Select(matchingField => installManifestFirst.GetOtherManifestInfoPair(matchingField)));
+            installManifest.AddRange(additionalMatchingFields.Select(installManifestFirst.GetOtherManifestInfoPair));
             return;
 
             string GetFileDetails()

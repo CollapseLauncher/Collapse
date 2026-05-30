@@ -26,41 +26,41 @@ namespace CollapseLauncher.Helper.Image
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial IntPtr ncnn_get_gpu_name(int gpuId);
+        internal static partial nint ncnn_get_gpu_name(int gpuId);
         #endregion
 
         #region Waifu2X PInvokes
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial IntPtr waifu2x_create(int gpuId, [MarshalAs(UnmanagedType.Bool)] bool ttaMode, int numThreads);
+        internal static partial nint waifu2x_create(int gpuId, [MarshalAs(UnmanagedType.Bool)] bool ttaMode, int numThreads);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial void waifu2x_destroy(IntPtr context);
+        internal static partial void waifu2x_destroy(nint context);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static unsafe partial int waifu2x_load(IntPtr context, byte* param, byte* model);
+        internal static unsafe partial int waifu2x_load(nint context, byte* param, byte* model);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static unsafe partial int waifu2x_process(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
+        internal static unsafe partial int waifu2x_process(nint context, int w, int h, int c, byte* inData, byte* outData);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static unsafe partial int waifu2x_process_cpu(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
+        internal static unsafe partial int waifu2x_process_cpu(nint context, int w, int h, int c, byte* inData, byte* outData);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial void waifu2x_set_param(IntPtr context, Param param, int value);
+        internal static partial void waifu2x_set_param(nint context, Param param, int value);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial int waifu2x_get_param(IntPtr context, Param param);
+        internal static partial int waifu2x_get_param(nint context, Param param);
 
         [LibraryImport(DllName)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        internal static partial Waifu2XStatus waifu2x_self_test(IntPtr context);
+        internal static partial Waifu2XStatus waifu2x_self_test(nint context);
 
         [LibraryImport("kernel32.dll", StringMarshalling = StringMarshalling.Utf16)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
@@ -104,7 +104,7 @@ namespace CollapseLauncher.Helper.Image
         #endregion
 
         #region Properties
-        private IntPtr _context;
+        private nint _context;
 
         #endregion
 

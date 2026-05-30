@@ -325,8 +325,8 @@ internal partial class HonkaiRepairV2
         string audioDefaultManifestPath = Path.Combine(audioBasePath, "AUDIO_Default_manifest.m");
         if (await EnsureAudioDefaultManifestExisted(HttpClientGeneric, audioDefaultManifestAsset, audioDefaultManifestPath, token))
         {
-            byte[] manifestContent = File.ReadAllBytes(audioDefaultManifestPath);
-            ulong audioDefaultAssetHash = BinaryPrimitives.ReadUInt64BigEndian(manifestContent.AsSpan(0, 8));
+            byte[] manifestContent       = await File.ReadAllBytesAsync(audioDefaultManifestPath, token);
+            ulong  audioDefaultAssetHash = BinaryPrimitives.ReadUInt64BigEndian(manifestContent.AsSpan(0, 8));
             await File.WriteAllTextAsync(audioDefaultVersionPath, $"{gameVersion}\t{audioDefaultAssetHash}", token);
         }
 

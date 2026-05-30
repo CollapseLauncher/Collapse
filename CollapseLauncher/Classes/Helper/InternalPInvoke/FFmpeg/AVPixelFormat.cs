@@ -1,4 +1,10 @@
-﻿namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
+﻿// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
+
+namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 
 public enum AVPixelFormat
 {

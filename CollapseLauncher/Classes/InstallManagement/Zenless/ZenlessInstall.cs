@@ -70,7 +70,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         #region Override Methods - StartPackageInstallationInner
 
-        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage)
         {
             IsRunning = true;
 

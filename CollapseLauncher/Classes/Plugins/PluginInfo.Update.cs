@@ -20,8 +20,8 @@ namespace CollapseLauncher.Plugins;
 
 public partial class PluginInfo
 {
-    private string[]?          UpdateCdnList { get; set; }
-    private IPluginSelfUpdate? Updater       { get; set; }
+    private string[]?          UpdateCdnList { get; }
+    private IPluginSelfUpdate? Updater       { get; }
 
     public bool IsUpdateSupported
     {

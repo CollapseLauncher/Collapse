@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable IdentifierTypo
 
+#nullable enable
 namespace CollapseLauncher.Interfaces
 {
     internal interface IGameInstallManager : IBackgroundActivity, IDisposable
     {
         ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false);
         Task StartPackageDownload(bool skipDialog = false);
-        ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null);
+        ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage = null);
         Task StartPackageInstallation();
         void ApplyGameConfig(bool forceUpdateToLatest = false);
 

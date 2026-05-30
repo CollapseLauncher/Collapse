@@ -24,6 +24,7 @@ using System.Net.Http;
 using System.Numerics;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
+// ReSharper disable IdentifierTypo
 
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable ConvertIfStatementToSwitchStatement
@@ -1242,9 +1243,9 @@ namespace CollapseLauncher.Pages
     public partial class EnumToIndexConverter<TEnum> : IValueConverter
         where TEnum : struct, Enum
     {
-        private static List<TEnum> _enums = [.. Enum.GetValues<TEnum>()];
+        private static readonly List<TEnum> Enums = [.. Enum.GetValues<TEnum>()];
 
-        public object? Convert(object? value, Type targetType, object parameter, string language)
+        public object Convert(object? value, Type targetType, object parameter, string language)
         {
             if (value is not TEnum asEnum ||
                 !Enum.IsDefined(asEnum))
@@ -1252,20 +1253,20 @@ namespace CollapseLauncher.Pages
                 asEnum = default;
             }
 
-            int indexOf = _enums.IndexOf(asEnum);
-            return indexOf < 0 || indexOf > _enums.Count - 1 ? default : indexOf;
+            int indexOf = Enums.IndexOf(asEnum);
+            return indexOf < 0 || indexOf > Enums.Count - 1 ? 0 : indexOf;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             if (value is not int asIndex ||
                 asIndex < 0 ||
-                asIndex > _enums.Count - 1)
+                asIndex > Enums.Count - 1)
             {
                 return default(TEnum);
             }
 
-            return _enums[asIndex];
+            return Enums[asIndex];
         }
     }
 }

@@ -139,9 +139,9 @@ namespace CollapseLauncher
             TryDeleteDownloadPref();
 
             // Get Sophon Properties
-            string gameAudioListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
-            SophonChunkUrls? sophonManifestUrls = GameVersionManager?.GamePreset.LauncherResourceChunksURL;
-            HttpClient httpClient = downloadClient.GetHttpClient();
+            string           gameAudioListPath  = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            SophonChunkUrls? sophonManifestUrls = GameVersionManager.GamePreset.LauncherResourceChunksURL;
+            HttpClient       httpClient         = downloadClient.GetHttpClient();
 
             if (sophonManifestUrls == null)
             {

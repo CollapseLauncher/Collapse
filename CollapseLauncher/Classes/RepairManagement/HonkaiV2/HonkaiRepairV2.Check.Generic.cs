@@ -54,7 +54,7 @@ internal partial class HonkaiRepairV2
     /// Check actual remote size asset from the actual URL.<br/>
     /// <br/>
     /// Note: This method only works on <see cref="FileType.Video"/> asset type with URL defined.
-    /// Otherwise, the method will immediately returns <see langword="true"/>.
+    /// Otherwise, the method will immediately return <see langword="true"/>.
     /// </summary>
     private async ValueTask<bool> TryIsAssetRemoteSizeEquals(
         FilePropertiesRemote asset,
@@ -75,7 +75,7 @@ internal partial class HonkaiRepairV2
         }
 
         UrlStatus status = await HttpClientAssetBundle.GetCachedUrlStatus(asset.RN, token);
-        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyways
+        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyway
         {
             return true;
         }

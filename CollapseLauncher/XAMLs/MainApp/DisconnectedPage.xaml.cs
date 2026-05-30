@@ -50,7 +50,7 @@ namespace CollapseLauncher
             ComboBoxGameTitle.ItemsSource  = gameTitleList;
             ComboBoxGameRegion.ItemsSource = gameRegionList;
 
-            int indexCategory = gameTitleList.IndexOf(gameTitle ?? "");
+            int indexCategory = gameTitleList.IndexOf(gameTitle);
             if (indexCategory < 0) indexCategory = 0;
 
             int indexRegion = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameTitle);
