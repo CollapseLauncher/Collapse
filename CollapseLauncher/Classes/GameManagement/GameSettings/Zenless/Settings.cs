@@ -6,6 +6,7 @@ using CollapseLauncher.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text;
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
@@ -77,15 +78,16 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         public override string GetLaunchArguments(GamePresetProperty property)
         {
-            StringBuilder parameter = new(1024);
+            DefaultInterpolatedStringHandler builder = new();
 
             if (SettingsCollapseScreen.UseCustomResolution)
             {
                 Size screenSize = SettingsScreen.sizeRes;
-                parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
+                builder.AppendFormatted(screenSize.Width, "-screen-width 0 ");
+                builder.AppendFormatted(screenSize.Height, "-screen-height 0 ");
             }
             
-            //Enable MobileMode
+            // Enable MobileMode
             if (SettingsCollapseMisc.LaunchMobileMode)
             {
                 // Force save on every launch
@@ -95,22 +97,22 @@ namespace CollapseLauncher.GameSettings.Zenless
 
             if (SettingsCollapseScreen.GameGraphicsAPI == 4)
             {
-                parameter.Append("-use-d3d12 ");
+                builder.AppendLiteral("-use-d3d12 ");
             }
 
             if (SettingsCollapseScreen.UseBorderlessScreen)
             {
-                parameter.Append("-popupwindow ");
+                builder.AppendLiteral("-popupwindow ");
             }
 
             string customArgs = SettingsCustomArgument.CustomArgumentValue;
             if (SettingsCollapseMisc.UseCustomArguments &&
                 !string.IsNullOrEmpty(customArgs))
             {
-                parameter.Append(customArgs);
+                builder.AppendLiteral(customArgs);
             }
 
-            return parameter.ToString();
+            return builder.ToStringAndClear();
         }
 
         public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;
