@@ -17,6 +17,7 @@
       xmlns:localeSourceGen="using:Hi3Helper.LocaleSourceGen"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
+      xmlns:collapseLauncher="using:CollapseLauncher"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
@@ -1641,25 +1642,25 @@
                                        FontSize="16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppCDNRepository, Mode=OneWay}" />
-                            <StackPanel Margin="0,0,0,16">
+                            <StackPanel Margin="0,0,0,16"
+                                        DataContext="{x:Bind CdnSelectionContext, Mode=OneWay}">
                                 <RadioButtons x:Name="AppCDNSelection"
-                                              DataContext="{x:Bind CdnSelectionContext, Mode=OneWay}"
                                               ItemsSource="{Binding CDNList, Mode=OneWay}"
                                               MaxColumns="3"
                                               SelectedIndex="{Binding SelectedCDN, Mode=TwoWay}">
                                     <RadioButtons.ItemTemplate>
-                                        <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                        <DataTemplate x:DataType="collapseLauncher:CDNURLProperty">
                                             <Grid MinWidth="110"
                                                   Margin="0,0,16,0"
                                                   HorizontalAlignment="Stretch"
-                                                  ToolTipService.ToolTip="{x:Bind Description}">
+                                                  ToolTipService.ToolTip="{Binding Description, Mode=OneWay}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                           Text="{x:Bind Name}" />
+                                                           Text="{Binding Name, Mode=OneWay}" />
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
                                                            HorizontalAlignment="Right"

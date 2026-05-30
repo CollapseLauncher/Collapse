@@ -15,41 +15,6 @@ using System.Linq;
 #nullable enable
 namespace Hi3Helper.Shared.Region
 {
-    #region CDN Property
-    public readonly struct CDNURLProperty : IEquatable<CDNURLProperty>
-    {
-        public string URLPrefix              { get; init; }
-        public string Name                   { get; init; }
-        public string Description            { get; init; }
-        public bool   PartialDownloadSupport { get; init; }
-
-        public bool Equals(CDNURLProperty other) => other.GetHashCode() == GetHashCode();
-
-        public override int GetHashCode() => HashCode.Combine(URLPrefix, Name, PartialDownloadSupport);
-
-        public override bool Equals([NotNullWhen(true)] object? obj) =>
-            obj is CDNURLProperty asCdnProperty && Equals(asCdnProperty);
-
-        public static bool operator ==(CDNURLProperty from, CDNURLProperty to)
-            => from.Equals(to);
-
-        public static bool operator !=(CDNURLProperty from, CDNURLProperty to)
-            => !(from == to);
-
-        public static bool operator ==(object? from, CDNURLProperty to)
-            => to.Equals(from);
-
-        public static bool operator !=(object? from, CDNURLProperty to)
-            => !(from == to);
-
-        public static bool operator ==(CDNURLProperty from, object? to)
-            => from.Equals(to);
-
-        public static bool operator !=(CDNURLProperty from, object? to)
-            => !(from == to);
-    }
-    #endregion
-
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods

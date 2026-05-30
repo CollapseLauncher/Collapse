@@ -76,9 +76,10 @@ using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Pages
 {
+    [GeneratedBindableCustomProperty]
     public partial class CDNSelectionContext : NotifyPropertyChanged
     {
-        public ObservableCollection<CDNURLProperty> CDNList => [..FallbackCDNUtil.CDNList];
+        public List<CDNURLProperty> CDNList => FallbackCDNUtil.CDNList;
 
         public int SelectedCDN
         {
