@@ -163,7 +163,7 @@ internal partial class HonkaiRepairV2
         {
             case 8:
             {
-                MhyMurmurHash264B              hasher   = new((uint)asset.S);
+                MhyMurmurHash264B              hasher   = new((ulong)assetFileInfo.Length);
                 HashUtility<MhyMurmurHash264B> hashUtil = HashUtility<MhyMurmurHash264B>.ThreadSafe;
 
                 (resultStatus, _) =
