@@ -62,7 +62,7 @@ internal partial class HonkaiRepairV2
         bool                 useFastCheck,
         CancellationToken    token = default)
     {
-        if (!fileInfo.Exists)
+        if (!fileInfo.Exists || fileInfo.Length == 0)
         {
             return false;
         }
