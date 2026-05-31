@@ -1,9 +1,8 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Animation;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -12,60 +11,73 @@ public partial class PanelSlideshow
 {
     #region Fields
 
-    private volatile Timer? _timer;
-    private          double _mTimer;
+    private Storyboard? _timerStoryboard;
 
     #endregion
 
     #region Methods
 
-    private void RestartTimer(double newDuration, double countIntervalMs = 100d, int delayBeforeStartMs = 1000)
+    // ReSharper disable once AsyncVoidMethod
+    private async void RestartTimer(double newDurationSeconds, int delayBeforeStartMs = 1000)
     {
-        if (!IsLoaded || newDuration == 0)
+        try
         {
             DisposeAndDeregisterTimer();
-            return;
-        }
+            if (!IsLoaded || newDurationSeconds == 0)
+            {
+                return;
+            }
 
-        new Thread(Impl)
+            _countdownProgressBar.Minimum = 0;
+            _countdownProgressBar.Maximum = 1;
+
+            _timerStoryboard = new Storyboard();
+            DoubleAnimation animation = new()
+            {
+                Duration                 = new Duration(TimeSpan.FromSeconds(newDurationSeconds)),
+                From                     = 0d,
+                To                       = 1d,
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(animation, _countdownProgressBar);
+            Storyboard.SetTargetProperty(animation, "Value");
+
+            _timerStoryboard.Children.Add(animation);
+
+            await Task.Delay(delayBeforeStartMs);
+            VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
+
+            _timerStoryboard.Completed += TimerStoryboardOnCompleted;
+            if (!_isMouseHover)
+            {
+                _timerStoryboard.Begin();
+            }
+        }
+        catch (Exception e)
         {
-            IsBackground = true
-        }.Start();
+            Console.WriteLine(e);
+        }
         return;
 
-        async void Impl()
+        async void TimerStoryboardOnCompleted(object? sender, object e)
         {
             try
             {
-                using (_atomicLock.EnterScope())
+                if (sender is not Storyboard storyboard)
                 {
-                    _mTimer = newDuration;
-
-                    DisposeAndDeregisterTimer();
-
-                    _timer         =  new Timer(countIntervalMs);
-                    _timer.Elapsed += Timer_Elapsed;
+                    return;
                 }
 
-                await Task.Delay(delayBeforeStartMs);
+                storyboard.Completed -= TimerStoryboardOnCompleted;
+                await Task.Delay(150);
+                VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
+                await Task.Delay(500);
 
-                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
-                                           () =>
-                                           {
-                                               if (IsLoaded)
-                                                   VisualStateManager.GoToState(this,
-                                                                                    StateNameCountdownProgressBarFadeIn,
-                                                                                    true);
-                                           });
-
-                if (!_isMouseHover && _timer != null)
-                {
-                    _timer.Start();
-                }
+                ItemIndex++;
             }
-            catch
+            catch (Exception ex)
             {
-                // ignored
+                Console.WriteLine(ex);
             }
         }
     }
@@ -77,103 +89,27 @@ public partial class PanelSlideshow
             return;
         }
 
-        if (_timer != null)
-        {
-            _timer.Elapsed -= Timer_Elapsed;
-        }
-
-        if (DispatcherQueue.HasThreadAccess)
-        {
-            _countdownProgressBar.Value = 0;
-        }
-        else
-        {
-            DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
-                                       () => _countdownProgressBar.Value = 0);
-        }
-
-        _timer?.Stop();
-        _timer?.Dispose();
-        _timer = null;
-    }
-
-    private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
-    {
-        if (sender is not Timer thisTimer)
-        {
-            return;
-        }
-
-        double interval = thisTimer.Interval / 1000d;
-        PerformIntervalDecrement();
-        return;
-
-        // ReSharper disable once AsyncVoidMethod
-        void PerformIntervalDecrement()
-        {
-            try
-            {
-                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
-                                           () =>
-                                           {
-                                               try
-                                               {
-                                                   _countdownProgressBar.Value += interval;
-                                               }
-                                               catch
-                                               {
-                                                   // ignored
-                                               }
-                                           });
-            }
-            catch
-            {
-                // ignored
-            }
-
-            _mTimer -= interval;
-            if (!(_mTimer < 0))
-            {
-                return;
-            }
-
-            thisTimer.Stop();
-
-            try
-            {
-                DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low,
-                                           async void () =>
-                                           {
-                                               try
-                                               {
-                                                   VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut,
-                                                                                    true);
-                                                   await Task.Delay(500);
-
-                                                   ItemIndex++;
-                                               }
-                                               catch
-                                               {
-                                                   // ignored
-                                               }
-                                           });
-            }
-            catch
-            {
-                // ignored
-            }
-        }
+        Interlocked.Exchange(ref _timerStoryboard, null)?.Stop();
     }
 
     /// <summary>
     /// Stops the slideshow countdown timer.
     /// </summary>
-    public void PauseSlideshow() => _timer?.Stop();
+    public void PauseSlideshow() => _timerStoryboard?.Pause();
 
     /// <summary>
     /// Resumes the slideshow countdown timer.
     /// </summary>
-    public void ResumeSlideshow() => _timer?.Start();
+    public void ResumeSlideshow()
+    {
+        if (_timerStoryboard?.GetCurrentState() == ClockState.Stopped)
+        {
+            _timerStoryboard?.Begin();
+            return;
+        }
+
+        _timerStoryboard?.Resume();
+    }
 
     #endregion
 }
