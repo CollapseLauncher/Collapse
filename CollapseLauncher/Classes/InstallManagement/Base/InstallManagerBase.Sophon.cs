@@ -903,6 +903,11 @@ namespace CollapseLauncher.InstallManager.Base
                                             parallelOptions,
                                             (asset, _) => Action(httpClient, asset));
 
+                // Forcely update status
+                UpdateSophonDownloadStatus(null!);
+                UpdateSophonFileTotalProgress(0, true);
+                UpdateSophonFileDownloadProgress(0, 0);
+
                 _isSophonPreloadCompleted = isPreloadMode;
 
                 // If it's in update mode, then clean up the temp sophon verified files

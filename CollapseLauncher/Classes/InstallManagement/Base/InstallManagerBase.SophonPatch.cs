@@ -538,6 +538,11 @@ namespace CollapseLauncher.InstallManager.Base
             // Run parallel pipeline for download
             await Parallel.ForEachAsync(pipelineDownloadEnumerable, parallelOptions, ImplDownload);
 
+            // Forcely update status
+            UpdateCurrentDownloadStatus();
+            UpdateSophonFileTotalProgress(0, true);
+            UpdateSophonFileDownloadProgress(0, 0);
+
             // If it's on preload mode, then return as we only need to perform patch download.
             if (isPreloadMode)
             {
@@ -555,6 +560,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Run parallel pipeline for patch
             await Parallel.ForEachAsync(pipelinePatchEnumerable, parallelOptions, ImplPatchUpdate);
+
+            // Forcely update status
+            UpdateCurrentDownloadStatus();
+            UpdateSophonFileTotalProgress(0, true);
+            UpdateSophonFileDownloadProgress(0, 0);
 
             if (_canDeleteZip)
             {
