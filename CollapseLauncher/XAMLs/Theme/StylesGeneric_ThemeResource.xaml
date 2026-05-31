@@ -116,6 +116,11 @@
                           TintColor="#222222"
                           TintLuminosityOpacity="0.7"
                           TintOpacity="0.0" />
+            <AcrylicBrush x:Key="CarouselPipsAcrylicLightBrush"
+                          FallbackColor="#EE333333"
+                          TintColor="#222222"
+                          TintLuminosityOpacity="0.5"
+                          TintOpacity="0.0" />
             <AcrylicBrush x:Key="WindowTrayBrush"
                           FallbackColor="#DD222222"
                           TintColor="#222222"
@@ -469,6 +474,11 @@
                           FallbackColor="#DDFFFFFF"
                           TintColor="#FFFFFF"
                           TintLuminosityOpacity="0.75"
+                          TintOpacity="0" />
+            <AcrylicBrush x:Key="CarouselPipsAcrylicLightBrush"
+                          FallbackColor="#DDFFFFFF"
+                          TintColor="#FFFFFF"
+                          TintLuminosityOpacity="0.50"
                           TintOpacity="0" />
             <AcrylicBrush x:Key="WindowTrayBrush"
                           FallbackColor="#FFFFFFFF"

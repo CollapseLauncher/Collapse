@@ -86,9 +86,7 @@
                 BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                 BorderThickness="0"
                 CornerRadius="0,8,8,0"
-                Opacity="0"
-                Shadow="{ThemeResource SharedShadow}"
-                Translation="-48,0,0" />
+                Opacity="0" />
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
@@ -112,37 +110,7 @@
                 </Frame>
             </Grid>
         </NavigationView>
-        <Viewbox x:Name="ImageEventImgViewBox"
-                 Grid.Row="0"
-                 Grid.Column="0"
-                 DataContext="{x:Bind CurrentGameBackgroundData, Mode=OneWay}"
-                 Stretch="UniformToFill"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 Visibility="{Binding FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}">
-            <Grid DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                  Visibility="{Binding CurrentSelectedBackgroundContext.IsCustom, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                <Grid Width="{Binding CurrentElementWidth, Mode=OneWay}"
-                      Height="{Binding CurrentElementHeight, Mode=OneWay}"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Visibility="{Binding IsBackgroundElevated, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                    <customControls:NonFaultyImageEx
-                        x:Name="ImageEventImg"
-                        x:FieldModifier="internal"
-                        extension:UIElementExtensions.CursorType="Hand"
-                        PointerPressed="ClickImageEventSpriteLink"
-                        HorizontalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.HorizontalAlignment, Mode=OneWay}"
-                        VerticalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VerticalAlignment, Mode=OneWay}"
-                        Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VSize, Mode=OneWay}"
-                        Margin="{x:Bind CurrentPresetConfig.GameEventButtonPosition.Position, Mode=OneWay}"
-                        Visibility="{x:Bind NeedShowEventIcon, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
-                        Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"
-                        Tag="{x:Bind CurrentGameBackgroundData.FeaturedEventIconClickLink, Mode=OneWay}"/>
-                </Grid>
-            </Grid>
-        </Viewbox>
-        <Grid Height="47"
+        <Grid Height="44"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
@@ -168,14 +136,12 @@
             <Grid x:Name="GridBGRegionGrid"
                   Grid.Column="2"
                   Grid.ColumnSpan="3"
-                  Height="47"
                   Margin="0,1,0,0"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   x:FieldModifier="internal">
                 <StackPanel x:Name="GridBGRegionInner"
                             Grid.Column="0"
-                            Margin="0,0"
                             VerticalAlignment="Center"
                             CanDrag="True"
                             Orientation="Horizontal">

@@ -133,7 +133,6 @@ namespace CollapseLauncher
                     DispatcherQueueExtensions.TryEnqueue(() =>
                     {
                         OnPropertyChanged(nameof(CurrentPresetConfig));
-                        OnPropertyChanged(nameof(CurrentGameBackgroundData));
                     });
                 }
                 catch (Exception ex)

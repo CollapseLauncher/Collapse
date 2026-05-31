@@ -28,50 +28,25 @@ public class HypLauncherContentKind : HypApiIdentifiable
     public List<HypLauncherCarouselContentData> Carousel { get; init; } = [];
 
     [JsonPropertyName("posts")]
-    public List<HypLauncherMediaContentData> News { get; init; } = [];
+    public List<HypLauncherMediaContentData> News
+    {
+        get;
+        init;
+    } = [];
 
     [JsonPropertyName("social_media_list")]
     public List<HypLauncherSocialMediaContentData> SocialMedia { get; init; } = [];
 
     // Extensions
-    [JsonIgnore]
-    [field: AllowNull, MaybeNull]
-    internal List<HypLauncherMediaContentData> NewsEventKind
-    {
-        get =>
-            field ??= News
-                     .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)
-                     .ToList();
-        private set;
-    }
-
-    [JsonIgnore]
-    [field: AllowNull, MaybeNull]
-    internal List<HypLauncherMediaContentData> NewsAnnouncementKind
-    {
-        get =>
-            field ??= News
-                     .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)
-                     .ToList();
-        private set;
-    }
-
-    [JsonIgnore]
-    [field: AllowNull, MaybeNull]
-    internal List<HypLauncherMediaContentData> NewsInformationKind
-    {
-        get =>
-            field ??= News
-                     .Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_INFO)
-                     .ToList();
-        private set;
-    }
+    [JsonIgnore] internal List<HypLauncherMediaContentData> NewsEventKind        { get => field ??= News.Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY).ToList(); }
+    [JsonIgnore] internal List<HypLauncherMediaContentData> NewsAnnouncementKind { get => field ??= News.Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE).ToList(); }
+    [JsonIgnore] internal List<HypLauncherMediaContentData> NewsInformationKind  { get => field ??= News.Where(x => x.ContentType == LauncherGameNewsPostType.POST_TYPE_INFO).ToList(); }
 
     public void ResetCachedNews()
     {
-        NewsEventKind        = [];
-        NewsAnnouncementKind = [];
-        NewsInformationKind  = [];
+        NewsEventKind.Clear();
+        NewsAnnouncementKind.Clear();
+        NewsInformationKind.Clear();
     }
 }
 

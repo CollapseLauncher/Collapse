@@ -14,6 +14,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
+using ImageEx;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -24,11 +25,13 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -53,18 +56,37 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // Currently separated files:
 // - HomePage.Playtime.cs
 //   Contains method related to playtime tracking UI and its handler
+// - HomePage.Background.cs
+//   Contains functionalities related to background management and its context menus.
 // - HomePage.GameLauncher.cs
 //   Contains method related to game launching and its surrounding like arguments, GLC, etc.
 // - HomePage.GameManagement.cs
 //   Contains method related to game management like installation, update, etc.
+// - HomePage.Variable.cs
+//   Contains miscellaneous variables used for the UI.
+// - HomePage.Wpf.cs
+//   Contains functionalities for WPF packages UI or Icons used in some games (like Genshin Impact's Miliastra Wonderland Editor).
 // - HomePage.Misc.cs
-//   Contains miscelanous method that doesn't fit into other categories and is not big enough to be in its own file
+//   Contains miscellaneous method that doesn't fit into other categories and is not big enough to be in its own file
 
 namespace CollapseLauncher.Pages
 {
     [GeneratedBindableCustomProperty]
-    public sealed partial class HomePage
+    public sealed partial class HomePage : INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // ReSharper disable once UnusedMember.Local
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+        
         #region Properties
 
         private GamePresetProperty             CurrentGameProperty  { get; }
@@ -128,6 +150,7 @@ namespace CollapseLauncher.Pages
             RightBottomButtons.SetAllControlsCursorRecursive(cursor);
             LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
             GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
+            ImageEventImgViewBox.EnableElementVisibilityAnimation();
         }
 
         private void InitializeConsoleValues()
@@ -181,7 +204,6 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Visibility  = Visibility.Visible;
                     ShowEventsPanelToggle.IsEnabled    = true;
                     ScaleUpEventsPanelToggle.IsEnabled = true;
-                    PostPanel.Visibility               = Visibility.Visible;
                 }
 
                 if (CurrentGameProperty.GameInstall != null)
@@ -438,6 +460,17 @@ namespace CollapseLauncher.Pages
 
             SidePanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        private void CarouselImageExOpened(object sender, ImageExOpenedEventArgs e)
+        {
+            if (sender is not ImageEx.ImageEx { Image: Image asInnerImage })
+            {
+                return;
+            }
+
+            CurrentCarouselImageWidth = asInnerImage.ActualWidth;
+            CurrentCarouselImageHeight = asInnerImage.ActualHeight;
+        }
         #endregion
 
         #region SocMed Buttons
@@ -568,8 +601,13 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Event Image
-        private static void HideImageEventImg(bool hide)
+        private void HideImageEventImg(bool hide)
         {
+            if (!hide)
+            {
+                ImageEventImg.Visibility = Visibility.Visible;
+            }
+            
             Storyboard      storyboard       = new();
             DoubleAnimation OpacityAnimation = new()
             {
@@ -578,11 +616,22 @@ namespace CollapseLauncher.Pages
                 Duration = new Duration(TimeSpan.FromSeconds(0.10))
             };
 
-            Storyboard.SetTarget(OpacityAnimation, m_mainPage?.ImageEventImg);
+            Storyboard.SetTarget(OpacityAnimation, ImageEventImg);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
+            storyboard.Completed += OnCompleted;
 
             storyboard.Begin();
+            return;
+
+            void OnCompleted(object sender, object e)
+            {
+                storyboard.Completed -= OnCompleted;
+                if (hide)
+                {
+                    ImageEventImg.Visibility = Visibility.Collapsed;
+                }
+            }
         }
         #endregion
 

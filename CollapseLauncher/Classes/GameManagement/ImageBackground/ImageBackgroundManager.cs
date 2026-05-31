@@ -310,7 +310,7 @@ public partial class ImageBackgroundManager
             field = value;
             OnPropertyChanged();
         }
-    }
+    } = 2560d;
 
     public double CurrentElementHeight
     {
@@ -320,7 +320,7 @@ public partial class ImageBackgroundManager
             field = value;
             OnPropertyChanged();
         }
-    }
+    } = 1440d;
 
     /// <summary>
     /// The collection of image context sources.<br/><br/>

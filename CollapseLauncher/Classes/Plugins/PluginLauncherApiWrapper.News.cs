@@ -22,7 +22,6 @@ internal sealed partial class PluginLauncherApiWrapper
         List<HypLauncherCarouselContentData> carouselList = contentApi.Data.Content.Carousel;
 
         newsList.Clear();
-        contentApi.Data.Content.ResetCachedNews();
         carouselList.Clear();
 
         using PluginDisposableMemory<LauncherNewsEntry> newsEntry = PluginDisposableMemoryExtension.ToManagedSpan<LauncherNewsEntry>(_pluginNewsApi.GetNewsEntries);
