@@ -509,7 +509,10 @@ internal abstract class ProgressBase : GamePropertyBase
     private long   _sophonDownloadOnlyCurrentDownloadedBytes;
     private long   _sophonDownloadOnlyLastDownloadedBytes;
 
-    protected void UpdateSophonFileTotalProgress(long read)
+
+    protected void UpdateSophonFileTotalProgress(long read) => UpdateSophonFileTotalProgress(read, false);
+
+    protected void UpdateSophonFileTotalProgress(long read, bool forceUpdate)
     {
         _ = Interlocked.Add(ref ProgressAllSizeCurrent, read);
 
@@ -523,10 +526,8 @@ internal abstract class ProgressBase : GamePropertyBase
         // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
         _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
 
-        // Calculate the clamped speed for download and timelapse
-        double speedDownloadClamped = _sophonDownloadOnlySpeed.ClampLimitedSpeedNumber();
 
-        if (!CheckIfNeedRefreshStopwatch())
+        if (!CheckIfNeedRefreshStopwatch() && !forceUpdate)
         {
             return;
         }
