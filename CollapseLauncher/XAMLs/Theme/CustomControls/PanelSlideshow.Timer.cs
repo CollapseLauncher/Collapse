@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Extension;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading;
@@ -22,8 +23,20 @@ public partial class PanelSlideshow
     {
         try
         {
-            DisposeAndDeregisterTimer();
-            if (!IsLoaded || newDurationSeconds == 0)
+            if (!IsLoaded ||
+                !_isTemplateLoaded ||
+                newDurationSeconds == 0)
+            {
+                if (newDurationSeconds == 0)
+                {
+                    _countdownProgressBar.Value = 0;
+                }
+                DisposeAndDeregisterTimer();
+
+                return;
+            }
+
+            if (_timerStoryboard != null)
             {
                 return;
             }
@@ -31,7 +44,7 @@ public partial class PanelSlideshow
             _countdownProgressBar.Minimum = 0;
             _countdownProgressBar.Maximum = 1;
 
-            _timerStoryboard = new Storyboard();
+            Interlocked.Exchange(ref _timerStoryboard, new Storyboard());
             DoubleAnimation animation = new()
             {
                 Duration                 = new Duration(TimeSpan.FromSeconds(newDurationSeconds)),
@@ -73,6 +86,7 @@ public partial class PanelSlideshow
                 VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
                 await Task.Delay(500);
 
+                DisposeAndDeregisterTimer();
                 ItemIndex++;
             }
             catch (Exception ex)
@@ -80,16 +94,6 @@ public partial class PanelSlideshow
                 Console.WriteLine(ex);
             }
         }
-    }
-
-    private void DisposeAndDeregisterTimer()
-    {
-        if (!_isTemplateLoaded)
-        {
-            return;
-        }
-
-        Interlocked.Exchange(ref _timerStoryboard, null)?.Stop();
     }
 
     /// <summary>
@@ -109,6 +113,21 @@ public partial class PanelSlideshow
         }
 
         _timerStoryboard?.Resume();
+    }
+
+    /// <summary>
+    /// Resets the slideshow countdown timer.
+    /// </summary>
+    public void ResetSlideshow()
+    {
+        _timerStoryboard?.Seek(TimeSpan.FromSeconds(0));
+    }
+
+    private void DisposeAndDeregisterTimer()
+    {
+        Storyboard? oldStoryboard = Interlocked.Exchange(ref _timerStoryboard, null);
+        oldStoryboard?.Stop();
+        oldStoryboard?.Children?.Clear();
     }
 
     #endregion
