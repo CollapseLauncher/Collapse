@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading;
@@ -55,15 +54,15 @@ public partial class PanelSlideshow
             Storyboard.SetTarget(animation, _countdownProgressBar);
             Storyboard.SetTargetProperty(animation, "Value");
 
-            _timerStoryboard.Children.Add(animation);
+            _timerStoryboard?.Children.Add(animation);
 
             await Task.Delay(delayBeforeStartMs);
             VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
 
-            _timerStoryboard.Completed += TimerStoryboardOnCompleted;
+            _timerStoryboard?.Completed += TimerStoryboardOnCompleted;
             if (!_isMouseHover)
             {
-                _timerStoryboard.Begin();
+                _timerStoryboard?.Begin();
             }
         }
         catch (Exception e)
