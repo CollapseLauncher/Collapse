@@ -9,7 +9,6 @@ using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper.EncTool;
-using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;

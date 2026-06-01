@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Interfaces.Class;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 using WinRT;

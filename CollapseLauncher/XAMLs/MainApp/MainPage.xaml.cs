@@ -4,8 +4,6 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.LauncherApiLoader;
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;

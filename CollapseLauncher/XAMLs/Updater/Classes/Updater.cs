@@ -6,7 +6,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
 using System.IO;
