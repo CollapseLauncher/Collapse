@@ -35,8 +35,8 @@ internal static partial class AssetBundleExtension
     internal static void RemoveUnlistedVideoAssetFromList(this List<FilePropertiesRemote> originList,
                                                           List<FilePropertiesRemote>      assetListFromVideo)
     {
-        List<FilePropertiesRemote> originOthersListOnly = originList.Where(x => x.FT != FileType.Video).ToList();
-        List<FilePropertiesRemote> originVideoListOnly = originList.Where(x => x.FT == FileType.Video).ToList();
+        List<FilePropertiesRemote> originOthersListOnly = [.. originList.Where(x => x.FT != FileType.Video)];
+        List<FilePropertiesRemote> originVideoListOnly  = [.. originList.Where(x => x.FT == FileType.Video)];
         originList.Clear();
         originList.AddRange(originOthersListOnly);
 
@@ -61,7 +61,7 @@ internal static partial class AssetBundleExtension
 
         GameVersion currentVersion = progressibleInstance.GameVersion;
 
-        HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
+        HashSet<int> ignoredCgHashset = [.. ignoredCgIds ?? []];
         List<CacheAssetInfo> assetInfoList =
             await assetBundleHttpClient
                .GetCacheAssetBundleListAsync(presetConfig,
