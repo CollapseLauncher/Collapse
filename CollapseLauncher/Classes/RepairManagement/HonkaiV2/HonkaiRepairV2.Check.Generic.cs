@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
-using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -55,7 +54,7 @@ internal partial class HonkaiRepairV2
     /// Check actual remote size asset from the actual URL.<br/>
     /// <br/>
     /// Note: This method only works on <see cref="FileType.Video"/> asset type with URL defined.
-    /// Otherwise, the method will immediately returns <see langword="true"/>.
+    /// Otherwise, the method will immediately return <see langword="true"/>.
     /// </summary>
     private async ValueTask<bool> TryIsAssetRemoteSizeEquals(
         FilePropertiesRemote asset,
@@ -76,7 +75,7 @@ internal partial class HonkaiRepairV2
         }
 
         UrlStatus status = await HttpClientAssetBundle.GetCachedUrlStatus(asset.RN, token);
-        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyways
+        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyway
         {
             return true;
         }
@@ -95,7 +94,7 @@ internal partial class HonkaiRepairV2
         CancellationToken    token                        = default)
     {
         // Update activity status
-        Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, asset.N);
+        Status.ActivityStatus = string.Format(Locale.Lang?._GameRepairPage?.Status6 ?? "", asset.N);
 
         // Increment current total count
         Interlocked.Increment(ref ProgressAllCountCurrent);
@@ -106,7 +105,7 @@ internal partial class HonkaiRepairV2
 
         int hashSize = asset.CRCArray?.Length ?? 0;
 
-        string   assetFilePath = Path.Combine(GamePath, asset.N);
+        string assetFilePath = Path.Combine(GamePath, asset.N);
         FileInfo assetFileInfo = new FileInfo(assetFilePath)
                                 .EnsureNoReadOnly(out bool isAssetExist)
                                 .StripAlternateDataStream();
@@ -148,12 +147,12 @@ internal partial class HonkaiRepairV2
         int bufferSize = asset.S.GetFileStreamBufferSize();
         await using FileStream assetFileStream = assetFileInfo
            .Open(new FileStreamOptions
-                 {
-                     Mode = FileMode.Open,
-                     Access = FileAccess.Read,
-                     Share = FileShare.Read,
-                     BufferSize = bufferSize
-                 });
+            {
+                Mode       = FileMode.Open,
+                Access     = FileAccess.Read,
+                Share      = FileShare.Read,
+                BufferSize = bufferSize
+            });
 
         // Override hash if HMAC key is null and asset's AssociatedObject is CacheAssetInfo
         hmacKey ??= (asset.AssociatedObject as CacheAssetInfo)?.HmacSha1Salt;
@@ -189,8 +188,8 @@ internal partial class HonkaiRepairV2
                                                   ImplReadBytesAction,
                                                   bufferSize,
                                                   token);
-                break;
-            }
+                    break;
+                }
             case MD5.HashSizeInBytes:
             {
                 using HashAlgorithm    hasher   = hmacKey != null ? new HMACMD5(hmacKey) : MD5.Create();

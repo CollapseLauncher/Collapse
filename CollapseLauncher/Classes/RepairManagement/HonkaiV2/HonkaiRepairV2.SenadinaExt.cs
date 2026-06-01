@@ -45,7 +45,7 @@ internal static class SenadinaExtension
         if (progressibleInstance != null)
         {
             progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Senadina Files");
+                string.Format(Locale.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Senadina Files");
             progressibleInstance.Status.IsProgressAllIndetermined = true;
             progressibleInstance.Status.IsIncludePerFileIndicator = false;
             progressibleInstance.UpdateStatus();
@@ -154,7 +154,7 @@ internal static class SenadinaExtension
         try
         {
             string origFileRelativePath = $"{gameVersion.Major}_{gameVersion.Minor}_{kind.ToString().ToLower()}";
-            string hashedRelativePath = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
+            string hashedRelativePath   = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
 
             string fileUrl = mainUrl.CombineURLFromString(hashedRelativePath);
             if (!dict.TryGetValue(origFileRelativePath, out SenadinaFileIdentifier? identifier))
@@ -166,8 +166,8 @@ internal static class SenadinaExtension
                                           "Please contact us in GitHub issues or Discord to let us know about this issue.");
             }
 
-            CDNCacheResult result = await client.TryGetCachedStreamFrom(fileUrl, token: token);
-            Stream networkStream = result.Stream;
+            CDNCacheResult result        = await client.TryGetCachedStreamFrom(fileUrl, token: token);
+            Stream         networkStream = result.Stream;
 
             await ThrowIfFileIsNotSenadina(networkStream, token);
             identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
@@ -203,8 +203,8 @@ internal static class SenadinaExtension
 
             await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
 #if DEBUG
-            using StreamReader rd = new StreamReader(fileIdentifierStreamDecoder);
-            string response = await rd.ReadToEndAsync(token);
+            using StreamReader rd       = new StreamReader(fileIdentifierStreamDecoder);
+            string             response = await rd.ReadToEndAsync(token);
             Logger.LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
             return response.Deserialize(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier);
 #else

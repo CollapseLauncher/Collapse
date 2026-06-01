@@ -48,17 +48,17 @@ internal static partial class AssetBundleExtension
             KianaDispatch      gameServerInfo,
             SenadinaFileResult senadinaResults,
             ProgressBase<T>    progressibleInstance,
-            CancellationToken  token                = default)
+            CancellationToken  token = default)
         where T : IAssetIndexSummary
     {
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Block Files");
+            string.Format(Locale.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Block Files");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
         progressibleInstance.UpdateStatus();
 
-        await using Stream xmfMetaCurrentFileStream  = senadinaResults.XmfMeta?.fileStream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
+        await using Stream xmfMetaCurrentFileStream = senadinaResults.XmfMeta?.fileStream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
         await using Stream xmfPatchCurrentFileStream = senadinaResults.XmfPatch?.fileStream ?? throw new NullReferenceException("Senadina BlockPatch Identifier Stream cannot be null!");
 
         XMFParser          xmfMetaParser  = new(string.Empty, xmfMetaCurrentFileStream, true);

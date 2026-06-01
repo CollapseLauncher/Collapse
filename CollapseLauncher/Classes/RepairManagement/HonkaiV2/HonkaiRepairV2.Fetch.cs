@@ -86,7 +86,7 @@ internal partial class HonkaiRepairV2
         #endregion
 
         #region Fetch Video Assets from AssetBundle
-        List<FilePropertiesRemote> assetListFromVideo = [];
+        List<FilePropertiesRemote> assetListFromVideo                 = [];
         List<FilePropertiesRemote> assetListFromVideoOnlyDownloadable = [];
         Task assetListFromVideoTask =
             HttpClientAssetBundle
@@ -96,11 +96,11 @@ internal partial class HonkaiRepairV2
                                        ignoredAssets.IgnoredVideoCgSubCategory,
                                        token)
                .GetResultFromAction(result =>
-                                    {
-                                        assetListFromVideo.AddRange(result);
-                                        assetListFromVideoOnlyDownloadable.AddRange(result.Where(x => ((KianaCgMetadata)x.AssociatedObject).DownloadMode == CGDownloadMode.DownloadTipOnce));
-                                        FinalizeVideoAssetsPath(assetListFromVideo);
-                                    });
+                {
+                    assetListFromVideo.AddRange(result);
+                    assetListFromVideoOnlyDownloadable.AddRange(result.Where(x => ((KianaCgMetadata)x.AssociatedObject).DownloadMode == CGDownloadMode.DownloadTipOnce));
+                    FinalizeVideoAssetsPath(assetListFromVideo);
+                });
         #endregion
 
         #region Fetch Audio Assets from AssetBundle
@@ -115,13 +115,13 @@ internal partial class HonkaiRepairV2
                                        ignoredAssets.IgnoredAudioPckType,
                                        token)
                .GetResultFromAction(async result =>
-                                    {
-                                        assetListFromAudio.AddRange(result);
-                                        await FinalizeAudioAssetsPath(assetIndex,
-                                                                      assetListFromAudio,
-                                                                      senadinaResult.Audio,
-                                                                      token);
-                                    });
+                {
+                    assetListFromAudio.AddRange(result);
+                    await FinalizeAudioAssetsPath(assetIndex,
+                                                  assetListFromAudio,
+                                                  senadinaResult.Audio,
+                                                  token);
+               });
         #endregion
 
         #region Fetch Block Assets from AssetBundle
@@ -136,13 +136,13 @@ internal partial class HonkaiRepairV2
                                        this,
                                        token)
                .GetResultFromAction(async result =>
-                                    {
-                                        assetListFromBlock.AddRange(result);
-                                        await FinalizeBlockAssetsPath(assetIndex,
-                                                                      assetListFromBlock,
-                                                                      senadinaResult,
-                                                                      token);
-                                    });
+                {
+                    assetListFromBlock.AddRange(result);
+                   await FinalizeBlockAssetsPath(assetIndex,
+                                                 assetListFromBlock,
+                                                 senadinaResult,
+                                                 token);
+               });
         #endregion
 
         #region Run Task Continuation in Parallel
@@ -397,10 +397,10 @@ internal partial class HonkaiRepairV2
     }
 
     private async Task<bool> EnsureAudioDefaultManifestExisted(
-        HttpClient client,
+        HttpClient            client,
         FilePropertiesRemote? audioDefaultManifestAsset,
-        string audioDefaultManifestPath,
-        CancellationToken token)
+        string                audioDefaultManifestPath,
+        CancellationToken     token)
     {
         if (audioDefaultManifestAsset == null)
         {

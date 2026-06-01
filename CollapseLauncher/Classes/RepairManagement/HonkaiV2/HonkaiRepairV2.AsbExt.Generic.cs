@@ -17,16 +17,16 @@ internal static partial class AssetBundleExtension
     extension(ProgressBase<FilePropertiesRemote> progressBase)
     {
         internal void AddBrokenAssetToList(FilePropertiesRemote asset,
-                                           byte[]?              finalHash    = null,
-                                           long?                useFoundSize = null)
+                                           byte[]? finalHash = null,
+                                           long? useFoundSize = null)
         {
             AssetProperty<RepairAssetType> property =
-                new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
-                                                   asset.GetRepairAssetType(),
-                                                   Path.GetDirectoryName(asset.N) ?? "\\",
-                                                   useFoundSize ?? asset.S,
-                                                   finalHash,
-                                                   asset.CRCArray);
+                new(Path.GetFileName(asset.N),
+                    asset.GetRepairAssetType(),
+                    Path.GetDirectoryName(asset.N) ?? "\\",
+                    useFoundSize ?? asset.S,
+                    finalHash,
+                    asset.CRCArray);
 
             asset.AssociatedAssetProperty = property;
             progressBase.Dispatch(AddToUITable);
@@ -60,7 +60,7 @@ internal static partial class AssetBundleExtension
         {
             // Increment total count current
             progressBase.ProgressAllCountCurrent++;
-            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Lang!._Misc!.Downloading + ": {0}" : Locale.Lang._GameRepairPage.Status8, asset.N);
+            progressBase.Status.ActivityStatus = string.Format(isCacheUpdateMode ? Locale.Lang?._Misc?.Downloading + ": {0}" : Locale.Lang?._GameRepairPage?.Status8 ?? "", asset.N);
             progressBase.UpdateStatus();
         }
     }
@@ -69,39 +69,11 @@ internal static partial class AssetBundleExtension
         asset switch
         {
             { FT: FileType.Audio, IsPatchApplicable: true } => RepairAssetType.AudioUpdate,
-            { FT: FileType.Audio } => RepairAssetType.Audio,
+            { FT: FileType.Audio }                          => RepairAssetType.Audio,
             { FT: FileType.Block, IsPatchApplicable: true } => RepairAssetType.BlockUpdate,
-            { FT: FileType.Block } => RepairAssetType.Block,
-            { FT: FileType.Video } => RepairAssetType.Video,
-            { FT: FileType.Unused } => RepairAssetType.Unused,
-            _ => RepairAssetType.Generic
+            { FT: FileType.Block }                          => RepairAssetType.Block,
+            { FT: FileType.Video }                          => RepairAssetType.Video,
+            { FT: FileType.Unused }                         => RepairAssetType.Unused,
+            _                                               => RepairAssetType.Generic
         };
-
-    /*
-    internal static long GetDownloadableSize(this List<FilePropertiesRemote> assetList)
-    {
-        if (assetList.Count == 0)
-        {
-            return 0;
-        }
-
-        IEnumerable<FilePropertiesRemote> nonPatchableQuery =
-            assetList.Where(x => x.FT != FileType.Unused && !x.IsPatchApplicable);
-
-        IEnumerable<uint> patchableBlockLengthQuery =
-            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, BlockPatchInfo: not null })
-                     .Select(x => x.BlockPatchInfo)
-                     .SelectMany(x => x?.PatchPairs ?? [])
-                     .Select(x => x.PatchSize);
-
-        IEnumerable<uint> patchableAudioLengthQuery =
-            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, AudioPatchInfo: not null })
-                     .Select(x => x.AudioPatchInfo)
-                     .Select(x => x?.PatchFileSize ?? 0);
-
-        return nonPatchableQuery.Sum(x => x.S)
-            + patchableBlockLengthQuery.Sum(x => x)
-            + patchableAudioLengthQuery.Sum(x => x);
-    }
-    */
 }

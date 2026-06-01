@@ -78,20 +78,20 @@ internal partial class HonkaiRepairV2
                                .UseLauncherConfig(DownloadThreadCount * DownloadThreadCount)
                                .SetAllowedDecompression(DecompressionMethods.None)
                                .SetUserAgent(AssetBundleUserAgent)
-                            #if AOT
+#if AOT
                                .SetHttpVersion(HttpVersion.Version20)
-                            #else
+#else
                                .SetHttpVersion(HttpVersion.Version30)
-                            #endif
+#endif
                                .Create();
 
         HttpClientGeneric = new HttpClientBuilder()
                            .UseLauncherConfig(DownloadThreadCount * DownloadThreadCount)
-                        #if AOT
+#if AOT
                            .SetHttpVersion(HttpVersion.Version20)
-                        #else
+#else
                            .SetHttpVersion(HttpVersion.Version30)
-                        #endif
+#endif
                            .Create();
     }
 

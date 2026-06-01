@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -30,13 +29,13 @@ namespace CollapseLauncher.RepairManagement;
 internal static partial class AssetBundleExtension
 {
     internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video\";
-    internal const string MetadataFilename = "107438912";
+    internal const string MetadataFilename  = "107438912";
 
     internal static void RemoveUnlistedVideoAssetFromList(this List<FilePropertiesRemote> originList,
                                                           List<FilePropertiesRemote>      assetListFromVideo)
     {
         List<FilePropertiesRemote> originOthersListOnly = originList.Where(x => x.FT != FileType.Video).ToList();
-        List<FilePropertiesRemote> originVideoListOnly = originList.Where(x => x.FT == FileType.Video).ToList();
+        List<FilePropertiesRemote> originVideoListOnly  = originList.Where(x => x.FT == FileType.Video).ToList();
         originList.Clear();
         originList.AddRange(originOthersListOnly);
 
@@ -83,7 +82,7 @@ internal static partial class AssetBundleExtension
 
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Video");
+            string.Format(Locale.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Video");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
@@ -104,7 +103,7 @@ internal static partial class AssetBundleExtension
            .ForEachAsync(KianaCgMetadata.Parse(dechipheredCgStream),
                          new ParallelOptions
                          {
-                             CancellationToken = token,
+                             CancellationToken      = token,
                              MaxDegreeOfParallelism = parallelThread
                          },
                          ImplCheckAndAdd);
@@ -131,8 +130,9 @@ internal static partial class AssetBundleExtension
             string assetUrl = baseUrl.CombineURLFromString("Video", assetName);
 
             // Update status
-            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang?._GameRepairPage?.Status14 ?? "", assetName);
-            progressibleInstance.Status.IsProgressAllIndetermined = true;
+            progressibleInstance.Status.ActivityStatus =
+                string.Format(Locale.Lang?._GameRepairPage?.Status14 ?? "", assetName);
+            progressibleInstance.Status.IsProgressAllIndetermined     = true;
             progressibleInstance.Status.IsProgressPerFileIndetermined = true;
             progressibleInstance.UpdateStatus();
 

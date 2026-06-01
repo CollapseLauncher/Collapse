@@ -65,13 +65,13 @@ internal partial class HonkaiRepairV2
         }
 
         // Step 2: If asset has no patch applicable, add it to broken asset
-        if (!asset.IsPatchApplicable ||                                        // 1st Check: Ensure if patch is applicable
-             asset.AssociatedObject is not ManifestAssetInfo audioAssetInfo || // 2nd Check: Ensure if AssociatedObject is ManifestAssetInfo
-             audioAssetInfo.AllPatchInfo                                       // 3rd Check: Ensure if matching patch info is available
-                           .FirstOrDefault(x =>
-                                               IsBytesEqualReversible(hashBufferMemory.Span,
-                                                                      x.OldAudioMD5Array))
-                 is not { } patchInfo)
+        if (!asset.IsPatchApplicable ||                                       // 1st Check: Ensure if patch is applicable
+            asset.AssociatedObject is not ManifestAssetInfo audioAssetInfo || // 2nd Check: Ensure if AssociatedObject is ManifestAssetInfo
+            audioAssetInfo.AllPatchInfo                                       // 3rd Check: Ensure if matching patch info is available
+                          .FirstOrDefault(x =>
+                                              IsBytesEqualReversible(hashBufferMemory.Span,
+                                                                     x.OldAudioMD5Array))
+                is not { } patchInfo)
         {
             byte[] finalBytesToDisplay = new byte[hashBufferSize];
             hashBufferMemory.CopyTo(finalBytesToDisplay);

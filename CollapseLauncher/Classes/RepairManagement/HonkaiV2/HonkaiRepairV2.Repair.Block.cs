@@ -61,8 +61,8 @@ internal partial class HonkaiRepairV2
                                   .EnsureNoReadOnly()
                                   .StripAlternateDataStream();
 
-        int bufferSize = patchInfo.PatchSize.GetFileStreamBufferSize();
-        long loaded = 0;
+        int  bufferSize = patchInfo.PatchSize.GetFileStreamBufferSize();
+        long loaded     = 0;
 
         await using (FileStream patchFileStream =
                      patchOutputFileInfo.Open(FileMode.OpenOrCreate,

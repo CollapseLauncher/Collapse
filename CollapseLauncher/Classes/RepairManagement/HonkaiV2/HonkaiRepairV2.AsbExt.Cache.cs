@@ -216,7 +216,7 @@ internal static partial class AssetBundleExtension
                                     ?? throw new InvalidOperationException("Cannot deserialize CacheAsset object");
             tempAssetList.Add(new CacheAssetInfo
             {
-                Asset = cacheAsset,
+                Asset    = cacheAsset,
                 AssetUrl = $"{asbBaseUrl.CombineURLFromString(cacheAsset.N)}_{cacheAsset.CRC}"
             });
 #if DEBUG

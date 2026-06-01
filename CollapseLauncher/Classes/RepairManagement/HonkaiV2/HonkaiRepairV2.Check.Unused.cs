@@ -29,7 +29,7 @@ internal partial class HonkaiRepairV2
             "@",
             "d3d",
             "dxgi.dll",
-            GameVersionManager!.GamePreset.ProfileName!
+            GameVersionManager.GamePreset.ProfileName!
         ], StringComparison.OrdinalIgnoreCase);
 
         SearchValues<string> searchValuesContains = SearchValues.Create([
@@ -42,17 +42,17 @@ internal partial class HonkaiRepairV2
             ".ini"
         ], StringComparison.OrdinalIgnoreCase);
 
-        HashSet<string> hashSetList = GetExclusionHashSetFromAssetList(foundList, assetList);
-        var hashSetLookup = hashSetList.GetAlternateLookup<ReadOnlySpan<char>>();
+        HashSet<string> hashSetList   = GetExclusionHashSetFromAssetList(foundList, assetList);
+        var             hashSetLookup = hashSetList.GetAlternateLookup<ReadOnlySpan<char>>();
 
         Regex? matchIgnoredRegex = null;
-        string ignoredFilesPath = Path.Combine(GamePath, "@IgnoredFiles");
+        string ignoredFilesPath  = Path.Combine(GamePath, "@IgnoredFiles");
         if (File.Exists(ignoredFilesPath))
         {
             try
             {
-                string[] ignoredFiles = File.ReadAllLines(ignoredFilesPath);
-                string mergedPattern = PatternMatcher.MergeRegexPattern(ignoredFiles);
+                string[] ignoredFiles  = File.ReadAllLines(ignoredFilesPath);
+                string   mergedPattern = PatternMatcher.MergeRegexPattern(ignoredFiles);
 
                 matchIgnoredRegex = new Regex(mergedPattern, RegexOptions.IgnoreCase |
                                                              RegexOptions.NonBacktracking |
@@ -70,9 +70,9 @@ internal partial class HonkaiRepairV2
         DirectoryInfo dirInfo = new(gameDir);
         foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
         {
-            string fileFullPath = fileInfo.FullName;
+            string             fileFullPath     = fileInfo.FullName;
             ReadOnlySpan<char> fileRelativePath = TrimToRelativePath(fileFullPath);
-            ReadOnlySpan<char> fileName = Path.GetFileName(fileRelativePath);
+            ReadOnlySpan<char> fileName         = Path.GetFileName(fileRelativePath);
 
             if (fileRelativePath.IndexOfAny(searchValuesStartsWith) == 0)
                 continue;
@@ -90,8 +90,8 @@ internal partial class HonkaiRepairV2
             FilePropertiesRemote asset = new()
             {
                 FT = FileType.Unused,
-                N = fileRelativePath.ToString(),
-                S = fileInfo.Length
+                N  = fileRelativePath.ToString(),
+                S  = fileInfo.Length
             };
             this.AddBrokenAssetToList(asset, null, 0);
         }
@@ -121,7 +121,7 @@ internal partial class HonkaiRepairV2
                                                      .OfType<BlockPatchInfo>()
                                                      .SelectMany(x => x.PatchPairs))
         {
-            string oldFileName = Path.Combine(AssetBundleExtension.RelativePathBlock, blockPatchAsset.OldName);
+            string oldFileName   = Path.Combine(AssetBundleExtension.RelativePathBlock,      blockPatchAsset.OldName);
             string patchFileName = Path.Combine(AssetBundleExtension.RelativePathBlockPatch, blockPatchAsset.PatchName);
             ConverterTool.NormalizePathInplaceNoTrim(oldFileName);
             ConverterTool.NormalizePathInplaceNoTrim(patchFileName);

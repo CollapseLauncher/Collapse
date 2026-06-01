@@ -50,7 +50,7 @@ internal static partial class AssetBundleExtension
 
         // Update Progress
         progressibleInstance.Status.ActivityStatus =
-            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Audio Manifest");
+            string.Format(Locale.Lang?._CachesPage?.CachesStatusFetchingType ?? "", "Audio Manifest");
         progressibleInstance.Status.IsProgressAllIndetermined = true;
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
@@ -114,13 +114,13 @@ internal static partial class AssetBundleExtension
                 assetList.Add(new FilePropertiesRemote
                 {
                     IsPatchApplicable = audioAsset.IsHasPatch,
-                    AssociatedObject = audioAsset,
-                    AudioPatchInfo = audioAsset.PatchInfo,
-                    CRC = audioAsset.HashString,
-                    FT = FileType.Audio,
-                    RN = baseAudioUrl.CombineURLFromString(audioAsset.Path),
-                    N = audioAsset.Name + ".pck",
-                    S = audioAsset.Size
+                    AssociatedObject  = audioAsset,
+                    AudioPatchInfo    = audioAsset.PatchInfo,
+                    CRC               = audioAsset.HashString,
+                    FT                = FileType.Audio,
+                    RN                = baseAudioUrl.CombineURLFromString(audioAsset.Path),
+                    N                 = audioAsset.Name + ".pck",
+                    S                 = audioAsset.Size
                 });
             }
         }
@@ -131,7 +131,7 @@ internal static partial class AssetBundleExtension
         [NotNullWhen(true)] out ManifestAudioPatchInfo? patchInfo,
         [NotNullWhen(true)] out string?                 patchUrl)
     {
-        const string startTrim         = "/";
+        const string startTrim = "/";
 
         patchInfo = null;
         patchUrl  = null;
@@ -142,7 +142,7 @@ internal static partial class AssetBundleExtension
             throw new InvalidOperationException("This method cannot be called while AudioPatchInfo is null");
         }
 
-        if (asset.AssociatedObject is not ManifestAssetInfo audioAssetInfo)
+        if (asset.AssociatedObject is not ManifestAssetInfo)
         {
             throw new InvalidOperationException("This method cannot be called while AssociatedObject is not a ManifestAssetInfo type");
         }
