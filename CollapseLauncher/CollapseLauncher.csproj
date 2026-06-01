@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.3</Version>
+        <Version>1.84.4</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -505,14 +505,20 @@
     <Target Name="PostPublish-RemoveFiles" AfterTargets="Publish">
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)*.all.onnxe;" />
             <FilesToDelete Include="$(PublishDir)*.winmd;" />
             <FilesToDelete Include="$(PublishDir)*.xml;" />
             <FilesToDelete Include="$(PublishDir)DirectML.dll;" />
-            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
-            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Asg.SemanticIndex*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Search*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Widgets*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.pri;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
+            <FilesToDelete Include="$(PublishDir)NPUDetect.dll;" />
             <FilesToDelete Include="$(PublishDir)onnxruntime*.*;" />
+            <FilesToDelete Include="$(PublishDir)PerceptiveStreaming.dll;" />
             <FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
