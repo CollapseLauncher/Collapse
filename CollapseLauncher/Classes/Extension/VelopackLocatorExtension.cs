@@ -5,9 +5,7 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
-using NuGet.Versioning;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,12 +32,8 @@ namespace CollapseLauncher.Extension
             // its custom AUMID
             IVelopackLogger? logger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
 
-            Process currentProcess = Process.GetCurrentProcess();
-
-            WindowsVelopackLocator locator =
-                new(currentProcess.MainModule!.FileName,
-                    (uint)currentProcess.Id,
-                    logger);
+            DefaultProcessImpl procDefault = new(logger);
+            WindowsVelopackLocator locator = new(procDefault, logger);
             // HACK: Always ensure to set the AUMID field null so it won't
             //       set the AUMID to its own.
             locator.GetLocatorAumidField() = null;
@@ -168,7 +162,7 @@ namespace CollapseLauncher.Extension
 
                     // Try open the shortcut and check whether this shortcut is actually pointing to
                     // CollapseLauncher.exe file
-                    using ShellLink shellLink = new(thisUserStartMenuShortcut);
+                    ShellLink shellLink = new(thisUserStartMenuShortcut);
                     // Try to get the target path and its filename
                     string shortcutTargetPath = shellLink.Target;
                     if (!shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
@@ -247,10 +241,10 @@ namespace CollapseLauncher.Extension
                                        </package>
                                        """; // Adding shortcutAumid for future use, since they typo-ed the XML tag LMAO
             string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
-            string xmlPath        = Path.Combine(LauncherConfig.AppExecutableDir, "sq.version");
+            string xmlPath = Path.Combine(LauncherConfig.AppExecutableDir, "sq.version");
             string xmlContent = string.Format(xmlTemplate, currentVersion, LauncherConfig.IsPreview ? "preview" : "stable",
                                               aumid).ReplaceLineEndings("\n");
-            
+
             // Check if file exist
             if (File.Exists(xmlPath))
             {

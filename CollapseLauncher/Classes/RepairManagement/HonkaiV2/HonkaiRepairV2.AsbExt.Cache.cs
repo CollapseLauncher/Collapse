@@ -5,6 +5,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Plugin.Core.Management;
@@ -50,7 +51,7 @@ internal static partial class AssetBundleExtension
             KianaDispatch     gameServerInfo,
             CacheAssetType?   cacheAssetType,
             ProgressBase<T>   progressibleInstance,
-            CancellationToken token                = default)
+            CancellationToken token = default)
         where T : IAssetIndexSummary
     {
         // ReSharper disable once RedundantAssignment
@@ -140,7 +141,7 @@ internal static partial class AssetBundleExtension
         TextAsset packageVersionText  = new(packageVersionBytes);
 
         int    mersenneTwisterSeed = 0;
-        byte[] hmacHashSalt        = [];
+        byte[] hmacHashSalt        = new byte[8];
 
         // Enumerate each of JSON object entry
         foreach (ReadOnlySpan<char> currentJsonEntry in packageVersionText.GetStringEnumeration())
@@ -153,7 +154,7 @@ internal static partial class AssetBundleExtension
             // Message from @neon-nyan to whoever fuck responsible for Hi3 security team at miHoYo:
             // I'm not going to try to hide our internal calling names if miHoYo keeps changing something AGAIN.
             // I'm already sick of this. One more changes happen, I'm not going to bother to type everything in its real name anymore.
-            
+
             // Try parse entry if it's not a JSON object
             if (currentJsonEntry[0] != '{' && currentJsonEntry[^1] != '}')
             {
@@ -193,8 +194,14 @@ internal static partial class AssetBundleExtension
                     }
 
                     // Use Collapse's MhyEncTool to get the salt from the last 8 bytes of the signature bytes.
-                    MhyEncTool saltTool = new(currentJsonEntry.ToString(), masterKey);
-                    hmacHashSalt = saltTool.GetSalt();
+                    if (!MhyEncTool.TryGetSalt(currentJsonEntry,
+                                               masterKey,
+                                               hmacHashSalt,
+                                               out _,
+                                               out Exception? ex))
+                    {
+                        throw ex;
+                    }
 #if DEBUG
                     Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Got HMACSHA1 salt: 0x{BinaryPrimitives.ReadInt64LittleEndian(hmacHashSalt):x8}",
                                         LogType.Debug,
@@ -209,7 +216,7 @@ internal static partial class AssetBundleExtension
                                     ?? throw new InvalidOperationException("Cannot deserialize CacheAsset object");
             tempAssetList.Add(new CacheAssetInfo
             {
-                Asset    = cacheAsset,
+                Asset = cacheAsset,
                 AssetUrl = $"{asbBaseUrl.CombineURLFromString(cacheAsset.N)}_{cacheAsset.CRC}"
             });
 #if DEBUG
@@ -235,7 +242,7 @@ internal static partial class AssetBundleExtension
             if (assetInfo.Asset.DLM == 2)
             {
                 // Update progress
-                progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.Status2, cacheType, assetInfo.Asset.N);
+                progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang?._CachesPage?.Status2 ?? "", cacheType, assetInfo.Asset.N);
                 progressibleInstance.UpdateStatus();
 
                 UrlStatus urlStatus = await checkAsbHttpClient.GetURLStatusCode(assetInfo.AssetUrl, innerToken);
@@ -318,6 +325,11 @@ internal static partial class AssetBundleExtension
         {
             throw new NullReferenceException("GameGatewayDefault cannot be empty on the game preset");
         }
+
+#if DEBUG
+        // Assign Dispatcher Logger for Debug
+        KianaDispatch.DebugLogger = ILoggerHelper.GetILogger("KianaDispatch");
+#endif
 
         Exception? lastException = null;
         for (int i = 0; i < presetConfig.GameDispatchArrayURL?.Count; i++)

@@ -5,9 +5,9 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
-using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Logging;
@@ -22,7 +22,7 @@ namespace CollapseLauncher.Helper.Update
     internal static class LauncherUpdateHelper
     {
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
-        private static  bool                  _isLauncherUpdateAvailable;
+        private static bool _isLauncherUpdateAvailable;
 
         internal static GameVersion? LauncherCurrentVersion => field ??= LauncherConfig.AppCurrentVersionString;
 
@@ -41,7 +41,7 @@ namespace CollapseLauncher.Helper.Update
                 Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}",
                                     LogType.Warning, true);
                 if (!ex.Message.Contains("application which is not installed",
-                                         StringComparison.InvariantCultureIgnoreCase)) 
+                                         StringComparison.InvariantCultureIgnoreCase))
                     await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
@@ -60,7 +60,8 @@ namespace CollapseLauncher.Helper.Update
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
             // Initialize update manager logger, locator and options
             IVelopackLogger? velopackLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
-            IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(velopackLogger);
+            DefaultProcessImpl defaultProcessImpl = new(velopackLogger);
+            IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(defaultProcessImpl, velopackLogger);
             UpdateOptions updateManagerOptions = new()
             {
                 AllowVersionDowngrade = true,
@@ -102,8 +103,8 @@ namespace CollapseLauncher.Helper.Update
 
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)
         {
-            string             relativePath = updateChannel.CombineURLFromString("fileindex.json");
-            await using Stream ms           = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
+            string relativePath = updateChannel.CombineURLFromString("fileindex.json");
+            await using Stream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
             return await ms.DeserializeAsync(AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp);
         }
     }

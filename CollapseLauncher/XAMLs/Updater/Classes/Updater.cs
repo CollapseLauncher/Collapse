@@ -63,12 +63,14 @@ public partial class Updater
         _updateDownloader = new UpdateManagerHttpAdapter();
 
         _updateManagerLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
-        IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(_updateManagerLogger);
+        DefaultProcessImpl defaultProcessImpl = new(_updateManagerLogger);
+        IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(defaultProcessImpl, _updateManagerLogger);
         UpdateOptions updateManagerOptions = new()
         {
             AllowVersionDowngrade = true,
-            ExplicitChannel = _channelName
+            ExplicitChannel       = _channelName
         };
+        // Initialize update manager
         // Initialize update manager source
         IUpdateSource updateSource = new SimpleWebSource(_channelURL, _updateDownloader);
         _updateManager = new UpdateManager(

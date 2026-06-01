@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment
@@ -59,11 +59,11 @@ namespace CollapseLauncher.Helper
                 // -1 means task is disabled with tray enabled
                 -1 => (false, true),
                 // 0 means task is disabled with tray disabled
-                0  => (false, false),
+                0 => (false, false),
                 // 1 means task is enabled with tray disabled
-                1  => (true, false),
+                1 => (true, false),
                 // 2 means task is enabled with tray enabled
-                2  => (true, true),
+                2 => (true, true),
                 // Otherwise, return both disabled (due to failure)
                 _ => (false, false)
             };
@@ -172,9 +172,9 @@ namespace CollapseLauncher.Helper
 
             // Try create directory
             Directory.CreateDirectory(iconLocationDir);
-            
+
             // Create ShellLink instance
-            using ShellLink shellLink = new ShellLink();
+            ShellLink shellLink = new();
 
             // If existing icon exist, try open it
             try
@@ -188,14 +188,14 @@ namespace CollapseLauncher.Helper
                 SentryHelper.ExceptionHandler(new Exception(msg, ex));
                 Logger.LogWriteLine(msg + $"\r\n{ex}", LogType.Error, true);
             }
-            
+
             // Set params on the shortcut instance
-            shellLink.IconIndex         = 0;
-            shellLink.IconPath          = executablePath ?? "";
-            shellLink.DisplayMode       = LinkDisplayMode.edmNormal;
-            shellLink.WorkingDirectory  = workingDirPath ?? "";
-            shellLink.Target            = executablePath ?? "";
-            shellLink.Description       = appDescription ?? "";
+            shellLink.IconIndex = 0;
+            shellLink.IconPath = executablePath ?? "";
+            shellLink.DisplayMode = LinkDisplayMode.edmNormal;
+            shellLink.WorkingDirectory = workingDirPath ?? "";
+            shellLink.Target = executablePath ?? "";
+            shellLink.Description = appDescription ?? "";
 
             // Save the icons
             shellLink.Save(iconLocation);
@@ -248,11 +248,11 @@ namespace CollapseLauncher.Helper
             using Process process = new Process();
             process.StartInfo = new ProcessStartInfo
             {
-                FileName               = appletPath,
-                Arguments              = argument,
-                UseShellExecute        = false,
+                FileName = appletPath,
+                Arguments = argument,
+                UseShellExecute = false,
                 RedirectStandardOutput = true,
-                CreateNoWindow         = true
+                CreateNoWindow = true
             };
 
 #if DEBUG
@@ -264,7 +264,7 @@ namespace CollapseLauncher.Helper
             {
                 // Start the applet and wait until it exit.
                 process.Start();
-                while (process.StandardOutput.ReadLine() is {} consoleStdOut)
+                while (process.StandardOutput.ReadLine() is { } consoleStdOut)
                 {
                     Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
 

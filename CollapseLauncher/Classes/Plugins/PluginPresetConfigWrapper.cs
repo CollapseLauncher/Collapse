@@ -8,7 +8,6 @@ using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -92,9 +91,9 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
         set;
     }
 
-    public override GameNameType   GameType           => GameNameType.Plugin;
-    public override LauncherType   LauncherType       => LauncherType.Plugin;
-    public override GameVendorType VendorType         => GameVendorType.CollapsePlugin;
+    public override GameNameType   GameType     => GameNameType.Plugin;
+    public override LauncherType   LauncherType => LauncherType.Plugin;
+    public override GameVendorType VendorType   => GameVendorType.CollapsePlugin;
     public string VendorTypeInString
     {
         get
@@ -264,11 +263,11 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
         {
             _config.comGet_ReleaseChannel(out GameReleaseChannel result);
             return result switch
-                   {
-                       GameReleaseChannel.OpenBeta => GameChannel.Beta,
-                       GameReleaseChannel.ClosedBeta => GameChannel.DevRelease,
-                       _ => GameChannel.Stable
-                   };
+            {
+                GameReleaseChannel.OpenBeta   => GameChannel.Beta,
+                GameReleaseChannel.ClosedBeta => GameChannel.DevRelease,
+                _                             => GameChannel.Stable
+            };
         }
     }
 
@@ -282,7 +281,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
     }
 
     private         int? _hashID;
-    public override int  HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
+    public override int  HashID => _hashID ??= HashCode.Combine(GameName, ZoneName);
 
 
     [field: AllowNull, MaybeNull]
@@ -388,23 +387,6 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
     {
         _config.Free();
         DiscordPresenceContext.Dispose();
-
-        ReleaseComObject(PluginNewsApi);
-        ReleaseComObject(PluginMediaApi);
-        ReleaseComObject(PluginGameManager);
-        ReleaseComObject(PluginGameInstaller);
-        ReleaseComObject(_config);
-
         GC.SuppressFinalize(this);
-        return;
-
-        static void ReleaseComObject<T>(T obj)
-            where T : class
-        {
-            if (!ComMarshal<T>.TryReleaseComObject(obj, out Exception? ex))
-            {
-                Logger.LogWriteLine($"[PluginPresetConfigWrapper::Dispose] Cannot release COM Instance of {typeof(T).Name}\r\n{ex}", LogType.Error, true);
-            }
-        }
     }
 }

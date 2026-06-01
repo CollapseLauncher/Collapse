@@ -32,13 +32,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
     internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
 
-    private unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
-    private unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
-    private unsafe delegate GameVersion* DelegateGetPluginVersion();
-    private unsafe delegate void*        DelegateGetPlugin();
-    private delegate        void         DelegateFreePlugin();
-    private delegate        void         DelegateSetCallback(nint callbackP);
-
     private bool _isDisposed;
 
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
@@ -141,10 +134,10 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
 
-            if (!libraryHandle.TryGetExport("GetPluginStandardVersion", out DelegateGetPluginStandardVersion getPluginStandardVersionHandle) ||
-                !libraryHandle.TryGetExport("GetPluginVersion", out DelegateGetPluginVersion getPluginVersionHandle) ||
-                !libraryHandle.TryGetExport("GetPlugin", out DelegateGetPlugin getPluginHandle) ||
-                !libraryHandle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (!libraryHandle.TryGetExportUnsafe("GetPluginStandardVersion", out nint getPluginStandardVersionHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("GetPluginVersion", out nint getPluginVersionHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("GetPlugin", out nint getPluginHandleP) ||
+                !libraryHandle.TryGetExportUnsafe("SetLoggerCallback", out nint setLoggerCallbackHandleP))
             {
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
@@ -153,23 +146,25 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(_sharedLoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
-                setLoggerCallbackHandle(callbackForLogger);
+                ((delegate* unmanaged[Cdecl]<nint, void>)setLoggerCallbackHandleP)(callbackForLogger);
             }
 
             // TODO: Add versioning check.
-            GameVersion pluginStandardVersion = *getPluginStandardVersionHandle();
-            GameVersion pluginVersion         = *getPluginVersionHandle();
-            void*       pluginInstancePtr     = getPluginHandle();
+            GameVersion pluginStandardVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginStandardVersionHandleP)();
+            GameVersion pluginVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginVersionHandleP)();
+            nint pluginInstancePtr = ((delegate* unmanaged[Cdecl]<nint>)getPluginHandleP)();
 
-            if (pluginInstancePtr == null)
+            if (pluginInstancePtr == nint.Zero)
             {
                 throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export function returns a null pointer!");
             }
 
-            IPlugin? pluginInstance = ComInterfaceMarshaller<IPlugin>.ConvertToManaged(pluginInstancePtr);
-            if (pluginInstance == null)
+            if (!ComMarshal<IPlugin>.TryCreateComObjectFromReference(pluginInstancePtr,
+                                                                      out IPlugin? pluginInstance,
+                                                                      out Exception? ex))
             {
-                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!",
+                                                 ex);
             }
 
             // Get Self Updater
@@ -177,15 +172,12 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             Updater = selfUpdater;
 
             // Get Managed Update CDN List
-            if (libraryHandle.TryGetExport("GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
+            if (libraryHandle.TryGetExportUnsafe("GetPluginUpdateCdnList", out nint getPluginUpdateCdnListP))
             {
-                int      pluginCdnListCount = 0;
-                ushort** urlsPtr            = null;
-
-                getPluginUpdateCdnList(&pluginCdnListCount, &urlsPtr);
-
-                if (pluginCdnListCount != 0 && urlsPtr != null)
+                ((delegate* unmanaged[Cdecl]<out int, out nint, void>)getPluginUpdateCdnListP)(out int pluginCdnListCount, out nint urlArrayPtr);
+                if (pluginCdnListCount != 0 && urlArrayPtr != nint.Zero)
                 {
+                    ushort** urlsPtr = (ushort**)urlArrayPtr;
                     string[] urlList = GC.AllocateUninitializedArray<string>(pluginCdnListCount);
                     for (int i = 0; i < pluginCdnListCount; i++)
                     {
@@ -229,7 +221,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
 
-            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
+            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Info, true);
 
             PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
             for (int i = 0; i < presetConfigCount; i++)
@@ -255,22 +247,22 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         }
     }
 
-    internal void EnableDnsResolver()
+    internal unsafe void EnableDnsResolver()
     {
         if (!IsLoaded)
         {
             return;
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallback",
-                                out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallback",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackHandle))
         {
             nint dnsCallback = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallback);
             setDnsResolverCallbackHandle(dnsCallback);
         }
 
-        if (!Handle.TryGetExport("SetDnsResolverCallbackAsync",
-                                 out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (!Handle.TryGetExportUnsafe("SetDnsResolverCallbackAsync",
+                                       out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackAsyncHandle))
         {
             return;
         }
@@ -279,21 +271,21 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         setDnsResolverCallbackAsyncHandle(dnsCallbackAsync);
     }
 
-    internal void DisableDnsResolver()
+    internal unsafe void DisableDnsResolver()
     {
         if (!IsLoaded)
         {
             return;
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallback",
-                                out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallback",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackHandle))
         {
             setDnsResolverCallbackHandle(nint.Zero);
         }
 
-        if (Handle.TryGetExport("SetDnsResolverCallbackAsync",
-                                out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (Handle.TryGetExportUnsafe("SetDnsResolverCallbackAsync",
+                                      out delegate* unmanaged[Cdecl]<nint, void> setDnsResolverCallbackAsyncHandle))
         {
             setDnsResolverCallbackAsyncHandle(nint.Zero);
         }
@@ -321,7 +313,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     internal void SetPluginLocaleId(string localeId) => Instance?.SetPluginLocaleId(localeId);
 
-    public void Dispose()
+    public unsafe void Dispose()
     {
         if (_isDisposed || !IsLoaded)
         {
@@ -332,7 +324,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         {
             // Disable callbacks
             DisableDnsResolver();
-            if (Handle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (Handle.TryGetExportUnsafe("SetLoggerCallback",
+                                          out delegate* unmanaged[Cdecl]<nint, void> setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
                 Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
@@ -345,7 +338,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             }
 
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
-            if (Handle.TryGetExport("FreePlugin", out DelegateFreePlugin freePluginCallback))
+            if (Handle.TryGetExportUnsafe("FreePlugin",
+                                          out delegate* unmanaged[Cdecl]<void> freePluginCallback))
             {
                 // Try call the free function.
                 freePluginCallback();
@@ -369,11 +363,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         finally
         {
             // Free the plugin handle and remove it from the dictionary.
-            if (!ComMarshal<IPlugin>.TryReleaseComObject(Instance, out Exception? ex))
-            {
-                Logger.LogWriteLine($"[PluginInfo] Cannot release COM Object reference for IPlugin instance due to unexpected error: {ex}", LogType.Error, true);
-            }
-
             NativeLibrary.Free(Handle);
 
             // Free GCHandle and nullify the delegate.
@@ -386,9 +375,9 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     private static unsafe nint DnsResolverCallbackAsync(char* hostnameP, int hostnameLength, void** cancelCallbackP)
     {
-        string hostnameString = new string(new ReadOnlySpan<char>(hostnameP, hostnameLength));
+        string hostnameString = new(new ReadOnlySpan<char>(hostnameP, hostnameLength));
 
-        CancellationTokenSource tcs            = new CancellationTokenSource();
+        CancellationTokenSource tcs            = new();
         VoidCallback            cancelCallback = CancelDelegate;
         GCHandle                handle         = GCHandle.Alloc(cancelCallback); // Lock the callback from getting GCed
 
@@ -397,9 +386,9 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         Task<nint> task = DnsResolverCallbackAsync(hostnameString, tcs.Token);
         task.GetAwaiter()
             .OnCompleted(() =>
-                         {
-                             handle.Free(); // Allow the GC to free the callback
-                         });
+             {
+                 handle.Free(); // Allow the GC to free the callback
+             });
 
         return task.AsResult();
 

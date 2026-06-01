@@ -3,14 +3,14 @@ using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.RegistryUtils;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native.Enums.Registry;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Win32;
-using Hi3Helper.Win32.Screen;
-using RegistryUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,10 +18,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Color = Windows.UI.Color;
 // ReSharper disable CommentTypo
@@ -46,7 +46,7 @@ namespace CollapseLauncher.Pages
 
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!), HKEY.HKEY_CURRENT_USER);
                     ToggleRegistrySubscribe(true);
                 });
 

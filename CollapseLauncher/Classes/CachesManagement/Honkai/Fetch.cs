@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.UABT;
 using System;
@@ -310,8 +311,15 @@ namespace CollapseLauncher
                 key = LauncherMetadataHelper.CurrentMasterKey?.Key;
             }
 
-            MhyEncTool saltTool = new MhyEncTool(data, key);
-            return saltTool.GetSalt();
+            byte[] saltBytes = new byte[8];
+            if (!MhyEncTool.TryGetSalt(data,
+                                       key,
+                                       saltBytes,
+                                       out _,
+                                       out Exception exception))
+                throw exception;
+
+            return saltBytes;
         }
 
         private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(GamePath!, type == CacheAssetType.Data ? "Data" : "Resources");

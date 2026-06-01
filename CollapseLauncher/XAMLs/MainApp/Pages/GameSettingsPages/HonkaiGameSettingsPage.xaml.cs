@@ -1,20 +1,20 @@
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.RegistryUtils;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native.Enums.Registry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Win32;
-using RegistryUtils;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using Windows.UI;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
 
 #if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
@@ -37,7 +37,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!), HKEY.HKEY_CURRENT_USER);
                     ToggleRegistrySubscribe(true);
                 });
 
