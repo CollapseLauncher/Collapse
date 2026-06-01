@@ -367,26 +367,23 @@ internal static partial class AssetBundleExtension
     private static AudioLanguageType GetCurrentGameAudioLanguage(PresetConfig presetConfig)
     {
         using RegistryKey? rootRegistryKey = Registry.CurrentUser.OpenSubKey(presetConfig.ConfigRegistryLocation);
-        if (rootRegistryKey?.GetValue(PersonalAudioSetting.ValueName) is not byte[] jsonValue)
-        {
-            return presetConfig.GameDefaultCVLanguage;
-        }
+        return GetAudioLanguageTypeFromString((rootRegistryKey?.GetValue(PersonalAudioSetting.ValueName) as byte[])?
+                                             .Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSetting)?._userCVLanguage)
+               ?? presetConfig.GameDefaultCVLanguage;
 
-        PersonalAudioSetting? audioSetting =
-            jsonValue.Deserialize(HonkaiSettingsJsonContext.Default.PersonalAudioSetting);
-        if (audioSetting == null)
+        static AudioLanguageType? GetAudioLanguageTypeFromString(string? lang)
         {
-            return presetConfig.GameDefaultCVLanguage;
-        }
+            if (lang?.StartsWith("Japanese") ?? false)
+            {
+                return AudioLanguageType.Japanese;
+            }
 
-        if (audioSetting
-           ._userCVLanguage?
-           .StartsWith("Chinese", StringComparison.OrdinalIgnoreCase) ?? false)
-        {
-            return AudioLanguageType.Chinese;
-        }
+            if (lang?.StartsWith("Chinese") ?? false)
+            {
+                return AudioLanguageType.Chinese;
+            }
 
-        // Use default value based on preset.
-        return presetConfig.GameDefaultCVLanguage;
+            return null;
+        }
     }
 }
