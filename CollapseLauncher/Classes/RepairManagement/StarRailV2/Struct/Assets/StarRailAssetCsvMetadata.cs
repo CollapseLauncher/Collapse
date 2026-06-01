@@ -69,6 +69,12 @@ public sealed class StarRailAssetCsvMetadata : StarRailAssetBinaryMetadata<StarR
                 return false;
             }
 
+            const string emptyFlag = "Empty";
+            if (line.Equals(emptyFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
             const string             separators = ",;"; // Include ; as well, just in case.
             const StringSplitOptions options = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
