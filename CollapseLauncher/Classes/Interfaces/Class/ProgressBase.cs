@@ -526,6 +526,8 @@ internal abstract class ProgressBase : GamePropertyBase
         // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
         _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
 
+        // Calculate the clamped speed for download and timelapse
+        double speedDownloadClamped = _sophonDownloadOnlySpeed.ClampLimitedSpeedNumber();
 
         if (!CheckIfNeedRefreshStopwatch() && !forceUpdate)
         {
