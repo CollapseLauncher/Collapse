@@ -541,9 +541,9 @@ internal partial class StarRailPersistentRefResult
         static Stream
 #endif
             CreateLocalStream(Stream thisSourceStream,
-                              string filePath,
+                              string filePath
 #if DEBUG
-                              CancellationToken token)
+                            , CancellationToken token)
 #else
             )
 #endif
