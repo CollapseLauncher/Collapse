@@ -254,9 +254,9 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[1.0.1, )",
-        "resolved": "1.0.1",
-        "contentHash": "LlmymFeEYBGNQfNiG89buDUT6C09MgqJnLzkvQz997fk/+KfmlyXlwbxOBFxt24HL4B8TQAFmNa6Oy9K4XlH0Q=="
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "Rz67gJL619fSBS6omaSINUxyDuwhIxkm5mmubf7uLd5Qgi6LLKaKCha+QFP6n+Bw/UjA0vutnH4JQfYzn6ANtw=="
       },
       "CommunityToolkit.WinUI.Animations": {
         "type": "Transitive",

@@ -282,7 +282,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
-        <PackageReference Include="Velopack" Version="1.0.1" />
+        <PackageReference Include="Velopack" Version="1.2.0" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
