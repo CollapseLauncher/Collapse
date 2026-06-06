@@ -15,7 +15,31 @@ namespace CollapseLauncher.Extension
         /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
         /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_ProtectedCursor")]
-        internal static extern void SetCursor(this UIElement element, InputCursor inputCursor);
+        private static extern void SetCursorInner(this UIElement element, InputCursor inputCursor);
+
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        internal static T SetCursor<T>(this T element, InputCursor inputCursor)
+            where T : UIElement
+        {
+            element.SetCursorInner(inputCursor);
+            return element;
+        }
+
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        internal static T SetCursor<T>(this T element, InputSystemCursorShape inputCursor)
+            where T : UIElement
+        {
+            element.SetCursorInner(InputSystemCursor.Create(inputCursor));
+            return element;
+        }
 
         /// <summary>
         /// Set the cursor for the element.
@@ -23,6 +47,17 @@ namespace CollapseLauncher.Extension
         /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
         /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
         internal static T WithCursor<T>(this T element, InputCursor inputCursor) where T : UIElement
+        {
+            element.SetCursor(inputCursor);
+            return element;
+        }
+
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        internal static T WithCursor<T>(this T element, InputSystemCursorShape inputCursor) where T : UIElement
         {
             element.SetCursor(inputCursor);
             return element;

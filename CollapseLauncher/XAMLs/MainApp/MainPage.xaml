@@ -163,6 +163,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <ComboBox x:Name="ComboBoxGameTitle"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       Grid.Column="0"
                                       MinWidth="167"
                                       BorderThickness="0"
@@ -179,6 +180,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <ComboBox x:Name="ComboBoxGameRegion"
+                                      extension:UIElementExtensions.CursorType="Hand"
                                       Grid.Column="1"
                                       MinWidth="148"
                                       BorderThickness="0"
@@ -263,6 +265,7 @@
                             </Button>
                             <Button x:Name="ChangeRegionConfirmBtn"
                                     extension:UIElementExtensions.UniformCornerRadius="-1"
+                                    extension:UIElementExtensions.CursorType="Hand"
                                     IsEnabled="False"
                                     Style="{ThemeResource NewAccentButtonStyle}">
                                 <Button.Content>
@@ -321,6 +324,7 @@
                                                            Text="" />
                                             </StackPanel>
                                             <Button x:Name="ChangeRegionBtn"
+                                                    extension:UIElementExtensions.CursorType="Hand"
                                                     HorizontalAlignment="Stretch"
                                                     HorizontalContentAlignment="Stretch"
                                                     Click="ChangeRegion"
@@ -384,6 +388,7 @@
                   VerticalAlignment="Stretch"
                   x:FieldModifier="internal">
                 <ToggleButton x:Name="ToggleNotificationPanelBtn"
+                              extension:UIElementExtensions.CursorType="Hand"
                               Padding="0"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
@@ -408,6 +413,7 @@
                   CornerRadius="0,0,0,0" />
         </Grid>
         <Button x:Name="GridBGIcon"
+                extension:UIElementExtensions.CursorType="Hand"
                 Grid.Column="0"
                 Height="33"
                 Margin="58,8,0,0"
@@ -568,6 +574,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="1"
+                        extension:UIElementExtensions.CursorType="Hand"
                         HorizontalAlignment="Right"
                         extension:UIElementExtensions.UniformCornerRadius="-1"
                         Click="ClearAllNotification"

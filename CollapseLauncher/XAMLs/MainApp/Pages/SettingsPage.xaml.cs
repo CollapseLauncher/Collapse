@@ -112,7 +112,7 @@ namespace CollapseLauncher.Pages
 
         private readonly Dictionary<string, FrameworkElement>               _settingsControls    = new();
         private readonly Lock                                               _highlightLock       = new();
-        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = new([]);
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = [with([])];
         private          int                                                _highlightCurrentIndex;
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
@@ -137,12 +137,14 @@ namespace CollapseLauncher.Pages
             _dialogMethods    = [];
             DialogMethodNames = [];
 #if DEBUG
-            _dialogMethods = typeof(SimpleDialogs)
-                            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                            .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
-                            .ToList();
+            _dialogMethods =
+            [
+                .. typeof(SimpleDialogs)
+                  .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                  .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
+            ];
             
-            DialogMethodNames = _dialogMethods.Select(m => m.Name).ToList();
+            DialogMethodNames = [.. _dialogMethods.Select(m => m.Name)];
             
             if (DialogMethodNames.Count > 0)
                 SelectedDialogMethodName = DialogMethodNames[0];
@@ -837,7 +839,7 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
         }
 
-        private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+        private readonly List<string> _windowSizeProfilesKey = [.. WindowSizeProfiles.Keys];
         private int SelectedWindowSizeProfile
         {
             get
@@ -1840,7 +1842,7 @@ namespace CollapseLauncher.Pages
                     {
                         // Try to find TextBlock inside the content
                         IEnumerable<TextBlock> textBlocks = element.FindDescendants().OfType<TextBlock>();
-                        TextBlock[]            enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                        TextBlock[]            enumerable = textBlocks as TextBlock[] ?? [.. textBlocks];
                         if (enumerable.Length != 0)
                         {
                             key = string.Join(" ", enumerable.Select(tb => tb.Text));
@@ -2220,9 +2222,11 @@ namespace CollapseLauncher.Pages
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                List<string> filtered = DialogMethodNames
-                                       .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
-                                       .ToList();
+                List<string> filtered =
+                [
+                    .. DialogMethodNames
+                       .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                ];
                 sender.ItemsSource = filtered;
             }
         }
