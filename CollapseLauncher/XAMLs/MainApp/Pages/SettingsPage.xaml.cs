@@ -49,6 +49,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,6 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-using System.Runtime.CompilerServices;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
