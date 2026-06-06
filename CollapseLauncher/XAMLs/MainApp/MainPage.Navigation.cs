@@ -162,7 +162,7 @@ public partial class MainPage : Page
 {
     private NavigationViewItemsContext? NavigationViewItemsContext { get; set; }
 
-    private void InitializeNavigationItems(bool resetSelection = true)
+    private void InitializeNavigationItems()
     {
         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, Impl);
         return;
@@ -181,7 +181,10 @@ public partial class MainPage : Page
                 throw new NullReferenceException("Preset config is null");
             }
 
-            NavigationViewItemsContext ??= NavigationViewItemsContext.Create(NavigationViewControl);
+            if (NavigationViewItemsContext == null)
+            {
+                return;
+            }
 
             if (m_appMode == AppMode.Hi3CacheUpdater &&
                 presetConfig.IsCacheUpdateEnabled)
@@ -206,11 +209,6 @@ public partial class MainPage : Page
             NavigationViewItemsContext.GameSettingsPage.Item.Tag = gspPageType;
             NavigationViewItemsContext.GameSettingsPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
             NavigationViewItemsContext.FileCleanupPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
-
-            if (resetSelection)
-            {
-                NavigationViewControl.SelectedItem = NavigationViewItemsContext.HomePage.Item;
-            }
         }
     }
 

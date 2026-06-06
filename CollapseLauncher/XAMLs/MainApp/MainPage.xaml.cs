@@ -128,6 +128,7 @@ namespace CollapseLauncher
         {
             try
             {
+                NavigationViewItemsContext ??= NavigationViewItemsContext.Create(NavigationViewControl);
                 await ShowFFmpegInstallationDialog();
 
                 SubscribeEvents();
