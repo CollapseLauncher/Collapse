@@ -17,7 +17,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Foundation;
 using Windows.Media.Playback;
-
 // ReSharper disable CommentTypo
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable AccessToModifiedClosure
@@ -447,7 +446,7 @@ public partial class LayeredBackgroundImage
 
             token.Register(() =>
             {
-                Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
+                // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
             });
             // Set events
             DispatcherQueue?.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
@@ -469,7 +468,7 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
             }
 
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+            // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
