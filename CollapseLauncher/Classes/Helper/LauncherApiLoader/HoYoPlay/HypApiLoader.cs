@@ -121,7 +121,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                                 sophonBranchUrl,
                                                 PresetConfig.LauncherBizName!,
                                                 false,
-                                                token);
+                                                token).ConfigureAwait(false);
 
             sophonUrls.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
 
@@ -140,7 +140,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                   ExecutionTimeoutAttempt,
                                   onTimeoutRoutine,
                                   result => LauncherGameSophonBranches = result,
-                                  token);
+                                  token).ConfigureAwait(false);
         }
 
         private void InitializeFakeVersionInfo()
@@ -201,7 +201,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 Version = branchData.Tag
             };
 
-            HashSet<string> existingDiffsVer = new HashSet<string>(region.Patches.Select(x => x.Version.ToString()));
+            HashSet<string> existingDiffsVer = [.. region.Patches.Select(x => x.Version.ToString())];
             foreach (string versionTag in (branchData.DiffTags ?? [])
                     .Where(x => !existingDiffsVer.Contains(x)))
             {

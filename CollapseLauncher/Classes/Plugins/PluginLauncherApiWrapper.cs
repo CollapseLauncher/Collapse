@@ -67,14 +67,14 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
 
-    public async ValueTask<bool> LoadAsync(
-        Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync = null,
-        Func<CancellationToken, ValueTask>? afterLoadRoutineAsync  = null,
-        ActionOnTimeOutRetry?               onTimeoutRoutine       = null,
-        Action<Exception>?                  errorLoadRoutine       = null,
-        CancellationToken                   token                  = default)
+    public async Task<bool> LoadAsync(
+        Func<CancellationToken, Task>? beforeLoadRoutineAsync = null,
+        Func<CancellationToken, Task>? afterLoadRoutineAsync  = null,
+        ActionOnTimeOutRetry?          onTimeoutRoutine       = null,
+        Action<Exception>?             errorLoadRoutine       = null,
+        CancellationToken              token                  = default)
     {
-        await (beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
+        await (beforeLoadRoutineAsync?.Invoke(token) ?? Task.CompletedTask);
 
         try
         {
@@ -91,7 +91,7 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
             ConvertSocialMediaEntries(LauncherGameContent);
             ConvertNewsAndCarouselEntries(LauncherGameContent);
 
-            await(afterLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
+            await(afterLoadRoutineAsync?.Invoke(token) ?? Task.CompletedTask);
             return true;
         }
         catch (Exception ex)
