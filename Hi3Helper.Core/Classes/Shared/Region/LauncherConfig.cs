@@ -563,8 +563,8 @@ namespace Hi3Helper.Shared.Region
 
             { "PostInstallShutdownTimeout", 60 },
             
-            { "IsCDNCacheEnabled", false },
-            { "IsCDNCacheAggressiveModeEnabled", false },
+            { "IsCDNCacheEnabled", true },
+            { "IsCDNCacheAggressiveModeEnabled", true },
             { "CDNCacheDir", string.Empty },
             { "CDNCacheExpireTimeMinutes", 10d },
 
