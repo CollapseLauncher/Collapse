@@ -2257,7 +2257,7 @@
                                 <Grid Padding="8,2"
                                       Background="DarkBlue"
                                       CornerRadius="8"
-                                      Visibility="{x:Bind innerConfig:LauncherConfig.IsPreview, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                                      Visibility="{x:Bind IsPreviewBuild, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                                     <TextBlock FontSize="10"
                                                FontWeight="Bold"
                                                Text="Preview" />
@@ -2265,7 +2265,7 @@
                                 <Grid Padding="8,2"
                                       Background="DarkOliveGreen"
                                       CornerRadius="8"
-                                      Visibility="{x:Bind innerConfig:LauncherConfig.IsPreview, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                      Visibility="{x:Bind IsPreviewBuild, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
                                     <TextBlock FontSize="10"
                                                FontWeight="Bold"
                                                Text="Stable" />
@@ -3148,7 +3148,7 @@
                             </Grid>
                         </Grid>
                     </Button>
-                    <ItemsRepeater ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
+                    <ItemsRepeater ItemsSource="{x:Bind PluginInstances.Values, Mode=OneWay}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="plugins:PluginInfo">
                                 <Button Margin="0,0,0,4"

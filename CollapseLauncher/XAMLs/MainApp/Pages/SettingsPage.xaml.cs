@@ -42,6 +42,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-
+using System.Runtime.CompilerServices;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -73,7 +74,7 @@ using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable HeuristicUnreachableCode
 
-
+#nullable enable
 namespace CollapseLauncher.Pages
 {
     [GeneratedBindableCustomProperty]
@@ -100,8 +101,21 @@ namespace CollapseLauncher.Pages
     }
     
     [GeneratedBindableCustomProperty]
-    public sealed partial class SettingsPage : Page
+    public sealed partial class SettingsPage : Page, INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // ReSharper disable once UnusedMember.Local
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
         #region Properties
 
         private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
@@ -117,12 +131,28 @@ namespace CollapseLauncher.Pages
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
         private readonly List<MethodInfo>                                   _dialogMethods;
-        private          List<string>                                       DialogMethodNames        { get; }
-        public           string                                             SelectedDialogMethodName { get; set; }
-        private          CDNSelectionContext                                CdnSelectionContext      { get; } = new();
+
+        private List<string> DialogMethodNames { get; }
+
+        public string SelectedDialogMethodName
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private CDNSelectionContext CdnSelectionContext { get; } = new();
 
         private List<TextBlock> FFmpegDecodingModeSelectionItems { get; } = BuildFFmpegDecodingModeSelectionItems();
+
         private List<StackPanel> FFmpegDecodingModeHelpItems { get; } = BuildFFmpegDecodingModeHelpItems();
+
+        private Dictionary<string, PluginInfo> PluginInstances => PluginManager.PluginInstances;
+
+        private bool IsPreviewBuild => LauncherConfig.IsPreview;
 
 #nullable enable
         private string? _previousSearchQuery;
@@ -143,7 +173,11 @@ namespace CollapseLauncher.Pages
                   .GetMethods(BindingFlags.Public | BindingFlags.Static)
                   .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
             ];
-            
+
+            // Create brushes for highlighting
+            _highlightBrush         = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity   = 0.5 };
+
             DialogMethodNames = [.. _dialogMethods.Select(m => m.Name)];
             
             if (DialogMethodNames.Count > 0)
@@ -1725,10 +1759,6 @@ namespace CollapseLauncher.Pages
         #region Settings Search
         private void InitializeSettingsSearch()
         {
-            // Create brushes for highlighting
-            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
-            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity = 0.5 };
-
             // Map all settings controls with their display text
             if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
             ClearHighlighting();
@@ -1894,7 +1924,7 @@ namespace CollapseLauncher.Pages
 
         private void ClearHighlighting()
         {
-            foreach (HighlightableControlProperty? control in _highlightedControls)
+            foreach (HighlightableControlProperty control in _highlightedControls)
             {
                 control.ClearHighlight();
             }

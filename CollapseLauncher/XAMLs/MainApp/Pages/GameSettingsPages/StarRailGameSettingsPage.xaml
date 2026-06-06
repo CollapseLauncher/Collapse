@@ -877,15 +877,6 @@
                                    Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}" />
                     </StackPanel>
                 </Button>
-                <TextBlock x:Name="ApplyText"
-                           Grid.Column="1"
-                           Margin="16,-4,0,0"
-                           HorizontalAlignment="Stretch"
-                           VerticalAlignment="Center"
-                           Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SettingsApplied, Mode=OneWay}"
-                           TextWrapping="Wrap"
-                           Visibility="Collapsed" />
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">

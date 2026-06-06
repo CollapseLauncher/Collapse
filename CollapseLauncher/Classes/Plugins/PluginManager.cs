@@ -18,10 +18,10 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal static partial class PluginManager
 {
-    private const string PluginDirPrefix = "Hi3Helper.Plugin.*";
+    private const  string PluginDirPrefix = "Hi3Helper.Plugin.*";
     internal const string ManifestPrefix  = "manifest.json";
 
-    public static readonly Dictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
+    public static Dictionary<string, PluginInfo> PluginInstances { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     internal static async Task LoadPlugins(
         Dictionary<string, Dictionary<string, PresetConfig>> launcherMetadataConfig,
