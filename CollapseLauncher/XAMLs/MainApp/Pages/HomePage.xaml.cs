@@ -69,6 +69,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // - HomePage.Misc.cs
 //   Contains miscellaneous method that doesn't fit into other categories and is not big enough to be in its own file
 
+#nullable enable
 namespace CollapseLauncher.Pages
 {
     [GeneratedBindableCustomProperty]
@@ -167,7 +168,7 @@ namespace CollapseLauncher.Pages
 
         private void ReturnToHomePage()
         {
-            if (!(m_mainPage?.TryGetCurrentPageObject(out object typeOfPage) ?? false) ||
+            if (!(m_mainPage?.TryGetCurrentPageObject(out object? typeOfPage) ?? false) ||
                 typeOfPage is not Type asTypePage ||
                 asTypePage != typeof(HomePage) ||
                 GamePropertyVault.GetCurrentGameProperty() != CurrentGameProperty)
@@ -305,19 +306,13 @@ namespace CollapseLauncher.Pages
                         break;
                     case GameInstallStateEnum.InstalledHavePlugin:
                     case GameInstallStateEnum.NeedsUpdate:
-                        if (CurrentGameProperty.GameInstall != null)
-                        {
-                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
-                        }
+                        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.StartGame;
 
                         UpdateGameDialog(null, null);
                         break;
                     case GameInstallStateEnum.NotInstalled:
                     case GameInstallStateEnum.GameBroken:
-                        if (CurrentGameProperty.GameInstall != null)
-                        {
-                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
-                        }
+                        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.StartGame;
 
                         InstallGameDialog(null, null);
                         break;
@@ -951,7 +946,7 @@ namespace CollapseLauncher.Pages
                                                 Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
 
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty?.GameInstall != null)
+                if (CurrentGameProperty.GameInstall != null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)
