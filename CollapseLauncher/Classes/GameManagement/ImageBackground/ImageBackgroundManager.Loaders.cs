@@ -275,16 +275,9 @@ public partial class ImageBackgroundManager
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
         layerElement.ImageLoaded       += LayerElementOnLoaded;
-        layerElement.CanvasSizeChanged += LayerElementCanvasSizeChanged;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
-    }
-
-    private void LayerElementCanvasSizeChanged(LayeredBackgroundImage layerElement, Size size)
-    {
-        CurrentElementWidth  = size.Width;
-        CurrentElementHeight = size.Height;
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
@@ -297,10 +290,6 @@ public partial class ImageBackgroundManager
         foreach (UIElement element in elementToRemove)
         {
             PresenterGrid?.Children.Remove(element);
-            if (element is LayeredBackgroundImage asLayeredImage)
-            {
-                asLayeredImage.CanvasSizeChanged -= LayerElementCanvasSizeChanged;
-            }
         }
 
         if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)

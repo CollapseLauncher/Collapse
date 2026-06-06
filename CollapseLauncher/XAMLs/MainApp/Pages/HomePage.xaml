@@ -184,8 +184,8 @@
             <Grid x:Name="ImageEventImgContainerGrid"
                   DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                   Visibility="{Binding CurrentSelectedBackgroundContext.IsCustom, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                <Grid Width="{Binding CurrentElementWidth, Mode=OneWay}"
-                      Height="{Binding CurrentElementHeight, Mode=OneWay}"
+                <Grid Width="{Binding DesignWidth, Mode=OneWay}"
+                      Height="{Binding DesignHeight, Mode=OneWay}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center">
                     <c:NonFaultyImageEx

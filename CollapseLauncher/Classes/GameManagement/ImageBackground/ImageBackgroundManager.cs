@@ -302,25 +302,9 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public double CurrentElementWidth
-    {
-        get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
-    } = 2560d;
+    public double DesignWidth => 2560d;
 
-    public double CurrentElementHeight
-    {
-        get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
-    } = 1440d;
+    public double DesignHeight => 1440d;
 
     /// <summary>
     /// The collection of image context sources.<br/><br/>
