@@ -628,6 +628,18 @@ namespace CollapseLauncher.Pages
                 }
             }
         }
+
+        private void ImageEventImg_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            ImageEventImgNormal.Visibility = Visibility.Collapsed;
+            ImageEventImgHover.Visibility = Visibility.Visible;
+        }
+
+        private void ImageEventImg_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            ImageEventImgNormal.Visibility = Visibility.Visible;
+            ImageEventImgHover.Visibility = Visibility.Collapsed;
+        }
         #endregion
 
         #region Open Link from Tag
