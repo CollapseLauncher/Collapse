@@ -839,12 +839,12 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
         }
 
-        private readonly List<string> _windowSizeProfilesKey = [.. WindowSizeProfiles.Keys];
+        private readonly List<WindowSizeProfile> _windowSizeProfilesKey = [.. WindowSizeProfiles.Keys];
         private int SelectedWindowSizeProfile
         {
             get
             {
-                string val = CurrentWindowSizeName;
+                WindowSizeProfile val = CurrentWindowSizeName;
                 return _windowSizeProfilesKey.IndexOf(val);
             }
             set

@@ -12,6 +12,7 @@ using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -155,16 +156,17 @@ public partial class HomePage
             }
 
             GameRunningWatcher(_Settings);
-                
-            switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+            GameLaunchedBehavior behavior = GetAppConfigValue("GameLaunchedBehavior").ToEnum<GameLaunchedBehavior>();
+
+            switch (behavior)
             {
-                case "ToTray":
+                case GameLaunchedBehavior.ToTray:
                     WindowUtility.ToggleToTray_MainWindow();
                     break;
-                case "Nothing":
+                case GameLaunchedBehavior.Nothing:
                     break;
                 // ReSharper disable once RedundantCaseLabel
-                case "Minimize":
+                case GameLaunchedBehavior.Minimize:
                 default:
                     WindowUtility.WindowMinimize(false);
                     break;

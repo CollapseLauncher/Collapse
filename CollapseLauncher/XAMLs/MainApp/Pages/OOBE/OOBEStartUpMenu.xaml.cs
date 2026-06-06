@@ -348,8 +348,8 @@ namespace CollapseLauncher.Pages.OOBE
         private bool IsSelectLauncherFolderDone;
         private bool IsLauncherCustomizationDone;
 
-        private readonly Compositor   currentCompositor     = CompositionTarget.GetCompositorForCurrentThread();
-        private readonly List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+        private readonly Compositor              currentCompositor = CompositionTarget.GetCompositorForCurrentThread();
+        private readonly List<WindowSizeProfile> WindowSizeProfilesKey = [.. WindowSizeProfiles.Keys];
 
         private void ToggleEnableNextPageButton(bool enableNextPageButton)
         {
@@ -380,7 +380,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             get
             {
-                string val = CurrentWindowSizeName;
+                WindowSizeProfile val = CurrentWindowSizeName;
                 return WindowSizeProfilesKey.IndexOf(val);
             }
             set
@@ -517,7 +517,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             if (indexOfKey == null)
             {
-                string currentWindowSizeKeyName = CurrentWindowSizeName;
+                WindowSizeProfile currentWindowSizeKeyName = CurrentWindowSizeName;
                 indexOfKey = WindowSizeProfiles.Keys.ToList().IndexOf(currentWindowSizeKeyName);
                 if (indexOfKey < 0)
                 {

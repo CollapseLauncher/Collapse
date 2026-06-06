@@ -1,4 +1,6 @@
 ﻿using CollapseLauncher.Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,7 +17,7 @@ namespace CollapseLauncher.WindowSize
 #if !DEBUG
             readonly
 #endif
-            Dictionary<string, WindowSizeProp> WindowSizeProfiles
+            Dictionary<WindowSizeProfile, WindowSizeProp> WindowSizeProfiles
 #if DEBUG
             =>
 #else
@@ -24,7 +26,7 @@ namespace CollapseLauncher.WindowSize
             new()
             {
             {
-                "Normal",
+                WindowSizeProfile.Normal,
                 new WindowSizeProp
                 {
                     WindowBounds                 = new Size(1280, 720),
@@ -50,7 +52,7 @@ namespace CollapseLauncher.WindowSize
                 }
             },
             {
-                "Small",
+                WindowSizeProfile.Small,
                 new WindowSizeProp
                 {
                     WindowBounds                 = new Size(1024, 576),
@@ -77,21 +79,21 @@ namespace CollapseLauncher.WindowSize
             }
         };
 
-        internal static string CurrentWindowSizeName
+        internal static WindowSizeProfile CurrentWindowSizeName
         {
             get
             {
-                string val = GetAppConfigValue("WindowSizeProfile").ToString();
-                return !WindowSizeProfiles.ContainsKey(val ?? "Normal") ? WindowSizeProfiles.Keys.FirstOrDefault() : val;
+                WindowSizeProfile profile = GetAppConfigValue("WindowSizeProfile").ToEnum<WindowSizeProfile>();
+                return !WindowSizeProfiles.ContainsKey(profile) ? WindowSizeProfiles.Keys.FirstOrDefault() : profile;
             }
             set
             {
-                SetAppConfigValue("WindowSizeProfile", value);
+                SetAppConfigValue("WindowSizeProfile", IniValue.Create(value));
                 WindowUtility.SetWindowSize(CurrentWindowSize.WindowBounds.Width, CurrentWindowSize.WindowBounds.Height);
             }
         }
 
-        internal static WindowSizeProp CurrentWindowSize      { get => WindowSizeProfiles[CurrentWindowSizeName]; }
+        internal static WindowSizeProp CurrentWindowSize { get => WindowSizeProfiles[CurrentWindowSizeName]; }
     }
 
     internal class WindowSizeProp

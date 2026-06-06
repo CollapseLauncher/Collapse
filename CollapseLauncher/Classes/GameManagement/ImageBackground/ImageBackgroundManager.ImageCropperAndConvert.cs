@@ -9,6 +9,7 @@ using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Text;
@@ -82,7 +83,7 @@ public partial class ImageBackgroundManager
             Uri overlayImageUri = !string.IsNullOrEmpty(decodedOverlayPath)
                 ? new Uri(decodedOverlayPath)
                 : new Uri(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\ImageCropperOverlay",
-                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile") == "Small"
+                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile").ToEnum<WindowSizeProfile>() == WindowSizeProfile.Small
                                            ? "small.png"
                                            : "normal.png"));
 

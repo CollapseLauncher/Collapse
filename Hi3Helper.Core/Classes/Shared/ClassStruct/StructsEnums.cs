@@ -16,6 +16,19 @@ namespace Hi3Helper.Shared.ClassStruct
         Dark    = 2,
     }
 
+    public enum GameLaunchedBehavior
+    {
+        Minimize,
+        ToTray,
+        Nothing
+    }
+
+    public enum WindowSizeProfile
+    {
+        Normal,
+        Small
+    }
+
     public enum GameInstallStateEnum
     {
         Installed = 0,

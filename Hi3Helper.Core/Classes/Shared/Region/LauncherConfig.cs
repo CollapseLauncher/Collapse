@@ -508,13 +508,12 @@ namespace Hi3Helper.Shared.Region
             { "ThemeMode", IniValue.Create(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
-            { "IsUseVideoBGDynamicColorUpdate", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
             { "ShowGamePlaytime", true },
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
-            { "WindowSizeProfile", "Normal" },
+            { "WindowSizeProfile", IniValue.Create(WindowSizeProfile.Normal) },
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", false },
         #if !DISABLEDISCORD
@@ -529,7 +528,7 @@ namespace Hi3Helper.Shared.Region
             { "EnableHTTPRepairOverride", false },
             { "ForceGIHDREnable", false },
             { "HI3IgnoreMediaPack", false },
-            { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
+            { "GameLaunchedBehavior", IniValue.Create(GameLaunchedBehavior.Minimize) }, // Possible Values: "Minimize", "ToTray", and "Nothing"
             { "MinimizeToTray", false },
             { "UseExternalBrowser", false },
             { "EnableWaifu2X", false },
