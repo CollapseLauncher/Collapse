@@ -596,26 +596,39 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Event Image
+
+        private static Storyboard GetFadeOpacityAnimation(FrameworkElement element,
+                                                          bool             isHide,
+                                                          double           durationSeconds          = 0.1d,
+                                                          double           delaySeconds             = 0d,
+                                                          bool             enableDependentAnimation = false)
+        {
+            Storyboard storyboard = new();
+            DoubleAnimation opacityAnimation = new()
+            {
+                From                     = isHide ? 1 : 0,
+                To                       = isHide ? 0 : 1,
+                Duration                 = new Duration(TimeSpan.FromSeconds(durationSeconds)),
+                BeginTime                = TimeSpan.FromSeconds(delaySeconds),
+                EnableDependentAnimation = enableDependentAnimation
+            };
+
+            Storyboard.SetTarget(opacityAnimation, element);
+            Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
+            storyboard.Children.Add(opacityAnimation);
+
+            return storyboard;
+        }
+
         private void HideImageEventImg(bool hide)
         {
             if (!hide)
             {
                 ImageEventImg.Visibility = Visibility.Visible;
             }
-            
-            Storyboard      storyboard       = new();
-            DoubleAnimation OpacityAnimation = new()
-            {
-                From     = hide ? 1 : 0,
-                To       = hide ? 0 : 1,
-                Duration = new Duration(TimeSpan.FromSeconds(0.10))
-            };
 
-            Storyboard.SetTarget(OpacityAnimation, ImageEventImg);
-            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-            storyboard.Children.Add(OpacityAnimation);
+            Storyboard storyboard = GetFadeOpacityAnimation(ImageEventImg, hide, 0.15);
             storyboard.Completed += OnCompleted;
-
             storyboard.Begin();
             return;
 
@@ -631,15 +644,16 @@ namespace CollapseLauncher.Pages
 
         private void ImageEventImg_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            ImageEventImgNormal.Visibility = Visibility.Collapsed;
-            ImageEventImgHover.Visibility = Visibility.Visible;
+            GetFadeOpacityAnimation(ImageEventImgNormal, true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHover,  false, 0.05d).Begin();
         }
 
         private void ImageEventImg_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            ImageEventImgNormal.Visibility = Visibility.Visible;
-            ImageEventImgHover.Visibility = Visibility.Collapsed;
+            GetFadeOpacityAnimation(ImageEventImgHover,  true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgNormal, false, 0.05d).Begin();
         }
+
         #endregion
 
         #region Open Link from Tag
