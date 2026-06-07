@@ -251,8 +251,6 @@ public sealed partial class RegistryMonitor : IDisposable
     /// </summary>
     public void Dispose()
     {
-        Interlocked.Exchange(ref _disposed, true);
-        
         try
         {
             Stop();
@@ -262,6 +260,10 @@ public sealed partial class RegistryMonitor : IDisposable
             Logger.LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             throw new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _disposed, true);
         }
 #if DEBUG
         Logger.LogWriteLine("RegistryMonitor Disposed!", LogType.Debug, true);
