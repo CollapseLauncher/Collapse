@@ -7,8 +7,8 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.Plugin.Core.UI.Controls;
 using Hi3Helper.SentryHelper;
-using Microsoft.UI.Xaml;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -22,7 +22,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using WinRT;
 using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
@@ -79,23 +78,9 @@ namespace CollapseLauncher.Helper.Metadata
     public enum LauncherType
     {
         Legacy,
-        Sophon = Legacy,
+        Sophon,
         HoYoPlay,
         Plugin
-    }
-
-    [GeneratedBindableCustomProperty]
-    public partial class GameEventButtonPosition
-    {
-        [JsonConverter(typeof(JsonStringEnumConverter<HorizontalAlignment>))]
-        public HorizontalAlignment HorizontalAlignment { get; init; } = HorizontalAlignment.Left;
-
-        [JsonConverter(typeof(JsonStringEnumConverter<VerticalAlignment>))]
-        public VerticalAlignment VerticalAlignment { get; init; } = VerticalAlignment.Top;
-
-        public Thickness Position { get; init; } = new(256, 596, 0, 0);
-        public double    VSize    { get; init; } = 80d;
-        public Size FrameSize { get; init; } = new(2560, 1440);
     }
 
     public class GameInstallFileInfo
@@ -335,7 +320,7 @@ namespace CollapseLauncher.Helper.Metadata
         }
     }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSourceGenerationOptions(IncludeFields = false, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(PresetConfig))]
     internal sealed partial class PresetConfigJsonContext : JsonSerializerContext;
 
@@ -557,7 +542,12 @@ namespace CollapseLauncher.Helper.Metadata
 
         public GameInstallFileInfo? GameInstallFileInfo { get; init; }
 
-        public GameEventButtonPosition GameEventButtonPosition { get => field ??= new GameEventButtonPosition(); init; }
+        private GameEventButtonPosition? _gameEventButtonPosition;
+        public GameEventButtonPosition GameEventButtonPosition
+        {
+            get => _gameEventButtonPosition.HasValue && _gameEventButtonPosition.Value != default ? _gameEventButtonPosition.Value : GameEventButtonPosition.Default;
+            init => _gameEventButtonPosition = value;
+        }
 
         #endregion
 

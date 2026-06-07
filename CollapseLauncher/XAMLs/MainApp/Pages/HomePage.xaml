@@ -41,6 +41,9 @@
         <pages:TimeSpanToNumberMillisecondsConverter x:Key="TimeSpanToNumberMillisecondsConverter" />
         <pages:TimeSpanMoreThan15SecondsToVisibilityConverter x:Key="TimeSpanMoreThan15SecondsToVisibilityConverter" />
         <pages:FontPathLookupConverter x:Key="FontPathLookupConverter" />
+        <pages:PluginHorizontalAlignmentConverter x:Key="PluginHorizontalAlignmentConverter" />
+        <pages:PluginVerticalAlignmentConverter x:Key="PluginVerticalAlignmentConverter" />
+        <pages:PluginDoublePositionToThicknessConverter x:Key="PluginDoublePositionToThicknessConverter" />
         <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
@@ -194,21 +197,22 @@
                           PointerPressed="ClickImageEventSpriteLink"
                           PointerEntered="ImageEventImg_OnPointerEntered"
                           PointerExited="ImageEventImg_OnPointerExited"
-                          HorizontalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.HorizontalAlignment, Mode=OneWay}"
-                          VerticalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VerticalAlignment, Mode=OneWay}"
-                          Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VSize, Mode=OneWay}"
-                          Margin="{x:Bind CurrentPresetConfig.GameEventButtonPosition.Position, Mode=OneWay}"
+                          HorizontalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.HorizontalAlignment, Mode=OneWay, Converter={StaticResource PluginHorizontalAlignmentConverter}}"
+                          VerticalAlignment="{x:Bind CurrentPresetConfig.GameEventButtonPosition.VerticalAlignment, Mode=OneWay, Converter={StaticResource PluginVerticalAlignmentConverter}}"
+                          Width="{x:Bind CurrentPresetConfig.GameEventButtonPosition.IconSize.Width, Mode=OneWay}"
+                          Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.IconSize.Height, Mode=OneWay}"
+                          Margin="{x:Bind CurrentPresetConfig.GameEventButtonPosition.Position, Mode=OneWay, Converter={StaticResource PluginDoublePositionToThicknessConverter}}"
                           Tag="{x:Bind CurrentGameBackgroundData.FeaturedEventIconClickLink, Mode=OneWay}"
                           Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}}">
-                        <c:NonFaultyImageEx
-                            x:Name="ImageEventImgNormal"
-                            x:FieldModifier="internal"
-                            Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"/>
                         <c:NonFaultyImageEx
                             x:Name="ImageEventImgHover"
                             x:FieldModifier="internal"
                             Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconHoverUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"
-                            Visibility="Collapsed"/>
+                            Opacity="0"/>
+                        <c:NonFaultyImageEx
+                            x:Name="ImageEventImgNormal"
+                            x:FieldModifier="internal"
+                            Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"/>
                     </Grid>
                 </Grid>
             </Grid>

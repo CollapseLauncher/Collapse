@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable IdentifierTypo
@@ -63,32 +64,47 @@ namespace CollapseLauncher.Pages
 
     public partial class BooleanVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Visible;
+        public object Convert(object value, Type targetType, object parameter, string input) =>
+            (bool)value ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            (Visibility)value == Visibility.Visible;
     }
 
     public partial class InverseBooleanVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => !(bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Collapsed;
+        public object Convert(object value, Type targetType, object parameter, string input) =>
+            !(bool)value ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            (Visibility)value == Visibility.Collapsed;
     }
 
     public partial class DoubleRound2Converter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => Math.Round((double)value, 2);
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object Convert(object value, Type targetType, object parameter, string input) =>
+            Math.Round((double)value, 2);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            new NotImplementedException();
     }
 
     public partial class DoubleRound3Converter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => Math.Round((double)value, 3);
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object Convert(object value, Type targetType, object parameter, string input) =>
+            Math.Round((double)value, 3);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            new NotImplementedException();
     }
 
     public partial class StringToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => value is string asString && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object Convert(object value, Type targetType, object parameter, string input) =>
+            value is string asString && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            new NotImplementedException();
     }
 
     public partial class FileSizeToStringLiteralConverter : IValueConverter
@@ -107,7 +123,9 @@ namespace CollapseLauncher.Pages
 
             return ConverterTool.SummarizeSizeSimple((long)value);
         }
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) =>
+            new NotImplementedException();
     }
 
     public partial class DownloadSpeedLimitToStringConverter : IValueConverter
@@ -120,9 +138,11 @@ namespace CollapseLauncher.Pages
             }
 
             long valBFromM = (long)(asDouble * (1 << 20));
-            return valBFromM > 0 ?
-                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "", ConverterTool.SummarizeSizeSimple(valBFromM))) :
-                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
+            return valBFromM > 0
+                ? string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM,
+                                string.Format(Locale.Current.Lang?._Misc?.SpeedPerSec ?? "",
+                                              ConverterTool.SummarizeSizeSimple(valBFromM)))
+                : string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -141,9 +161,10 @@ namespace CollapseLauncher.Pages
             }
 
             int valBFromM = (int)(asDouble * (1 << 20));
-            return valBFromM > 0 ?
-                string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM, ConverterTool.SummarizeSizeSimple(valBFromM)) :
-                string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
+            return valBFromM > 0
+                ? string.Format(Locale.Current.Lang?._Misc?.IsBytesMoreThanBytes ?? "", valBFromM,
+                                ConverterTool.SummarizeSizeSimple(valBFromM))
+                : string.Format(Locale.Current.Lang?._Misc?.IsBytesUnlimited ?? "");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -154,14 +175,14 @@ namespace CollapseLauncher.Pages
 
     public partial class DoubleFormatter : INumberFormatter2, INumberParser
     {
-        private const string Format = "{0:F5}";
-        public string FormatDouble(double value) => string.Format(Format, value);
-        public double? ParseDouble(string text) => double.TryParse(text, out double dbl) ? dbl : null;
+        private const string  Format = "{0:F5}";
+        public        string  FormatDouble(double value) => string.Format(Format, value);
+        public        double? ParseDouble(string  text)  => double.TryParse(text, out double dbl) ? dbl : null;
 
-        public string FormatInt(long value) => throw new NotSupportedException();
+        public string FormatInt(long   value) => throw new NotSupportedException();
         public string FormatUInt(ulong value) => throw new NotSupportedException();
-        public long? ParseInt(string text) => throw new NotSupportedException();
-        public ulong? ParseUInt(string text) => throw new NotSupportedException();
+        public long?  ParseInt(string  text)  => throw new NotSupportedException();
+        public ulong? ParseUInt(string text)  => throw new NotSupportedException();
     }
 
     public partial class CapsuleCornerRadiusConverter : IValueConverter
@@ -178,6 +199,7 @@ namespace CollapseLauncher.Pages
             {
                 padding = asDouble;
             }
+
             return (d - padding) / 2.0;
         }
 
@@ -213,7 +235,7 @@ namespace CollapseLauncher.Pages
             {
                 return asCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             }
-            
+
             return value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
         }
 
@@ -247,19 +269,19 @@ namespace CollapseLauncher.Pages
         public virtual object Convert(object value, Type targetType, object parameter, string language)
         {
             return value switch
-                   {
-                       double asDouble => asDouble > 0,
-                       float asFloat => asFloat > 0,
-                       long asLong => asLong > 0,
-                       ulong asULong => asULong > 0,
-                       int asInt => asInt > 0,
-                       uint asUInt => asUInt > 0,
-                       short asShort => asShort > 0,
-                       ushort asUShort => asUShort > 0,
-                       byte asByte => asByte > 0,
-                       sbyte asSByte => asSByte > 0,
-                       _ => throw new InvalidDataException()
-                   };
+            {
+                double asDouble => asDouble > 0,
+                float asFloat   => asFloat > 0,
+                long asLong     => asLong > 0,
+                ulong asULong   => asULong > 0,
+                int asInt       => asInt > 0,
+                uint asUInt     => asUInt > 0,
+                short asShort   => asShort > 0,
+                ushort asUShort => asUShort > 0,
+                byte asByte     => asByte > 0,
+                sbyte asSByte   => asSByte > 0,
+                _               => throw new InvalidDataException()
+            };
         }
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -334,7 +356,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string?  iconUrl = null;
+                string? iconUrl = null;
                 if (asPluginInfo.Instance is { } pluginInstance)
                 {
                     pluginInstance.GetPluginAppIconUrl(out iconUrl);
@@ -370,13 +392,14 @@ namespace CollapseLauncher.Pages
 
                 return new BitmapIcon
                 {
-                    UriSource = url,
+                    UriSource        = url,
                     ShowAsMonochrome = false
                 };
             }
             catch (Exception ex)
             {
-                string message = $"[GamePluginIconConverter::Convert()] Cannot get icon from plugin: {asPluginInfo.Name}";
+                string message =
+                    $"[GamePluginIconConverter::Convert()] Cannot get icon from plugin: {asPluginInfo.Name}";
                 Logger.LogWriteLine(message, LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
             }
@@ -406,11 +429,11 @@ namespace CollapseLauncher.Pages
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             return value switch
-                   {
-                       DateTime asDateTime => GetFullFormat(asDateTime.ToLocalTime()),
-                       DateTimeOffset asDateTimeOffset => GetFullFormat(asDateTimeOffset.ToLocalTime()),
-                       _ => value
-                   };
+            {
+                DateTime asDateTime             => GetFullFormat(asDateTime.ToLocalTime()),
+                DateTimeOffset asDateTimeOffset => GetFullFormat(asDateTimeOffset.ToLocalTime()),
+                _                               => value
+            };
 
             string GetFullFormat(DateTimeOffset offset) => offset.ToString(FullFormat);
         }
@@ -557,8 +580,8 @@ namespace CollapseLauncher.Pages
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
-                                 null => GameVersion.Empty,
-                                 _ => (GameVersion)value
+                                 null                      => GameVersion.Empty,
+                                 _                         => (GameVersion)value
                              });
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -570,7 +593,8 @@ namespace CollapseLauncher.Pages
     public partial class UpdatingPercentageStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButtonUpdating ?? "",
+            => string.Format(Locale.Current.Lang?._PluginManagerPage?.ListViewItemUpdateStatusAvailableButtonUpdating ??
+                             "",
                              Math.Round((double)value, 2));
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -586,8 +610,8 @@ namespace CollapseLauncher.Pages
                              value switch
                              {
                                  PluginManifest asManifest => asManifest.PluginVersion,
-                                 null => GameVersion.Empty,
-                                 _ => (GameVersion)value
+                                 null                      => GameVersion.Empty,
+                                 _                         => (GameVersion)value
                              });
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -633,7 +657,7 @@ namespace CollapseLauncher.Pages
             string changedCacheFolder = LauncherConfig.AppGameImgCachedFolder;
             CacheManager.CurrentCacheDir = changedCacheFolder;
 
-            CacheManager.Logger?.LogDebug("App game folder has been changed to: {path}", path);
+            CacheManager.Logger?.LogDebug("App game folder has been changed to: {path}",     path);
             CacheManager.Logger?.LogDebug("Sprite cache folder has been changed to: {path}", changedCacheFolder);
         }
 
@@ -643,8 +667,8 @@ namespace CollapseLauncher.Pages
             string? sourceAsString = value as string;
 
             if ((sourceAsUri == null &&
-                !string.IsNullOrEmpty(sourceAsString) &&
-                !Uri.TryCreate(sourceAsString, UriKind.Absolute, out sourceAsUri)) ||
+                 !string.IsNullOrEmpty(sourceAsString) &&
+                 !Uri.TryCreate(sourceAsString, UriKind.Absolute, out sourceAsUri)) ||
                 sourceAsUri == null)
             {
                 return value;
@@ -679,13 +703,16 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                CDNCacheResult result = await CacheManager.TryGetCachedStreamFrom(Client, url, token: CancellationToken.None);
+                CDNCacheResult result =
+                    await CacheManager.TryGetCachedStreamFrom(Client, url, token: CancellationToken.None);
                 await using Stream stream = result.Stream;
                 await stream.CopyToAsync(Stream.Null); // Copy over with CopyToStream in the background.
             }
             catch (Exception ex)
             {
-                CacheManager.Logger?.LogError(ex, "An error has occurred while trying to download content from: {url}\r\n{ex}", url, ex);
+                CacheManager.Logger?.LogError(ex,
+                                              "An error has occurred while trying to download content from: {url}\r\n{ex}",
+                                              url, ex);
             }
         }
 
@@ -962,7 +989,7 @@ namespace CollapseLauncher.Pages
             {
                 seconds = asTimeSpan.TotalSeconds;
             }
-            
+
             if (value is DateTime asDateTime)
             {
                 seconds = asDateTime.Second;
@@ -1269,4 +1296,93 @@ namespace CollapseLauncher.Pages
             return Enums[asIndex];
         }
     }
+
+    public abstract partial class EnumToEnumConverter<TEnumFrom, TEnumTo> : IValueConverter
+        where TEnumFrom : struct, Enum
+        where TEnumTo : struct, Enum
+    {
+        public abstract int MaxBufferLength { get; }
+
+        public object Convert(object? value, Type targetType, object parameter, string language)
+            => ConvertTo<TEnumFrom, TEnumTo>(value);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => ConvertTo<TEnumTo, TEnumFrom>(value);
+
+        private TTo ConvertTo<TFrom, TTo>(object? value)
+            where TFrom : struct, Enum
+            where TTo : struct, Enum
+        {
+            if (value is not TFrom asEnumFrom)
+            {
+                throw new
+                    InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
+            }
+
+            Span<char> strBuff = stackalloc char[MaxBufferLength];
+            if (!Enum.TryFormat(asEnumFrom, strBuff, out int charsWritten))
+            {
+                throw new InvalidOperationException($"Failed to format the enum value: {asEnumFrom}");
+            }
+
+            if (!Enum.TryParse(strBuff[..charsWritten], true, out TTo result))
+            {
+                throw new InvalidOperationException($"Failed to parse the enum value: {asEnumFrom}");
+            }
+
+            return result;
+        }
+    }
+
+    public partial class StructToStructConverter<TStructFrom, TStructTo> : IValueConverter
+        where TStructFrom : unmanaged
+        where TStructTo : unmanaged
+    {
+        public object Convert(object? value, Type targetType, object parameter, string language)
+            => ConvertTo<TStructFrom, TStructTo>(value);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => ConvertTo<TStructTo, TStructFrom>(value);
+
+        private static unsafe TTo ConvertTo<TFrom, TTo>(object? value)
+            where TFrom : unmanaged
+            where TTo : unmanaged
+        {
+            if (value is not TFrom asStructFrom)
+            {
+                throw new
+                    InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
+            }
+
+            int sizeOfFrom = sizeof(TFrom);
+            int sizeOfTo = sizeof(TTo);
+
+            if (sizeOfFrom != sizeOfTo)
+            {
+                throw new InvalidOperationException($"Size mismatch: {typeof(TFrom)} ({sizeOfFrom} bytes) vs {typeof(TTo)} ({sizeOfTo} bytes)");
+            }
+
+            TTo result = default;
+            Unsafe.Copy(ref result, &asStructFrom);
+            return result;
+        }
+    }
+
+    public partial class PluginHorizontalAlignmentConverter :
+        EnumToEnumConverter<Hi3Helper.Plugin.Core.UI.HorizontalAlignment,
+                            HorizontalAlignment>
+    {
+        public override int MaxBufferLength => 8;
+    }
+
+    public partial class PluginVerticalAlignmentConverter :
+        EnumToEnumConverter<Hi3Helper.Plugin.Core.UI.VerticalAlignment,
+                            VerticalAlignment>
+    {
+        public override int MaxBufferLength => 8;
+    }
+
+    public partial class PluginDoublePositionToThicknessConverter :
+        StructToStructConverter<Hi3Helper.Plugin.Core.UI.DoublePosition,
+                                Thickness>;
 }
