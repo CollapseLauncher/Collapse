@@ -22,6 +22,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using WinRT;
 using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
@@ -94,6 +95,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         public Thickness Position { get; init; } = new(256, 596, 0, 0);
         public double    VSize    { get; init; } = 80d;
+        public Size FrameSize { get; init; } = new(2560, 1440);
     }
 
     public class GameInstallFileInfo

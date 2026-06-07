@@ -184,8 +184,8 @@
             <Grid x:Name="ImageEventImgContainerGrid"
                   DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
                   Visibility="{Binding CurrentSelectedBackgroundContext.IsCustom, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                <Grid Width="{Binding DesignWidth, Mode=OneWay}"
-                      Height="{Binding DesignHeight, Mode=OneWay}"
+                <Grid Width="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Width, Mode=OneWay}"
+                      Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Height, Mode=OneWay}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center">
                     <Grid x:Name="ImageEventImg"

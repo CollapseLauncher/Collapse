@@ -302,10 +302,6 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public double DesignWidth => 2560d;
-
-    public double DesignHeight => 1440d;
-
     /// <summary>
     /// The collection of image context sources.<br/><br/>
     /// Notes to Dev:<br/>
