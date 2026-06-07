@@ -163,7 +163,7 @@ namespace CollapseLauncher
             // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
             List<SophonAsset> sophonAssetList = [];
             await GenshinInstall.DownloadPkgVersionStatic(httpClient,
-                                                          GameVersionManager!,
+                                                          GameVersionManager,
                                                           GamePath,
                                                           gameAudioListPath,
                                                           manifestMainInfoPair,

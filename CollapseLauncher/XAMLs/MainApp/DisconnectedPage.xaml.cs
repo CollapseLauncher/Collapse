@@ -36,7 +36,7 @@ namespace CollapseLauncher
 
         private void InitializeRegionComboBox()
         {
-            string? gameTitle = MetadataHelper.GetLastSavedGameTitleOrDefault();
+            var gameTitle = MetadataHelper.GetLastSavedGameTitleOrDefault();
 
             List<string>       gameTitleList  = MetadataHelper.CurrentGameTitleList;
             List<PresetConfig> gameRegionList = MetadataHelper.GetGameRegionList(gameTitle);

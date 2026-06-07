@@ -17,7 +17,7 @@ public class HypLauncherContentData
     public HypLauncherContentKind? Content { get; set; }
 }
 
-public class HypLauncherContentKind : HypApiIdentifiable
+public partial class HypLauncherContentKind : HypApiIdentifiable
 {
     [JsonPropertyName("language")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]

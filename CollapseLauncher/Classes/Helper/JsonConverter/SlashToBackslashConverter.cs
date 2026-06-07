@@ -8,7 +8,7 @@ namespace CollapseLauncher.Helper.JsonConverter
 {
     internal class SlashToBackslashConverter : JsonConverter<string?>
     {
-        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
                 throw new JsonException("Current type token is not a string!");

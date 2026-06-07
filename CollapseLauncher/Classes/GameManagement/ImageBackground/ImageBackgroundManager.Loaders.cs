@@ -20,7 +20,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace

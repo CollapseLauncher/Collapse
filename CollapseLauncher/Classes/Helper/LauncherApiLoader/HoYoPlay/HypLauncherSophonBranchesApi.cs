@@ -20,7 +20,7 @@ public class HypLauncherSophonBranchesData : HypApiDataLookupable<HypLauncherSop
     } = [];
 }
 
-public sealed class HypLauncherSophonBranchesKind : HypApiIdentifiable
+public sealed partial class HypLauncherSophonBranchesKind : HypApiIdentifiable
 {
     [JsonPropertyName("main")]
     public HypGameInfoBranchData? GameMainField { get; init; }
