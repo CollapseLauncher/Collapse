@@ -175,7 +175,7 @@
                  Grid.Column="0"
                  Grid.RowSpan="4"
                  Grid.ColumnSpan="2"
-                 Margin="-80,-56,-32,-32"
+                 Margin="-80,-55,-32,-32"
                  DataContext="{x:Bind CurrentGameBackgroundData, Mode=OneWay}"
                  Stretch="UniformToFill"
                  HorizontalAlignment="Center"
