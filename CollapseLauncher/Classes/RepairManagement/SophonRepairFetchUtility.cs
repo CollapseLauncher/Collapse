@@ -54,18 +54,27 @@ internal static class RepairSharedUtility
                                               false,
                                               token);
 
+        SophonDownloadSpeedLimiter? speedLimiter = instance.SpeedLimiterServiceContext == nint.Zero ? null :
+            SophonDownloadSpeedLimiter.CreateInstance(instance.SpeedLimiterServiceContext);
+
         if (!infoPair.IsFound)
         {
             throw new InvalidOperationException($"Sophon cannot find matching field: {matchingField} from API URL: {sophonApiUrl}");
         }
 
         SearchValues<string> excludedMatchingFields = SearchValues.Create(excludeMatchingFieldList, StringComparison.OrdinalIgnoreCase);
-        List<SophonChunkManifestInfoPair> infoPairs = [infoPair];
-        infoPairs.AddRange(infoPair
-                          .OtherSophonBuildData?
-                          .ManifestIdentityList
-                          .Where(x => !string.IsNullOrEmpty(x.MatchingField) && !x.MatchingField.ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
-                          .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField!)) ?? []);
+        List<SophonChunkManifestInfoPair> infoPairs =
+        [
+            infoPair,
+            .. infoPair
+              .OtherSophonBuildData?
+              .ManifestIdentityList
+              .Where(x => !string.IsNullOrEmpty(x.MatchingField) &&
+                          !x.MatchingField.ContainsAny(excludedMatchingFields) &&
+                          !x.MatchingField.Equals(matchingField))
+              .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField!)) ?? []
+
+        ];
 
         foreach (SophonChunkManifestInfoPair pair in infoPairs)
         {
@@ -77,15 +86,16 @@ internal static class RepairSharedUtility
             await foreach (SophonAsset asset in SophonManifest
                               .EnumerateAsync(client,
                                               pair,
+                                              downloadSpeedLimiter: speedLimiter,
                                               token: token))
             {
                 assetIndex.Add(new FilePropertiesRemote
                 {
                     AssociatedObject = asset,
                     S = asset.AssetSize,
-                    N = asset.AssetName.NormalizePath(),
+                    N = asset.AssetName?.NormalizePath(),
                     CRC = asset.AssetHash,
-                    FT = assetTypeDeterminer(asset.AssetName)
+                    FT = assetTypeDeterminer(asset.AssetName ?? "")
                 });
             }
         }

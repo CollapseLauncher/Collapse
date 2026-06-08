@@ -113,17 +113,21 @@ namespace CollapseLauncher
             string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : [];
 
             // Set the ignored audio lang
-            string[] ignoredAudioLangList = audioLangList
-                .Where(x => !currentAudioLangList.Contains(x))
-                .Select(x => $"{separatorChar}{x}{separatorChar}")
-                .ToArray();
+            string[] ignoredAudioLangList =
+            [
+                .. audioLangList
+                  .Where(x => !currentAudioLangList.Contains(x))
+                  .Select(x => $"{separatorChar}{x}{separatorChar}")
+            ];
             SearchValues<string> ignoredAudioLangListSearch = SearchValues.Create(ignoredAudioLangList, StringComparison.OrdinalIgnoreCase);
 
             // Return only for asset index that doesn't have language included in ignoredAudioLangList
-            List<T> tempFiltered = assetIndex.Where(x => !predicate(x)
-                                                        .AsSpan()
-                                                        .ContainsAny(ignoredAudioLangListSearch))
-                                             .ToList();
+            List<T> tempFiltered =
+            [
+                .. assetIndex.Where(x => !predicate(x)
+                                         .AsSpan()
+                                         .ContainsAny(ignoredAudioLangListSearch))
+            ];
             assetIndex.Clear();
             assetIndex.AddRange(tempFiltered);
         }
@@ -159,6 +163,9 @@ namespace CollapseLauncher
                                                    sophonManifestUrls.MainUrl,
                                                    sophonManifestUrls.MainBranchMatchingField,
                                                    token);
+            SophonDownloadSpeedLimiter? speedLimiter = SpeedLimiterServiceContext == nint.Zero
+                ? null
+                : SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
             // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
             List<SophonAsset> sophonAssetList = [];
@@ -167,6 +174,7 @@ namespace CollapseLauncher
                                                           GamePath,
                                                           gameAudioListPath,
                                                           manifestMainInfoPair,
+                                                          speedLimiter,
                                                           sophonAssetList,
                                                           token);
 
@@ -182,9 +190,9 @@ namespace CollapseLauncher
                     isForceStoreInPersistent = false
                 };
 
-                _ = SophonAssetDictRef.TryAdd(asset.AssetName.NormalizePath(), asset);
+                _ = SophonAssetDictRef.TryAdd(asset.AssetName?.NormalizePath() ?? "", asset);
                 assetIndex.Add(assetAsPkgVersionProp);
-                hashtableManifest.TryAdd(asset.AssetName, assetAsPkgVersionProp);
+                hashtableManifest.TryAdd(asset.AssetName ?? "", assetAsPkgVersionProp);
             }
             LogWriteLine($"Main asset list fetched with count: {SophonAssetDictRef.Count} from Sophon manifest", LogType.Default, true);
         }

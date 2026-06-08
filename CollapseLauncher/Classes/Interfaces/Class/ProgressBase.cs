@@ -167,7 +167,7 @@ internal abstract class ProgressBase : GamePropertyBase
     // Extension for IGameInstallManager
 
     private const int  RefreshInterval             = 100;
-    protected     nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
+    internal      nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
 
     public bool IsSophonInUpdateMode { get; protected set; }
     public bool IsSophonInPreloadVerifyMode { get; protected set; }

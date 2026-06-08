@@ -558,7 +558,7 @@
           "Google.Protobuf": "[3.35.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "SharpHDiffPatch.Core": "[*, )",
-          "System.IO.Hashing": "[10.0.8, )"
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {
