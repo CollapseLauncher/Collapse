@@ -12,7 +12,7 @@ internal static class CollapsePInvoke
 {
     private const string LibraryExtension = ".dll";
 
-    internal static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+    internal static nint DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
     {
         bool retryFirst = false;
         string pathToLoad = libraryName;
@@ -23,11 +23,11 @@ internal static class CollapsePInvoke
             return dllHandle;
         }
 
-        // Try append extension in case loading was failed due to it. Try to load it once again.
+        // Try to append extension in case loading was failed due to it. Try to load it once again.
         if (!pathToLoad.EndsWith(LibraryExtension, StringComparison.OrdinalIgnoreCase) && !retryFirst)
         {
             retryFirst = true;
-            pathToLoad = Path.Combine(Path.GetDirectoryName(libraryName),
+            pathToLoad = Path.Combine(Path.GetDirectoryName(libraryName) ?? "",
                                       Path.GetFileNameWithoutExtension(libraryName) + LibraryExtension);
             goto LoadFirst;
         }
@@ -50,7 +50,7 @@ internal static class CollapsePInvoke
         string dllFileName = Path.GetFileName(libraryName);
         string dllPathOnDir = Path.Combine(dirPath, dllFileName);
     Load:
-        if (LoadInternal(dllPathOnDir, assembly, null) is var dllHandle &&
+        if (LoadInternal(dllPathOnDir, assembly) is var dllHandle &&
             dllHandle != nint.Zero)
         {
             handle = dllHandle;
@@ -58,16 +58,17 @@ internal static class CollapsePInvoke
         }
 
         // If the second attempt by loading from specific dir also failed,
-        // Try append extension in case loading was failed due to it. Then try to load it once again :fingercrossed:
-        if (!dllPathOnDir.EndsWith(LibraryExtension, StringComparison.OrdinalIgnoreCase) && !retry)
+        // Try to append extension in case loading was failed due to it. Then try to load it once again :fingercrossed:
+        if (dllPathOnDir.EndsWith(LibraryExtension, StringComparison.OrdinalIgnoreCase) || retry)
         {
-            retry = true;
-            dllPathOnDir = Path.Combine(Path.GetDirectoryName(dllPathOnDir),
-                                        Path.GetFileNameWithoutExtension(dllPathOnDir) + LibraryExtension);
-            goto Load;
+            return false;
         }
 
-        return false;
+        retry = true;
+        dllPathOnDir = Path.Combine(Path.GetDirectoryName(dllPathOnDir) ?? "",
+                                    Path.GetFileNameWithoutExtension(dllPathOnDir) + LibraryExtension);
+        goto Load;
+
     }
 
     private static nint LoadInternal(string path, Assembly assembly, DllImportSearchPath? searchPath = null)

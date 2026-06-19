@@ -4,16 +4,17 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -23,6 +24,7 @@ using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Logger;
+using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable RedundantExtendsListEntry
@@ -40,71 +42,162 @@ namespace CollapseLauncher;
 
 file static class NavigationExtension
 {
-    public static void Add<TItem>(this IList<object> list, string localePropertyPath, string? iconGlyph = null, object? tag = null)
+    public static (TItem Item, FontIcon? Icon) Add<TItem>(this IList<object> list, string localePropertyPath, string? iconGlyph = null, object? tag = null)
         where TItem : NavigationViewItemBase, new()
     {
         TItem item = new() { Tag = tag };
         item.BindNavigationViewItemText(Locale.Current, localePropertyPath);
 
+        FontIcon? icon = null;
         if (item is NavigationViewItem asItem && iconGlyph != null)
         {
-            asItem.Icon = new FontIcon { Glyph = iconGlyph };
+            asItem.Icon = icon = new FontIcon { Glyph = iconGlyph };
         }
 
         list.Add(item);
+        return (item, icon);
     }
 
-    public static void Add<TItem, TPage>(this IList<object> list, string localePropertyPath, string? iconGlyph = null)
+    public static (TItem Item, FontIcon? Icon) Add<TItem, TPage>(this IList<object> list, string localePropertyPath, string? iconGlyph = null)
         where TItem : NavigationViewItemBase, new()
         where TPage : notnull
     {
         Type navigationType = typeof(TPage);
-        list.Add<TItem>(localePropertyPath, iconGlyph, navigationType);
+        return list.Add<TItem>(localePropertyPath, iconGlyph, navigationType);
+    }
+}
+
+public class NavigationViewItemsContext
+{
+    public (NavigationViewItemBase Item, FontIcon Icon) HomePage         { get; set; }
+    public (NavigationViewItemBase Item, FontIcon Icon) RepairPage       { get; set; }
+    public (NavigationViewItemBase Item, FontIcon Icon) CachePage        { get; set; }
+    public (NavigationViewItemBase Item, FontIcon Icon) GameSettingsPage { get; set; }
+    public (NavigationViewItemBase Item, FontIcon Icon) FileCleanupPage  { get; set; }
+
+    public static NavigationViewItemsContext Create(NavigationView navView)
+    {
+        foreach (FrameworkElement dependency in navView
+                                               .FindDescendants()
+                                               .OfType<FrameworkElement>())
+        {
+            // Avoid any icons to have shadow attached if it's not from this page
+            if (dependency.BaseUri.AbsolutePath != navView.BaseUri.AbsolutePath)
+            {
+                continue;
+            }
+
+            if (dependency is IconElement icon)
+            {
+                MainPage.AttachShadowNavigationPanelItem(icon);
+            }
+
+            if (dependency.Name == "PaneToggleButtonGrid" &&
+                dependency is Grid paneToggleButtonGrid &&
+                paneToggleButtonGrid.Children.FirstOrDefault(x => (x as Grid)?.Name == "ButtonHolderGrid") is Grid buttonHolderGrid)
+            {
+                foreach (Button button in buttonHolderGrid.Children.OfType<Button>())
+                {
+                    button.SetCursor(InputSystemCursorShape.Hand);
+                }
+            }
+        }
+
+        (NavigationViewItem Item, FontIcon Icon) homePage = navView.MenuItems.Add<NavigationViewItem, HomePage>("Lang._HomePage.PageTitle", "")!;
+        navView.MenuItems.Add<NavigationViewItemHeader>("Lang._MainPage.NavigationUtilities");
+
+        string cachePageGlyph = m_isWindows11 ? "" : "";
+        (NavigationViewItem Item, FontIcon Icon) repairPage = navView.MenuItems.Add<NavigationViewItem, RepairPage>("Lang._GameRepairPage.PageTitle", "")!;
+        (NavigationViewItem Item, FontIcon Icon) cachePage = navView.MenuItems.Add<NavigationViewItem, CachesPage>("Lang._CachesPage.PageTitle", cachePageGlyph)!;
+        (NavigationViewItem Item, FontIcon Icon) gameSettingsPage = navView.FooterMenuItems.Add<NavigationViewItem>("Lang._GameSettingsPage.PageTitle", "")!;
+        (NavigationViewItem Item, FontIcon Icon) fileCleanupPage = navView.FooterMenuItems.Add<NavigationViewItem>("Lang._FileCleanupPage.Title",      "", "filescleanup")!;
+
+        FontIcon iconAppSettings = new() { Glyph = "" };
+        if (navView.SettingsItem is NavigationViewItem settingsItem)
+        {
+            settingsItem.Tag  = typeof(SettingsPage);
+            settingsItem.Icon = iconAppSettings;
+            _                 = settingsItem.BindNavigationViewItemText(Locale.Current, "Lang._SettingsPage.PageTitle");
+
+            UIElementExtensions.SetCursorType(settingsItem, InputSystemCursorShape.Hand);
+        }
+
+        MainPage.AttachShadowNavigationPanelItem(homePage.Icon);
+        MainPage.AttachShadowNavigationPanelItem(repairPage.Icon);
+        MainPage.AttachShadowNavigationPanelItem(cachePage.Icon);
+        MainPage.AttachShadowNavigationPanelItem(gameSettingsPage.Icon);
+        MainPage.AttachShadowNavigationPanelItem(fileCleanupPage.Icon);
+        MainPage.AttachShadowNavigationPanelItem(iconAppSettings);
+
+        UIElementExtensions.SetCursorType(homePage.Item,         InputSystemCursorShape.Hand);
+        UIElementExtensions.SetCursorType(repairPage.Item,       InputSystemCursorShape.Hand);
+        UIElementExtensions.SetCursorType(cachePage.Item,        InputSystemCursorShape.Hand);
+        UIElementExtensions.SetCursorType(gameSettingsPage.Item, InputSystemCursorShape.Hand);
+        UIElementExtensions.SetCursorType(fileCleanupPage.Item,  InputSystemCursorShape.Hand);
+
+        NavigationViewItemsContext context = new(homePage,
+                                                 repairPage,
+                                                 cachePage,
+                                                 gameSettingsPage,
+                                                 fileCleanupPage);
+
+        return context;
+    }
+
+    private NavigationViewItemsContext((NavigationViewItemBase Item, FontIcon Icon) homePage,
+                                       (NavigationViewItemBase Item, FontIcon Icon) repairPage,
+                                       (NavigationViewItemBase Item, FontIcon Icon) cachePage,
+                                       (NavigationViewItemBase Item, FontIcon Icon) gameSettingsPage,
+                                       (NavigationViewItemBase Item, FontIcon Icon) fileCleanupPage)
+    {
+        HomePage         = homePage;
+        RepairPage       = repairPage;
+        CachePage        = cachePage;
+        GameSettingsPage = gameSettingsPage;
+        FileCleanupPage  = fileCleanupPage;
     }
 }
 
 public partial class MainPage : Page
 {
-    private void InitializeNavigationItems(bool ResetSelection = true)
+    private NavigationViewItemsContext? NavigationViewItemsContext { get; set; }
+
+    private void InitializeNavigationItems()
     {
-        DispatcherQueue.TryEnqueue(Impl);
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, Impl);
         return;
 
         void Impl()
         {
             NavigationViewControl.IsSettingsVisible = true;
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
 
             GamePresetProperty gameProperty            = GetCurrentGameProperty();
-            IGameVersion?      CurrentGameVersionCheck = gameProperty.GameVersion;
+            IGameVersion?      currentGameVersionCheck = gameProperty.GameVersion;
+            PresetConfig?      presetConfig            = currentGameVersionCheck?.GamePreset;
+            bool               isPluginGame            = presetConfig is PluginPresetConfigWrapper;
 
-            FontIcon iconAppSettings = new() { Glyph = "" };
-            string   cachePageGlyph  = m_isWindows11 ? "" : "";
-
-            if (m_appMode == AppMode.Hi3CacheUpdater)
+            if (presetConfig == null)
             {
-                if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
-                {
-                    NavigationViewControl.MenuItems.Add<NavigationViewItem, CachesPage>("Lang._CachesPage.PageTitle", cachePageGlyph);
-                }
+                throw new NullReferenceException("Preset config is null");
+            }
+
+            if (NavigationViewItemsContext == null)
+            {
                 return;
             }
 
-            NavigationViewControl.MenuItems.Add<NavigationViewItem, HomePage>("Lang._HomePage.PageTitle", "");
-            NavigationViewControl.MenuItems.Add<NavigationViewItemHeader>("Lang._MainPage.NavigationUtilities");
-
-            if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
+            if (m_appMode == AppMode.Hi3CacheUpdater &&
+                presetConfig.IsCacheUpdateEnabled)
             {
-                NavigationViewControl.MenuItems.Add<NavigationViewItem, RepairPage>("Lang._GameRepairPage.PageTitle", "");
+                NavigationViewItemsContext.CachePage.Item.Visibility = Visibility.Visible;
+                NavigationViewItemsContext.HomePage.Item.Visibility  = Visibility.Visible;
+                return;
             }
 
-            if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
-            {
-                NavigationViewControl.MenuItems.Add<NavigationViewItem, CachesPage>("Lang._CachesPage.PageTitle", cachePageGlyph);
-            }
+            NavigationViewItemsContext.RepairPage.Item.Visibility = presetConfig.IsRepairEnabled ? Visibility.Visible : Visibility.Collapsed;
+            NavigationViewItemsContext.CachePage.Item.Visibility = presetConfig.IsCacheUpdateEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-            Type? gspPageType = CurrentGameVersionCheck?.GameType switch
+            Type? gspPageType = presetConfig.GameType switch
             {
                 GameNameType.Honkai   => typeof(HonkaiGameSettingsPage),
                 GameNameType.StarRail => typeof(StarRailGameSettingsPage),
@@ -113,49 +206,13 @@ public partial class MainPage : Page
                 _                     => null
             };
 
-            NavigationViewControl.FooterMenuItems.Add<NavigationViewItem>("Lang._GameSettingsPage.PageTitle", "", gspPageType);
-            NavigationViewControl.FooterMenuItems.Add<NavigationViewItem>("Lang._FileCleanupPage.Title", "", "filescleanup");
-
-            if (NavigationViewControl.SettingsItem is NavigationViewItem settingsItem)
-            {
-                settingsItem.Tag  = typeof(SettingsPage);
-                settingsItem.Icon = iconAppSettings;
-                _                 = settingsItem.BindNavigationViewItemText(Locale.Current, "Lang._SettingsPage.PageTitle");
-            }
-
-            foreach (FrameworkElement dependency in NavigationViewControl
-                                                   .FindDescendants()
-                                                   .OfType<FrameworkElement>())
-            {
-                // Avoid any icons to have shadow attached if it's not from this page
-                if (dependency.BaseUri.AbsolutePath != BaseUri.AbsolutePath)
-                {
-                    continue;
-                }
-
-                switch (dependency)
-                {
-                    case FontIcon icon:
-                        AttachShadowNavigationPanelItem(icon);
-                        break;
-                    case AnimatedIcon animIcon:
-                        AttachShadowNavigationPanelItem(animIcon);
-                        break;
-                }
-            }
-            AttachShadowNavigationPanelItem(iconAppSettings);
-
-            if (ResetSelection)
-            {
-                NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-            }
-
-            InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-            MainPageGrid.SetAllControlsCursorRecursive(handCursor);
+            NavigationViewItemsContext.GameSettingsPage.Item.Tag = gspPageType;
+            NavigationViewItemsContext.GameSettingsPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
+            NavigationViewItemsContext.FileCleanupPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
-    private static void AttachShadowNavigationPanelItem(FrameworkElement element)
+    internal static void AttachShadowNavigationPanelItem(FrameworkElement element)
     {
         bool             isAppLight       = IsAppThemeLight;
         Windows.UI.Color shadowColor      = isAppLight ? Colors.White : Colors.Black;

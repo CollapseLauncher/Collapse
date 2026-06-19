@@ -2,14 +2,16 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
-using Hi3Helper.Win32.Screen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,9 +20,9 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+using WinRT;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using Hi3Helper.SentryHelper;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable AsyncVoidMethod
@@ -29,12 +31,16 @@ using Hi3Helper.SentryHelper;
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [GeneratedBindableCustomProperty]
     public partial class ZenlessGameSettingsPage
     {
+        private ZenlessGameSettingsContext SettingsContext { get; }
+
         public ZenlessGameSettingsPage() : base(GetCurrentGameProperty().GameSettings, Registry.CurrentUser.CreateSubKey(Path.Combine($"Software\\{GetCurrentGameProperty().GameVersion?.VendorTypeProp.VendorType}", GetCurrentGameProperty().GameVersion?.GamePreset.InternalGameNameInConfig!)))
         {
             try
             {
+                SettingsContext = new ZenlessGameSettingsContext((ZenlessSettings)GetCurrentGameProperty().GameSettings!);
                 InitializeComponent();
 
                 ApplyButton.Translation           = new Vector3(0, 0, 32);

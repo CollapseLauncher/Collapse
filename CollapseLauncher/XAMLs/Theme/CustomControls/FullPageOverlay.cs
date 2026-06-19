@@ -25,6 +25,7 @@ public partial class FullPageOverlay : ContentControl
         _isAlwaysOnTop     = alwaysOnTop;
         _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
     }
+    
     #endregion
 
     #region Override Methods

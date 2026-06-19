@@ -339,7 +339,7 @@ internal partial class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetJsonMetadata>(instance,
                                                               handleArchive,
                                                               client,
-                                                              baseUrl.Audio,
+                                                              baseUrl.AudioPersistent,
                                                               "AudioV",
                                                               aDirAudio,
                                                               token);
@@ -349,7 +349,7 @@ internal partial class StarRailPersistentRefResult
             await LoadMetadataFile<StarRailAssetJsonMetadata>(instance,
                                                               handleArchive,
                                                               client,
-                                                              baseUrl.Video,
+                                                              baseUrl.VideoPersistent,
                                                               "VideoV",
                                                               aDirVideo,
                                                               token);
@@ -525,20 +525,44 @@ internal partial class StarRailPersistentRefResult
         string fileUrl = baseUrl.CombineURLFromString(filename);
         await using Stream networkStream = (await client.TryGetCachedStreamFrom(fileUrl, token: token)).Stream;
         await using Stream sourceStream = !string.IsNullOrEmpty(saveToLocalDir)
+#if DEBUG
+            ? await CreateLocalStream(networkStream, Path.Combine(saveToLocalDir, filename), token)
+#else
             ? CreateLocalStream(networkStream, Path.Combine(saveToLocalDir, filename))
+#endif
             : networkStream;
 
         await parser.ParseAsync(sourceStream, true, token);
 
         return parser;
 
-        static Stream CreateLocalStream(Stream thisSourceStream, string filePath)
+#if DEBUG
+        static async ValueTask<Stream>
+#else
+        static Stream
+#endif
+            CreateLocalStream(Stream thisSourceStream,
+                              string filePath
+#if DEBUG
+                            , CancellationToken token)
+#else
+            )
+#endif
         {
             FileInfo fileInfo = new FileInfo(filePath)
                                .EnsureCreationOfDirectory()
                                .EnsureNoReadOnly()
                                .StripAlternateDataStream();
+#if DEBUG
+            FileStream fileStream = fileInfo.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            await thisSourceStream.CopyToAsync(fileStream, token);
+            fileStream.Flush(true);
+            fileStream.Position = 0;
+
+            return fileStream;
+#else
             return new CopyToStream(thisSourceStream, fileInfo.Create(), null, true);
+#endif
         }
     }
 

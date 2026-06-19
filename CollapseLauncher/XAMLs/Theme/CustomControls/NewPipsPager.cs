@@ -9,11 +9,4 @@ public partial class NewPipsPager : Control
     {
         DefaultStyleKey = typeof(NewPipsPager);
     }
-
-    ~NewPipsPager()
-    {
-        UnapplyNavigationButtonEvents();
-        UnapplyKeyPressEvents();
-        UnapplyItemsRepeaterEvents();
-    }
 }

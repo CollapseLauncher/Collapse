@@ -90,7 +90,7 @@ internal sealed partial class GenshinInstall
             pkgFileInfo.Add(assetLocalInfo);
         }
 
-        string? execPrefix = Path.GetFileNameWithoutExtension(GameVersionManager?.GamePreset.GameExecutableName);
+        string? execPrefix = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
         if (string.IsNullOrEmpty(execPrefix))
         {
             return ValueTask.CompletedTask;
@@ -114,8 +114,9 @@ internal sealed partial class GenshinInstall
                                                               string                       gameBasePath,
                                                               string                       gameAudioListPath,
                                                               SophonChunkManifestInfoPair? manifestInfoPair = null,
-                                                              List<SophonAsset>?           outputAssetList = null,
-                                                              CancellationToken            token = default)
+                                                              SophonDownloadSpeedLimiter?  speedLimiter     = null,
+                                                              List<SophonAsset>?           outputAssetList  = null,
+                                                              CancellationToken            token            = default)
     {
         const string errorRaiseMsg = "Please raise this issue to our Github Repo or Official Discord";
 
@@ -153,6 +154,7 @@ internal sealed partial class GenshinInstall
                                              manifestInfoPair,
                                              outputAssetList,
                                              "pkg_version",
+                                             speedLimiter,
                                              token);
 
         // Get the existing voice-over matching fields
@@ -164,7 +166,7 @@ internal sealed partial class GenshinInstall
         // ReSharper disable once InvertIf
         if (availableVaMatchingFields.Count != 0) // If any, then create them
         {
-            foreach (var field in availableVaMatchingFields)
+            foreach (string field in availableVaMatchingFields)
             {
                 SophonChunkManifestInfoPair voManifestInfoPair = manifestInfoPair.GetOtherManifestInfoPair(field);
                 if (!voManifestInfoPair.IsFound)
@@ -178,6 +180,7 @@ internal sealed partial class GenshinInstall
                                                      voManifestInfoPair,
                                                      outputAssetList,
                                                      $"Audio_{languageString}_pkg_version",
+                                                     speedLimiter,
                                                      token);
             }
         }
@@ -191,6 +194,7 @@ internal sealed partial class GenshinInstall
                                                              SophonChunkManifestInfoPair manifestPair,
                                                              List<SophonAsset>?          outputAssetList,
                                                              string                      pkgVersionFilename,
+                                                             SophonDownloadSpeedLimiter? speedLimiter,
                                                              CancellationToken           token)
     {
         // Ensure and try to create examine FileInfo
@@ -204,14 +208,14 @@ internal sealed partial class GenshinInstall
         await using FileStream stream = fileInfo.Create();
 
         // Start enumerate the SophonAsset
-        byte[] newLineBytes = "\r\n"u8.ToArray();
+        byte[] newLineBytes = [.. "\r\n"u8];
         await foreach (SophonAsset assetInfo in SophonManifest.EnumerateAsync(client,
                                                                               manifestPair,
-                                                                              null,
+                                                                              speedLimiter,
                                                                               token))
         {
             // Ignore stock pkg_version
-            if (assetInfo.AssetName.EndsWith("pkg_version", StringComparison.OrdinalIgnoreCase))
+            if (assetInfo.AssetName?.EndsWith("pkg_version", StringComparison.OrdinalIgnoreCase) ?? false)
             {
                 continue;
             }

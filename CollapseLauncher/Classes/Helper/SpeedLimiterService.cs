@@ -236,7 +236,7 @@ public partial class SpeedLimiterService : NotifyPropertyChanged
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)] // Pack to 8 bytes to ensure aligning
-    private struct ThrottleServiceContext
+    private ref struct ThrottleServiceContext
     {
         public long AvailableTokens;
         public long LastTimestamp;

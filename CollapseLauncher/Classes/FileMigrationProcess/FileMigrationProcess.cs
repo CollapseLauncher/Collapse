@@ -94,18 +94,18 @@ namespace CollapseLauncher
 
         private async Task<string> MoveFile(FileMigrationProcessUIRef uiRef)
         {
-            FileInfo inputPathInfo = new FileInfo(InputPath);
-            FileInfo outputPathInfo = new FileInfo(OutputPath);
+            FileInfo inputPathInfo  = new(InputPath);
+            FileInfo outputPathInfo = new(OutputPath);
 
-            var inputPathDir = FileDialogHelper.IsRootPath(InputPath)
+            string inputPathDir = FileDialogHelper.IsRootPath(InputPath)
                 ? Path.GetPathRoot(InputPath)
                 : Path.GetDirectoryName(inputPathInfo.FullName);
 
             if (string.IsNullOrEmpty(inputPathDir))
-                throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat,
+                throw new InvalidOperationException(string.Format(Locale.Current.Lang?._Dialogs?.InvalidGameDirNewTitleFormat ?? "",
                                                                   InputPath));
             
-            DirectoryInfo outputPathDirInfo = new DirectoryInfo(inputPathDir);
+            DirectoryInfo outputPathDirInfo = new(inputPathDir);
             outputPathDirInfo.Create();
 
             // Update path display
@@ -129,8 +129,8 @@ namespace CollapseLauncher
 
         private async Task<string> MoveDirectory(FileMigrationProcessUIRef uiRef)
         {
-            DirectoryInfo inputPathInfo = new DirectoryInfo(InputPath);
-            DirectoryInfo outputPathInfo = new DirectoryInfo(OutputPath);
+            DirectoryInfo inputPathInfo  = new(InputPath);
+            DirectoryInfo outputPathInfo = new(OutputPath);
             outputPathInfo.Create();
 
             bool isMoveBackward = inputPathInfo.FullName.StartsWith(outputPathInfo.FullName, StringComparison.OrdinalIgnoreCase) &&
@@ -148,7 +148,7 @@ namespace CollapseLauncher
             // reduce massive seeking, hence improving speed.
             bool isBothSsd = DriveTypeChecker.IsDriveSsd(InputPath) &&
                              DriveTypeChecker.IsDriveSsd(OutputPath);
-            ParallelOptions parallelOptions = new ParallelOptions
+            ParallelOptions parallelOptions = new()
             {
                 CancellationToken = TokenSource?.Token ?? CancellationToken.None,
                 MaxDegreeOfParallelism = isBothSsd ? LauncherConfig.AppCurrentThread : 1
@@ -238,7 +238,7 @@ namespace CollapseLauncher
                 else
                 {
                     Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
-                    FileInfo outputFileInfo = new FileInfo(outputNewFilePath);
+                    FileInfo outputFileInfo = new(outputNewFilePath);
                     await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
                 }
             }

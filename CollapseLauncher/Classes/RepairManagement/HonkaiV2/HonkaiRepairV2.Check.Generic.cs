@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
-using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -55,7 +54,7 @@ internal partial class HonkaiRepairV2
     /// Check actual remote size asset from the actual URL.<br/>
     /// <br/>
     /// Note: This method only works on <see cref="FileType.Video"/> asset type with URL defined.
-    /// Otherwise, the method will immediately returns <see langword="true"/>.
+    /// Otherwise, the method will immediately return <see langword="true"/>.
     /// </summary>
     private async ValueTask<bool> TryIsAssetRemoteSizeEquals(
         FilePropertiesRemote asset,
@@ -63,7 +62,7 @@ internal partial class HonkaiRepairV2
         bool                 useFastCheck,
         CancellationToken    token = default)
     {
-        if (!fileInfo.Exists)
+        if (!fileInfo.Exists || fileInfo.Length == 0)
         {
             return false;
         }
@@ -76,7 +75,7 @@ internal partial class HonkaiRepairV2
         }
 
         UrlStatus status = await HttpClientAssetBundle.GetCachedUrlStatus(asset.RN, token);
-        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyways
+        if (!status.IsSuccessStatusCode || status.FileSize == 0) // Returns true if status is not successful or size is 0 anyway
         {
             return true;
         }
@@ -163,7 +162,7 @@ internal partial class HonkaiRepairV2
         {
             case 8:
             {
-                MhyMurmurHash264B              hasher   = new((uint)asset.S);
+                MhyMurmurHash264B              hasher   = new((ulong)assetFileInfo.Length);
                 HashUtility<MhyMurmurHash264B> hashUtil = HashUtility<MhyMurmurHash264B>.ThreadSafe;
 
                 (resultStatus, _) =

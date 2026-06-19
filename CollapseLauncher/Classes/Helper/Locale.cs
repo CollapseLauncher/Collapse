@@ -324,7 +324,7 @@ public partial class Locale : NotifyPropertyChanged
         try
         {
             string? dir = LauncherConfig.AppLangFolder;
-            for (int i = 0; i < 10 && dir != null; i++)
+            for (int i = 0; i < 10; i++)
             {
                 dir = Path.GetDirectoryName(dir);
                 if (dir == null) break;
@@ -362,7 +362,7 @@ public partial class Locale : NotifyPropertyChanged
         if (_langFileWatcher != null) return;
 
         _sourceLangFolder = FindSourceLangFolder();
-        string watchFolder = _sourceLangFolder ?? LauncherConfig.AppLangFolder!;
+        string watchFolder = _sourceLangFolder ?? LauncherConfig.AppLangFolder;
 
         _langFileWatcher = new FileSystemWatcher(watchFolder, "*.json")
         {
@@ -402,18 +402,19 @@ public partial class Locale : NotifyPropertyChanged
             }
         }, null, Timeout.Infinite, Timeout.Infinite);
 
-        void OnFileEvent(object sender, FileSystemEventArgs e)
+        _langFileWatcher.Changed += OnFileEvent;
+        _langFileWatcher.Created += OnFileEvent;
+        _langFileWatcher.Renamed += OnFileEvent;
+
+        Logger.LogWriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
+        return;
+
+        void OnFileEvent(object? sender, FileSystemEventArgs e)
         {
             if (!e.FullPath.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) return;
             _pendingChangedFile = e.FullPath;
             _langReloadDebounce!.Change(300, Timeout.Infinite);
         }
-
-        _langFileWatcher.Changed += OnFileEvent;
-        _langFileWatcher.Created += OnFileEvent;
-        _langFileWatcher.Renamed += (_, e) => OnFileEvent(_, e);
-
-        Logger.LogWriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
     }
 
     /// <summary>

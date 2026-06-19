@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -36,6 +38,28 @@ namespace CollapseLauncher.Pages;
 
 public sealed partial class HomePage
 {
+    public HypLauncherBackgroundList? CurrentGameBackgroundData
+    {
+        get
+        {
+            ILauncherApi?              api  = CurrentPresetConfig?.GameLauncherApi;
+            HypLauncherBackgroundList? data = api?.LauncherGameBackground?.Data;
+            return data;
+        }
+    }
+
+    private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement asUiElement ||
+            !e.GetCurrentPoint(asUiElement).Properties.IsLeftButtonPressed ||
+            asUiElement.Tag is not string url)
+        {
+            return;
+        }
+
+        SpawnWebView2.SpawnWebView2Window(url, Content);
+    }
+
     #region Background element events
 
     private CancellationTokenSource? _multiBackgroundGridHoverCts;

@@ -1908,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Ray Tracing Quality",
     "AdvancedGraphics_SuperScaling": "Super Scaling",
     "AdvancedGraphics_SuperScalingQ": "Super Scaling Priority",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Ultra Performance",
     "AdvancedGraphics_SuperScalingQ_Performance": "Performance",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Balanced",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Quality"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Quality",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {

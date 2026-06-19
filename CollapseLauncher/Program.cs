@@ -179,8 +179,8 @@ namespace CollapseLauncher
             uint iconCount = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
             if (iconCount > 0)
             {
-                IntPtr[] largeIcons = new IntPtr[1];
-                IntPtr[] smallIcons = new IntPtr[1];
+                nint[] largeIcons = new nint[1];
+                nint[] smallIcons = new nint[1];
                 nint largeIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(largeIcons, 0);
                 nint smallIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(smallIcons, 0);
                 PInvoke.ExtractIconEx(mainModulePath, 0, largeIconsArrayP, smallIconsArrayP, 1);
@@ -418,7 +418,7 @@ namespace CollapseLauncher
             Console.Error.WriteLine("Activity: Checking for possible fallback/recovery update...");
             Console.Error.WriteLine("Press any key to exit or Press 'R' to restart the main thread app...");
 
-            using CancellationTokenSource tokenSource = new CancellationTokenSource();
+            using CancellationTokenSource tokenSource = new();
             _ = RunCheckForPossibleRecoveryOrFallbackUpdate(tokenSource.Token);
 
             if (ConsoleKey.R == Console.ReadKey().Key)
@@ -675,7 +675,7 @@ namespace CollapseLauncher
             return Convert.ToHexStringLower(hash);
         }
 
-        private static string restartedFromPidArgKey = "restartedFromPid";
+        private const string RestartedFromPidArgKey = "restartedFromPid";
 
         public static void ForceRestart()
         {
@@ -684,7 +684,7 @@ namespace CollapseLauncher
             {
                 FileName         = AppExecutablePath,
                 WorkingDirectory = Environment.CurrentDirectory,
-                Arguments        = $"{restartedFromPidArgKey}:{Environment.ProcessId} {string.Join(' ', AppCurrentArgument)}",
+                Arguments        = $"{RestartedFromPidArgKey}:{Environment.ProcessId} {string.Join(' ', AppCurrentArgument)}",
                 UseShellExecute  = true
             });
 
@@ -699,15 +699,15 @@ namespace CollapseLauncher
             }
 
             string firstArg = args[0];
-            if (!firstArg.StartsWith(restartedFromPidArgKey, StringComparison.OrdinalIgnoreCase))
+            if (!firstArg.StartsWith(RestartedFromPidArgKey, StringComparison.OrdinalIgnoreCase))
             {
                 return args;
             }
 
-            string[] otherArgs = args.Length > 1 ? args[1..] : [];
-            ReadOnlySpan<char> restartParentPid = ConverterTool.GetSplit(firstArg, 1, ":,#$;");
+            string[]           otherArgs        = args.Length > 1 ? args[1..] : [];
+            ReadOnlySpan<char> restartParentPid = firstArg.GetSplit(1, ":,#$;");
 
-            // Check for PID. If exist, then kill.
+            // Check for PID. If existed, then kill.
             if (!int.TryParse(restartParentPid, out int parentPid) ||
                 !ProcessChecker.IsProcessExist(parentPid))
             {

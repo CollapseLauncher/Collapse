@@ -18,7 +18,6 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 public partial class LayeredBackgroundImage
 {
     public event Action<LayeredBackgroundImage>? ImageLoaded;
-    public event Action<LayeredBackgroundImage, Size>? CanvasSizeChanged;
 
     #region Fields
 
@@ -407,7 +406,6 @@ public partial class LayeredBackgroundImage
 
         SetValue(CanvasWidthProperty,  size.Width);
         SetValue(CanvasHeightProperty, size.Height);
-        CanvasSizeChanged?.Invoke(this, size);
     }
 
     private void NotifyVideoLoaded(MediaPlayer sender, object args)

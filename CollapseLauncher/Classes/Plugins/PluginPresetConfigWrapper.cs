@@ -8,7 +8,6 @@ using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -388,23 +387,6 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
     {
         _config.Free();
         DiscordPresenceContext.Dispose();
-
-        ReleaseComObject(PluginNewsApi);
-        ReleaseComObject(PluginMediaApi);
-        ReleaseComObject(PluginGameManager);
-        ReleaseComObject(PluginGameInstaller);
-        ReleaseComObject(_config);
-
         GC.SuppressFinalize(this);
-        return;
-
-        static void ReleaseComObject<T>(T obj)
-            where T : class
-        {
-            if (!ComMarshal<T>.TryReleaseComObject(obj, out Exception? ex))
-            {
-                Logger.LogWriteLine($"[PluginPresetConfigWrapper::Dispose] Cannot release COM Instance of {typeof(T).Name}\r\n{ex}", LogType.Error, true);
-            }
-        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using CollapseLauncher.Extension;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

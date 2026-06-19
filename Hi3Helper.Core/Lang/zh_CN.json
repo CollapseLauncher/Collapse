@@ -1908,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "光线追踪质量",
     "AdvancedGraphics_SuperScaling": "超分辨率",
     "AdvancedGraphics_SuperScalingQ": "超分辨率优先级",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "超高性能",
     "AdvancedGraphics_SuperScalingQ_Performance": "性能",
     "AdvancedGraphics_SuperScalingQ_Balanced": "平衡",
-    "AdvancedGraphics_SuperScalingQ_Quality": "质量"
+    "AdvancedGraphics_SuperScalingQ_Quality": "质量",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {

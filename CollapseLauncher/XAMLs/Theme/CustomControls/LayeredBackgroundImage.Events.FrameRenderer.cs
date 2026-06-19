@@ -17,7 +17,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Foundation;
 using Windows.Media.Playback;
-
 // ReSharper disable CommentTypo
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable AccessToModifiedClosure
@@ -119,7 +118,7 @@ public partial class LayeredBackgroundImage
                                         in _canvasRenderSize);
         }
         // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
         {
             DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
         }
@@ -147,9 +146,9 @@ public partial class LayeredBackgroundImage
                     SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, _functionTableDispose);
                 }
                 // Device lost error. If happened, reinitialize render target
-                catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+                catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
                 {
-                    CanvasDevice_OnDeviceLost();
+                    DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
                 }
                 catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
                 {
@@ -197,9 +196,14 @@ public partial class LayeredBackgroundImage
             ds?.DrawImage(_canvasRenderTarget, _canvasRenderSize);
         }
         // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
         {
             DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
+        }
+        catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
+        {
+            // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
+            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
         }
         catch (Exception ex)
         {
@@ -221,9 +225,14 @@ public partial class LayeredBackgroundImage
                 ds?.Dispose();
             }
             // Device lost error. If happened, reinitialize render target
-            catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u)
+            catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
             {
                 CanvasDevice_OnDeviceLost();
+            }
+            catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
+            {
+                // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
+                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
             catch (Exception ex)
             {
@@ -447,7 +456,7 @@ public partial class LayeredBackgroundImage
 
             token.Register(() =>
             {
-                Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
+                // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Make sure to unblock if request is cancelled
             });
             // Set events
             DispatcherQueue?.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
@@ -469,7 +478,7 @@ public partial class LayeredBackgroundImage
                 _videoPlayer.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
             }
 
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+            // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 

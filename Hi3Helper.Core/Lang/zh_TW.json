@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
     "VideoBackground_AudioVolume": "音量",
     "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg Decoding Mode",
     "VideoBackground_FFmpegInstallStatus": "Install Status:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
@@ -560,7 +561,7 @@
     "VideoBackground_FFmpegInstallNote": "Note",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
     "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your background. To change your existing installation, please disable the \"Use FFmpeg for Video Decoding\" feature first, then restart your launcher and come back to this setting.",
 
     "Update": "檢查更新",
     "Update_CurVer": "目前版本：",
@@ -595,6 +596,13 @@
     "About_Copyright4": "。版權所有。",
 
     "LicenseType": "MIT許可證",
+
+    "About_FFmpegCopyright1": "This software uses code of ",
+    "About_FFmpegCopyright2": " licensed under the ",
+    "About_FFmpegCopyright3": " and ",
+    "About_FFmpegCopyright4": " as a wrapper under the ",
+    "About_FFmpegCopyright5": " license.",
+    "About_FFmpegDonate": "Donate to FFmpeg Project",
 
     "Disclaimer": "免責聲明",
     "Disclaimer1": "此應用不以任何方式與",
@@ -986,7 +994,9 @@
     "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
 
     "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior.",
+
+    "DescriptionNotAvailable": "Description is not available."
   },
 
   "_BackgroundNotification": {
@@ -1257,6 +1267,18 @@
     "PostInstallBehaviour_EnumShutdown": "Shutdown Computer",
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Custom Parallax Pixels (Min: {0}px, Max: {1}px)",
+
+    "StartupFFmpegInstallDialogTitle": "FFmpeg Installation is Required",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher has now require FFmpeg decoder (build 7.x) to be installed in order to play video background properly. Click on \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" to install FFmpeg from scratch or locate it from your existing installation, or click on \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" to keep using Windows Media Foundation built-in decoder.",
+    "StartupFFmpegInstallDialogSubtitle4": "Note:",
+    "StartupFFmpegInstallDialogSubtitle5": "Video background might displays garbaged/corrupted frame in certain game selection due to unsupported Color-space type by Windows Media Foundation built-in decoder. If you want to select FFmpeg to decode the video background later, you can go to the \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\" page, then find \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" section to enable and install the FFmpeg decoder.",
+    "StartupFFmpegInstallDialogInstallBtn": "Install & Use FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Use Built-in Decoder",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "Do not ask me to install FFmpeg again in the future",
 
     "Media_ExtNotSupported1": "Sorry but the file extension for the following background image/video file is not supported.",
     "Media_ExtNotSupported2": "File Path/URL: {0}",
@@ -1781,6 +1803,20 @@
     "Genshin Impact": "Miliastra Sandbox"
   },
 
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "Automatic",
+    "AutomaticSystemDecoder": "Automatic with System Decoder",
+    "ForceSystemDecoder": "Force System Decoder",
+    "ForceFFmpegSoftwareDecoder": "Force FFmpeg Software Decoder"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "Automatically choose the best available decoder (Hardware-accelerated Decoder will be preferred if available).",
+    "AutomaticSystemDecoder": "Same as Automatic but FFmpeg will use the built-in System Decoder to decode if available.",
+    "ForceSystemDecoder": "FFmpeg will forcely use built-in System Decoder instead of what is available within the FFmpeg library. You might need to install the additional Windows Media Foundation codecs to play your video with this mode if the decoder is not available or the playback might not run properly.",
+    "ForceFFmpegSoftwareDecoder": "Same as Automatic but FFmpeg will forcely use the Software-based decoder instead of Hardware-accelerated ones."
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "用戶協議："
   },
@@ -1872,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Ray Tracing Quality",
     "AdvancedGraphics_SuperScaling": "Super Scaling",
     "AdvancedGraphics_SuperScalingQ": "Super Scaling Priority",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Ultra Performance",
     "AdvancedGraphics_SuperScalingQ_Performance": "Performance",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Balanced",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Quality"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Quality",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {

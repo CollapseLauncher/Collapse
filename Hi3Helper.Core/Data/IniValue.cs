@@ -84,20 +84,19 @@ namespace Hi3Helper.Data
         #endregion
 
         #region Create Methods
-        public static IniValue Create<TEnum>(TEnum value)
-            where TEnum : struct, Enum => new IniValue(Enum.GetName(value));
+        public static IniValue Create<TEnum>(TEnum value) where TEnum : struct, Enum => new(Enum.GetName(value));
 
-        public static IniValue Create(IFormattable? value) => new IniValue(value);
+        public static IniValue Create(IFormattable? value) => new(value);
 
-        public static IniValue Create(object? value) => new IniValue(value);
+        public static IniValue Create(object? value) => new(value);
 
-        public static IniValue Create(string? value) => new IniValue(value);
+        public static IniValue Create(string? value) => new(value);
 
-        public static IniValue Create(bool value) => new IniValue(value);
+        public static IniValue Create(bool value) => new(value);
 
-        public static IniValue Create(Size value) => new IniValue(value);
+        public static IniValue Create(Size value) => new(value);
 
-        public static IniValue CreateEmpty() => new IniValue();
+        public static IniValue CreateEmpty() => new();
         #endregion
 
         #region Try Methods
@@ -107,7 +106,7 @@ namespace Hi3Helper.Data
         /// <typeparam name="TNumber">A number value where it's a member of <seealso cref="ISpanParsable{TSelf}"/></typeparam>
         /// <param name="result">The output result of the parsed number</param>
         /// <returns>The number of the value member of <seealso cref="ISpanParsable{TSelf}"/></returns>
-        public bool TryParseValue<TNumber>(out TNumber result)
+        public readonly bool TryParseValue<TNumber>(out TNumber result)
             where TNumber : struct, ISpanParsable<TNumber>
         {
             ReadOnlySpan<char> valueSpan = _value;
@@ -135,7 +134,7 @@ namespace Hi3Helper.Data
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="Size"/>
         /// </summary>
         /// <returns>Value of <seealso cref="Size"/></returns>
-        public Size ToSize()
+        public readonly Size ToSize()
         {
             const string possibleSeparators = ",x:";
 
@@ -207,7 +206,7 @@ namespace Hi3Helper.Data
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="bool"/></returns>
-        public bool ToBool(bool defaultValue = false)
+        public readonly bool ToBool(bool defaultValue = false)
         {
             // Try parse the value
             return bool.TryParse(_value, out bool result) ? result :
@@ -219,7 +218,7 @@ namespace Hi3Helper.Data
         /// Convert the <seealso cref="IniValue"/> to a nullable <seealso cref="bool"/>
         /// </summary>
         /// <returns>Value of a nullable <seealso cref="bool"/></returns>
-        public bool? ToBoolNullable()
+        public readonly bool? ToBoolNullable()
         {
             // If the value is empty, return null
             if (IsEmpty)
@@ -237,7 +236,7 @@ namespace Hi3Helper.Data
         /// <typeparam name="TNumber">Type which is member of parsable numbers</typeparam>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>The parsed number</returns>
-        public TNumber ToNumber<TNumber>(TNumber? defaultValue = null)
+        public readonly TNumber ToNumber<TNumber>(TNumber? defaultValue = null)
             where TNumber : struct, ISpanParsable<TNumber>
         {
             // Try parse the value and if it's valid, return the result
@@ -255,91 +254,111 @@ namespace Hi3Helper.Data
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="sbyte"/></returns>
-        public sbyte ToSByte(sbyte defaultValue = 0) => ToNumber<sbyte>(defaultValue);
+        public readonly sbyte ToSByte(sbyte defaultValue = 0) => ToNumber<sbyte>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="byte"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="byte"/></returns>
-        public byte ToByte(byte defaultValue = 0) => ToNumber<byte>(defaultValue);
+        public readonly byte ToByte(byte defaultValue = 0) => ToNumber<byte>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="short"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="short"/></returns>
-        public short ToShort(short defaultValue = 0) => ToNumber<short>(defaultValue);
+        public readonly short ToShort(short defaultValue = 0) => ToNumber<short>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="ushort"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="ushort"/></returns>
-        public ushort ToShort(ushort defaultValue = 0) => ToNumber<ushort>(defaultValue);
+        public readonly ushort ToShort(ushort defaultValue = 0) => ToNumber<ushort>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="int"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="int"/></returns>
-        public int ToInt(int defaultValue = 0) => ToNumber<int>(defaultValue);
+        public readonly int ToInt(int defaultValue = 0) => ToNumber<int>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="uint"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="uint"/></returns>
-        public uint ToUInt(uint defaultValue = 0) => ToNumber<uint>(defaultValue);
+        public readonly uint ToUInt(uint defaultValue = 0) => ToNumber<uint>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="long"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="long"/></returns>
-        public long ToLong(long defaultValue = 0) => ToNumber<long>(defaultValue);
+        public readonly long ToLong(long defaultValue = 0) => ToNumber<long>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="ulong"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="ulong"/></returns>
-        public ulong ToUlong(ulong defaultValue = 0) => ToNumber<ulong>(defaultValue);
+        public readonly ulong ToUlong(ulong defaultValue = 0) => ToNumber<ulong>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="Int128"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="Int128"/></returns>
-        public Int128 ToInt128(Int128? defaultValue = null) => ToNumber(defaultValue);
+        public readonly Int128 ToInt128(Int128? defaultValue = null) => ToNumber(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="UInt128"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="UInt128"/></returns>
-        public UInt128 ToUInt128(UInt128? defaultValue = null) => ToNumber(defaultValue);
+        public readonly UInt128 ToUInt128(UInt128? defaultValue = null) => ToNumber(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="float"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="float"/></returns>
-        public float ToFloat(float defaultValue = 0) => ToNumber<float>(defaultValue);
+        public readonly float ToFloat(float defaultValue = 0) => ToNumber<float>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="double"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="double"/></returns>
-        public double ToDouble(double defaultValue = 0) => ToNumber<double>(defaultValue);
+        public readonly double ToDouble(double defaultValue = 0) => ToNumber<double>(defaultValue);
 
         /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="decimal"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
         /// <returns>Value of <seealso cref="decimal"/></returns>
-        public decimal ToDecimal(decimal defaultValue = 0) => ToNumber<decimal>(defaultValue);
+        public readonly decimal ToDecimal(decimal defaultValue = 0) => ToNumber<decimal>(defaultValue);
+
+        /// <summary>
+        /// Convert the <seealso cref="IniValue"/> to any member of <seealso cref="Enum"/> types.
+        /// </summary>
+        /// <typeparam name="T">Type of enum</typeparam>
+        /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
+        /// <returns>Value of <typeparam name="T"/></returns>
+        public readonly T ToEnum<T>(T defaultValue = default) where T : struct, Enum
+        {
+            // If the value is empty, return the default value
+            if (IsEmpty)
+            {
+                return defaultValue;
+            }
+
+            // Try parse the value and if it's valid, return the result
+            return Enum.TryParse(_value, true, out T result) ? result :
+                // Otherwise, return the default value if invalid.
+                defaultValue;
+        }
         #endregion
 
         #region Get String Methods
@@ -349,43 +368,43 @@ namespace Hi3Helper.Data
         #endregion
 
         #region Implicit Cast Operators
-        public static implicit operator IniValue(sbyte o) => new IniValue(o);
+        public static implicit operator IniValue(sbyte o) => new(o);
 
-        public static implicit operator IniValue(byte o) => new IniValue(o);
+        public static implicit operator IniValue(byte o) => new(o);
 
-        public static implicit operator IniValue(short o) => new IniValue(o);
+        public static implicit operator IniValue(short o) => new(o);
 
-        public static implicit operator IniValue(ushort o) => new IniValue(o);
+        public static implicit operator IniValue(ushort o) => new(o);
 
-        public static implicit operator IniValue(int o) => new IniValue(o);
+        public static implicit operator IniValue(int o) => new(o);
 
-        public static implicit operator IniValue(uint o) => new IniValue(o);
+        public static implicit operator IniValue(uint o) => new(o);
 
-        public static implicit operator IniValue(long o) => new IniValue(o);
+        public static implicit operator IniValue(long o) => new(o);
 
-        public static implicit operator IniValue(ulong o) => new IniValue(o);
+        public static implicit operator IniValue(ulong o) => new(o);
 
-        public static implicit operator IniValue(Int128 o) => new IniValue(o);
+        public static implicit operator IniValue(Int128 o) => new(o);
 
-        public static implicit operator IniValue(UInt128 o) => new IniValue(o);
+        public static implicit operator IniValue(UInt128 o) => new(o);
 
-        public static implicit operator IniValue(float o) => new IniValue(o);
+        public static implicit operator IniValue(float o) => new(o);
 
-        public static implicit operator IniValue(double o) => new IniValue(o);
+        public static implicit operator IniValue(double o) => new(o);
 
-        public static implicit operator IniValue(decimal o) => new IniValue(o);
+        public static implicit operator IniValue(decimal o) => new(o);
 
-        public static implicit operator IniValue(bool o) => new IniValue(o);
+        public static implicit operator IniValue(bool o) => new(o);
 
-        public static implicit operator IniValue(string? o) => new IniValue(o);
+        public static implicit operator IniValue(string? o) => new(o);
 
-        public static implicit operator IniValue(nint o) => new IniValue(o);
+        public static implicit operator IniValue(nint o) => new(o);
 
-        public static implicit operator IniValue(nuint o) => new IniValue(o);
+        public static implicit operator IniValue(nuint o) => new(o);
 
-        public static implicit operator IniValue(Size o) => new IniValue(o);
+        public static implicit operator IniValue(Size o) => new(o);
 
-        public static implicit operator IniValue(Guid o) => new IniValue(o);
+        public static implicit operator IniValue(Guid o) => new(o);
 
         public static implicit operator sbyte(IniValue value) => value.ToNumber<sbyte>();
 

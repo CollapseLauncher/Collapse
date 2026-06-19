@@ -64,7 +64,7 @@ namespace CollapseLauncher.InstallManager.Genshin
         private string _gameAudioOldPath =>
             Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows");
 
-        private GenshinRepair Repair { get; set; }
+        private GenshinRepair Repair { get; }
 
         #endregion
 

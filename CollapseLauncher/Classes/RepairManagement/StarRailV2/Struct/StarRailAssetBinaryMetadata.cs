@@ -1,5 +1,5 @@
-﻿using System;
-using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
+﻿using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
+using System;
 // ReSharper disable CommentTypo
 
 #pragma warning disable IDE0290 // Shut the fuck up

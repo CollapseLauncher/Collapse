@@ -205,19 +205,15 @@ namespace CollapseLauncher.Extension
             throw new COMException($"Initialization for {nameof(T)} has failed with return code: {returnCode}", initTask.Exception);
         }
 
+        // ReSharper disable once InconsistentNaming
         private static readonly Guid IInitializableIid = new(ComInterfaceId.ExInitializable);
         private static IInitializableTask GetInitializableTask<T>(T instance)
             where T : class
         {
-            if (!ComMarshal<T>.TryCastComObjectAs(instance,
-                                                  in IInitializableIid,
-                                                  out IInitializableTask? initTask,
-                                                  out Exception? ex))
-            {
-                throw ex;
-            }
-
-            return initTask;
+            return !ComMarshal<T>.TryCastComObjectAs(instance,
+                                                      in IInitializableIid,
+                                                      out IInitializableTask? initTask,
+                                                      out Exception? ex) ? throw ex : initTask;
         }
 
         internal static async Task GetResultFromAction<T>(this Task<T> task, Action<T> getResultAction)

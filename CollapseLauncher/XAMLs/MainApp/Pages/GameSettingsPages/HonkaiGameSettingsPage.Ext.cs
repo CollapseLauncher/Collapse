@@ -8,47 +8,39 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-// ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.Pages
 {
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument")]
-    public partial class HonkaiGameSettingsPage : INotifyPropertyChanged
+    public partial class HonkaiGameSettingsPage
     {
         #region Fields
         private int _prevGraphSelect;
-        #endregion
-
-        #region Methods
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        
+        private HonkaiSettings? SettingsThis { get => field ??= Settings as HonkaiSettings; }
         #endregion
 
         #region Presets
-        public ICollection<string> PresetRenderingNames => ((HonkaiSettings)Settings).PresetSettingsGraphics.PresetKeys;
+        public ICollection<string> PresetRenderingNames => SettingsThis?.PresetSettingsGraphics.PresetKeys ?? Array.Empty<string>();
 
         public int PresetRenderingIndex
         {
             get
             {
-                string                    name        = ((HonkaiSettings)Settings).PresetSettingsGraphics.GetPresetKey(Settings);
-                int                       index       = ((HonkaiSettings)Settings).PresetSettingsGraphics.PresetKeys.IndexOf(name);
-                PersonalGraphicsSettingV2 presetValue = ((HonkaiSettings)Settings).PresetSettingsGraphics.GetPresetFromKey(name);
+                if (SettingsThis == null)
+                    return -1;
+
+                string name = SettingsThis.PresetSettingsGraphics?.GetPresetKey(SettingsThis) ?? string.Empty;
+                int index = SettingsThis.PresetSettingsGraphics?.PresetKeys?.IndexOf(name) ?? -1;
+                PersonalGraphicsSettingV2? presetValue = SettingsThis.PresetSettingsGraphics?.GetPresetFromKey(name);
 
                 if (presetValue != null)
                 {
-                    ((HonkaiSettings)Settings).SettingsGraphics = presetValue;
+                    SettingsThis.SettingsGraphics = presetValue;
                 }
 
                 ToggleRenderingSettings(name == PresetConst.DefaultPresetName);
@@ -58,14 +50,14 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
 
-                string                    name = ((HonkaiSettings)Settings).PresetSettingsGraphics.PresetKeys[value];
-                PersonalGraphicsSettingV2 presetValue = ((HonkaiSettings)Settings).PresetSettingsGraphics.GetPresetFromKey(name);
+                string name = SettingsThis?.PresetSettingsGraphics.PresetKeys?[value] ?? string.Empty;
+                PersonalGraphicsSettingV2? presetValue = SettingsThis?.PresetSettingsGraphics.GetPresetFromKey(name);
 
                 if (presetValue != null)
                 {
-                    ((HonkaiSettings)Settings).SettingsGraphics = presetValue;
+                    SettingsThis?.SettingsGraphics = presetValue;
                 }
-                ((HonkaiSettings)Settings).PresetSettingsGraphics.SetPresetKey(presetValue);
+                SettingsThis?.PresetSettingsGraphics.SetPresetKey(presetValue);
 
                 ToggleRenderingSettings(name == PresetConst.DefaultPresetName);
                 UpdatePresetRenderingSettings();
@@ -96,10 +88,10 @@ namespace CollapseLauncher.Pages
         #region GameResolution
         public bool IsFullscreenEnabled
         {
-            get => Settings.SettingsScreen.isfullScreen;
+            get => SettingsThis?.SettingsScreen.isfullScreen ?? false;
             set
             {
-                Settings.SettingsScreen.isfullScreen = value;
+                SettingsThis?.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled               = false;
@@ -117,10 +109,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsBorderlessEnabled
         {
-            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            get => SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen ?? false;
             set
             {
-                Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+                SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled      = false;
@@ -138,10 +130,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsCustomResolutionEnabled
         {
-            get => Settings.SettingsCollapseScreen.UseCustomResolution;
+            get => SettingsThis?.SettingsCollapseScreen.UseCustomResolution ?? false;
             set
             {
-                Settings.SettingsCollapseScreen.UseCustomResolution = value;
+                SettingsThis?.SettingsCollapseScreen.UseCustomResolution = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -169,10 +161,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsExclusiveFullscreenEnabled
         {
-            get => IsFullscreenEnabled && Settings.SettingsCollapseScreen.UseExclusiveFullscreen;
+            get => IsFullscreenEnabled && (SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen ?? false);
             set
             {
-                Settings.SettingsCollapseScreen.UseExclusiveFullscreen = value;
+                SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = false;
@@ -185,24 +177,24 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public bool IsCanResizableWindow => !Settings.SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
+        public bool IsCanResizableWindow => !(SettingsThis?.SettingsScreen.isfullScreen ?? false) && !IsExclusiveFullscreenEnabled;
 
         public bool IsResizableWindow
         {
-            get => Settings.SettingsCollapseScreen.UseResizableWindow;
-            set => Settings.SettingsCollapseScreen.UseResizableWindow = value;
+            get => SettingsThis?.SettingsCollapseScreen.UseResizableWindow ?? false;
+            set => SettingsThis?.SettingsCollapseScreen.UseResizableWindow = value;
         }
 
         public int ResolutionW
         {
-            get => Settings.SettingsScreen.sizeRes.Width;
-            set => Settings.SettingsScreen.sizeRes = new Size(value, ResolutionH);
+            get => SettingsThis?.SettingsScreen.sizeRes.Width ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(value, ResolutionH);
         }
 
         public int ResolutionH
         {
-            get => Settings.SettingsScreen.sizeRes.Height;
-            set => Settings.SettingsScreen.sizeRes = new Size(ResolutionW, value);
+            get => SettingsThis?.SettingsScreen.sizeRes.Height ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(ResolutionW, value);
         }
 
         public bool IsCanResolutionWH => IsCustomResolutionEnabled;
@@ -211,7 +203,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string res = Settings.SettingsScreen.sizeResString;
+                string? res = SettingsThis?.SettingsScreen.sizeResString;
                 if (!string.IsNullOrEmpty(res))
                 {
                     return res;
@@ -220,7 +212,7 @@ namespace CollapseLauncher.Pages
                 Size size = ScreenProp.CurrentResolution;
                 return $"{size.Width}x{size.Height}";
             }
-            set => Settings.SettingsScreen.sizeResString = value;
+            set => SettingsThis?.SettingsScreen.sizeResString = value;
         }
         #endregion
 
@@ -232,14 +224,14 @@ namespace CollapseLauncher.Pages
         }
         public short FPSInCombat
         {
-            get => ((HonkaiSettings)Settings).SettingsGraphics.TargetFrameRateForInLevel;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.TargetFrameRateForInLevel = value;
+            get => SettingsThis?.SettingsGraphics.TargetFrameRateForInLevel ?? 0;
+            set => SettingsThis?.SettingsGraphics.TargetFrameRateForInLevel = value;
         }
 
         public short FPSInMainMenu
         {
-            get => ((HonkaiSettings)Settings).SettingsGraphics.TargetFrameRateForOthers;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.TargetFrameRateForOthers = value;
+            get => SettingsThis?.SettingsGraphics.TargetFrameRateForOthers ?? 0;
+            set => SettingsThis?.SettingsGraphics.TargetFrameRateForOthers = value;
         }
         #endregion
 
@@ -266,7 +258,7 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsRenderingAccuracy
         {
-            get => _prevGraphSelect = (int)((HonkaiSettings)Settings).SettingsGraphics.ResolutionQuality;
+            get => _prevGraphSelect = (int)(SettingsThis?.SettingsGraphics.ResolutionQuality ?? default);
             set => TryChallengeRenderingAccuracySet(value, value < 9);
         }
 
@@ -276,7 +268,7 @@ namespace CollapseLauncher.Pages
             {
                 if (!BypassChallenge)
                 {
-                    _prevGraphSelect = (int)((HonkaiSettings)Settings).SettingsGraphics.ResolutionQuality;
+                    _prevGraphSelect = (int)(SettingsThis?.SettingsGraphics.ResolutionQuality ?? default);
                     ContentDialogResult result = await SimpleDialogs.Dialog_GraphicsVeryHighWarning();
 
                     RenderingAccuracySelector.SelectedIndex = result switch
@@ -286,7 +278,7 @@ namespace CollapseLauncher.Pages
                                                               };
                 }
 
-                ((HonkaiSettings)Settings).SettingsGraphics.ResolutionQuality = (SelectResolutionQuality)value;
+                SettingsThis?.SettingsGraphics.ResolutionQuality = (SelectResolutionQuality)value;
             }
             catch (Exception e)
             {
@@ -300,8 +292,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsShadowQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.ShadowLevel;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.ShadowLevel = (SelectShadowLevel)value;
+            get => (int)(SettingsThis?.SettingsGraphics.ShadowLevel ?? default);
+            set => SettingsThis?.SettingsGraphics.ShadowLevel = (SelectShadowLevel)value;
         }
 
         /// <summary>
@@ -309,8 +301,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsReflectionQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.ReflectionQuality;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.ReflectionQuality = (SelectReflectionQuality)value;
+            get => (int)(SettingsThis?.SettingsGraphics.ReflectionQuality ?? default);
+            set => SettingsThis?.SettingsGraphics.ReflectionQuality = (SelectReflectionQuality)value;
         }
 
         /// <summary>
@@ -318,8 +310,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsLightingQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.LightingQuality;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.LightingQuality = (SelectLightningQuality)value;
+            get => (int)(SettingsThis?.SettingsGraphics.LightingQuality ?? default);
+            set => SettingsThis?.SettingsGraphics.LightingQuality = (SelectLightningQuality)value;
         }
 
         /// <summary>
@@ -327,8 +319,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsPostFXQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.PostFXQuality;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.PostFXQuality = (SelectPostFXQuality)value;
+            get => (int)(SettingsThis?.SettingsGraphics.PostFXQuality ?? default);
+            set => SettingsThis?.SettingsGraphics.PostFXQuality = (SelectPostFXQuality)value;
         }
 
         /// <summary>
@@ -336,8 +328,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsAAType
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.AAType;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.AAType = (SelectAAType)value;
+            get => (int)(SettingsThis?.SettingsGraphics.AAType ?? default);
+            set => SettingsThis?.SettingsGraphics.AAType = (SelectAAType)value;
         }
 
         /// <summary>
@@ -345,8 +337,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsCharacterQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.CharacterQuality;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.CharacterQuality = (SelectCharacterQuality)value;
+            get => (int)(SettingsThis?.SettingsGraphics.CharacterQuality ?? default);
+            set => SettingsThis?.SettingsGraphics.CharacterQuality = (SelectCharacterQuality)value;
         }
 
         /// <summary>
@@ -354,8 +346,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsWeatherQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.WeatherQuality;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.WeatherQuality = (SelectWeatherQuality)value;
+            get => (int)(SettingsThis?.SettingsGraphics.WeatherQuality ?? default);
+            set => SettingsThis?.SettingsGraphics.WeatherQuality = (SelectWeatherQuality)value;
         }
         
         /// <summary>
@@ -363,10 +355,10 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsPostFXEnabled
         {
-            get => ((HonkaiSettings)Settings).SettingsGraphics.UsePostFX;
+            get => SettingsThis?.SettingsGraphics.UsePostFX ?? false;
             set
             {
-                ((HonkaiSettings)Settings).SettingsGraphics.UsePostFX = value;
+                SettingsThis?.SettingsGraphics.UsePostFX = value;
                 if (!(GameFXPostProcExpander.IsExpanded = value))
                 {
                     GameFXHDRCheckBox.IsChecked = GameFXHDRCheckBox.IsEnabled = false;
@@ -387,8 +379,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsPhysicsEnabled
         {
-            get => ((HonkaiSettings)Settings).SettingsPhysics.PhysicsSimulationBool;
-            set => ((HonkaiSettings)Settings).SettingsPhysics.PhysicsSimulationBool = value;
+            get => SettingsThis?.SettingsPhysics.PhysicsSimulationBool ?? false;
+            set => SettingsThis?.SettingsPhysics.PhysicsSimulationBool = value;
         }
 
         /// <summary>
@@ -396,8 +388,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsFXHDREnabled
         {
-            get => IsGraphicsPostFXEnabled && ((HonkaiSettings)Settings).SettingsGraphics.UseHDR;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.UseHDR = value;
+            get => IsGraphicsPostFXEnabled && (SettingsThis?.SettingsGraphics.UseHDR ?? false);
+            set => SettingsThis?.SettingsGraphics.UseHDR = value;
         }
 
         /// <summary>
@@ -405,8 +397,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsFXHighQualityEnabled
         {
-            get => IsGraphicsPostFXEnabled && ((HonkaiSettings)Settings).SettingsGraphics.PostFXGradeBool;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.PostFXGradeBool = value;
+            get => IsGraphicsPostFXEnabled && (SettingsThis?.SettingsGraphics.PostFXGradeBool ?? false);
+            set => SettingsThis?.SettingsGraphics.PostFXGradeBool = value;
         }
 
         /// <summary>
@@ -414,8 +406,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsFXFXAAEnabled
         {
-            get => IsGraphicsPostFXEnabled && ((HonkaiSettings)Settings).SettingsGraphics.UseFXAA;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.UseFXAA = value;
+            get => IsGraphicsPostFXEnabled && (SettingsThis?.SettingsGraphics.UseFXAA ?? false);
+            set => SettingsThis?.SettingsGraphics.UseFXAA = value;
         }
 
         /// <summary>
@@ -423,14 +415,14 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public bool IsGraphicsFXDistortionEnabled
         {
-            get => IsGraphicsPostFXEnabled && ((HonkaiSettings)Settings).SettingsGraphics.UseDistortion;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.UseDistortion = value;
+            get => IsGraphicsPostFXEnabled && (SettingsThis?.SettingsGraphics.UseDistortion ?? false);
+            set => SettingsThis?.SettingsGraphics.UseDistortion = value;
         }
 
         public int GraphicsAPI
         {
-            get => Settings.SettingsCollapseScreen.GameGraphicsAPI;
-            set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value;
+            get => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI ?? 0;
+            set => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI = value;
         }
 
         /// <summary>
@@ -438,8 +430,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsGlobalIllumination
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.GlobalIllumination;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.GlobalIllumination = (SelectGlobalIllumination)value;
+            get => (int)(SettingsThis?.SettingsGraphics.GlobalIllumination ?? default);
+            set => SettingsThis?.SettingsGraphics.GlobalIllumination = (SelectGlobalIllumination)value;
         }
 
         /// <summary>
@@ -447,8 +439,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsAmbientOcclusion
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.AmbientOcclusion;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.AmbientOcclusion = (SelectAmbientOcclusion)value;
+            get => (int)(SettingsThis?.SettingsGraphics.AmbientOcclusion ?? default);
+            set => SettingsThis?.SettingsGraphics.AmbientOcclusion = (SelectAmbientOcclusion)value;
         }
 
         /// <summary>
@@ -456,13 +448,13 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsLevelOfDetail
         {
-            get => ((HonkaiSettings)Settings).SettingsGraphics.LodGrade switch
+            get => SettingsThis?.SettingsGraphics.LodGrade switch
             {
                 SelectLodGrade.High => 2,
                 SelectLodGrade.Medium => 1,
                 _ => 0
             };
-            set => ((HonkaiSettings)Settings).SettingsGraphics.LodGrade = value switch
+            set => SettingsThis?.SettingsGraphics.LodGrade = value switch
             {
                 2 => SelectLodGrade.High,
                 1 => SelectLodGrade.Medium,
@@ -475,8 +467,8 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsVolumetricLight
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.VolumetricLight;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.VolumetricLight = (SelectVolumetricLight)value;
+            get => (int)(SettingsThis?.SettingsGraphics.VolumetricLight ?? default);
+            set => SettingsThis?.SettingsGraphics.VolumetricLight = (SelectVolumetricLight)value;
         }
 
         /// <summary>
@@ -484,58 +476,58 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsParticleQuality
         {
-            get => (int)((HonkaiSettings)Settings).SettingsGraphics.ParticleEmitLevel;
-            set => ((HonkaiSettings)Settings).SettingsGraphics.ParticleEmitLevel = (SelectParticleEmitLevel)value;
+            get => (int)(SettingsThis?.SettingsGraphics.ParticleEmitLevel ?? default);
+            set => SettingsThis?.SettingsGraphics.ParticleEmitLevel = (SelectParticleEmitLevel)value;
         }
         #endregion
 
         #region Audio
         public int AudioMasterVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.MasterVolume;
-            set => ((HonkaiSettings)Settings).SettingsAudio.MasterVolume = value;
+            get => SettingsThis?.SettingsAudio.MasterVolume ?? 0;
+            set => SettingsThis?.SettingsAudio.MasterVolume = value;
         }
 
         public int AudioBGMVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.BGMVolume;
-            set => ((HonkaiSettings)Settings).SettingsAudio.BGMVolume = value;
+            get => SettingsThis?.SettingsAudio.BGMVolume ?? 0;
+            set => SettingsThis?.SettingsAudio.BGMVolume = value;
         }
 
         public int AudioSFXVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.SoundEffectVolume;
-            set => ((HonkaiSettings)Settings).SettingsAudio.SoundEffectVolume = value;
+            get => SettingsThis?.SettingsAudio.SoundEffectVolume ?? 0;
+            set => SettingsThis?.SettingsAudio.SoundEffectVolume = value;
         }
 
         public int AudioVoiceVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.VoiceVolume;
-            set => ((HonkaiSettings)Settings).SettingsAudio.VoiceVolume = value;
+            get => SettingsThis?.SettingsAudio.VoiceVolume ?? 0;
+            set => SettingsThis?.SettingsAudio.VoiceVolume = value;
         }
 
         public int AudioElfVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.ElfVolume;
-            set => ((HonkaiSettings)Settings).SettingsAudio.ElfVolume = value;
+            get => SettingsThis?.SettingsAudio.ElfVolume ?? 0;
+            set => SettingsThis?.SettingsAudio.ElfVolume = value;
         }
 
         public int AudioCutsceneVolume
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.CGVolumeV2;
-            set => ((HonkaiSettings)Settings).SettingsAudio.CGVolumeV2 = value;
+            get => SettingsThis?.SettingsAudio.CGVolumeV2 ?? 0;
+            set => SettingsThis?.SettingsAudio.CGVolumeV2 = value;
         }
 
         public int AudioVoiceLanguage
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio._userCVLanguageInt;
-            set => ((HonkaiSettings)Settings).SettingsAudio._userCVLanguageInt = value;
+            get => SettingsThis?.SettingsAudio._userCVLanguageInt ?? 0;
+            set => SettingsThis?.SettingsAudio._userCVLanguageInt = value;
         }
 
         public bool AudioMute
         {
-            get => ((HonkaiSettings)Settings).SettingsAudio.Mute;
-            set => ((HonkaiSettings)Settings).SettingsAudio.Mute = value;
+            get => SettingsThis?.SettingsAudio.Mute ?? false;
+            set => SettingsThis?.SettingsAudio.Mute = value;
         }
 
         #endregion
@@ -543,8 +535,8 @@ namespace CollapseLauncher.Pages
         #region Misc
         public bool IsGameBoost
         {
-            get => Settings.SettingsCollapseMisc.UseGameBoost;
-            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+            get => SettingsThis?.SettingsCollapseMisc.UseGameBoost ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.UseGameBoost = value;
         }
         #endregion
 
@@ -553,13 +545,13 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings ?? false;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
             {
-                Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings = value;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
             }
         }
@@ -568,7 +560,7 @@ namespace CollapseLauncher.Pages
         {
             get 
             { 
-                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand ?? false;
 
                 if (value)
                 {
@@ -598,60 +590,53 @@ namespace CollapseLauncher.Pages
                     PreLaunchForceCloseToggle.IsEnabled = false;
                 }
 
-                Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
             }
         }
 
         public string PreLaunchCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
-            set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
+            get => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand ?? string.Empty;
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand = value;
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
-            set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+            get => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
         
         public int LaunchDelay
         {
-            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
-            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+            get => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay ?? 0;
+            set => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay = value;
         }
 
         public bool IsUsePostExitCommand
         {
             get 
             {
-                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseGamePostExitCommand ?? false;
                 PostExitCommandTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
                 PostExitCommandTextBox.IsEnabled = value;
-                Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
 
         public string PostExitCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
-            set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
-        }
-
-        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-        {
-            // clamp for negative value when clearing the number box
-            if ((int)sender.Value < 0)
-                sender.Value = 0;
+            get => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand ?? string.Empty;
+            set => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand = value;
         }
 
         public bool RunWithExplorerAsParent
         {
-            get => Settings.SettingsCollapseMisc.RunWithExplorerAsParent;
-            set => Settings.SettingsCollapseMisc.RunWithExplorerAsParent = value;
+            get => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent = value;
         }
         #endregion
     }

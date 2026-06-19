@@ -20,7 +20,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace
@@ -46,7 +45,17 @@ public partial class ImageBackgroundManager
         }
 
         IsBackgroundLoading = true;
-        new Thread(async () => await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false))
+        new Thread(async void () =>
+        {
+            try
+            {
+                await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWriteLine($"{e}", LogType.Error, true);
+            }
+        })
         {
             IsBackground = true,
             Priority = ThreadPriority.Lowest
@@ -126,7 +135,17 @@ public partial class ImageBackgroundManager
             }
 
             // -- Read Color Accent information from current background context.
-            new Thread(async context => await GetMediaAccentColor(context).ConfigureAwait(false))
+            new Thread(async void (ctx) =>
+            {
+                try
+                {
+                    await GetMediaAccentColor(ctx).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWriteLine($"{e}", LogType.Error, true);
+                }
+            })
             {
                 IsBackground = true
             }.UnsafeStart((downloadedBackgroundUri, isUseFFmpeg));
@@ -255,16 +274,9 @@ public partial class ImageBackgroundManager
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
         layerElement.ImageLoaded       += LayerElementOnLoaded;
-        layerElement.CanvasSizeChanged += LayerElementCanvasSizeChanged;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
-    }
-
-    private void LayerElementCanvasSizeChanged(LayeredBackgroundImage layerElement, Size size)
-    {
-        CurrentElementWidth  = size.Width;
-        CurrentElementHeight = size.Height;
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
@@ -277,10 +289,6 @@ public partial class ImageBackgroundManager
         foreach (UIElement element in elementToRemove)
         {
             PresenterGrid?.Children.Remove(element);
-            if (element is LayeredBackgroundImage asLayeredImage)
-            {
-                asLayeredImage.CanvasSizeChanged -= LayerElementCanvasSizeChanged;
-            }
         }
 
         if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
@@ -356,7 +364,7 @@ public partial class ImageBackgroundManager
                                                                     FileAccess.Write,
                                                                     FileShare.ReadWrite);
 
-            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper._waifu2X));
+            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
             pipeline.WriteOutput(outputFileStream);
         }
     }

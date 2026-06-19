@@ -5,9 +5,9 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
-using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Logging;
@@ -60,7 +60,8 @@ namespace CollapseLauncher.Helper.Update
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
             // Initialize update manager logger, locator and options
             IVelopackLogger? velopackLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
-            IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(velopackLogger);
+            DefaultProcessImpl defaultProcessImpl = new(velopackLogger);
+            IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(defaultProcessImpl, velopackLogger);
             UpdateOptions updateManagerOptions = new()
             {
                 AllowVersionDowngrade = true,

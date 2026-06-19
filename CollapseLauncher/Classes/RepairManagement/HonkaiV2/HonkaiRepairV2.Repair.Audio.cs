@@ -72,7 +72,7 @@ internal partial class HonkaiRepairV2
         {
             byte[]            hashBuffer = new byte[8];
             byte[]            buffer     = ArrayPool<byte>.Shared.Rent(bufferSize);
-            MhyMurmurHash264B hasher     = new(patchInfo.PatchFileSize);
+            MhyMurmurHash264B hasher     = new((ulong)patchFileStream.Length);
 
             try
             {

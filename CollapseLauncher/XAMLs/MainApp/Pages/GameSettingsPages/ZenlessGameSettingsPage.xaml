@@ -18,7 +18,9 @@
     <conv:GameSettingsPageBase.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />
+        <conv:InverseNumberToBoolConverter x:Key="InverseNumberToBoolConverter" />
         <conv:NumberToBoolConverter x:Key="NumberToBoolConverter" />
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
     </conv:GameSettingsPageBase.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -48,13 +50,13 @@
                                         <StackPanel x:Name="GameResolutionWindow"
                                                     Margin="0,0,0,8"
                                                     Orientation="Vertical">
-                                            <Grid>
+                                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                                 <CheckBox x:Name="VSyncToggle"
                                                           HorizontalAlignment="Left"
                                                           VerticalAlignment="Center"
                                                           extension:UIElementExtensions.CursorType="Hand"
                                                           Checked="EnforceCustomPreset_Checkbox"
-                                                          IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"
+                                                          IsChecked="{Binding EnableVSync, Mode=TwoWay}"
                                                           Unchecked="EnforceCustomPreset_Checkbox">
                                                     <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_VSync, Mode=OneWay}"
                                                                TextWrapping="Wrap" />
@@ -250,7 +252,7 @@
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_SpecPanel, Mode=OneWay}"
                                        TextWrapping="Wrap" />
-                            <Grid>
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -267,7 +269,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Preset, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Preset, Mode=TwoWay}"
                                               SelectionChanged="PresetSelector">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecHigh, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecMedium, Mode=OneWay}" />
@@ -286,7 +288,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Fps, Mode=TwoWay}">
+                                              SelectedIndex="{Binding Graphics_Fps, Mode=TwoWay}">
                                         <ComboBoxItem Content="30" />
                                         <ComboBoxItem Content="60" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Graphics_FPSUnlimited, Mode=OneWay}" />
@@ -305,10 +307,10 @@
                                             Minimum="0"
                                             Style="{ThemeResource FatSliderStyle}"
                                             TickPlacement="Inline"
-                                            Value="{x:Bind Graphics_ColorFilter, Mode=TwoWay}" />
+                                            Value="{Binding Graphics_ColorFilter, Mode=TwoWay}" />
                                 </StackPanel>
                             </Grid>
-                            <Grid>
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -326,7 +328,8 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_RenderRes, Mode=TwoWay}"
+                                              IsEnabled="{Binding ElementName=SuperResolutionOptionComboBox, Path=SelectedIndex, Converter={StaticResource InverseNumberToBoolConverter}}"
+                                              SelectedIndex="{Binding Graphics_RenderRes, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="0.8" />
                                         <ComboBoxItem Content="1.0" />
@@ -344,7 +347,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_AntiAliasing, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_AntiAliasing, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecDisabled, Mode=OneWay}" />
                                         <ComboBoxItem Content="TAA" />
@@ -362,7 +365,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Shadow, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Shadow, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecMedium, Mode=OneWay}" />
@@ -370,7 +373,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <Grid>
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -387,7 +390,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_VolFog, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_VolFog, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecDisabled, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
@@ -406,7 +409,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Reflection, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Reflection, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecDisabled, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
@@ -425,7 +428,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Effects, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Effects, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.SpecVeryLow, Mode=OneWay}" />
                                         <!--  Borrow Locale from Genshin Settings for now  -->
@@ -435,7 +438,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <Grid>
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -452,7 +455,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Character, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Character, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecHigh, Mode=OneWay}" />
@@ -469,7 +472,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Shading, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Shading, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecMedium, Mode=OneWay}" />
@@ -487,14 +490,14 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_Environment, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_Environment, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecHigh, Mode=OneWay}" />
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <Grid>
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -511,7 +514,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_AnisotropicSampling, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_AnisotropicSampling, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="1x" />
                                         <ComboBoxItem Content="2x" />
@@ -531,7 +534,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_GlobalIllumination, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_GlobalIllumination, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}"
                                                       Visibility="Collapsed" />
@@ -550,7 +553,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
+                                              SelectedIndex="{Binding Graphics_HiPreCharaAnim, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecDisabled, Mode=OneWay}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecDynamic, Mode=OneWay}" />
@@ -558,7 +561,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <Grid Margin="2,8,0,0">
+                            <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}" Margin="2,8,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -571,7 +574,7 @@
                                               VerticalAlignment="Center"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
-                                              IsChecked="{x:Bind Graphics_Bloom, Mode=TwoWay}"
+                                              IsChecked="{Binding Graphics_Bloom, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_BloomQuality, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
@@ -584,7 +587,7 @@
                                               VerticalAlignment="Center"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
-                                              IsChecked="{x:Bind Graphics_Distortion, Mode=TwoWay}"
+                                              IsChecked="{Binding Graphics_Distortion, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.Graphics_Distortion, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
@@ -597,7 +600,7 @@
                                               VerticalAlignment="Center"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               Checked="EnforceCustomPreset_Checkbox"
-                                              IsChecked="{x:Bind Graphics_MotionBlur, Mode=TwoWay}"
+                                              IsChecked="{Binding Graphics_MotionBlur, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Graphics_MotionBlur, Mode=OneWay}"
                                                    TextWrapping="Wrap" />
@@ -647,16 +650,17 @@
                                     </Button.Flyout>
                                 </Button>
                             </StackPanel>
-                            <ItemsControl IsEnabled="{x:Bind IsDeviceHasRTXGPU, Mode=OneWay}">
+                            <ItemsControl IsEnabled="{x:Bind IsDeviceHasRTXGPU, Mode=OneWay}"
+                                          DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                                 <Grid Margin="0,0,16,0"
                                       ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                         <ColumnDefinition />
-                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
+                                    <StackPanel Grid.Column="0"
+                                                VerticalAlignment="Bottom">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -665,12 +669,13 @@
                                                        TextWrapping="WrapWholeWords" />
                                             <ToggleSwitch x:Name="RayTracingToggle"
                                                           extension:UIElementExtensions.CursorType="Hand"
-                                                          IsOn="{x:Bind AdvancedGraphics_UseRayTracing, Mode=TwoWay}"
+                                                          IsOn="{Binding AdvancedGraphics_UseRayTracing, Mode=TwoWay}"
                                                           OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
                                                           OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1">
+                                    <StackPanel Grid.Column="1"
+                                                VerticalAlignment="Bottom">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -680,15 +685,28 @@
                                             <ComboBox HorizontalAlignment="Stretch"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
-                                                      IsEnabled="{x:Bind RayTracingToggle.IsOn, Mode=OneWay}"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_RayTracingQuality, Mode=TwoWay}">
+                                                      IsEnabled="{Binding Path=IsOn, ElementName=RayTracingToggle, Mode=OneWay}"
+                                                      SelectedIndex="{Binding AdvancedGraphics_RayTracingQuality, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecLow, Mode=OneWay}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecMedium, Mode=OneWay}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecHigh, Mode=OneWay}" />
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SpecUltra, Mode=OneWay}" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2">
+                                </Grid>
+                            </ItemsControl>
+                            <ItemsControl IsEnabled="{x:Bind IsDeviceHasRTXGPU, Mode=OneWay}"
+                                          DataContext="{x:Bind SettingsContext, Mode=OneWay}">
+                                <Grid Margin="0,8,16,0"
+                                      ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0"
+                                                VerticalAlignment="Bottom">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -699,13 +717,14 @@
                                                       HorizontalAlignment="Stretch"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionOption, Mode=TwoWay}">
+                                                      SelectedIndex="{Binding AdvancedGraphics_SuperResolutionOption, Mode=TwoWay}">
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}" />
                                                 <ComboBoxItem Content="DLSS" />
+                                                <ComboBoxItem Content="FSR" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3">
+                                    <StackPanel Grid.Column="1">
                                         <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
                                             <TextBlock Margin="0,0,8,8"
                                                        HorizontalAlignment="Left"
@@ -715,11 +734,33 @@
                                             <ComboBox HorizontalAlignment="Stretch"
                                                       extension:UIElementExtensions.CursorType="Hand"
                                                       CornerRadius="14"
-                                                      IsEnabled="{x:Bind SuperResolutionOptionComboBox.SelectedIndex, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
-                                                      SelectedIndex="{x:Bind AdvancedGraphics_SuperResolutionQuality, Mode=TwoWay}">
+                                                      IsEnabled="{Binding Path=SelectedIndex, ElementName=SuperResolutionOptionComboBox, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
+                                                      SelectedIndex="{Binding AdvancedGraphics_SuperResolutionQuality, Mode=TwoWay}">
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_UltraPerformance, Mode=OneWay}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Performance, Mode=OneWay}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Balanced, Mode=OneWay}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_Quality, Mode=OneWay}" />
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_SuperScalingQ_DLAA, Mode=OneWay}" />
+                                            </ComboBox>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Bottom">
+                                        <ItemsControl IsEnabled="{x:Bind ToggleSwitchUseDirectX12Api.IsOn, Mode=OneWay}">
+                                            <TextBlock Margin="0,0,8,8"
+                                                           HorizontalAlignment="Left"
+                                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                           Text="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.AdvancedGraphics_FrameGeneration, Mode=OneWay}"
+                                                           TextWrapping="WrapWholeWords" />
+                                            <ComboBox x:Name="FrameGenerationTypeComboBox"
+                                                          HorizontalAlignment="Stretch"
+                                                          extension:UIElementExtensions.CursorType="Hand"
+                                                          CornerRadius="14"
+                                                          IsEnabled="{Binding Path=SelectedIndex, ElementName=SuperResolutionOptionComboBox, Mode=OneWay, Converter={StaticResource NumberToBoolConverter}}"
+                                                          SelectedIndex="{Binding AdvancedGraphics_FrameGenerationType, Mode=TwoWay}">
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}" />
+                                                <ComboBoxItem Content="DLSS" />
+                                                <ComboBoxItem Content="FSR" />
                                             </ComboBox>
                                         </ItemsControl>
                                     </StackPanel>
@@ -732,7 +773,7 @@
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Current.Lang._StarRailGameSettingsPage.Audio_Title, Mode=OneWay}"
                                TextWrapping="Wrap" />
-                    <Grid>
+                    <Grid DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
@@ -752,7 +793,7 @@
                                                 Style="{ThemeResource FatSliderStyle}"
                                                 TickFrequency="1"
                                                 TickPlacement="Outside"
-                                                Value="{x:Bind Audio_VolMain, Mode=TwoWay}" />
+                                                Value="{Binding Audio_VolMain, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -765,7 +806,7 @@
                                                 Style="{ThemeResource FatSliderStyle}"
                                                 TickFrequency="1"
                                                 TickPlacement="Outside"
-                                                Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
+                                                Value="{Binding Audio_VolSfx, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -778,7 +819,7 @@
                                                 Style="{ThemeResource FatSliderStyle}"
                                                 TickFrequency="1"
                                                 TickPlacement="Outside"
-                                                Value="{x:Bind Audio_VolAmbient, Mode=TwoWay}" />
+                                                Value="{Binding Audio_VolAmbient, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -798,7 +839,7 @@
                                                 Style="{ThemeResource FatSliderStyle}"
                                                 TickFrequency="1"
                                                 TickPlacement="Outside"
-                                                Value="{x:Bind Audio_VolMusic, Mode=TwoWay}" />
+                                                Value="{Binding Audio_VolMusic, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -811,13 +852,14 @@
                                                 Style="{ThemeResource FatSliderStyle}"
                                                 TickFrequency="1"
                                                 TickPlacement="Outside"
-                                                Value="{x:Bind Audio_VolDialog, Mode=TwoWay}" />
+                                                Value="{Binding Audio_VolDialog, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <Grid Margin="0,0,0,8">
+                    <Grid Margin="0,0,0,8"
+                          DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                         <controls:UniformGrid HorizontalAlignment="Left"
                                               Columns="3">
                             <StackPanel Grid.Column="0">
@@ -831,7 +873,7 @@
                                           VerticalAlignment="Center"
                                           extension:UIElementExtensions.CursorType="Hand"
                                           CornerRadius="14"
-                                          SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
+                                          SelectedIndex="{Binding Audio_PlaybackDevice, Mode=TwoWay}">
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Headphones, Mode=OneWay}" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Speakers, Mode=OneWay}" />
                                     <ComboBoxItem Content="Placeholder, please report to @bagusnl if you see this message"
@@ -846,7 +888,7 @@
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
                                               extension:UIElementExtensions.CursorType="Hand"
-                                              IsOn="{x:Bind Audio_MuteOnMinimize, Mode=TwoWay}">
+                                              IsOn="{Binding Audio_MuteOnMinimize, Mode=TwoWay}">
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Current.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize, Mode=OneWay}"
                                                TextWrapping="Wrap" />
@@ -855,7 +897,7 @@
                         </controls:UniformGrid>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
-                    <StackPanel>
+                    <StackPanel DataContext="{x:Bind SettingsContext, Mode=OneWay}">
                         <TextBlock Margin="0,0,0,16"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Current.Lang._StarRailGameSettingsPage.Language, Mode=OneWay}"
@@ -894,7 +936,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
-                                              SelectedIndex="{x:Bind Lang_Audio, Mode=TwoWay}">
+                                              SelectedIndex="{Binding Lang_Audio, Mode=TwoWay}">
                                         <!--  Placeholder to bump int array  -->
                                         <ComboBoxItem IsEnabled="False"
                                                       Visibility="Collapsed" />
@@ -917,7 +959,7 @@
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
                                               MaxDropDownHeight="200"
-                                              SelectedIndex="{x:Bind Lang_Text, Mode=TwoWay}">
+                                              SelectedIndex="{Binding Lang_Text, Mode=TwoWay}">
                                         <!--  Placeholder to bump int array  -->
                                         <ComboBoxItem IsEnabled="False"
                                                       Visibility="Collapsed" />
@@ -989,8 +1031,7 @@
                                       OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                       OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                     </Grid>
-                    <StackPanel x:Name="AdvancedSettingsPanel"
-                                Visibility="Collapsed">
+                    <StackPanel Visibility="{x:Bind IsUseAdvancedSettings, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
                         <TextBlock Margin="0,0,0,8"
                                    TextWrapping="WrapWholeWords">
                             <Run Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.Advanced_Subtitle1, Mode=OneWay}" />
@@ -1068,7 +1109,9 @@
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
                   Background="{ThemeResource GameSettingsApplyGridBrush}"
-                  CornerRadius="8">
+                  CornerRadius="8"
+                  Shadow="{StaticResource SharedShadow}"
+                  Translation="0, 0, 16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -1092,15 +1135,6 @@
                                    Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}" />
                     </StackPanel>
                 </Button>
-                <TextBlock x:Name="ApplyText"
-                           Grid.Column="1"
-                           Margin="16,-4,0,0"
-                           HorizontalAlignment="Stretch"
-                           VerticalAlignment="Center"
-                           Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.SettingsApplied, Mode=OneWay}"
-                           TextWrapping="Wrap"
-                           Visibility="Collapsed" />
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">

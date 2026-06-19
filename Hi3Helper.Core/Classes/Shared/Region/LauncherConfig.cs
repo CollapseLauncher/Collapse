@@ -15,41 +15,6 @@ using System.Linq;
 #nullable enable
 namespace Hi3Helper.Shared.Region
 {
-    #region CDN Property
-    public readonly struct CDNURLProperty : IEquatable<CDNURLProperty>
-    {
-        public string URLPrefix              { get; init; }
-        public string Name                   { get; init; }
-        public string Description            { get; init; }
-        public bool   PartialDownloadSupport { get; init; }
-
-        public bool Equals(CDNURLProperty other) => other.GetHashCode() == GetHashCode();
-
-        public override int GetHashCode() => HashCode.Combine(URLPrefix, Name, PartialDownloadSupport);
-
-        public override bool Equals([NotNullWhen(true)] object? obj) =>
-            obj is CDNURLProperty asCdnProperty && Equals(asCdnProperty);
-
-        public static bool operator ==(CDNURLProperty from, CDNURLProperty to)
-            => from.Equals(to);
-
-        public static bool operator !=(CDNURLProperty from, CDNURLProperty to)
-            => !(from == to);
-
-        public static bool operator ==(object? from, CDNURLProperty to)
-            => to.Equals(from);
-
-        public static bool operator !=(object? from, CDNURLProperty to)
-            => !(from == to);
-
-        public static bool operator ==(CDNURLProperty from, object? to)
-            => from.Equals(to);
-
-        public static bool operator !=(CDNURLProperty from, object? to)
-            => !(from == to);
-    }
-    #endregion
-
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
@@ -543,13 +508,12 @@ namespace Hi3Helper.Shared.Region
             { "ThemeMode", IniValue.Create(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
-            { "IsUseVideoBGDynamicColorUpdate", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
             { "ShowGamePlaytime", true },
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
-            { "WindowSizeProfile", "Normal" },
+            { "WindowSizeProfile", IniValue.Create(WindowSizeProfile.Normal) },
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", false },
         #if !DISABLEDISCORD
@@ -564,7 +528,7 @@ namespace Hi3Helper.Shared.Region
             { "EnableHTTPRepairOverride", false },
             { "ForceGIHDREnable", false },
             { "HI3IgnoreMediaPack", false },
-            { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
+            { "GameLaunchedBehavior", IniValue.Create(GameLaunchedBehavior.Minimize) }, // Possible Values: "Minimize", "ToTray", and "Nothing"
             { "MinimizeToTray", false },
             { "UseExternalBrowser", false },
             { "EnableWaifu2X", false },
@@ -598,8 +562,8 @@ namespace Hi3Helper.Shared.Region
 
             { "PostInstallShutdownTimeout", 60 },
             
-            { "IsCDNCacheEnabled", false },
-            { "IsCDNCacheAggressiveModeEnabled", false },
+            { "IsCDNCacheEnabled", true },
+            { "IsCDNCacheAggressiveModeEnabled", true },
             { "CDNCacheDir", string.Empty },
             { "CDNCacheExpireTimeMinutes", 10d },
 

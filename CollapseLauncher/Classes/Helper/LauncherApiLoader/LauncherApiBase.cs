@@ -3,9 +3,9 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.SentryHelper;
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -61,19 +61,19 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             GC.SuppressFinalize(this);
         }
 
-        public async ValueTask<bool> LoadAsync(Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync,
-                                               Func<CancellationToken, ValueTask>? afterLoadRoutineAsync,
-                                               ActionOnTimeOutRetry?               onTimeoutRoutine,
-                                               Action<Exception>?                  errorLoadRoutine,
-                                               CancellationToken                   token)
+        public async Task<bool> LoadAsync(Func<CancellationToken, Task>? beforeLoadRoutineAsync,
+                                          Func<CancellationToken, Task>? afterLoadRoutineAsync,
+                                          ActionOnTimeOutRetry?          onTimeoutRoutine,
+                                          Action<Exception>?             errorLoadRoutine,
+                                          CancellationToken              token)
         {
             try
             {
                 IsLoadingCompleted = false;
-                await (beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
+                await (beforeLoadRoutineAsync?.Invoke(token) ?? Task.CompletedTask);
 
-                await LoadAsyncInner(onTimeoutRoutine, token);
-                await (afterLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
+                await LoadAsyncInner(onTimeoutRoutine, token).ConfigureAwait(false);
+                await (afterLoadRoutineAsync?.Invoke(token) ?? Task.CompletedTask);
 
                 return true;
             }

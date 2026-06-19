@@ -12,7 +12,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
@@ -1932,21 +1931,24 @@ namespace CollapseLauncher.Dialogs
                                     // If content is short enough to not need scrolling,
                                     // enable the button after layout completes.
                                     sv.SizeChanged += OnSizeChanged;
+                                    return;
 
                                     void OnSizeChanged(object s, SizeChangedEventArgs e)
                                     {
                                         if (s is not ScrollViewer scrollViewer)
                                             return;
 
-                                        if (scrollViewer.ScrollableHeight < 1)
+                                        if (!(scrollViewer.ScrollableHeight < 1))
                                         {
-                                            dialog.IsPrimaryButtonEnabled = true;
-                                            scrollViewer.ViewChanged -= OnViewChanged;
-                                            scrollViewer.SizeChanged -= OnSizeChanged;
+                                            return;
                                         }
+
+                                        dialog.IsPrimaryButtonEnabled =  true;
+                                        scrollViewer.ViewChanged      -= OnViewChanged;
+                                        scrollViewer.SizeChanged      -= OnSizeChanged;
                                     }
 
-                                    void OnViewChanged(object s, ScrollViewerViewChangedEventArgs args)
+                                    void OnViewChanged(object? s, ScrollViewerViewChangedEventArgs args)
                                     {
                                         if (args.IsIntermediate)
                                             return;
@@ -1954,12 +1956,14 @@ namespace CollapseLauncher.Dialogs
                                         if (s is not ScrollViewer scrollViewer)
                                             return;
 
-                                        if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 40)
+                                        if (!(scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 40))
                                         {
-                                            dialog.IsPrimaryButtonEnabled = true;
-                                            scrollViewer.ViewChanged -= OnViewChanged;
-                                            scrollViewer.SizeChanged -= OnSizeChanged;
+                                            return;
                                         }
+
+                                        dialog.IsPrimaryButtonEnabled =  true;
+                                        scrollViewer.ViewChanged      -= OnViewChanged;
+                                        scrollViewer.SizeChanged      -= OnSizeChanged;
                                     }
                                 });
                 if (result == ContentDialogResult.None)

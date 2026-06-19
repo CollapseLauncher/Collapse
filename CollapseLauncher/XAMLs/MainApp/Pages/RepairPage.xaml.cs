@@ -278,7 +278,7 @@ namespace CollapseLauncher.Pages
         #if !DISABLEDISCORD
             else
             {
-                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Repair);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Repair);
             }
         #endif
         }

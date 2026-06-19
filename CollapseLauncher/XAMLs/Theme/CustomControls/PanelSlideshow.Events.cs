@@ -1,5 +1,4 @@
-﻿#nullable enable
-using CommunityToolkit.WinUI;
+﻿using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper.Data;
 using Microsoft.UI.Input;
@@ -16,6 +15,7 @@ using System.Linq;
 using System.Numerics;
 using Windows.System;
 
+#nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class PanelSlideshow
@@ -59,6 +59,7 @@ public partial class PanelSlideshow
 
         // Restart slideshow timer
         RestartTimer(SlideshowDuration);
+        ResetSlideshow();
 
         IList<UIElement> elements   = Items;
         UIElement        newElement = elements[newIndex];

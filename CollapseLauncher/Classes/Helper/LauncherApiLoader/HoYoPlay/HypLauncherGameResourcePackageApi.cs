@@ -24,7 +24,7 @@ public class HypLauncherGameResourcePackageData : HypApiDataLookupable<HypResour
     } = [];
 }
 
-public class HypResourcesData : HypApiIdentifiable
+public partial class HypResourcesData : HypApiIdentifiable
 {
     [JsonPropertyName("main")]
     public HypResourcePackageData? MainPackage { get; set; }

@@ -1,15 +1,16 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,6 +20,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Velopack.Sources;
+using WinRT;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 #pragma warning disable IDE0130
@@ -59,8 +61,7 @@ namespace CollapseLauncher
                                                                  targetFile,
                                                                  AppCurrentDownloadThread,
                                                                  relativePath,
-                                                                 cancelToken
-                                                                );
+                                                                 cancelToken);
             }
             catch (Exception ex)
             {
@@ -137,6 +138,77 @@ namespace CollapseLauncher
                                          timeout);
     }
 
+    #region CDN Property
+    [GeneratedBindableCustomProperty]
+    public partial class CDNURLProperty : NotifyPropertyChanged
+    {
+        public required string URLPrefix
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public required string Name
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public required string Description
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool PartialDownloadSupport
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Equals(CDNURLProperty? other) => other?.GetHashCode() == GetHashCode();
+
+        public override int GetHashCode() => HashCode.Combine(URLPrefix, Name, PartialDownloadSupport);
+
+        public override bool Equals([NotNullWhen(true)] object? obj) =>
+            obj is CDNURLProperty asCdnProperty && Equals(asCdnProperty);
+
+        public static bool operator ==(CDNURLProperty from, CDNURLProperty to)
+            => from.Equals(to);
+
+        public static bool operator !=(CDNURLProperty from, CDNURLProperty to)
+            => !(from == to);
+
+        public static bool operator ==(object? from, CDNURLProperty to)
+            => to.Equals(from);
+
+        public static bool operator !=(object? from, CDNURLProperty to)
+            => !(from == to);
+
+        public static bool operator ==(CDNURLProperty from, object? to)
+            => from.Equals(to);
+
+        public static bool operator !=(CDNURLProperty from, object? to)
+            => !(from == to);
+    }
+    #endregion
+    
     internal static class FallbackCDNUtil
     {
         private static HttpClient _client;
@@ -461,7 +533,7 @@ namespace CollapseLauncher
             LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
             // Try check the status of the URL
-            (HttpStatusCode, bool) returnCode = await downloadClient.GetURLStatus(absoluteURL, token);
+            (HttpStatusCode, bool) returnCode = await downloadClient.GetUrlStatus(absoluteURL, token);
 
             if (returnCode.Item2)
             {
@@ -474,7 +546,7 @@ namespace CollapseLauncher
             return (false, absoluteURL);
         }
 
-        private static async ValueTask<UrlStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
+        private static async ValueTask<UrlStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token)
         {
             try
             {
@@ -556,7 +628,7 @@ namespace CollapseLauncher
             long[] latencies = new long[CDNList.Count];
 
             // Warming up
-            foreach (CDNURLProperty cdnProperty in CDNList) await TryGetURLStatus(cdnProperty, fileAsPingTarget, tokenSource.Token, true);
+            foreach (CDNURLProperty cdnProperty in CDNList) await TryGetURLStatus(cdnProperty, fileAsPingTarget, tokenSource.Token);
 
             using (tokenSource)
             {
@@ -577,7 +649,7 @@ namespace CollapseLauncher
                         // Restart the stopwatch
                         stopwatch.Restart();
                         // Get the URL Status then return boolean and URLStatus
-                        UrlStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
+                        UrlStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token);
                         latencyAvgArr[j] = !(isSuccess = urlStatus is { IsSuccessStatusCode: true }) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
 

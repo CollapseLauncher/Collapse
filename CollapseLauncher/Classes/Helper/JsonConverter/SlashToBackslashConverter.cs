@@ -6,9 +6,9 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher.Helper.JsonConverter
 {
-    internal class SlashToBackslashConverter : JsonConverter<string>
+    internal class SlashToBackslashConverter : JsonConverter<string?>
     {
-        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
                 throw new JsonException("Current type token is not a string!");
@@ -17,9 +17,9 @@ namespace CollapseLauncher.Helper.JsonConverter
             return ConverterTool.NormalizePath(str);
         }
 
-        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
         {
-            string replaced = value.Replace('\\', '/');
+            string? replaced = value?.Replace('\\', '/');
             writer.WriteStringValue(replaced);
         }
     }

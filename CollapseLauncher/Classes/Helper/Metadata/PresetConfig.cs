@@ -2,12 +2,13 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.Plugin.Core.UI.Controls;
 using Hi3Helper.SentryHelper;
-using Microsoft.UI.Xaml;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -77,22 +78,9 @@ namespace CollapseLauncher.Helper.Metadata
     public enum LauncherType
     {
         Legacy,
-        Sophon = Legacy,
+        Sophon,
         HoYoPlay,
         Plugin
-    }
-
-    [GeneratedBindableCustomProperty]
-    public partial class GameEventButtonPosition
-    {
-        [JsonConverter(typeof(JsonStringEnumConverter<HorizontalAlignment>))]
-        public HorizontalAlignment HorizontalAlignment { get; init; } = HorizontalAlignment.Left;
-
-        [JsonConverter(typeof(JsonStringEnumConverter<VerticalAlignment>))]
-        public VerticalAlignment VerticalAlignment { get; init; } = VerticalAlignment.Top;
-
-        public Thickness Position { get; init; } = new(256, 596, 0, 0);
-        public double    VSize    { get; init; } = 80d;
     }
 
     public class GameInstallFileInfo
@@ -241,32 +229,31 @@ namespace CollapseLauncher.Helper.Metadata
             string launcherIdOrPasswordHead, string gameIdOrGamePackageIdHead,
             string? launcherIdOrPassword, string? gameIdOrGamePackageId)
         {
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url)
+                || string.IsNullOrEmpty(launcherIdOrPassword)
+                || string.IsNullOrEmpty(gameIdOrGamePackageId))
                 return url;
 
-            if (string.IsNullOrEmpty(launcherIdOrPassword) || string.IsNullOrEmpty(gameIdOrGamePackageId))
-                return url;
-
-            int urlLen = url.Length + (1 << 10);
-            char[] urlBuffer = ArrayPool<char>.Shared.Rent(urlLen);
-            Span<char> urlSpanBuffer = urlBuffer;
-            ReadOnlySpan<char> urlSpan = url;
+            int                urlLen        = url.Length + (1 << 10);
+            char[]             urlBuffer     = ArrayPool<char>.Shared.Rent(urlLen);
+            Span<char>         urlSpanBuffer = urlBuffer;
+            ReadOnlySpan<char> urlSpan       = url;
 
             try
             {
-                int urlSpanBufferLen = 0;
-                Span<Range> splitRanges = stackalloc Range[32];
-                int urlSplitRangesLen = urlSpan.Split(splitRanges, '?', StringSplitOptions.RemoveEmptyEntries);
+                int         urlSpanBufferLen  = 0;
+                Span<Range> splitRanges       = stackalloc Range[32];
+                int         urlSplitRangesLen = urlSpan.Split(splitRanges, '?', StringSplitOptions.RemoveEmptyEntries);
                 if (urlSplitRangesLen < 2)
                     return url;
 
                 ReadOnlySpan<char> urlPathSpan = urlSpan[splitRanges[0]];
-                ReadOnlySpan<char> querySpan = urlSpan[splitRanges[1]];
+                ReadOnlySpan<char> querySpan   = urlSpan[splitRanges[1]];
 
                 if (!urlPathSpan.TryCopyTo(urlSpanBuffer))
                     throw new InvalidOperationException("Failed to copy url path string to buffer");
-                urlSpanBufferLen += splitRanges[0].End.Value - splitRanges[0].Start.Value;
-                urlSpanBuffer[urlSpanBufferLen++] = '?';
+                urlSpanBufferLen                  += splitRanges[0].End.Value - splitRanges[0].Start.Value;
+                urlSpanBuffer[urlSpanBufferLen++] =  '?';
 
                 #region Parse and split queries - Sanitize the GameId and GameId query
                 int querySplitRangesLen = querySpan.Split(splitRanges, '&', StringSplitOptions.RemoveEmptyEntries);
@@ -274,13 +261,13 @@ namespace CollapseLauncher.Helper.Metadata
                 Span<char> querySpanBuffer = urlSpanBuffer[urlSpanBufferLen..];
                 for (int i = querySplitRangesLen - 1; i > -1; i--)
                 {
-                    Range segmentRange = splitRanges[i];
-                    int segmentLen = segmentRange.End.Value - segmentRange.Start.Value;
+                    Range              segmentRange = splitRanges[i];
+                    int                segmentLen   = segmentRange.End.Value - segmentRange.Start.Value;
                     ReadOnlySpan<char> querySegment = querySpan[segmentRange];
 
                     // Skip GameId or GameId query head
-                    if (querySegment.StartsWith(launcherIdOrPasswordHead, StringComparison.OrdinalIgnoreCase)
-                     || querySegment.StartsWith(gameIdOrGamePackageIdHead, StringComparison.OrdinalIgnoreCase))
+                    if (querySegment.StartsWith(launcherIdOrPasswordHead,     StringComparison.OrdinalIgnoreCase)
+                        || querySegment.StartsWith(gameIdOrGamePackageIdHead, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     // Otherwise, add others
@@ -294,7 +281,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Append '&'
                 if (queryWritten > 0 && querySpanBuffer[queryWritten - 1] != '&'
-                    && querySpanBuffer[queryWritten - 1] != '?')
+                                     && querySpanBuffer[queryWritten - 1] != '?')
                     querySpanBuffer[queryWritten++] = '&';
 
                 urlSpanBufferLen += queryWritten;
@@ -303,8 +290,8 @@ namespace CollapseLauncher.Helper.Metadata
                 #region Append GameId and GameId query
                 if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password head string to buffer");
-                urlSpanBufferLen += launcherIdOrPasswordHead.Length;
-                urlSpanBuffer[urlSpanBufferLen++] = '=';
+                urlSpanBufferLen                  += launcherIdOrPasswordHead.Length;
+                urlSpanBuffer[urlSpanBufferLen++] =  '=';
                 if (!launcherIdOrPassword.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password value string to buffer");
                 urlSpanBufferLen += launcherIdOrPassword.Length;
@@ -313,13 +300,13 @@ namespace CollapseLauncher.Helper.Metadata
 
                 if (!gameIdOrGamePackageIdHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy game id or package id head string to buffer");
-                urlSpanBufferLen += gameIdOrGamePackageIdHead.Length;
-                urlSpanBuffer[urlSpanBufferLen++] = '=';
+                urlSpanBufferLen                  += gameIdOrGamePackageIdHead.Length;
+                urlSpanBuffer[urlSpanBufferLen++] =  '=';
                 if (!gameIdOrGamePackageId.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy game id or package id value string to buffer");
                 urlSpanBufferLen += gameIdOrGamePackageId.Length;
 
-                string returnString = new string(urlBuffer, 0, urlSpanBufferLen);
+                string returnString = new(urlBuffer, 0, urlSpanBufferLen);
 #if DEBUG
                 LogWriteLine($"URL string's GameId or Password and GameId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
 #endif
@@ -333,11 +320,12 @@ namespace CollapseLauncher.Helper.Metadata
         }
     }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSourceGenerationOptions(IncludeFields = false, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(PresetConfig))]
     internal sealed partial class PresetConfigJsonContext : JsonSerializerContext;
 
-    public class PresetConfig
+    [GeneratedBindableCustomProperty]
+    public partial class PresetConfig : NotifyPropertyChanged
     {
         #region Constants
         // ReSharper disable once UnusedMember.Local
@@ -554,7 +542,12 @@ namespace CollapseLauncher.Helper.Metadata
 
         public GameInstallFileInfo? GameInstallFileInfo { get; init; }
 
-        public GameEventButtonPosition GameEventButtonPosition { get => field ??= new GameEventButtonPosition(); init; }
+        private GameEventButtonPosition? _gameEventButtonPosition;
+        public GameEventButtonPosition GameEventButtonPosition
+        {
+            get => _gameEventButtonPosition.HasValue && _gameEventButtonPosition.Value != default ? _gameEventButtonPosition.Value : GameEventButtonPosition.Default;
+            init => _gameEventButtonPosition = value;
+        }
 
         #endregion
 
@@ -795,12 +788,8 @@ namespace CollapseLauncher.Helper.Metadata
             if (!value.DataVersion.TryGetValue(verInt, out GameDataVersion? verData))
             {
                 // Fallback to find the default value anyway
-                KeyValuePair<int, GameDataVersion>? kvpTemp = value.DataVersion.FirstOrDefault();
-                if (kvpTemp == null)
-                    return null;
-
-                // ReSharper disable once ConstantConditionalAccessQualifier
-                verData = kvpTemp?.Value;
+                KeyValuePair<int, GameDataVersion> kvpTemp = value.DataVersion.FirstOrDefault();
+                verData = kvpTemp.Value;
             }
 
             if (verData == null)

@@ -18,7 +18,7 @@ namespace CollapseLauncher.RepairManagement.StarRail.Struct;
 /// </summary>
 internal class StarRailAssetMetadataIndex : StarRailBinaryDataWritable<StarRailAssetMetadataIndex.MetadataIndex>
 {
-    public StarRailAssetMetadataIndex() : this(false, false)
+    public StarRailAssetMetadataIndex() : this(false)
     {
     }
 

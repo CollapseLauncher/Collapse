@@ -335,12 +335,12 @@
                                                                   Margin="0,0,0,-8"
                                                                   ItemsSource="{x:Bind collapse:FallbackCDNUtil.CDNList}">
                                                         <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                                            <DataTemplate x:DataType="collapse:CDNURLProperty">
                                                                 <StackPanel Margin="0,8">
                                                                     <TextBlock FontSize="16"
                                                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                                               Text="{x:Bind Name}" />
-                                                                    <TextBlock Text="{x:Bind Description}"
+                                                                               Text="{Binding Name, Mode=OneWay}" />
+                                                                    <TextBlock Text="{Binding Description, Mode=OneWay}"
                                                                                TextWrapping="Wrap" />
                                                                 </StackPanel>
                                                             </DataTemplate>

@@ -6,7 +6,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -62,7 +61,8 @@ public partial class Updater
         _updateDownloader = new UpdateManagerHttpAdapter();
 
         _updateManagerLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
-        IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(_updateManagerLogger);
+        DefaultProcessImpl defaultProcessImpl = new(_updateManagerLogger);
+        IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(defaultProcessImpl, _updateManagerLogger);
         UpdateOptions updateManagerOptions = new()
         {
             AllowVersionDowngrade = true,

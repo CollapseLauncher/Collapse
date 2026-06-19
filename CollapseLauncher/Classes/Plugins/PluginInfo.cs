@@ -155,17 +155,19 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             // TODO: Add versioning check.
             GameVersion pluginStandardVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginStandardVersionHandleP)();
             GameVersion pluginVersion = *((delegate* unmanaged[Cdecl]<GameVersion*>)getPluginVersionHandleP)();
-            void* pluginInstancePtr = ((delegate* unmanaged[Cdecl]<void*>)getPluginHandleP)();
+            nint pluginInstancePtr = ((delegate* unmanaged[Cdecl]<nint>)getPluginHandleP)();
 
-            if (pluginInstancePtr == null)
+            if (pluginInstancePtr == nint.Zero)
             {
                 throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export function returns a null pointer!");
             }
 
-            IPlugin? pluginInstance = ComInterfaceMarshaller<IPlugin>.ConvertToManaged(pluginInstancePtr);
-            if (pluginInstance == null)
+            if (!ComMarshal<IPlugin>.TryCreateComObjectFromReference(pluginInstancePtr,
+                                                                      out IPlugin? pluginInstance,
+                                                                      out Exception? ex))
             {
-                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!",
+                                                 ex);
             }
 
             // Get Self Updater
@@ -441,11 +443,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         finally
         {
             // Free the plugin handle and remove it from the dictionary.
-            if (!ComMarshal<IPlugin>.TryReleaseComObject(Instance, out Exception? ex))
-            {
-                Logger.LogWriteLine($"[PluginInfo] Cannot release COM Object reference for IPlugin instance due to unexpected error: {ex}", LogType.Error, true);
-            }
-
             NativeLibrary.Free(Handle);
 
             // Free GCHandle and nullify the delegate.

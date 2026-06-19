@@ -70,7 +70,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         #region Override Methods - StartPackageInstallationInner
 
-        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage)
         {
             IsRunning = true;
 
@@ -80,7 +80,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
             // If the confirm is 1 (verified) or -1 (cancelled), then return the code
             int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                  ZenlessGameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as ZenlessRepair);
+                                                                  ZenlessGameRepairManager = (ZenlessRepair)GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer));
             if (deltaPatchConfirm is -1 or 1)
             {
                 return deltaPatchConfirm;
@@ -102,7 +102,7 @@ namespace CollapseLauncher.InstallManager.Zenless
                                                                     bool doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
-            if (!isOnlyInstallPackage && await StartDeltaPatch(ZenlessGameRepairManager, false, true))
+            if (!isOnlyInstallPackage && await StartDeltaPatch(ZenlessGameRepairManager!, false, true))
             {
                 // Assign the game package to delta-patch requirement list
                 // and start the additional patching process (like Audio patch, etc)

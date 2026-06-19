@@ -2,32 +2,22 @@
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-// ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
+#pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher.Pages
 {
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    public partial class GenshinGameSettingsPage : INotifyPropertyChanged
+    public partial class GenshinGameSettingsPage
     {
-        #region Methods
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        // ReSharper disable once UnusedMember.Local
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #region Fields
+        private GenshinSettings? SettingsThis { get => field ??= Settings as GenshinSettings; }
         #endregion
 
         #region GameResolution
@@ -35,7 +25,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-               bool value = Settings!.SettingsScreen!.isfullScreen;
+               bool value = SettingsThis?.SettingsScreen?.isfullScreen ?? false;
                if (value)
                {
                    GameWindowResizable.IsEnabled      = false;
@@ -52,7 +42,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                ((GenshinSettings)Settings).SettingsScreen.isfullScreen = value;
+                SettingsThis?.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled               = false;
@@ -72,12 +62,12 @@ namespace CollapseLauncher.Pages
         {
             get
             { 
-                bool valueCl = ((GenshinSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen;
-                bool valueGi = ((GenshinSettings)Settings).SettingVisibleBackground.isBorderless;
+                bool valueCl = SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen ?? false;
+                bool valueGi = SettingsThis?.SettingVisibleBackground.isBorderless ?? false;
                 if (valueCl || valueGi)
                 {
-                    ((GenshinSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen = true;
-                    ((GenshinSettings)Settings).SettingVisibleBackground.isBorderless      = true;
+                    SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen = true;
+                    SettingsThis?.SettingVisibleBackground.isBorderless      = true;
 
                     GameWindowResizable.IsEnabled      = false;
                     GameWindowResizable.IsChecked      = false;
@@ -92,8 +82,8 @@ namespace CollapseLauncher.Pages
             } 
             set
             {
-                ((GenshinSettings)Settings).SettingsCollapseScreen.UseBorderlessScreen = value;
-                ((GenshinSettings)Settings).SettingVisibleBackground.isBorderless      = value;
+                SettingsThis?.SettingsCollapseScreen.UseBorderlessScreen = value;
+                SettingsThis?.SettingVisibleBackground.isBorderless      = value;
                 if (value)
                 {
                     GameWindowResizable.IsEnabled = false;
@@ -110,10 +100,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsCustomResolutionEnabled
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseScreen.UseCustomResolution;
+            get => SettingsThis?.SettingsCollapseScreen.UseCustomResolution ?? false;
             set
             {
-                ((GenshinSettings)Settings).SettingsCollapseScreen.UseCustomResolution = value;
+                SettingsThis?.SettingsCollapseScreen.UseCustomResolution = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -146,11 +136,11 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                return IsFullscreenEnabled && ((GenshinSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen;
+                return IsFullscreenEnabled && (SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen ?? false);
             }
             set
             {
-                ((GenshinSettings)Settings).SettingsCollapseScreen.UseExclusiveFullscreen = value;
+                SettingsThis?.SettingsCollapseScreen.UseExclusiveFullscreen = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = false;
@@ -165,15 +155,15 @@ namespace CollapseLauncher.Pages
 
         public bool IsCanResizableWindow
         {
-            get => !((GenshinSettings)Settings).SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
+            get => !(SettingsThis?.SettingsScreen.isfullScreen ?? false) && !IsExclusiveFullscreenEnabled;
         }
 
         public bool IsResizableWindow
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseScreen.UseResizableWindow;
+            get => SettingsThis?.SettingsCollapseScreen.UseResizableWindow ?? false;
             set
             {
-                ((GenshinSettings)Settings).SettingsCollapseScreen.UseResizableWindow = value;
+                SettingsThis?.SettingsCollapseScreen.UseResizableWindow = value;
                 if (value)
                 {
                     GameResolutionFullscreen.IsChecked = false;
@@ -191,14 +181,14 @@ namespace CollapseLauncher.Pages
 
         public int ResolutionW
         {
-            get => ((GenshinSettings)Settings).SettingsScreen.sizeRes.Width;
-            set => ((GenshinSettings)Settings).SettingsScreen.sizeRes = new Size(value, ResolutionH);
+            get => SettingsThis?.SettingsScreen.sizeRes.Width ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(value, ResolutionH);
         }
 
         public int ResolutionH
         {
-            get => ((GenshinSettings)Settings).SettingsScreen.sizeRes.Height;
-            set => ((GenshinSettings)Settings).SettingsScreen.sizeRes = new Size(ResolutionW, value);
+            get => SettingsThis?.SettingsScreen.sizeRes.Height ?? 0;
+            set => SettingsThis?.SettingsScreen.sizeRes = new Size(ResolutionW, value);
         }
 
         public bool IsCanResolutionWH
@@ -210,7 +200,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string res = ((GenshinSettings)Settings).SettingsScreen.sizeResString;
+                string? res = SettingsThis?.SettingsScreen.sizeResString;
                 if (!string.IsNullOrEmpty(res))
                 {
                     return res;
@@ -219,7 +209,7 @@ namespace CollapseLauncher.Pages
                 Size size = ScreenProp.CurrentResolution;
                 return $"{size.Width}x{size.Height}";
             }
-            set => ((GenshinSettings)Settings).SettingsScreen.sizeResString = value;
+            set => SettingsThis?.SettingsScreen.sizeResString = value;
         }
 
         #endregion
@@ -227,8 +217,8 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings
         public double Gamma
         {
-            get => Math.Round(((GenshinSettings)Settings).SettingsGeneralData.gammaValue * -1 + 4.4, 5);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.gammaValue = Math.Round(value * -1 + 4.4, 5);
+            get => Math.Round(SettingsThis?.SettingsGeneralData.gammaValue * -1 + 4.4 ?? 0, 5);
+            set => SettingsThis?.SettingsGeneralData.gammaValue = Math.Round(value * -1 + 4.4, 5);
             // This should belong in programmer horror stories, *DO NOT EVER DO THIS*
             // Basically, calculate the stepper function which amounts to y = -x + 4.4, so we inverse the value and add 4.4
             // DON'T ASK HOW WE DID THIS, IT'S a 4AM THING :)
@@ -237,26 +227,26 @@ namespace CollapseLauncher.Pages
 
         public bool VerticalSync
         {
-            get => Convert.ToBoolean((int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VerticalSync);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VerticalSync = (VerticalSyncOption)Convert.ToInt32(value);
+            get => Convert.ToBoolean((int)(SettingsThis?.SettingsGeneralData.globalPerfData.VerticalSync ?? 0));
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.VerticalSync = (VerticalSyncOption)Convert.ToInt32(value);
         }
 
         public bool VolumetricFog
         {
-            get => Convert.ToBoolean((int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VolumetricFog);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VolumetricFog = (VolumetricFogOption)Convert.ToInt32(value);
+            get => Convert.ToBoolean((int)(SettingsThis?.SettingsGeneralData.globalPerfData.VolumetricFog ?? 0));
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.VolumetricFog = (VolumetricFogOption)Convert.ToInt32(value);
         }
 
         public bool Reflections
         {
-            get => Convert.ToBoolean((int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Reflections);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Reflections = (ReflectionsOption)Convert.ToInt32(value);
+            get => Convert.ToBoolean((int)(SettingsThis?.SettingsGeneralData.globalPerfData.Reflections ?? 0));
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.Reflections = (ReflectionsOption)Convert.ToInt32(value);
         }
 
         public bool Bloom
         {
-            get => Convert.ToBoolean((int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Bloom);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Bloom = (BloomOption)Convert.ToInt32(value);
+            get => Convert.ToBoolean((int)(SettingsThis?.SettingsGeneralData.globalPerfData.Bloom ?? 0));
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.Bloom = (BloomOption)Convert.ToInt32(value);
         }
 
         public int FPS
@@ -264,7 +254,7 @@ namespace CollapseLauncher.Pages
             get
             {
                 // Get the current value
-                FPSOption curValue = ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.FPS;
+                FPSOption curValue = SettingsThis?.SettingsGeneralData.globalPerfData.FPS ?? default;
                 // Get the index of the current value in FPSOptionsList array
                 int indexOfValue = Array.IndexOf(GlobalPerfData.FPSOptionsList!, curValue);
                 // Return the index of the value
@@ -278,7 +268,7 @@ namespace CollapseLauncher.Pages
                 // Get the FPSOption based on the selected index by the "value"
                 FPSOption valueFromIndex = GlobalPerfData.FPSOptionsList[value];
                 // Set the actual value to its property
-                ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.FPS = valueFromIndex;
+                SettingsThis?.SettingsGeneralData.globalPerfData.FPS = valueFromIndex;
             }
         }
 
@@ -286,7 +276,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int enumIndex = ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.RenderResolution;
+                int enumIndex = SettingsThis?.SettingsGeneralData.globalPerfData.RenderResolution ?? 0;
                 int valueIndex = GlobalPerfData.RenderScaleIndex.IndexOf(enumIndex);
                 double enumValue = GlobalPerfData.RenderScaleValues[valueIndex];
                 return GlobalPerfData.RenderScaleValues.IndexOf(enumValue);
@@ -295,7 +285,7 @@ namespace CollapseLauncher.Pages
             {
                 double enumValue = GlobalPerfData.RenderScaleValues[value];
                 int enumIndex = DictionaryCategory.RenderResolutionOption[enumValue];
-                ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.RenderResolution = enumIndex;
+                SettingsThis?.SettingsGeneralData.globalPerfData.RenderResolution = enumIndex;
             }
         }
 
@@ -303,7 +293,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int curValue = (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.ShadowQuality;
+                int curValue = (int)(SettingsThis?.SettingsGeneralData.globalPerfData.ShadowQuality ?? default);
 
                 // Disable Volumetric Fog when ShadowQuality is not Medium or higher
                 if (curValue < 2)
@@ -330,184 +320,187 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsEnabled = true;
                 }
 
-                ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.ShadowQuality = (ShadowQualityOption)value;
+                SettingsThis?.SettingsGeneralData.globalPerfData.ShadowQuality = (ShadowQualityOption)value;
             }
         }
 
         public int VisualEffects
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VisualEffects;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.VisualEffects = (VisualEffectsOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.VisualEffects ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.VisualEffects = (VisualEffectsOption)value;
         }
 
         public int SFXQuality
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.SFXQuality;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.SFXQuality = (SFXQualityOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.SFXQuality ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.SFXQuality = (SFXQualityOption)value;
         }
 
         public int EnvironmentDetail
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.EnvironmentDetail;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.EnvironmentDetail = (EnvironmentDetailOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.EnvironmentDetail ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.EnvironmentDetail = (EnvironmentDetailOption)value;
         }
 
         public int MotionBlur
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.MotionBlur;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.MotionBlur = (MotionBlurOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.MotionBlur ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.MotionBlur = (MotionBlurOption)value;
         }
 
         public int CrowdDensity
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.CrowdDensity;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.CrowdDensity = (CrowdDensityOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.CrowdDensity ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.CrowdDensity = (CrowdDensityOption)value;
         }
 
         public int SubsurfaceScattering
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.SubsurfaceScattering;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.SubsurfaceScattering = (SubsurfaceScatteringOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.SubsurfaceScattering ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.SubsurfaceScattering = (SubsurfaceScatteringOption)value;
         }
 
         public int CoOpTeammateEffects
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.CoOpTeammateEffects;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.CoOpTeammateEffects ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)value;
         }
 
         public int AnisotropicFiltering
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.AnisotropicFiltering;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.AnisotropicFiltering = (AnisotropicFilteringOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.AnisotropicFiltering ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.AnisotropicFiltering = (AnisotropicFilteringOption)value;
         }
 
         public int Antialiasing
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Antialiasing;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.Antialiasing = (AntialiasingOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.Antialiasing ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.Antialiasing = (AntialiasingOption)value;
         }
 
         public bool TeamPageBackground
         {
-            get => !((GenshinSettings)Settings).SettingsGeneralData.disableTeamPageBackgroundSwitch;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.disableTeamPageBackgroundSwitch = !value;
+            get => !(SettingsThis?.SettingsGeneralData.disableTeamPageBackgroundSwitch ?? false);
+            set => SettingsThis?.SettingsGeneralData.disableTeamPageBackgroundSwitch = !value;
         }
 
         public int GlobalIllumination
         {
-            get => (int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.GlobalIllumination;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)value;
+            get => (int)(SettingsThis?.SettingsGeneralData.globalPerfData.GlobalIllumination ?? default);
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)value;
         }
 
         public bool DynamicCharacterResolution
         {
-            get => Convert.ToBoolean((int)((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.DynamicCharacterResolution);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)Convert.ToInt32(value);
+            get => Convert.ToBoolean((int)(SettingsThis?.SettingsGeneralData.globalPerfData.DynamicCharacterResolution ?? default));
+            set => SettingsThis?.SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)Convert.ToInt32(value);
         }
         #endregion
 
         #region Graphics Settings - HDR
         public bool IsHDR
         {
-            get => GetAppConfigValue("ForceGIHDREnable").ToBool() || ((GenshinSettings)Settings).SettingsWindowsHDR.isHDR || ((GenshinSettings)Settings).SettingsGeneralData.enableHDR;
+            get => GetAppConfigValue("ForceGIHDREnable").ToBool() || (SettingsThis?.SettingsWindowsHDR.isHDR ?? false) || (SettingsThis?.SettingsGeneralData.enableHDR ?? false);
             set
             {
-                ((GenshinSettings)Settings).SettingsWindowsHDR.isHDR = value;
-                ((GenshinSettings)Settings).SettingsGeneralData.enableHDR = value;
+                if (Settings is GenshinSettings genshinSettings)
+                {
+                    genshinSettings.SettingsWindowsHDR.isHDR = value;
+                    genshinSettings.SettingsGeneralData.enableHDR = value;
+                }
                 SetAndSaveConfigValue("ForceGIHDREnable", value);
             } 
         }
 
         private double MaxLuminosity
         {
-            get => (double)((GenshinSettings)Settings).SettingsGeneralData.maxLuminosity;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.maxLuminosity = (decimal)Math.Round(value, 1);
+            get => (double)(SettingsThis?.SettingsGeneralData.maxLuminosity ?? 0);
+            set => SettingsThis?.SettingsGeneralData.maxLuminosity = (decimal)Math.Round(value, 1);
         }
 
         private double UiPaperWhite
         {
-            get => (double)((GenshinSettings)Settings).SettingsGeneralData.uiPaperWhite;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.uiPaperWhite = (decimal)Math.Round(value, 1);
+            get => (double)(SettingsThis?.SettingsGeneralData.uiPaperWhite ?? 0);
+            set => SettingsThis?.SettingsGeneralData.uiPaperWhite = (decimal)Math.Round(value, 1);
         }
 
         private double ScenePaperWhite
         {
-            get => (double)((GenshinSettings)Settings).SettingsGeneralData.scenePaperWhite;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.scenePaperWhite = (decimal)Math.Round(value, 1);
+            get => (double)(SettingsThis?.SettingsGeneralData.scenePaperWhite ?? 0);
+            set => SettingsThis?.SettingsGeneralData.scenePaperWhite = (decimal)Math.Round(value, 1);
         }
         #endregion
 
         #region Audio
         public int Audio_Global
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.volumeGlobal;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.volumeGlobal = value;
+            get => SettingsThis?.SettingsGeneralData.volumeGlobal ?? 0;
+            set => SettingsThis?.SettingsGeneralData.volumeGlobal = value;
         }
 
         public int Audio_SFX
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.volumeSFX;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.volumeSFX = value;
+            get => SettingsThis?.SettingsGeneralData.volumeSFX ?? 0;
+            set => SettingsThis?.SettingsGeneralData.volumeSFX = value;
         }
 
         public int Audio_Music
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.volumeMusic;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.volumeMusic = value;
+            get => SettingsThis?.SettingsGeneralData.volumeMusic ?? 0;
+            set => SettingsThis?.SettingsGeneralData.volumeMusic = value;
         }
 
         public int Audio_Voice
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.volumeVoice;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.volumeVoice = value;
+            get => SettingsThis?.SettingsGeneralData.volumeVoice ?? 0;
+            set => SettingsThis?.SettingsGeneralData.volumeVoice = value;
         }
 
         public bool Audio_DynamicRange
         {
-            get => !Convert.ToBoolean(((GenshinSettings)Settings).SettingsGeneralData.audioDynamicRange);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.audioDynamicRange = Convert.ToInt32(!value);
+            get => !Convert.ToBoolean(SettingsThis?.SettingsGeneralData.audioDynamicRange ?? 0);
+            set => SettingsThis?.SettingsGeneralData.audioDynamicRange = Convert.ToInt32(!value);
         }
 
         public bool Audio_Surround
         {
-            get => Convert.ToBoolean(((GenshinSettings)Settings).SettingsGeneralData.audioOutput);
-            set => ((GenshinSettings)Settings).SettingsGeneralData.audioOutput = Convert.ToInt32(value);
+            get => Convert.ToBoolean(SettingsThis?.SettingsGeneralData.audioOutput ?? 0);
+            set => SettingsThis?.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
         }
 
         public bool Audio_MuteOnMinimized
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.muteAudioOnAppMinimized;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.muteAudioOnAppMinimized = value;
+            get => SettingsThis?.SettingsGeneralData.muteAudioOnAppMinimized ?? false;
+            set => SettingsThis?.SettingsGeneralData.muteAudioOnAppMinimized = value;
         }
         #endregion
 
         #region Language
         public int AudioLang
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.deviceVoiceLanguageType;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.deviceVoiceLanguageType = value;
+            get => SettingsThis?.SettingsGeneralData.deviceVoiceLanguageType ?? 0;
+            set => SettingsThis?.SettingsGeneralData.deviceVoiceLanguageType = value;
         }
 
         public int TextLang
         {
-            get => ((GenshinSettings)Settings).SettingsGeneralData.deviceLanguageType - 1;
-            set => ((GenshinSettings)Settings).SettingsGeneralData.deviceLanguageType = value + 1;
+            get => SettingsThis?.SettingsGeneralData.deviceLanguageType - 1 ?? 0;
+            set => SettingsThis?.SettingsGeneralData.deviceLanguageType = value + 1;
         }
         #endregion
 
         #region Misc
         public bool IsGameBoost
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.UseGameBoost;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.UseGameBoost = value;
+            get => SettingsThis?.SettingsCollapseMisc.UseGameBoost ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.UseGameBoost = value;
         }
 
         public bool IsMobileMode
         {
-            //get => ((GenshinSettings)Settings).SettingsCollapseMisc.LaunchMobileMode;
+            //get => (Settings as GenshinSettings).SettingsCollapseMisc.LaunchMobileMode;
             get => false;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.LaunchMobileMode = value;
+            set => SettingsThis?.SettingsCollapseMisc.LaunchMobileMode = value;
         }
         #endregion
 
@@ -516,14 +509,14 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = ((GenshinSettings)Settings).SettingsCollapseMisc.UseAdvancedGameSettings;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings ?? false;
                 AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
             {
-                ((GenshinSettings)Settings).SettingsCollapseMisc.UseAdvancedGameSettings = value;
-                AdvancedSettingsPanel.Visibility                      = value ? Visibility.Visible : Visibility.Collapsed;
+                SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
             } 
         }
 
@@ -531,7 +524,7 @@ namespace CollapseLauncher.Pages
         {
             get 
             { 
-                bool value = ((GenshinSettings)Settings).SettingsCollapseMisc.UseGamePreLaunchCommand;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand ?? false;
 
                 if (value)
                 {
@@ -561,33 +554,33 @@ namespace CollapseLauncher.Pages
                     GameLaunchDelay.IsEnabled           = false;
                 }
 
-                ((GenshinSettings)Settings).SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
             }
         }
 
         public string PreLaunchCommand
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePreLaunchCommand;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePreLaunchCommand = value;
+            get => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand ?? "";
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand = value;
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+            get => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
         public int LaunchDelay
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.GameLaunchDelay;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.GameLaunchDelay = value;
+            get => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay ?? 0;
+            set => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay = value;
         }
         
         public bool IsUsePostExitCommand
         {
             get 
             {
-                bool value = ((GenshinSettings)Settings).SettingsCollapseMisc.UseGamePostExitCommand;
+                bool value = SettingsThis?.SettingsCollapseMisc.UseGamePostExitCommand ?? false;
                 PostExitCommandTextBox.IsEnabled = value;
 
                 return value;
@@ -595,27 +588,20 @@ namespace CollapseLauncher.Pages
             set
             {
                 PostExitCommandTextBox.IsEnabled = value;
-                ((GenshinSettings)Settings).SettingsCollapseMisc.UseGamePostExitCommand = value;
+                SettingsThis?.SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
 
         public string PostExitCommand
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePostExitCommand;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.GamePostExitCommand = value;
-        }
-
-        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-        {
-            // clamp for negative value when clearing the number box
-            if ((int)sender.Value < 0)
-                sender.Value = 0;
+            get => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand ?? "";
+            set => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand = value;
         }
 
         public bool RunWithExplorerAsParent
         {
-            get => ((GenshinSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent;
-            set => ((GenshinSettings)Settings).SettingsCollapseMisc.RunWithExplorerAsParent = value;
+            get => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent ?? false;
+            set => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent = value;
         }
         #endregion
     }

@@ -21,7 +21,7 @@ public class HypLauncherGameResourcePluginReleasesData : HypApiDataLookupable<Hy
     } = [];
 }
 
-public class HypResourcePluginData : HypApiIdentifiable
+public partial class HypResourcePluginData : HypApiIdentifiable
 {
     [JsonPropertyName("plugins")]
     public List<HypPluginPackageInfo> Plugins

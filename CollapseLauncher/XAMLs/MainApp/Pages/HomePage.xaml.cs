@@ -14,6 +14,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
+using ImageEx;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -24,11 +25,13 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -53,18 +56,38 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // Currently separated files:
 // - HomePage.Playtime.cs
 //   Contains method related to playtime tracking UI and its handler
+// - HomePage.Background.cs
+//   Contains functionalities related to background management and its context menus.
 // - HomePage.GameLauncher.cs
 //   Contains method related to game launching and its surrounding like arguments, GLC, etc.
 // - HomePage.GameManagement.cs
 //   Contains method related to game management like installation, update, etc.
+// - HomePage.Variable.cs
+//   Contains miscellaneous variables used for the UI.
+// - HomePage.Wpf.cs
+//   Contains functionalities for WPF packages UI or Icons used in some games (like Genshin Impact's Miliastra Wonderland Editor).
 // - HomePage.Misc.cs
-//   Contains miscelanous method that doesn't fit into other categories and is not big enough to be in its own file
+//   Contains miscellaneous method that doesn't fit into other categories and is not big enough to be in its own file
 
+#nullable enable
 namespace CollapseLauncher.Pages
 {
     [GeneratedBindableCustomProperty]
-    public sealed partial class HomePage
+    public sealed partial class HomePage : INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // ReSharper disable once UnusedMember.Local
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+        
         #region Properties
 
         private GamePresetProperty             CurrentGameProperty  { get; }
@@ -128,6 +151,7 @@ namespace CollapseLauncher.Pages
             RightBottomButtons.SetAllControlsCursorRecursive(cursor);
             LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
             GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
+            ImageEventImgViewBox.EnableElementVisibilityAnimation();
         }
 
         private void InitializeConsoleValues()
@@ -144,7 +168,7 @@ namespace CollapseLauncher.Pages
 
         private void ReturnToHomePage()
         {
-            if (!(m_mainPage?.TryGetCurrentPageObject(out object typeOfPage) ?? false) ||
+            if (!(m_mainPage?.TryGetCurrentPageObject(out object? typeOfPage) ?? false) ||
                 typeOfPage is not Type asTypePage ||
                 asTypePage != typeof(HomePage) ||
                 GamePropertyVault.GetCurrentGameProperty() != CurrentGameProperty)
@@ -181,7 +205,6 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Visibility  = Visibility.Visible;
                     ShowEventsPanelToggle.IsEnabled    = true;
                     ScaleUpEventsPanelToggle.IsEnabled = true;
-                    PostPanel.Visibility               = Visibility.Visible;
                 }
 
                 if (CurrentGameProperty.GameInstall != null)
@@ -283,19 +306,13 @@ namespace CollapseLauncher.Pages
                         break;
                     case GameInstallStateEnum.InstalledHavePlugin:
                     case GameInstallStateEnum.NeedsUpdate:
-                        if (CurrentGameProperty.GameInstall != null)
-                        {
-                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
-                        }
+                        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.StartGame;
 
                         UpdateGameDialog(null, null);
                         break;
                     case GameInstallStateEnum.NotInstalled:
                     case GameInstallStateEnum.GameBroken:
-                        if (CurrentGameProperty.GameInstall != null)
-                        {
-                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
-                        }
+                        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.StartGame;
 
                         InstallGameDialog(null, null);
                         break;
@@ -438,6 +455,17 @@ namespace CollapseLauncher.Pages
 
             SidePanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        private void CarouselImageExOpened(object sender, ImageExOpenedEventArgs e)
+        {
+            if (sender is not ImageEx.ImageEx { Image: Image asInnerImage })
+            {
+                return;
+            }
+
+            CurrentCarouselImageWidth = asInnerImage.ActualWidth;
+            CurrentCarouselImageHeight = asInnerImage.ActualHeight;
+        }
         #endregion
 
         #region SocMed Buttons
@@ -568,22 +596,66 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Event Image
-        private static void HideImageEventImg(bool hide)
+
+        private static Storyboard GetFadeOpacityAnimation(FrameworkElement element,
+                                                          bool             isHide,
+                                                          double           durationSeconds          = 0.1d,
+                                                          double           delaySeconds             = 0d,
+                                                          bool             enableDependentAnimation = false)
         {
-            Storyboard      storyboard       = new();
-            DoubleAnimation OpacityAnimation = new()
+            Storyboard storyboard = new();
+            DoubleAnimation opacityAnimation = new()
             {
-                From     = hide ? 1 : 0,
-                To       = hide ? 0 : 1,
-                Duration = new Duration(TimeSpan.FromSeconds(0.10))
+                From                     = isHide ? 1 : 0,
+                To                       = isHide ? 0 : 1,
+                Duration                 = new Duration(TimeSpan.FromSeconds(durationSeconds)),
+                BeginTime                = TimeSpan.FromSeconds(delaySeconds),
+                EnableDependentAnimation = enableDependentAnimation
             };
 
-            Storyboard.SetTarget(OpacityAnimation, m_mainPage?.ImageEventImg);
-            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-            storyboard.Children.Add(OpacityAnimation);
+            Storyboard.SetTarget(opacityAnimation, element);
+            Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
+            storyboard.Children.Add(opacityAnimation);
 
-            storyboard.Begin();
+            return storyboard;
         }
+
+        private void HideImageEventImg(bool hide)
+        {
+            if (!hide)
+            {
+                ImageEventImg.Visibility = Visibility.Visible;
+            }
+
+            Storyboard storyboard = GetFadeOpacityAnimation(ImageEventImg, hide, 0.15);
+            storyboard.Completed += OnCompleted;
+            storyboard.Begin();
+            return;
+
+            void OnCompleted(object sender, object e)
+            {
+                storyboard.Completed -= OnCompleted;
+                if (hide)
+                {
+                    ImageEventImg.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void ImageEventImg_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            GetFadeOpacityAnimation(ImageEventImgNormal,      true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHover,       false, 0.05d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHoverShadow, false, 0.05d).Begin();
+        }
+
+        private void ImageEventImg_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            GetFadeOpacityAnimation(ImageEventImgHover,       true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHoverShadow, true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgNormal,      false, 0.05d).Begin();
+        }
+
         #endregion
 
         #region Open Link from Tag
@@ -902,7 +974,7 @@ namespace CollapseLauncher.Pages
                                                 Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
 
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty?.GameInstall != null)
+                if (CurrentGameProperty.GameInstall != null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)

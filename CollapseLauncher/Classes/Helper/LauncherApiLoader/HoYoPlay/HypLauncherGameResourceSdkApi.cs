@@ -19,7 +19,7 @@ public class HypLauncherGameResourceSdkData : HypApiDataLookupable<HypChannelSdk
     } = [];
 }
 
-public class HypChannelSdkData : HypApiIdentifiable
+public partial class HypChannelSdkData : HypApiIdentifiable
 {
     [JsonPropertyName("channel_sdk_pkg")]
     public HypPackageData? SdkPackageDetail { get; set; }

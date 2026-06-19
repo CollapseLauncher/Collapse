@@ -7,6 +7,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -34,8 +35,8 @@ internal static partial class AssetBundleExtension
     internal static void RemoveUnlistedVideoAssetFromList(this List<FilePropertiesRemote> originList,
                                                           List<FilePropertiesRemote>      assetListFromVideo)
     {
-        List<FilePropertiesRemote> originOthersListOnly = originList.Where(x => x.FT != FileType.Video).ToList();
-        List<FilePropertiesRemote> originVideoListOnly = originList.Where(x => x.FT == FileType.Video).ToList();
+        List<FilePropertiesRemote> originOthersListOnly = [.. originList.Where(x => x.FT != FileType.Video)];
+        List<FilePropertiesRemote> originVideoListOnly  = [.. originList.Where(x => x.FT == FileType.Video)];
         originList.Clear();
         originList.AddRange(originOthersListOnly);
 
@@ -58,7 +59,9 @@ internal static partial class AssetBundleExtension
         AudioLanguageType gameLanguageType = GetCurrentGameAudioLanguage(presetConfig);
         int               parallelThread   = Math.Clamp(progressibleInstance.ThreadForIONormalized * 4, 16, 64);
 
-        HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
+        GameVersion currentVersion = progressibleInstance.GameVersion;
+
+        HashSet<int> ignoredCgHashset = [.. ignoredCgIds ?? []];
         List<CacheAssetInfo> assetInfoList =
             await assetBundleHttpClient
                .GetCacheAssetBundleListAsync(presetConfig,
@@ -128,19 +131,22 @@ internal static partial class AssetBundleExtension
             string assetUrl = baseUrl.CombineURLFromString("Video", assetName);
 
             // Update status
-            progressibleInstance.Status.ActivityStatus = string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", assetName);
-            progressibleInstance.Status.IsProgressAllIndetermined = true;
+            progressibleInstance.Status.ActivityStatus =
+                string.Format(Locale.Current.Lang?._GameRepairPage?.Status14 ?? "", assetName);
+            progressibleInstance.Status.IsProgressAllIndetermined     = true;
             progressibleInstance.Status.IsProgressPerFileIndetermined = true;
             progressibleInstance.UpdateStatus();
 
-            if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV)
+            if (entry.Value.Category is CGCategory.Birthday or CGCategory.Activity or CGCategory.VersionPV ||
+                IsCgOnCurrentVersionOrPresent(assetName, currentVersion))
             {
                 UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
                 Logger.LogWriteLine($"The CG asset: {assetName} " +
-                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                                    (urlStatus.IsSuccessStatusCode ? "is" : "is not") +
+                                    $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
                 if (!urlStatus.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("No Asset bundle URLs were reachable");
+                    return;
                 }
 
                 if (urlStatus.FileSize > 0)
@@ -161,5 +167,9 @@ internal static partial class AssetBundleExtension
                 });
             }
         }
+
+        static bool IsCgOnCurrentVersionOrPresent(string assetName, GameVersion gameVersion) =>
+            GameVersion.TryParse(assetName.GetSplit(0, '_'), out GameVersion fileVersion) &&
+            fileVersion >= gameVersion;
     }
 }

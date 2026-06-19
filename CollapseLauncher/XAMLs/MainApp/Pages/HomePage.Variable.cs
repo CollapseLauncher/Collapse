@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.WindowSize;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -23,8 +24,6 @@ public sealed partial class HomePage
     private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
 
     private ILauncherApi? CurrentGameLauncherApi { get; }
-
-    private HypLauncherBackgroundList? GameBackgroundData => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
 
     private HypLauncherContentKind? GameContentData => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
 
@@ -52,31 +51,23 @@ public sealed partial class HomePage
 
     internal string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
 
-    internal Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-    internal Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+    internal bool IsNewsEventPanelVisible => GameNewsDataEventKind?.Count > 0;
+    internal bool IsNewsNoticePanelVisible => GameNewsDataAnnouncementKind?.Count > 0;
+    internal bool IsNewsInfoPanelVisible => GameNewsDataInformationKind?.Count > 0;
 
-    internal Visibility IsPostInfoPanelAllEmpty  =>
-        IsPostEventPanelVisible == Visibility.Collapsed
-        && IsPostNoticePanelVisible == Visibility.Collapsed
-        && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
+    internal int NewsEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
 
-    internal int PostEmptyMascotTextWidth => Locale.Current.Lang?._HomePage?.PostPanel_NoNews.Length > 30 ? 200 : 100;
-
-    internal int DefaultPostPanelIndex
+    internal int DefaultNewsPanelIndex
     {
         get
         {
-            if (IsPostEventPanelVisible != Visibility.Collapsed)
+            if (IsNewsEventPanelVisible)
                 return 0;
 
-            if (IsPostNoticePanelVisible != Visibility.Collapsed)
+            if (IsNewsNoticePanelVisible)
                 return 1;
 
-            return IsPostInfoPanelVisible != Visibility.Collapsed ? 2 : 0;
+            return IsNewsInfoPanelVisible ? 2 : 0;
         }
     }
 
@@ -115,13 +106,13 @@ public sealed partial class HomePage
     internal bool IsShowSidePanel
     {
         get => GetAppConfigValue("ShowEventsPanel") &&
-               IsCarouselPanelAvailable &&
-               IsNewsPanelAvailable;
+               (IsCarouselPanelAvailable ||
+                IsNewsPanelAvailable);
         set
         {
             SetAndSaveConfigValue("ShowEventsPanel", value);
             HideImageCarousel(!value);
-            InnerLauncherConfig.m_mainPage?.NeedShowEventIcon = value;
+            HideImageEventImg(!value);
         }
     }
 
@@ -167,6 +158,28 @@ public sealed partial class HomePage
                 GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
                 _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
             };
+        }
+    }
+
+    internal WindowSizeProp CurrentWindowSize => WindowSize.WindowSize.CurrentWindowSize;
+
+    internal double CurrentCarouselImageWidth
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    internal double CurrentCarouselImageHeight
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
         }
     }
 

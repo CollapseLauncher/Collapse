@@ -132,7 +132,7 @@ namespace CollapseLauncher.GameSettings.Honkai
                     $"{ex}", ex));
             }
 
-            return new ScreenSettingData();
+            return new ScreenSettingData(gameSettings);
         }
 
         public override void Save()

@@ -91,6 +91,8 @@
                           TintLuminosityOpacity="0.75"
                           TintOpacity="0.75" />
             <!--  Controls element brush  -->
+            <SolidColorBrush x:Key="CarouselBackgroundBrush"
+                             Color="#111111"/>
             <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
                           FallbackColor="#EE303030"
                           TintColor="#222222"
@@ -115,6 +117,11 @@
                           FallbackColor="#EE333333"
                           TintColor="#222222"
                           TintLuminosityOpacity="0.7"
+                          TintOpacity="0.0" />
+            <AcrylicBrush x:Key="CarouselPipsAcrylicLightBrush"
+                          FallbackColor="#EE333333"
+                          TintColor="#222222"
+                          TintLuminosityOpacity="0.5"
                           TintOpacity="0.0" />
             <AcrylicBrush x:Key="WindowTrayBrush"
                           FallbackColor="#DD222222"
@@ -447,6 +454,8 @@
                           TintLuminosityOpacity="0.5"
                           TintOpacity="0" />
             <!--  Controls element brush  -->
+            <SolidColorBrush x:Key="CarouselBackgroundBrush"
+                             Color="#EEEEEE"/>
             <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
                           FallbackColor="#EEEEEEEE"
                           TintColor="#EEEEEE"
@@ -469,6 +478,11 @@
                           FallbackColor="#DDFFFFFF"
                           TintColor="#FFFFFF"
                           TintLuminosityOpacity="0.75"
+                          TintOpacity="0" />
+            <AcrylicBrush x:Key="CarouselPipsAcrylicLightBrush"
+                          FallbackColor="#DDFFFFFF"
+                          TintColor="#FFFFFF"
+                          TintLuminosityOpacity="0.50"
                           TintOpacity="0" />
             <AcrylicBrush x:Key="WindowTrayBrush"
                           FallbackColor="#FFFFFFFF"
@@ -778,6 +792,8 @@
             <StaticResource x:Key="WebView2GridBackground"
                             ResourceKey="SystemColorWindowColorBrush" />
             <!--  Controls element brushes  -->
+            <SolidColorBrush x:Key="CarouselBackgroundBrush"
+                             Color="Transparent" />
             <StaticResource x:Key="AudioLanguageSelectionRadioButtonBrush"
                             ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="ProgressBackgroundAcrylicBrush"

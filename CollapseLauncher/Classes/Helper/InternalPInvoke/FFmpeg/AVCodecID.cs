@@ -1,4 +1,10 @@
-﻿namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
+﻿// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
+
+namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 
 // https://ffmpeg.org/doxygen/7.0/group__lavc__core.html#gaadca229ad2c20e060a14fec08a5cc7ce
 public enum AVCodecID

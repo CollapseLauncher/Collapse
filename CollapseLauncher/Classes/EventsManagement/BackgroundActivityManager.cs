@@ -7,13 +7,11 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 
 // ReSharper disable StringLiteralTypo

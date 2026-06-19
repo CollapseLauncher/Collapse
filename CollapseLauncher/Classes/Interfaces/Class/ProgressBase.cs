@@ -167,7 +167,7 @@ internal abstract class ProgressBase : GamePropertyBase
     // Extension for IGameInstallManager
 
     private const int  RefreshInterval             = 100;
-    protected     nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
+    internal      nint SpeedLimiterServiceContext { get; } = SpeedLimiterService.CreateServiceContext();
 
     public bool IsSophonInUpdateMode { get; protected set; }
     public bool IsSophonInPreloadVerifyMode { get; protected set; }
@@ -509,7 +509,10 @@ internal abstract class ProgressBase : GamePropertyBase
     private long   _sophonDownloadOnlyCurrentDownloadedBytes;
     private long   _sophonDownloadOnlyLastDownloadedBytes;
 
-    protected void UpdateSophonFileTotalProgress(long read)
+
+    protected void UpdateSophonFileTotalProgress(long read) => UpdateSophonFileTotalProgress(read, false);
+
+    protected void UpdateSophonFileTotalProgress(long read, bool forceUpdate)
     {
         _ = Interlocked.Add(ref ProgressAllSizeCurrent, read);
 
@@ -523,7 +526,7 @@ internal abstract class ProgressBase : GamePropertyBase
         // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
         _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
 
-        if (!CheckIfNeedRefreshStopwatch())
+        if (!CheckIfNeedRefreshStopwatch() && !forceUpdate)
         {
             return;
         }
@@ -688,7 +691,7 @@ internal abstract class ProgressBase : GamePropertyBase
         UpdateAll();
     }
 
-    protected virtual void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
+    protected virtual void HttpClientDownloadProgressAdapter(object? sender, DownloadEvent e)
     {
         // Set the progress bar not undetermined
         Status.IsProgressPerFileIndetermined = false;

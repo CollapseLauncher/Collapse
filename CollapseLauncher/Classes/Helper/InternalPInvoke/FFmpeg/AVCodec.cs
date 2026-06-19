@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
@@ -14,7 +17,7 @@ public unsafe struct AVCodec
     public AVCodecID Id;
     public int Capabilities;
     public byte MaxLowRes;
-    public AVRational* SupportedFramerates;
+    public AVRational* SupportedFrameRates;
     public AVPixelFormat* SupportedPixelFormats;
     public int* SupportedSampleRates;
     public AVSampleFormat* SupportedSampleFormats;
@@ -30,6 +33,6 @@ public unsafe struct AVCodec
     private static string? GetUtf8StringFrom(byte* ptr)
     {
         ReadOnlySpan<byte> bytes = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(ptr);
-        return Encoding.UTF8.GetString(bytes);
+        return bytes.IsEmpty ? null : Encoding.UTF8.GetString(bytes);
     }
 }

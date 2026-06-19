@@ -12,6 +12,7 @@ using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -155,16 +156,17 @@ public partial class HomePage
             }
 
             GameRunningWatcher(_Settings);
-                
-            switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+            GameLaunchedBehavior behavior = GetAppConfigValue("GameLaunchedBehavior").ToEnum<GameLaunchedBehavior>();
+
+            switch (behavior)
             {
-                case "ToTray":
+                case GameLaunchedBehavior.ToTray:
                     WindowUtility.ToggleToTray_MainWindow();
                     break;
-                case "Nothing":
+                case GameLaunchedBehavior.Nothing:
                     break;
                 // ReSharper disable once RedundantCaseLabel
-                case "Minimize":
+                case GameLaunchedBehavior.Minimize:
                 default:
                     WindowUtility.WindowMinimize(false);
                     break;
@@ -203,11 +205,11 @@ public partial class HomePage
     private static int CreateProcessWithParent(string parent, string applicationPath, string arguments,
                                                   string workingDirectory)
     {
-        var parentHandle = IntPtr.Zero;
-        var hToken = IntPtr.Zero;
-        var hDuplicateToken = IntPtr.Zero;
-        var attributeList = IntPtr.Zero;
-        var pHandle = IntPtr.Zero;
+        var parentHandle = nint.Zero;
+        var hToken = nint.Zero;
+        var hDuplicateToken = nint.Zero;
+        var attributeList = nint.Zero;
+        var pHandle = nint.Zero;
 
         try
         {
@@ -217,13 +219,13 @@ public partial class HomePage
                 return -1;
             const int PROCESS_CREATE_PROCESS = 0x0080;
             parentHandle = PInvoke.OpenProcess(PROCESS_CREATE_PROCESS, false, parentProc.Id);
-            if (parentHandle == IntPtr.Zero)
+            if (parentHandle == nint.Zero)
                 return -1;
 
             // Obtain the current process token
             if (!PInvoke.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ACCESS.TOKEN_ALL_ACCESS, out hToken))
                 return -1;
-            if (!PInvoke.DuplicateTokenEx(hToken, TOKEN_ACCESS.TOKEN_ALL_ACCESS, IntPtr.Zero,
+            if (!PInvoke.DuplicateTokenEx(hToken, TOKEN_ACCESS.TOKEN_ALL_ACCESS, nint.Zero,
                                           SECURITY_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary,
                                           out hDuplicateToken))
                 return -1;
@@ -231,21 +233,21 @@ public partial class HomePage
             // Initialize the attribute list with the parent process
             var siex = new STARTUPINFOEX();
             siex.StartupInfo.cb = Marshal.SizeOf<STARTUPINFOEX>();
-            var attributeSize = IntPtr.Zero;
-            PInvoke.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref attributeSize);
+            var attributeSize = nint.Zero;
+            PInvoke.InitializeProcThreadAttributeList(nint.Zero, 1, 0, ref attributeSize);
             attributeList = Marshal.AllocHGlobal(attributeSize);
             if (!PInvoke.InitializeProcThreadAttributeList(attributeList, 1, 0, ref attributeSize))
                 return -1;
-            pHandle = Marshal.AllocHGlobal(IntPtr.Size);
+            pHandle = Marshal.AllocHGlobal(nint.Size);
             Marshal.WriteIntPtr(pHandle, parentHandle);
-            if (!PInvoke.UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE.PARENT_PROCESS, pHandle, IntPtr.Size,
-                                                   IntPtr.Zero, IntPtr.Zero))
+            if (!PInvoke.UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE.PARENT_PROCESS, pHandle, nint.Size,
+                                                   nint.Zero, nint.Zero))
                 return -1;
             siex.lpAttributeList = attributeList;
 
             // Create the new process as a child of the specified parent process, and with our process user token
-            var ok = PInvoke.CreateProcessAsUser(hDuplicateToken, applicationPath, arguments, IntPtr.Zero, IntPtr.Zero, false,
-                                                 ProcessCreationFlags.EXTENDED_STARTUPINFO_PRESENT, IntPtr.Zero, workingDirectory, ref siex,
+            var ok = PInvoke.CreateProcessAsUser(hDuplicateToken, applicationPath, arguments, nint.Zero, nint.Zero, false,
+                                                 ProcessCreationFlags.EXTENDED_STARTUPINFO_PRESENT, nint.Zero, workingDirectory, ref siex,
                                                   out var pi);
             if (!ok)
                 return -1;
@@ -257,22 +259,22 @@ public partial class HomePage
         }
         finally
         {
-            if (hDuplicateToken != IntPtr.Zero)
+            if (hDuplicateToken != nint.Zero)
                 PInvoke.CloseHandle(hDuplicateToken);
 
-            if (hToken != IntPtr.Zero)
+            if (hToken != nint.Zero)
                 PInvoke.CloseHandle(hToken);
 
-            if (pHandle != IntPtr.Zero)
+            if (pHandle != nint.Zero)
                 Marshal.FreeHGlobal(pHandle);
 
-            if (attributeList != IntPtr.Zero)
+            if (attributeList != nint.Zero)
             {
                 PInvoke.DeleteProcThreadAttributeList(attributeList);
                 Marshal.FreeHGlobal(attributeList);
             }
 
-            if (parentHandle != IntPtr.Zero)
+            if (parentHandle != nint.Zero)
                 PInvoke.CloseHandle(parentHandle);
         }
     }
@@ -512,7 +514,7 @@ public partial class HomePage
     #region Exclusive Window Payload
     private async void StartExclusiveWindowPayload()
     {
-        IntPtr _windowPtr = ProcessChecker.GetProcessWindowHandle(CurrentGameProperty.GameVersion?.GamePreset.GameExecutableName ?? "");
+        nint _windowPtr = ProcessChecker.GetProcessWindowHandle(CurrentGameProperty.GameVersion?.GamePreset.GameExecutableName ?? "");
         await Task.Delay(1000);
         Windowing.HideWindow(_windowPtr);
         await Task.Delay(1000);
@@ -831,7 +833,7 @@ public partial class HomePage
 
                         #if !DISABLEDISCORD
                             if (ToggleRegionPlayingRpc)
-                                AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                                AppDiscordPresence.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
                         #endif
 
                             int height = gameSettings.SettingsScreen?.height ?? 0;
@@ -890,7 +892,7 @@ public partial class HomePage
             PlaytimeRunningStack.Visibility = Visibility.Collapsed;
                 
         #if !DISABLEDISCORD
-            AppDiscordPresence?.SetActivity(ActivityType.Idle);
+            AppDiscordPresence.SetActivity(ActivityType.Idle);
         #endif
         }
         catch (TaskCanceledException)

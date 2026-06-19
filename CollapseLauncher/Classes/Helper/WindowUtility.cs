@@ -52,7 +52,7 @@ namespace CollapseLauncher.Helper
         None
     }
 
-    internal delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+    internal delegate nint WndProcDelegate(nint hwnd, uint msg, nuint wParam, nint lParam);
     internal static class WindowUtility
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
@@ -478,15 +478,15 @@ namespace CollapseLauncher.Helper
 
         #region WndProc Handler
 
-        private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
+        private static nint InstallWndProcCallback(nint hwnd, WndProcDelegate wndProc)
         {
             // Install WndProc hook
             const int GWLP_WNDPROC = -4;
-            IntPtr    pWndProc     = Marshal.GetFunctionPointerForDelegate(wndProc);
+            nint    pWndProc     = Marshal.GetFunctionPointerForDelegate(wndProc);
             return PInvoke.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
         }
 
-        private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        private static nint MainWndProc(nint hwnd, uint msg, nuint wParam, nint lParam)
         {
             const uint WM_SYSCOMMAND      = 0x0112;
             const uint WM_SHOWWINDOW      = 0x0018;
@@ -585,7 +585,7 @@ namespace CollapseLauncher.Helper
                         const int HTTOPRIGHT = 14;
                         const int HTCLOSE = 20;
 
-                        IntPtr result = PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
+                        nint result = PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                         {
                             // Hide all system buttons
@@ -631,7 +631,7 @@ namespace CollapseLauncher.Helper
             
                 case WM_ENDSESSION:
                     // wParam is TRUE if session is ending
-                    if (wParam != UIntPtr.Zero)
+                    if (wParam != nuint.Zero)
                     {
                         if (MainWindow.IsCriticalOpInProgress)
                         {
@@ -745,11 +745,11 @@ namespace CollapseLauncher.Helper
                 PInvoke.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
             }
 
-            IntPtr desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+            nint desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
             _oldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
         }
 
-        private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        private static nint DesktopSiteBridgeWndProc(nint hwnd, uint msg, nuint wParam, nint lParam)
         {
             const uint WM_WINDOWPOSCHANGING = 0x0046;
 
@@ -868,7 +868,7 @@ namespace CollapseLauncher.Helper
 
         internal static bool IsCurrentWindowInFocus()
         {
-            IntPtr currentForegroundWindow = PInvoke.GetForegroundWindow();
+            nint currentForegroundWindow = PInvoke.GetForegroundWindow();
             return CurrentWindowPtr == currentForegroundWindow;
         }
         #endregion
@@ -934,7 +934,7 @@ namespace CollapseLauncher.Helper
         public static void Tray_ShowNotification(string title,
                                                  string message,
                                                  NotificationIcon icon = NotificationIcon.None,
-                                                 IntPtr? customIconHandle = null,
+                                                 nint? customIconHandle = null,
                                                  bool largeIcon = false,
                                                  bool sound = true,
                                                  bool respectQuietTime = true,
@@ -961,7 +961,7 @@ namespace CollapseLauncher.Helper
             // to foreground.
             window._TrayIcon?.ToggleMainVisibility(true);
 
-            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
+            nint consoleWindowHandle = PInvoke.GetConsoleWindow();
             if (LauncherConfig.GetAppConfigValue("EnableConsole") && PInvoke.IsWindowVisible(consoleWindowHandle))
             {
                 window._TrayIcon?.ToggleConsoleVisibility(true);

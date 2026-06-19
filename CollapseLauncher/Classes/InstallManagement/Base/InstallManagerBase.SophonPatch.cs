@@ -392,13 +392,13 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Initialize the return list and iterate the manifests
             List<SophonPatchAsset> patchAssets = [];
-            foreach (var manifestPair in patchManifestList)
+            foreach ((SophonChunkManifestInfoPair patch, SophonChunkManifestInfoPair main, _) in patchManifestList)
             {
                 // Get the asset and add it to the list
                 await foreach (SophonPatchAsset patchAsset in SophonPatch
                                   .EnumerateUpdateAsync(httpClient,
-                                                        manifestPair.Patch,
-                                                        manifestPair.Main,
+                                                        patch,
+                                                        main,
                                                         updateVersionfrom,
                                                         downloadLimiter,
                                                         token))
@@ -409,13 +409,13 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Find the removable assets and compare with the added list.
             List<SophonPatchAsset> removableAssets = [];
-            foreach (var manifestPair in patchManifestList)
+            foreach ((SophonChunkManifestInfoPair patch, SophonChunkManifestInfoPair main, _) in patchManifestList)
             {
                 // Get the asset and add it to the list
                 await foreach (SophonPatchAsset patchAsset in SophonPatch
                                   .EnumerateRemovableAsync(httpClient,
-                                                           manifestPair.Patch,
-                                                           manifestPair.Main,
+                                                           patch,
+                                                           main,
                                                            updateVersionfrom,
                                                            patchAssets,
                                                            token))
@@ -432,9 +432,13 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task<List<string>> GetAlterSophonPatchVOMatchingFields(CancellationToken token)
         {
-            FileInfo voAudioLangFileInfo = new(_gameAudioLangListPathStatic);
             List<string> voAudioMatchingFields = [];
+            if (_gameAudioLangListPathStatic == null)
+            {
+                return voAudioMatchingFields;
+            }
 
+            FileInfo voAudioLangFileInfo = new(_gameAudioLangListPathStatic);
             if (!voAudioLangFileInfo.Exists)
             {
                 return voAudioMatchingFields;
@@ -534,6 +538,11 @@ namespace CollapseLauncher.InstallManager.Base
             // Run parallel pipeline for download
             await Parallel.ForEachAsync(pipelineDownloadEnumerable, parallelOptions, ImplDownload);
 
+            // Forcely update status
+            UpdateCurrentDownloadStatus();
+            UpdateSophonFileTotalProgress(0, true);
+            UpdateSophonFileDownloadProgress(0, 0);
+
             // If it's on preload mode, then return as we only need to perform patch download.
             if (isPreloadMode)
             {
@@ -551,6 +560,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Run parallel pipeline for patch
             await Parallel.ForEachAsync(pipelinePatchEnumerable, parallelOptions, ImplPatchUpdate);
+
+            // Forcely update status
+            UpdateCurrentDownloadStatus();
+            UpdateSophonFileTotalProgress(0, true);
+            UpdateSophonFileDownloadProgress(0, 0);
 
             if (_canDeleteZip)
             {

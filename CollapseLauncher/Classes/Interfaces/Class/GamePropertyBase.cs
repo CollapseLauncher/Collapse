@@ -83,7 +83,7 @@ internal abstract class GamePropertyBase : NotifyPropertyChanged
             {
                 return GameVersionOverride;
             }
-            return GameVersionManager?.GetGameExistingVersion() ?? throw new NullReferenceException();
+            return GameVersionManager.GetGameExistingVersion() ?? throw new NullReferenceException();
         }
     }
 

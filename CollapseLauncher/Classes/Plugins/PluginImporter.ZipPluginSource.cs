@@ -74,7 +74,7 @@ internal static partial class PluginImporter
                 bool    isManifestCompressed = manifestEntry.Name.EndsWith(CompressionExt, StringComparison.OrdinalIgnoreCase);
                 string? eliminatedPrefix     = Path.GetDirectoryName(manifestEntry.FullName);
 
-                await using Stream manifestStream = manifestEntry.Open();
+                await using Stream manifestStream = await manifestEntry.OpenAsync(token);
                 await using Stream manifestDecStream = isManifestCompressed
                     ? new BrotliStream(manifestStream, CompressionMode.Decompress)
                     : manifestStream;
@@ -98,7 +98,7 @@ internal static partial class PluginImporter
             {
                 if (isFail)
                 {
-                    archive?.Dispose();
+                    await (archive?.DisposeAsync() ?? ValueTask.CompletedTask);
                     if (fileStream != null)
                     {
                         await fileStream.DisposeAsync();

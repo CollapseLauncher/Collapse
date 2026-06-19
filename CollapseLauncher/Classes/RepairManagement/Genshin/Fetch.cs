@@ -4,7 +4,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Genshin;
 using Hi3Helper;
-using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
@@ -113,17 +113,21 @@ namespace CollapseLauncher
             string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : [];
 
             // Set the ignored audio lang
-            string[] ignoredAudioLangList = audioLangList
-                .Where(x => !currentAudioLangList.Contains(x))
-                .Select(x => $"{separatorChar}{x}{separatorChar}")
-                .ToArray();
+            string[] ignoredAudioLangList =
+            [
+                .. audioLangList
+                  .Where(x => !currentAudioLangList.Contains(x))
+                  .Select(x => $"{separatorChar}{x}{separatorChar}")
+            ];
             SearchValues<string> ignoredAudioLangListSearch = SearchValues.Create(ignoredAudioLangList, StringComparison.OrdinalIgnoreCase);
 
             // Return only for asset index that doesn't have language included in ignoredAudioLangList
-            List<T> tempFiltered = assetIndex.Where(x => !predicate(x)
-                                                        .AsSpan()
-                                                        .ContainsAny(ignoredAudioLangListSearch))
-                                             .ToList();
+            List<T> tempFiltered =
+            [
+                .. assetIndex.Where(x => !predicate(x)
+                                         .AsSpan()
+                                         .ContainsAny(ignoredAudioLangListSearch))
+            ];
             assetIndex.Clear();
             assetIndex.AddRange(tempFiltered);
         }
@@ -139,9 +143,9 @@ namespace CollapseLauncher
             TryDeleteDownloadPref();
 
             // Get Sophon Properties
-            string gameAudioListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
-            SophonChunkUrls? sophonManifestUrls = GameVersionManager?.GamePreset.LauncherResourceChunksURL;
-            HttpClient httpClient = downloadClient.GetHttpClient();
+            string           gameAudioListPath  = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            SophonChunkUrls? sophonManifestUrls = GameVersionManager.GamePreset.LauncherResourceChunksURL;
+            HttpClient       httpClient         = downloadClient.GetHttpClient();
 
             if (sophonManifestUrls == null)
             {
@@ -159,14 +163,18 @@ namespace CollapseLauncher
                                                    sophonManifestUrls.MainUrl,
                                                    sophonManifestUrls.MainBranchMatchingField,
                                                    token);
+            SophonDownloadSpeedLimiter? speedLimiter = SpeedLimiterServiceContext == nint.Zero
+                ? null
+                : SophonDownloadSpeedLimiter.CreateInstance(SpeedLimiterServiceContext);
 
             // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
             List<SophonAsset> sophonAssetList = [];
             await GenshinInstall.DownloadPkgVersionStatic(httpClient,
-                                                          GameVersionManager!,
+                                                          GameVersionManager,
                                                           GamePath,
                                                           gameAudioListPath,
                                                           manifestMainInfoPair,
+                                                          speedLimiter,
                                                           sophonAssetList,
                                                           token);
 
@@ -182,9 +190,9 @@ namespace CollapseLauncher
                     isForceStoreInPersistent = false
                 };
 
-                _ = SophonAssetDictRef.TryAdd(asset.AssetName.NormalizePath(), asset);
+                _ = SophonAssetDictRef.TryAdd(asset.AssetName?.NormalizePath() ?? "", asset);
                 assetIndex.Add(assetAsPkgVersionProp);
-                hashtableManifest.TryAdd(asset.AssetName, assetAsPkgVersionProp);
+                hashtableManifest.TryAdd(asset.AssetName ?? "", assetAsPkgVersionProp);
             }
             LogWriteLine($"Main asset list fetched with count: {SophonAssetDictRef.Count} from Sophon manifest", LogType.Default, true);
         }
@@ -305,7 +313,7 @@ namespace CollapseLauncher
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
                 string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.Content}";
 #if DEBUG
-                LogWriteLine(dFormat);
+                LogWriteLine(dFormat, LogType.Debug, true);
 #endif
                 // Write the decrypted query response in the log (for diagnostic)
                 await LogFileWriter.WriteLineAsync(dFormat);
@@ -323,7 +331,7 @@ namespace CollapseLauncher
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
             string dFormat = $"Proto Response (RAW Decrypted form):\r\n{Convert.ToBase64String(decryptedData)}";
 #if DEBUG
-            LogWriteLine(dFormat);
+            LogWriteLine(dFormat, LogType.Debug, true);
 #endif
             await LogFileWriter.WriteLineAsync(dFormat);
 

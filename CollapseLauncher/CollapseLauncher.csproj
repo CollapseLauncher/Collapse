@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.3</Version>
+        <Version>1.84.4</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -116,7 +116,7 @@
     <PropertyGroup Condition="'$(PublishAot)' != 'true'">
         <!--
         CET isn't working properly while debugging .NET 9 apps on Windows 10.
-        So, we need to disable the CetCompat globally and only use it on AOT (defined on its Publish Profiles).
+        So, we need to disable the CetCompat globally and only use it on AOT (defined on its "Publish" Profiles).
         -->
         <CetCompat>false</CetCompat>
     </PropertyGroup>
@@ -129,8 +129,8 @@
         
         <!-- Compilation and Optimization -->
         <Deterministic>true</Deterministic>
-        <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-        <OptimizationPreference>Size</OptimizationPreference>
+        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <OptimizationPreference>Speed</OptimizationPreference>
         <IlcDisableReflection>false</IlcDisableReflection>
         <IlcDisableSingleFile>true</IlcDisableSingleFile>
         <IlcTrimMetadata>true</IlcTrimMetadata>
@@ -170,7 +170,7 @@
     
     <ItemGroup Condition="'$(PublishAot)' == 'true'">
         <!-- Use additional linker arguments -->
-        <LinkerArg Include="/DEBUG:NONE" />
+        <LinkerArg Include="/DEBUG:NONE /LTCG" />
         <!-- <LinkerArg Include="/LTCG" /> -->
         
         <!-- Region: Libsql.Client -->
@@ -235,9 +235,6 @@
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
         <DirectPInvoke Include="libomp140.x86_64.dll" />
         <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static.lib" />
-        <!--
-        These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
-        -->
         <NativeLibrary Include="StaticLib\Waifu2x\ncnn.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\SPIRV.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\glslang.lib" />
@@ -254,26 +251,17 @@
         <NativeLibrary Include="StaticLib\libwebpdemux.lib" />
         <DirectPInvoke Include="webpmux" />
         <NativeLibrary Include="StaticLib\libwebpmux.lib" />
-        <!--
-        These libraries are required by libwebp to resolve external calls.
-        -->
         <NativeLibrary Include="StaticLib\libsharpyuv.lib" />
 
         <!-- Region: heif -->
         <DirectPInvoke Include="heif" />
         <NativeLibrary Include="StaticLib\heif.lib" />
-        <!--
-        These libraries are required by jxl to resolve external calls.
-        -->
         <NativeLibrary Include="StaticLib\libdav1d.lib" />
         <NativeLibrary Include="StaticLib\libde265.lib" />
 
         <!-- Region: jxl -->
         <DirectPInvoke Include="jxl" />
         <NativeLibrary Include="StaticLib\jxl.lib" />
-        <!--
-        These libraries are required by jxl to resolve external calls.
-        -->
         <NativeLibrary Include="StaticLib\jxl_cms.lib" />
         <NativeLibrary Include="StaticLib\hwy.lib" />
 
@@ -286,15 +274,15 @@
         <PackageReference Include="FFmpegInteropX" Version="2.0.117-uwp9" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
-        <PackageReference Include="Velopack" Version="0.0.1298" />
+        <PackageReference Include="Velopack" Version="1.2.0" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
@@ -313,20 +301,20 @@
         
         <PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Markdig.Signed" Version="1.1.3" />
+        <PackageReference Include="Markdig.Signed" Version="1.3.2" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.0.1" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
-        <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="System.CommandLine" Version="2.0.7" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.7" />
+        <PackageReference Include="Roman-Numerals" Version="2.1.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.9" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.9" />
     </ItemGroup>
 
     <ItemGroup>
@@ -515,33 +503,22 @@
     </Target>
 
     <Target Name="PostPublish-RemoveFiles" AfterTargets="Publish">
-        <!-- Region: Libsql.Client -->
-        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'" />
-
-        <!-- Region: waifu2x-ncnn-vulkan -->
-        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
-        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
-
-        <!-- Region: Hi3Helper.Throttle -->
-        <!--
-        <Delete Files="$(PublishDir)Lib\Hi3Helper.Throttle.dll" Condition="'$(PublishAot)' == 'true'" />
-        -->
-
-        <!-- Region: libzstd -->
-        <ItemGroup Condition="'$(PublishAot)' == 'true'">
-            <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
-        </ItemGroup>
-
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)*.all.onnxe;" />
             <FilesToDelete Include="$(PublishDir)*.winmd;" />
             <FilesToDelete Include="$(PublishDir)*.xml;" />
             <FilesToDelete Include="$(PublishDir)DirectML.dll;" />
-            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
-            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Asg.SemanticIndex*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Search*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Widgets*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.pri;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
+            <FilesToDelete Include="$(PublishDir)NPUDetect.dll;" />
             <FilesToDelete Include="$(PublishDir)onnxruntime*.*;" />
+            <FilesToDelete Include="$(PublishDir)PerceptiveStreaming.dll;" />
             <FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
@@ -558,11 +535,26 @@
         <Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
+        <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
+
+
+        <!-- Region: MagicScaler Decoders -->
         <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpmux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)jxl.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)heif.dll" Condition="'$(PublishAot)' == 'true'" />
-        <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
+
+        <!-- Region: Libsql.Client -->
+        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'" />
+
+        <!-- Region: waifu2x-ncnn-vulkan -->
+        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
+
+        <!-- Region: libzstd -->
+        <ItemGroup Condition="'$(PublishAot)' == 'true'">
+            <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
+        </ItemGroup>
     </Target>
 </Project>

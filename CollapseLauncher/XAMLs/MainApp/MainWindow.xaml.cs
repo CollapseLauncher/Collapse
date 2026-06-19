@@ -222,7 +222,7 @@ namespace CollapseLauncher
 
                 // Hide system menu
                 var controlsHwnd = PInvoke.FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
-                if (controlsHwnd != IntPtr.Zero)
+                if (controlsHwnd != nint.Zero)
                 {
                     PInvoke.DestroyWindow(controlsHwnd);
                 }

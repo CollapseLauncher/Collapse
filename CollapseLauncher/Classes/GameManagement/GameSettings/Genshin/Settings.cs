@@ -5,6 +5,8 @@ using Hi3Helper.Win32.Screen;
 using System.Drawing;
 using System.Text;
 // ReSharper disable IdentifierTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {

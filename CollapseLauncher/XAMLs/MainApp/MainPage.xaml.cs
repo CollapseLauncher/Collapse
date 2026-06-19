@@ -4,8 +4,6 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.LauncherApiLoader;
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
@@ -77,26 +75,6 @@ namespace CollapseLauncher
         internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
         internal ImageBackgroundManager CurrentBackgroundManager => ImageBackgroundManager.Shared;
 
-        public HypLauncherBackgroundList? CurrentGameBackgroundData
-        {
-            get
-            {
-                ILauncherApi?              api  = CurrentPresetConfig?.GameLauncherApi;
-                HypLauncherBackgroundList? data = api?.LauncherGameBackground?.Data;
-                return data;
-            }
-        }
-
-        public bool NeedShowEventIcon
-        {
-            get => GetAppConfigValue("ShowEventsPanel");
-            set
-            {
-                SetAndSaveConfigValue("ShowEventsPanel", value);
-                OnPropertyChanged();
-            }
-        }
-
         #endregion
 
         #region Main Routine
@@ -119,7 +97,6 @@ namespace CollapseLauncher
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBGRegionGrid, GridBGNotifBtn, NotificationPanelClearAllGrid);
-                ImageEventImgViewBox.EnableElementVisibilityAnimation();
             }
             catch (Exception ex)
             {
@@ -151,6 +128,7 @@ namespace CollapseLauncher
         {
             try
             {
+                NavigationViewItemsContext ??= NavigationViewItemsContext.Create(NavigationViewControl);
                 await ShowFFmpegInstallationDialog();
 
                 SubscribeEvents();
@@ -908,17 +886,5 @@ namespace CollapseLauncher
             }
         }
         #endregion
-
-        private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
-        {
-            if (sender is not FrameworkElement asUiElement ||
-                !e.GetCurrentPoint(asUiElement).Properties.IsLeftButtonPressed ||
-                asUiElement.Tag is not string url)
-            {
-                return;
-            }
-
-            SpawnWebView2.SpawnWebView2Window(url, Content);
-        }
     }
 }

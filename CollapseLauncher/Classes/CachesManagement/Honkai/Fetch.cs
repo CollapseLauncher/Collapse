@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.UABT;
 using System;
@@ -161,7 +162,7 @@ namespace CollapseLauncher
         {
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst = type == CacheAssetType.Data;
+            bool isFirst               = type == CacheAssetType.Data;
             bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             foreach (string line in enumerator)
@@ -178,9 +179,8 @@ namespace CollapseLauncher
                 }
 
                 // Get the lucky number if it does so 👀
-                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
+                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int _))
                 {
-                    LuckyNumber = luckyNumber;
                     isNeedReadLuckyNumber = false;
                     continue;
                 }
@@ -297,7 +297,7 @@ namespace CollapseLauncher
             return (count, size);
         }
 
-        private byte[] GetAssetIndexSalt(string data)
+        private static byte[] GetAssetIndexSalt(string data)
         {
             // Get the salt from the string and return as byte[]
             byte[] key;
@@ -314,8 +314,15 @@ namespace CollapseLauncher
                 key = MetadataHelper.CurrentMasterKey?.Key;
             }
 
-            MhyEncTool saltTool = new(data, key);
-            return saltTool.GetSalt();
+            byte[] saltBytes = new byte[8];
+            if (!MhyEncTool.TryGetSalt(data,
+                                       key,
+                                       saltBytes,
+                                       out _,
+                                       out Exception exception))
+                throw exception;
+            
+            return saltBytes;
         }
 
         private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(GamePath!, type == CacheAssetType.Data ? "Data" : "Resources");
@@ -328,7 +335,5 @@ namespace CollapseLauncher
                    input.Contains($"{CacheRegionalCheckName}_{lang}");
             // If none, then pass it as true (non-regional string)
         }
-
-        public KianaDispatch GetCurrentGateway() => GameGateway;
     }
 }

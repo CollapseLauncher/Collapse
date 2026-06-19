@@ -51,14 +51,14 @@ namespace CollapseLauncher.Helper.Image
             };
 
         #region Waifu2X
-        public static Waifu2X _waifu2X;
+        public static Waifu2X Waifu2X;
         private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;
 
         public static Waifu2XStatus Waifu2XStatus => _cachedStatus;
 
         public static bool IsWaifu2XEnabled
         {
-            get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable && _waifu2X != null;
+            get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable && Waifu2X != null;
             set
             {
                 SetAndSaveConfigValue("EnableWaifu2X", value);
@@ -95,13 +95,13 @@ namespace CollapseLauncher.Helper.Image
 
         public static void InitWaifu2X()
         {
-            _waifu2X ??= CreateWaifu2X();
+            Waifu2X ??= CreateWaifu2X();
         }
 
         public static void DestroyWaifu2X()
         {
-            _waifu2X?.Dispose();
-            _waifu2X = null;
+            Waifu2X?.Dispose();
+            Waifu2X = null;
         }
         #endregion
 

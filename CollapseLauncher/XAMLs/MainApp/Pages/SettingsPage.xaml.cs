@@ -13,6 +13,8 @@ using CollapseLauncher.Helper.Loading;
 #endif
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Plugins;
@@ -40,12 +42,14 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,9 +62,6 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Interfaces.Class;
-
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -73,12 +74,13 @@ using CollapseLauncher.Interfaces.Class;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable HeuristicUnreachableCode
 
-
+#nullable enable
 namespace CollapseLauncher.Pages
 {
+    [GeneratedBindableCustomProperty]
     public partial class CDNSelectionContext : NotifyPropertyChanged
     {
-        public ObservableCollection<CDNURLProperty> CDNList => [..FallbackCDNUtil.CDNList];
+        public List<CDNURLProperty> CDNList => FallbackCDNUtil.CDNList;
 
         public int SelectedCDN
         {
@@ -99,8 +101,21 @@ namespace CollapseLauncher.Pages
     }
     
     [GeneratedBindableCustomProperty]
-    public sealed partial class SettingsPage : Page
+    public sealed partial class SettingsPage : Page, INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // ReSharper disable once UnusedMember.Local
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
         #region Properties
 
         private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
@@ -111,17 +126,33 @@ namespace CollapseLauncher.Pages
 
         private readonly Dictionary<string, FrameworkElement>               _settingsControls    = new();
         private readonly Lock                                               _highlightLock       = new();
-        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = new([]);
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = [with([])];
         private          int                                                _highlightCurrentIndex;
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
         private readonly List<MethodInfo>                                   _dialogMethods;
-        private          List<string>                                       DialogMethodNames        { get; }
-        public           string                                             SelectedDialogMethodName { get; set; }
-        private          CDNSelectionContext                                CdnSelectionContext      { get; } = new();
+
+        private List<string> DialogMethodNames { get; }
+
+        public string SelectedDialogMethodName
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private CDNSelectionContext CdnSelectionContext { get; } = new();
 
         private List<TextBlock> FFmpegDecodingModeSelectionItems { get; } = BuildFFmpegDecodingModeSelectionItems();
+
         private List<StackPanel> FFmpegDecodingModeHelpItems { get; } = BuildFFmpegDecodingModeHelpItems();
+
+        private Dictionary<string, PluginInfo> PluginInstances => PluginManager.PluginInstances;
+
+        private bool IsPreviewBuild => LauncherConfig.IsPreview;
 
 #nullable enable
         private string? _previousSearchQuery;
@@ -136,12 +167,18 @@ namespace CollapseLauncher.Pages
             _dialogMethods    = [];
             DialogMethodNames = [];
 #if DEBUG
-            _dialogMethods = typeof(SimpleDialogs)
-                            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                            .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
-                            .ToList();
-            
-            DialogMethodNames = _dialogMethods.Select(m => m.Name).ToList();
+            _dialogMethods =
+            [
+                .. typeof(SimpleDialogs)
+                  .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                  .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
+            ];
+
+            // Create brushes for highlighting
+            _highlightBrush         = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity   = 0.5 };
+
+            DialogMethodNames = [.. _dialogMethods.Select(m => m.Name)];
             
             if (DialogMethodNames.Count > 0)
                 SelectedDialogMethodName = DialogMethodNames[0];
@@ -836,12 +873,12 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
         }
 
-        private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+        private readonly List<WindowSizeProfile> _windowSizeProfilesKey = [.. WindowSizeProfiles.Keys];
         private int SelectedWindowSizeProfile
         {
             get
             {
-                string val = CurrentWindowSizeName;
+                WindowSizeProfile val = CurrentWindowSizeName;
                 return _windowSizeProfilesKey.IndexOf(val);
             }
             set
@@ -1722,10 +1759,6 @@ namespace CollapseLauncher.Pages
         #region Settings Search
         private void InitializeSettingsSearch()
         {
-            // Create brushes for highlighting
-            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
-            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity = 0.5 };
-
             // Map all settings controls with their display text
             if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
             ClearHighlighting();
@@ -1839,7 +1872,7 @@ namespace CollapseLauncher.Pages
                     {
                         // Try to find TextBlock inside the content
                         IEnumerable<TextBlock> textBlocks = element.FindDescendants().OfType<TextBlock>();
-                        TextBlock[]            enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                        TextBlock[]            enumerable = textBlocks as TextBlock[] ?? [.. textBlocks];
                         if (enumerable.Length != 0)
                         {
                             key = string.Join(" ", enumerable.Select(tb => tb.Text));
@@ -1891,7 +1924,7 @@ namespace CollapseLauncher.Pages
 
         private void ClearHighlighting()
         {
-            foreach (HighlightableControlProperty? control in _highlightedControls)
+            foreach (HighlightableControlProperty control in _highlightedControls)
             {
                 control.ClearHighlight();
             }
@@ -2171,11 +2204,11 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
+        private static async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
         {
             ParameterInfo[] parameters = method.GetParameters();
             StackPanel      stackPanel = new();
-            List<Control>   controls   = new();
+            List<Control>   controls   = [];
 
             foreach (ParameterInfo parameter in parameters)
             {
@@ -2219,9 +2252,11 @@ namespace CollapseLauncher.Pages
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                List<string> filtered = DialogMethodNames
-                                       .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
-                                       .ToList();
+                List<string> filtered =
+                [
+                    .. DialogMethodNames
+                       .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                ];
                 sender.ItemsSource = filtered;
             }
         }

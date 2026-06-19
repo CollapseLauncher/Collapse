@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
     "VideoBackground_UseFFmpeg": "Usar FFmpeg para la decodificación de vídeo",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg Decoding Mode",
     "VideoBackground_FFmpegInstallStatus": "Estado de la instalación:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Instalado",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
@@ -993,7 +994,9 @@
     "FeedbackSendFailure": "¡Error al enviar tus comentarios! Compruebe los registros/consola para más información.",
 
     "Tag_Deprecated": "Obsoleto",
-    "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
+    "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados.",
+
+    "DescriptionNotAvailable": "Description is not available."
   },
 
   "_BackgroundNotification": {
@@ -1800,6 +1803,20 @@
     "Genshin Impact": "Miliastra Sandbox"
   },
 
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "Automatic",
+    "AutomaticSystemDecoder": "Automatic with System Decoder",
+    "ForceSystemDecoder": "Force System Decoder",
+    "ForceFFmpegSoftwareDecoder": "Force FFmpeg Software Decoder"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "Automatically choose the best available decoder (Hardware-accelerated Decoder will be preferred if available).",
+    "AutomaticSystemDecoder": "Same as Automatic but FFmpeg will use the built-in System Decoder to decode if available.",
+    "ForceSystemDecoder": "FFmpeg will forcely use built-in System Decoder instead of what is available within the FFmpeg library. You might need to install the additional Windows Media Foundation codecs to play your video with this mode if the decoder is not available or the playback might not run properly.",
+    "ForceFFmpegSoftwareDecoder": "Same as Automatic but FFmpeg will forcely use the Software-based decoder instead of Hardware-accelerated ones."
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Acuerdo:"
   },
@@ -1891,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Calidad Ray Tracing ",
     "AdvancedGraphics_SuperScaling": "Superescalado",
     "AdvancedGraphics_SuperScalingQ": "Prioridad Superescalado",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Ultra Rendimiento",
     "AdvancedGraphics_SuperScalingQ_Performance": "Rendimiento",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Balanceado",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Calidad"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Calidad",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {

@@ -3,9 +3,9 @@ using Hi3Helper.EncTool;
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,11 +20,11 @@ namespace CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
 /// </summary>
 public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMetadata<StarRailAssetSignaturelessMetadata.Metadata>
 {
-    public StarRailAssetSignaturelessMetadata() : this(null)
+    protected StarRailAssetSignaturelessMetadata() : this(null)
     {
     }
 
-    public StarRailAssetSignaturelessMetadata(string? customAssetExtension = null)
+    protected StarRailAssetSignaturelessMetadata(string? customAssetExtension = null)
         : base(0,
                256,
                0, // Leave the rest of it to 0 as this metadata has non-consistent header struct
@@ -78,10 +78,13 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
                                                            cancellationToken: token)
                                          .ConfigureAwait(false);
 
-        Span<byte> countBufferSpan        = countBuffer;
-        int        parentDataCount        = BinaryPrimitives.ReadInt32BigEndian(countBufferSpan);
+        Span<byte> countBufferSpan = countBuffer;
+        int        parentDataCount = BinaryPrimitives.ReadInt32BigEndian(countBufferSpan);
 
         // -- Declare constant length for each parent and children data
+        StarRailBinaryDataHeaderStruct header      = Header;
+        short                          typeVersion = header.TypeVersionFlag.ReverseEndianess();
+
         const int parentDataBufferLen   = 32;
         const int childrenDataBufferLen = 12;
 
@@ -89,8 +92,12 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
         byte[]       parentDataBuffer       = ArrayPool<byte>.Shared.Rent(parentDataBufferLen);
         Memory<byte> parentDataBufferMemory = parentDataBuffer.AsMemory(0, parentDataBufferLen);
 
+        // -- Allocate v3 string field buffer to the Memory<T>
+        byte[]       v3StringFieldLenBuffer       = new byte[2];
+        Memory<byte> v3StringFieldLenBufferMemory = v3StringFieldLenBuffer.AsMemory();
+
         // -- Allocate list
-        DataList = new List<Metadata>(parentDataCount);
+        DataList = [with(parentDataCount)];
 
         try
         {
@@ -108,11 +115,50 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
                                lastPos,
                                out int bytesToSkip,
                                out Metadata result);
-                DataList.Add(result);
 
                 // -- Skip children data
                 currentOffset += await dataStream.SeekForwardAsync(bytesToSkip, token)
                                                  .ConfigureAwait(false);
+
+                switch (typeVersion)
+                {
+                    // Starting from Star Rail 4.3 (Manifest Ver. 3) update, they are adding additional field which contains the subdirectory of the asset.
+                    // So we need to read the string field, and append the subdirectory to the filename if found.
+                    case >= 3:
+                        // Read the string length
+                        await dataStream.ReadAtLeastAsync(v3StringFieldLenBufferMemory,
+                                                          v3StringFieldLenBufferMemory.Length,
+                                                          cancellationToken: token);
+                        short v3StringFieldLen = BinaryPrimitives.ReadInt16BigEndian(v3StringFieldLenBuffer);
+
+                        // If there's a string field, read and append it to the filename
+                        if (v3StringFieldLen != 0)
+                        {
+                            byte[] strBuffer = new byte[v3StringFieldLen];
+                            await dataStream.ReadAtLeastAsync(strBuffer,
+                                                              strBuffer.Length,
+                                                              cancellationToken: token);
+
+                            string str = Encoding.UTF8.GetString(strBuffer);
+                            result = new Metadata
+                            {
+                                Filename    = str.CombineURLFromString(result.Filename),
+                                FileSize    = result.FileSize,
+                                Flags       = result.Flags,
+                                MD5Checksum = result.MD5Checksum
+                            };
+                        }
+                        break;
+                }
+
+                // Dummy read to append into the end-of-struct mark (0x80) + Sanity.
+                int endOfStructMark = dataStream.ReadByte();
+                if (endOfStructMark != 0x80)
+                {
+                    throw new InvalidDataException($"Game data structure might be changed. Unexpected end-of-struct mark, expect 0x80 but received 0x{endOfStructMark:x2} instead. Please report this issue to Collapse developers.");
+                }
+
+                DataList.Add(result);
             }
         }
         finally
@@ -142,8 +188,7 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
 
             // subDataCount = Number of sub-data struct count
             // subDataSize  = Number of sub-data struct size
-            // 1            = Unknown offset, seek +1
-            bytesToSkip = subDataCount * subDataSize + 1;
+            bytesToSkip = subDataCount * subDataSize;
             result = new Metadata
             {
                 MD5Checksum = md5Hash,

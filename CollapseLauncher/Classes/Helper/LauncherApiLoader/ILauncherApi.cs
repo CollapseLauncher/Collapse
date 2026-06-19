@@ -34,10 +34,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         HttpClient?                        ApiGeneralHttpClient        { get; }
         HttpClient?                        ApiResourceHttpClient       { get; }
         bool                               IsPlugin                    { get; }
-        ValueTask<bool> LoadAsync(Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync = null,
-                                  Func<CancellationToken, ValueTask>? afterLoadRoutineAsync  = null,
-                                  ActionOnTimeOutRetry?               onTimeoutRoutine       = null,
-                                  Action<Exception>?                  errorLoadRoutine       = null,
-                                  CancellationToken                   token                  = default);
+        Task<bool> LoadAsync(Func<CancellationToken, Task>? beforeLoadRoutineAsync = null,
+                             Func<CancellationToken, Task>? afterLoadRoutineAsync  = null,
+                             ActionOnTimeOutRetry?          onTimeoutRoutine       = null,
+                             Action<Exception>?             errorLoadRoutine       = null,
+                             CancellationToken              token                  = default);
     }
 }

@@ -39,64 +39,69 @@ namespace CollapseLauncher
 
         private static string RegionToChangeName => MetadataHelper.GetCurrentTranslatedTitleRegion();
 
-        private List<object> LastMenuNavigationItem;
-        private List<object> LastFooterNavigationItem;
-
         private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
+        private          CancellationTokenSourceWrapper?    regionLoadingCts;
 
-        private async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset, string gameName, string gameRegion)
+        private Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset, string gameName, string gameRegion)
         {
-            if (RegionLoadingStatus.ContainsKey((gameName,gameRegion)))
+            TaskCompletionSource<bool> tcs = new();
+            Interlocked.Exchange(ref regionLoadingCts, new CancellationTokenSourceWrapper())?.Dispose();
+            string regionToChangeName = $"{preset.GameLauncherApi?.GameNameTranslation} - {preset.GameLauncherApi?.GameRegionTranslation}";
+
+            if (!RegionLoadingStatus.TryAdd((gameName,gameRegion), false))
             {
                 LogWriteLine($"Region {gameName} - {gameRegion} is already loading, aborting...", LogType.Warning, true);
-                return false;
+                return Task.FromResult(false);
             }
-            RegionLoadingStatus.Add((gameName, gameRegion), false);
-            
-            CancellationTokenSourceWrapper tokenSource = new();
 
-            string regionToChangeName = $"{preset.GameLauncherApi?.GameNameTranslation} - {preset.GameLauncherApi?.GameRegionTranslation}";
-            bool runResult = await (preset.GameLauncherApi?
-                                         .LoadAsync(BeforeLoadRoutine,
-                                                    AfterLoadRoutine,
-                                                    ActionOnTimeOutRetry,
-                                                    OnErrorRoutine,
-                                                    tokenSource.Token) ?? ValueTask.FromResult(false));
-            
-            RegionLoadingStatus.Remove((gameName, gameRegion));
-            return runResult;
+            new Thread(Impl) { IsBackground = false }.Start();
+            return tcs.Task;
+
+            async void Impl()
+            {
+                try
+                {
+                    bool runResult = await (preset.GameLauncherApi?
+                       .LoadAsync(BeforeLoadRoutine,
+                                  AfterLoadRoutine,
+                                  ActionOnTimeOutRetry,
+                                  OnErrorRoutine,
+                                  regionLoadingCts?.Token ?? CancellationToken.None) ?? Task.FromResult(false));
+
+                    RegionLoadingStatus.Remove((gameName, gameRegion));
+                    tcs.SetResult(runResult);
+                }
+                catch (Exception ex)
+                {
+                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                    tcs.SetResult(false);
+                }
+            }
 
             void OnErrorRoutine(Exception ex) => OnErrorRoutineInner(ex, ErrorType.Unhandled);
 
             void OnErrorRoutineInner(Exception ex, ErrorType errorType)
             {
                 Interlocked.Exchange(ref IsLoadRegionComplete, true);
-                LoadingMessageHelper.HideActionButton();
-                LoadingMessageHelper.HideLoadingFrame();
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    LoadingMessageHelper.HideActionButton();
+                    LoadingMessageHelper.HideLoadingFrame();
 
-                LogWriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
-                ErrorSender.SendExceptionWithoutPage(ex, errorType);
-                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                    LogWriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
+                    ErrorSender.SendExceptionWithoutPage(ex, errorType);
+                    MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                });
             }
 
             void CancelLoadEvent(object sender, RoutedEventArgs args)
             {
-                tokenSource.Cancel();
+                regionLoadingCts?.Cancel();
                 Interlocked.Exchange(ref IsLoadRegionComplete, true);
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     // If explicit cancel was triggered, restore the navigation menu item then return false
-                    foreach (object item in LastMenuNavigationItem)
-                    {
-                        NavigationViewControl.MenuItems.Add(item);
-                    }
-                    foreach (object item in LastFooterNavigationItem)
-                    {
-                        NavigationViewControl.FooterMenuItems.Add(item);
-                    }
                     NavigationViewControl.IsSettingsVisible = true;
-                    LastMenuNavigationItem.Clear();
-                    LastFooterNavigationItem.Clear();
                     m_arguments.StartGame?.Play = false;
 
                     ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
@@ -106,7 +111,7 @@ namespace CollapseLauncher
                 });
             }
 
-            async ValueTask AfterLoadRoutine(CancellationToken token)
+            async Task AfterLoadRoutine(CancellationToken token)
             {
                 try
                 {
@@ -132,8 +137,8 @@ namespace CollapseLauncher
 
                     DispatcherQueueExtensions.TryEnqueue(() =>
                     {
+                        // NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.OfType<NavigationViewItem>().FirstOrDefault();
                         OnPropertyChanged(nameof(CurrentPresetConfig));
-                        OnPropertyChanged(nameof(CurrentGameBackgroundData));
                     });
                 }
                 catch (Exception ex)
@@ -151,20 +156,29 @@ namespace CollapseLauncher
                 LoadingMessageHelper.ShowActionButton(Locale.Current.Lang?._Misc?.Cancel, "", CancelLoadEvent);
             }
 
-            async ValueTask BeforeLoadRoutine(CancellationToken token)
+            Task BeforeLoadRoutine(CancellationToken token)
             {
                 try
                 {
-                    Interlocked.Exchange(ref IsLoadRegionComplete, false);
-                    KeyboardShortcuts.CannotUseKbShortcuts = true; // Disable keyboard shortcuts while loading region
-                    LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
+                    try
+                    {
+                        Interlocked.Exchange(ref IsLoadRegionComplete, false);
+                        KeyboardShortcuts.CannotUseKbShortcuts = true; // Disable keyboard shortcuts while loading region
+                        LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
+                    
+                        ClearMainPageState();
+                        _ = ShowAsyncLoadingTimedOutPill(token);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                    }
 
-                    await Task.Run(ClearMainPageState, token);
-                    _ = ShowAsyncLoadingTimedOutPill(token);
+                    return Task.CompletedTask;
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                    return Task.FromException(exception);
                 }
             }
         }
@@ -173,13 +187,6 @@ namespace CollapseLauncher
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                // Clear NavigationViewControl Items and Reset Region props
-                LastMenuNavigationItem = [.. NavigationViewControl.MenuItems];
-                LastFooterNavigationItem = [.. NavigationViewControl.FooterMenuItems];
-                NavigationViewControl.MenuItems.Clear();
-                NavigationViewControl.FooterMenuItems.Clear();
-                NavigationViewControl.IsSettingsVisible = false;
-
                 // Clear cache on navigation reset
                 LauncherFrame.BackStack.Clear();
                 int cacheSizeOld = LauncherFrame.CacheSize;
@@ -203,7 +210,7 @@ namespace CollapseLauncher
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             // Init NavigationPanel Items
-            await Task.Run(() => InitializeNavigationItems(), token);
+            InitializeNavigationItems();
         }
 
         private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion, CancellationToken token)
@@ -297,7 +304,7 @@ namespace CollapseLauncher
             return isBeginValid && isEndValid;
         }
 
-        private async void ChangeRegion(object sender, RoutedEventArgs e)
+        private void ChangeRegion(object? sender, RoutedEventArgs? e)
         {
             try
             {
@@ -310,7 +317,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
+        private async void ChangeRegionNoWarning(object? sender, RoutedEventArgs? e)
         {
             try
             {
@@ -358,10 +365,11 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task<bool> LoadRegionRootButton()
+        private async Task LoadRegionRootButton()
         {
             if (ComboBoxGameTitle.SelectedValue is not string gameTitle ||
-                ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion) return false;
+                ComboBoxGameRegion.SelectedValue is not PresetConfig gameRegion)
+                return;
 
             // Set and Save CurrentRegion in AppConfig
             MetadataHelper.SaveGame(gameTitle, gameRegion.ZoneName);
@@ -373,7 +381,7 @@ namespace CollapseLauncher
             _ = ShowAsyncLoadingTimedOutPill();
             if (!await LoadRegionFromCurrentConfigV2(gameRegion, gameTitle, gameRegion.ZoneName ?? ""))
             {
-                return false;
+                return;
             }
 
             LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
@@ -381,11 +389,9 @@ namespace CollapseLauncher
             if (AppDiscordPresence.IsRpcEnabled)
                 AppDiscordPresence.SetupPresence(gameRegion);
         #endif
-            return true;
-
         }
 
-        private void ToggleChangeRegionBtn(in object sender, bool IsHide)
+        private void ToggleChangeRegionBtn(object? sender, bool IsHide)
         {
             if (IsHide)
             {

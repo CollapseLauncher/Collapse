@@ -16,7 +16,7 @@ public class HypWpfPackageList : HypApiDataLookupable<HypWpfPackageData>
     } = [];
 }
 
-public class HypWpfPackageData : HypApiIdentifiable
+public partial class HypWpfPackageData : HypApiIdentifiable
 {
     [JsonPropertyName("wpf_package")]
     public HypPackageData? PackageInfo { get; set; }

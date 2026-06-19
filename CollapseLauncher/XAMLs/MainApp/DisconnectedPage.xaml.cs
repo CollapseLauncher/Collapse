@@ -2,7 +2,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -37,7 +36,7 @@ namespace CollapseLauncher
 
         private void InitializeRegionComboBox()
         {
-            string? gameTitle = MetadataHelper.GetLastSavedGameTitleOrDefault();
+            var gameTitle = MetadataHelper.GetLastSavedGameTitleOrDefault();
 
             List<string>       gameTitleList  = MetadataHelper.CurrentGameTitleList;
             List<PresetConfig> gameRegionList = MetadataHelper.GetGameRegionList(gameTitle);
@@ -51,7 +50,7 @@ namespace CollapseLauncher
             ComboBoxGameTitle.ItemsSource  = gameTitleList;
             ComboBoxGameRegion.ItemsSource = gameRegionList;
 
-            int indexCategory = gameTitleList.IndexOf(gameTitle ?? "");
+            int indexCategory = gameTitleList.IndexOf(gameTitle);
             if (indexCategory < 0) indexCategory = 0;
 
             int indexRegion = MetadataHelper.GetLastSavedGameRegionIndexOrDefault(gameTitle);
