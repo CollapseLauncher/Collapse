@@ -117,6 +117,18 @@ public enum QualityOption3
 }
 
 /// <summary>
+/// Available options for graphics settings that has 3 or 4 options <br/>
+/// Low, Medium, High, Ultra
+/// </summary>
+public enum QualityOption3_4
+{
+    Low,
+    Medium,
+    High,
+    Ultra
+}
+
+/// <summary>
 /// Available options for graphics settings that has 4 options <br/>
 /// Off, Low, Medium, High
 /// </summary>
@@ -147,18 +159,32 @@ public enum QualityOption5
 public enum SuperResolutionScalingOption
 {
     Disabled = 0,
-    DLSS
+    DLSS,
+    FSR
 }
 
 /// <summary>
 /// Available options for Super Resolution Scaling Quality.
-/// Default : Balanced (1)
+/// Default : Balanced (2)
 /// </summary>
 public enum SuperResolutionScalingQuality
 {
+    UltraPerformance,
     Performance,
     Balanced,
-    Quality
+    Quality,
+    DLAA
+}
+
+/// <summary>
+/// Available options for Frame Generation Engine.
+/// Default : Disabled (0)
+/// </summary>
+public enum FrameGenerationType
+{
+    Disabled = 0,
+    DLSS,
+    FSR
 }
 
 /// <summary>

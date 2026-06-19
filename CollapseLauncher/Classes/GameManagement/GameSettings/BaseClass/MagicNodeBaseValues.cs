@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
@@ -323,7 +324,7 @@ namespace CollapseLauncher.GameSettings.Base
         };
     }
 
-    internal class MagicNodeBaseValues<T> : IGameSettingsValueMagic<T>
+    internal class MagicNodeBaseValues<T> : NotifyPropertyChanged, IGameSettingsValueMagic<T>
         where T : MagicNodeBaseValues<T>, new()
     {
         [JsonIgnore]

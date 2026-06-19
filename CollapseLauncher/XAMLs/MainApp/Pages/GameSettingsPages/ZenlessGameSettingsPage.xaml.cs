@@ -2,6 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using Hi3Helper;
@@ -19,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using WinRT;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
@@ -29,12 +31,16 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [GeneratedBindableCustomProperty]
     public partial class ZenlessGameSettingsPage
     {
+        private ZenlessGameSettingsContext SettingsContext { get; }
+
         public ZenlessGameSettingsPage() : base(GetCurrentGameProperty().GameSettings, Registry.CurrentUser.CreateSubKey(Path.Combine($"Software\\{GetCurrentGameProperty().GameVersion?.VendorTypeProp.VendorType}", GetCurrentGameProperty().GameVersion?.GamePreset.InternalGameNameInConfig!)))
         {
             try
             {
+                SettingsContext = new ZenlessGameSettingsContext((ZenlessSettings)GetCurrentGameProperty().GameSettings!);
                 InitializeComponent();
 
                 ApplyButton.Translation           = new Vector3(0, 0, 32);

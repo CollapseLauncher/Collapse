@@ -20,6 +20,35 @@ namespace CollapseLauncher.Pages
     {
         #region Fields
         private ZenlessSettings? SettingsThis { get => field ??= Settings as ZenlessSettings; }
+
+        // ReSharper disable once IdentifierTypo
+        private static bool? _isDeviceHasRTXGPU;
+        // ReSharper disable once IdentifierTypo
+        public bool IsDeviceHasRTXGPU
+        {
+            get
+            {
+                if (_isDeviceHasRTXGPU != null)
+                {
+                    return (bool)_isDeviceHasRTXGPU;
+                }
+
+                foreach (ReadOnlySpan<char> str in EnumerateGpuNames.GetEnumerateGpuNames())
+                {
+                    if (!str.Contains("Nvidia", StringComparison.OrdinalIgnoreCase) ||
+                        !str.Contains("RTX",    StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    _isDeviceHasRTXGPU = true;
+                    return true;
+                }
+
+                _isDeviceHasRTXGPU = false;
+                return false;
+            }
+        }
         #endregion
 
         #region Methods
@@ -331,26 +360,29 @@ namespace CollapseLauncher.Pages
             set
             {
                 SettingsThis?.SettingsCollapseMisc.LaunchMobileMode = value;
-                SettingsThis?.GeneralData.LocalUILayoutPlatform =
-                    value ? LocalUiLayoutPlatform.Mobile : LocalUiLayoutPlatform.PC;
+                SettingsContext.LocalUILayoutPlatform = value ? LocalUiLayoutPlatform.Mobile : LocalUiLayoutPlatform.PC;
             }
-            
+        }
+
+        public bool AdvancedGraphics_UseDirectX12Api
+        {
+            get => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI == 4;
+            set
+            {
+                SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI = value ? 4 : 3;
+                OnPropertyChanged();
+            }
         }
         #endregion
 
         #region Advanced Settings
         public bool IsUseAdvancedSettings
         {
-            get
-            {
-                bool value = SettingsThis?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
-                AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-                return value;
-            }
+            get => SettingsThis?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
             set
             {
                 SettingsThis?.SettingsCollapseMisc.UseAdvancedGameSettings = value;
-                AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
             }
         }
 
@@ -389,25 +421,38 @@ namespace CollapseLauncher.Pages
                 }
 
                 SettingsThis?.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+                OnPropertyChanged();
             }
         }
 
         public string PreLaunchCommand
         {
             get => SettingsThis?.SettingsCollapseMisc?.GamePreLaunchCommand ?? string.Empty;
-            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand = value;
+            set
+            {
+                SettingsThis?.SettingsCollapseMisc.GamePreLaunchCommand = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
             get => SettingsThis?.SettingsCollapseMisc?.GamePreLaunchExitOnGameStop ?? false;
-            set => SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+            set
+            {
+                SettingsThis?.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+                OnPropertyChanged();
+            }
         }
 
         public int LaunchDelay
         {
             get => SettingsThis?.SettingsCollapseMisc?.GameLaunchDelay ?? 0;
-            set => SettingsThis?.SettingsCollapseMisc.GameLaunchDelay = value;
+            set
+            {
+                SettingsThis?.SettingsCollapseMisc.GameLaunchDelay = value;
+                OnPropertyChanged();
+            }
         }
         
         public bool IsUsePostExitCommand
@@ -428,256 +473,21 @@ namespace CollapseLauncher.Pages
         public string PostExitCommand
         {
             get => SettingsThis?.SettingsCollapseMisc?.GamePostExitCommand ?? string.Empty;
-            set => SettingsThis?.SettingsCollapseMisc.GamePostExitCommand = value;
+            set
+            {
+                SettingsThis?.SettingsCollapseMisc.GamePostExitCommand = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool RunWithExplorerAsParent
         {
             get => SettingsThis?.SettingsCollapseMisc?.RunWithExplorerAsParent ?? false;
-            set => SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent = value;
-        }
-        #endregion
-
-        #region Language Settings - GENERAL_DATA
-        public int Lang_Text
-        {
-            get
+            set
             {
-                int v = (int)(SettingsThis?.GeneralData.DeviceLanguageType ?? default);
-                return v <= 0 ? 1 : v;
+                SettingsThis?.SettingsCollapseMisc.RunWithExplorerAsParent = value;
+                OnPropertyChanged();
             }
-            set => SettingsThis?.GeneralData.DeviceLanguageType = (LanguageText)value;
-        }
-
-        public int Lang_Audio
-        {
-            get
-            {
-                int v = (int)(SettingsThis?.GeneralData.DeviceLanguageVoiceType ?? default);
-                return v <= 0 ? 1 : v;
-            }
-            set => SettingsThis?.GeneralData.DeviceLanguageVoiceType = (LanguageVoice)value;
-        }
-        #endregion
-
-        #region Graphics Settings - GENERAL_DATA > SystemSettingDataMap
-        public bool EnableVSync
-        {
-            get => SettingsThis?.GeneralData?.VSync ?? false;
-            set => SettingsThis?.GeneralData.VSync = value;
-        }
-        
-        public int Graphics_Preset
-        {
-            get => (int)(SettingsThis?.GeneralData.GraphicsPreset ?? default);
-            set => SettingsThis?.GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
-        }
-        
-        public int Graphics_RenderRes
-        {
-            get => (int)(SettingsThis?.GeneralData.RenderResolution ?? default);
-            set => SettingsThis?.GeneralData.RenderResolution = (RenderResOption)value;
-        }
-        
-        public int Graphics_Shadow
-        {
-            get => (int)(SettingsThis?.GeneralData.ShadowQuality ?? default);
-            set => SettingsThis?.GeneralData.ShadowQuality = (QualityOption3)value;
-        }
-        
-        public int Graphics_AntiAliasing
-        {
-            get => (int)(SettingsThis?.GeneralData.AntiAliasing ?? default);
-            set => SettingsThis?.GeneralData.AntiAliasing = (AntiAliasingOption)value;
-        }
-        
-        public int Graphics_VolFog
-        {
-            get => (int)(SettingsThis?.GeneralData.VolumetricFogQuality ?? default);
-            set => SettingsThis?.GeneralData.VolumetricFogQuality = (QualityOption4)value;
-        }
-
-        public bool Graphics_Bloom
-        {
-            get => SettingsThis?.GeneralData.Bloom ?? false;
-            set => SettingsThis?.GeneralData.Bloom = value;
-        }
-
-        public bool Graphics_MotionBlur
-        {
-            get => SettingsThis?.GeneralData.MotionBlur ?? false;
-            set => SettingsThis?.GeneralData.MotionBlur = value;
-        }
-
-        public int Graphics_Reflection
-        {
-            get => (int)(SettingsThis?.GeneralData.ReflectionQuality ?? default);
-            set => SettingsThis?.GeneralData.ReflectionQuality = (QualityOption4)value;
-        }
-        
-        public int Graphics_Effects
-        {
-            get => (int)(SettingsThis?.GeneralData.FxQuality ?? default);
-            set => SettingsThis?.GeneralData.FxQuality = (QualityOption5)value;
-        }
-
-        public int Graphics_ColorFilter
-        {
-            get => SettingsThis?.GeneralData.ColorFilter ?? 0;
-            set => SettingsThis?.GeneralData.ColorFilter = value;
-        }
-        
-        public int Graphics_Character
-        {
-            get => (int)(SettingsThis?.GeneralData.CharacterQuality ?? default);
-            set => SettingsThis?.GeneralData.CharacterQuality = (QualityOption2)value;
-        }
-
-        public bool Graphics_Distortion
-        {
-            get => SettingsThis?.GeneralData.Distortion ?? false;
-            set => SettingsThis?.GeneralData.Distortion = value;
-        }
-        
-        public int Graphics_Shading
-        {
-            get => (int)(SettingsThis?.GeneralData.ShadingQuality ?? default);
-            set => SettingsThis?.GeneralData.ShadingQuality = (QualityOption3)value;
-        }
-        
-        public int Graphics_Environment
-        {
-            get => (int)(SettingsThis?.GeneralData.EnvironmentQuality ?? default);
-            set => SettingsThis?.GeneralData.EnvironmentQuality = (QualityOption2)value;
-        }
-        
-        public int Graphics_AnisotropicSampling
-        {
-            get => (int)(SettingsThis?.GeneralData.AnisotropicSampling ?? default);
-            set => SettingsThis?.GeneralData.AnisotropicSampling = (AnisotropicSamplingOption)value;
-        }
-
-        public int Graphics_GlobalIllumination
-        {
-            get => (int)(SettingsThis?.GeneralData.GlobalIllumination ?? default);
-            set => SettingsThis?.GeneralData.GlobalIllumination = (QualityOption3)value;
-        }
-
-        public int Graphics_Fps
-        {
-            get => (int)(SettingsThis?.GeneralData.Fps ?? default);
-            set => SettingsThis?.GeneralData.Fps = (FpsOption)value;
-        }
-
-        /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
-        public int Graphics_HiPreCharaAnim
-        {
-            get => (int)(SettingsThis?.GeneralData.HiPrecisionCharaAnim ?? default);
-            set => SettingsThis?.GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
-        }
-
-        public bool AdvancedGraphics_UseDirectX12Api
-        {
-            get => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI == 4;
-            set => SettingsThis?.SettingsCollapseScreen.GameGraphicsAPI = value ? 4 : 3;
-        }
-
-        public bool AdvancedGraphics_UseRayTracing
-        {
-            get => SettingsThis?.GeneralData.RayTracing_Enabled ?? false;
-            set => SettingsThis?.GeneralData.RayTracing_Enabled = value;
-        }
-
-        public int AdvancedGraphics_RayTracingQuality
-        {
-            get => (int)(SettingsThis?.GeneralData.RayTracing_Quality ?? default);
-            set => SettingsThis?.GeneralData.RayTracing_Quality = (QualityOption3)value;
-        }
-
-        public int AdvancedGraphics_SuperResolutionOption
-        {
-            get => (int)(SettingsThis?.GeneralData.SuperResolution_Option ?? default);
-            set => SettingsThis?.GeneralData.SuperResolution_Option = (SuperResolutionScalingOption)value;
-        }
-
-        public int AdvancedGraphics_SuperResolutionQuality
-        {
-            get => (int)(SettingsThis?.GeneralData.SuperResolution_Quality ?? default);
-            set => SettingsThis?.GeneralData.SuperResolution_Quality = (SuperResolutionScalingQuality)value;
-        }
-
-        // ReSharper disable once IdentifierTypo
-        private static bool? _isDeviceHasRTXGPU;
-        // ReSharper disable once IdentifierTypo
-        public bool IsDeviceHasRTXGPU
-        {
-            get
-            {
-                if (_isDeviceHasRTXGPU != null)
-                {
-                    return (bool)_isDeviceHasRTXGPU;
-                }
-
-                foreach (ReadOnlySpan<char> str in EnumerateGpuNames.GetEnumerateGpuNames())
-                {
-                    if (!str.Contains("Nvidia", StringComparison.OrdinalIgnoreCase) ||
-                        !str.Contains("RTX",    StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    _isDeviceHasRTXGPU = true;
-                    return true;
-                }
-
-                _isDeviceHasRTXGPU = false;
-                return false;
-            }
-        }
-        #endregion
-
-        #region Audio Settings - GENERAL_DATA > SystemSettingDataMap
-
-        public int Audio_VolMain
-        {
-            get => SettingsThis?.GeneralData.Audio_MainVolume ?? 0;
-            set => SettingsThis?.GeneralData.Audio_MainVolume = value;
-        }
-
-        public int Audio_VolMusic
-        {
-            get => SettingsThis?.GeneralData.Audio_MusicVolume ?? 0;
-            set => SettingsThis?.GeneralData.Audio_MusicVolume = value;
-        }
-
-        public int Audio_VolDialog
-        {
-            get => SettingsThis?.GeneralData.Audio_DialogVolume ?? 0;
-            set => SettingsThis?.GeneralData.Audio_DialogVolume = value;
-        }
-
-        public int Audio_VolSfx
-        {
-            get => SettingsThis?.GeneralData.Audio_SfxVolume ?? 0;
-            set => SettingsThis?.GeneralData.Audio_SfxVolume = value;
-        }
-
-        public int Audio_VolAmbient
-        {
-            get => SettingsThis?.GeneralData.Audio_AmbientVolume ?? 0;
-            set => SettingsThis?.GeneralData.Audio_AmbientVolume = value;
-        }
-
-        public int Audio_PlaybackDevice
-        {
-            get => (int)(SettingsThis?.GeneralData.Audio_PlaybackDevice ?? default);
-            set => SettingsThis?.GeneralData.Audio_PlaybackDevice = (AudioPlaybackDevice)value;
-        }
-
-        public bool Audio_MuteOnMinimize
-        {
-            get => SettingsThis?.GeneralData.Audio_MuteOnMinimize ?? false;
-            set => SettingsThis?.GeneralData.Audio_MuteOnMinimize = value;
         }
         #endregion
     }

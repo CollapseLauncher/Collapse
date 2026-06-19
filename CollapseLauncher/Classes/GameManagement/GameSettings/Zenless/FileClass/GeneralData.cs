@@ -7,6 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using WinRT;
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
@@ -17,6 +19,7 @@ using System.Text.Json.Serialization.Metadata;
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless
 {
+    [GeneratedBindableCustomProperty]
     internal sealed partial class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
     {
         #region Disposer
@@ -27,31 +30,6 @@ namespace CollapseLauncher.GameSettings.Zenless
             _keyboardBindingMap = null;
             _mouseBindingMap = null;
             _gamepadBindingMap = null;
-            _graphicsPresData = null;
-            _resolutionIndexData = null;
-            _vSyncData = null;
-            _renderResolutionData = null;
-            _shadowQualityData = null;
-            _antiAliasingData = null;
-            _volFogQualityData = null;
-            _bloomData = null;
-            _reflQualityData = null;
-            _fxQualityData = null;
-            _colorFilterData = null;
-            _charQualityData = null;
-            _distortionData = null;
-            _shadingQualityData = null;
-            _envQualityData = null;
-            _envGlobalIllumination = null;
-            _vMotionBlur = null;
-            _fpsData = null;
-            _hpcaData = null;
-            _mainVolData = null;
-            _musicVolData = null;
-            _dialogVolData = null;
-            _sfxVolData = null;
-            _playDevData = null;
-            _muteAudOnMinimizeData = null;
 
             GC.Collect();
         }
@@ -275,8 +253,6 @@ namespace CollapseLauncher.GameSettings.Zenless
         #region Graphics
 
         // Key 3 Preset
-        private SystemSettingLocalData<GraphicsPresetOption>? _graphicsPresData;
-
         /// <summary>
         ///     Sets the preset for Graphics Settings
         /// </summary>
@@ -284,30 +260,22 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public GraphicsPresetOption GraphicsPreset
         {
-            get => (_graphicsPresData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("3", GraphicsPresetOption.Medium))
-            .GetDataEnum<GraphicsPresetOption>();
-            set => _graphicsPresData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("3", GraphicsPresetOption.Medium).GetDataEnum<GraphicsPresetOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("3", GraphicsPresetOption.Medium).SetDataEnum(value);
         }
 
         // Key 5 Resolution Select
-        private SystemSettingLocalData<int>? _resolutionIndexData;
-
         /// <summary>
         ///     Sets the resolution based on the in-game logic.
         /// </summary>
         [JsonIgnore]
         public int ResolutionIndex
         {
-            get => (_resolutionIndexData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("5", -1))
-            .GetData();
-            set => _resolutionIndexData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("5", -1).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("5", -1).SetData(value);
         }
 
         // Key 8 VSync
-        private SystemSettingLocalData<int>? _vSyncData;
-
         /// <summary>
         ///     Set VSync mode
         /// </summary>
@@ -315,15 +283,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         public bool VSync
         {
             // Initialize the field under _vSyncData as SystemSettingLocalData<TValue>
-            get => (_vSyncData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("8", 1))
-            .GetData() == 1;
-            set => _vSyncData?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("8", 1).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("8", 1).SetData(value ? 1 : 0);
         }
 
         // Key 9 Render Resolution
-        private SystemSettingLocalData<RenderResOption>? _renderResolutionData;
-
         /// <summary>
         ///     Sets the render resolution used in-game
         /// </summary>
@@ -332,15 +296,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         public RenderResOption RenderResolution
         {
             // Initialize the field under _renderResolutionData as SystemSettingLocalData<TValue>
-            get => (_renderResolutionData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("9", RenderResOption.f10))
-            .GetDataEnum<RenderResOption>();
-            set => _renderResolutionData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("9", RenderResOption.f10).GetDataEnum<RenderResOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("9", RenderResOption.f10).SetDataEnum(value);
         }
 
         // Key 10 Shadow
-        private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Shadow
         /// </summary>
@@ -349,28 +309,20 @@ namespace CollapseLauncher.GameSettings.Zenless
         public QualityOption3 ShadowQuality
         {
             // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
-            get => (_shadowQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("10", QualityOption3.Medium))
-            .GetDataEnum<QualityOption3>();
-            set => _shadowQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("10", QualityOption3.Medium).GetDataEnum<QualityOption3>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("10", QualityOption3.Medium).SetDataEnum(value);
         }
 
         // Key 12 Anti Aliasing
-        private SystemSettingLocalData<AntiAliasingOption>? _antiAliasingData;
-
         [JsonIgnore]
         public AntiAliasingOption AntiAliasing
         {
             // Initialize the field under _antiAliasingData as SystemSettingLocalData<TValue>
-            get => (_antiAliasingData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("12", AntiAliasingOption.TAA))
-            .GetDataEnum<AntiAliasingOption>();
-            set => _antiAliasingData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("12", AntiAliasingOption.TAA).GetDataEnum<AntiAliasingOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("12", AntiAliasingOption.TAA).SetDataEnum(value);
         }
 
         // Key 13 Volumetric Fog
-        private SystemSettingLocalData<QualityOption4>? _volFogQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Volumetric Fog
         /// </summary>
@@ -378,27 +330,19 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption4 VolumetricFogQuality
         {
-            get => (_volFogQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("13", QualityOption4.Medium))
-            .GetDataEnum<QualityOption4>();
-            set => _volFogQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("13", QualityOption4.Medium).GetDataEnum<QualityOption4>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("13", QualityOption4.Medium).SetDataEnum(value);
         }
 
         // Key 14 Bloom
-        private SystemSettingLocalData<int>? _bloomData;
-
         [JsonIgnore]
         public bool Bloom
         {
-            get => (_bloomData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("14", 1))
-            .GetData() == 1;
-            set => _bloomData?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("14", 1).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("14", 1).SetData(value ? 1 : 0);
         }
 
         // Key 15 Reflection
-        private SystemSettingLocalData<QualityOption4>? _reflQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Reflection
         /// </summary>
@@ -406,15 +350,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption4 ReflectionQuality
         {
-            get => (_reflQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("15", QualityOption4.Medium))
-            .GetDataEnum<QualityOption4>();
-            set => _reflQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("15", QualityOption4.Medium).GetDataEnum<QualityOption4>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("15", QualityOption4.Medium).SetDataEnum(value);
         }
 
         // Key 16 Effects
-        private SystemSettingLocalData<QualityOption5>? _fxQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Effects
         /// </summary>
@@ -422,26 +362,18 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption5 FxQuality
         {
-            get => (_fxQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("16", QualityOption5.Medium))
-            .GetDataEnum<QualityOption5>();
-            set => _fxQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("16", QualityOption5.Medium).GetDataEnum<QualityOption5>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("16", QualityOption5.Medium).SetDataEnum(value);
         }
 
         // Key 95 Color Filter Effect
-        private SystemSettingLocalData<int>? _colorFilterData;
-
         public int ColorFilter
         {
-            get => (_colorFilterData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("95", 10))
-            .GetData();
-            set => _colorFilterData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("95", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("95", 10).SetData(value);
         }
 
         // Key 99 Character Quality
-        private SystemSettingLocalData<QualityOption2>? _charQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Character
         /// </summary>
@@ -449,28 +381,19 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption2 CharacterQuality
         {
-            get => (_charQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("99", QualityOption2.High))
-            .GetDataEnum<QualityOption2>();
-            set =>
-                _charQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("99", QualityOption2.High).GetDataEnum<QualityOption2>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("99", QualityOption2.High).SetDataEnum(value);
         }
 
         // Key 107 Distortion
-        private SystemSettingLocalData<int>? _distortionData;
-
         [JsonIgnore]
         public bool Distortion
         {
-            get => (_distortionData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("107", 1))
-            .GetData() == 1;
-            set => _distortionData?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("107", 1).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("107", 1).SetData(value ? 1 : 0);
         }
 
         // Key 108 Shading Quality
-        private SystemSettingLocalData<QualityOption3>? _shadingQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Color
         /// </summary>
@@ -478,15 +401,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption3 ShadingQuality
         {
-            get => (_shadingQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("108", QualityOption3.Medium))
-            .GetDataEnum<QualityOption3>();
-            set => _shadingQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("108", QualityOption3.Medium).GetDataEnum<QualityOption3>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("108", QualityOption3.Medium).SetDataEnum(value);
         }
 
         // Key 109 Environment Quality
-        private SystemSettingLocalData<QualityOption2>? _envQualityData;
-
         /// <summary>
         ///     Sets the in-game quality settings for Environment
         /// </summary>
@@ -494,15 +413,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption2 EnvironmentQuality
         {
-            get => (_envQualityData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("109", QualityOption2.High))
-            .GetDataEnum<QualityOption2>();
-            set => _envQualityData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("109", QualityOption2.High).GetDataEnum<QualityOption2>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("109", QualityOption2.High).SetDataEnum(value);
         }
         
         // Key 16184 Anisotropic Sampling
-        private SystemSettingLocalData<AnisotropicSamplingOption>? _anisotropicSamplingData;
-        
         /// <summary>
         ///     Sets the in-game quality settings for Anisotropic Sampling
         /// </summary>
@@ -510,15 +425,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public AnisotropicSamplingOption AnisotropicSampling
         {
-            get => (_anisotropicSamplingData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("16184", AnisotropicSamplingOption.x8))
-            .GetDataEnum<AnisotropicSamplingOption>();
-            set => _anisotropicSamplingData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("16184", AnisotropicSamplingOption.x8).GetDataEnum<AnisotropicSamplingOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("16184", AnisotropicSamplingOption.x8).SetDataEnum(value);
         }
         
         // Key 12155 Global Illumination
-        private SystemSettingLocalData<QualityOption3>? _envGlobalIllumination;
-
         /// <summary>
         ///     Sets the in-game global illumination settings for Environment
         /// </summary>
@@ -526,30 +437,22 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public QualityOption3 GlobalIllumination
         {
-            get => (_envGlobalIllumination ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("12155", QualityOption3.High))
-            .GetDataEnum<QualityOption3>();
-            set => _envGlobalIllumination?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("12155", QualityOption3.High).GetDataEnum<QualityOption3>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("12155", QualityOption3.High).SetDataEnum(value);
         }
 
         // Key 106 Motion Blur
-        private SystemSettingLocalData<int>? _vMotionBlur;
-
         /// <summary>
         ///     Set Motion Blur mode
         /// </summary>
         [JsonIgnore]
         public bool MotionBlur
         {
-            get => (_vMotionBlur ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("106", 1))
-            .GetData() == 1;
-            set => _vMotionBlur?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("106", 1).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("106", 1).SetData(value ? 1 : 0);
         }
 
         // Key 110 FPS
-        private SystemSettingLocalData<FpsOption>? _fpsData;
-
         /// <summary>
         ///     Sets the in-game frame limiter
         /// </summary>
@@ -558,15 +461,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         public FpsOption Fps
         {
             // Initialize the field under _fpsData as SystemSettingLocalData<TValue>
-            get => (_fpsData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("110", FpsOption.Hi60))
-            .GetDataEnum<FpsOption>();
-            set => _fpsData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("110", FpsOption.Hi60).GetDataEnum<FpsOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("110", FpsOption.Hi60).SetDataEnum(value);
         }
 
         // Key 13162 High-Precision Character Animation
-        private SystemSettingLocalData<HiPrecisionCharaAnimOption>? _hpcaData;
-
         /// <summary>
         ///     Sets in-game settings for High-Precision Character Animation. <br />
         ///     Whatever that is ¯\_(ツ)_/¯
@@ -575,10 +474,8 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public HiPrecisionCharaAnimOption HiPrecisionCharaAnim
         {
-            get => (_hpcaData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("13162", HiPrecisionCharaAnimOption.Off))
-            .GetDataEnum<HiPrecisionCharaAnimOption>();
-            set => _hpcaData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("13162", HiPrecisionCharaAnimOption.Off).GetDataEnum<HiPrecisionCharaAnimOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("13162", HiPrecisionCharaAnimOption.Off).SetDataEnum(value);
         }
 
         #endregion
@@ -586,8 +483,6 @@ namespace CollapseLauncher.GameSettings.Zenless
         #region Advanced Graphics Settings
 
         // Key 22003 Ray Tracing
-        private SystemSettingLocalData<int>? _rayTracingEnabled;
-
         /// <summary>
         ///     Sets whether Ray Tracing is enabled or not
         /// </summary>
@@ -595,29 +490,23 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public bool RayTracing_Enabled
         {
-            get => (_rayTracingEnabled ??= SystemSettingDataMap .AsSystemSettingLocalData("22003", 0))
-               .GetData() == 1;
-            set => _rayTracingEnabled?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("22003", 0).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("22003", 0).SetData(value ? 1 : 0);
         }
 
         // Key 23001 Ray Tracing Quality
-        private SystemSettingLocalData<QualityOption3>? _rayTracingQuality;
-
         /// <summary>
         ///     Sets the Ray Tracing quality level
         /// </summary>
-        /// <see cref="QualityOption3" />
+        /// <see cref="QualityOption3_4" />
         [JsonIgnore]
-        public QualityOption3 RayTracing_Quality
+        public QualityOption3_4 RayTracing_Quality
         {
-            get => (_rayTracingQuality ??= SystemSettingDataMap.AsSystemSettingLocalData("23001", QualityOption3.Medium))
-               .GetDataEnum<QualityOption3>();
-            set => _rayTracingQuality?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("23001", QualityOption3_4.Medium).GetDataEnum<QualityOption3_4>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("23001", QualityOption3_4.Medium).SetDataEnum(value);
         }
 
         // Key 22004 Super Resolution
-        private SystemSettingLocalData<SuperResolutionScalingOption>? _superResolutionOption;
-
         /// <summary>
         ///     Sets the mode of available Super Resolution scaling
         /// </summary>
@@ -625,14 +514,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public SuperResolutionScalingOption SuperResolution_Option
         {
-            get => (_superResolutionOption ??= SystemSettingDataMap.AsSystemSettingLocalData("22004", SuperResolutionScalingOption.Disabled))
-               .GetDataEnum<SuperResolutionScalingOption>();
-            set => _superResolutionOption?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("22004", SuperResolutionScalingOption.Disabled).GetDataEnum<SuperResolutionScalingOption>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("22004", SuperResolutionScalingOption.Disabled).SetDataEnum(value);
         }
 
         // Key 22005 Super Resolution Quality
-        private SystemSettingLocalData<SuperResolutionScalingQuality>? _superResolutionQuality;
-
         /// <summary>
         ///     Sets the mode of available quality for Super Resolution scaling
         /// </summary>
@@ -640,9 +526,20 @@ namespace CollapseLauncher.GameSettings.Zenless
         [JsonIgnore]
         public SuperResolutionScalingQuality SuperResolution_Quality
         {
-            get => (_superResolutionQuality ??= SystemSettingDataMap.AsSystemSettingLocalData("22005", SuperResolutionScalingQuality.Balanced))
-               .GetDataEnum<SuperResolutionScalingQuality>();
-            set => _superResolutionQuality?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("22005", SuperResolutionScalingQuality.Balanced).GetDataEnum<SuperResolutionScalingQuality>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("22005", SuperResolutionScalingQuality.Balanced).SetDataEnum(value);
+        }
+
+        // Key 22006 Super Resolution Quality
+        /// <summary>
+        ///     Sets the mode of available quality for Super Resolution scaling
+        /// </summary>
+        /// <see cref="FrameGenerationType" />
+        [JsonIgnore]
+        public FrameGenerationType FrameGeneration_Type
+        {
+            get => SystemSettingDataMap.AsSystemSettingLocalData("22006", FrameGenerationType.Disabled).GetDataEnum<FrameGenerationType>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("22006", FrameGenerationType.Disabled).SetDataEnum(value);
         }
 
         #endregion
@@ -650,87 +547,59 @@ namespace CollapseLauncher.GameSettings.Zenless
         #region Audio
 
         // Key 31 Main Volume
-        private SystemSettingLocalData<int>? _mainVolData;
-
         [JsonIgnore]
         public int Audio_MainVolume
         {
-            get => (_mainVolData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("31", 10))
-            .GetData();
-            set => _mainVolData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("31", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("31", 10).SetData(value);
         }
 
         // Key 32 Music
-        private SystemSettingLocalData<int>? _musicVolData;
-
         [JsonIgnore]
         public int Audio_MusicVolume
         {
-            get => (_musicVolData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("32", 10))
-            .GetData();
-            set => _musicVolData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("32", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("32", 10).SetData(value);
         }
 
         // Key 33 Dialog
-        private SystemSettingLocalData<int>? _dialogVolData;
-
         [JsonIgnore]
         public int Audio_DialogVolume
         {
-            get => (_dialogVolData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("33", 10))
-            .GetData();
-            set => _dialogVolData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("33", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("33", 10).SetData(value);
         }
 
         // Key 34 SFX
-        private SystemSettingLocalData<int>? _sfxVolData;
-
         [JsonIgnore]
         public int Audio_SfxVolume
         {
-            get => (_sfxVolData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("34", 10))
-            .GetData();
-            set => _sfxVolData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("34", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("34", 10).SetData(value);
         }
 
         // Key 20192 Ambient
-        private SystemSettingLocalData<int>? _ambientVolData;
-
         [JsonIgnore]
         public int Audio_AmbientVolume
         {
-            get => (_ambientVolData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("20192", 10))
-            .GetData();
-            set => _ambientVolData?.SetData(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("20192", 10).GetData();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("20192", 10).SetData(value);
         }
 
         // Key 10104 Playback Device Type
-        private SystemSettingLocalData<AudioPlaybackDevice>? _playDevData;
-
         [JsonIgnore]
         public AudioPlaybackDevice Audio_PlaybackDevice
         {
-            get => (_playDevData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("10104", AudioPlaybackDevice.Headphones))
-            .GetDataEnum<AudioPlaybackDevice>();
-            set => _playDevData?.SetDataEnum(value);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("10104", AudioPlaybackDevice.Headphones).GetDataEnum<AudioPlaybackDevice>();
+            set => SystemSettingDataMap.AsSystemSettingLocalData("10104", AudioPlaybackDevice.Headphones).SetDataEnum(value);
         }
 
         // Key 10113 Mute on Background
-        private SystemSettingLocalData<int>? _muteAudOnMinimizeData;
-
         [JsonIgnore]
         public bool Audio_MuteOnMinimize
         {
-            get => (_muteAudOnMinimizeData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("10113", 1))
-            .GetData() == 1;
-            set => _muteAudOnMinimizeData?.SetData(value ? 1 : 0);
+            get => SystemSettingDataMap.AsSystemSettingLocalData("10113", 1).GetData() == 1;
+            set => SystemSettingDataMap.AsSystemSettingLocalData("10113", 1).SetData(value ? 1 : 0);
         }
 
         #endregion
