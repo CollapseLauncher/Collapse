@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Acryl-Effekt bei Verwendung eines Videohintergrunds anwenden",
     "VideoBackground_AudioVolume": "Lautstärke",
     "VideoBackground_UseFFmpeg": "FFmpeg für die Videodekodierung verwenden",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg-Dekodierungsmodus",
     "VideoBackground_FFmpegInstallStatus": "Installationsstatus:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Installiert",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Nicht installiert",
@@ -560,7 +561,7 @@
     "VideoBackground_FFmpegInstallNote": "Hinweis",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher unterstützt nur die FFmpeg-Version 7.x. Andere Versionen von FFmpeg werden derzeit nicht unterstützt!",
     "VideoBackground_FFmpegInstallLockedTitle": "Änderung der FFmpeg-Installation ist gesperrt",
-    "VideoBackground_FFmpegInstallLockedContent": "Derzeit wird FFmpeg für die Dekodierung deines aktuellen Hintergrunds verwendet. Um deine bestehende Installation zu ändern, deaktiviere bitte zunächst die Option „FFmpeg für die Videodekodierung verwenden“, starte deinen Launcher neu, kehre zu diesen Einstellungen zurück und klicke dann auf die Schaltfläche „Neue Installation starten oder Assistenten suchen“.",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg wird derzeit für die Dekodierung des Hintergrunds verwendet. Um deine bestehende Installation anzupassen, deaktiviere bitte zunächst die Option „FFmpeg für die Videodekodierung verwenden“, starte dann den Launcher neu und kehre zu dieser Einstellung zurück.",
 
     "Update": "Nach Updates suchen",
     "Update_CurVer": "Aktuelle Version:",
@@ -993,7 +994,9 @@
     "FeedbackSendFailure": "Das Senden des Feedbacks ist fehlgeschlagen! Weitere Informationen findest du in den Protokollen/der Konsole.",
 
     "Tag_Deprecated": "Veraltet",
-    "Generic_GameFeatureDeprecation": "Aufgrund unvorhergesehener Änderungen am Spiel wurde diese Funktion als veraltet eingestuft und wird in Zukunft entfernt. Die Verwendung dieser Funktion kann zu unerwartetem Verhalten führen."
+    "Generic_GameFeatureDeprecation": "Aufgrund unvorhergesehener Änderungen am Spiel wurde diese Funktion als veraltet eingestuft und wird in Zukunft entfernt. Die Verwendung dieser Funktion kann zu unerwartetem Verhalten führen.",
+
+    "DescriptionNotAvailable": "Keine Beschreibung verfügbar."
   },
 
   "_BackgroundNotification": {
@@ -1800,6 +1803,20 @@
     "Genshin Impact": "Miliastra Sandbox"
   },
 
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "Automatisch",
+    "AutomaticSystemDecoder": "Automatisch mit System-Decoder",
+    "ForceSystemDecoder": "System-Decoder erzwingen",
+    "ForceFFmpegSoftwareDecoder": "FFmpeg-Software-Decoder erzwingen"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "Wählt automatisch den besten verfügbaren Decoder aus (ein hardwarebeschleunigter Decoder wird bevorzugt, sofern verfügbar).",
+    "AutomaticSystemDecoder": "Wie „Automatisch“, FFmpeg verwendet jedoch den integrierten System-Decoder zum Dekodieren, sofern dieser verfügbar ist.",
+    "ForceSystemDecoder": "FFmpeg verwendet in diesem Modus zwingend den integrierten Systemdecoder anstelle der in der FFmpeg-Bibliothek verfügbaren Decoder. Möglicherweise musst du die zusätzlichen Windows Media Foundation-Codecs installieren, um dein Video in diesem Modus abzuspielen, falls der Decoder nicht verfügbar ist oder die Wiedergabe sonst möglicherweise nicht ordnungsgemäß funktioniert.",
+    "ForceFFmpegSoftwareDecoder": "Wie „Automatisch“, FFmpeg verwendet jedoch zwingend den softwarebasierten Decoder anstelle der hardwarebeschleunigten."
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Vereinbarung:"
   },
@@ -1891,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Raytracing-Qualität",
     "AdvancedGraphics_SuperScaling": "Super-Skalierung",
     "AdvancedGraphics_SuperScalingQ": "Super-Skalierungspriorität",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Ultra Performance",
     "AdvancedGraphics_SuperScalingQ_Performance": "Leistung",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Ausgewogen",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Qualität"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Qualität",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {
