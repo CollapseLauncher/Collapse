@@ -533,7 +533,7 @@ namespace CollapseLauncher
             LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
             // Try check the status of the URL
-            (HttpStatusCode, bool) returnCode = await downloadClient.GetURLStatus(absoluteURL, token);
+            (HttpStatusCode, bool) returnCode = await downloadClient.GetUrlStatus(absoluteURL, token);
 
             if (returnCode.Item2)
             {
@@ -546,7 +546,7 @@ namespace CollapseLauncher
             return (false, absoluteURL);
         }
 
-        private static async ValueTask<UrlStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
+        private static async ValueTask<UrlStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token)
         {
             try
             {
@@ -628,7 +628,7 @@ namespace CollapseLauncher
             long[] latencies = new long[CDNList.Count];
 
             // Warming up
-            foreach (CDNURLProperty cdnProperty in CDNList) await TryGetURLStatus(cdnProperty, fileAsPingTarget, tokenSource.Token, true);
+            foreach (CDNURLProperty cdnProperty in CDNList) await TryGetURLStatus(cdnProperty, fileAsPingTarget, tokenSource.Token);
 
             using (tokenSource)
             {
@@ -649,7 +649,7 @@ namespace CollapseLauncher
                         // Restart the stopwatch
                         stopwatch.Restart();
                         // Get the URL Status then return boolean and URLStatus
-                        UrlStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
+                        UrlStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token);
                         latencyAvgArr[j] = !(isSuccess = urlStatus is { IsSuccessStatusCode: true }) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
 
