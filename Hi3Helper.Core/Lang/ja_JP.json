@@ -1908,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "レイトレーシング品質",
     "AdvancedGraphics_SuperScaling": "スーパースケーリング",
     "AdvancedGraphics_SuperScalingQ": "スーパースケーリング優先度",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "ウルトラパフォーマンス",
     "AdvancedGraphics_SuperScalingQ_Performance": "パフォーマンス",
     "AdvancedGraphics_SuperScalingQ_Balanced": "バランス",
-    "AdvancedGraphics_SuperScalingQ_Quality": "クォリティ"
+    "AdvancedGraphics_SuperScalingQ_Quality": "クォリティ",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {
