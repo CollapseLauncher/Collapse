@@ -644,14 +644,16 @@ namespace CollapseLauncher.Pages
 
         private void ImageEventImg_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            GetFadeOpacityAnimation(ImageEventImgNormal, true,  0.075d, delaySeconds: 0.03d).Begin();
-            GetFadeOpacityAnimation(ImageEventImgHover,  false, 0.05d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgNormal,      true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHover,       false, 0.05d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHoverShadow, false, 0.05d).Begin();
         }
 
         private void ImageEventImg_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            GetFadeOpacityAnimation(ImageEventImgHover,  true,  0.075d, delaySeconds: 0.03d).Begin();
-            GetFadeOpacityAnimation(ImageEventImgNormal, false, 0.05d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHover,       true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgHoverShadow, true,  0.075d, delaySeconds: 0.03d).Begin();
+            GetFadeOpacityAnimation(ImageEventImgNormal,      false, 0.05d).Begin();
         }
 
         #endregion

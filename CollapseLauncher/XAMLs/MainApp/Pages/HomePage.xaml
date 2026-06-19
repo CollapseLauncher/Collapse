@@ -14,6 +14,7 @@
       xmlns:helper="using:CollapseLauncher.Helper"
       xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
+      xmlns:ui="using:CommunityToolkit.WinUI"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
@@ -204,11 +205,19 @@
                           Margin="{x:Bind CurrentPresetConfig.GameEventButtonPosition.Position, Mode=OneWay, Converter={StaticResource PluginDoublePositionToThicknessConverter}}"
                           Tag="{x:Bind CurrentGameBackgroundData.FeaturedEventIconClickLink, Mode=OneWay}"
                           Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}}">
+                        <Border x:Name="ImageEventImgHoverShadow" Opacity="0"/>
                         <c:NonFaultyImageEx
                             x:Name="ImageEventImgHover"
                             x:FieldModifier="internal"
                             Source="{x:Bind CurrentGameBackgroundData.FeaturedEventIconHoverUrl, Mode=OneWay, Converter={StaticResource UrlToCachedImagePathConverter}}"
-                            Opacity="0"/>
+                            Opacity="0">
+                            <ui:Effects.Shadow>
+                                <ui:AttachedDropShadow CastTo="{x:Bind ImageEventImgHoverShadow}"
+                                                       BlurRadius="32"
+                                                       Opacity="0.3"
+                                                       Offset="0,8" />
+                            </ui:Effects.Shadow>
+                        </c:NonFaultyImageEx>
                         <c:NonFaultyImageEx
                             x:Name="ImageEventImgNormal"
                             x:FieldModifier="internal"
