@@ -59,19 +59,19 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[2.1.3, )",
-        "resolved": "2.1.3",
-        "contentHash": "46KCntcmWPS0nbV3a8iEMslpYy0W9wTsmkANrXFxDWuiAnm8jXytFNvwNVN5HfoA3d+Cxb3pO+JE2UNnB5wn7w==",
+        "requested": "[2.2.0, )",
+        "resolved": "2.2.0",
+        "contentHash": "kUgzkxWkqxUNpUwDU4mnNwlkDwSO8sO1SiUTFXD2YKW+SKTVB4rJjqmOLqMgBQbz4yfs+dLjmpeKXtV4Uf9c/Q==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK.AI": "2.1.10",
+          "Microsoft.WindowsAppSDK.AI": "2.2.3",
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
           "Microsoft.WindowsAppSDK.DWrite": "2.1.0",
-          "Microsoft.WindowsAppSDK.Foundation": "2.0.21",
-          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.13",
-          "Microsoft.WindowsAppSDK.ML": "2.1.1",
-          "Microsoft.WindowsAppSDK.Runtime": "[2.1.3]",
+          "Microsoft.WindowsAppSDK.Foundation": "2.1.0",
+          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.15",
+          "Microsoft.WindowsAppSDK.ML": "2.1.70",
+          "Microsoft.WindowsAppSDK.Runtime": "[2.2.0]",
           "Microsoft.WindowsAppSDK.Widgets": "2.0.5",
-          "Microsoft.WindowsAppSDK.WinUI": "2.1.0"
+          "Microsoft.WindowsAppSDK.WinUI": "2.2.1"
         }
       },
       "CommunityToolkit.WinUI.Animations": {
@@ -90,8 +90,8 @@
       },
       "Microsoft.Windows.AI.MachineLearning": {
         "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "A5BbYPLVrcaRJvpwx0nv7aMDOMqR20qaw9EaLcUe9pkSArzKoSk6cilRsSioU+eRa9+HahidBZTegawdswKqIQ==",
+        "resolved": "2.1.70",
+        "contentHash": "3Ft/INx7j/paN68bttIWGsVCs/DNJEWtjm460Z5vyxIEiWHdtBFRi+bBVlu322+r8oqN1GZtB3QDV9qoY1w7mg==",
         "dependencies": {
           "System.Numerics.Tensors": "9.0.0"
         }
@@ -103,11 +103,11 @@
       },
       "Microsoft.WindowsAppSDK.AI": {
         "type": "Transitive",
-        "resolved": "2.1.10",
-        "contentHash": "4rOxfQbOZkdGK/wzajqyXZeCl9WW1qdtb63hTBFEA7pZ14iyF3iV64VNg6KOXuRRUL64/wyHHsiBwLlvFSFgcw==",
+        "resolved": "2.2.3",
+        "contentHash": "q3VpuZIoqUJfMmd6HWNJKanpSqG4REI0iWyGzcEXl4yU4w1jR06HOoubcPQCToxnlYKEU0SUExghzw5CBExD4A==",
         "dependencies": {
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
-          "Microsoft.WindowsAppSDK.Foundation": "2.0.21"
+          "Microsoft.WindowsAppSDK.Foundation": "2.1.0"
         }
       },
       "Microsoft.WindowsAppSDK.Base": {
@@ -129,35 +129,35 @@
       },
       "Microsoft.WindowsAppSDK.Foundation": {
         "type": "Transitive",
-        "resolved": "2.0.21",
-        "contentHash": "Wzr4c9dSXXcNQw67wVmy+32FXW6+TLyrQHD5eZXAjNydMsLRMZjUXzD1qQgBg1bdgzjlkYnOyYqoXbOL6lfqkw==",
+        "resolved": "2.1.0",
+        "contentHash": "Urz1WrsXHYDHYrCPIWZlSTwgXwghEXlS6lY62Hk3vZE0GZ3hyYrMM7a+p6RrXC55GEgrRhOTRqXqcH2ZL/UWRA==",
         "dependencies": {
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
-          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.13"
+          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.15"
         }
       },
       "Microsoft.WindowsAppSDK.InteractiveExperiences": {
         "type": "Transitive",
-        "resolved": "2.0.13",
-        "contentHash": "jxzb2F0thCzUhxX3EMthKyxMaWINGSAf1/uMfS3pyCODCzHoR39LUQE22DZDAmMJEM4pebCnIj2PYRQjSuy65Q==",
+        "resolved": "2.0.15",
+        "contentHash": "aQ9uzAIhTaN9zkclrtVg6kylpF+hESU+tC0bHarOCWdBz8ShZ7gt+gKwEmjKiqtPv6sRrRglyLLNVSPfb8KmMQ==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK.Base": "2.0.3"
+          "Microsoft.WindowsAppSDK.Base": "2.0.4"
         }
       },
       "Microsoft.WindowsAppSDK.ML": {
         "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "q+luYBGlPdzMwhOsZCUmWbIZMvmc0pn5+nBvrKyQzvd/mC2+YBEaqfN2/zkfkFKsmJUuPvnG73RouAP/1oKPaA==",
+        "resolved": "2.1.70",
+        "contentHash": "Okbb/lBv2YBDH6bjhrMCQBANsopvZJjdu+ZFNVcx5LafM+dsjEVFBnPkakmA/rwRbuP+N4q/GYoKH60uwH9jRA==",
         "dependencies": {
-          "Microsoft.Windows.AI.MachineLearning": "[2.1.1, 3.0.0)",
+          "Microsoft.Windows.AI.MachineLearning": "[2.1.70, 3.0.0)",
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
           "Microsoft.WindowsAppSDK.Foundation": "2.0.21"
         }
       },
       "Microsoft.WindowsAppSDK.Runtime": {
         "type": "Transitive",
-        "resolved": "2.1.3",
-        "contentHash": "dbddzTTnePoiFEw2h9QeGxJ8jyFtx7OEMIt053vjd/FQU4hzdnK9/LGPF5cwCkCD8gLvrXqyfR8AhCjz5Ni9sQ==",
+        "resolved": "2.2.0",
+        "contentHash": "6wQYALaneLbZjl0oN4hoS9CB+0Jy5dlFHyw1G9Yg9hPPmZup5bACMdWMUom9ME06/8YOso4T42p3mm6l7cD+Kg==",
         "dependencies": {
           "Microsoft.WindowsAppSDK.Base": "2.0.4"
         }
@@ -172,13 +172,13 @@
       },
       "Microsoft.WindowsAppSDK.WinUI": {
         "type": "Transitive",
-        "resolved": "2.1.0",
-        "contentHash": "HXFdlOESmUM7RPPWO5z4lpJX7zIPhDDPngfEP1itAUG/1SWFWKxYdEpt6nciMGITj92OpSK70R8/h06j5tfhIg==",
+        "resolved": "2.2.1",
+        "contentHash": "w8KuqJB7IphDRXAGNVuRq+oGeoGycc4ZAraA+OIpsGm/boEKHLkwXmzNDaNrVlnsDpjxQFWE2XVp0hXjlWJqxw==",
         "dependencies": {
           "Microsoft.Web.WebView2": "1.0.3719.77",
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
-          "Microsoft.WindowsAppSDK.Foundation": "2.0.21",
-          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.13"
+          "Microsoft.WindowsAppSDK.Foundation": "2.1.0",
+          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.15"
         }
       },
       "System.Numerics.Tensors": {
@@ -204,19 +204,19 @@
       },
       "Microsoft.Windows.AI.MachineLearning": {
         "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "A5BbYPLVrcaRJvpwx0nv7aMDOMqR20qaw9EaLcUe9pkSArzKoSk6cilRsSioU+eRa9+HahidBZTegawdswKqIQ==",
+        "resolved": "2.1.70",
+        "contentHash": "3Ft/INx7j/paN68bttIWGsVCs/DNJEWtjm460Z5vyxIEiWHdtBFRi+bBVlu322+r8oqN1GZtB3QDV9qoY1w7mg==",
         "dependencies": {
           "System.Numerics.Tensors": "9.0.0"
         }
       },
       "Microsoft.WindowsAppSDK.Foundation": {
         "type": "Transitive",
-        "resolved": "2.0.21",
-        "contentHash": "Wzr4c9dSXXcNQw67wVmy+32FXW6+TLyrQHD5eZXAjNydMsLRMZjUXzD1qQgBg1bdgzjlkYnOyYqoXbOL6lfqkw==",
+        "resolved": "2.1.0",
+        "contentHash": "Urz1WrsXHYDHYrCPIWZlSTwgXwghEXlS6lY62Hk3vZE0GZ3hyYrMM7a+p6RrXC55GEgrRhOTRqXqcH2ZL/UWRA==",
         "dependencies": {
           "Microsoft.WindowsAppSDK.Base": "2.0.4",
-          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.13"
+          "Microsoft.WindowsAppSDK.InteractiveExperiences": "2.0.15"
         }
       }
     }
