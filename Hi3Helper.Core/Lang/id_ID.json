@@ -1908,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Kualitas Ray Tracing",
     "AdvancedGraphics_SuperScaling": "Super Scaling",
     "AdvancedGraphics_SuperScalingQ": "Prioritas Super Scaling",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Performa Ultra",
     "AdvancedGraphics_SuperScalingQ_Performance": "Performa",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Seimbang",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Kualitas"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Kualitas",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Buatan"
   },
 
   "_NotificationToast": {
