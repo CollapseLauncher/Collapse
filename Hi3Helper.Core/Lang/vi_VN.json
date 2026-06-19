@@ -553,6 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Bật hiệu ứng acrylic khi dùng video nền",
     "VideoBackground_AudioVolume": "Âm lượng",
     "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
+    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg Decoding Mode",
     "VideoBackground_FFmpegInstallStatus": "Install Status:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Installed",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
@@ -560,7 +561,7 @@
     "VideoBackground_FFmpegInstallNote": "Note",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
     "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your current background. To change your existing installation, please disabling \"Use FFmpeg for Video Decoding\" feature first, restart your launcher, go back to this settings then click \"Start New Install or Locate Wizard\" button.",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your background. To change your existing installation, please disable the \"Use FFmpeg for Video Decoding\" feature first, then restart your launcher and come back to this setting.",
 
     "Update": "Cập nhật",
     "Update_CurVer": "Phiên bản hiện tại:",
@@ -595,6 +596,13 @@
     "About_Copyright4": ". Bảo lưu mọi quyền.",
 
     "LicenseType": "giấy phép MIT",
+
+    "About_FFmpegCopyright1": "Phần mềm này sử dụng mã nguồn của ",
+    "About_FFmpegCopyright2": ", phát hành với giấy phép ",
+    "About_FFmpegCopyright3": " và ",
+    "About_FFmpegCopyright4": " as a wrapper under the ",
+    "About_FFmpegCopyright5": " license.",
+    "About_FFmpegDonate": "Ủng hộ dự án FFmpeg",
 
     "Disclaimer": "Trách nhiệm và pháp lý",
     "Disclaimer1": "Launcher này không liên kết với",
@@ -986,7 +994,9 @@
     "FeedbackSendFailure": "Không gửi được phản hồi! Kiểm tra nhật ký/console để biết thêm thông tin.",
 
     "Tag_Deprecated": "Lỗi thời",
-    "Generic_GameFeatureDeprecation": "Do những thay đổi không lường trước của game, tính năng này đã bị loại bỏ và sẽ bị xóa trong tương lai. Sử dụng tính năng này có thể gây ra một số lỗi không mong muốn."
+    "Generic_GameFeatureDeprecation": "Do những thay đổi không lường trước của game, tính năng này đã bị loại bỏ và sẽ bị xóa trong tương lai. Sử dụng tính năng này có thể gây ra một số lỗi không mong muốn.",
+
+    "DescriptionNotAvailable": "Description is not available."
   },
 
   "_BackgroundNotification": {
@@ -1257,6 +1267,18 @@
     "PostInstallBehaviour_EnumShutdown": "Tắt máy",
 
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Custom Parallax Pixels (Min: {0}px, Max: {1}px)",
+
+    "StartupFFmpegInstallDialogTitle": "Yêu cầu cài đặt FFmpeg",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher giờ đây yêu cầu decoder (trình giải mã) FFmpeg (bản dựng 7.x) phải được cài đặt trên máy để có thể phát hình nền video một cách ổn định. Nhấn \"",
+    "StartupFFmpegInstallDialogSubtitle2": "\" để cài đặt FFmpeg từ đầu hay để chọn thư mục cài nếu trên máy đã có sẵn, hoặc nhấn \"",
+    "StartupFFmpegInstallDialogSubtitle3": "\" để tiếp tục sử dụng decoder Windows Media Foundation tích hợp sẵn.",
+    "StartupFFmpegInstallDialogSubtitle4": "Lưu ý:",
+    "StartupFFmpegInstallDialogSubtitle5": "Hình nền video có thể sẽ có các khung hình bị nhiễu/hỏng trong một số game cụ thể do decoder (trình giải mã) Windows Media Foundation tích hợp sẵn không hỗ trợ loại không gian màu của video đó. Nếu sau này bạn muốn sử dụng FFmpeg để decode hình nền video, bạn có thể tới trang \"",
+    "StartupFFmpegInstallDialogSubtitle6": "\", sau đó tìm và bật mục chọn \"",
+    "StartupFFmpegInstallDialogSubtitle7": "\" để cài đặt và sử dụng decoder FFmpeg.",
+    "StartupFFmpegInstallDialogInstallBtn": "Cài đặt & sử dụng FFmpeg",
+    "StartupFFmpegInstallDialogUseBuiltInBtn": "Sử dụng decoder tích hợp sẵn",
+    "StartupFFmpegInstallDialogDoNotAskInstall": "Không hỏi tôi lại việc cài đặt FFmpeg nữa",
 
     "Media_ExtNotSupported1": "Sorry but the file extension for the following background image/video file is not supported.",
     "Media_ExtNotSupported2": "File Path/URL: {0}",
@@ -1781,6 +1803,20 @@
     "Genshin Impact": "Sandbox Thiên Tinh"
   },
 
+  "_DictKvpFFmpegDecodingMode": {
+    "Automatic": "Tự động",
+    "AutomaticSystemDecoder": "Automatic with System Decoder",
+    "ForceSystemDecoder": "Force System Decoder",
+    "ForceFFmpegSoftwareDecoder": "Force FFmpeg Software Decoder"
+  },
+
+  "_DictKvpFFmpegDecodingModeTooltip": {
+    "Automatic": "Automatically choose the best available decoder (Hardware-accelerated Decoder will be preferred if available).",
+    "AutomaticSystemDecoder": "Same as Automatic but FFmpeg will use the built-in System Decoder to decode if available.",
+    "ForceSystemDecoder": "FFmpeg will forcely use built-in System Decoder instead of what is available within the FFmpeg library. You might need to install the additional Windows Media Foundation codecs to play your video with this mode if the decoder is not available or the playback might not run properly.",
+    "ForceFFmpegSoftwareDecoder": "Same as Automatic but FFmpeg will forcely use the Software-based decoder instead of Hardware-accelerated ones."
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Điều khoản:"
   },
@@ -1872,9 +1908,12 @@
     "AdvancedGraphics_RayTracingQ": "Chất lượng Ray Tracing",
     "AdvancedGraphics_SuperScaling": "Siêu phân giải",
     "AdvancedGraphics_SuperScalingQ": "Siêu phân giải sẽ ưu tiên",
+    "AdvancedGraphics_SuperScalingQ_UltraPerformance": "Siêu Hiệu Năng",
     "AdvancedGraphics_SuperScalingQ_Performance": "Hiệu năng",
     "AdvancedGraphics_SuperScalingQ_Balanced": "Cân bằng",
-    "AdvancedGraphics_SuperScalingQ_Quality": "Chất lượng hình ảnh"
+    "AdvancedGraphics_SuperScalingQ_Quality": "Chất lượng hình ảnh",
+    "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
+    "AdvancedGraphics_FrameGeneration": "Frame Generation"
   },
 
   "_NotificationToast": {
