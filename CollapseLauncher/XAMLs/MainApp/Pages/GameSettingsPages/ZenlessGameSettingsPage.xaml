@@ -18,6 +18,7 @@
     <conv:GameSettingsPageBase.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />
+        <conv:InverseNumberToBoolConverter x:Key="InverseNumberToBoolConverter" />
         <conv:NumberToBoolConverter x:Key="NumberToBoolConverter" />
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
     </conv:GameSettingsPageBase.Resources>
@@ -327,6 +328,7 @@
                                               HorizontalAlignment="Stretch"
                                               extension:UIElementExtensions.CursorType="Hand"
                                               CornerRadius="14"
+                                              IsEnabled="{Binding ElementName=SuperResolutionOptionComboBox, Path=SelectedIndex, Converter={StaticResource InverseNumberToBoolConverter}}"
                                               SelectedIndex="{Binding Graphics_RenderRes, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
                                         <ComboBoxItem Content="0.8" />
