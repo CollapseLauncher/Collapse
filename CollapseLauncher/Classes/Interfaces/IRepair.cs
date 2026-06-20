@@ -4,13 +4,11 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IRepair : IDisposable
+    internal interface IRepair : IBackgroundActivity, IDisposable
     {
         ObservableCollection<IAssetProperty> AssetEntry { get; set; }
-        event EventHandler<TotalPerFileProgress> ProgressChanged;
-        event EventHandler<TotalPerFileStatus> StatusChanged;
+        TotalPerFileStatus Status { get; }
         Task<bool> StartCheckRoutine(bool useFastCheck = false);
         Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null);
-        void CancelRoutine();
     }
 }

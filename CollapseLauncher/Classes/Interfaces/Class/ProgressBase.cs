@@ -87,6 +87,9 @@ internal abstract class ProgressBase : GamePropertyBase
 
     public event EventHandler<TotalPerFileProgress>? ProgressChanged;
     public event EventHandler<TotalPerFileStatus>?   StatusChanged;
+    public event EventHandler?                       FlushingTrigger;
+
+    public bool IsRunning => Status.IsRunning;
 
     public TotalPerFileStatus Status
     {
@@ -1123,6 +1126,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (OperationCanceledException)
@@ -1130,6 +1134,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (Exception)
@@ -1174,6 +1179,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (OperationCanceledException)
@@ -1181,6 +1187,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (Exception)
@@ -1226,6 +1233,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (OperationCanceledException)
@@ -1233,6 +1241,7 @@ internal abstract class ProgressBase : GamePropertyBase
             // If a cancellation was thrown, then set IsCanceled as true
             Status.IsCompleted = false;
             Status.IsCanceled  = true;
+            UpdateStatus();
             throw;
         }
         catch (Exception)

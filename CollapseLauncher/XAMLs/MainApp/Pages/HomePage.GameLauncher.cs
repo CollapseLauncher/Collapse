@@ -48,7 +48,7 @@ public partial class HomePage
     #region Game Start/Stop Method
 
     private CancellationTokenSource WatchOutputLog = new();
-    private CancellationTokenSource ResizableWindowHookToken;
+    private CancellationTokenSource? ResizableWindowHookToken;
 
 #nullable enable
     private async void StartGame(object? sender, RoutedEventArgs? e)
@@ -288,10 +288,12 @@ public partial class HomePage
             await Task.Delay(3000);
         }
 
-        if (ResizableWindowHookToken != null)
+        CancellationTokenSource? resizableWindowHookCts =
+            Interlocked.Exchange(ref ResizableWindowHookToken, null);
+        if (resizableWindowHookCts != null)
         {
-            await ResizableWindowHookToken.CancelAsync();
-            ResizableWindowHookToken.Dispose();
+            await resizableWindowHookCts.CancelAsync();
+            resizableWindowHookCts.Dispose();
         }
 
         // Stopping GameLogWatcher
@@ -533,13 +535,22 @@ public partial class HomePage
 
             // Check if the game is using Resizable Window settings
             if (!settings.SettingsCollapseScreen.UseResizableWindow) return;
-            ResizableWindowHookToken = new CancellationTokenSource();
 
-            while (!ResizableWindowHookToken.IsCancellationRequested &&
+            var hookCts = new CancellationTokenSource();
+            CancellationTokenSource? previousHookCts =
+                Interlocked.Exchange(ref ResizableWindowHookToken, hookCts);
+            previousHookCts?.Cancel();
+            previousHookCts?.Dispose();
+
+            CancellationToken hookToken = hookCts.Token;
+
+            while (!hookToken.IsCancellationRequested &&
                    !CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out _, out _))
             {
-                await Task.Delay(200, ResizableWindowHookToken.Token);
+                await Task.Delay(200, hookToken);
             }
+
+            if (hookToken.IsCancellationRequested) return;
 
             string gameExecutablePath = Path.Combine(CurrentGameProperty.GameVersion?.GameDirPath.NormalizePath() ?? "",
                                                      executableName.NormalizePath());
@@ -559,7 +570,7 @@ public partial class HomePage
                                                  height,
                                                  width,
                                                  gameExecutableDirectory,
-                                                 ResizableWindowHookToken.Token));
+                                                 hookToken));
                 return;
             }
 
@@ -574,7 +585,15 @@ public partial class HomePage
                                                                isNeedToResetPos,
                                                                ILoggerHelper.GetILogger(),
                                                                gameExecutableDirectory,
-                                                               ResizableWindowHookToken.Token));
+                                                               hookToken));
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when the game closes or the hook is cancelled.
+        }
+        catch (ObjectDisposedException)
+        {
+            // Expected when GameRunningWatcher disposes the hook token concurrently.
         }
         catch (Exception ex)
         {

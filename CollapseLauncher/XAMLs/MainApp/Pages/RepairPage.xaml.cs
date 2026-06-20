@@ -65,6 +65,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                RemoveEvent(); // Prevent double-subscription if re-attaching from background
                 AddEvent();
 
                 bool isGameBroken = await (CurrentGameProperty.GameRepair?.StartCheckRoutine(isFast) ?? Task.FromResult(false));
@@ -117,6 +118,7 @@ namespace CollapseLauncher.Pages
                 RepairFilesBtn.IsEnabled = false;
                 CancelBtn.IsEnabled = true;
 
+                RemoveEvent(); // Prevent double-subscription if re-attaching from background
                 AddEvent();
 
                 int assetCount = CurrentGameProperty.GameRepair?.AssetEntry.Count ?? 0;
@@ -214,6 +216,26 @@ namespace CollapseLauncher.Pages
                 RepairTotalStatus.Text = e.ActivityAll;
                 RepairTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
                 RepairPerFileProgressBar.IsIndeterminate = e.IsProgressPerFileIndetermined;
+
+                // If the operation completed while we were on another page, update button states now
+                if (e.IsCompleted && !e.IsCanceled)
+                {
+                    bool hasAssets = (CurrentGameProperty.GameRepair?.AssetEntry.Count ?? 0) > 0;
+                    CancelBtn.IsEnabled       = false;
+                    RepairFilesBtn.IsEnabled  = hasAssets;
+                    RepairFilesBtn.Visibility = hasAssets ? Visibility.Visible : Visibility.Collapsed;
+                    CheckFilesBtn.IsEnabled   = !hasAssets;
+                    CheckFilesBtn.Visibility  = hasAssets ? Visibility.Collapsed : Visibility.Visible;
+                }
+                else if (e.IsCanceled)
+                {
+                    // Operation was cancelled (possibly from the background notification)
+                    CancelBtn.IsEnabled       = false;
+                    CheckFilesBtn.IsEnabled   = true;
+                    CheckFilesBtn.Visibility  = Visibility.Visible;
+                    RepairFilesBtn.IsEnabled  = false;
+                    RepairFilesBtn.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -251,12 +273,33 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty.GameRepair?.CancelRoutine();
-            CurrentGameProperty.GameRepair?.AssetEntry.Clear();
+            // Detach event listeners from this page instance, but let the operation
+            // continue running in the background if it's currently active.
+            RemoveEvent();
+            if (CurrentGameProperty.GameRepair?.Status.IsRunning ?? false)
+            {
+                // Operation still running — attach a background notification so the user can see
+                // progress and can cancel from the notification bar.
+                string actTitle   = string.Format("{0}: {1}",
+                                                  Locale.Current.Lang?._GameRepairPage?.PageTitle ?? "Game Repair",
+                                                  CurrentGameProperty.GamePreset.GameName);
+                string actSubtitle = CurrentGameProperty.GamePreset.ZoneName ?? string.Empty;
+                BackgroundActivityManager.Attach(CurrentGameProperty.GamePreset,
+                                                 CurrentGameProperty.GameRepair,
+                                                 actTitle,
+                                                 actSubtitle);
+            }
+            else
+            {
+                CurrentGameProperty.GameRepair?.AssetEntry.Clear();
+            }
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            // Remove the background notification (if any) now that the user is on this page.
+            BackgroundActivityManager.Detach(CurrentGameProperty.GamePreset);
+
             if (GameInstallationState
                 is GameInstallStateEnum.NotInstalled
                 or GameInstallStateEnum.NeedsUpdate
@@ -274,6 +317,31 @@ namespace CollapseLauncher.Pages
                 PageContent.Visibility = Visibility.Collapsed;
                 OverlayTitle.Text      = Locale.Current.Lang?._GameRepairPage?.OverlayGameRunningTitle;
                 OverlaySubtitle.Text   = Locale.Current.Lang?._GameRepairPage?.OverlayGameRunningSubtitle;
+            }
+            else if (CurrentGameProperty.GameRepair?.Status.IsRunning ?? false)
+            {
+                // An operation is still running in the background — re-attach and restore the busy UI state.
+                AddEvent();
+                CheckFilesBtn.IsEnabled  = false;
+                RepairFilesBtn.IsEnabled = false;
+                CancelBtn.IsEnabled      = true;
+        #if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Repair);
+        #endif
+            }
+            else if ((CurrentGameProperty.GameRepair?.Status.IsCompleted ?? false)
+                  && !(CurrentGameProperty.GameRepair!.Status.IsCanceled)
+                  && CurrentGameProperty.GameRepair.AssetEntry.Count > 0)
+            {
+                // Check completed with broken files while we were on another page — restore the repair-ready state.
+                CheckFilesBtn.IsEnabled   = false;
+                CheckFilesBtn.Visibility  = Visibility.Collapsed;
+                RepairFilesBtn.IsEnabled  = true;
+                RepairFilesBtn.Visibility = Visibility.Visible;
+                CancelBtn.IsEnabled       = false;
+        #if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Repair);
+        #endif
             }
         #if !DISABLEDISCORD
             else

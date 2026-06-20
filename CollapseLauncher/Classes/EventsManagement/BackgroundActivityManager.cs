@@ -108,6 +108,7 @@ namespace CollapseLauncher
                                            }
             .WithMargin(4d, 4d, 4d, 0)
             .WithCornerRadius(8);
+            parentNotificationUI.Loaded += StretchContentArea;
             parentNotificationUI.Translation = new Vector3(0,0,32);
 
             StackPanel parentContainer = UIElementExtensions.CreateStackPanel()
@@ -223,6 +224,8 @@ namespace CollapseLauncher
             {
                 progressBar.IsIndeterminate = args!.IsProgressAllIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;
+                // Terminal states (canceled / completed) take full priority — return early so the
+                // "running" block below cannot overwrite IsClosable back to false.
                 if (args.IsCanceled)
                 {
                     cancelButton.IsEnabled = false;
@@ -232,6 +235,7 @@ namespace CollapseLauncher
                     parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Error!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
+                    return;
                 }
                 if (args.IsCompleted)
                 {
@@ -242,6 +246,7 @@ namespace CollapseLauncher
                     parentNotificationUI.Title = string.Format(Locale.Current.Lang?._BackgroundNotification?.NotifBadge_Completed!, activityTitle);
                     parentNotificationUI.IsClosable = true;
                     parentContainer.Margin = containerClosableMargin;
+                    return;
                 }
 
                 if (!args.IsRunning)
@@ -275,6 +280,34 @@ namespace CollapseLauncher
             };
 
             NotificationSender.SendCustomNotification(presetConfig.GetHashCode(), parentNotificationUI);
+        }
+            // The InfoBar template's "ContentArea" ContentPresenter has no HorizontalContentAlignment
+        // binding, so it defaults to Left — giving content only its desired (natural) width.
+        // We fix this after the template applies by finding and patching that ContentPresenter.
+        private static void StretchContentArea(object sender, RoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement element) return;
+            element.Loaded -= StretchContentArea;
+
+            var contentArea = FindDescendant<ContentPresenter>(element, "ContentArea");
+            if (contentArea != null)
+                contentArea.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+        }
+
+        private static T? FindDescendant<T>(DependencyObject parent, string name)
+            where T : FrameworkElement
+        {
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T match && match.Name == name)
+                    return match;
+                var found = FindDescendant<T>(child, name);
+                if (found != null)
+                    return found;
+            }
+            return null;
         }
     }
 }
