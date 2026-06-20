@@ -61,7 +61,7 @@ internal static partial class AssetBundleExtension
         string            baseUrl          = progressibleInstance.GetRandomAsbBaseUrl(gameServerInfo);
         string baseAudioUrl =
             baseUrl.CombineURLFromString($"Audio/Windows/{gameVersion.Major}_{gameVersion.Minor}/{gameServerInfo
-               .Manifest
+               .Manifest?
                .ManifestAudio
                .ManifestAudioRevision}");
 
