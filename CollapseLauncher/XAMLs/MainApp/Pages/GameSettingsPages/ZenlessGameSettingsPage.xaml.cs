@@ -38,9 +38,9 @@ namespace CollapseLauncher.Pages
 
         public ZenlessGameSettingsPage() : base(GetCurrentGameProperty().GameSettings, Registry.CurrentUser.CreateSubKey(Path.Combine($"Software\\{GetCurrentGameProperty().GameVersion?.VendorTypeProp.VendorType}", GetCurrentGameProperty().GameVersion?.GamePreset.InternalGameNameInConfig!)))
         {
+            SettingsContext = new ZenlessGameSettingsContext((ZenlessSettings)GetCurrentGameProperty().GameSettings!);
             try
             {
-                SettingsContext = new ZenlessGameSettingsContext((ZenlessSettings)GetCurrentGameProperty().GameSettings!);
                 InitializeComponent();
 
                 ApplyButton.Translation           = new Vector3(0, 0, 32);
@@ -119,13 +119,16 @@ namespace CollapseLauncher.Pages
         private static string[] GetFilesRelativePaths(string gameDir, string relativePath)
         {
             string sourceDirPath = Path.Combine(gameDir, relativePath);
-            return Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories).Select(filePath =>
-            {
-                string fileName           = Path.GetFileName(filePath);
-                string trimmedRelativeDir = Path.GetDirectoryName(filePath[gameDir.Length..])?.Trim('\\') ?? "";
-                string relativeFilePath   = Path.Combine(trimmedRelativeDir, fileName);
-                return relativeFilePath;
-            }).ToArray();
+            return
+            [
+                .. Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories).Select(filePath =>
+                {
+                    string fileName           = Path.GetFileName(filePath);
+                    string trimmedRelativeDir = Path.GetDirectoryName(filePath[gameDir.Length..])?.Trim('\\') ?? "";
+                    string relativeFilePath   = Path.Combine(trimmedRelativeDir, fileName);
+                    return relativeFilePath;
+                })
+            ];
         }
 
         private Size SizeProp { get; set; }
