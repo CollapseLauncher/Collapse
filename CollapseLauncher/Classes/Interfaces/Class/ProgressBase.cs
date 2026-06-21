@@ -583,8 +583,8 @@ internal abstract class ProgressBase : GamePropertyBase
     {
         Interlocked.Add(ref ProgressAllCountCurrent, 1);
         Status.ActivityStatus = $"{(IsSophonInUpdateMode
-            ? Locale.Lang?._Misc?.Updating
-            : IsSophonInPreloadVerifyMode ? Locale.Lang?._Misc?.Verifying : Locale.Lang?._Misc?.Downloading)}: {string.Format(Locale.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
+            ? Locale.Current.Lang?._Misc?.Updating
+            : IsSophonInPreloadVerifyMode ? Locale.Current.Lang?._Misc?.Verifying : Locale.Current.Lang?._Misc?.Downloading)}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                ProgressAllCountTotal)}";
         UpdateStatus();
     }
@@ -1362,31 +1362,6 @@ internal abstract class ProgressBase : GamePropertyBase
             assetURL       = null;
             goto StartOver;
         }
-    }
-
-    [return: NotNullIfNotNull(nameof(url))]
-    internal string? GetHttpsOrHttpOverrideUrl(string? url)
-    {
-        const string schemeStart = "://";
-
-        if (string.IsNullOrEmpty(url))
-        {
-            return url;
-        }
-
-        string scheme = IsForceHttpOverride ? "http://" : "https://";
-        if (url.StartsWith(scheme, StringComparison.OrdinalIgnoreCase))
-        {
-            return url;
-        }
-
-        string urlNoScheme       = url;
-        int    indexOfSchemeMark = url.IndexOf(schemeStart, StringComparison.OrdinalIgnoreCase);
-        if (indexOfSchemeMark < 0) return scheme + urlNoScheme;
-        
-        indexOfSchemeMark += schemeStart.Length;
-        urlNoScheme       =  url[indexOfSchemeMark..];
-        return scheme + urlNoScheme;
     }
 
     [return: NotNullIfNotNull(nameof(url))]
