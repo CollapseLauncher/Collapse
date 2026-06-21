@@ -553,7 +553,7 @@
     "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
     "VideoBackground_UseFFmpeg": "Usar FFmpeg para la decodificación de vídeo",
-    "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg Decoding Mode",
+    "VideoBackground_FFmpegVideoDecodingMethod": "Modo Decodificación de FFmpeg",
     "VideoBackground_FFmpegInstallStatus": "Estado de la instalación:",
     "VideoBackground_FFmpegInstallStatus_Installed": "Instalado",
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
@@ -561,7 +561,7 @@
     "VideoBackground_FFmpegInstallNote": "Aviso",
     "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 7.x. Otras versiones de FFmpeg no son compatibles por el momento.",
     "VideoBackground_FFmpegInstallLockedTitle": "Modificar la instalación de FFmpeg está bloqueada",
-    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado actualmente para decodificar su fondo actual, para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", reinicia el launcher, vuelve a los ajustes y haz clic en \"Iniciar una nueva instalación o localizar asistente de instalación\"",
+    "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado para decodificar su fondo. Para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", luego reinicia tu launcher y vuelve a aquí.",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
@@ -996,7 +996,7 @@
     "Tag_Deprecated": "Obsoleto",
     "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados.",
 
-    "DescriptionNotAvailable": "Description is not available."
+    "DescriptionNotAvailable": "Descripción no disponible."
   },
 
   "_BackgroundNotification": {
@@ -1804,17 +1804,17 @@
   },
 
   "_DictKvpFFmpegDecodingMode": {
-    "Automatic": "Automatic",
-    "AutomaticSystemDecoder": "Automatic with System Decoder",
-    "ForceSystemDecoder": "Force System Decoder",
-    "ForceFFmpegSoftwareDecoder": "Force FFmpeg Software Decoder"
+    "Automatic": "Automático",
+    "AutomaticSystemDecoder": "Automático con decodificador del sistema",
+    "ForceSystemDecoder": "Forzar decodificador de sistema",
+    "ForceFFmpegSoftwareDecoder": "Forzar decodificador de software FFmpeg"
   },
 
   "_DictKvpFFmpegDecodingModeTooltip": {
-    "Automatic": "Automatically choose the best available decoder (Hardware-accelerated Decoder will be preferred if available).",
-    "AutomaticSystemDecoder": "Same as Automatic but FFmpeg will use the built-in System Decoder to decode if available.",
-    "ForceSystemDecoder": "FFmpeg will forcely use built-in System Decoder instead of what is available within the FFmpeg library. You might need to install the additional Windows Media Foundation codecs to play your video with this mode if the decoder is not available or the playback might not run properly.",
-    "ForceFFmpegSoftwareDecoder": "Same as Automatic but FFmpeg will forcely use the Software-based decoder instead of Hardware-accelerated ones."
+    "Automatic": "Automáticamente selecciona el mejor decodificador disponible (se dará preferencia al decodificador con aceleración por hardware, si está disponible).",
+    "AutomaticSystemDecoder": "Similar al Automático pero FFmpeg utilizará el decodificador integrado del sistema, si está disponible",
+    "ForceSystemDecoder": "FFmpeg forzara el uso del decodificador integrado del sistema en lugar de los disponibles en la biblioteca de FFmpeg. Es posible que tengas que instalar los códecs adicionales de Windows Media Foundation para reproducir el vídeo si el decodificador no está disponible; de lo contrario, la reproducción puede no funcionar correctamente.",
+    "ForceFFmpegSoftwareDecoder": "Similar al Automático, pero FFmpeg forzara el uso del decodificador basado en software en lugar de los acelerados por hardware."
   },
 
   "_OOBEAgreementMenu": {
@@ -1913,7 +1913,7 @@
     "AdvancedGraphics_SuperScalingQ_Balanced": "Balanceado",
     "AdvancedGraphics_SuperScalingQ_Quality": "Calidad",
     "AdvancedGraphics_SuperScalingQ_DLAA": "DLAA",
-    "AdvancedGraphics_FrameGeneration": "Frame Generation"
+    "AdvancedGraphics_FrameGeneration": "Generación de Fotogramas"
   },
 
   "_NotificationToast": {
