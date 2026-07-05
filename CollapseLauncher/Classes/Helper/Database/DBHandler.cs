@@ -282,24 +282,43 @@ internal static class DbHandler
         return null;
     }
 
-    public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false)
+    public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false,
+                                           bool isBlob = false, byte[]? blobValue = null)
     {
         if (!(IsEnabled ?? false)) return;
     #if DEBUG
         var t   = Stopwatch.StartNew();
         var r   = new Random();
         var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
-        LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
-                     true);
+        if (isBlob)
+        {
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
+                         true);
+        }
+        else
+        {
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
+                         true);
+        }
+       
     #endif
         for (var i = 0; i < MaxAttempts; i++)
         {
-            var retVal = await StoreKeyValueInternal(key, value);
+            var retVal = await StoreKeyValueInternal(key, value, isBlob, blobValue);
             if (retVal.result == 200)
             {
             #if DEBUG
-                LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
-                             LogType.Debug, true);
+                if (isBlob)
+                {
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tIS BLOB",
+                                 LogType.Debug, true);
+                }
+                else
+                {
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
+                                 LogType.Debug, true);
+                }
+                
             #endif
                 return;
             }
@@ -390,16 +409,18 @@ internal static class DbHandler
         }
     }
 
-    private static async Task<(int result, Exception? exceptionValue)> StoreKeyValueInternal(string key, string value)
+    private static async Task<(int result, Exception? exceptionValue)> StoreKeyValueInternal(string key, string value, bool isBlob = false, byte[]? blobValue = null)
     {
         try
         {
             if (_database == null) await Init(true);
+            var tableName = "uid-"  + _userIdHash + (isBlob ? "-blob" : "");
+            object dbValue   = isBlob && blobValue != null ? blobValue : value;
                     
             // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
-            var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
+            var command = $"INSERT INTO \"{tableName}\" (key, value) VALUES (?, ?) " +
                           $"ON CONFLICT(key) DO UPDATE SET value = ?";
-            var parameters = new object[] { key, value, value };
+            var parameters = new object[] { key, dbValue, dbValue };
             await _database!.Execute(command, parameters);
                 
             return (200, null); // 200: OK
