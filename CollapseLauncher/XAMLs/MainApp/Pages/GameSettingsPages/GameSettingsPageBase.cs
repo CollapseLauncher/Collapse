@@ -196,6 +196,64 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
         }
     }
+    
+    protected virtual async void OnRegistryDbUploadButtonClick(object sender, RoutedEventArgs args)
+    {
+        await SuspendRegistryMonitorOnActionAsync(Impl);
+        return;
+
+        async Task Impl()
+        {
+            try
+            {
+                Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
+
+                if (exc != null) throw exc;
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
+            }
+            catch (OperationCanceledException)
+            {
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegErr1", true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                SetApplyTextStatus(ex.Message, true);
+                ErrorSender.SendException(ex);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+    }
+    
+    protected virtual async void OnRegistryDbDownloadButtonClick(object sender, RoutedEventArgs args)
+    {
+        await SuspendRegistryMonitorOnActionAsync(Impl);
+        return;
+
+        async Task Impl()
+        {
+            try
+            {
+                throw new NotImplementedException();
+                Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
+
+                if (exc != null) throw exc;
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
+            }
+            catch (OperationCanceledException)
+            {
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegErr1", true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                SetApplyTextStatus(ex.Message, true);
+                ErrorSender.SendException(ex);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+    }
+    
 
     protected virtual void SuspendRegistryMonitorOnAction(Action action)
     {

@@ -23,6 +23,10 @@ namespace CollapseLauncher.Interfaces
 
         RegistryKey? RefreshRegistryRoot();
         Task<Exception?> ImportSettings(string? gameBasePath = null);
-        Task<Exception?> ExportSettings(bool isCompressed = true, string? parentPathToImport = null, string[]? relativePathToImport = null);
+
+        Task<Exception?> ExportSettings(bool      isCompressed         = true, string? parentPathToImport = null,
+                                        string[]? relativePathToImport = null, string? path               = null);
+
+        Task<Exception?> PushToDatabase();
     }
 }

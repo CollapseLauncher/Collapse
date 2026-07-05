@@ -1149,6 +1149,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
+                    <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="ApplyButton"
@@ -1169,6 +1170,44 @@
                                    Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}" />
                     </StackPanel>
                 </Button>
+                <StackPanel Grid.Column="2"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Button x:Name="DBRestore"
+                            Height="32"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="OnRegistryDbDownloadButtonClick"
+                            CornerRadius="16,0,0,16"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            ToolTipService.ToolTip="Restore Game Settings from Database">
+                        <StackPanel Margin="8,0"
+                                    Orientation="Horizontal">
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="&#xf56e;" />
+                            <TextBlock Margin="8,0,0,0"
+                                       FontWeight="Medium"
+                                       Text="Restore from DB" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DBUpload"
+                            Height="32"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="OnRegistryDbUploadButtonClick"
+                            CornerRadius="0,16,16,0"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            ToolTipService.ToolTip="Upload current game settings to Database">
+                        <StackPanel Margin="8,0"
+                                    Orientation="Horizontal">
+                            <TextBlock Margin="0,0,8,0"
+                                       FontWeight="Medium"
+                                       Text="Upload to DB" />
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="&#xf56f;" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
