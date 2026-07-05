@@ -163,6 +163,10 @@ internal static class DbHandler
                 await
                     _database
                        .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
+
+                await
+                    _database
+                       .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}-blob\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' BLOB)");
                 _isFirstInit = false;
             }
             else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
