@@ -17,11 +17,11 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #nullable enable
 namespace Hi3Helper;
 
-public class LoggerConsole : LoggerBase
+public sealed class LoggerConsole : LoggerBase
 {
-    public static   nint ConsoleHandle;
-    public static   nint ConsoleWindow => PInvoke.GetConsoleWindow();
-    internal static bool VirtualTerminal;
+    public static bool VirtualTerminal;
+    public static nint ConsoleHandle;
+    public static nint ConsoleWindow => PInvoke.GetConsoleWindow();
 
     private readonly SimpleConsoleWin32OutStream StdOutStream;
 
@@ -75,9 +75,9 @@ public class LoggerConsole : LoggerBase
 
         if (PInvoke.GetConsoleMode(ConsoleHandle, out uint mode))
         {
-            const uint ENABLE_PROCESSED_OUTPUT = 1;
+            const uint ENABLE_PROCESSED_OUTPUT            = 1;
             const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
-            const uint DISABLE_NEWLINE_AUTO_RETURN = 8;
+            const uint DISABLE_NEWLINE_AUTO_RETURN        = 8;
             mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
             if (PInvoke.SetConsoleMode(ConsoleHandle, mode))
             {
@@ -112,14 +112,24 @@ public class LoggerConsole : LoggerBase
     #region Logging Methods
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWriteLine()
-        => Console.WriteLine();
+    public override void LogWriteLine(bool writeToLogFile          = false,
+                                      bool writeTimestampOnLogFile = true)
+    {
+        Console.WriteLine();
+
+        if (!writeToLogFile)
+        {
+            return;
+        }
+
+        base.LogWriteLine(false, writeTimestampOnLogFile);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWriteLine(ReadOnlySpan<char> line,
-                                             LogType            type                    = LogType.Info,
-                                             bool               writeToLogFile          = false,
-                                             bool               writeTimestampOnLogFile = true)
+    public override void LogWriteLine(ReadOnlySpan<char> line,
+                                      LogType            type                    = LogType.Info,
+                                      bool               writeToLogFile          = false,
+                                      bool               writeTimestampOnLogFile = true)
     {
         WriteLineToStreamCore(StdOutStream, line, type, isBeginWithCarriageReturn: true);
 
@@ -136,10 +146,10 @@ public class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                             LogType                              type = LogType.Info,
-                                             bool                                 writeToLogFile = false,
-                                             bool                                 writeTimestampOnLogFile = true)
+    public override void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
+                                      LogType                              type = LogType.Info,
+                                      bool                                 writeToLogFile = false,
+                                      bool                                 writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
@@ -168,12 +178,12 @@ public class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWrite(ReadOnlySpan<char> line,
-                                         LogType            type                    = LogType.Info,
-                                         bool               appendNewLine           = false,
-                                         bool               writeToLogFile          = false,
-                                         bool               writeTypeTag            = false,
-                                         bool               writeTimestampOnLogFile = true)
+    public override void LogWrite(ReadOnlySpan<char> line,
+                                  LogType            type                    = LogType.Info,
+                                  bool               appendNewLine           = false,
+                                  bool               writeToLogFile          = false,
+                                  bool               writeTypeTag            = false,
+                                  bool               writeTimestampOnLogFile = true)
     {
         WriteLineToStreamCore(StdOutStream,
                               line,
@@ -198,12 +208,12 @@ public class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                         LogType                              type                    = LogType.Info,
-                                         bool                                 appendNewLine           = false,
-                                         bool                                 writeToLogFile          = false,
-                                         bool                                 writeTypeTag            = false,
-                                         bool                                 writeTimestampOnLogFile = true)
+    public override void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
+                                  LogType                              type                    = LogType.Info,
+                                  bool                                 appendNewLine           = false,
+                                  bool                                 writeToLogFile          = false,
+                                  bool                                 writeTypeTag            = false,
+                                  bool                                 writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
@@ -234,15 +244,15 @@ public class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override Task LogWriteLineAsync(CancellationToken token = default)
+    public override Task LogWriteLineAsync(CancellationToken token = default)
         => Console.Out.WriteLineAsync();
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override async Task LogWriteLineAsync(string            line,
-                                                        LogType           type                    = LogType.Info,
-                                                        bool              writeToLogFile          = false,
-                                                        bool              writeTimestampOnLogFile = true,
-                                                        CancellationToken token                   = default)
+    public override async Task LogWriteLineAsync(string            line,
+                                                 LogType           type                    = LogType.Info,
+                                                 bool              writeToLogFile          = false,
+                                                 bool              writeTimestampOnLogFile = true,
+                                                 CancellationToken token                   = default)
     {
         await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,
@@ -262,13 +272,13 @@ public class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override async Task LogWriteAsync(string            line,
-                                                    LogType           type                    = LogType.Info,
-                                                    bool              appendNewLine           = false,
-                                                    bool              writeToLogFile          = false,
-                                                    bool              writeTypeTag            = false,
-                                                    bool              writeTimestampOnLogFile = true,
-                                                    CancellationToken token                   = default)
+    public override async Task LogWriteAsync(string            line,
+                                             LogType           type                    = LogType.Info,
+                                             bool              appendNewLine           = false,
+                                             bool              writeToLogFile          = false,
+                                             bool              writeTypeTag            = false,
+                                             bool              writeTimestampOnLogFile = true,
+                                             CancellationToken token                   = default)
     {
         await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,

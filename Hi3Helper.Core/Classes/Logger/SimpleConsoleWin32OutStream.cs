@@ -7,26 +7,62 @@ using System.Runtime.InteropServices;
 
 namespace Hi3Helper;
 
-internal sealed class SimpleConsoleWin32OutStream : Stream
+internal sealed unsafe class SimpleConsoleWin32OutStream : Stream
 {
-    private readonly nint _consoleHandleUnsafe;
-    private readonly bool _isFreeConsoleHandle;
+    private readonly void* _consoleHandleUnsafe;
+    private readonly bool  _isFreeConsoleHandle;
 
     internal SimpleConsoleWin32OutStream(nint consoleHandle, bool freeConsoleHandle = false)
     {
-        _consoleHandleUnsafe = consoleHandle;
+        _consoleHandleUnsafe = (void*)consoleHandle;
         _isFreeConsoleHandle = freeConsoleHandle;
     }
 
-    [DllImport("Kernel32.dll", EntryPoint = "WriteConsoleA")]
-    private static extern int WriteConsole(nint     hConsoleOutput,
-                                           ref byte lpBuffer,
-                                           int      nNumberOfCharsToWrite,
-                                           ref int  lpNumberOfCharsWritten,
-                                           nint     lpReserved);
+    static SimpleConsoleWin32OutStream()
+    {
+        WriteConsole = &WriteConsoleNop;
+        CloseHandle  = &CloseHandleNop;
 
-    [DllImport("Kernel32.dll", EntryPoint = "CloseHandle")]
-    private static extern int CloseHandle(nint handle);
+        if (!NativeLibrary.TryLoad("Kernel32.dll", out nint kernel32P))
+        {
+            return;
+        }
+
+        if (NativeLibrary.TryGetExport(kernel32P,
+                                       "WriteConsoleA",
+                                       out nint writeConsoleD))
+        {
+            WriteConsole = (delegate* unmanaged[Stdcall]<void*, void*, int, int*, void*, int>)writeConsoleD;
+        }
+
+        if (NativeLibrary.TryGetExport(kernel32P,
+                                       "CloseHandle",
+                                       out nint closeHandleD))
+        {
+            CloseHandle = (delegate* unmanaged[Stdcall]<void*, int>)closeHandleD;
+        }
+    }
+
+    [SkipLocalsInit]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int WriteConsoleNop(void* hConsoleOutput,
+                                       void* lpBuffer,
+                                       int   nNumberOfCharsToWrite,
+                                       int*  lpNumberOfCharsWritten,
+                                       void* lpReserved)
+    {
+        if (lpNumberOfCharsWritten != null)
+            *lpNumberOfCharsWritten = nNumberOfCharsToWrite;
+
+        return 1; // Always returns true
+    }
+
+    [SkipLocalsInit]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int CloseHandleNop(void* handle) => 1; // Always returns true
+
+    private static readonly delegate* unmanaged[Stdcall]<void*, void*, int, int*, void*, int> WriteConsole;
+    private static readonly delegate* unmanaged[Stdcall]<void*, int>                          CloseHandle;
 
     [SkipLocalsInit]
     public override void Flush()
@@ -50,25 +86,13 @@ internal sealed class SimpleConsoleWin32OutStream : Stream
     public override void Write(ReadOnlySpan<byte> buffer)
     {
         ref byte bufferRef = ref MemoryMarshal.GetReference(buffer);
-        WriteCore(ref bufferRef, buffer.Length);
+        WriteCore(_consoleHandleUnsafe, ref bufferRef, buffer.Length);
     }
 
     [SkipLocalsInit]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteCore(ref byte buffer, int len)
-    {
-        int written = 0;
-
-    Write:
-        int result = WriteConsole(_consoleHandleUnsafe, ref buffer, len, ref written, nint.Zero);
-        Marshal.ThrowExceptionForHR(result);
-        len -= written;
-        if (len > 0)
-        {
-            buffer = ref Unsafe.Add(ref buffer, written);
-            goto Write;
-        }
-    }
+    public static void WriteCore(void* handle, ref byte buffer, int len) =>
+        WriteConsole(handle, Unsafe.AsPointer(ref buffer), len, null, null);
 
     protected override void Dispose(bool disposing)
     {
@@ -77,8 +101,7 @@ internal sealed class SimpleConsoleWin32OutStream : Stream
             return;
         }
 
-        int hResult = CloseHandle(_consoleHandleUnsafe);
-        Marshal.ThrowExceptionForHR(hResult);
+        CloseHandle(_consoleHandleUnsafe);
     }
 
     public override bool CanRead  => false;
