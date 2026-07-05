@@ -203,6 +203,12 @@ public partial class LayeredBackgroundImage
         set => SetValue(UseImageCacheProperty, value);
     }
 
+    public bool ForceSoftwareDecoding
+    {
+        get => (bool)GetValue(ForceSoftwareDecodingProperty);
+        set => SetValue(ForceSoftwareDecodingProperty, value);
+    }
+
     public string? MediaSourceCacheDir
     {
         get => (string?)GetValue(MediaSourceCacheDirProperty);
@@ -434,6 +440,12 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
+
+    public static readonly DependencyProperty ForceSoftwareDecodingProperty =
+        DependencyProperty.Register(nameof(ForceSoftwareDecoding),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty MediaSourceCacheDirProperty =
         DependencyProperty.Register(nameof(MediaSourceCacheDir),
