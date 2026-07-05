@@ -1173,6 +1173,7 @@
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Center"
                             Orientation="Horizontal">
+                    <!-- TODO: Apply localization -->
                     <Button x:Name="DBRestore"
                             Height="32"
                             extension:UIElementExtensions.CursorType="Hand"

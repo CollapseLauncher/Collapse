@@ -209,6 +209,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
                 Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
 
                 if (exc != null) throw exc;
+                // TODO: Apply localization
                 SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
             }
             catch (OperationCanceledException)
@@ -234,10 +235,10 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
         {
             try
             {
-                throw new NotImplementedException();
-                Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
+                Exception? exc = await (Settings?.GetFromDatabase() ?? Task.FromResult<Exception?>(null));
 
                 if (exc != null) throw exc;
+                // TODO: Apply localization
                 SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
             }
             catch (OperationCanceledException)
