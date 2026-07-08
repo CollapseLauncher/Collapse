@@ -481,6 +481,9 @@ public partial class LayeredBackgroundImage
             }
 
             // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+            // Guard: skip deferred dispose if the player was already swapped out by a
+            // concurrent source switch (the old player was disposed synchronously).
+            MediaPlayer? playerAtDisposeStart = _videoPlayer;
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
@@ -488,11 +491,14 @@ public partial class LayeredBackgroundImage
             {
                 try
                 {
-                    if (_videoPlayer != null! && DispatcherQueue != null!)
+                    if (_videoPlayer != null! &&
+                        ReferenceEquals(_videoPlayer, playerAtDisposeStart) &&
+                        DispatcherQueue != null!)
                     {
                         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                                    {
-                                                       if (disposeVideoPlayer)
+                                                       if (disposeVideoPlayer &&
+                                                           ReferenceEquals(_videoPlayer, playerAtDisposeStart))
                                                            DisposeVideoPlayer(disposeRenderImageSource);
                                                    });
                     }

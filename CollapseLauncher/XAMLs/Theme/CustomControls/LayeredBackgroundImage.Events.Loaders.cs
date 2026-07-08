@@ -219,8 +219,16 @@ public partial class LayeredBackgroundImage
 
             if (lastMediaType == MediaSourceType.Video)
             {
-                // Dispose and Invalidate Video Player
-                DisposeAndPauseVideoView();
+                // Synchronously dispose the old player before loading the new source,
+                // cancelling any in-flight fade-out that would otherwise dispose it later.
+                CancellationTokenSource? fadeCts = Interlocked.Exchange(ref _videoPlayerFadeCts, null);
+                fadeCts?.Cancel();
+                fadeCts?.Dispose();
+                SetValue(IsVideoPlayProperty, false);
+                if (_videoPlayer != null!)
+                {
+                    DisposeVideoPlayer();
+                }
             }
 
             _ = InnerLoadDetached().ConfigureAwait(false);
@@ -428,6 +436,8 @@ public partial class LayeredBackgroundImage
                             : instance.VideoPlayer_VideoFrameAvailableSafe;
 
                         ffmpegMediaSource.Dispose();
+                        sourceStreamRandom?.Dispose();
+                        sourceStreamRandom = null;
 
                         if (loadFfmpegRetry <= 0)
                         {
