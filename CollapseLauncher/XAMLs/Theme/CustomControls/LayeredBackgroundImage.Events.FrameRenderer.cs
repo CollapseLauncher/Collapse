@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -55,8 +55,10 @@ public partial class LayeredBackgroundImage
     #endregion
 
     #region Fields
+    private const int MaxSharedLastMediaPositionEntries = 32;
 
-    private static readonly Dictionary<int, TimeSpan> SharedLastMediaPosition = new();
+    private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
+    private static int _sharedLastMediaPositionCount;
 
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;
