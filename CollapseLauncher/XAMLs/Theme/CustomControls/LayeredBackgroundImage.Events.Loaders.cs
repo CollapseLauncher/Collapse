@@ -416,11 +416,12 @@ public partial class LayeredBackgroundImage
                     {
                         await Task.Delay(150);
 
-                        // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
                         Interlocked.Exchange(ref instance._isVideoInitialized, 0);
-                        player?.VideoFrameAvailable -= !instance._useSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+                        if (instance._videoPlayer?.PlaybackSession != null)
+                        {
+                            instance._videoPlayer.PlaybackSession.PlaybackStateChanged -= instance.NotifyVideoLoadedOnStateChanged;
+                            instance._videoPlayer.PlaybackSession.PositionChanged       -= instance.MediaDurationPosition_OnChangedBridge;
+                        }
 
                         ffmpegMediaSource.Dispose();
 
@@ -510,42 +511,35 @@ public partial class LayeredBackgroundImage
             SetValue(MediaDurationProperty, sender.NaturalDuration);
             SetValue(IsCurrentMediaSeekableProperty, sender.CanSeek);
 
-            // Create instance
-            Image image = new()
+            DisposeVideoPlayerElement();
+
+            MediaPlayerElement playerElement = new()
             {
                 Tag = (_backgroundGrid, this),
-                Name = "VideoRenderFrame"
+                Name = "VideoRenderFrame",
+                AreTransportControlsEnabled = false,
+                Stretch = BackgroundStretch,
+                HorizontalAlignment = BackgroundHorizontalAlignment,
+                VerticalAlignment = BackgroundVerticalAlignment
             };
-
-            // Bind property
-            image.BindProperty(this,
-                               nameof(BackgroundStretch),
-                               Image.StretchProperty,
-                               BindingMode.OneWay);
-            image.BindProperty(this,
-                               nameof(BackgroundHorizontalAlignment),
-                               HorizontalAlignmentProperty,
-                               BindingMode.OneWay);
-            image.BindProperty(this,
-                               nameof(BackgroundVerticalAlignment),
-                               VerticalAlignmentProperty,
-                               BindingMode.OneWay);
 
             InitializeRenderTargetSize(sender.PlaybackSession);
 
-            // Register events
-            image.Loaded   += Image_VideoFrameOnLoaded;
-            image.Unloaded += Image_VideoFrameOnUnloaded;
+            playerElement.SetMediaPlayer(_videoPlayer);
 
-            // Add to children
-            image.Transitions.Add(new ContentThemeTransition());
-            _backgroundGrid.Children.Add(image);
+            Interlocked.Exchange(ref _videoPlayerElement, playerElement);
+
+            playerElement.Loaded   += MediaPlayerElement_VideoFrameOnLoaded;
+            playerElement.Unloaded += MediaPlayerElement_VideoFrameOnUnloaded;
+
+            playerElement.Transitions.Add(new ContentThemeTransition());
+            _backgroundGrid.Children.Add(playerElement);
         }
     }
 
-    private static void Image_VideoFrameOnLoaded(object sender, RoutedEventArgs e)
+    private static void MediaPlayerElement_VideoFrameOnLoaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        if (sender is not MediaPlayerElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
         {
             return;
         }
@@ -554,17 +548,48 @@ public partial class LayeredBackgroundImage
 
         Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
         parentGrid.Item2.InitializeAndPlayVideoView();
-        Image_ImageOpened(sender, e);
+        MediaPlayerElement_ImageOpened(sender, e);
     }
 
-    private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
+    private static void MediaPlayerElement_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        if (sender is not MediaPlayerElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
         {
             return;
         }
 
         parentGrid.Item2.DisposeAndPauseVideoView();
+    }
+
+    private static void MediaPlayerElement_ImageOpened(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MediaPlayerElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid } playerElement)
+        {
+            return;
+        }
+
+        // Set placeholder to hidden once loaded
+        ref bool isPlaceholderHidden = ref parentGrid.Item2._isPlaceholderHidden;
+        if (parentGrid.Item1.Name.StartsWith("Background", StringComparison.OrdinalIgnoreCase) &&
+            !Interlocked.Exchange(ref isPlaceholderHidden, true))
+        {
+            VisualStateManager.GoToState(parentGrid.Item2, StateNamePlaceholderStateHidden, true);
+
+            // Only notify early if background is an image or if autoplay is not enabled
+            if (parentGrid.Item2._lastBackgroundSourceType == MediaSourceType.Image ||
+                parentGrid.Item2._lastBackgroundStaticSourceType == MediaSourceType.Image ||
+                !(bool)parentGrid.Item2.GetValue(IsVideoAutoplayProperty))
+            {
+                parentGrid.Item2.NotifyImageLoaded();
+            }
+        }
+
+        // HACK: Tells the Grid to temporarily detach all UIElement children
+        //       then re-add the playerElement to the grid
+        ClearMediaGrid(parentGrid.Item1, playerElement);
+
+        // Remove transition once loaded
+        playerElement.Transitions.Clear();
     }
 
     private static void Image_ImageOpened(object sender, RoutedEventArgs e)
@@ -638,15 +663,22 @@ public partial class LayeredBackgroundImage
                 grid.Children.Where(x => x != except)
                     .ToList();
 
-        foreach (Image image in elementExcepted.OfType<Image>())
+        foreach (UIElement element in elementExcepted)
         {
-            // This one is for Image. The source will always guarantee to call this event.
-            image.ImageOpened -= Image_ImageOpened;
-            // This one is for Video since ImageOpened with Canvas source will never trigger this so we use Loaded instead.
-            image.Loaded   -= Image_VideoFrameOnLoaded;
-            image.Unloaded -= Image_VideoFrameOnUnloaded;
-            // Clears the loaded ImageSource
-            image.Source = null;
+            switch (element)
+            {
+                case MediaPlayerElement playerElement:
+                    playerElement.Loaded   -= MediaPlayerElement_VideoFrameOnLoaded;
+                    playerElement.Unloaded -= MediaPlayerElement_VideoFrameOnUnloaded;
+                    playerElement.SetMediaPlayer(null);
+                    break;
+                case Image image:
+                    // This one is for Image. The source will always guarantee to call this event.
+                    image.ImageOpened -= Image_ImageOpened;
+                    // Clears the loaded ImageSource
+                    image.Source = null;
+                    break;
+            }
         }
 
         foreach (UIElement element in elementExcepted)

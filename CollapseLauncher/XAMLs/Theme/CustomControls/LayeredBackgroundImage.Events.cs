@@ -392,26 +392,25 @@ public partial class LayeredBackgroundImage
                                ?? _backgroundGrid.Children.LastOrDefault();
 
         Size size = default;
-        if (canvasElement is Image image)
+        switch (canvasElement)
         {
-            if (image.Source is BitmapSource asBitmapSource)
-            {
-                size = new Size(asBitmapSource.PixelWidth, asBitmapSource.PixelHeight);
-            }
-            else
-            {
-                size = image.RenderSize;
-            }
+            case Image image:
+                if (image.Source is BitmapSource asBitmapSource)
+                {
+                    size = new Size(asBitmapSource.PixelWidth, asBitmapSource.PixelHeight);
+                }
+                else
+                {
+                    size = image.RenderSize;
+                }
+                break;
+            case MediaPlayerElement playerElement:
+                size = playerElement.RenderSize;
+                break;
         }
 
         SetValue(CanvasWidthProperty,  size.Width);
         SetValue(CanvasHeightProperty, size.Height);
-    }
-
-    private void NotifyVideoLoaded(MediaPlayer sender, object args)
-    {
-        sender.VideoFrameAvailable -= NotifyVideoLoaded;
-        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, NotifyImageLoaded);
     }
 
     #endregion

@@ -1,15 +1,10 @@
 ﻿using CollapseLauncher.Extension;
 using Hi3Helper;
-using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Foundation;
-using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Media.Playback;
-using WinRT;
 
 // ReSharper disable CommentTypo
 
@@ -32,7 +27,6 @@ public partial class LayeredBackgroundImage
             MediaPlayer player = new()
             {
                 IsLoopingEnabled          = true,
-                IsVideoFrameServerEnabled = true,
                 Volume                    = AudioVolume.GetClampedVolume(),
                 IsMuted                   = !IsAudioEnabled,
                 CommandManager            = { IsEnabled = false }
@@ -40,11 +34,6 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _videoPlayer, player);
 
             player.MediaOpened += InitializeVideoFrameOnMediaOpened;
-
-            if (!_useSafeFrameRenderer)
-            {
-                ((IWinRTObject)player).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
-            }
         }
         catch (Exception ex)
         {
@@ -75,80 +64,9 @@ public partial class LayeredBackgroundImage
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeVideoPlayer] {ex}",
+            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTargetSize] {ex}",
                                 LogType.Error,
                                 true);
-        }
-    }
-
-    private unsafe void InitializeRenderTarget()
-    {
-        try
-        {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
-            DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
-
-            _canvasDevice ??= CanvasDevice.GetSharedDevice();
-            _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
-                                                                _canvasWidth,
-                                                                _canvasHeight,
-                                                                96f);
-
-            _canvasRenderTarget ??= new CanvasRenderTarget(_canvasDevice,
-                                                           _canvasWidth,
-                                                           _canvasHeight,
-                                                           96f);
-
-            Interlocked.Exchange(ref _useSafeFrameRenderer, false);
-            if (_useSafeFrameRenderer)
-            {
-                return;
-            }
-
-            _canvasRenderTargetNativePtr = ((IWinRTObject)_canvasRenderTarget).NativeObject.ThisPtr;
-            _canvasImageSourceNativePtr  = ((IWinRTObject)_canvasImageSource).NativeObject.ThisPtr;
-            
-            ((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(typeof(IDirect3DSurface).GUID, out _canvasRenderTargetAsSurfacePtr);
-
-            try
-            {
-                if (_functionTableBeginDraw == null! ||
-                    _functionTableDrawImage == null! ||
-                    _functionTableDispose == null!)
-                {
-                    SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
-                                                                               _canvasRenderTargetNativePtr,
-                                                                               out _functionTableBeginDraw,
-                                                                               out _functionTableDrawImage,
-                                                                               out _functionTableDispose,
-                                                                               in _canvasRenderSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Interlocked.Exchange(ref _useSafeFrameRenderer, true); // Fallback
-
-                _functionTableBeginDraw = null;
-                _functionTableDrawImage = null;
-                _functionTableDispose   = null;
-                Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
-                                    LogType.Error,
-                                    true);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-        finally
-        {
-            if (_canvasImageSource != null)
-            {
-                SetRenderImageSource(_canvasImageSource.Source);
-            }
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Unblock frame drawing routine
         }
     }
 
@@ -160,6 +78,11 @@ public partial class LayeredBackgroundImage
     {
         try
         {
+            if (_videoPlayer == null!)
+            {
+                return;
+            }
+
             if (_videoPlayer.IsObjectDisposed())
             {
                 return;
@@ -174,16 +97,16 @@ public partial class LayeredBackgroundImage
                 _ = SaveMediaPosition(BackgroundSource, _videoPlayer.Position);
             }
 
-            if (!_useSafeFrameRenderer)
-            {
-                NullifyMediaPlayerNativePointers();
-            }
+            DisposeVideoPlayerElement();
 
             Interlocked.Exchange(ref _videoFfmpegMediaSource, null)?.Dispose();
             // ReSharper disable once ConstantConditionalAccessQualifier
             Interlocked.Exchange(ref _videoPlayer, null!)?.Dispose();
 
-            DisposeRenderTarget(disposeRenderImageSource);
+            if (disposeRenderImageSource)
+            {
+                SetRenderImageSource(null);
+            }
         }
         catch (Exception ex)
         {
@@ -197,21 +120,43 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private void DisposeRenderTarget(bool disposeRenderImageSource = true)
+    private void DisposeVideoPlayerElement()
     {
+        MediaPlayerElement? element = Interlocked.Exchange(ref _videoPlayerElement, null);
+        if (element == null)
+        {
+            return;
+        }
+
         try
         {
-            if (disposeRenderImageSource)
+            element.SetMediaPlayer(null);
+            element.Loaded   -= MediaPlayerElement_VideoFrameOnLoaded;
+            element.Unloaded -= MediaPlayerElement_VideoFrameOnUnloaded;
+            _backgroundGrid?.DispatcherQueue?.TryEnqueue(() =>
             {
-                SetRenderImageSource(null);
-                Interlocked.Exchange(ref _canvasImageSource,  null);
-                Interlocked.Exchange(ref _canvasRenderTarget, null)?.Dispose();
-            }
+                try
+                {
+                    _backgroundGrid?.Children.Remove(element);
+                }
+                catch
+                {
+                    // ignored
+                }
+            });
+        }
+        catch
+        {
+            // ignored
+        }
+    }
 
-            if (!_useSafeFrameRenderer)
-            {
-                NullifyRenderTargetNativePointers();
-            }
+    private void DisposeRenderTarget(bool disposeRenderImageSource = true)
+    {
+        if (!disposeRenderImageSource) return;
+        try
+        {
+            SetRenderImageSource(null);
         }
         catch (Exception e)
         {
@@ -219,50 +164,6 @@ public partial class LayeredBackgroundImage
                                 LogType.Error,
                                 true);
         }
-    }
-
-    #endregion
-
-    #region On Device Lost Handler
-
-    private void CanvasDevice_OnDeviceLost()
-    {
-        Logger.LogWriteLine("[LayeredBackgroundImage::CanvasDevice_OnDeviceLost] Render device has been lost! Re-initialize render device and textures...",
-                            LogType.Warning,
-                            true);
-
-        // -- Nullify _canvasImageSource so CanvasDevice and other dependencies are reinitialized too
-        Interlocked.Exchange(ref _canvasImageSource, null!);
-        InitializeRenderTarget();
-
-        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
-        Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-    }
-
-    #endregion
-
-    #region COM Native Pointer Nullifiers
-
-    private void NullifyMediaPlayerNativePointers()
-    {
-        // -- Note to myself @neon-nyan:
-        //    Release IMediaPlayer5 reference first, then dispose the whole MediaPlayer.
-        //    This is necessary as we just cast the _videoPlayer object (as IWinRTObject, then took its direct pointer) into IMediaPlayer5.
-        //    If not released, the reference on the IWinRTObject will not be zeroed, causing leak.
-        if (_videoPlayerPtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _videoPlayerPtr, nint.Zero));
-    }
-
-    private void NullifyRenderTargetNativePointers()
-    {
-        // -- Note to myself @neon-nyan:
-        //    Release IDirect3DSurface reference first, then dispose the whole CanvasRenderTarget.
-        //    This is necessary as we just cast the _canvasRenderTargetNativePtr (which is obtained from IWinRTObject's direct pointer) into IDirect3DSurface.
-        //    If not released, the reference on the IWinRTObject will not be zeroed, causing leak.
-        if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _canvasRenderTargetAsSurfacePtr, nint.Zero));
-
-        // -- Nullify IWinRTObject direct pointers.
-        Interlocked.Exchange(ref _canvasRenderTargetNativePtr, nint.Zero);
-        Interlocked.Exchange(ref _canvasImageSourceNativePtr,  nint.Zero);
     }
 
     #endregion

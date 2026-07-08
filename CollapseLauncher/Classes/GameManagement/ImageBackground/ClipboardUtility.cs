@@ -32,8 +32,6 @@ public static class ClipboardUtility
         ImageBackgroundManager? instance,
         FrameToCopyType frameToCopyType)
     {
-        bool isBackgroundVideo = false;
-
         try
         {
             if (instance == null)
@@ -56,7 +54,7 @@ public static class ClipboardUtility
                    .OriginBackgroundImagePath;
 
             CanvasRenderTarget? backgroundCanvas = hasBackground
-                ? isStaticBackgroundShowing ? null : currentElement?.LockCanvasRenderTarget()
+                ? isStaticBackgroundShowing ? null : await (currentElement?.CaptureCurrentVideoFrame())
                 : null;
 
             ICanvasResourceCreator? canvasDevice = backgroundCanvas;
@@ -69,7 +67,8 @@ public static class ClipboardUtility
                 backgroundCanvas = new CanvasRenderTarget(canvasDevice, backgroundCanvas.Size._width, backgroundCanvas.Size._height, 96f);
                 backgroundCanvas.CopyPixelsFromBitmap(oldCanvas);
 
-                isBackgroundVideo = true; // Mark as video so we can unlock the frame later.
+                // Dispose the captured frame since we've copied it.
+                oldCanvas.Dispose();
             }
 
             // If it's still null (which most likely an image), get the canvas.
@@ -110,13 +109,6 @@ public static class ClipboardUtility
             Logger.LogWriteLine($"[ImageBackgroundManager::CopyCurrentFrameToClipboard] An error occurred while trying to copy current background frame to clipboard\r\n{ex}",
                                 LogType.Error,
                                 true);
-        }
-        finally
-        {
-            if (isBackgroundVideo)
-            {
-                instance?.CurrentBackgroundElement?.UnlockCanvasRenderTarget();
-            }
         }
     }
 
