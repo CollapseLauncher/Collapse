@@ -383,7 +383,7 @@ public partial class LayeredBackgroundImage
                         General =
                         {
                             ReadAheadBufferEnabled  = true,
-                            ReadAheadBufferDuration = TimeSpan.FromSeconds(10)
+                            ReadAheadBufferDuration = TimeSpan.FromSeconds(15)
                         }
                     };
 
