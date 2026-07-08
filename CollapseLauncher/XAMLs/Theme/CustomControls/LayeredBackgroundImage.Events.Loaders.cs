@@ -379,6 +379,11 @@ public partial class LayeredBackgroundImage
                             VideoOutputAllowBgra8 = true,
                             VideoOutputAllowNv12  = true,
                             VideoDecoderMode      = instance.FfmpegDecoderMode
+                        },
+                        General =
+                        {
+                            ReadAheadBufferEnabled  = true,
+                            ReadAheadBufferDuration = TimeSpan.FromSeconds(10)
                         }
                     };
 
