@@ -112,9 +112,9 @@ public partial class LayeredBackgroundImage
 
             try
             {
-                if (_functionTableBeginDraw == null ||
-                    _functionTableDrawImage == null ||
-                    _functionTableDispose == null)
+                if (_functionTableBeginDraw == null! ||
+                    _functionTableDrawImage == null! ||
+                    _functionTableDispose == null!)
                 {
                     SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
                                                                                _canvasRenderTargetNativePtr,

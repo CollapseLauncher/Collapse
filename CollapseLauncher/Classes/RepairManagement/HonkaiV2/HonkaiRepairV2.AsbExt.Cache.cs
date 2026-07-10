@@ -338,21 +338,20 @@ internal static partial class AssetBundleExtension
             string currentBaseUrl = presetConfig.GameDispatchArrayURL[i];
             try
             {
-                KianaDispatch dispatch = await KianaDispatch
-                   .GetDispatchAsync(assetBundleHttpClient,
-                                currentBaseUrl,
-                                presetConfig.GameDispatchURLTemplate,
-                                presetConfig.GameDispatchChannelName,
-                                presetConfig.DispatcherKey,
-                                gameVersion.VersionArray,
-                                token);
+                KianaDispatch dispatch = await KianaDispatch.GetDispatchAsync(assetBundleHttpClient,
+                                                                              currentBaseUrl,
+                                                                              presetConfig.GameDispatchURLTemplate,
+                                                                              presetConfig.GameDispatchChannelName,
+                                                                              presetConfig.DispatcherKey,
+                                                                              gameVersion.VersionArray,
+                                                                              token);
 
                 return await KianaDispatch.GetGameServerAsync(assetBundleHttpClient,
-                                                         dispatch,
-                                                         presetConfig.GameGatewayDefault,
-                                                         presetConfig.DispatcherKey,
-                                                         gameVersion.VersionArray,
-                                                         token);
+                                                              dispatch,
+                                                              presetConfig.GameGatewayDefault,
+                                                              presetConfig.DispatcherKey,
+                                                              gameVersion.VersionArray,
+                                                              token);
             }
             catch when (token.IsCancellationRequested)
             {

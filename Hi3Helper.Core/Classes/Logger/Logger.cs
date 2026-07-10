@@ -20,23 +20,18 @@ public static class Logger
 
     public static void UseConsoleLog(bool isEnable)
     {
-        using (LoggerBase.LockObject.EnterScope())
+        switch (isEnable)
         {
-            switch (isEnable)
-            {
-                case false when CurrentLogger is LoggerNull:
-                case true when CurrentLogger is LoggerConsole:
-                    return;
-            }
-
-            CurrentLogger?.Dispose();
-
-            string logPath = LauncherConfig.AppGameLogsFolder;
-            Interlocked.Exchange(ref CurrentLogger,
-                                 isEnable
-                                     ? new LoggerConsole(logPath, Encoding.UTF8)
-                                     : new LoggerNull(logPath, Encoding.UTF8));
+            case false when CurrentLogger is LoggerNull:
+            case true when CurrentLogger is LoggerConsole:
+                return;
         }
+
+        string logPath = LauncherConfig.AppGameLogsFolder;
+        Interlocked.Exchange(ref CurrentLogger,
+                             isEnable
+                                 ? new LoggerConsole(logPath, Encoding.UTF8)
+                                 : new LoggerNull(logPath, Encoding.UTF8))?.Dispose();
     }
 
 

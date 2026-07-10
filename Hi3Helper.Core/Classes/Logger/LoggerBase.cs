@@ -21,9 +21,9 @@ namespace Hi3Helper;
 
 public abstract class LoggerBase : ILog
 {
-    protected const          string   DateTimeFormat = "HH:mm:ss.fff";
-    protected readonly       Encoding Encoding;
-    internal static readonly Lock     LockObject = new();
+    protected const    string        DateTimeFormat = "HH:mm:ss.fff";
+    protected readonly Encoding      Encoding;
+    private readonly   SemaphoreSlim _initSemaphore = new(1, 1);
 
     private const byte SquareBracketOpen  = 0x5B; // [
     private const byte SquareBracketClose = 0x5D; // ]
@@ -208,7 +208,9 @@ public abstract class LoggerBase : ILog
 
     public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
     {
-        using (LockObject.EnterScope())
+        _initSemaphore.Wait();
+
+        try
         {
             DisposeCore(true);
 
@@ -230,6 +232,10 @@ public abstract class LoggerBase : ILog
             encoding ??= Encoding.UTF8;
             SetFolderPathAndInitialize(LogFolder ?? "", encoding);
         }
+        finally
+        {
+            _initSemaphore.Release();
+        }
     }
     #endregion
 
@@ -237,7 +243,9 @@ public abstract class LoggerBase : ILog
 #if !APPLYUPDATE
     private void InitializeWriter(bool isFallback, Encoding? logEncoding)
     {
-        using (LockObject.EnterScope())
+        _initSemaphore.Wait();
+
+        try
         {
             DateTime dateTimeNow = DateTime.Now;
 
@@ -258,18 +266,22 @@ public abstract class LoggerBase : ILog
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
             // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
-            FileStream fileStream = new FileStream(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            FileStream fileStream = new(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             // Seek the file to the EOF
             fileStream.Seek(0, SeekOrigin.End);
 
             // Initialize the StreamWriter
             LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
         }
+        finally
+        {
+            _initSemaphore.Release();
+        }
     }
 
     private static void DeleteLogFilesInner(string folderPath)
     {
-        DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
+        DirectoryInfo dirInfo = new(folderPath);
         foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*-id*.log", SearchOption.TopDirectoryOnly))
         {
             try
@@ -335,21 +347,24 @@ public abstract class LoggerBase : ILog
     private readonly ArrayPool<byte> _logBufferPool = ArrayPool<byte>.Create();
     private          byte[]          _buffer        = [];
 
-    protected bool IsBufferBudgetSufficient(int requestedSize)
-        => _buffer.Length >= requestedSize;
-
-    protected void ResizeBuffer(int requestedSize)
+    protected void EnsureBufferSizeSufficient(int requestedSize)
     {
-        if (_buffer.Length == 0)
+        if (_buffer.Length >= requestedSize)
         {
-            _buffer = _logBufferPool.Rent(requestedSize);
             return;
         }
 
-        _logBufferPool.Return(_buffer);
-        _buffer = _logBufferPool.Rent(requestedSize);
+        if (_buffer.Length == 0)
+        {
+            Interlocked.Exchange(ref _buffer, _logBufferPool.Rent(requestedSize));
+            return;
+        }
+
+        byte[] oldBuffer = Interlocked.Exchange(ref _buffer, _logBufferPool.Rent(requestedSize));
+        _logBufferPool.Return(oldBuffer);
     }
 
+    [SkipLocalsInit]
     protected unsafe void WriteLineToStreamCore(Stream             stream,
                                                 ReadOnlySpan<char> line,
                                                 LogType            type                      = LogType.Info,
@@ -359,39 +374,36 @@ public abstract class LoggerBase : ILog
                                                 bool               isWriteTimestamp          = false,
                                                 bool               isBeginWithCarriageReturn = false)
     {
-        using (LockObject.EnterScope())
+        int  lineUtf8Len   = Encoding.GetMaxByteCount(line.Length + 48);
+        bool useStackalloc = lineUtf8Len <= 1024;
+        if (!useStackalloc)
         {
-            int  lineUtf8Len   = Encoding.GetMaxByteCount(line.Length + 48);
-            bool useStackalloc = lineUtf8Len <= 512;
-            if (!useStackalloc && !IsBufferBudgetSufficient(lineUtf8Len))
-            {
-                ResizeBuffer(lineUtf8Len);
-            }
-
-            scoped Span<byte> buffer = useStackalloc ? stackalloc byte[lineUtf8Len] : _buffer;
-
-            int len = isWriteTagType ?
-                WriteToBufferWithIndentCore(line,
-                                            buffer,
-                                            type,
-                                            appendNewLine,
-                                            isWriteColor,
-                                            isWriteTagType,
-                                            isWriteTimestamp,
-                                            isBeginWithCarriageReturn) :
-                WriteToBufferCore(line,
-                                  buffer,
-                                  type,
-                                  appendNewLine,
-                                  isWriteColor,
-                                  isWriteTagType,
-                                  isWriteTimestamp,
-                                  false,
-                                  isBeginWithCarriageReturn);
-
-            stream.Write(buffer[..len]);
-            stream.Flush();
+            EnsureBufferSizeSufficient(lineUtf8Len);
         }
+
+        scoped Span<byte> buffer = useStackalloc ? stackalloc byte[lineUtf8Len] : _buffer;
+
+        int len = isWriteTagType
+            ? WriteToBufferWithIndentCore(line,
+                                          buffer,
+                                          type,
+                                          appendNewLine,
+                                          isWriteColor,
+                                          isWriteTagType,
+                                          isWriteTimestamp,
+                                          isBeginWithCarriageReturn)
+            : WriteToBufferCore(line,
+                                buffer,
+                                type,
+                                appendNewLine,
+                                isWriteColor,
+                                isWriteTagType,
+                                isWriteTimestamp,
+                                false,
+                                isBeginWithCarriageReturn);
+
+        stream.Write(buffer[..len]);
+        stream.Flush();
     }
 
     private static ReadOnlySpan<char> GetCurrentSplitLine(in Range           range,
@@ -551,8 +563,8 @@ public abstract class LoggerBase : ILog
 
         int bufferSpaceLeft = buffer.Length - (int)Unsafe.ByteOffset(ref bufferPStart, ref bufferP);
         bufferP = ref Unsafe.Add(ref bufferP,
-                              Encoding.GetBytes(new ReadOnlySpan<char>(Unsafe.AsPointer(ref lineP), line.Length),
-                                                new Span<byte>(Unsafe.AsPointer(ref bufferP), bufferSpaceLeft)));
+                                 Encoding.GetBytes(new ReadOnlySpan<char>(Unsafe.AsPointer(ref lineP), line.Length),
+                                                   new Span<byte>(Unsafe.AsPointer(ref bufferP), bufferSpaceLeft)));
         if (appendNewLine)
         {
             bufferP = ref CopyToBuffer(ref bufferP, ref NewLineBytesP[0], NewLineBytesPLen);
@@ -561,7 +573,16 @@ public abstract class LoggerBase : ILog
         return (int)Unsafe.ByteOffset(ref bufferPStart, ref bufferP);
     }
 
-    public virtual void LogWriteLine() { }
+    public virtual void LogWriteLine(bool writeToLogFile          = false,
+                                     bool writeTimestampOnLogFile = true)
+    {
+        const string newLine = "\r\n";
+        WriteLineToStreamCore(LogWriter.BaseStream,
+                              newLine,
+                              LogType.NoTag,
+                              isWriteColor: false,
+                              isWriteTimestamp: writeTimestampOnLogFile);
+    }
 
     public virtual void LogWriteLine(ReadOnlySpan<char> line,
                                      LogType            type                    = LogType.Info,

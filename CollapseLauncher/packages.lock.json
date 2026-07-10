@@ -90,9 +90,9 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.6.0, )",
-        "resolved": "3.6.0",
-        "contentHash": "Nw3TZP1GbDqEsV4hk34iL9YnOLZRDAiosH/IgWXtjv+KTNVJXCEWkDTBmUamWuP9QOShin79c1FudnbT2AV5dA==",
+        "requested": "[3.6.1, )",
+        "resolved": "3.6.1",
+        "contentHash": "R4o2lg1PgXbJnPjtxaUdrn9T9f4E/HJqOo0GAKtyhmflUzz4814u82VOPobkvIO+8tGzaHfnuD6nyFw4JjQENg==",
         "dependencies": {
           "ThisAssembly.Constants": "2.1.2"
         }
@@ -583,7 +583,7 @@
           "CommunityToolkit.WinUI.Media": "[8.2.251219, )",
           "Microsoft.Graphics.Win2D": "[1.4.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.251115.2, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1839, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2270, )",
           "Microsoft.WindowsAppSDK": "[2.2.0, )"
         }
       },
@@ -608,7 +608,7 @@
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.251219, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.251115.2, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1839, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2270, )",
           "Microsoft.WindowsAppSDK": "[2.2.0, )"
         }
       },
