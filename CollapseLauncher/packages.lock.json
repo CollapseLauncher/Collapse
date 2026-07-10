@@ -159,9 +159,9 @@
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
-        "requested": "[10.0.28000.1839, )",
-        "resolved": "10.0.28000.1839",
-        "contentHash": "xPRyq2l8rBbKPOEymCGGN1+086KHsMpXz2bhP2Ha3Woo0tsqrnEXUO/iINJ5kqOvax78LtSReoAZi26rFqOdPg=="
+        "requested": "[10.0.28000.2270, )",
+        "resolved": "10.0.28000.2270",
+        "contentHash": "a7xlGBRfSyXQrjnzFMDd0FCOvyv9mA/oX0FNt4A5hAVvVy6w62NBxygDC/LHM1205dXH9Pv4u0D+Qr77GH8e4Q=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
@@ -453,11 +453,11 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
-        "resolved": "2.3.4",
-        "contentHash": "Id0lCnBTvvFRUQl6EArE449RmPh/hqjxnhDxQLUgIMMad2nF2ryY7Hh1oKazumgk0Ov7c5/aLiAA6lYCfv1mMw==",
+        "resolved": "2.4.0",
+        "contentHash": "1Ml6JmXTwX6zYFsTghNTOOCB8SLLGLABNCIFQPvGNXhJhMjZS3APZkEQdbCgWsB+Ljmyv9UxoJPXAYjL5xdV1g==",
         "dependencies": {
           "Hi3Helper.ZstdNet": "1.6.5",
-          "ZstdSharp.Port": "0.8.6"
+          "ZstdSharp.Port": "0.8.8"
         }
       },
       "System.Drawing.Common": {
@@ -480,8 +480,8 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.6",
-        "contentHash": "iP4jVLQoQmUjMU88g1WObiNr6YKZGvh4aOXn3yOJsHqZsflwRsxZPcIBvNXgjXO3vQKSLctXGLTpcBPLnWPS8A=="
+        "resolved": "0.8.8",
+        "contentHash": "UIDFkA5DC3en3tOJ3Mof11yBx9kUQLsaeo/oFdvN6Bbkr9E9+VCqfIadHci8cu+I51K2Sl7XYWVl2R/mA75NBQ=="
       },
       "colorthief": {
         "type": "Project",
@@ -592,7 +592,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.251219, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.1839, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2270, )",
           "Microsoft.WindowsAppSDK": "[2.2.0, )"
         }
       },
