@@ -339,7 +339,7 @@ internal static partial class AssetBundleExtension
             try
             {
                 KianaDispatch dispatch = await KianaDispatch
-                   .GetDispatch(assetBundleHttpClient,
+                   .GetDispatchAsync(assetBundleHttpClient,
                                 currentBaseUrl,
                                 presetConfig.GameDispatchURLTemplate,
                                 presetConfig.GameDispatchChannelName,
@@ -347,9 +347,11 @@ internal static partial class AssetBundleExtension
                                 gameVersion.VersionArray,
                                 token);
 
-                return await KianaDispatch.GetGameserver(assetBundleHttpClient,
+                return await KianaDispatch.GetGameServerAsync(assetBundleHttpClient,
                                                          dispatch,
                                                          presetConfig.GameGatewayDefault,
+                                                         presetConfig.DispatcherKey,
+                                                         gameVersion.VersionArray,
                                                          token);
             }
             catch when (token.IsCancellationRequested)

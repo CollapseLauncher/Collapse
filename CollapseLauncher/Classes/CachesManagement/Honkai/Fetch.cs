@@ -91,21 +91,20 @@ namespace CollapseLauncher
             KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            foreach (string baseURL in GameVersionManager!.GamePreset!.GameDispatchArrayURL!)
+            if (string.IsNullOrEmpty(GameVersionManager!.GamePreset!.DispatcherKey))
+            {
+                throw new NullReferenceException("Dispatcher key is null or empty!");
+            }
+
+            string key = GameVersionManager.GamePreset.DispatcherKey;
+
+            foreach (string baseURL in GameVersionManager.GamePreset.GameDispatchArrayURL!)
             {
                 try
                 {
-                    // Init the key and decrypt it if existed.
-                    if (string.IsNullOrEmpty(GameVersionManager.GamePreset.DispatcherKey))
-                    {
-                        throw new NullReferenceException("Dispatcher key is null or empty!");
-                    }
-
-                    string key = GameVersionManager.GamePreset.DispatcherKey;
-
                     // Try assign dispatcher
                     if (GameVersionManager.GamePreset is { GameDispatchURLTemplate: not null, GameDispatchChannelName: not null })
-                        dispatch = await KianaDispatch.GetDispatch(client,
+                        dispatch = await KianaDispatch.GetDispatchAsync(client,
                                                                    baseURL,
                                                                    GameVersionManager.GamePreset.GameDispatchURLTemplate,
                                                                    GameVersionManager.GamePreset.GameDispatchChannelName,
@@ -125,7 +124,12 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            GameGateway = await KianaDispatch.GetGameserver(client, dispatch!, GameVersionManager.GamePreset.GameGatewayDefault!, token);
+            GameGateway = await KianaDispatch.GetGameServerAsync(client,
+                                                               dispatch!,
+                                                               GameVersionManager.GamePreset.GameGatewayDefault!,
+                                                               key,
+                                                               GameVersion.VersionArray,
+                                                               token);
             GameRepoURL = BuildAssetBundleURL(GameGateway);
         }
 
