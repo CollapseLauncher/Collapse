@@ -487,6 +487,8 @@ internal abstract class ProgressBase : GamePropertyBase
 
     private int _riLastTick = Environment.TickCount;
 
+    protected void ResetProgressRefreshStopwatch() => _riLastTick = 0;
+
     protected bool CheckIfNeedRefreshStopwatch()
     {
         int currentTick = Environment.TickCount - _riLastTick;

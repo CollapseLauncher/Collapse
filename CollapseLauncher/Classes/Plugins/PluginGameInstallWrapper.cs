@@ -70,6 +70,9 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private readonly InstallProgressDelegate      _updateProgressDelegate;
     private readonly InstallProgressStateDelegate _updateProgressStatusDelegate;
     private          InstallProgressProperty      _updateProgressProperty;
+    private          InstallProgressState         _currentInstallState = InstallProgressState.Idle;
+    private          string                       _lastActivityStatus  = string.Empty;
+    private          float                        _lastLoggedPercentage = -1f;
 
     private PerFileProgressCallbackNative? _perFileProgressDelegate;
     private GCHandle                       _perFileProgressGcHandle;
@@ -162,16 +165,125 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             long downloaded = progress->PerFileDownloadedBytes;
             long total = progress->PerFileTotalBytes;
 
-            Progress.ProgressPerFileSizeCurrent = downloaded;
-            Progress.ProgressPerFileSizeTotal   = total;
-            Progress.ProgressPerFilePercentage  = total > 0
-                ? ConverterTool.ToPercentage(total, downloaded)
-                : 0;
+            using (_updateStatusLock.EnterScope())
+            {
+                Progress.ProgressPerFileSizeCurrent = downloaded;
+                Progress.ProgressPerFileSizeTotal   = total;
+                Progress.ProgressPerFilePercentage  = total > 0
+                    ? ConverterTool.ToPercentage(total, downloaded)
+                    : 0;
+
+                if (Status.IsProgressPerFileIndetermined && total > 0)
+                    Status.IsProgressPerFileIndetermined = false;
+
+                PublishProgressUi(updateProgressBar: true);
+            }
         }
         catch (Exception ex)
         {
             Logger.LogWriteLine($"[PluginGameInstallWrapper::OnPerFileProgressCallback] Exception (swallowed):\r\n{ex}",
                                 LogType.Error, true);
+        }
+    }
+
+    private (int current, int total) GetDisplayCounts()
+    {
+        switch (_currentInstallState)
+        {
+            case InstallProgressState.Download
+                when _updateProgressProperty.AssetCountTotal > 0:
+                return (_updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+            default:
+                if (_updateProgressProperty.StateCountTotal > 0)
+                    return (_updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal);
+
+                if (_updateProgressProperty.AssetCountTotal > 0)
+                    return (_updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+
+                return (0, 0);
+        }
+    }
+
+    private string BuildActivityStatusString()
+    {
+        (int current, int total) = GetDisplayCounts();
+        if (total <= 0)
+        {
+            return _currentInstallState switch
+            {
+                InstallProgressState.Reconciling => "Reconciling sources",
+                InstallProgressState.Verify or InstallProgressState.Preparing => Locale.Current.Lang._Misc.Verifying,
+                InstallProgressState.Idle => Locale.Current.Lang._Misc.Idle,
+                InstallProgressState.Removing => "Deleting",
+                InstallProgressState.Install => Locale.Current.Lang._Misc.Extracting,
+                InstallProgressState.Download => !_updateProgressProperty.IsUpdateMode
+                    ? Locale.Current.Lang._Misc.Downloading
+                    : Locale.Current.Lang._Misc.Updating,
+                InstallProgressState.Updating => Locale.Current.Lang._Misc.Updating,
+                _ => !_updateProgressProperty.IsUpdateMode
+                    ? Locale.Current.Lang._Misc.Downloading
+                    : Locale.Current.Lang._Misc.Updating
+            };
+        }
+
+        return _currentInstallState switch
+        {
+            InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            InstallProgressState.Idle => Locale.Current.Lang._Misc.Idle,
+            InstallProgressState.Install => string.Format(Locale.Current.Lang._Misc.Extracting + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang._Misc.Verifying + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            InstallProgressState.Reconciling => string.Format("Reconciling sources: " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            InstallProgressState.Download => string.Format(Locale.Current.Lang._Misc.Downloading + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            InstallProgressState.Updating => string.Format(Locale.Current.Lang._Misc.Updating + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total),
+            _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang._Misc.Downloading : Locale.Current.Lang._Misc.Updating) + ": " + Locale.Current.Lang._Misc.PerFromTo, current, total)
+        };
+    }
+
+    private void ApplyActivityStatusFromProperty()
+    {
+        Status.ActivityStatus = BuildActivityStatusString();
+        (int current, int total) = GetDisplayCounts();
+        if (total > 0)
+        {
+            Status.ActivityAll = string.Format(Locale.Current.Lang._Misc.PerFromTo, current, total);
+            Status.IsProgressAllIndetermined     = false;
+            Status.IsProgressPerFileIndetermined = false;
+        }
+        else if (_updateProgressProperty.AssetCountTotal > 0)
+        {
+            Status.ActivityAll = string.Format(Locale.Current.Lang._Misc.PerFromTo,
+                _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+        }
+    }
+
+    private void PublishProgressUi(bool updateProgressBar)
+    {
+        ApplyActivityStatusFromProperty();
+
+        bool statusChanged = !string.Equals(_lastActivityStatus, Status.ActivityStatus, StringComparison.Ordinal);
+        if (statusChanged)
+        {
+            _lastActivityStatus = Status.ActivityStatus;
+            _lastLoggedPercentage = (float)Progress.ProgressAllPercentage;
+            Logger.LogWriteLine(
+                $"[PluginGameInstallWrapper::ProgressUI] {Status.ActivityStatus} | {Progress.ProgressAllPercentage:F1}%",
+                LogType.Debug, true);
+        }
+
+        UpdateStatus();
+
+        if (statusChanged || (updateProgressBar && CheckIfNeedRefreshStopwatch()))
+            UpdateProgress();
+
+        // Byte/hash progress can advance within a single file step without changing the X/Y label.
+        if (!statusChanged
+            && updateProgressBar
+            && Math.Abs(Progress.ProgressAllPercentage - _lastLoggedPercentage) >= 1f)
+        {
+            _lastLoggedPercentage = (float)Progress.ProgressAllPercentage;
+            Logger.LogWriteLine(
+                $"[PluginGameInstallWrapper::ProgressUI] {Status.ActivityStatus} | {Progress.ProgressAllPercentage:F1}%",
+                LogType.Debug, true);
         }
     }
 
@@ -355,6 +467,10 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         try
         {
             IsRunning = true;
+            _currentInstallState = InstallProgressState.Idle;
+            _lastActivityStatus  = string.Empty;
+            _lastLoggedPercentage = -1f;
+            ResetProgressRefreshStopwatch();
 
             Status.IsProgressAllIndetermined     = true;
             Status.IsProgressPerFileIndetermined = true;
@@ -449,6 +565,10 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Progress.ProgressAllSizeTotal = downloadedBytesTotal;
                 Progress.ProgressAllSpeed = currentSpeed;
 
+                bool useFileCountProgress = _currentInstallState is InstallProgressState.Reconciling
+                    or InstallProgressState.Verify
+                    or InstallProgressState.Preparing;
+
                 if (_hasPerFileProgress)
                 {
                     // V1Ext_Update5: per-file bytes/percentage come from OnPerFileProgressCallback.
@@ -462,33 +582,32 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                     Progress.ProgressPerFileSizeTotal   = downloadedBytesTotal;
                     Progress.ProgressPerFileSpeed       = currentSpeed;
                     Progress.ProgressPerFilePercentage  = downloadedBytesTotal > 0
-                        ? ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes)
+                        ? Math.Min(100d, ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes))
                         : 0;
                 }
 
-                Progress.ProgressAllTimeLeft = downloadedBytesTotal > 0 && currentSpeed > 0
-                    ? ConverterTool.ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed)
-                    : TimeSpan.Zero;
+                if (useFileCountProgress && _updateProgressProperty.StateCountTotal > 0)
+                {
+                    double filePercent = ConverterTool.ToPercentage(
+                        _updateProgressProperty.StateCountTotal,
+                        _updateProgressProperty.StateCount);
+                    Progress.ProgressAllPercentage = Math.Min(100d, filePercent);
+                    Progress.ProgressAllTimeLeft   = TimeSpan.Zero;
+                }
+                else
+                {
+                    Progress.ProgressAllTimeLeft = downloadedBytesTotal > downloadedBytes && currentSpeed > 0
+                        ? ConverterTool.ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed)
+                        : TimeSpan.Zero;
 
-                Progress.ProgressAllPercentage = downloadedBytesTotal > 0
-                    ? ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes)
-                    : 0;
+                    Progress.ProgressAllPercentage = downloadedBytesTotal > 0
+                        ? Math.Min(100d, ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes))
+                        : 0;
+                }
 
                 _updateProgressProperty.LastDownloaded = downloadedBytes;
 
-                if (!CheckIfNeedRefreshStopwatch())
-                {
-                    return;
-                }
-
-                if (Status.IsProgressAllIndetermined)
-                {
-                    Status.IsProgressAllIndetermined = false;
-                    Status.IsProgressPerFileIndetermined = false;
-                    UpdateStatus();
-                }
-
-                UpdateProgress();
+                PublishProgressUi(updateProgressBar: true);
             }
         }
         catch (Exception ex)
@@ -504,19 +623,9 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             using (_updateStatusLock.EnterScope())
             {
-                string? stateString = delegateState switch
-                {
-                    InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Idle => Locale.Current.Lang?._Misc?.Idle,
-                    InstallProgressState.Install => string.Format(Locale.Current.Lang?._Misc?.Extracting + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Current.Lang?._Misc?.Verifying + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
-                    _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Current.Lang?._Misc?.Downloading : Locale.Current.Lang?._Misc?.Updating) + ": " + Locale.Current.Lang?._Misc?.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
-                };
-
-                Status.ActivityStatus = stateString;
-                Status.ActivityAll = string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
-
-                UpdateStatus();
+                _currentInstallState = delegateState;
+                ApplyActivityStatusFromProperty();
+                PublishProgressUi(updateProgressBar: true);
             }
         }
         catch (Exception ex)

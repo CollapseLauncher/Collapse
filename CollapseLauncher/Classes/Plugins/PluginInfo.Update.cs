@@ -175,7 +175,7 @@ public partial class PluginInfo
         // Update manifest if update is available.
         if (updateRoutineStatus.ReturnCode.HasFlag(SelfUpdateReturnCode.UpdateIsAvailable) &&
             updateRoutineStatus.PluginVersion != GameVersion.Empty &&
-            updateRoutineStatus.PluginVersion != pluginInfo.Version)
+            updateRoutineStatus.PluginVersion > pluginInfo.Version)
         {
             pluginInfo.IsUpdateAvailable = true;
             pluginInfo.NextUpdateManifestInfo = new PluginManifest
@@ -192,7 +192,7 @@ public partial class PluginInfo
             };
         }
 
-        if (updateRoutineStatus.PluginVersion == pluginInfo.Version)
+        if (updateRoutineStatus.PluginVersion <= pluginInfo.Version)
         {
             pluginInfo.IsPluginUpToDate = true;
         }
@@ -216,10 +216,10 @@ public partial class PluginInfo
 
         // If the manifest is null or
         // If the manifest version is empty or
-        // If the manifest version is the same as the plugin version, then ignore while return true as successful operation.
+        // If the manifest version is the same or older than the plugin version, then ignore while return true as successful operation.
         if (manifest == null ||
             manifest.PluginVersion == GameVersion.Empty ||
-            (pluginInfo.IsPluginUpToDate = manifest.PluginVersion == pluginInfo.Version))
+            (pluginInfo.IsPluginUpToDate = manifest.PluginVersion <= pluginInfo.Version))
         {
             return true;
         }
