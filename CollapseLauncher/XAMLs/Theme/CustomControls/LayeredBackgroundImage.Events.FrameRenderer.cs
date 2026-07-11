@@ -463,7 +463,8 @@ public partial class LayeredBackgroundImage
             DispatcherQueue?.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionOnPause?.Invoke();
 
-            if (_videoPlayer == null!)
+            MediaPlayer? playerAtDisposeStart = _videoPlayer;
+            if (playerAtDisposeStart is null)
             {
                 actionAfterPause?.Invoke();
                 return;
@@ -472,17 +473,12 @@ public partial class LayeredBackgroundImage
             if (disposeVideoPlayer)
             {
                 // Unsubscribe early to avoid wasted skipped frames.
-                _videoPlayer.VideoFrameAvailable -= !_useSafeFrameRenderer
-                    ? VideoPlayer_VideoFrameAvailableUnsafe
-                    : VideoPlayer_VideoFrameAvailableSafe;
-
-                _videoPlayer.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
+                DetachVideoPlayerEvents(playerAtDisposeStart);
             }
 
             // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
             // Guard: skip deferred dispose if the player was already swapped out by a
             // concurrent source switch (the old player was disposed synchronously).
-            MediaPlayer? playerAtDisposeStart = _videoPlayer;
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
