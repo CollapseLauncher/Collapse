@@ -58,7 +58,6 @@ public partial class LayeredBackgroundImage
     private const int MaxSharedLastMediaPositionEntries = 32;
 
     private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
-    private static int _sharedLastMediaPositionCount;
 
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;

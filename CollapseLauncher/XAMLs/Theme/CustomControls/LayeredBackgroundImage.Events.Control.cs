@@ -353,25 +353,18 @@ public partial class LayeredBackgroundImage
 
     private static void TrimSharedLastMediaPositionIfNeeded()
     {
-        // Fast path: skip cleanup when below the cap.
-        if (Interlocked.Increment(ref _sharedLastMediaPositionCount) <= MaxSharedLastMediaPositionEntries)
-        {
+        if (SharedLastMediaPosition.Count <= MaxSharedLastMediaPositionEntries)
             return;
-        }
 
-        int excess = _sharedLastMediaPositionCount - MaxSharedLastMediaPositionEntries;
-        if (excess <= 0)
-        {
-            return;
-        }
-
+        int excess = SharedLastMediaPosition.Count - MaxSharedLastMediaPositionEntries;
         foreach (var entry in SharedLastMediaPosition)
         {
-            if (SharedLastMediaPosition.TryRemove(entry.Key, out _) &&
-                Interlocked.Decrement(ref _sharedLastMediaPositionCount) <= MaxSharedLastMediaPositionEntries)
-            {
+            if (!SharedLastMediaPosition.TryRemove(entry.Key, out _))
+                continue;
+
+            excess--;
+            if (excess <= 0)
                 break;
-            }
         }
     }
 
