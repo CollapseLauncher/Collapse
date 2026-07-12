@@ -1173,35 +1173,34 @@
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
-                    <!-- TODO: Apply localization -->
                     <DropDownButton Height="32"
                                     extension:UIElementExtensions.CursorType="Hand"
                                     extension:UIElementExtensions.UniformCornerRadius="-1"
-                                    ToolTipService.ToolTip="Restore/Upload Game Settings from/to Database"
+                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBImportExportTooltip, Mode=OneWay}"
                                     Style="{ThemeResource TransparentDropDownButtonStyle}">
                         <DropDownButton.Content>
                             <StackPanel Margin="4,0,8,0"
                                         Orientation="Horizontal"
                                         Spacing="8">
                                 <FontIcon Glyph="&#xE753;" FontSize="16" />
-                                <TextBlock Text="Upload/Restore from DB"
+                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBImportExport, Mode=OneWay}"
                                            FontSize="14"/>
                             </StackPanel>
                         </DropDownButton.Content>
                         <DropDownButton.Flyout>
                             <MenuFlyout Placement="Top">
-                                <MenuFlyoutItem Text="Restore from DB"
+                                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBRestoreTitle, Mode=OneWay}"
                                                 Click="OnRegistryDbDownloadButtonClick"
                                                 extension:UIElementExtensions.CursorType="Hand"
-                                                ToolTipService.ToolTip="Restore Game Settings from Database">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBRestoreTooltip, Mode=OneWay}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE896;" />
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem Text="Upload to DB"
+                                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBUploadTitle, Mode=OneWay}"
                                                 Click="OnRegistryDbUploadButtonClick"
                                                 extension:UIElementExtensions.CursorType="Hand"
-                                                ToolTipService.ToolTip="Upload current game settings to Database">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.DBUploadTooltip, Mode=OneWay}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE898;" />
                                     </MenuFlyoutItem.Icon>

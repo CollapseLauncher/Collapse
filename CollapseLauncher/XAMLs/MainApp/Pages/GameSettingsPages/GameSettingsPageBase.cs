@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.RegistryUtils;
@@ -209,15 +210,20 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
         {
             try
             {
+                if (!DbHandler.IsEnabled ?? false)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotSetup", true);
+                }
+
+                if (!DbHandler.IsInitialized)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotInitialized", true);
+                }
+                
                 Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
 
                 if (exc != null) throw exc;
-                // TODO: Apply localization
-                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
-            }
-            catch (OperationCanceledException)
-            {
-                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegErr1", true);
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBExported");
             }
             catch (Exception ex)
             {
@@ -238,11 +244,20 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
         {
             try
             {
+                if (!DbHandler.IsEnabled ?? false)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotSetup", true);
+                }
+
+                if (!DbHandler.IsInitialized)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotInitialized", true);
+                }
+                
                 Exception? exc = await (Settings?.GetFromDatabase() ?? Task.FromResult<Exception?>(null));
 
                 if (exc != null) throw exc;
-                // TODO: Apply localization
-                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegExported");
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBImported");
             }
             catch (OperationCanceledException)
             {
