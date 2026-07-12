@@ -156,22 +156,32 @@ public partial class LayeredBackgroundImage
 
     #region Disposers
 
+    private void DetachVideoPlayerEvents(MediaPlayer player)
+    {
+        player.MediaOpened -= InitializeVideoFrameOnMediaOpened;
+        player.VideoFrameAvailable -= NotifyVideoLoaded;
+        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableUnsafe;
+        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableSafe;
+        player.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
+    }
+
     private void DisposeVideoPlayer(bool disposeRenderImageSource = true)
     {
         try
         {
-            if (_videoPlayer.IsObjectDisposed())
+            MediaPlayer? player = _videoPlayer;
+            if (player is null || player.IsObjectDisposed())
             {
                 return;
             }
 
-            _videoPlayer.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-            _videoPlayer.Pause();
+            DetachVideoPlayerEvents(player);
+            player.Pause();
 
             // Save last video player duration for later
-            if (_videoPlayer.CanSeek)
+            if (player.CanSeek)
             {
-                _ = SaveMediaPosition(BackgroundSource, _videoPlayer.Position);
+                _ = SaveMediaPosition(BackgroundSource, player.Position);
             }
 
             if (!_useSafeFrameRenderer)
@@ -180,8 +190,7 @@ public partial class LayeredBackgroundImage
             }
 
             Interlocked.Exchange(ref _videoFfmpegMediaSource, null)?.Dispose();
-            // ReSharper disable once ConstantConditionalAccessQualifier
-            Interlocked.Exchange(ref _videoPlayer, null!)?.Dispose();
+            Interlocked.Exchange(ref _videoPlayer, null)?.Dispose();
 
             DisposeRenderTarget(disposeRenderImageSource);
         }

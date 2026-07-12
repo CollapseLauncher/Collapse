@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -55,8 +55,9 @@ public partial class LayeredBackgroundImage
     #endregion
 
     #region Fields
+    private const int MaxSharedLastMediaPositionEntries = 32;
 
-    private static readonly Dictionary<int, TimeSpan> SharedLastMediaPosition = new();
+    private static readonly ConcurrentDictionary<int, TimeSpan> SharedLastMediaPosition = new();
 
     private CanvasRenderTarget? _canvasRenderTarget;
     private nint                _canvasRenderTargetNativePtr;
@@ -462,7 +463,8 @@ public partial class LayeredBackgroundImage
             DispatcherQueue?.TryEnqueue(() => SetValue(IsVideoPlayProperty, false));
             actionOnPause?.Invoke();
 
-            if (_videoPlayer == null!)
+            MediaPlayer? playerAtDisposeStart = _videoPlayer;
+            if (playerAtDisposeStart is null)
             {
                 actionAfterPause?.Invoke();
                 return;
@@ -471,14 +473,12 @@ public partial class LayeredBackgroundImage
             if (disposeVideoPlayer)
             {
                 // Unsubscribe early to avoid wasted skipped frames.
-                _videoPlayer.VideoFrameAvailable -= !_useSafeFrameRenderer
-                    ? VideoPlayer_VideoFrameAvailableUnsafe
-                    : VideoPlayer_VideoFrameAvailableSafe;
-
-                _videoPlayer.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
+                DetachVideoPlayerEvents(playerAtDisposeStart);
             }
 
             // Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Blocks early
+            // Guard: skip deferred dispose if the player was already swapped out by a
+            // concurrent source switch (the old player was disposed synchronously).
             PauseVideoView(Impl, volumeFadeDurationMs, volumeFadeResolutionMs, token);
             return;
 
@@ -486,11 +486,14 @@ public partial class LayeredBackgroundImage
             {
                 try
                 {
-                    if (_videoPlayer != null! && DispatcherQueue != null!)
+                    if (_videoPlayer != null! &&
+                        ReferenceEquals(_videoPlayer, playerAtDisposeStart) &&
+                        DispatcherQueue != null!)
                     {
                         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                                    {
-                                                       if (disposeVideoPlayer)
+                                                       if (disposeVideoPlayer &&
+                                                           ReferenceEquals(_videoPlayer, playerAtDisposeStart))
                                                            DisposeVideoPlayer(disposeRenderImageSource);
                                                    });
                     }
