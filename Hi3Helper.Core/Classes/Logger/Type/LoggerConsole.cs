@@ -77,8 +77,7 @@ public sealed class LoggerConsole : LoggerBase
         {
             const uint ENABLE_PROCESSED_OUTPUT            = 1;
             const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
-            const uint DISABLE_NEWLINE_AUTO_RETURN        = 8;
-            mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+            mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
             if (PInvoke.SetConsoleMode(ConsoleHandle, mode))
             {
                 VirtualTerminal = true;
