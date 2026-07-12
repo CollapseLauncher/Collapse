@@ -30,7 +30,7 @@ internal static class DbHandler
             field              = value;
             DbConfig.DbEnabled = value ?? false;
 
-            _isFirstInit = true; // Force first init
+            IsInitialized = false; // Force first init
             if (!(value ?? false)) Dispose(); // Dispose instance if user disabled database function globally
         }
     }
@@ -46,11 +46,11 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field          = value;
             DbConfig.DbUrl = value;
-            _isFirstInit   = true;
+            IsInitialized   = false;
         }
     }
         
@@ -66,11 +66,11 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field            = value;
             DbConfig.DbToken = value;
-            _isFirstInit     = true;
+            IsInitialized     = false;
         }
     }
         
@@ -94,7 +94,7 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field             = value;
             DbConfig.UserGuid = value;
@@ -102,17 +102,18 @@ internal static class DbHandler
             if (string.IsNullOrWhiteSpace(value))
             {
                 _userIdHash  = null;
-                _isFirstInit = true;
+                IsInitialized = false;
                 return;
             }
             
             var byteUidH = System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(value));
             _userIdHash  = Convert.ToHexStringLower(byteUidH);
-            _isFirstInit = true;
+            IsInitialized = false;
         }
     }
+    
+    public static bool IsInitialized { get; private set; } = false;
 
-    private static bool _isFirstInit = true;
     #endregion
         
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -157,7 +158,7 @@ internal static class DbHandler
                                                         opts.AuthToken = Token;
                                                     });
 
-            if (_isFirstInit)
+            if (!IsInitialized)
             {
                 LogWriteLine("[DbHandler::Init] Initializing database system...");
                 // Ensure table exist at first initialization
@@ -168,7 +169,7 @@ internal static class DbHandler
                 await
                     _database
                        .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}-blob\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' BLOB)");
-                _isFirstInit = false;
+                IsInitialized = true;
             }
             else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
         }
