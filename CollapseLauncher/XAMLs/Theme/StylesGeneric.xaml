@@ -3,6 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <!--  Project styles: Button  -->
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AccentButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AccentDropDownButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AcrylicButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/AcrylicSemiButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/DefaultButton.xaml" />
@@ -10,6 +11,7 @@
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/NewAccentButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/SocMedIconButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/TransparentDefaultButton.xaml" />
+        <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/TransparentDropDownButton.xaml" />
         <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Button/WindowsCaptionButton.xaml" />
 
         <!--  Project styles: ComboBox  -->

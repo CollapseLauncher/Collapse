@@ -1141,115 +1141,109 @@
             </ScrollViewer>
             <Grid x:Name="GameSettingsApplyGrid"
                   Margin="16"
-                  Padding="16,16"
+                  Padding="12,8"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
                   Background="{ThemeResource GameSettingsApplyGridBrush}"
-                  CornerRadius="8">
+                  extension:UIElementExtensions.UniformCornerRadius="-1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
-                    <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ApplyButton"
+                <Button Grid.Column="0"
+                        x:Name="ApplyButton"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         extension:UIElementExtensions.CursorType="Hand"
-                        Click="OnApplyButtonClick"
-                        CornerRadius="16"
+                        extension:UIElementExtensions.UniformCornerRadius="-1"
                         IsEnabled="True"
-                        Style="{ThemeResource AccentButtonStyle}">
-                    <StackPanel Margin="8,0"
-                                Orientation="Horizontal">
-                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                  FontSize="14"
-                                  Glyph="&#xf00c;" />
-                        <TextBlock Margin="8,0,0,0"
-                                   FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}" />
+                        Padding="6"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Click="OnApplyButtonClick">
+                    <StackPanel Margin="4,0,8,0"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                        <FontIcon Glyph="&#xE73E;" />
+                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.ApplyBtn, Mode=OneWay}"
+                                   FontWeight="Semibold"
+                                   FontSize="14"/>
                     </StackPanel>
                 </Button>
                 <StackPanel Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <!-- TODO: Apply localization -->
-                    <Button x:Name="DBRestore"
-                            Height="32"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="OnRegistryDbDownloadButtonClick"
-                            CornerRadius="16,0,0,16"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="Restore Game Settings from Database">
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="&#xf56e;" />
-                            <TextBlock Margin="8,0,0,0"
-                                       FontWeight="Medium"
-                                       Text="Restore from DB" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="DBUpload"
-                            Height="32"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="OnRegistryDbUploadButtonClick"
-                            CornerRadius="0,16,16,0"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="Upload current game settings to Database">
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <TextBlock Margin="0,0,8,0"
-                                       FontWeight="Medium"
-                                       Text="Upload to DB" />
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="&#xf56f;" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
-                    <TextBlock Margin="16,-4,16,0"
-                               VerticalAlignment="Center"
-                               FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportExport, Mode=OneWay}" />
-                    <Button x:Name="RegistryExport"
-                            Height="32"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="OnRegistryExportButtonClick"
-                            CornerRadius="16,0,0,16"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTooltip, Mode=OneWay}">
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="&#xf56e;" />
-                            <TextBlock Margin="8,0,0,0"
-                                       FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTitle, Mode=OneWay}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="RegistryImport"
-                            Height="32"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="OnRegistryImportButtonClick"
-                            CornerRadius="0,16,16,0"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTooltip, Mode=OneWay}">
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <TextBlock Margin="0,0,8,0"
-                                       FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTitle, Mode=OneWay}" />
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="&#xf56f;" />
-                        </StackPanel>
-                    </Button>
+                    <!-- TODO: Apply localization -->
+                    <DropDownButton Height="32"
+                                    extension:UIElementExtensions.CursorType="Hand"
+                                    extension:UIElementExtensions.UniformCornerRadius="-1"
+                                    ToolTipService.ToolTip="Restore/Upload Game Settings from/to Database"
+                                    Style="{ThemeResource TransparentDropDownButtonStyle}">
+                        <DropDownButton.Content>
+                            <StackPanel Margin="4,0,8,0"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                <FontIcon Glyph="&#xE753;" FontSize="16" />
+                                <TextBlock Text="Upload/Restore from DB"
+                                           FontSize="14"/>
+                            </StackPanel>
+                        </DropDownButton.Content>
+                        <DropDownButton.Flyout>
+                            <MenuFlyout Placement="Top">
+                                <MenuFlyoutItem Text="Restore from DB"
+                                                Click="OnRegistryDbDownloadButtonClick"
+                                                extension:UIElementExtensions.CursorType="Hand"
+                                                ToolTipService.ToolTip="Restore Game Settings from Database">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE896;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem Text="Upload to DB"
+                                                Click="OnRegistryDbUploadButtonClick"
+                                                extension:UIElementExtensions.CursorType="Hand"
+                                                ToolTipService.ToolTip="Upload current game settings to Database">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE898;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                    <DropDownButton Height="32"
+                                    extension:UIElementExtensions.CursorType="Hand"
+                                    extension:UIElementExtensions.UniformCornerRadius="-1"
+                                    Style="{ThemeResource AccentDropDownButtonStyle}"
+                                    Margin="8, 0, 0, 0">
+                        <DropDownButton.Content>
+                            <StackPanel Margin="4,0,8,0"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                <FontIcon Glyph="&#xE74E;" FontSize="16" />
+                                <TextBlock Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportExport, Mode=OneWay}"
+                                           FontSize="14"/>
+                            </StackPanel>
+                        </DropDownButton.Content>
+                        <DropDownButton.Flyout>
+                            <MenuFlyout Placement="Top">
+                                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTitle, Mode=OneWay}"
+                                                Click="OnRegistryImportButtonClick"
+                                                extension:UIElementExtensions.CursorType="Hand"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegImportTooltip, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE8B5;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTitle, Mode=OneWay}"
+                                                Click="OnRegistryExportButtonClick"
+                                                extension:UIElementExtensions.CursorType="Hand"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._GameSettingsPage.RegExportTooltip, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xEDE1;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
                 </StackPanel>
             </Grid>
         </Grid>

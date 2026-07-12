@@ -5,6 +5,7 @@ using CollapseLauncher.RegistryUtils;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -94,7 +95,9 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             VerticalAlignment   = VerticalAlignment.Center,
             Style               = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
             TextWrapping        = TextWrapping.Wrap,
-            Visibility          = Visibility.Collapsed
+            Visibility          = Visibility.Collapsed,
+            FontSize            = 14,
+            FontWeight          = FontWeights.SemiBold
         };
         ApplyTextForeground      = ApplyText.Foreground;
         ApplyTextForegroundError = new SolidColorBrush(new Color { A = 255, R = 255 });
