@@ -13,6 +13,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.Storage;
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -23,10 +27,36 @@ namespace CollapseLauncher.Pages
         public static PluginManagerPageContext Context { get; }              = new();
         public static PluginManagerPage        This    { get; private set; } = null!;
 
+        private readonly DispatcherTimer _fileDragIndicatorTimer = new()
+        {
+            Interval = TimeSpan.FromMilliseconds(50)
+        };
+        private bool _isWinUiFileDragActive;
+        private bool _isDropIndicatorVisible;
+
         public PluginManagerPage()
         {
             This = this;
             InitializeComponent();
+            _fileDragIndicatorTimer.Tick += OnFileDragIndicatorTimerTick;
+            Loaded += OnPluginManagerPageLoaded;
+            Unloaded += OnPluginManagerPageUnloaded;
+        }
+
+        private void OnPluginManagerPageLoaded(object sender, RoutedEventArgs e)
+        {
+            WindowUtility.FileDropEvent += OnNativeFileDrop;
+            WindowUtility.SetFileDropEnabled(true);
+            _fileDragIndicatorTimer.Start();
+        }
+
+        private void OnPluginManagerPageUnloaded(object sender, RoutedEventArgs e)
+        {
+            _fileDragIndicatorTimer.Stop();
+            _isWinUiFileDragActive = false;
+            SetImportDropIndicator(false);
+            WindowUtility.SetFileDropEnabled(false);
+            WindowUtility.FileDropEvent -= OnNativeFileDrop;
         }
 
         private void OnListViewRightClickUpdate(object sender, RightTappedRoutedEventArgs e)
@@ -63,10 +93,8 @@ namespace CollapseLauncher.Pages
 
         private async void OnClickImportButton(object sender, RoutedEventArgs e)
         {
-            int imported = 0;
             try
             {
-                ImportBoxButton.IsEnabled = false;
                 Dictionary<string, string> supportedFiles = new()
                 {
                     { Locale.Current.Lang?._PluginManagerPage?.FileDialogFileFilter1 ?? "", "*.zip;manifest.json" }
@@ -79,6 +107,117 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
+                await ImportPlugins(selectedFiles);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex.WrapPluginException("No plugin has been imported due to following error:"));
+            }
+        }
+
+        private void OnDragEnterImportBox(object sender, DragEventArgs e)
+        {
+            if (ImportBoxButton.IsEnabled && e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                _isWinUiFileDragActive = true;
+                SetImportDropIndicator(true);
+                e.AcceptedOperation = DataPackageOperation.Copy;
+            }
+        }
+
+        private void OnDragLeaveImportBox(object sender, DragEventArgs e)
+        {
+            Point position = e.GetPosition(ImportBoxButton);
+            if (position.X >= 0 && position.X <= ImportBoxButton.ActualWidth &&
+                position.Y >= 0 && position.Y <= ImportBoxButton.ActualHeight)
+            {
+                return;
+            }
+
+            _isWinUiFileDragActive = false;
+            SetImportDropIndicator(false);
+        }
+
+        private void OnDragOverImportBox(object sender, DragEventArgs e)
+        {
+            if (ImportBoxButton.IsEnabled && e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                _isWinUiFileDragActive = true;
+                SetImportDropIndicator(true);
+                e.AcceptedOperation = DataPackageOperation.Copy;
+            }
+        }
+
+        private async void OnDropImportBox(object sender, DragEventArgs e)
+        {
+            _isWinUiFileDragActive = false;
+            SetImportDropIndicator(false);
+            try
+            {
+                IReadOnlyList<IStorageItem> storageItems = await e.DataView.GetStorageItemsAsync();
+                string[] selectedFiles = storageItems.OfType<StorageFile>().Select(file => file.Path).ToArray();
+                await ImportPlugins(selectedFiles);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex.WrapPluginException("No plugin has been imported due to following error:"));
+            }
+        }
+
+        private async void OnNativeFileDrop(string[] selectedFiles, PointInt32 dropPoint)
+        {
+            if (!IsPointInDropArea(dropPoint))
+            {
+                return;
+            }
+
+            await ImportPlugins(selectedFiles);
+        }
+
+        private void OnFileDragIndicatorTimerTick(object? sender, object e)
+        {
+            bool isExternalDragOverDropArea =
+                WindowUtility.TryGetExternalDragPosition(out PointInt32 dragPosition) &&
+                IsPointInDropArea(dragPosition);
+            SetImportDropIndicator(_isWinUiFileDragActive || isExternalDragOverDropArea);
+        }
+
+        private bool IsPointInDropArea(PointInt32 point)
+        {
+            Rect dropAreaBounds = ImportBoxButton.TransformToVisual(null)
+                                                     .TransformBounds(new Rect(0,
+                                                                               0,
+                                                                               ImportBoxButton.ActualWidth,
+                                                                               ImportBoxButton.ActualHeight));
+            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+            return point.X >= dropAreaBounds.Left * scaleFactor &&
+                   point.X <= dropAreaBounds.Right * scaleFactor &&
+                   point.Y >= dropAreaBounds.Top * scaleFactor &&
+                   point.Y <= dropAreaBounds.Bottom * scaleFactor;
+        }
+
+        private void SetImportDropIndicator(bool isVisible)
+        {
+            if (_isDropIndicatorVisible == isVisible)
+            {
+                return;
+            }
+
+            _isDropIndicatorVisible = isVisible;
+            ImportDropIndicator.Opacity = isVisible ? 1 : 0;
+        }
+
+        private async Task ImportPlugins(string[] selectedFiles)
+        {
+            if (selectedFiles.Length == 0)
+            {
+                return;
+            }
+
+            int imported = 0;
+            try
+            {
+                ImportBoxButton.IsEnabled = false;
                 List<Exception> exceptions = [];
 
                 foreach (string filePath in selectedFiles)
