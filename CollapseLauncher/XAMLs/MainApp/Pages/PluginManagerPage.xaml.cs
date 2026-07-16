@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
+using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -9,7 +10,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -166,6 +169,9 @@ namespace CollapseLauncher.Pages
 
         private async void OnNativeFileDrop(string[] selectedFiles, PointInt32 dropPoint)
         {
+            _isWinUiFileDragActive = false;
+            SetImportDropIndicator(false);
+
             if (!IsPointInDropArea(dropPoint))
             {
                 return;
@@ -215,10 +221,10 @@ namespace CollapseLauncher.Pages
             }
 
             int imported = 0;
+            List<(string FilePath, Exception Exception)> failures = [];
             try
             {
                 ImportBoxButton.IsEnabled = false;
-                List<Exception> exceptions = [];
 
                 foreach (string filePath in selectedFiles)
                 {
@@ -230,27 +236,52 @@ namespace CollapseLauncher.Pages
                     }
                     catch (Exception exception)
                     {
-                        exceptions.Add(exception);
+                        failures.Add((filePath, exception));
+                        Logger.LogWriteLine($"[PluginManagerPage::ImportPlugins] Failed to import: {filePath}\r\n{exception}",
+                                            LogType.Error,
+                                            true);
                     }
                 }
-
-                if (exceptions.Count > 0)
-                {
-                    throw new AggregateException(exceptions);
-                }
-            }
-            catch (Exception ex)
-            {
-                string messageHead = imported > 0 ?
-                    $"{imported} plugin(s) have been imported! But some error has occurred while importing other plugins:" :
-                    "No plugin has been imported due to following error:";
-
-                ErrorSender.SendException(ex.WrapPluginException(messageHead));
             }
             finally
             {
                 ImportBoxButton.IsEnabled = true;
             }
+
+            if (failures.Count == 0)
+            {
+                return;
+            }
+
+            string messageHead = imported > 0 ?
+                $"{imported} plugin(s) were imported, but {failures.Count} file(s) could not be imported:" :
+                "No plugins were imported:";
+            string failureMessages = string.Join(Environment.NewLine,
+                                                 failures.Select(failure =>
+                                                     $"- {Path.GetFileName(failure.FilePath)}: {GetFriendlyImportError(failure.FilePath, failure.Exception)}"));
+
+            string warningMessage = $"{messageHead}{Environment.NewLine}{Environment.NewLine}{failureMessages}";
+            await SimpleDialogs.SpawnDialog(Locale.Current.Lang?._UnhandledExceptionPage?.UnhandledTitle4 ?? "Warning",
+                                            warningMessage,
+                                            ImportBoxButton,
+                                            Locale.Current.Lang?._Misc?.Close,
+                                            dialogTheme: ContentDialogTheme.Warning);
+        }
+
+        private static string GetFriendlyImportError(string filePath, Exception exception)
+        {
+            return exception switch
+            {
+                NotSupportedException        => exception.Message,
+                DuplicateNameException      => exception.Message,
+                UnauthorizedAccessException => "Permission was denied while reading or installing the plugin.",
+                FileNotFoundException       => "The package is missing its manifest or another required file.",
+                InvalidDataException        => "The archive or manifest is invalid.",
+                IOException when filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) =>
+                    "The archive could not be read or installed.",
+                IOException => "The manifest or one of its referenced files could not be read.",
+                _ => "The file is not a valid or supported plugin."
+            };
         }
 
         internal static async void AskLauncherRestart(object? sender, RoutedEventArgs? e)
