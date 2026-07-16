@@ -447,7 +447,7 @@ namespace CollapseLauncher.Helper
 
             dragPosition = default;
             nint windowHandle = CurrentWindowPtr;
-            if (windowHandle == nint.Zero || windowHandle == PInvoke.GetForegroundWindow())
+            if (windowHandle == nint.Zero)
             {
                 return false;
             }
