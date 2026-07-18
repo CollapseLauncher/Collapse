@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -642,21 +642,21 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         Logger.LogWriteLine($"Size remained to download: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)}.",
                             LogType.Default, true);
 
-        // Get the information about the disk
-        DriveInfo driveInfo = new(gamePath);
+        // Get free space using the path (handles volume mount points correctly)
+        long volumeFreeSpace = PathUtil.GetVolumeFreeSpace(gamePath);
+        string volumeName = PathUtil.GetPathVolumeName(gamePath);
 
         // Push log regarding disk space
-        Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
+        Logger.LogWriteLine($"Total free space remained on disk: {volumeName}: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}.",
                             LogType.Default, true);
 
         // If the space is insufficient, then show the dialog and throw
-        if (sizeRemainedToDownload > driveInfo.TotalFreeSpace)
+        if (sizeRemainedToDownload > volumeFreeSpace)
         {
-            string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
-                            $"(Free space: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(sizeToDownload)}), " +
-                            $"Drive: {driveInfo.Name})";
-            await SimpleDialogs.Dialog_InsufficientDriveSpace(driveInfo.TotalFreeSpace,
-                                                              sizeRemainedToDownload, driveInfo.Name);
+            string errStr = $"Free Space on {volumeName} is not sufficient! " +
+                            $"(Free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(sizeToDownload)}), " +
+                            $"Drive: {volumeName})";
+            await SimpleDialogs.Dialog_InsufficientDriveSpace(volumeFreeSpace, sizeRemainedToDownload, volumeName);
 
             // Push log for the disk space error
             Logger.LogWriteLine(errStr, LogType.Error, true);
