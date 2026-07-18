@@ -376,7 +376,7 @@
         <PRIResource Remove="StaticLib\buildScript\**" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <ItemGroup Condition="'$(PublishAot)' == 'true' Or '$(PublishTrimmed)' == 'true'">
         <!-- Descriptor for all classes that cannot be trimmed -->
         <!-- We used to have a bunch of entries listed here. But due to some issues that might be caused by unwanted trimming behavior, we decided to
              just leave the TrimmerRootDescriptor applied.
