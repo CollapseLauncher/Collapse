@@ -93,9 +93,8 @@ namespace CollapseLauncher.GameManagement.Versioning
              || string.IsNullOrEmpty(cpsCurrent))
                 return false;
 
-            return !(channelIdCurrentInt != GamePreset.ChannelID
-             || subChannelIdCurrentInt != GamePreset.SubChannelID
-             || !cpsCurrent.Equals(GamePreset.LauncherCPSType));
+            return channelIdCurrentInt == GamePreset.ChannelID
+                && subChannelIdCurrentInt == GamePreset.SubChannelID;
         }
 
         protected virtual bool IsGameExecDataDirValid(string? executableName) => true; // Always true for games other than Genshin Impact
