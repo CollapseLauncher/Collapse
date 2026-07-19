@@ -837,10 +837,10 @@
     "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
     "ListViewFooterRestartButton": "Restart the Launcher",
 
-    "RightPanelImportTitle1": "Click to add the",
+    "RightPanelImportTitle1": "Browse or drop a",
     "RightPanelImportTitle2": "or",
-    "RightPanelImportTitle3": "here",
-    "RightPanelImportTitle4": "Anywhere in the box is fine!"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "Drop plugin files anywhere in this panel"
   },
 
   "_Misc": {

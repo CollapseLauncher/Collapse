@@ -823,12 +823,17 @@
                 </ResourceDictionary>
             </Grid.Resources>
             <Button x:Name="ImportBoxButton"
+                    AllowDrop="True"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     extension:UIElementExtensions.CursorType="Hand"
                     Background="{StaticResource ImportBoxButtonBackground}"
                     Click="OnClickImportButton"
-                    CornerRadius="20">
+                    CornerRadius="20"
+                    DragEnter="OnDragEnterImportBox"
+                    DragLeave="OnDragLeaveImportBox"
+                    DragOver="OnDragOverImportBox"
+                    Drop="OnDropImportBox">
                 <interactivity:Interaction.Behaviors>
                     <interactivity:EventTriggerBehavior EventName="PointerEntered">
                         <behaviors:StartAnimationAction Animation="{x:Bind ImportBoxPlusGridEnterAnimation}" />
@@ -906,7 +911,7 @@
                             </animations:AnimationSet>
                         </animations:Explicit.Animations>
 
-                        <FontIcon FontSize="48z"
+                        <FontIcon FontSize="48"
                                   Glyph="&#xE710;" />
                     </Button>
                     <StackPanel Grid.Row="1"
@@ -938,6 +943,24 @@
                     </StackPanel>
                 </Grid>
             </Button>
+            <Grid x:Name="ImportDropIndicator"
+                  IsHitTestVisible="False"
+                  Opacity="0">
+                <Grid.OpacityTransition>
+                    <ScalarTransition Duration="0:0:.18" />
+                </Grid.OpacityTransition>
+                <Border Margin="3"
+                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                        CornerRadius="17"
+                        Opacity=".08" />
+                <Rectangle Margin="2"
+                           RadiusX="18"
+                           RadiusY="18"
+                           Stroke="{ThemeResource AccentColor}"
+                           StrokeDashArray="1,2"
+                           StrokeDashCap="Round"
+                           StrokeThickness="3" />
+            </Grid>
         </Grid>
         <Button x:Name="OpenPluginCatalogBottomLeftButton"
                 Grid.Column="0"
