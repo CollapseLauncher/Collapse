@@ -38,10 +38,14 @@ public partial class ImageBackgroundManager
     private void LoadImageAtIndex(int index, bool forceLoadToStatic, CancellationToken token)
     {
         if (ImageContextSources.Count <= index ||
-            index < 0 ||
-            IsBackgroundLoading)
+            index < 0)
         {
             return;
+        }
+
+        if (IsBackgroundLoading)
+        {
+            CancelCurrentBackgroundLoad();
         }
 
         IsBackgroundLoading = true;
@@ -60,6 +64,16 @@ public partial class ImageBackgroundManager
             IsBackground = true,
             Priority = ThreadPriority.Lowest
         }.UnsafeStart();
+    }
+
+    private void CancelCurrentBackgroundLoad()
+    {
+        if (Interlocked.Exchange(ref _imageLoadingTokenSource, null) is { } lastCts)
+        {
+            lastCts.Cancel();
+            lastCts.Dispose();
+        }
+        IsBackgroundLoading = false;
     }
 
     private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token)
@@ -190,6 +204,12 @@ public partial class ImageBackgroundManager
                                  bool isVideo,
                                  LayeredImageBackgroundContext context)
     {
+        if (CurrentSelectedBackgroundContext != null &&
+            !context.Equals(CurrentSelectedBackgroundContext))
+        {
+            return;
+        }
+
         LayeredBackgroundImage layerElement = new()
         {
             BackgroundSource          = backgroundFilePath,
