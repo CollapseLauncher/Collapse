@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -9,13 +10,18 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -35,7 +41,7 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private void LoadImageAtIndex(int index, bool forceLoadToStatic, CancellationToken token)
+    private void LoadImageAtIndex(int index, bool forceLoadToStatic, CancellationToken token, bool forceReload = false)
     {
         if (ImageContextSources.Count <= index ||
             index < 0)
@@ -48,12 +54,16 @@ public partial class ImageBackgroundManager
             CancelCurrentBackgroundLoad();
         }
 
-        IsBackgroundLoading = true;
+        // Only show loading indicator when a download is required.
+        if (!CheckIsContextCached(ImageContextSources[index]))
+        {
+            IsBackgroundLoading = true;
+        }
         new Thread(async void () =>
         {
             try
             {
-                await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false);
+                await LoadImageAtIndexCore(index, forceLoadToStatic, token, forceReload).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -76,7 +86,103 @@ public partial class ImageBackgroundManager
         IsBackgroundLoading = false;
     }
 
-    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token)
+    public void PreloadBackground(PresetConfig? preset, Grid? presenterGrid)
+    {
+        if (preset == null || presenterGrid == null) return;
+
+        CancelCurrentBackgroundLoad();
+        Interlocked.Increment(ref _loadGeneration);
+
+        PresenterGrid = presenterGrid;
+        string autoPlayKey = $"LastIsEnableBackgroundAutoPlay-{preset.GameName}-{preset.ZoneName}";
+        CurrentIsEnableBackgroundAutoPlayKey = autoPlayKey;
+
+        string cachedBgKey = $"CachedBg-{preset.GameName}-{preset.ZoneName}";
+        string? backgroundUrl    = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-Background").ToString();
+        string? staticBgUrl      = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-StaticBackground").ToString();
+        string? overlayUrl       = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-Overlay").ToString();
+
+        if (string.IsNullOrEmpty(backgroundUrl) && string.IsNullOrEmpty(staticBgUrl)) return;
+
+        string? primaryBg = backgroundUrl ?? staticBgUrl;
+
+        LayeredImageBackgroundContext context = new()
+        {
+            OriginOverlayImagePath          = overlayUrl,
+            OriginBackgroundImagePath       = backgroundUrl,
+            OriginBackgroundStaticImagePath = staticBgUrl,
+            OverlayImagePath                = overlayUrl,
+            BackgroundImagePath             = primaryBg,
+            BackgroundImageStaticPath       = staticBgUrl,
+            IsVideo                         = IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!),
+            IsCustom                        = false
+        };
+
+        if (CheckIsContextCached(context))
+        {
+            string? localOverlay    = TryGetCachedLocalPath(overlayUrl);
+            string? localBackground = TryGetCachedLocalPath(primaryBg);
+            string? localStatic     = TryGetCachedLocalPath(staticBgUrl);
+
+            bool overlayRequired  = !string.IsNullOrEmpty(overlayUrl);
+            bool staticRequired   = !string.IsNullOrEmpty(staticBgUrl);
+
+            if (localBackground != null &&
+                (!overlayRequired || localOverlay != null) &&
+                (!staticRequired  || localStatic != null))
+            {
+                bool willDisplayStatic = !IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!) ||
+                                         (!CurrentIsEnableCustomImage &&
+                                          !GlobalIsEnableCustomImage &&
+                                          !CurrentIsEnableBackgroundAutoPlay);
+                Uri accentPreviewUri = willDisplayStatic ? new Uri(localStatic) : new Uri(localBackground);
+
+                RestoreSavedAccent(cachedBgKey, accentPreviewUri);
+
+                ImageContextSources.Clear();
+                ImageContextSources.Add(context);
+                OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
+                OnPropertyChanged(nameof(CurrentBackgroundCount));
+
+                CurrentBackgroundElement = CreateLayerElement(localOverlay != null ? new Uri(localOverlay) : null,
+                                                              new Uri(localBackground),
+                                                              localStatic != null ? new Uri(localStatic) : null,
+                                                              context,
+                                                              IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!));
+
+                bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+                new Thread(async void (ctx) =>
+                {
+                    try
+                    {
+                        await GetMediaAccentColor(ctx).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogWriteLine($"{e}", LogType.Error, true);
+                    }
+                })
+                {
+                    IsBackground = true
+                }.UnsafeStart((accentPreviewUri, isUseFFmpeg, cachedBgKey));
+                return;
+            }
+        }
+
+        // Show preset placeholder.
+        string placeholderPath = GetPlaceholderBackgroundImageFrom(null);
+        PresenterGrid.Background = new ImageBrush
+        {
+            ImageSource = new BitmapImage(new Uri(placeholderPath)),
+            Stretch     = Stretch.UniformToFill
+        };
+        PresenterGrid.Children.Clear();
+        CurrentBackgroundElement = null;
+        _displayedContext = null;
+        IsBackgroundLoading = true;
+    }
+
+    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token, bool forceReload = false)
     {
         Stopwatch? stopwatch = null;
         try
@@ -126,8 +232,13 @@ public partial class ImageBackgroundManager
 
             // Try to use static bg URL if normal bg is not available.
             downloadedBackgroundUri ??= downloadedBackgroundStaticUri;
-            if (downloadedBackgroundUri == null) // If no background file is available, return.
+            if (downloadedBackgroundUri == null)
             {
+                if (!context.IsCustom)
+                {
+                    NeedFallbackPlaceholder = false;
+                    OnBackgroundLoadFailed?.Invoke();
+                }
                 return;
             }
 
@@ -148,7 +259,23 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            // -- Read Color Accent information from current background context.
+            // Try to force loading static image if requested.
+            if (forceLoadToStatic && downloadedBackgroundStaticUri != null)
+            {
+                isVideo                       = false;
+                downloadedBackgroundUri       = downloadedBackgroundStaticUri;
+                downloadedBackgroundStaticUri = null;
+            }
+
+            // Read accent color from the source that is actually displayed.
+            bool willDisplayStatic = !isVideo ||
+                                     (!CurrentIsEnableCustomImage &&
+                                      !GlobalIsEnableCustomImage &&
+                                      !CurrentIsEnableBackgroundAutoPlay);
+            Uri? accentSourceUri = willDisplayStatic
+                ? downloadedBackgroundStaticUri ?? downloadedBackgroundUri
+                : downloadedBackgroundUri;
+
             new Thread(async void (ctx) =>
             {
                 try
@@ -162,39 +289,50 @@ public partial class ImageBackgroundManager
             })
             {
                 IsBackground = true
-            }.UnsafeStart((downloadedBackgroundUri, isUseFFmpeg));
+            }.UnsafeStart((accentSourceUri, isUseFFmpeg, CurrentCachedBgKey));
 
-            // Try to force loading static image if requested.
-            if (forceLoadToStatic && downloadedBackgroundStaticUri != null)
+            if (!context.IsCustom &&
+                !string.IsNullOrEmpty(CurrentCachedBgKey))
             {
-                isVideo                       = false;
-                downloadedBackgroundUri       = downloadedBackgroundStaticUri;
-                downloadedBackgroundStaticUri = null;
+                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Background",       context.OriginBackgroundImagePath ?? "");
+                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-StaticBackground", context.OriginBackgroundStaticImagePath ?? "");
+                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Overlay",          context.OriginOverlayImagePath ?? "");
             }
 
             // -- Use UI thread and load image layer
+            int captureGen = _loadGeneration;
+            bool captureForceReload = forceReload;
             DispatcherQueueExtensions
                .CurrentDispatcherQueue
                .TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri,
-                                                 downloadedBackgroundUri,
-                                                 downloadedBackgroundStaticUri,
-                                                 isVideo,
-                                                 context));
+                                                  downloadedBackgroundUri,
+                                                  downloadedBackgroundStaticUri,
+                                                  isVideo,
+                                                  context,
+                                                  captureGen,
+                                                  forceReload: captureForceReload));
 
             GlobalIsFFmpegCurrentlyUsed = isVideo && isUseFFmpeg;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             _ = SentryHelper.ExceptionHandlerAsync(ex);
             Logger.LogWriteLine($"[ImageBackgroundManager::LoadImageAtIndex] {ex}",
                                 LogType.Error,
                                 true);
         }
+        catch (OperationCanceledException)
+        {
+            // Suppress: cancellation is expected on game switch or rapid load cycles.
+        }
         finally
         {
             stopwatch?.Stop();
             Logger.LogWriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
-            IsBackgroundLoading = false;
+            if (!token.IsCancellationRequested)
+            {
+                IsBackgroundLoading = false;
+            }
         }
     }
 
@@ -202,14 +340,75 @@ public partial class ImageBackgroundManager
                                  Uri? backgroundFilePath,
                                  Uri? backgroundStaticFilePath,
                                  bool isVideo,
-                                 LayeredImageBackgroundContext context)
+                                 LayeredImageBackgroundContext context,
+                                 int loadGeneration,
+                                 bool forceReload = false)
     {
-        if (CurrentSelectedBackgroundContext != null &&
-            !context.Equals(CurrentSelectedBackgroundContext))
+        if (loadGeneration != _loadGeneration)
         {
             return;
         }
 
+        if (!forceReload &&
+            CurrentBackgroundElement != null &&
+            _displayedContext != null &&
+            context.Equals(_displayedContext))
+        {
+            return;
+        }
+
+        CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo);
+    }
+
+    private void RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
+    {
+        string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
+        if (!string.IsNullOrEmpty(savedHex) && savedHex!.Length >= 6 && ThemeRootElement != null)
+        {
+            if (TryParseHexColor(savedHex, out Color accentColor))
+            {
+                ThemeRootElement.ChangeAccentColor(accentColor);
+                return;
+            }
+        }
+
+        if (fallbackSourceUri != null && ThemeRootElement != null)
+        {
+            try
+            {
+                Color syncColor = Task.Run(async () =>
+                    await ColorPaletteUtility.GetMediaAccentColorFromAsync(fallbackSourceUri, false)
+                ).GetAwaiter().GetResult();
+                ThemeRootElement.ChangeAccentColor(syncColor);
+                LauncherConfig.SetAndSaveConfigValue($"{cachedBgKey}-AccentColor",
+                    $"{syncColor.R:X2}{syncColor.G:X2}{syncColor.B:X2}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"RestoreSavedAccent failed: {ex}", LogType.Error, true);
+            }
+        }
+    }
+
+    private static bool TryParseHexColor(string hex, out Color color)
+    {
+        color = default;
+        if (hex.Length < 6) return false;
+        if (hex[0] == '#')
+            hex = hex[1..];
+        if (!uint.TryParse(hex, NumberStyles.HexNumber, null, out uint argb)) return false;
+        if (hex.Length <= 6)
+            argb = 0xFF_000000 | argb;
+        color = Color.FromArgb((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)argb);
+        return true;
+    }
+
+    private LayeredBackgroundImage CreateLayerElement(Uri? overlayFilePath,
+                                                      Uri? backgroundFilePath,
+                                                      Uri? backgroundStaticFilePath,
+                                                      LayeredImageBackgroundContext context,
+                                                      bool isVideo)
+    {
         LayeredBackgroundImage layerElement = new()
         {
             BackgroundSource          = backgroundFilePath,
@@ -220,8 +419,6 @@ public partial class ImageBackgroundManager
             ParallaxResetOnUnfocused  = false,
             BackgroundElevationPixels = 64d
         };
-
-        CurrentBackgroundElement = layerElement;
 
         if (!CurrentIsEnableCustomImage &&
             !GlobalIsEnableCustomImage)
@@ -293,10 +490,12 @@ public partial class ImageBackgroundManager
                                   bindingMode: BindingMode.OneWay,
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
-        layerElement.ImageLoaded       += LayerElementOnLoaded;
+        layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
+        _displayedContext = context;
+        return layerElement;
     }
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
@@ -304,11 +503,17 @@ public partial class ImageBackgroundManager
         layerElement.ImageLoaded -= LayerElementOnLoaded;
         layerElement.Transitions.Add(new PopupThemeTransition());
 
-        UIElement? lastElement = PresenterGrid?.Children.LastOrDefault();
-        List<UIElement> elementToRemove = PresenterGrid?.Children.Where(element => element != lastElement).ToList() ?? [];
-        foreach (UIElement element in elementToRemove)
+        if (PresenterGrid != null)
         {
-            PresenterGrid?.Children.Remove(element);
+            List<UIElement> toRemove = PresenterGrid.Children.Where(element => element != layerElement).ToList();
+            foreach (UIElement oldElement in toRemove)
+            {
+                if (oldElement is LayeredBackgroundImage oldLayer)
+                    oldLayer.ImageLoaded -= LayerElementOnLoaded;
+                PresenterGrid.Children.Remove(oldElement);
+            }
+
+            PresenterGrid.Background = null;
         }
 
         if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
@@ -393,20 +598,29 @@ public partial class ImageBackgroundManager
     {
         try
         {
-            if (context is not (Uri asUri, bool useFfmpegForVideo))
+            if (context is not (Uri asUri, bool useFfmpegForVideo, string configKey))
             {
                 return;
             }
 
             Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
                                                    .ConfigureAwait(false);
+
+            if (color == default(Color)) return;
+
+            string hex = $"{color.R:X2}{color.G:X2}{color.B:X2}";
+            if (!string.IsNullOrEmpty(configKey))
+            {
+                string? savedHex = LauncherConfig.GetAppConfigValue($"{configKey}-AccentColor").ToString();
+                if (savedHex == hex) return;
+                LauncherConfig.SetAndSaveConfigValue($"{configKey}-AccentColor", hex);
+            }
+
             ColorAccentChanged?.Invoke(color);
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"An error has occurred while trying to get media accent color! {ex}",
-                                LogType.Error,
-                                true);
+            Logger.LogWriteLine($"GetMediaAccentColor failed: {ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex);
         }
     }

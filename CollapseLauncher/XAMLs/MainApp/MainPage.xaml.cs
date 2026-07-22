@@ -94,6 +94,8 @@ namespace CollapseLauncher
 
                 ImageBackgroundManager.Shared.GlobalParallaxHoverSource = MainPageGrid;
                 ImageBackgroundManager.Shared.ColorAccentChanged += SharedOnColorAccentChanged;
+                ImageBackgroundManager.Shared.OnBackgroundLoadFailed += SharedOnBackgroundLoadFailed;
+                ImageBackgroundManager.Shared.ThemeRootElement = this;
 
                 // Enable implicit animation on certain elements
                 AnimationHelper.EnableImplicitAnimation(true, null, GridBGRegionGrid, GridBGNotifBtn, NotificationPanelClearAllGrid);
@@ -108,8 +110,11 @@ namespace CollapseLauncher
         private void SharedOnColorAccentChanged(Color color)
         {
             DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
-            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
-            DispatcherQueue.TryEnqueue(() => this.ChangeAccentColor(color));
+        }
+
+        private void SharedOnBackgroundLoadFailed()
+        {
+            DispatcherQueue.TryEnqueue(() => PlaceholderBackgroundLayer.Visibility = Visibility.Visible);
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -419,6 +424,7 @@ namespace CollapseLauncher
             KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             GridBGRegionGrid.SizeChanged             -= GridBG_RegionGrid_SizeChanged;
             MainPageGrid.SizeChanged                 -= MainPageGrid_SizeChanged;
+            ImageBackgroundManager.Shared.OnBackgroundLoadFailed -= SharedOnBackgroundLoadFailed;
         }
         #endregion
 

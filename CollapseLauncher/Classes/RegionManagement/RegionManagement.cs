@@ -11,6 +11,7 @@ using Hi3Helper;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -167,6 +168,14 @@ namespace CollapseLauncher
                         LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
                     
                         ClearMainPageState();
+
+                        bool isCustom = LauncherConfig.GetAppConfigValue($"LastIsCustomImageEnabled-{preset.GameName}-{preset.ZoneName}").ToBool();
+                        if (!isCustom)
+                        {
+                            DispatcherQueue.TryEnqueue(() =>
+                                ImageBackgroundManager.Shared.PreloadBackground(preset, BackgroundPresenterGrid));
+                        }
+
                         _ = ShowAsyncLoadingTimedOutPill(token);
                     }
                     catch (Exception ex)
