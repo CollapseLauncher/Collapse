@@ -131,11 +131,12 @@ public partial class ImageBackgroundManager
                 (!overlayRequired || localOverlay != null) &&
                 (!staticRequired  || localStatic != null))
             {
-                bool willDisplayStatic = !IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!) ||
-                                         (!CurrentIsEnableCustomImage &&
-                                          !GlobalIsEnableCustomImage &&
-                                          !CurrentIsEnableBackgroundAutoPlay);
-                Uri accentPreviewUri = willDisplayStatic ? new Uri(localStatic) : new Uri(localBackground);
+                bool willDisplayStatic = (!IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!) ||
+                                          (!CurrentIsEnableCustomImage &&
+                                           !GlobalIsEnableCustomImage &&
+                                           !CurrentIsEnableBackgroundAutoPlay))
+                                         && localStatic != null;
+                Uri accentPreviewUri = willDisplayStatic ? new Uri(localStatic!) : new Uri(localBackground);
 
                 RestoreSavedAccent(cachedBgKey, accentPreviewUri);
 
