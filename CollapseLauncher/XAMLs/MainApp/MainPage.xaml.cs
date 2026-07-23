@@ -114,7 +114,12 @@ namespace CollapseLauncher
 
         private void SharedOnBackgroundLoadFailed()
         {
-            DispatcherQueue.TryEnqueue(() => PlaceholderBackgroundLayer.Visibility = Visibility.Visible);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (!BackgroundPresenterGrid.Children.Contains(PlaceholderBackgroundLayer))
+                    BackgroundPresenterGrid.Children.Insert(0, PlaceholderBackgroundLayer);
+                PlaceholderBackgroundLayer.Visibility = Visibility.Visible;
+            });
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

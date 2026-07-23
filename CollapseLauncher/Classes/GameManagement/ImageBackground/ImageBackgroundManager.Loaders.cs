@@ -511,14 +511,8 @@ public partial class ImageBackgroundManager
             foreach (UIElement oldElement in toRemove)
             {
                 if (oldElement is LayeredBackgroundImage oldLayer)
-                {
                     oldLayer.ImageLoaded -= LayerElementOnLoaded;
-                    oldLayer.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    PresenterGrid.Children.Remove(oldElement);
-                }
+                PresenterGrid.Children.Remove(oldElement);
             }
 
             PresenterGrid.Background = null;
