@@ -102,7 +102,11 @@ public partial class ImageBackgroundManager
         string? staticBgUrl      = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-StaticBackground").ToString();
         string? overlayUrl       = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-Overlay").ToString();
 
-        if (string.IsNullOrEmpty(backgroundUrl) && string.IsNullOrEmpty(staticBgUrl)) return;
+        if (string.IsNullOrEmpty(backgroundUrl) && string.IsNullOrEmpty(staticBgUrl))
+        {
+            IsBackgroundLoading = true;
+            return;
+        }
 
         string? primaryBg = backgroundUrl ?? staticBgUrl;
 
@@ -508,8 +512,14 @@ public partial class ImageBackgroundManager
             foreach (UIElement oldElement in toRemove)
             {
                 if (oldElement is LayeredBackgroundImage oldLayer)
+                {
                     oldLayer.ImageLoaded -= LayerElementOnLoaded;
-                PresenterGrid.Children.Remove(oldElement);
+                    oldLayer.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    PresenterGrid.Children.Remove(oldElement);
+                }
             }
 
             PresenterGrid.Background = null;
