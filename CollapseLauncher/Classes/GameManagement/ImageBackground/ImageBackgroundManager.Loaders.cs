@@ -181,7 +181,6 @@ public partial class ImageBackgroundManager
             ImageSource = new BitmapImage(new Uri(placeholderPath)),
             Stretch     = Stretch.UniformToFill
         };
-        PresenterGrid.Children.Clear();
         CurrentBackgroundElement = null;
         _displayedContext = null;
         IsBackgroundLoading = true;

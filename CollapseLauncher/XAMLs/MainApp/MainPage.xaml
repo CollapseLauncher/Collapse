@@ -33,7 +33,6 @@
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
-                                                   Visibility="Collapsed"
                                                    BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
                                                    MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}">
                 <customControls:LayeredBackgroundImage.Transitions>
