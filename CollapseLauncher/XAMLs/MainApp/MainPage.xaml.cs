@@ -118,7 +118,7 @@ namespace CollapseLauncher
             {
                 if (!BackgroundPresenterGrid.Children.Contains(PlaceholderBackgroundLayer))
                     BackgroundPresenterGrid.Children.Insert(0, PlaceholderBackgroundLayer);
-                PlaceholderBackgroundLayer.Visibility = Visibility.Visible;
+                PlaceholderBackgroundLayer.Opacity = 1;
             });
         }
 

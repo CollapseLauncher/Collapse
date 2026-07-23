@@ -355,13 +355,35 @@ public partial class ImageBackgroundManager
 
         if (!forceReload &&
             CurrentBackgroundElement != null &&
-            _displayedContext != null &&
-            context.Equals(_displayedContext))
+            _displayedContext != null)
         {
-            return;
+            if (context.Equals(_displayedContext))
+            {
+                return;
+            }
+
+            if (CurrentBackgroundElement is LayeredBackgroundImage existingLayer &&
+                IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
+                IsSameLocalFile(existingLayer.BackgroundStaticSource, backgroundStaticFilePath))
+            {
+                return;
+            }
         }
 
         CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo);
+    }
+
+    private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
+    {
+        if (newFilePath == null) return currentSource == null;
+        string? newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
+        string? currentPath = currentSource switch
+        {
+            Uri uri => uri.IsFile ? uri.LocalPath : uri.OriginalString,
+            string str => str,
+            _ => null
+        };
+        return string.Equals(currentPath, newPath, StringComparison.OrdinalIgnoreCase);
     }
 
     private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
@@ -511,8 +533,22 @@ public partial class ImageBackgroundManager
             foreach (UIElement oldElement in toRemove)
             {
                 if (oldElement is LayeredBackgroundImage oldLayer)
+                {
                     oldLayer.ImageLoaded -= LayerElementOnLoaded;
-                PresenterGrid.Children.Remove(oldElement);
+
+                    if (oldLayer.Tag == null)
+                    {
+                        oldLayer.Opacity = 0;
+                    }
+                    else
+                    {
+                        PresenterGrid.Children.Remove(oldElement);
+                    }
+                }
+                else
+                {
+                    PresenterGrid.Children.Remove(oldElement);
+                }
             }
 
             PresenterGrid.Background = null;
