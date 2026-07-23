@@ -191,12 +191,17 @@ public partial class ImageBackgroundManager
     #region This Instance Properties
 
     private string                    CurrentCustomBackgroundConfigKey     { get; set; } = "";
+    private string                    CurrentCachedBgKey                   { get; set; } = "";
     private string                    CurrentIsEnableCustomImageConfigKey  { get; set; } = "";
     private string                    CurrentSelectedBackgroundIndexKey    { get; set; } = "";
     private string                    CurrentIsEnableBackgroundAutoPlayKey { get; set; } = "";
     private HypLauncherBackgroundApi? CurrentBackgroundApi                 { get; set; }
     private Grid?                     PresenterGrid                        { get; set; }
     private PresetConfig?             PresetConfig                         { get; set; }
+
+    internal bool NeedFallbackPlaceholder { get; set; }
+
+    public Action? OnBackgroundLoadFailed { get; set; }
 
     public string? CurrentCustomBackgroundImagePath
     {
@@ -252,7 +257,7 @@ public partial class ImageBackgroundManager
 
             LauncherConfig.SetAndSaveConfigValue(CurrentSelectedBackgroundIndexKey, value);
             OnPropertyChanged();
-            LoadImageAtIndex(value, false, CancellationToken.None);
+            LoadImageAtIndex(value, false, CancellationToken.None, true);
         }
     }
 
@@ -316,6 +321,12 @@ public partial class ImageBackgroundManager
 
     private int _previousContextHash;
 
+    private volatile int _loadGeneration;
+
+    private LayeredImageBackgroundContext? _displayedContext;
+
+    internal FrameworkElement? ThemeRootElement { get; set; }
+
     #endregion
 
     /// <summary>
@@ -337,6 +348,7 @@ public partial class ImageBackgroundManager
         CurrentSelectedBackgroundIndexKey    = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableCustomImageConfigKey  = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableBackgroundAutoPlayKey = $"LastIsEnableBackgroundAutoPlay-{presetConfig.GameName}-{presetConfig.ZoneName}";
+        CurrentCachedBgKey                   = $"CachedBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
         CurrentBackgroundApi = backgroundApi;
@@ -534,6 +546,15 @@ public partial class ImageBackgroundManager
         bool                                               skipPreviousContextCheck,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
+        UpdateContextListCore(token, skipPreviousContextCheck, false, imageContexts);
+    }
+
+    private void UpdateContextListCore(
+        CancellationToken                                  token,
+        bool                                               skipPreviousContextCheck,
+        bool                                               forceLoadToStatic,
+        params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
+    {
         // Do not update if the previous contexts are equal
         if ((!skipPreviousContextCheck &&
             IsContextEqual(imageContexts)) ||
@@ -541,6 +562,8 @@ public partial class ImageBackgroundManager
         {
             return;
         }
+
+        Interlocked.Increment(ref _loadGeneration);
 
         ImageContextSources.Clear(); // Flush list
         ref IList<LayeredImageBackgroundContext>? backedList =
@@ -568,7 +591,7 @@ public partial class ImageBackgroundManager
         OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
         OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
         OnPropertyChanged(nameof(CurrentBackgroundCount));
-        LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, token);
+        LoadImageAtIndex(CurrentSelectedBackgroundIndex, forceLoadToStatic, token);
     }
 #pragma warning restore CA1068
 
@@ -593,6 +616,7 @@ public partial class ImageBackgroundManager
     {
         Interlocked.Exchange(ref _previousContextHash, 0);
         ImageContextSources.Clear();
+        NeedFallbackPlaceholder = false;
     }
 
     void INotifyAllPropertyChanged.NotifyAllChanged()
