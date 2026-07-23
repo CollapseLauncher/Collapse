@@ -138,7 +138,7 @@ public partial class ImageBackgroundManager
                                          && localStatic != null;
                 Uri accentPreviewUri = willDisplayStatic ? new Uri(localStatic!) : new Uri(localBackground);
 
-                RestoreSavedAccent(cachedBgKey, accentPreviewUri);
+                _ = RestoreSavedAccent(cachedBgKey, accentPreviewUri);
 
                 ImageContextSources.Clear();
                 ImageContextSources.Add(context);
@@ -361,7 +361,7 @@ public partial class ImageBackgroundManager
         CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo);
     }
 
-    private void RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
+    private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
     {
         string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
         if (!string.IsNullOrEmpty(savedHex) && savedHex!.Length >= 6 && ThemeRootElement != null)
@@ -377,9 +377,7 @@ public partial class ImageBackgroundManager
         {
             try
             {
-                Color syncColor = Task.Run(async () =>
-                    await ColorPaletteUtility.GetMediaAccentColorFromAsync(fallbackSourceUri, false)
-                ).GetAwaiter().GetResult();
+                Color syncColor = await ColorPaletteUtility.GetMediaAccentColorFromAsync(fallbackSourceUri, false);
                 ThemeRootElement.ChangeAccentColor(syncColor);
                 LauncherConfig.SetAndSaveConfigValue($"{cachedBgKey}-AccentColor",
                     $"{syncColor.R:X2}{syncColor.G:X2}{syncColor.B:X2}");
