@@ -108,13 +108,17 @@ public partial class LayeredBackgroundImage
         }
 
         Grid grid = element._placeholderGrid;
-        element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
-                                            nameof(PlaceholderStretch),
-                                            nameof(PlaceholderHorizontalAlignment),
-                                            nameof(PlaceholderVerticalAlignment),
-                                            grid,
-                                            false,
-                                            ref element._lastPlaceholderSourceType);
+        if (!IsSourceKindEquals(element._lastPlaceholderSource, element.PlaceholderSource))
+        {
+            element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
+                                                nameof(PlaceholderStretch),
+                                                nameof(PlaceholderHorizontalAlignment),
+                                                nameof(PlaceholderVerticalAlignment),
+                                                grid,
+                                                false,
+                                                ref element._lastPlaceholderSourceType);
+            element._lastPlaceholderSource = element.PlaceholderSource;
+        }
     }
 
     private static void BackgroundSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -129,11 +133,19 @@ public partial class LayeredBackgroundImage
         // then load static background source.
         if (element is { CanUseStaticBackground: true, IsVideoPlay: true } or { CanUseStaticBackground: true, IsUseStaticBackgroundUsed: true })
         {
-            BackgroundSource_UseStatic(element);
+            if (!IsSourceKindEquals(element._lastBackgroundStaticSource, element.BackgroundStaticSource))
+            {
+                BackgroundSource_UseStatic(element);
+                element._lastBackgroundStaticSource = element.BackgroundStaticSource;
+            }
             return;
         }
 
-        BackgroundSource_UseNormal(element);
+        if (!IsSourceKindEquals(element._lastBackgroundSource, element.BackgroundSource))
+        {
+            BackgroundSource_UseNormal(element);
+            element._lastBackgroundSource = element.BackgroundSource;
+        }
     }
 
     private static void BackgroundSource_UseStatic(LayeredBackgroundImage element)
@@ -174,13 +186,17 @@ public partial class LayeredBackgroundImage
         }
 
         Grid grid = element._foregroundGrid;
-        element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
-                                            nameof(ForegroundStretch),
-                                            nameof(ForegroundHorizontalAlignment),
-                                            nameof(ForegroundVerticalAlignment),
-                                            grid,
-                                            false,
-                                            ref element._lastForegroundSourceType);
+        if (!IsSourceKindEquals(element._lastForegroundSource, element.ForegroundSource))
+        {
+            element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
+                                                nameof(ForegroundStretch),
+                                                nameof(ForegroundHorizontalAlignment),
+                                                nameof(ForegroundVerticalAlignment),
+                                                grid,
+                                                false,
+                                                ref element._lastForegroundSourceType);
+            element._lastForegroundSource = element.ForegroundSource;
+        }
     }
 
     private void LoadFromSourceAsyncDetached(
@@ -299,6 +315,7 @@ public partial class LayeredBackgroundImage
             image.BindProperty(instance, horizontalAlignmentProperty, HorizontalAlignmentProperty, BindingMode.OneWay);
             image.BindProperty(instance, verticalAlignmentProperty,   VerticalAlignmentProperty,   BindingMode.OneWay);
 
+            ClearMediaGrid(grid);
             grid.Children.Add(image);
 
             image.Tag         =  (grid, instance);

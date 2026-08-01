@@ -15,6 +15,13 @@ namespace CollapseLauncher.Extension
 
         public static void ChangeAccentColor(this FrameworkElement element, Color baseColor)
         {
+            if (Application.Current.Resources.TryGetValue("AccentColor", out object? existing) &&
+                existing is SolidColorBrush existingBrush &&
+                existingBrush.Color.Equals(baseColor))
+            {
+                return;
+            }
+
             Color accentColorMask        = baseColor;
             Color accentColorTransparent = baseColor;
 
@@ -55,30 +62,28 @@ namespace CollapseLauncher.Extension
 
         internal static void ReloadPageTheme(this FrameworkElement page)
         {
-            ElementTheme theme = InnerLauncherConfig.CurrentAppTheme switch
+            ElementTheme target = InnerLauncherConfig.CurrentAppTheme switch
                                  {
                                      AppThemeMode.Dark => ElementTheme.Dark,
                                      AppThemeMode.Light => ElementTheme.Light,
                                      _ => ElementTheme.Default
                                  };
 
+            // Force the opposite theme first to ensure ThemeResource re-evaluation.
+            ElementTheme opposite = target switch
+            {
+                ElementTheme.Dark  => ElementTheme.Light,
+                ElementTheme.Light => ElementTheme.Dark,
+                _                  => ElementTheme.Light
+            };
+
             bool isComplete = false;
             while (!isComplete)
             {
                 try
                 {
-                    page.RequestedTheme = page.RequestedTheme switch
-                                          {
-                                              ElementTheme.Dark => ElementTheme.Light,
-                                              ElementTheme.Light => ElementTheme.Default,
-                                              ElementTheme.Default => ElementTheme.Dark,
-                                              _ => page.RequestedTheme
-                                          };
-
-                    if (page.RequestedTheme != theme)
-                    {
-                        ReloadPageTheme(page);
-                    }
+                    page.RequestedTheme = opposite;
+                    page.RequestedTheme = target;
 
                     isComplete = true;
                 }
