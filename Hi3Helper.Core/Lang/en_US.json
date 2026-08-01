@@ -837,10 +837,18 @@
     "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
     "ListViewFooterRestartButton": "Restart the Launcher",
 
-    "RightPanelImportTitle1": "Click to add the",
+    "RightPanelImportTitle1": "Click to Browse or drop a",
     "RightPanelImportTitle2": "or",
-    "RightPanelImportTitle3": "here",
-    "RightPanelImportTitle4": "Anywhere in the box is fine!"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "Drop plugin files anywhere in this panel",
+
+    "Error_NoPluginImported": "No plugin has been imported due to following error:",
+    "Error_AccessDeniedPluginInstall": "Permission was denied while reading or installing the plugin.",
+    "Error_PluginPackageMissingManifest": "The package is missing its manifest or another required file.",
+    "Error_PluginPackageInvalidManifest": "The archive or manifest is invalid.",
+    "Error_IOErrorCannotBeInstalled": "The archive could not be read or installed.",
+    "Error_IOErrorCannotBeRead": "The manifest or one of its referenced files could not be read.",
+    "Error_PluginNotSupportedOrInvalid": "The file is not a valid or supported plugin."
   },
 
   "_Misc": {
