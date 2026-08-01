@@ -53,7 +53,7 @@ namespace CollapseLauncher.Helper
     }
 
     internal delegate nint WndProcDelegate(nint hwnd, uint msg, nuint wParam, nint lParam);
-    internal static partial class WindowUtility
+    internal static class WindowUtility
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
         internal static event Action<string[], PointInt32>? FileDropEvent;
@@ -433,10 +433,10 @@ namespace CollapseLauncher.Helper
             }
 
             uint messageFilterAction = isEnabled ? MSGFLT_ALLOW : MSGFLT_RESET;
-            NativeFileDrop.ChangeWindowMessageFilterEx(windowHandle, WM_DROPFILES, messageFilterAction, nint.Zero);
-            NativeFileDrop.ChangeWindowMessageFilterEx(windowHandle, WM_COPYDATA, messageFilterAction, nint.Zero);
-            NativeFileDrop.ChangeWindowMessageFilterEx(windowHandle, WM_COPYGLOBALDATA, messageFilterAction, nint.Zero);
-            NativeFileDrop.DragAcceptFiles(windowHandle, isEnabled);
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_DROPFILES,      messageFilterAction, nint.Zero);
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_COPYDATA,       messageFilterAction, nint.Zero);
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_COPYGLOBALDATA, messageFilterAction, nint.Zero);
+            PInvoke.DragAcceptFiles(windowHandle, isEnabled);
         }
 
         internal static bool TryGetExternalDragPosition(out PointInt32 dragPosition)
@@ -452,15 +452,15 @@ namespace CollapseLauncher.Helper
                 return false;
             }
 
-            bool isMouseButtonPressed = (NativeFileDrop.GetAsyncKeyState(VK_LBUTTON) & KeyPressed) != 0 ||
-                                        (NativeFileDrop.GetAsyncKeyState(VK_RBUTTON) & KeyPressed) != 0;
-            if (!isMouseButtonPressed || !NativeFileDrop.GetCursorPos(out NativePoint cursorPosition))
+            bool isMouseButtonPressed = (PInvoke.GetAsyncKeyState(VK_LBUTTON) & KeyPressed) != 0 ||
+                                        (PInvoke.GetAsyncKeyState(VK_RBUTTON) & KeyPressed) != 0;
+            if (!isMouseButtonPressed || !PInvoke.GetCursorPos(out POINTL cursorPosition))
             {
                 return false;
             }
 
-            NativeFileDrop.ScreenToClient(windowHandle, ref cursorPosition);
-            dragPosition = new PointInt32(cursorPosition.X, cursorPosition.Y);
+            PInvoke.ScreenToClient(windowHandle, ref cursorPosition);
+            dragPosition = new PointInt32(cursorPosition.x, cursorPosition.y);
             return true;
         }
 
@@ -692,85 +692,19 @@ namespace CollapseLauncher.Helper
                     }
                     break;
                 case WM_DROPFILES:
-                    HandleFileDrop((nint)wParam);
+                    if (NativeFileDrop.TryHandleFileDrop((nint)wParam,
+                                                         out string[]? files,
+                                                         out POINTL dropPoint,
+                                                         out Exception? ex))
+                    {
+                        FileDropEvent?.Invoke(files, new PointInt32(dropPoint.x, dropPoint.y));
+                    }
+
+                    if (ex != null) ErrorSender.SendException(ex);
                     return 0;
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
-        }
-
-        private static unsafe void HandleFileDrop(nint dropHandle)
-        {
-            const uint GetFileCount = uint.MaxValue;
-
-            try
-            {
-                int fileCount = (int)NativeFileDrop.DragQueryFile(dropHandle, GetFileCount, null, 0);
-                string[] files = new string[fileCount];
-                for (int i = 0; i < fileCount; i++)
-                {
-                    uint filePathLength = NativeFileDrop.DragQueryFile(dropHandle, (uint)i, null, 0);
-                    char[] filePathBuffer = new char[filePathLength + 1];
-                    fixed (char* filePathBufferPtr = filePathBuffer)
-                    {
-                        NativeFileDrop.DragQueryFile(dropHandle, (uint)i, filePathBufferPtr, (uint)filePathBuffer.Length);
-                        files[i] = new string(filePathBufferPtr, 0, (int)filePathLength);
-                    }
-                }
-
-                NativeFileDrop.DragQueryPoint(dropHandle, out NativePoint dropPoint);
-                FileDropEvent?.Invoke(files, new PointInt32(dropPoint.X, dropPoint.Y));
-            }
-            finally
-            {
-                NativeFileDrop.DragFinish(dropHandle);
-            }
-        }
-
-        private static unsafe partial class NativeFileDrop
-        {
-            [LibraryImport("shell32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            internal static partial void DragAcceptFiles(nint windowHandle, [MarshalAs(UnmanagedType.Bool)] bool acceptFiles);
-
-            [LibraryImport("shell32.dll", EntryPoint = "DragQueryFileW")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            internal static partial uint DragQueryFile(nint dropHandle, uint fileIndex, char* filePath, uint filePathLength);
-
-            [LibraryImport("shell32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static partial bool DragQueryPoint(nint dropHandle, out NativePoint dropPoint);
-
-            [LibraryImport("shell32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            internal static partial void DragFinish(nint dropHandle);
-
-            [LibraryImport("user32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static partial bool ChangeWindowMessageFilterEx(nint windowHandle, uint message, uint action, nint changeFilterStruct);
-
-            [LibraryImport("user32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            internal static partial short GetAsyncKeyState(int virtualKey);
-
-            [LibraryImport("user32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static partial bool GetCursorPos(out NativePoint cursorPosition);
-
-            [LibraryImport("user32.dll")]
-            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static partial bool ScreenToClient(nint windowHandle, ref NativePoint cursorPosition);
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct NativePoint
-        {
-            internal int X;
-            internal int Y;
         }
 
         #endregion
