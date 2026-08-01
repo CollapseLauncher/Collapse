@@ -700,7 +700,11 @@ namespace CollapseLauncher.Helper
                         FileDropEvent?.Invoke(files, new PointInt32(dropPoint.x, dropPoint.y));
                     }
 
-                    if (ex != null) ErrorSender.SendException(ex);
+                    if (ex != null)
+                    {
+                        ErrorSender.SendException(ex);
+                        SentryHelper.ExceptionHandler(ex);
+                    }
                     return 0;
             }
 
