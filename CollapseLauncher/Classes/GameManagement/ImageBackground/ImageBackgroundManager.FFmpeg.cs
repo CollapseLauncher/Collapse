@@ -27,6 +27,8 @@ public partial class ImageBackgroundManager
     private const string GlobalFFmpegCustomPathConfigKey   = "GlobalFFmpegCustomPath";
     private const string GlobalFFmpegDecodingModeConfigKey = "GlobalFFmpegDecodingMode";
 
+    private const int GlobalFFmpegDefaultVersionKey = 80;
+
     public VideoDecoderMode[] AvailableFFmpegDecodingModes => field ??= Enum.GetValues<VideoDecoderMode>();
 
     public int GlobalFFmpegVersionToUse
@@ -36,7 +38,7 @@ public partial class ImageBackgroundManager
             int version = LauncherConfig.GetAppConfigValue(GlobalFFmpegVersionToUseConfigKey);
             return FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(version) ?
                 version :
-                FFmpegPInvoke.FFmpegVersionLibNames.Keys.FirstOrDefault();
+                GlobalFFmpegDefaultVersionKey;
         }
         set
         {
@@ -55,7 +57,7 @@ public partial class ImageBackgroundManager
     {
         get
         {
-            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out var names))
+            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out FFmpegPInvoke.FFmpegLibraryNames names))
             {
                 return names;
             }
@@ -101,7 +103,7 @@ public partial class ImageBackgroundManager
         get
         {
             string? value = LauncherConfig.GetAppConfigValue(GlobalFFmpegDecodingModeConfigKey);
-            if (Enum.TryParse<VideoDecoderMode>(value, out var result))
+            if (Enum.TryParse(value, out VideoDecoderMode result))
             {
                 return result;
             }
@@ -142,7 +144,7 @@ public partial class ImageBackgroundManager
                 return false;
             }
 
-            var names = GlobalFFmpegLibraryNames;
+            FFmpegPInvoke.FFmpegLibraryNames names = GlobalFFmpegLibraryNames;
 
             string  curDir              = Directory.GetCurrentDirectory();
             bool    isFFmpegAvailable   = IsFFmpegAvailable(curDir, names, out exception);
@@ -251,7 +253,7 @@ public partial class ImageBackgroundManager
 
     internal static string[] GetFFmpegRequiredDllFilenames()
     {
-        var names = Shared.GlobalFFmpegLibraryNames;
+        FFmpegPInvoke.FFmpegLibraryNames names = Shared.GlobalFFmpegLibraryNames;
         return [
             names.Codec,
             names.Device,
