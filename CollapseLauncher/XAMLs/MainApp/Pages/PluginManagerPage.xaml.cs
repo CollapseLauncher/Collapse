@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
+using Hi3Helper.LocaleSourceGen;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
@@ -114,7 +115,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex.WrapPluginException("No plugin has been imported due to following error:"));
+                ErrorSender.SendException(ex.WrapPluginException(Locale.Current.Lang?._PluginManagerPage?.Error_NoPluginImported));
             }
         }
 
@@ -153,31 +154,39 @@ namespace CollapseLauncher.Pages
 
         private async void OnDropImportBox(object sender, DragEventArgs e)
         {
-            _isWinUiFileDragActive = false;
-            SetImportDropIndicator(false);
             try
             {
+                _isWinUiFileDragActive = false;
+                SetImportDropIndicator(false);
+
                 IReadOnlyList<IStorageItem> storageItems = await e.DataView.GetStorageItemsAsync();
-                string[] selectedFiles = storageItems.OfType<StorageFile>().Select(file => file.Path).ToArray();
+                string[] selectedFiles = [.. storageItems.OfType<StorageFile>().Select(file => file.Path)];
                 await ImportPlugins(selectedFiles);
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex.WrapPluginException("No plugin has been imported due to following error:"));
+                ErrorSender.SendException(ex.WrapPluginException(Locale.Current.Lang?._PluginManagerPage?.Error_NoPluginImported));
             }
         }
 
         private async void OnNativeFileDrop(string[] selectedFiles, PointInt32 dropPoint)
         {
-            _isWinUiFileDragActive = false;
-            SetImportDropIndicator(false);
-
-            if (!IsPointInDropArea(dropPoint))
+            try
             {
-                return;
-            }
+                _isWinUiFileDragActive = false;
+                SetImportDropIndicator(false);
 
-            await ImportPlugins(selectedFiles);
+                if (!IsPointInDropArea(dropPoint))
+                {
+                    return;
+                }
+
+                await ImportPlugins(selectedFiles);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+            }
         }
 
         private void OnFileDragIndicatorTimerTick(object? sender, object e)
@@ -268,19 +277,21 @@ namespace CollapseLauncher.Pages
                                             dialogTheme: ContentDialogTheme.Warning);
         }
 
-        private static string GetFriendlyImportError(string filePath, Exception exception)
+        private static string? GetFriendlyImportError(string filePath, Exception exception)
         {
+            LangParamsPluginManagerPage? locale    = Locale.Current.Lang?._PluginManagerPage;
+            bool                         isFileZip = filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+
             return exception switch
             {
-                NotSupportedException        => exception.Message,
+                NotSupportedException       => exception.Message,
                 DuplicateNameException      => exception.Message,
-                UnauthorizedAccessException => "Permission was denied while reading or installing the plugin.",
-                FileNotFoundException       => "The package is missing its manifest or another required file.",
-                InvalidDataException        => "The archive or manifest is invalid.",
-                IOException when filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) =>
-                    "The archive could not be read or installed.",
-                IOException => "The manifest or one of its referenced files could not be read.",
-                _ => "The file is not a valid or supported plugin."
+                UnauthorizedAccessException => locale?.Error_AccessDeniedPluginInstall,
+                FileNotFoundException       => locale?.Error_PluginPackageMissingManifest,
+                InvalidDataException        => locale?.Error_PluginPackageInvalidManifest,
+                IOException when isFileZip  => locale?.Error_IOErrorCannotBeInstalled,
+                IOException                 => locale?.Error_IOErrorCannotBeRead,
+                _                           => locale?.Error_PluginNotSupportedOrInvalid
             };
         }
 
