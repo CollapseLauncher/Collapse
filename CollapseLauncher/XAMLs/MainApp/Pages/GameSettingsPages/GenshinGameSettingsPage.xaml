@@ -1145,7 +1145,9 @@
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
                   Background="{ThemeResource GameSettingsApplyGridBrush}"
-                  extension:UIElementExtensions.UniformCornerRadius="-1">
+                  extension:UIElementExtensions.UniformCornerRadius="-1"
+                  Shadow="{StaticResource SharedShadow}"
+                  Translation="0,0,32">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
