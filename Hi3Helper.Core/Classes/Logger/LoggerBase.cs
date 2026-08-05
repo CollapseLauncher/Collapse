@@ -480,11 +480,12 @@ public abstract class LoggerBase : ILog
                                                     bool              isWriteTimestamp = false,
                                                     CancellationToken token            = default)
     {
-        int    lineUtf8Len = Encoding.GetMaxByteCount(line.Length);
-        byte[] buffer      = _logBufferPool.Rent(lineUtf8Len);
+        int lineUtf8Len = Encoding.GetMaxByteCount(line.Length);
+        EnsureBufferSizeSufficient(lineUtf8Len);
 
         try
         {
+            byte[] buffer = _buffer;
             int len = WriteToBufferCore(line,
                                         buffer,
                                         type,
@@ -498,7 +499,6 @@ public abstract class LoggerBase : ILog
         finally
         {
             await stream.FlushAsync(token);
-            _logBufferPool.Return(buffer);
         }
     }
 
