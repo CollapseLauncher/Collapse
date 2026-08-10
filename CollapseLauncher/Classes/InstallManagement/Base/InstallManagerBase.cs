@@ -1093,7 +1093,9 @@ namespace CollapseLauncher.InstallManager.Base
             #pragma warning restore CS8604 // Possible null reference argument.
 
                 // Cleanup Game_Data folder while keeping whatever specified in FoldersToKeepInData
-                foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
+                foreach (string folderGameData in Directory.Exists(_DataFolderFullPath)
+                                                     ? Directory.EnumerateFileSystemEntries(_DataFolderFullPath)
+                                                     : Array.Empty<string>())
                 {
                     try
                     {
@@ -1131,14 +1133,17 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Check if _DataFolderPath folder empty after cleaning up 
-                if (!Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
+                if (Directory.Exists(_DataFolderFullPath) &&
+                    !Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
                 {
                     Directory.Delete(_DataFolderFullPath);
                     LogWriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
                 }
 
                 // Cleanup any folders in FoldersToDelete
-                foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
+                foreach (string folderNames in Directory.Exists(GameFolder)
+                                                   ? Directory.EnumerateDirectories(GameFolder)
+                                                   : Array.Empty<string>())
                 {
                     if (_gameInstallFileInfo.FoldersToDelete.Length == 0 ||
                         !_gameInstallFileInfo.FoldersToDelete.Contains(Path.GetFileName(folderNames)))
@@ -1160,7 +1165,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Cleanup any files in FilesToDelete
-                foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
+                foreach (string fileNames in Directory.Exists(GameFolder)
+                                                 ? Directory.EnumerateFiles(GameFolder)
+                                                 : Array.Empty<string>())
                 {
                     if ((_gameInstallFileInfo.FilesToDelete.Length == 0 ||
                          !_gameInstallFileInfo.FilesToDelete.Contains(Path.GetFileName(fileNames))) &&
