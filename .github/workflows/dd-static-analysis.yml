@@ -14,11 +14,13 @@ jobs:
           
       - name: Check code meets quality and security standards
         id: datadog-static-analysis
-        uses: DataDog/datadog-static-analyzer-github-action@v1
+        uses: DataDog/datadog-static-analyzer-github-action@v3
         with:
           dd_api_key: ${{ secrets.DD_API_KEY }}
           dd_app_key: ${{ secrets.DD_APP_KEY }}
           dd_site: ap1.datadoghq.com
           secrets_enabled: false
           static_analysis_enabled: true
-          cpu_count: 2
+          cpu_count: 4
+          diff_aware: true
+          enable_performance_statistics: true

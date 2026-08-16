@@ -543,9 +543,6 @@ namespace CollapseLauncher.Extension
 
         internal static void SetApplicationResource(string resourceKey, object value)
         {
-            if (!CurrentResourceDictionary.ContainsKey(resourceKey))
-                throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
-
             CurrentResourceDictionary[resourceKey] = value;
         }
 

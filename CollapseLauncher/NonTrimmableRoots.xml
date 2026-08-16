@@ -4,4 +4,8 @@
 		<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
 		<type fullname="Microsoft.UI.Xaml.Controls.Primitives.Popup" preserve="all"/>
 	</assembly>
+	<assembly fullname="Microsoft.InteractiveExperiences.Projection">
+        <!-- Fix the issue where CurrentOverlappedPresenter always returns null -->
+		<type fullname="Microsoft.UI.Windowing.OverlappedPresenter" preserve="all"/>
+	</assembly>
 </linker>

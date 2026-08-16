@@ -207,4 +207,41 @@ public partial class ImageBackgroundManager
 
         return source[Random.Shared.Next(0, source.Length - 1)];
     }
+
+    internal static bool CheckIsContextCached(LayeredImageBackgroundContext ctx)
+    {
+        bool backgroundCached = false;
+        if (!string.IsNullOrEmpty(ctx.BackgroundImagePath) &&
+            TryGetDownloadedFile(new Uri(ctx.BackgroundImagePath), out _, out _, out _))
+        {
+            backgroundCached = true;
+        }
+        else if (!string.IsNullOrEmpty(ctx.BackgroundImageStaticPath) &&
+                 TryGetDownloadedFile(new Uri(ctx.BackgroundImageStaticPath), out _, out _, out _))
+        {
+            backgroundCached = true;
+        }
+
+        return backgroundCached;
+    }
+
+    internal static string? TryGetCachedLocalPath(string? urlOrPath)
+    {
+        if (string.IsNullOrEmpty(urlOrPath))
+        {
+            return null;
+        }
+
+        if (TryGetDecodedTemporaryFile(urlOrPath, out string decodedFilePath))
+        {
+            return decodedFilePath;
+        }
+
+        if (TryGetDownloadedFile(new Uri(urlOrPath), out FileInfo downloadedFile, out _, out _))
+        {
+            return downloadedFile.FullName;
+        }
+
+        return null;
+    }
 }

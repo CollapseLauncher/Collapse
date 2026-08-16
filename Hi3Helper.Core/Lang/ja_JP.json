@@ -572,7 +572,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "未インストール",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "新規インストールまたは既存インストールを参照",
     "VideoBackground_FFmpegInstallNote": "注",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcherはバージョン7.xのFFmpegのみをサポートしています。その他バージョンのFFmpegは現在サポートされていません！",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcherはバージョン8.xのFFmpegのみをサポートしています。それ以外のバージョンのFFmpegは現在サポートされていません！",
     "VideoBackground_FFmpegInstallLockedTitle": "FFmpegの変更がロックされています",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpegが現在の動画背景のデコードに使用中です。既存のインストールを変更するには、まず\"動画のデコードにFFmpegを使う\"設定を無効にしてからランチャーを再起動し、設定を変更し直してください。",
 
@@ -852,8 +852,16 @@
 
     "RightPanelImportTitle1": "ここをクリックして",
     "RightPanelImportTitle2": "か",
-    "RightPanelImportTitle3": "を追加します",
-    "RightPanelImportTitle4": "範囲内ならどこを押しても大丈夫！"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "範囲内ならどこにドロップしても大丈夫！",
+
+    "Error_NoPluginImported": "以下のエラーのため、プラグインがインポートされませんでした：",
+    "Error_AccessDeniedPluginInstall": "プラグインの読み取りまたはインストール中に、権限が拒否されました。",
+    "Error_PluginPackageMissingManifest": "パッケージにマニフェストまたは別の必須ファイルがありません。",
+    "Error_PluginPackageInvalidManifest": "アーカイブまたはマニフェストが無効です。",
+    "Error_IOErrorCannotBeInstalled": "アーカイブの読み取りまたはインストールに失敗しました。",
+    "Error_IOErrorCannotBeRead": "マニフェストまたは参照ファイルの一部を読み込めませんでした。",
+    "Error_PluginNotSupportedOrInvalid": "ファイルが有効ではない、またはサポートされていないプラ​​グインです。"
   },
 
   "_Misc": {
@@ -1282,7 +1290,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "視差エフェクトのピクセル数（最小：{0}px、最大： {1}px）",
 
     "StartupFFmpegInstallDialogTitle": "FFmpegのインストールが必要です",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcherで動画背景を正常に再生するためには、FFmpeg（バージョン7.x）のインストールが必要です。\"",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcherで動画背景を正常に再生するためには、FFmpeg（バージョン8.x）のインストールが必要です。\"",
     "StartupFFmpegInstallDialogSubtitle2": "\"をクリックしてFFmpegを新規インストールするか、\"",
     "StartupFFmpegInstallDialogSubtitle3": "\"をクリックしてWindows Media Foundationデコーダーを使用し続けるか選んでください。",
     "StartupFFmpegInstallDialogSubtitle4": "注：",

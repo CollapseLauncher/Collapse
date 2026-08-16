@@ -148,8 +148,8 @@ public sealed partial class HomePage
         }
         else
         {
-            PInvoke.GetCursorPos(out pointerPos).ThrowOnFailure();
-            PInvoke.ScreenToClient(WindowUtility.CurrentWindowPtr, ref pointerPos).ThrowOnFailure();
+            PInvoke.GetCursorPos(out pointerPos);
+            PInvoke.ScreenToClient(WindowUtility.CurrentWindowPtr, ref pointerPos);
         }
 
         double xFrom = gridPos.X;

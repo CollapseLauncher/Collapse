@@ -61,35 +61,38 @@ public abstract class LoggerBase : ILog
     #region Static Class Constructor
     static unsafe LoggerBase()
     {
-        HashSet<int> distinctIndex = [];
+        HashSet<LogType> distinctIndex = [];
         foreach (LogType logType in Enum.GetValues<LogType>())
         {
-            distinctIndex.Add((int)logType);
+            distinctIndex.Add(logType);
         }
 
         int maxCharInTag = distinctIndex
-                          .Select(x => (LogType)x)
-                          .Max(x => x.ToString().Length) + 3;
+                          .Select(x => x)
+                          .Max(x => Enum.GetName(x)?.Length ?? 0) + 3;
         string defaultEmptyTag = new(' ', maxCharInTag);
 
         List<string> colorCodes = [];
         List<string> tagTypes   = [];
+        int          maxLen     = 0;
+        int          elementLen = 0;
         foreach (int index in distinctIndex)
         {
             LogType type      = (LogType)index;
             string  colorCode = ConsoleColorMap.GetValueOrDefault(type, DefaultEmptyColor);
 
             colorCodes.Add(colorCode);
-            tagTypes.Add(type == LogType.NoTag ? defaultEmptyTag : $"[{type}] ");
+            string tag = type == LogType.NoTag ? defaultEmptyTag : $"[{type}] ";
+            tagTypes.Add(tag);
+
+            maxLen = Math.Max(maxLen, tag.Length);
+            ++elementLen;
         }
 
-        int maxLen     = tagTypes.Max(x => x.Length);
-        int elementLen = tagTypes.Count;
-
-        nint[] logTagTypePArray    = new nint[elementLen];
-        uint[] logTagTypePLenArray = new uint[elementLen];
-        nint[] logColorPArray      = new nint[elementLen];
-        uint[] logColorPLenArray   = new uint[elementLen];
+        LogTagTypeP    = (byte**)NativeMemory.Alloc((nuint)(elementLen * 2 * sizeof(nuint)));
+        LogTagTypePLen = (uint*)NativeMemory.Alloc((nuint)elementLen * 2 * sizeof(uint));
+        LogColorP      = (byte**)Unsafe.Add<nint>(LogTagTypeP, elementLen);
+        LogColorPLen   = (uint*)Unsafe.Add<uint>(LogTagTypePLen, elementLen);
 
         for (int i = 0; i < elementLen; i++)
         {
@@ -101,9 +104,9 @@ public abstract class LoggerBase : ILog
             char*              tagCharPtr = (char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(tagChar));
             new Span<byte>(allocTag, maxLen).Fill((byte)' ');
 
-            logTagTypePArray[i]    = (nint)allocTag;
-            logTagTypePLenArray[i] = (uint)maxLen;
-            _                      = Encoding.UTF8.GetBytes(tagCharPtr, tagCharLen, allocTag, maxLen);
+            LogTagTypeP[i]    = allocTag;
+            LogTagTypePLen[i] = (uint)maxLen;
+            _                 = Encoding.UTF8.GetBytes(tagCharPtr, tagCharLen, allocTag, maxLen);
 
             // Write color code
             ReadOnlySpan<char> colorChar    = colorCodes[i];
@@ -111,21 +114,9 @@ public abstract class LoggerBase : ILog
             char*              colorCharPtr = (char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(colorChar));
             byte*              allocColor   = (byte*)NativeMemory.Alloc((nuint)colorCharLen);
 
-            logColorPArray[i]    = (nint)allocColor;
-            logColorPLenArray[i] = (uint)Encoding.UTF8.GetBytes(colorCharPtr, colorCharLen, allocColor, colorCharLen);
+            LogColorP[i]    = allocColor;
+            LogColorPLen[i] = (uint)Encoding.UTF8.GetBytes(colorCharPtr, colorCharLen, allocColor, colorCharLen);
         }
-
-        // Alloc and pin array to GC
-        GCHandle logColorPArrayGc      = GCHandle.Alloc(logColorPArray,      GCHandleType.Pinned);
-        GCHandle logColorPLenArrayGc   = GCHandle.Alloc(logColorPLenArray,   GCHandleType.Pinned);
-        GCHandle logTagTypePArrayGc    = GCHandle.Alloc(logTagTypePArray,    GCHandleType.Pinned);
-        GCHandle logTagTypePLenArrayGc = GCHandle.Alloc(logTagTypePLenArray, GCHandleType.Pinned);
-
-        LogColorP    = (byte**)logColorPArrayGc.AddrOfPinnedObject();
-        LogColorPLen = (uint*)logColorPLenArrayGc.AddrOfPinnedObject();
-
-        LogTagTypeP    = (byte**)logTagTypePArrayGc.AddrOfPinnedObject();
-        LogTagTypePLen = (uint*)logTagTypePLenArrayGc.AddrOfPinnedObject();
 
         // Create empty color code
         int   colorEmptyLen = DefaultEmptyColor.Length;
