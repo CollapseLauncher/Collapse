@@ -1,6 +1,9 @@
 ﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
@@ -70,11 +73,11 @@ namespace CollapseLauncher.GameSettings.Base
             return RegistryRoot;
         }
 
-        public async Task<Exception?> ImportSettings(string? gameBasePath = null)
+        public async Task<Exception?> ImportSettings(string? gameBasePath = null, string? path = null)
         {
             try
             {
-                string path = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegImportTitle);
+                path ??= await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegImportTitle);
 
                 if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr1);
 
@@ -190,11 +193,11 @@ namespace CollapseLauncher.GameSettings.Base
                 ImportStreamToFiles(stream, gameBasePath);
         }
 
-        public async Task<Exception?> ExportSettings(bool isCompressed = true, string? parentPathToImport = null, string[]? relativePathToImport = null)
+        public async Task<Exception?> ExportSettings(bool isCompressed = true, string? parentPathToImport = null, string[]? relativePathToImport = null, string? path = null)
         {
             try
             {
-                string path = await FileDialogNative.GetFileSavePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegExportTitle);
+                path ??= await FileDialogNative.GetFileSavePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Locale.Current.Lang?._GameSettingsPage?.SettingsRegExportTitle);
                 EnsureFileSaveHasExtension(ref path, ".clreg");
 
                 if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr1);
@@ -533,5 +536,70 @@ namespace CollapseLauncher.GameSettings.Base
             _ = reader.Read(val, 0, len);
             RegistryRoot?.SetValue(valueName, val, RegistryValueKind.Binary);
         }
+        
+        
+        # region database
+
+        private string GameTypeValue => (GameVersionManager?.GameType is not GameNameType.Plugin 
+            ? GameVersionManager?.GameType.ToString() : GameVersionManager?.GameName.Replace(" ", "")) ?? "UNKNOWN";
+        private string KeySettings => $"{GameTypeValue}-{GameVersionManager?.GameRegion}-gs";
+        private string KeyLastUpdated => $"{GameTypeValue}-{GameVersionManager?.GameRegion}-gs-lu";
+
+        public async Task<Exception?> PushToDatabase()
+        {
+            try
+            {
+                string path = Path.GetTempFileName();
+                _  = await ExportSettings(false, null, null, path);
+
+                if (!File.Exists(path)) return null;
+                
+                var fi = new FileInfo(path);
+                if (fi.Length == 0) return null;
+                byte[] fileBytes = await File.ReadAllBytesAsync(path);
+                await DbHandler.StoreKeyValue(KeySettings,    "",                   true, true, fileBytes);
+                await DbHandler.StoreKeyValue(KeyLastUpdated, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), true);
+                fi.Delete();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return ex;
+            }
+
+            return null;
+        }
+        
+        public async Task<Exception?> GetFromDatabase()
+        {
+            try
+            {
+                var retval = await DbHandler.QueryKey(KeySettings, true, true);
+
+                if (retval == null) throw new NullReferenceException();
+
+                string path = Path.GetTempFileName();
+                await File.WriteAllBytesAsync(path, Convert.FromHexString(retval));
+
+                string? gameBasePath = null;
+                if (GameVersionManager?.GameType == GameNameType.Zenless)
+                {
+                    gameBasePath = ConverterTool.NormalizePath(GameVersionManager?.GameDirPath);
+                }
+
+                await ImportSettings(gameBasePath, path);
+                
+                File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return ex;
+            }
+
+            return null;
+        }
+        
+        #endregion
     }
 }
