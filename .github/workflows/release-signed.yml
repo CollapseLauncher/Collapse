@@ -69,7 +69,7 @@ jobs:
           echo "::notice::Signing Policy: $env:SIGNING_POLICY_SLUG"
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: recursive
         
@@ -112,14 +112,14 @@ jobs:
           
     - name: Upload Artifact (unsigned)
       id: upload-unsigned-artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
           name: collapse-v${{ env.VERSION }}_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
           path: ./CollapseLauncher/SignArtifact
           compression-level: 9
 
     - name: Notify Discord for pending build
-      uses: sarisia/actions-status-discord@v1.15.3
+      uses: sarisia/actions-status-discord@v1.16
       if: always()
       continue-on-error: true
       with:
@@ -173,14 +173,14 @@ jobs:
         }
 
     - name: Re-upload Signed Artifact to GitHub
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
           name: SIGNED_collapse-v${{ env.VERSION }}_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
           path: ${{ runner.temp }}/SignedArtifact
           compression-level: 9
 
     - name: Final Notify Discord
-      uses: sarisia/actions-status-discord@v1.15.3
+      uses: sarisia/actions-status-discord@v1.16
       if: always()
       continue-on-error: true
       with:
@@ -194,7 +194,7 @@ jobs:
           Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
 
     - name: Install Sentry CLI
-      uses: MinoruSekine/setup-scoop@v4.0.1
+      uses: MinoruSekine/setup-scoop@v5.0.1
       with:
         buckets: extras
         apps: sentry-cli
@@ -229,7 +229,7 @@ jobs:
             }
 
     - name: Attest Build Provenance
-      uses: actions/attest-build-provenance@v3
+      uses: actions/attest-build-provenance@v4
       with:
         subject-path: "${{ runner.temp }}/SignedArtifact/BuildArtifact-${{ env.VERSION }}/**"
 
