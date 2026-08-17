@@ -187,9 +187,16 @@ namespace CollapseLauncher
                 foreach (XamlChangeId id in ids)
                 {
                     bool isPreviouslyEnabled = XamlOptionalChanges.IsChangeEnabled(id);
-                    if (!XamlOptionalChanges.EnableChange(id))
+                    try
                     {
-                        throw new NotSupportedException($"XAML Change ID: {id} is not supported");
+                        if (!XamlOptionalChanges.EnableChange(id))
+                        {
+                            throw new NotSupportedException($"XAML Change ID: {id} is not supported");
+                        }
+                    }
+                    catch (NotSupportedException ex)
+                    {
+                        LogWriteLine("[InitializeExperimentalWinUIFeatures]" + ex.Message, LogType.Scheme, true);
                     }
 
                     bool isEnabled = XamlOptionalChanges.IsChangeEnabled(id);
