@@ -11,13 +11,36 @@ namespace Hi3Helper.Data
 {
     public class AppInfo
     {
-        public int Id { get; internal set; }
-        public string Name { get; internal set; }
-        public string SteamUrl { get; internal set; }
-        public string Manifest { get; internal set; }
-        public string GameRoot { get; internal set; }
-        public string Executable { get; internal set; }
-        public string InstallDir { get; internal set; }
+        public int    Id           { get; internal set; }
+        public string Name         { get; internal set; }
+        public string SteamUrl     { get; internal set; }
+        public string Manifest     { get; internal set; }
+        public string GameRoot     { get; internal set; }
+        public string Executable   { get; internal set; }
+        public string InstallDir   { get; internal set; }
+        public SteamInstallState InstallState { get; internal set; }
+    }
+
+    
+    // Ref: https://github.com/SteamRE/open-steamworks/blob/f65c0439bf06981285da1e7639de82cd760755b7/Open%20Steamworks/AppsCommon.h#L39-L64
+    [Flags]
+    public enum SteamInstallState
+    {
+        Invalid        = 0,
+        Uninstalled    = 1 << 0,  // 1
+        UpdateRequired = 1 << 1,  // 2
+        FullyInstalled = 1 << 2,  // 4
+        DataEncrypted  = 1 << 3,  // 8
+        DataLocked     = 1 << 4,  // 16
+        FilesMissing   = 1 << 5,  // 32
+        SharedOnly     = 1 << 6,  // 64
+        FilesCorrupt   = 1 << 7,  // 128
+        UpdateRunning  = 1 << 8,  // 256
+        UpdatePaused   = 1 << 9,  // 512
+        UpdateStarted  = 1 << 10, // 1024
+        Uninstalling   = 1 << 11, // 2048
+        BackupRunning  = 1 << 12, // 4096
+        AppRunning     = 1 << 13  // 8192
     }
 
     public static partial class SteamTool
@@ -92,15 +115,36 @@ namespace Hi3Helper.Data
 
             if (!Directory.Exists(libGameRoot)) return null;
 
-            appInfo.Id         = int.Parse(appId!);
-            appInfo.Name       = name;
-            appInfo.Manifest   = appMetaFile;
-            appInfo.GameRoot   = libGameRoot;
-            appInfo.InstallDir = installDir;
-            appInfo.SteamUrl   = $"steam://runsteamid/{appId}";
-            appInfo.Executable = GetExecutable(appInfo);
+            appInfo.Id           = int.Parse(appId!);
+            appInfo.Name         = name;
+            appInfo.Manifest     = appMetaFile;
+            appInfo.GameRoot     = libGameRoot;
+            appInfo.InstallDir   = installDir;
+            appInfo.SteamUrl     = $"steam://runsteamid/{appId}";
+            appInfo.Executable   = GetExecutable(appInfo);
+            appInfo.InstallState = GetGameInstallState(dic);
 
             return appInfo;
+        }
+
+        private static SteamInstallState GetGameInstallState(Dictionary<string, string> steamDic)
+        {
+            try
+            {
+                var rawState = steamDic["StateFlags"];
+
+                if (int.TryParse(rawState, out int intState))
+                {
+                    SteamInstallState state = (SteamInstallState)intState;
+                    return state;
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Logger.LogWriteLine($"[Steam Install State] StateFlags not found, returning 0 (Not installed!\r\n" +
+                                    $"{ex.Message}", LogType.Error, true);
+            }
+            return 0; // Not installed
         }
 
         private static string _appInfoText;
