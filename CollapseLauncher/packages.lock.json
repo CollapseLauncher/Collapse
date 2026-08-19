@@ -456,8 +456,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "6.8.0",
-        "contentHash": "amUjwslDtdx1p8r6z4APCxM8vHCKG4CBamPpSTwxmTMoBQ2CLwx2m3CaIttJXRT/hw9S5rNfXgjol2OqADytLQ=="
+        "resolved": "6.9.0",
+        "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -494,7 +494,7 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[10.0.10, )"
+          "System.Drawing.Common": "[10.0.11, )"
         }
       },
       "discordrpc": {
@@ -529,7 +529,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
-          "Sentry": "[6.8.0, )"
+          "Sentry": "[6.9.0, )"
         }
       },
       "hi3helper.enctool": {
@@ -554,7 +554,7 @@
       "hi3helper.plugin.core": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "[10.0.11, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.10, )"
         }
       },
       "hi3helper.simpleziparchivereader": {
