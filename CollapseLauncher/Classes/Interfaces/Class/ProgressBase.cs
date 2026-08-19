@@ -467,6 +467,13 @@ internal abstract class ProgressBase : GamePropertyBase
 
     protected double CalculateSpeed(long receivedBytes) => CalculateSpeed(receivedBytes, ref _scLastSpeed, ref _scLastReceivedBytes, ref _scLastTick);
 
+    protected void ResetSpeedCalculator()
+    {
+        Interlocked.Exchange(ref _scLastReceivedBytes, 0);
+        Interlocked.Exchange(ref _scLastTick, Environment.TickCount64);
+        _scLastSpeed = 0;
+    }
+
     protected static double CalculateSpeed(long receivedBytes, ref double lastSpeedToUse, ref long lastReceivedBytesToUse, ref long lastTickToUse)
     {
         long   currentTick           = Environment.TickCount64 - lastTickToUse + 1;
