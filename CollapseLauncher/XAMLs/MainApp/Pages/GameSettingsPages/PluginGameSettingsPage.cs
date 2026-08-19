@@ -1,5 +1,6 @@
 using CollapseLauncher.Plugins;
 using CollapseLauncher.Helper;
+using CollapseLauncher.GameManagement.ImageBackground;
 using Hi3Helper.Plugin.Core.UI.Settings;
 using Hi3Helper.Plugin.Core.Utility;
 using Microsoft.UI;
@@ -16,7 +17,7 @@ namespace CollapseLauncher.Pages;
 /// <summary>
 /// Renders the declarative game settings page exposed by a v0.1.6 plugin.
 /// </summary>
-public sealed class PluginGameSettingsPage : Page
+public sealed partial class PluginGameSettingsPage : Page
 {
     private readonly GameSettingsExtension.GameSettingsContext _context;
     private readonly TextBlock _statusText = new()
@@ -28,6 +29,12 @@ public sealed class PluginGameSettingsPage : Page
 
     public PluginGameSettingsPage()
     {
+        InitializeComponent();
+
+        ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+        ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+        ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
+
         NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Disabled;
 
         if (GetCurrentGameProperty().GameVersion.GamePreset is not PluginPresetConfigWrapper preset)
