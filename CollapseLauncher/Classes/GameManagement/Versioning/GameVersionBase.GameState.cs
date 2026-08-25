@@ -116,12 +116,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         #region Check Game "Has" State
         public virtual bool IsGameHasPreload()
-        {
-            if (GamePreset.LauncherType == LauncherType.Sophon)
-                return GameDataSophonBranchPreload != null;
-
-            return GameDataPackagePreload is { CurrentVersion: not null };
-        }
+            => GameDataSophonBranchPreload != null || GameDataPackagePreload is { CurrentVersion: not null };
 
         public virtual bool IsGameHasDeltaPatch() => false;
 
