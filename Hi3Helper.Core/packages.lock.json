@@ -16,14 +16,14 @@
       },
       "Sentry": {
         "type": "Direct",
-        "requested": "[6.8.0, )",
-        "resolved": "6.8.0",
-        "contentHash": "amUjwslDtdx1p8r6z4APCxM8vHCKG4CBamPpSTwxmTMoBQ2CLwx2m3CaIttJXRT/hw9S5rNfXgjol2OqADytLQ=="
+        "requested": "[6.9.0, )",
+        "resolved": "6.9.0",
+        "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.35.1",
-        "contentHash": "pxtkuXhR8svkvDTQrYew9GZQt6eWhblz/V/WKUFrQgkHYlQPsumJTeF6ppHRJpe6j9ffukkd5lQULiiKaek4xA=="
+        "resolved": "3.36.0",
+        "contentHash": "wDPg8sKlmA8we1bqnC9DYKwLog4PNJ4GYTWV9FkzlGvfs3kNCSt2x0Qe31SBOeBPS2JGEZ/lNfil/Bkwx18Ufg=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
@@ -46,7 +46,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.35.1, )",
+          "Google.Protobuf": "[3.36.0, )",
           "Hi3Helper.Http": "[2.0.1, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[10.0.11, )"

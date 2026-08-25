@@ -99,9 +99,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.12.4, )",
-        "resolved": "1.12.4",
-        "contentHash": "ljqvBabvFwKoLniuoQKO8b5bJfJweKLs4fUNS/V5dsvpo0A8MlJqxxn9XVmP2DaskbUXty6IYaWAi1SArGIMeQ=="
+        "requested": "[1.13.0, )",
+        "resolved": "1.13.0",
+        "contentHash": "nWZtz9WjSbq6V7TjjYBCmW+D8+BrWs15O6MlPxh55SH4zmenkWHXwu6gYeIarHL3KoHgDyZzTdOM50EdTnR8Xw=="
       },
       "Libsql.Client": {
         "type": "Direct",
@@ -301,8 +301,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.35.1",
-        "contentHash": "pxtkuXhR8svkvDTQrYew9GZQt6eWhblz/V/WKUFrQgkHYlQPsumJTeF6ppHRJpe6j9ffukkd5lQULiiKaek4xA=="
+        "resolved": "3.36.0",
+        "contentHash": "wDPg8sKlmA8we1bqnC9DYKwLog4PNJ4GYTWV9FkzlGvfs3kNCSt2x0Qe31SBOeBPS2JGEZ/lNfil/Bkwx18Ufg=="
       },
       "Hi3Helper.SourceGen": {
         "type": "Transitive",
@@ -311,8 +311,8 @@
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
-        "resolved": "1.6.5",
-        "contentHash": "0Voe4Vi/kcUR+/33mOIKcJlP73oK9iauA2MuHXB0IHDvrbzT02L/2tfyTe621904LzN2zaML7JGKnOOLzuzmFQ=="
+        "resolved": "1.6.7",
+        "contentHash": "tKRsB+itZCtsIlHkQk7eGVbPzOcprMAmKxha+ZpduVz8BnsDZZVrh2GXpuoK3YuOVEspMVr7pKJ8IrnFF0ZAiQ=="
       },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
@@ -456,15 +456,16 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "6.8.0",
-        "contentHash": "amUjwslDtdx1p8r6z4APCxM8vHCKG4CBamPpSTwxmTMoBQ2CLwx2m3CaIttJXRT/hw9S5rNfXgjol2OqADytLQ=="
+        "resolved": "6.9.0",
+        "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
-        "resolved": "2.4.0",
-        "contentHash": "1Ml6JmXTwX6zYFsTghNTOOCB8SLLGLABNCIFQPvGNXhJhMjZS3APZkEQdbCgWsB+Ljmyv9UxoJPXAYjL5xdV1g==",
+        "resolved": "2.4.1",
+        "contentHash": "jc9lm95YoZqDHxLRBE0p4NRabmo5lZYHJEe0th/8ozx/nCGPSg8epKWoD+r3W9YOBHCqht1DUBSN6Sl0ePW44Q==",
         "dependencies": {
           "Hi3Helper.ZstdNet": "1.6.5",
+          "System.IO.Hashing": "10.0.11",
           "ZstdSharp.Port": "0.8.8"
         }
       },
@@ -494,7 +495,7 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[10.0.10, )"
+          "System.Drawing.Common": "[10.0.11, )"
         }
       },
       "discordrpc": {
@@ -529,13 +530,13 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
-          "Sentry": "[6.8.0, )"
+          "Sentry": "[6.9.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.35.1, )",
+          "Google.Protobuf": "[3.36.0, )",
           "Hi3Helper.Http": "[2.0.1, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[10.0.11, )"
@@ -563,7 +564,7 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.35.1, )",
+          "Google.Protobuf": "[3.36.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "SharpHDiffPatch.Core": "[*, )",
           "System.IO.Hashing": "[10.0.11, )"
