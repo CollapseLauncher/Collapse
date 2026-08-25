@@ -146,14 +146,11 @@ public partial class ImageBackgroundManager
 
             FFmpegPInvoke.FFmpegLibraryNames names = GlobalFFmpegLibraryNames;
 
-            string  curDir              = Directory.GetCurrentDirectory();
-            bool    isFFmpegAvailable   = IsFFmpegAvailable(curDir, names, out exception);
-            string? customFFmpegDirPath = GlobalCustomFFmpegPath;
+            string  curDir       = LauncherConfig.AppExecutableDir;
+            string  stockDir     = Path.Combine(curDir, "Lib");
+            string? stockFindDir = FindFFmpegInstallFolder(stockDir, names);
 
-            if (isFFmpegAvailable)
-            {
-                return false;
-            }
+            string? customFFmpegDirPath = GlobalCustomFFmpegPath;
 
             // -- 1. Check from custom path first. If it exists, then pass.
             if (!string.IsNullOrEmpty(customFFmpegDirPath) &&
@@ -163,9 +160,17 @@ public partial class ImageBackgroundManager
                 return result = true;
             }
 
-            // -- 2. Find one from environment variables. If it exists, then pass.
+            // -- 2. Link stock library to the root directory
+            if (!string.IsNullOrEmpty(stockFindDir) &&
+                IsFFmpegAvailable(stockFindDir, names, out exception) &&
+                TryLinkFFmpegLibrary(stockFindDir, curDir, names, out exception))
+            {
+                return result = true;
+            }
+
+            // -- 3. Find one from environment variables. If it exists, then pass.
             //       Otherwise, return false.
-            return result = TryFindFFmpegInstallFromEnvVar(names, out string ? envVarPath, out exception) &&
+            return result = TryFindFFmpegInstallFromEnvVar(names, out string? envVarPath, out exception) &&
                             TryLinkFFmpegLibrary(envVarPath, curDir, names, out exception);
         }
         finally
