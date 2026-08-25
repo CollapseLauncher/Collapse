@@ -527,7 +527,10 @@ namespace CollapseLauncher.GameManagement.Versioning
             return null;
         }
 
-        public virtual bool IsForceRedirectToSophon() => GamePreset.GameLauncherApi?.IsForceRedirectToSophon ?? false;
+        public virtual bool IsForceRedirectToSophon()
+            => (GamePreset.GameLauncherApi?.IsForceRedirectToSophon ?? false) ||
+               (IsGameHasPreload() && GameDataPackagePreload is { CurrentVersion: null }) ||
+               GameDataPackageMain is { CurrentVersion: null };
         #endregion
     }
 }
