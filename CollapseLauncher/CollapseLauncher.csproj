@@ -482,7 +482,7 @@
     </Target>
 
     <Target Name="PostBuild-RemoveFiles" AfterTargets="PostBuildEvent">
-        <Exec Command="del /s $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
+        <Exec Command="del $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
         <RemoveDir Directories="$(OutDir)Lib\linux-x64" Condition="Exists('$(OutDir)Lib\linux-x64')" />
@@ -493,7 +493,7 @@
     </Target>
     
     <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
-        <Exec Command="del /s $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
+        <Exec Command="del $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
