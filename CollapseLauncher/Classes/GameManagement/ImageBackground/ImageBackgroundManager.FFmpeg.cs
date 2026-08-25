@@ -27,6 +27,8 @@ public partial class ImageBackgroundManager
     private const string GlobalFFmpegCustomPathConfigKey   = "GlobalFFmpegCustomPath";
     private const string GlobalFFmpegDecodingModeConfigKey = "GlobalFFmpegDecodingMode";
 
+    private const int GlobalFFmpegDefaultVersionKey = 80;
+
     public VideoDecoderMode[] AvailableFFmpegDecodingModes => field ??= Enum.GetValues<VideoDecoderMode>();
 
     public int GlobalFFmpegVersionToUse
@@ -36,7 +38,7 @@ public partial class ImageBackgroundManager
             int version = LauncherConfig.GetAppConfigValue(GlobalFFmpegVersionToUseConfigKey);
             return FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(version) ?
                 version :
-                FFmpegPInvoke.FFmpegVersionLibNames.Keys.FirstOrDefault();
+                GlobalFFmpegDefaultVersionKey;
         }
         set
         {
@@ -55,7 +57,7 @@ public partial class ImageBackgroundManager
     {
         get
         {
-            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out var names))
+            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out FFmpegPInvoke.FFmpegLibraryNames names))
             {
                 return names;
             }
@@ -101,7 +103,7 @@ public partial class ImageBackgroundManager
         get
         {
             string? value = LauncherConfig.GetAppConfigValue(GlobalFFmpegDecodingModeConfigKey);
-            if (Enum.TryParse<VideoDecoderMode>(value, out var result))
+            if (Enum.TryParse(value, out VideoDecoderMode result))
             {
                 return result;
             }
@@ -142,16 +144,13 @@ public partial class ImageBackgroundManager
                 return false;
             }
 
-            var names = GlobalFFmpegLibraryNames;
+            FFmpegPInvoke.FFmpegLibraryNames names = GlobalFFmpegLibraryNames;
 
-            string  curDir              = Directory.GetCurrentDirectory();
-            bool    isFFmpegAvailable   = IsFFmpegAvailable(curDir, names, out exception);
+            string  curDir       = LauncherConfig.AppExecutableDir;
+            string  stockDir     = Path.Combine(curDir, "Lib");
+            string? stockFindDir = FindFFmpegInstallFolder(stockDir, names);
+
             string? customFFmpegDirPath = GlobalCustomFFmpegPath;
-
-            if (isFFmpegAvailable)
-            {
-                return false;
-            }
 
             // -- 1. Check from custom path first. If it exists, then pass.
             if (!string.IsNullOrEmpty(customFFmpegDirPath) &&
@@ -161,9 +160,17 @@ public partial class ImageBackgroundManager
                 return result = true;
             }
 
-            // -- 2. Find one from environment variables. If it exists, then pass.
+            // -- 2. Link stock library to the root directory
+            if (!string.IsNullOrEmpty(stockFindDir) &&
+                IsFFmpegAvailable(stockFindDir, names, out exception) &&
+                TryLinkFFmpegLibrary(stockFindDir, curDir, names, out exception))
+            {
+                return result = true;
+            }
+
+            // -- 3. Find one from environment variables. If it exists, then pass.
             //       Otherwise, return false.
-            return result = TryFindFFmpegInstallFromEnvVar(names, out string ? envVarPath, out exception) &&
+            return result = TryFindFFmpegInstallFromEnvVar(names, out string? envVarPath, out exception) &&
                             TryLinkFFmpegLibrary(envVarPath, curDir, names, out exception);
         }
         finally
@@ -251,7 +258,7 @@ public partial class ImageBackgroundManager
 
     internal static string[] GetFFmpegRequiredDllFilenames()
     {
-        var names = Shared.GlobalFFmpegLibraryNames;
+        FFmpegPInvoke.FFmpegLibraryNames names = Shared.GlobalFFmpegLibraryNames;
         return [
             names.Codec,
             names.Device,

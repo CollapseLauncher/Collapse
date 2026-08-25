@@ -213,11 +213,12 @@ namespace CollapseLauncher.InstallManager.Zenless
             return new GameInstallFileInfo
             {
                 GameDataFolderName = "ZenlessZoneZero_Data",
-                FoldersToDelete    = ["APMCrashReporter"],
+                FoldersToDelete    = ["APMCrashReporter", "chunk_collapse", "LauncherPlugins", "ldiff"],
                 FilesToDelete =
                 [
                     "mhypbase.dll", "HoYoKProtect.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^ZZZ.*",
-                    "^Unity.*"
+                    "^Unity.*", "^ZenlessZoneZero\\.exe$", "^amd_.*\\.dll$", "^nvngx_.*\\.dll$", "^sl\\..*\\.dll$",
+                    "^file_category_launcher$", "^version_info$"
                 ],
                 FoldersToKeepInData = ["ScreenShots"]
             };

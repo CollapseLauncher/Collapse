@@ -10,4 +10,8 @@
 		-->
 		<namespace fullname="ABI.Microsoft.UI.Xaml.Media" preserve="All"/>
 	</assembly>
+	<assembly fullname="Microsoft.InteractiveExperiences.Projection">
+        <!-- Fix the issue where CurrentOverlappedPresenter always returns null -->
+		<type fullname="Microsoft.UI.Windowing.OverlappedPresenter" preserve="all"/>
+	</assembly>
 </linker>

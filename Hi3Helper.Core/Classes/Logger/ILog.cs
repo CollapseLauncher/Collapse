@@ -14,7 +14,8 @@ public interface ILog : IDisposable
 {
     StreamWriter LogWriter { get; }
 
-    void LogWriteLine();
+    void LogWriteLine(bool writeToLogFile          = false,
+                      bool writeTimestampOnLogFile = true);
 
     void LogWriteLine(ReadOnlySpan<char> line,
                       LogType            type                    = LogType.Info,

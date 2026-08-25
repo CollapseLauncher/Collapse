@@ -91,20 +91,19 @@ namespace CollapseLauncher
             KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            PresetConfig presetConfig = GameVersionManager.GamePreset;
+            PresetConfig presetConfig = GameVersionManager!.GamePreset!;
             int[]        version      = GameVersion.VersionArray;
             string       key          = presetConfig.DispatcherKey ?? "";
+
+            if (string.IsNullOrEmpty(presetConfig.DispatcherKey))
+            {
+                throw new NullReferenceException("Dispatcher key is null or empty!");
+            }
 
             foreach (string baseURL in presetConfig.GameDispatchArrayURL ?? [])
             {
                 try
                 {
-                    // Init the key and decrypt it if existed.
-                    if (string.IsNullOrEmpty(GameVersionManager.GamePreset.DispatcherKey))
-                    {
-                        throw new NullReferenceException("Dispatcher key is null or empty!");
-                    }
-
                     // Try assign dispatcher
                     if (presetConfig is { GameDispatchURLTemplate: not null, GameDispatchChannelName: not null })
                         dispatch = await KianaDispatch.GetDispatchAsync(client,
@@ -129,7 +128,7 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             GameGateway = await KianaDispatch.GetGameServerAsync(client,
-                                                                 dispatch,
+                                                                 dispatch!,
                                                                  presetConfig.GameGatewayDefault!,
                                                                  key,
                                                                  version,

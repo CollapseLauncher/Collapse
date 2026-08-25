@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Niet geïnstalleerd",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Nieuwe installatie starten of bestaande zoeken",
     "VideoBackground_FFmpegInstallNote": "Opmerking:",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher ondersteunt alleen FFmpeg versie 7.x. Andere versies worden niet ondersteund!",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher ondersteunt alleen FFmpeg versie 8.x. Andere versies worden niet ondersteund!",
     "VideoBackground_FFmpegInstallLockedTitle": "FFmpeg-installatie wijzigen is vergrendeld",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg wordt momenteel gebruikt voor het decoderen van je achtergrond. Als je je huidige installatie wilt wijzigen, schakel dan eerst de functie “FFmpeg gebruiken voor videodecodering” uit, start vervolgens je launcher opnieuw op en ga terug naar deze instelling.",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Aangepaste parallax-pixels instellen (min: {0} px, max: {1} px)",
 
     "StartupFFmpegInstallDialogTitle": "Installatie van FFmpeg is vereist",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher vereist nu dat de FFmpeg-decoder (versie 7.x) is geïnstalleerd om video-achtergronden correct af te spelen. Klik op \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher vereist nu dat de FFmpeg-decoder (versie 8.x) is geïnstalleerd om video-achtergronden correct af te spelen. Klik op \"",
     "StartupFFmpegInstallDialogSubtitle2": "om FFmpeg vanaf nul te installeren of zoek het in je bestaande installatie, of klik op \"",
     "StartupFFmpegInstallDialogSubtitle3": "om de ingebouwde decoder van Windows Media Foundation te blijven gebruiken.",
     "StartupFFmpegInstallDialogSubtitle4": "Opmerking:",

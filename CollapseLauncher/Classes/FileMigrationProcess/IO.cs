@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
@@ -90,8 +91,8 @@ namespace CollapseLauncher
             ArgumentException.ThrowIfNullOrEmpty(inputPath);
             ArgumentException.ThrowIfNullOrEmpty(outputPath);
 
-            DriveInfo inputDriveInfo = new DriveInfo(Path.GetPathRoot(inputPath)!);
-            DriveInfo outputDriveInfo = new DriveInfo(Path.GetPathRoot(outputPath)!);
+            string inputVolName = PathUtil.GetPathVolumeName(inputPath);
+            string outputVolName = PathUtil.GetPathVolumeName(outputPath);
 
             _totalFileSize = await Task.Run(() =>
             {
@@ -110,23 +111,24 @@ namespace CollapseLauncher
                 return returnSize;
             });
             
-            IsSameOutputDrive = inputDriveInfo.Name == outputDriveInfo.Name;
+            IsSameOutputDrive = inputVolName == outputVolName;
             if (IsSameOutputDrive)
                 return true;
 
-            bool isSpaceSufficient = outputDriveInfo.TotalFreeSpace > _totalFileSize;
+            long volumeFreeSpace = PathUtil.GetVolumeFreeSpace(outputPath);
+            bool isSpaceSufficient = volumeFreeSpace > _totalFileSize;
             if (isSpaceSufficient)
             {
                 return true;
             }
 
-            string errStr = $"Free Space on {outputDriveInfo.Name} is not sufficient! (Free space: {outputDriveInfo.TotalFreeSpace}, Req. Space: {_totalFileSize}, Drive: {outputDriveInfo.Name})";
+            string errStr = $"Free Space on {outputVolName} is not sufficient! (Free space: {volumeFreeSpace}, Req. Space: {_totalFileSize}, Drive: {outputVolName})";
             Logger.LogWriteLine(errStr, LogType.Error, true);
-            await SimpleDialogs.SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.OperationErrorDiskSpaceInsufficientTitle ?? "", outputDriveInfo.Name),
+            await SimpleDialogs.SpawnDialog(string.Format(Locale.Current.Lang?._Dialogs?.OperationErrorDiskSpaceInsufficientTitle ?? "", outputVolName),
                                             string.Format(Locale.Current.Lang?._Dialogs?.OperationErrorDiskSpaceInsufficientMsg ?? "",
-                                                          ConverterTool.SummarizeSizeSimple(outputDriveInfo.TotalFreeSpace),
+                                                          ConverterTool.SummarizeSizeSimple(volumeFreeSpace),
                                                           ConverterTool.SummarizeSizeSimple(_totalFileSize),
-                                                          outputDriveInfo.Name),
+                                                          outputVolName),
                                             null,
                                             null,
                                             Locale.Current.Lang?._Misc?.Okay,

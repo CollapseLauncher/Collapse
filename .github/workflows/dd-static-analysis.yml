@@ -21,4 +21,6 @@ jobs:
           dd_site: ap1.datadoghq.com
           secrets_enabled: false
           static_analysis_enabled: true
-          cpu_count: 2
+          cpu_count: 4
+          diff_aware: true
+          enable_performance_statistics: true

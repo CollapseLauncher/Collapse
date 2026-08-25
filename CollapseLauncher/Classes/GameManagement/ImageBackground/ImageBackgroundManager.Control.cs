@@ -58,7 +58,7 @@ public partial class ImageBackgroundManager
         bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
         if (isUserRequest && hasStaticImage && context != null)
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, CancellationToken.None);
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, CancellationToken.None, true);
         }
 
         // Force to restore autoplay status to true.
@@ -81,7 +81,7 @@ public partial class ImageBackgroundManager
         bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
         if (isUserRequest && hasStaticImage && context != null)
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, true, CancellationToken.None);
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, true, CancellationToken.None, true);
             return;
         }
 

@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "未安装",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "开始新安装或定位向导",
     "VideoBackground_FFmpegInstallNote": "备注：",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse 启动器仅支持 FFmpeg 7.x 版本。其他版本的 FFmpeg 暂不支持！",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse 启动器仅支持 FFmpeg 8.x 版本。其他版本的 FFmpeg 暂不支持！",
     "VideoBackground_FFmpegInstallLockedTitle": "更改 FFmpeg 安装已被锁定",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg 目前被用来解码您的背景。要更改您现有的安装，请先禁用“使用 FFmpeg 进行视频解码”功能，然后重启您的启动器，再返回到这项设置。",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "设置自定义视差像素（最小：{0} 像素，最大：{1} 像素）",
 
     "StartupFFmpegInstallDialogTitle": "需要安装 FFmpeg",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse 启动器现在需要安装 FFmpeg 解码器（7.x 版本）才能正常播放视频背景。点击“",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse 启动器现在需要安装 FFmpeg 解码器（8.x 版本）才能正常播放视频背景。点击“",
     "StartupFFmpegInstallDialogSubtitle2": "”全新安装 FFmpeg 或从现有安装中定位它，或点击“",
     "StartupFFmpegInstallDialogSubtitle3": "”继续使用 Windows Media Foundation 内置解码器。",
     "StartupFFmpegInstallDialogSubtitle4": "注：",

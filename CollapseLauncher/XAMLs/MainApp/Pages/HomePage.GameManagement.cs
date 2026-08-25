@@ -807,6 +807,9 @@ public sealed partial class HomePage
             }
             else
             {
+                ProgressRing.Value           = 0;
+                ProgressRing.IsIndeterminate = true;
+                ProgressTimeLeft.Visibility  = Visibility.Visible;
                 ProgressStatusGrid.Visibility                   =  Visibility.Visible;
                 if (CurrentGameProperty.GameInstall != null)
                 {
