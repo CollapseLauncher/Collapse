@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Iniciar una nueva instalación o localizar asistente de instalación",
     "VideoBackground_FFmpegInstallNote": "Aviso",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 7.x. Otras versiones de FFmpeg no son compatibles por el momento.",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 8.x. Otras versiones de FFmpeg no son compatibles por el momento.",
     "VideoBackground_FFmpegInstallLockedTitle": "Modificar la instalación de FFmpeg está bloqueada",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado para decodificar su fondo. Para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", luego reinicia tu launcher y vuelve a aquí.",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Establecer píxeles para paralaje (Mín: {0}px, Máx: {1}px)",
 
     "StartupFFmpegInstallDialogTitle": "Se requiere FFmpeg instalado",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse requiere que el decodificador FFmpeg (versión 7.x) esté instalado para reproducir correctamente el vídeo de fondo. Haz clic en \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse requiere que el decodificador FFmpeg (versión 8.x) esté instalado para reproducir correctamente el vídeo de fondo. Haz clic en \"",
     "StartupFFmpegInstallDialogSubtitle2": "\" para instalar FFmpeg desde cero o seleccionarlo de tu instalación actual, o haz clic en \"",
     "StartupFFmpegInstallDialogSubtitle3": "\" para seguir usando el decodificador integrado de Windows Media Fundation ",
     "StartupFFmpegInstallDialogSubtitle4": "Aviso:",

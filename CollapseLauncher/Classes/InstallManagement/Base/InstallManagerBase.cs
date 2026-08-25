@@ -14,6 +14,7 @@ using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.LocaleSourceGen;
@@ -1092,7 +1093,9 @@ namespace CollapseLauncher.InstallManager.Base
             #pragma warning restore CS8604 // Possible null reference argument.
 
                 // Cleanup Game_Data folder while keeping whatever specified in FoldersToKeepInData
-                foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
+                foreach (string folderGameData in Directory.Exists(_DataFolderFullPath)
+                                                     ? Directory.EnumerateFileSystemEntries(_DataFolderFullPath)
+                                                     : Array.Empty<string>())
                 {
                     try
                     {
@@ -1130,14 +1133,17 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Check if _DataFolderPath folder empty after cleaning up 
-                if (!Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
+                if (Directory.Exists(_DataFolderFullPath) &&
+                    !Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
                 {
                     Directory.Delete(_DataFolderFullPath);
                     LogWriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
                 }
 
                 // Cleanup any folders in FoldersToDelete
-                foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
+                foreach (string folderNames in Directory.Exists(GameFolder)
+                                                   ? Directory.EnumerateDirectories(GameFolder)
+                                                   : Array.Empty<string>())
                 {
                     if (_gameInstallFileInfo.FoldersToDelete.Length == 0 ||
                         !_gameInstallFileInfo.FoldersToDelete.Contains(Path.GetFileName(folderNames)))
@@ -1159,7 +1165,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Cleanup any files in FilesToDelete
-                foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
+                foreach (string fileNames in Directory.Exists(GameFolder)
+                                                 ? Directory.EnumerateFiles(GameFolder)
+                                                 : Array.Empty<string>())
                 {
                     if ((_gameInstallFileInfo.FilesToDelete.Length == 0 ||
                          !_gameInstallFileInfo.FilesToDelete.Contains(Path.GetFileName(fileNames))) &&
@@ -3147,9 +3155,6 @@ namespace CollapseLauncher.InstallManager.Base
         private async ValueTask CheckDriveFreeSpace(List<GameInstallPackage> packageList,
                                                     double    sizeDownloaded)
         {
-            // Get the information about the disk
-            DriveInfo driveInfo = new DriveInfo(GamePath);
-
             // Get the required space uncompressed
             long requiredSpaceUncompressed = packageList.Sum(x => x.SizeRequired);
             long requiredSpaceCompressed   = packageList.Sum(x => x.Size);
@@ -3164,13 +3169,14 @@ namespace CollapseLauncher.InstallManager.Base
             double remainedDownloadUncompressed = requiredSpaceUncompressed - currentDownloadedUncompressed;
             double remainedDownloadCompressed   = requiredSpaceCompressed - sizeDownloaded;
 
-            // Get the total free space of the disk and log the required size
-            long diskFreeSpace = driveInfo.TotalFreeSpace;
-            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {driveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}",
+            // Get the total free space of the path (handles volume mount points correctly)
+            long volumeFreeSpace = PathUtil.GetVolumeFreeSpace(GamePath);
+            string volumeName = PathUtil.GetPathVolumeName(GamePath);
+            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {volumeName} remaining free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}",
                          LogType.Default, true);
 
 #if DEBUG
-            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(diskFreeSpace), 3), 4);
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(volumeFreeSpace), 3), 4);
             double requiredSpaceGb = Convert.ToDouble(requiredSpaceUncompressed / (1L << 30));
             double existingPackageSizeGb = Convert.ToDouble(sizeDownloaded / (1L << 30));
             double remainingDownloadSizeGb =
@@ -3190,14 +3196,13 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Debug);
 #endif
 
-            if (diskFreeSpace < remainedDownloadUncompressed)
+            if (volumeFreeSpace < remainedDownloadUncompressed)
             {
-                string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
-                                $"(Free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
-                                $"Existing Package Size (Compressed): {sizeDownloaded} (Uncompressed): {currentDownloadedUncompressed}, Drive: {driveInfo.Name})";
+                string errStr = $"Free Space on {volumeName} is not sufficient! " +
+                                $"(Free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
+                                $"Existing Package Size (Compressed): {sizeDownloaded} (Uncompressed): {currentDownloadedUncompressed}, Drive: {volumeName})";
                 LogWriteLine(errStr, LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(diskFreeSpace, remainedDownloadUncompressed,
-                                                    driveInfo.Name);
+                await Dialog_InsufficientDriveSpace(volumeFreeSpace, remainedDownloadUncompressed, volumeName);
                 throw new TaskCanceledException(errStr);
             }
         }

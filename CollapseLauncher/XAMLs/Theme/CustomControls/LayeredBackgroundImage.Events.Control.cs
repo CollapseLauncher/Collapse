@@ -344,10 +344,28 @@ public partial class LayeredBackgroundImage
             timeSpan = timeSpan.Negate();
         }
 
-        ref TimeSpan span = ref CollectionsMarshal.GetValueRefOrAddDefault(SharedLastMediaPosition, hashCode, out _);
-        span = timeSpan;
+        SharedLastMediaPosition[hashCode] = timeSpan;
+
+        TrimSharedLastMediaPositionIfNeeded();
 
         return true;
+    }
+
+    private static void TrimSharedLastMediaPositionIfNeeded()
+    {
+        if (SharedLastMediaPosition.Count <= MaxSharedLastMediaPositionEntries)
+            return;
+
+        int excess = SharedLastMediaPosition.Count - MaxSharedLastMediaPositionEntries;
+        foreach (var entry in SharedLastMediaPosition)
+        {
+            if (!SharedLastMediaPosition.TryRemove(entry.Key, out _))
+                continue;
+
+            excess--;
+            if (excess <= 0)
+                break;
+        }
     }
 
     #endregion

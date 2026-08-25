@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Not Installed",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Start New Install or Locate Wizard",
     "VideoBackground_FFmpegInstallNote": "Note",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 7.x build. Other builds of FFmpeg aren't currently supported!",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher only supports FFmpeg 8.x build. Other builds of FFmpeg aren't currently supported!",
     "VideoBackground_FFmpegInstallLockedTitle": "Changing FFmpeg Installation is Locked",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg is currently being used for decoding your background. To change your existing installation, please disable the \"Use FFmpeg for Video Decoding\" feature first, then restart your launcher and come back to this setting.",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Custom Parallax Pixels (Min: {0}px, Max: {1}px)",
 
     "StartupFFmpegInstallDialogTitle": "Yêu cầu cài đặt FFmpeg",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher giờ đây yêu cầu decoder (trình giải mã) FFmpeg (bản dựng 7.x) phải được cài đặt trên máy để có thể phát hình nền video một cách ổn định. Nhấn \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher giờ đây yêu cầu decoder (trình giải mã) FFmpeg (bản dựng 8.x) phải được cài đặt trên máy để có thể phát hình nền video một cách ổn định. Nhấn \"",
     "StartupFFmpegInstallDialogSubtitle2": "\" để cài đặt FFmpeg từ đầu hay để chọn thư mục cài nếu trên máy đã có sẵn, hoặc nhấn \"",
     "StartupFFmpegInstallDialogSubtitle3": "\" để tiếp tục sử dụng decoder Windows Media Foundation tích hợp sẵn.",
     "StartupFFmpegInstallDialogSubtitle4": "Lưu ý:",

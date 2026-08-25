@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Tidak Terinstall",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Mulai Instalasi Baru atau Pakai Lokasi Existing",
     "VideoBackground_FFmpegInstallNote": "Catatan",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher hanya mendukung build FFmpeg 7.x. Build FFmpeg lainnya saat ini tidak didukung!",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher hanya mendukung build FFmpeg 8.x. Build FFmpeg lainnya saat ini tidak didukung!",
     "VideoBackground_FFmpegInstallLockedTitle": "Perubahan Instalasi FFmpeg saat ini Dikunci",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg saat ini sedang digunakan untuk decoding video background. Untuk mengubah instalasi saat ini, silahkan matikan \"Gunakan FFmpeg untuk Decoding Video\" terlebih dahulu, kemudian restart launcher dan kembali lagi ke pengaturan ini.",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Pixel Parallax Kustom (Min: {0}px, Maks: {1}px)",
 
     "StartupFFmpegInstallDialogTitle": "Instalasi FFmpeg Diperlukan",
-    "StartupFFmpegInstallDialogSubtitle1": "Saat ini Collapse Launcher membutuhkan Decoder FFmpeg (build 7.x) terpasang pada sistem kamu. Klik \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Saat ini Collapse Launcher membutuhkan Decoder FFmpeg (build 8.x) terpasang pada sistem kamu. Klik \"",
     "StartupFFmpegInstallDialogSubtitle2": "\" untuk memasang FFmpeg dari awal, atau klik \"",
     "StartupFFmpegInstallDialogSubtitle3": "\" untuk tetap menggunakan decoder Windows Media Foundation bawaan.",
     "StartupFFmpegInstallDialogSubtitle4": "Catatan:",

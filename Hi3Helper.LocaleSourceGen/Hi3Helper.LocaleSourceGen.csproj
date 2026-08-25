@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <PackageReference Include="Hi3Helper.SourceGen" Version="0.0.3" />
-      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
+      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
     </ItemGroup>
 
 </Project>

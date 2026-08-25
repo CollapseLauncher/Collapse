@@ -15,6 +15,7 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Settings;
 using Microsoft.Win32;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Libheif;
@@ -123,6 +124,8 @@ namespace CollapseLauncher
                 // so the execution could continue without anything to worry about **technically**
                 CheckRuntimeFeatures();
 
+                InitializeExperimentalWinUIFeatures();
+
                 Console.WriteLine(Directory.GetCurrentDirectory());
                 Application.Start(_ =>
                 {
@@ -167,6 +170,41 @@ namespace CollapseLauncher
             finally
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
+            }
+        }
+
+        private static void InitializeExperimentalWinUIFeatures()
+        {
+            // Self reminder to: @neon-nyan.
+            // Make sure that the XamlOptionalChanges APIs are available among 2.3.x releases. If not, then remove them.
+            // As per PR below, this opt-in features should be removed in the next release:
+            // https://github.com/sundaramramaswamy/microsoft-ui-xaml/blob/069fbc9683b3b07df5549961e00251439a6916cd/specs/XamlOptionalChanges/XamlOptionalChanges-Spec.md#xamlchangeid-enum
+            EnableXamlOpts(XamlChangeId.DefaultStyleOptimizations,
+                           XamlChangeId.DeferContextFlyoutInit,
+                           XamlChangeId.IconNoGridOptimization,
+                           XamlChangeId.OptimizeApplyStyles);
+            return;
+
+            static void EnableXamlOpts(params ReadOnlySpan<XamlChangeId> ids)
+            {
+                foreach (XamlChangeId id in ids)
+                {
+                    bool isPreviouslyEnabled = XamlOptionalChanges.IsChangeEnabled(id);
+                    try
+                    {
+                        if (!XamlOptionalChanges.EnableChange(id))
+                        {
+                            throw new NotSupportedException($"XAML Change ID: {id} is not supported");
+                        }
+                    }
+                    catch (NotSupportedException ex)
+                    {
+                        LogWriteLine("[InitializeExperimentalWinUIFeatures]" + ex.Message, LogType.Scheme, true);
+                    }
+
+                    bool isEnabled = XamlOptionalChanges.IsChangeEnabled(id);
+                    LogWriteLine($"[XAML_EXPERIMENTAL_OPTS]: {id} ({(int)id}) {(isEnabled ? "has been enabled" : "is not supported")} ({(!isPreviouslyEnabled ? "was previously disabled" : "was already enabled")})", LogType.Debug, true);
+                }
             }
         }
 

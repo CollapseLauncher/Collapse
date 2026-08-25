@@ -56,6 +56,7 @@ namespace CollapseLauncher.Helper
     internal static class WindowUtility
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
+        internal static event Action<string[], PointInt32>? FileDropEvent;
 
         private static nint _oldMainWndProcPtr;
         private static nint _oldDesktopSiteBridgeWndProcPtr;
@@ -417,6 +418,52 @@ namespace CollapseLauncher.Helper
             FileDialogNative.InitHandlerPointer(CurrentWindowPtr);
         }
 
+        internal static void SetFileDropEnabled(bool isEnabled)
+        {
+            const uint WM_COPYDATA       = 0x004A;
+            const uint WM_COPYGLOBALDATA = 0x0049;
+            const uint WM_DROPFILES      = 0x0233;
+            const uint MSGFLT_RESET      = 0;
+            const uint MSGFLT_ALLOW      = 1;
+
+            nint windowHandle = CurrentWindowPtr;
+            if (windowHandle == nint.Zero)
+            {
+                return;
+            }
+
+            uint messageFilterAction = isEnabled ? MSGFLT_ALLOW : MSGFLT_RESET;
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_DROPFILES,      messageFilterAction, nint.Zero);
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_COPYDATA,       messageFilterAction, nint.Zero);
+            PInvoke.ChangeWindowMessageFilterEx(windowHandle, WM_COPYGLOBALDATA, messageFilterAction, nint.Zero);
+            PInvoke.DragAcceptFiles(windowHandle, isEnabled);
+        }
+
+        internal static bool TryGetExternalDragPosition(out PointInt32 dragPosition)
+        {
+            const int VK_LBUTTON = 0x01;
+            const int VK_RBUTTON = 0x02;
+            const int KeyPressed = 0x8000;
+
+            dragPosition = default;
+            nint windowHandle = CurrentWindowPtr;
+            if (windowHandle == nint.Zero)
+            {
+                return false;
+            }
+
+            bool isMouseButtonPressed = (PInvoke.GetAsyncKeyState(VK_LBUTTON) & KeyPressed) != 0 ||
+                                        (PInvoke.GetAsyncKeyState(VK_RBUTTON) & KeyPressed) != 0;
+            if (!isMouseButtonPressed || !PInvoke.GetCursorPos(out POINTL cursorPosition))
+            {
+                return false;
+            }
+
+            PInvoke.ScreenToClient(windowHandle, ref cursorPosition);
+            dragPosition = new PointInt32(cursorPosition.x, cursorPosition.y);
+            return true;
+        }
+
         #region Drag Area Handler
 
         private static void InstallDragAreaChangeMonitor()
@@ -496,6 +543,7 @@ namespace CollapseLauncher.Helper
             const uint WM_ACTIVATE        = 0x0006;
             const uint WM_QUERYENDSESSION = 0x0011;
             const uint WM_ENDSESSION      = 0x0016;
+            const uint WM_DROPFILES       = 0x0233;
 
             switch (msg)
             {
@@ -643,6 +691,21 @@ namespace CollapseLauncher.Helper
                         (CurrentWindow as MainWindow)?.CloseApp();
                     }
                     break;
+                case WM_DROPFILES:
+                    if (NativeFileDrop.TryHandleFileDrop((nint)wParam,
+                                                         out string[]? files,
+                                                         out POINTL dropPoint,
+                                                         out Exception? ex))
+                    {
+                        FileDropEvent?.Invoke(files, new PointInt32(dropPoint.x, dropPoint.y));
+                    }
+
+                    if (ex != null)
+                    {
+                        ErrorSender.SendException(ex);
+                        SentryHelper.ExceptionHandler(ex);
+                    }
+                    return 0;
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);

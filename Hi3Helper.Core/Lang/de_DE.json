@@ -559,7 +559,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "Nicht installiert",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Neuinstallation oder Suchassistent starten",
     "VideoBackground_FFmpegInstallNote": "Hinweis",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher unterstützt nur die FFmpeg-Version 7.x. Andere Versionen von FFmpeg werden derzeit nicht unterstützt!",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse Launcher unterstützt nur die FFmpeg-Version 8.x. Andere Versionen von FFmpeg werden derzeit nicht unterstützt!",
     "VideoBackground_FFmpegInstallLockedTitle": "Änderung der FFmpeg-Installation ist gesperrt",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg wird derzeit für die Dekodierung des Hintergrunds verwendet. Um deine bestehende Installation anzupassen, deaktiviere bitte zunächst die Option „FFmpeg für die Videodekodierung verwenden“, starte dann den Launcher neu und kehre zu dieser Einstellung zurück.",
 
@@ -1269,7 +1269,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Benutzerdefinierte Parallax-Pixel festlegen (Min: {0}px, Max: {1}px)",
 
     "StartupFFmpegInstallDialogTitle": "Installation von FFmpeg ist erforderlich",
-    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher benötigt nun den FFmpeg-Decoder (Build 7.x), damit Videos im Hintergrund ordnungsgemäß wiedergegeben werden können. Klicke auf \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Collapse Launcher benötigt nun den FFmpeg-Decoder (Build 8.x), damit Videos im Hintergrund ordnungsgemäß wiedergegeben werden können. Klicke auf \"",
     "StartupFFmpegInstallDialogSubtitle2": "\", um FFmpeg neu zu installieren oder den Decoder in deiner bestehenden Installation zu suchen, oder klicke auf \"",
     "StartupFFmpegInstallDialogSubtitle3": "\", um weiterhin den integrierten Decoder von Windows Media Foundation zu verwenden.",
     "StartupFFmpegInstallDialogSubtitle4": "Hinweis:",

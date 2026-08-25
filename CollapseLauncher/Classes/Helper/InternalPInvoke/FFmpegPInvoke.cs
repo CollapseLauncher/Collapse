@@ -9,7 +9,7 @@ namespace CollapseLauncher.Helper.FFmpegPInvoke;
 
 public static unsafe partial class FFmpegPInvoke
 {
-    public static Dictionary<int, FFmpegLibraryNames> FFmpegVersionLibNames = new Dictionary<int, FFmpegLibraryNames>()
+    public static Dictionary<int, FFmpegLibraryNames> FFmpegVersionLibNames = new()
     {
         { 70, new FFmpegLibraryNames("avcodec-61.dll", "avdevice-61.dll", "avfilter-10.dll", "avformat-61.dll", "avutil-59.dll", "swresample-5.dll", "swscale-8.dll", "postproc-58.dll") },
         { 80, new FFmpegLibraryNames("avcodec-62.dll", "avdevice-62.dll", "avfilter-11.dll", "avformat-62.dll", "avutil-60.dll", "swresample-6.dll", "swscale-9.dll", "postproc-59.dll") }

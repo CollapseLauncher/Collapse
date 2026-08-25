@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.4</Version>
+        <Version>1.84.5</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -95,20 +95,20 @@
         <OutputType>Exe</OutputType>
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
         <TrimMode>full</TrimMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>True</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Publish'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
@@ -271,12 +271,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FFmpegInteropX" Version="2.0.117-uwp9" />
+        <PackageReference Include="FFmpegInteropX" Version="2.1.0.81200" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -299,22 +299,22 @@
         -->
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
-        <PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+        <PackageReference Include="GitInfo" Version="3.6.1" PrivateAssets="all" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
         <PackageReference Include="Markdig.Signed" Version="1.3.2" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
-        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.1.0" />
-        <PackageReference Include="System.CommandLine" Version="2.0.9" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.9" />
+        <PackageReference Include="System.CommandLine" Version="2.0.11" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.11" />
     </ItemGroup>
 
     <ItemGroup>
@@ -376,7 +376,7 @@
         <PRIResource Remove="StaticLib\buildScript\**" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <ItemGroup Condition="'$(PublishAot)' == 'true' Or '$(PublishTrimmed)' == 'true'">
         <!-- Descriptor for all classes that cannot be trimmed -->
         <!-- We used to have a bunch of entries listed here. But due to some issues that might be caused by unwanted trimming behavior, we decided to
              just leave the TrimmerRootDescriptor applied.
@@ -482,7 +482,7 @@
     </Target>
 
     <Target Name="PostBuild-RemoveFiles" AfterTargets="PostBuildEvent">
-        <Exec Command="del /s $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-61.dll $(ProjectDir)$(OutDir)av*-59.dll $(ProjectDir)$(OutDir)av*-10.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
+        <Exec Command="del $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
         <RemoveDir Directories="$(OutDir)Lib\linux-x64" Condition="Exists('$(OutDir)Lib\linux-x64')" />
@@ -493,7 +493,7 @@
     </Target>
     
     <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
-        <Exec Command="del /s $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-61.dll $(PublishDir)av*-59.dll $(PublishDir)av*-10.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
+        <Exec Command="del $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />

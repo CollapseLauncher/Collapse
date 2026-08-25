@@ -32,8 +32,12 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
-            <customControls:LayeredBackgroundImage BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
+            <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
+                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
                                                    MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}">
+                <customControls:LayeredBackgroundImage.OpacityTransition>
+                    <ScalarTransition Duration="0:0:0.2" />
+                </customControls:LayeredBackgroundImage.OpacityTransition>
                 <customControls:LayeredBackgroundImage.Transitions>
                     <PopupThemeTransition/>
                 </customControls:LayeredBackgroundImage.Transitions>

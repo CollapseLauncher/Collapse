@@ -108,13 +108,17 @@ public partial class LayeredBackgroundImage
         }
 
         Grid grid = element._placeholderGrid;
-        element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
-                                            nameof(PlaceholderStretch),
-                                            nameof(PlaceholderHorizontalAlignment),
-                                            nameof(PlaceholderVerticalAlignment),
-                                            grid,
-                                            false,
-                                            ref element._lastPlaceholderSourceType);
+        if (!IsSourceKindEquals(element._lastPlaceholderSource, element.PlaceholderSource))
+        {
+            element.LoadFromSourceAsyncDetached(PlaceholderSourceProperty,
+                                                nameof(PlaceholderStretch),
+                                                nameof(PlaceholderHorizontalAlignment),
+                                                nameof(PlaceholderVerticalAlignment),
+                                                grid,
+                                                false,
+                                                ref element._lastPlaceholderSourceType);
+            element._lastPlaceholderSource = element.PlaceholderSource;
+        }
     }
 
     private static void BackgroundSource_OnChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -129,11 +133,19 @@ public partial class LayeredBackgroundImage
         // then load static background source.
         if (element is { CanUseStaticBackground: true, IsVideoPlay: true } or { CanUseStaticBackground: true, IsUseStaticBackgroundUsed: true })
         {
-            BackgroundSource_UseStatic(element);
+            if (!IsSourceKindEquals(element._lastBackgroundStaticSource, element.BackgroundStaticSource))
+            {
+                BackgroundSource_UseStatic(element);
+                element._lastBackgroundStaticSource = element.BackgroundStaticSource;
+            }
             return;
         }
 
-        BackgroundSource_UseNormal(element);
+        if (!IsSourceKindEquals(element._lastBackgroundSource, element.BackgroundSource))
+        {
+            BackgroundSource_UseNormal(element);
+            element._lastBackgroundSource = element.BackgroundSource;
+        }
     }
 
     private static void BackgroundSource_UseStatic(LayeredBackgroundImage element)
@@ -174,13 +186,17 @@ public partial class LayeredBackgroundImage
         }
 
         Grid grid = element._foregroundGrid;
-        element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
-                                            nameof(ForegroundStretch),
-                                            nameof(ForegroundHorizontalAlignment),
-                                            nameof(ForegroundVerticalAlignment),
-                                            grid,
-                                            false,
-                                            ref element._lastForegroundSourceType);
+        if (!IsSourceKindEquals(element._lastForegroundSource, element.ForegroundSource))
+        {
+            element.LoadFromSourceAsyncDetached(ForegroundSourceProperty,
+                                                nameof(ForegroundStretch),
+                                                nameof(ForegroundHorizontalAlignment),
+                                                nameof(ForegroundVerticalAlignment),
+                                                grid,
+                                                false,
+                                                ref element._lastForegroundSourceType);
+            element._lastForegroundSource = element.ForegroundSource;
+        }
     }
 
     private void LoadFromSourceAsyncDetached(
@@ -219,8 +235,16 @@ public partial class LayeredBackgroundImage
 
             if (lastMediaType == MediaSourceType.Video)
             {
-                // Dispose and Invalidate Video Player
-                DisposeAndPauseVideoView();
+                // Synchronously dispose the old player before loading the new source,
+                // cancelling any in-flight fade-out that would otherwise dispose it later.
+                CancellationTokenSource? fadeCts = Interlocked.Exchange(ref _videoPlayerFadeCts, null);
+                fadeCts?.Cancel();
+                fadeCts?.Dispose();
+                SetValue(IsVideoPlayProperty, false);
+                if (_videoPlayer != null!)
+                {
+                    DisposeVideoPlayer();
+                }
             }
 
             _ = InnerLoadDetached().ConfigureAwait(false);
@@ -291,6 +315,7 @@ public partial class LayeredBackgroundImage
             image.BindProperty(instance, horizontalAlignmentProperty, HorizontalAlignmentProperty, BindingMode.OneWay);
             image.BindProperty(instance, verticalAlignmentProperty,   VerticalAlignmentProperty,   BindingMode.OneWay);
 
+            ClearMediaGrid(grid);
             grid.Children.Add(image);
 
             image.Tag         =  (grid, instance);
@@ -379,6 +404,11 @@ public partial class LayeredBackgroundImage
                             VideoOutputAllowBgra8 = true,
                             VideoOutputAllowNv12  = true,
                             VideoDecoderMode      = instance.FfmpegDecoderMode
+                        },
+                        General =
+                        {
+                            ReadAheadBufferEnabled  = true,
+                            ReadAheadBufferDuration = TimeSpan.FromSeconds(15)
                         }
                     };
 
@@ -423,6 +453,8 @@ public partial class LayeredBackgroundImage
                             : instance.VideoPlayer_VideoFrameAvailableSafe;
 
                         ffmpegMediaSource.Dispose();
+                        sourceStreamRandom?.Dispose();
+                        sourceStreamRandom = null;
 
                         if (loadFfmpegRetry <= 0)
                         {
