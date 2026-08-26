@@ -57,7 +57,7 @@ namespace CollapseLauncher.InstallManager.StarRail
             List<T> listFiltered = [];
             foreach (T patchAsset in itemList)
             {
-                if (itemPathSelector(patchAsset) is not {} filePath)
+                if (itemPathSelector(patchAsset) is not { } filePath)
                 {
                     listFiltered.Add(patchAsset);
                     continue;

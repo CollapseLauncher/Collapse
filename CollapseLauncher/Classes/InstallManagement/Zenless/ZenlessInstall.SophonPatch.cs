@@ -16,8 +16,8 @@ namespace CollapseLauncher.InstallManager.Zenless
         private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
         public override async Task FilterAssetList<T>(
-            List<T>           itemList,
-            Func<T, string?>  itemPathSelector,
+            List<T> itemList,
+            Func<T, string?> itemPathSelector,
             CancellationToken token)
         {
             HashSet<string> exceptMatchFieldHashSet = await GetExceptMatchFieldHashSet(token);

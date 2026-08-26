@@ -159,9 +159,9 @@
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
-        "requested": "[10.0.28000.2526, )",
-        "resolved": "10.0.28000.2526",
-        "contentHash": "voeXXRC5EKuvnUCkPxkEhCbNuv/FM1RzjCQ3lj58Ju5AlVzh/9Lg+a7hqy57mh/00BH/9YNZCJRUjIZJrzTJ4w=="
+        "requested": "[10.0.28000.2705, )",
+        "resolved": "10.0.28000.2705",
+        "contentHash": "TZQ96xtu7+fyFsyJCgj6Hazru0H8G1kiE1CeZLGpsqT4xKQmkxWu9yRuxYLeHJECjqEHN7duZUTcdbt8zlQ8OQ=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
@@ -461,10 +461,10 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
-        "resolved": "2.4.1",
-        "contentHash": "jc9lm95YoZqDHxLRBE0p4NRabmo5lZYHJEe0th/8ozx/nCGPSg8epKWoD+r3W9YOBHCqht1DUBSN6Sl0ePW44Q==",
+        "resolved": "2.4.2",
+        "contentHash": "omycz2nSYxHS/vzDrS3EBQOJimtd8I9LXiGqM4AmOA3OQEueVHDjKg9mWWv8sufgTXaM1SUXK2hs/Q/ssJtPmA==",
         "dependencies": {
-          "Hi3Helper.ZstdNet": "1.6.5",
+          "Hi3Helper.ZstdNet": "1.6.7",
           "System.IO.Hashing": "10.0.11",
           "ZstdSharp.Port": "0.8.8"
         }
@@ -565,8 +565,8 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.36.0, )",
-          "Hi3Helper.ZstdNet": "[*, )",
-          "SharpHDiffPatch.Core": "[*, )",
+          "Hi3Helper.ZstdNet": "[1.6.7, )",
+          "SharpHDiffPatch.Core": "[2.4.2, )",
           "System.IO.Hashing": "[10.0.11, )"
         }
       },
@@ -592,7 +592,7 @@
           "CommunityToolkit.WinUI.Media": "[8.2.251219, )",
           "Microsoft.Graphics.Win2D": "[1.4.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2526, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2705, )",
           "Microsoft.WindowsAppSDK": "[2.4.0, )"
         }
       },
@@ -601,7 +601,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.251219, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2526, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2705, )",
           "Microsoft.WindowsAppSDK": "[2.4.0, )"
         }
       },
@@ -617,7 +617,7 @@
           "CommunityToolkit.Common": "[8.4.2, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.251219, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2526, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.28000.2705, )",
           "Microsoft.WindowsAppSDK": "[2.4.0, )"
         }
       },

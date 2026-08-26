@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.5</Version>
+        <Version>1.84.6</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -49,7 +49,7 @@
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(DefineConstants.Contains('NET11_0_OR_GREATER'))">
+    <PropertyGroup Condition="$(TargetFramework.Contains('net11.0'))">
         <!-- .NET 11-preview3 features -->
         <Features>runtime-async=on</Features>
         <EnablePreviewFeatures>true</EnablePreviewFeatures>
@@ -305,7 +305,7 @@
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
