@@ -158,7 +158,6 @@ namespace CollapseLauncher.InstallManager.Base
                 $"{Path.GetFileNameWithoutExtension(gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent";
             _gameStreamingAssetsFolderBasePath =
                 $"{Path.GetFileNameWithoutExtension(gameVersionManager.GamePreset.GameExecutableName)}_Data\\StreamingAssets";
-            UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
         protected void ResetToken()
@@ -3233,7 +3232,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsCompleted = false;
                     Status.IsCanceled  = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Update);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Update);
 #endif
                     break;
                 case CompletenessStatus.Completed:
@@ -3244,7 +3243,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                     // HACK: Fix the progress not achieving 100% while completed
                     lock (Progress)
@@ -3261,7 +3260,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                     break;
                 case CompletenessStatus.Idle:
@@ -3272,7 +3271,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                     break;
             }

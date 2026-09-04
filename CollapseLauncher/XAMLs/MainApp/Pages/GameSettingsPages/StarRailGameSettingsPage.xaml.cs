@@ -110,7 +110,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
                 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.GameSettings);
                 #endif
                 }
             }
