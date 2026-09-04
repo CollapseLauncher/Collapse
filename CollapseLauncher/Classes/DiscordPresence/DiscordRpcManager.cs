@@ -28,8 +28,8 @@ public partial class DiscordRpcManager : IDisposable
     public readonly Thread                 PresenceSetThread;
     public readonly Channel<RichPresence?> PresenceSetChannel;
 
-    private ulong               _currentPresenceId = LauncherConfig.AppDiscordApplicationID;
-    private DiscordActivityType _currentActivityStatus;
+    private ulong               _lastPresenceId = LauncherConfig.AppDiscordApplicationID;
+    private DiscordActivityType _lastActivityStatus;
 
     private readonly EventWaitHandle _isReadyWaitHandle = new(false, EventResetMode.ManualReset);
 
@@ -39,7 +39,7 @@ public partial class DiscordRpcManager : IDisposable
         set
         {
             LauncherConfig.SetAndSaveConfigValue("EnableDiscordGameStatus", value);
-            SetActivity(_currentActivityStatus); // Refresh activity status
+            SetActivity(_lastActivityStatus); // Refresh activity status to the last one
         }
     }
 
@@ -49,7 +49,7 @@ public partial class DiscordRpcManager : IDisposable
         set
         {
             LauncherConfig.SetAndSaveConfigValue("EnableDiscordIdleStatus", value);
-            SetActivity(_currentActivityStatus); // Refresh activity status
+            SetActivity(_lastActivityStatus); // Refresh activity status to the last one
         }
     }
 
@@ -68,7 +68,7 @@ public partial class DiscordRpcManager : IDisposable
             if (!isPreviouslyEnabled &&
                 value != isPreviouslyEnabled)
             {
-                SetActivity(_currentActivityStatus);
+                SetActivity(_lastActivityStatus);
             }
         }
     }
@@ -91,8 +91,8 @@ public partial class DiscordRpcManager : IDisposable
         };
         PresenceSetThread.Start();
 
-        // Initialize from start if enabled and IsShowOnIdle == true
-        if (IsEnabled && IsShowOnIdle)
+        // Initialize from start if enabled
+        if (IsEnabled)
         {
             Start();
         }
@@ -179,9 +179,9 @@ public partial class DiscordRpcManager : IDisposable
             return;
         }
 
-        ulong presenceId = _currentPresenceId == 0
+        ulong presenceId = _lastPresenceId == 0
             ? LauncherConfig.AppDiscordApplicationID
-            : _currentPresenceId;
+            : _lastPresenceId;
 
         // Initialize new client and replace the field atomically.
         Interlocked.Exchange(ref Client, new DiscordRpcClient($"{presenceId}", _sharedLogger));
@@ -218,12 +218,12 @@ public partial class DiscordRpcManager : IDisposable
         Interlocked.Exchange(ref _currentPresetConfig, config);
         if (config == null)
         {
-            Interlocked.Exchange(ref _currentPresenceId, 0);
+            Interlocked.Exchange(ref _lastPresenceId, 0);
             return;
         }
 
         ulong presenceId = GetDiscordPresenceId(config);
-        Interlocked.Exchange(ref _currentPresenceId, presenceId);
+        Interlocked.Exchange(ref _lastPresenceId, presenceId);
 
         // We intentionally stop and start the client to refresh / re-create the client
         // with the new presence ID.
@@ -233,22 +233,12 @@ public partial class DiscordRpcManager : IDisposable
 
     public void SetActivity(DiscordActivityType type = DiscordActivityType.None, DateTime? specifiedStartTime = null)
     {
-        Interlocked.Exchange(ref _currentActivityStatus, type);
+        Interlocked.Exchange(ref _lastActivityStatus, type);
 
         // Prevent from exhausting the Presence channel if not enabled.
         if (!IsEnabled) return;
 
-        // If IsShowOnIdle == false and the activity type is None or Idle,
-        // tries to stop the RPC for a while to disconnect it from Discord and
-        // remove the RPC display.
-        if (!IsShowOnIdle && type is DiscordActivityType.None or DiscordActivityType.Idle)
-        {
-            Stop();
-            return;
-        }
-
-        // Make sure to re-enable the client if it was previously disposed due to
-        // IsShowOnIdle == false and type is None or Idle.
+        // Make sure to re-enable the client if it was not initialized while the manager is not disposed yet.
         if (Volatile.Read(ref Client) == null &&
             !IsDisposed &&
             IsEnabled)
@@ -257,16 +247,16 @@ public partial class DiscordRpcManager : IDisposable
         }
 
         LangParamsMisc? langMisc = Locale.Current.Lang?._Misc;
-        RichPresence presence = type switch
+        RichPresence? presence = type switch
         {
             DiscordActivityType.Play => PresenceBuilder.BuildTimedState(IsGameStatusEnabled ? langMisc?.DiscordRP_InGame : langMisc?.DiscordRP_Play, this, specifiedStartTime),
             DiscordActivityType.Update => PresenceBuilder.BuildTimedState(langMisc?.DiscordRP_Update, this, specifiedStartTime),
-            DiscordActivityType.Idle => PresenceBuilder.BuildIdleState(this),
+            DiscordActivityType.Idle => IsShowOnIdle ? PresenceBuilder.BuildIdleState(this) : null,
             DiscordActivityType.Repair => PresenceBuilder.BuildGenericState(langMisc?.DiscordRP_Repair, this),
             DiscordActivityType.Cache => PresenceBuilder.BuildGenericState(langMisc?.DiscordRP_Cache, this),
             DiscordActivityType.GameSettings => PresenceBuilder.BuildGenericState(langMisc?.DiscordRP_GameSettings, this),
             DiscordActivityType.AppSettings => PresenceBuilder.BuildGenericState(langMisc?.DiscordRP_AppSettings, this),
-            _ => new RichPresence
+            _ => IsShowOnIdle ? new RichPresence
             {
                 Details = Locale.Current.Lang?._Misc?.DiscordRP_Default,
                 Assets = new Assets
@@ -275,7 +265,7 @@ public partial class DiscordRpcManager : IDisposable
                     LargeImageText = PresenceBuilder.DefaultLauncherLogoTooltip
                 },
                 Timestamps = null!
-            }
+            } : null
         };
 
         PresenceSetChannel.Writer.TryWrite(presence);
