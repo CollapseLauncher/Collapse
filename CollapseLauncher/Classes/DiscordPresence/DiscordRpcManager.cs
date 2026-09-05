@@ -331,7 +331,6 @@ public partial class DiscordRpcManager : IDisposable
                                               out string? largeIconTooltip,
                                               out string? smallIconUrl,
                                               out string? smallIconTooltip,
-                                              out _,
                                               out string? translatedGameRegion);
 
             return new RichPresence
@@ -364,7 +363,6 @@ public partial class DiscordRpcManager : IDisposable
             out string?   largeIconTooltip,
             out string?   smallIconUrl,
             out string?   smallIconTooltip,
-            out string?   translatedGameName,
             out string?   translatedGameRegion)
         {
             Unsafe.SkipInit(out largeIconUrl);
@@ -374,7 +372,7 @@ public partial class DiscordRpcManager : IDisposable
 
             string? currentGameName   = presetConfig?.GameName;
             string? currentGameRegion = presetConfig?.ZoneName;
-            translatedGameName   = MetadataHelper.GetTranslatedTitle(currentGameName);
+            string? translatedGameName   = MetadataHelper.GetTranslatedTitle(currentGameName);
             translatedGameRegion = MetadataHelper.GetTranslatedRegion(currentGameRegion);
 
             // Try to get icons from plugin if available.
