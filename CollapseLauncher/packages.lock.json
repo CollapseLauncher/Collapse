@@ -147,9 +147,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.4129.50, )",
-        "resolved": "1.0.4129.50",
-        "contentHash": "BuJC70c7SCl8wlvojLZbc/E5ONmGyG3fhAMmpftCpKerxae//TxgKOTELRK2QRD7m7jigNFQRf6cfVT3ZiIQoQ=="
+        "requested": "[1.0.4191.47, )",
+        "resolved": "1.0.4191.47",
+        "contentHash": "Snb6mlTpuz6ZFjWMwIdg28Xp6kAUMy3zaLUyGbFSaw+/AJKlwoX8EiaWJ1eUMfKyJHksPkFjJHl1LIB7kX+0AQ=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -243,9 +243,9 @@
       },
       "ThisAssembly.Constants": {
         "type": "Direct",
-        "requested": "[2.1.2, )",
-        "resolved": "2.1.2",
-        "contentHash": "rq7HoR45a4H1NM8KPG+rOPhv6z36wpB088+tB6KCbltBsnx1uwCpS3IvLmMZh3EOnZarRjXE9oiVgGMFCCJ1Wg=="
+        "requested": "[2.1.5, )",
+        "resolved": "2.1.5",
+        "contentHash": "JB4nLzpPXTpCyZh60wdxA4aRjfx7Ao7sjlH8O+trTZMn5X75ZVPNJ6kK7VRVYhZWlIPfgex7augNWzPiCz0lJA=="
       },
       "TurnerSoftware.DinoDNS": {
         "type": "Direct",
@@ -301,8 +301,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.36.0",
-        "contentHash": "wDPg8sKlmA8we1bqnC9DYKwLog4PNJ4GYTWV9FkzlGvfs3kNCSt2x0Qe31SBOeBPS2JGEZ/lNfil/Bkwx18Ufg=="
+        "resolved": "3.36.1",
+        "contentHash": "77AqPEoaY1ODE+syYBHti0jXiwQq0J/fUr/fRyYhNlc9oKtH5dZZEr/OLKtdKNVG83PRnCYB2r8B80ZrObzOGQ=="
       },
       "Hi3Helper.SourceGen": {
         "type": "Transitive",
@@ -456,13 +456,13 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "6.9.0",
-        "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
+        "resolved": "6.10.0",
+        "contentHash": "jDiLbMSNuwMNJmJc5l8XaO3bgHxTbBkttqqSLQTDP415ucNM4F/Ckktg3L/Ww6v2Skcwt7wFC7vSW+f8W12Vqg=="
       },
       "SharpHPatchZ": {
         "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "Rr8IGWnHMEOSNwwTlKy+C6ddD0tMm/hgKtW72GuAv08xOGxuVYV+Mv6XPIQneB3WX1sYyOWOrdCdO5PZ5hn/Og==",
+        "resolved": "3.1.0",
+        "contentHash": "3o+WTgAnNjzw5qWpmUAGwAgwvmC9dYYbT0ZiH+3hQVX/sdRerkPHuUsr7JxqXi5opKCQzhWaw/TZxXFme78EGQ==",
         "dependencies": {
           "Hi3Helper.ZstdNet": "1.6.7",
           "System.IO.Hashing": "10.0.11",
@@ -530,13 +530,13 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
-          "Sentry": "[6.9.0, )"
+          "Sentry": "[6.10.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.36.0, )",
+          "Google.Protobuf": "[3.36.1, )",
           "Hi3Helper.Http": "[2.0.1, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[10.0.11, )"
@@ -564,9 +564,9 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.36.0, )",
+          "Google.Protobuf": "[3.36.1, )",
           "Hi3Helper.ZstdNet": "[1.6.7, )",
-          "SharpHPatchZ": "[3.0.0, )",
+          "SharpHPatchZ": "[3.1.0, )",
           "System.IO.Hashing": "[10.0.11, )"
         }
       },
@@ -643,9 +643,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.4129.50, )",
-        "resolved": "1.0.4129.50",
-        "contentHash": "BuJC70c7SCl8wlvojLZbc/E5ONmGyG3fhAMmpftCpKerxae//TxgKOTELRK2QRD7m7jigNFQRf6cfVT3ZiIQoQ=="
+        "requested": "[1.0.4191.47, )",
+        "resolved": "1.0.4191.47",
+        "contentHash": "Snb6mlTpuz6ZFjWMwIdg28Xp6kAUMy3zaLUyGbFSaw+/AJKlwoX8EiaWJ1eUMfKyJHksPkFjJHl1LIB7kX+0AQ=="
       },
       "PhotoSauce.NativeCodecs.Libheif": {
         "type": "Direct",

@@ -315,10 +315,9 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Start the patching process
-                ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(DeltaPatchProgress);
                 using HDiffInfo  hdiffInfo = await HPatch.CreateInstanceAsync(patchProperty.PatchPath, Token!.Token);
                 Exception? resultException = await HPatch.PatchAsync(hdiffInfo, patchProperty.PatchPath, ingredientPath,
-                                                                     previousPath, PatchOptions.BigBuffer, progressCallback,
+                                                                     previousPath, PatchOptions.BigBuffer, DeltaPatchProgress,
                                                                      token: Token.Token);
 
                 if (resultException != null)
@@ -1351,13 +1350,12 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-                ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(EventListener_PatchEvent);
                 Exception? resultException = await HPatch.PatchAsync(hdiffInfo,
                                                                      patchFileInfo.FullName,
                                                                      sourceFileInfo.FullName,
                                                                      targetFileInfo.FullName,
                                                                      PatchOptions.BigBuffer,
-                                                                     progressCallback,
+                                                                     EventListener_PatchEvent,
                                                                      token);
                 if (resultException != null)
                     throw resultException;
@@ -1458,7 +1456,6 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllCountTotal = 1;
             ProgressAllCountFound = hDiffMapEntries.Count;
 
-            ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(EventListener_PatchEvent);
             Task parallelTask = Parallel.ForEachAsync(hDiffMapEntries, new ParallelOptions
                                                       {
                                                           MaxDegreeOfParallelism = ThreadCount,
@@ -1540,7 +1537,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                              sourcePath.FullName,
                                                                              targetPathTemp.FullName,
                                                                              PatchOptions.BigBuffer,
-                                                                             progressCallback,
+                                                                             EventListener_PatchEvent,
                                                                              workerToken);
 
                         if (resultException != null)
