@@ -156,7 +156,7 @@ public partial class DiscordRpcManager : IDisposable
             return;
         }
 
-        // Reset the channel by flushing all pending presence
+        // Reset the channel by flushing all pending presences
         while (PresenceSetChannel.Reader.TryRead(out _)) { }
 
         if (!Volatile.Read(ref IsDisposed))
@@ -311,33 +311,19 @@ public partial class DiscordRpcManager : IDisposable
 
             // Try to get the existing start offset or create a new one if not exist.
             DateTime startOffset = manager._cachedStartTimes.GetOrAdd(presetConfigHashId, specifiedStartTime ?? DateTime.UtcNow);
-            TryGetGameIconsAndTranslatedNames(presetConfig,
-                                              out string? largeIconUrl,
-                                              out string? largeIconTooltip,
-                                              out string? smallIconUrl,
-                                              out string? smallIconTooltip,
-                                              out string? translatedGameName,
-                                              out string? translatedGameRegion);
 
-            return new RichPresence
-            {
-                Details = $"{activityName} {(!isGameStatusEnabled ? translatedGameName : null)}",
-                State   = $"{Locale.Current.Lang?._Misc?.DiscordRP_Region} {translatedGameRegion}",
-                Assets = new Assets
-                {
-                    LargeImageKey  = largeIconUrl,
-                    LargeImageText = largeIconTooltip,
-                    SmallImageKey  = smallIconUrl,
-                    SmallImageText = smallIconTooltip
-                },
-                Timestamps = new Timestamps
-                {
-                    Start = startOffset
-                }
-            };
+            string? currentGameName = presetConfig?.GameName;
+            string? translatedGameName = MetadataHelper.GetTranslatedTitle(currentGameName);
+
+            return BuildGenericState($"{activityName} {(!isGameStatusEnabled ? translatedGameName : null)}",
+                                     manager,
+                                     new Timestamps
+                                     {
+                                         Start = startOffset
+                                     });
         }
 
-        public static RichPresence BuildGenericState(string? activityName, DiscordRpcManager manager)
+        public static RichPresence BuildGenericState(string? activityName, DiscordRpcManager manager, Timestamps? timestamps = null)
         {
             PresetConfig? presetConfig = manager._currentPresetConfig;
             TryGetGameIconsAndTranslatedNames(presetConfig,
@@ -359,7 +345,7 @@ public partial class DiscordRpcManager : IDisposable
                     SmallImageKey  = smallIconUrl,
                     SmallImageText = smallIconTooltip
                 },
-                Timestamps = null!
+                Timestamps = timestamps
             };
         }
 
