@@ -459,10 +459,10 @@
         "resolved": "6.9.0",
         "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
       },
-      "SharpHDiffPatch.Core": {
+      "SharpHPatchZ": {
         "type": "Transitive",
-        "resolved": "2.4.2",
-        "contentHash": "omycz2nSYxHS/vzDrS3EBQOJimtd8I9LXiGqM4AmOA3OQEueVHDjKg9mWWv8sufgTXaM1SUXK2hs/Q/ssJtPmA==",
+        "resolved": "3.0.0",
+        "contentHash": "Rr8IGWnHMEOSNwwTlKy+C6ddD0tMm/hgKtW72GuAv08xOGxuVYV+Mv6XPIQneB3WX1sYyOWOrdCdO5PZ5hn/Og==",
         "dependencies": {
           "Hi3Helper.ZstdNet": "1.6.7",
           "System.IO.Hashing": "10.0.11",
@@ -566,7 +566,7 @@
         "dependencies": {
           "Google.Protobuf": "[3.36.0, )",
           "Hi3Helper.ZstdNet": "[1.6.7, )",
-          "SharpHDiffPatch.Core": "[2.4.2, )",
+          "SharpHPatchZ": "[3.0.0, )",
           "System.IO.Hashing": "[10.0.11, )"
         }
       },

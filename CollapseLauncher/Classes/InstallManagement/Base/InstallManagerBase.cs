@@ -14,7 +14,6 @@ using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.LocaleSourceGen;
@@ -22,12 +21,14 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
-using SharpHDiffPatch.Core;
-using SharpHDiffPatch.Core.Event;
+using SharpHPatchZ;
+using SharpHPatchZ.Header;
+using SharpHPatchZ.Header.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -314,15 +315,14 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Start the patching process
-                HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
-                EventListener.PatchEvent  += DeltaPatchCheckProgress;
-                EventListener.LoggerEvent += DeltaPatchCheckLogEvent;
-                await Task.Run(() =>
-                               {
-                                   HDiffPatch patch = new HDiffPatch();
-                                   patch.Initialize(patchProperty.PatchPath);
-                                   patch.Patch(ingredientPath, previousPath, true, Token!.Token, false, true);
-                               }).ConfigureAwait(false);
+                ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(DeltaPatchProgress);
+                using HDiffInfo  hdiffInfo = await HPatch.CreateInstanceAsync(patchProperty.PatchPath, Token!.Token);
+                Exception? resultException = await HPatch.PatchAsync(hdiffInfo, patchProperty.PatchPath, ingredientPath,
+                                                                     previousPath, PatchOptions.BigBuffer, progressCallback,
+                                                                     token: Token.Token);
+
+                if (resultException != null)
+                    throw resultException;
 
                 // Remove ingredient folder
                 Directory.Delete(ingredientPath, true);
@@ -344,11 +344,6 @@ namespace CollapseLauncher.InstallManager.Base
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                 throw;
-            }
-            finally
-            {
-                EventListener.PatchEvent  -= DeltaPatchCheckProgress;
-                EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
             }
         }
 
@@ -1347,38 +1342,45 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async Task FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
         {
-            HDiffPatch patcher = new HDiffPatch();
-            patcher.Initialize(patchPath);
-            token.ThrowIfCancellationRequested();
+            FileInfo patchFileInfo  = new(patchPath);
+            FileInfo sourceFileInfo = new(sourceBasePath);
+            FileInfo targetFileInfo = new(destPath);
 
-            Task task = Task.Run(() =>
+            using HDiffInfo hdiffInfo   = await HPatch.CreateInstanceAsync(patchFileInfo.FullName, token);
+            long            newFileSize = GetHDiffNewSize(hdiffInfo);
+
+            try
             {
-                try
+                ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(EventListener_PatchEvent);
+                Exception? resultException = await HPatch.PatchAsync(hdiffInfo,
+                                                                     patchFileInfo.FullName,
+                                                                     sourceFileInfo.FullName,
+                                                                     targetFileInfo.FullName,
+                                                                     PatchOptions.BigBuffer,
+                                                                     progressCallback,
+                                                                     token);
+                if (resultException != null)
+                    throw resultException;
+
+                targetFileInfo.TryMoveTo(sourceFileInfo);
+            }
+            catch (Exception ex) when (!token.IsCancellationRequested)
+            {
+                if (ex is not InvalidDataException or InvalidOperationException)
                 {
-                    patcher.Patch(sourceBasePath, destPath, true, token, false, true);
-                    File.Move(destPath, sourceBasePath, true);
+                    throw;
                 }
-                catch (InvalidDataException ex) when (!token.IsCancellationRequested)
-                {
-                    // ignored
-                    // Get the base and new target file size
-                    long newFileSize = HDiffPatch.GetHDiffNewSize(patchPath);
-                    FileInfo fileInfo = new FileInfo(sourceBasePath);
-                    long refFileSize = fileInfo.Exists ? fileInfo.Length : 0;
 
-                    // Check if the throw happened for different file, then rethrow
-                    if (newFileSize != refFileSize)
-                        throw;
+                FileInfo fileInfo    = new(sourceBasePath);
+                long     refFileSize = fileInfo.Exists ? fileInfo.Length : 0;
 
-                    // Otherwise, log the error
-                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
-                }
-            }, token);
-            await task;
+                // Check if the throw happened for different file, then rethrow
+                if (newFileSize != refFileSize)
+                    throw;
 
-            if (task.Exception != null)
-                throw task.Exception;
+                // Otherwise, log the error
+                LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
+            }
         }
 
         protected virtual async Task<List<HDiffMapEntry>> GetHDiffMapEntryList(string gameDir)
@@ -1441,7 +1443,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task ApplyHDiffMap()
         {
-            string gameDir = GamePath;
+            string              gameDir         = GamePath;
             List<HDiffMapEntry> hDiffMapEntries = await GetHDiffMapEntryList(gameDir);
 
             if (hDiffMapEntries.Count == 0)
@@ -1456,169 +1458,159 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllCountTotal = 1;
             ProgressAllCountFound = hDiffMapEntries.Count;
 
-            HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
-            EventListener.LoggerEvent += EventListener_PatchLogEvent;
-            EventListener.PatchEvent  += EventListener_PatchEvent;
+            ProgressCallback progressCallback = ProgressCallback.CreateFromManaged(EventListener_PatchEvent);
+            Task parallelTask = Parallel.ForEachAsync(hDiffMapEntries, new ParallelOptions
+                                                      {
+                                                          MaxDegreeOfParallelism = ThreadCount,
+                                                          CancellationToken      = Token!.Token
+                                                      },
+                                                      PatchWorker);
 
-            try
+            await parallelTask;
+
+            return;
+
+            async ValueTask PatchWorker(HDiffMapEntry entry, CancellationToken workerToken)
             {
-                Task parallelTask = Parallel.ForEachAsync(hDiffMapEntries, new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = ThreadCount,
-                    CancellationToken      = Token!.Token
-                },
-                async (entry, ctx) =>
-                {
-                    Status.ActivityStatus =
-                        $"{Locale.Current.Lang?._Misc?.Patching}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountTotal,
-                                                                ProgressAllCountFound)}";
-                    Status.ActivityStatusInternet = false;
+                Status.ActivityStatus = $"{Locale.Current.Lang?._Misc?.Patching}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountTotal, ProgressAllCountFound)}";
+                Status.ActivityStatusInternet = false;
 
-                    bool isSuccess = false;
+                bool isSuccess = false;
 
-                    FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName))
-                                         .StripAlternateDataStream().EnsureNoReadOnly(out bool isSourceExist);
-                    string sourcePathDir = sourcePath.DirectoryName ?? "";
-                    FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
-                                        .StripAlternateDataStream().EnsureNoReadOnly(out bool isPatchExist);
-                    string targetPathBasedOnSource = Path.Combine(sourcePathDir, Path.GetFileName(entry.TargetFileName ?? ""));
-                    FileInfo targetPath = new FileInfo(targetPathBasedOnSource)
-                                         .EnsureCreationOfDirectory()
-                                         .StripAlternateDataStream()
-                                         .EnsureNoReadOnly();
-                    FileInfo targetPathTemp = new FileInfo(targetPath + "_tmp")
-                                             .StripAlternateDataStream().EnsureNoReadOnly();
+                FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName))
+                                     .StripAlternateDataStream()
+                                     .EnsureNoReadOnly(out bool isSourceExist);
+                string sourcePathDir = sourcePath.DirectoryName ?? "";
+                FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
+                                    .StripAlternateDataStream()
+                                    .EnsureNoReadOnly(out bool isPatchExist);
+                string targetPathBasedOnSource = Path.Combine(sourcePathDir, Path.GetFileName(entry.TargetFileName ?? ""));
+                FileInfo targetPath = new FileInfo(targetPathBasedOnSource)
+                                     .EnsureCreationOfDirectory()
+                                     .StripAlternateDataStream()
+                                     .EnsureNoReadOnly();
+                FileInfo targetPathTemp = new FileInfo(targetPath + "_tmp")
+                                         .StripAlternateDataStream().EnsureNoReadOnly();
+
+                try
+                {
+                    if (string.IsNullOrEmpty(entry.SourceFileName) || !isPatchExist || !isSourceExist)
+                    {
+                        ForceUpdateProgress(entry);
+                        return;
+                    }
+
+                    if (isSourceExist && sourcePath.Length !=
+                        entry.SourceFileSize)
+                    {
+                        ForceUpdateProgress(entry);
+                        LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})",
+                                     LogType.Warning, true);
+                        return;
+                    }
+
+                    byte[] sourceLocalHash =
+                        entry.SourceMD5Hash?.Length switch
+                        {
+                            > 8 and 16 => await GetCryptoHashAsync<MD5>(sourcePath, null, false, true, workerToken),
+                            > 4        => await GetHashAsync<XxHash64>(sourcePath, false, true, workerToken),
+                            _          => await GetHashAsync<Crc32>(sourcePath, false, true, workerToken)
+                        };
+
+                    if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))
+                    {
+                        ForceUpdateProgress(entry);
+                        LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
+                                   + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}",
+                                     LogType.Warning,
+                                     true);
+                        return;
+                    }
+
+                    LogWriteLine($"Patching file {entry.SourceFileName} to {entry.TargetFileName}...", LogType.Default, true);
+                    UpdateProgressBase();
+                    UpdateStatus();
 
                     try
                     {
-                        if (string.IsNullOrEmpty(entry.SourceFileName))
-                        {
-                            ForceUpdateProgress(entry);
-                            return;
-                        }
+                        using HDiffInfo hdiffInfo = await HPatch.CreateInstanceAsync(patchPath.FullName, workerToken);
+                        Exception? resultException = await HPatch.PatchAsync(
+                                                                             hdiffInfo,
+                                                                             patchPath.FullName,
+                                                                             sourcePath.FullName,
+                                                                             targetPathTemp.FullName,
+                                                                             PatchOptions.BigBuffer,
+                                                                             progressCallback,
+                                                                             workerToken);
 
-                        if (!isPatchExist || !isSourceExist)
-                        {
-                            ForceUpdateProgress(entry);
-                            return;
-                        }
+                        if (resultException != null)
+                            throw resultException;
 
-                        if (isSourceExist && sourcePath.Length != entry.SourceFileSize)
-                        {
-                            ForceUpdateProgress(entry);
-                            LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})", LogType.Warning, true);
-                            return;
-                        }
-
-                        byte[] sourceLocalHash = entry.SourceMD5Hash?.Length switch
-                                                 {
-                                                     > 8 and 16 => await GetCryptoHashAsync<MD5>(sourcePath, null, false, true, Token.Token),
-                                                     > 4 => await GetHashAsync<XxHash64>(sourcePath, false, true, Token.Token),
-                                                     _ => await GetHashAsync<Crc32>(sourcePath, false, true, Token.Token)
-                                                 };
-
-                        if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))
-                        {
-                            ForceUpdateProgress(entry);
-                            LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
-                                + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}",
-                                LogType.Warning,
-                                true);
-                            return;
-                        }
-
-                        LogWriteLine($"Patching file {entry.SourceFileName} to {entry.TargetFileName}...", LogType.Default, true);
-                        UpdateProgressBase();
-                        UpdateStatus();
-
-                        await Task.Factory.StartNew(state =>
-                        {
-                            CancellationToken thisInnerCtx = (CancellationToken)(state ?? CancellationToken.None);
-                            try
-                            {
-                                thisInnerCtx.ThrowIfCancellationRequested();
-                                HDiffPatch patcher = new HDiffPatch();
-                                patcher.Initialize(patchPath.FullName);
-                                patcher.Patch(sourcePath.FullName, targetPathTemp.FullName, true, thisInnerCtx, false, true);
-                                isSuccess = true;
-                            }
-                            catch (InvalidDataException ex) when (!thisInnerCtx.IsCancellationRequested)
-                            {
-                                // ignored
-                                // Get the base and new target file size
-                                long newFileSize = HDiffPatch.GetHDiffNewSize(patchPath.FullName);
-                                long refFileSize = targetPath.Exists ? targetPath.Length : 0;
-
-                                // Check if the throw happened for different file, then rethrow
-                                if (newFileSize != refFileSize)
-                                    throw;
-
-                                // Otherwise, log the error
-                                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                                LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {targetPath.FullName}", LogType.Warning, true);
-                            }
-                        },
-                        ctx,
-                        ctx,
-                        TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default);
+                        isSuccess = true;
                     }
-                    catch (OperationCanceledException)
+                    catch (Exception) when (!workerToken.IsCancellationRequested)
                     {
-                        await Token.CancelAsync();
-                        LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
-                        throw;
+                        // ignored
+                        // Get the base and new target file size
+                        long newFileSize = GetHDiffNewSize(patchPath.FullName);
+                        long refFileSize = targetPath.Exists ? targetPath.Length : 0;
+
+                        // Check if the throw happened for different file, then rethrow
+                        if (newFileSize != refFileSize)
+                            throw;
+
+                        // Otherwise, log the error
+                        LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {targetPath.FullName}", LogType.Warning, true);
                     }
-                    catch (Exception ex)
+                }
+                catch (OperationCanceledException)
+                {
+                    LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
+                    await Token.CancelAsync();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
+                    LogWriteLine($"Error while patching file: {entry.SourceFileName} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
+                                 LogType.Warning,
+                                 true);
+
+                    ForceUpdateProgress(entry);
+                }
+                finally
+                {
+                    Interlocked.Increment(ref ProgressAllCountTotal);
+                    if (!string.IsNullOrEmpty(entry.PatchFileName))
                     {
-                        await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
-                        LogWriteLine(
-                            $"Error while patching file: {entry.SourceFileName ?? string.Empty} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
-                            LogType.Warning,
-                            true);
-
-                        ForceUpdateProgress(entry);
+                        _ = patchPath.TryDeleteFile();
                     }
-                    finally
+
+                    if (isSuccess && entry.CanDeleteSource)
                     {
-                        Interlocked.Increment(ref ProgressAllCountTotal);
-                        if (!string.IsNullOrEmpty(entry.PatchFileName))
-                        {
-                            _ = patchPath.TryDeleteFile();
-                        }
-
-                        if (isSuccess && entry.CanDeleteSource)
-                        {
-                            sourcePath.Refresh();
-                            _ = sourcePath.TryDeleteFile();
-                        }
-
-                        targetPathTemp.Refresh();
-                        if (targetPathTemp.Exists)
-                        {
-                            _ = targetPathTemp.TryMoveTo(targetPath);
-                        }
+                        sourcePath.Refresh();
+                        _ = sourcePath.TryDeleteFile();
                     }
-                });
 
-                await parallelTask;
+                    targetPathTemp.Refresh();
+                    if (targetPathTemp.Exists)
+                    {
+                        _ = targetPathTemp.TryMoveTo(targetPath);
+                    }
+                }
             }
-            finally
-            {
-                EventListener.LoggerEvent -= EventListener_PatchLogEvent;
-                EventListener.PatchEvent -= EventListener_PatchEvent;
-            }
-
-            return;
 
             void ForceUpdateProgress(HDiffMapEntry entry)
             {
                 lock (Progress)
                 {
                     Progress.ProgressAllSizeCurrent += entry.TargetFileSize;
-                    Progress.ProgressAllPercentage = ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
+                    Progress.ProgressAllPercentage =
+                        ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
                     Progress.ProgressAllSpeed = CalculateSpeed(entry.TargetFileSize);
-                    Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
+                    Progress.ProgressAllTimeLeft =
+                        ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent,
+                                                       Progress.ProgressAllSpeed);
                 }
 
                 UpdateProgress();
@@ -1639,10 +1631,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             ProgressAllCountTotal = 1;
             ProgressAllCountFound = hdiffEntry.Count;
-
-            HDiffPatch.LogVerbosity = Verbosity.Verbose;
-            EventListener.LoggerEvent   += EventListener_PatchLogEvent;
-            EventListener.PatchEvent    += EventListener_PatchEvent;
 
             Task parallelTask = Parallel.ForEachAsync(hdiffEntry, new ParallelOptions
             {
@@ -1726,17 +1714,12 @@ namespace CollapseLauncher.InstallManager.Base
                 await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
                 throw innerExceptionsFirst;
             }
-            finally
-            {
-                EventListener.LoggerEvent   -= EventListener_PatchLogEvent;
-                EventListener.PatchEvent    -= EventListener_PatchEvent;
-            }
         }
 
-        private void EventListener_PatchEvent(object? sender, PatchEvent e)
+        private void EventListener_PatchEvent(long totalWritten, long totalSize, int written)
         {
-            Interlocked.Add(ref ProgressAllSizeCurrent, e.Read);
-            double speed = CalculateSpeed(e.Read);
+            Interlocked.Add(ref ProgressAllSizeCurrent, written);
+            double speed = CalculateSpeed(written);
 
             if (!CheckIfNeedRefreshStopwatch())
             {
@@ -1751,32 +1734,6 @@ namespace CollapseLauncher.InstallManager.Base
                 Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
             }
             UpdateProgress();
-        }
-
-        private void EventListener_PatchLogEvent(object? sender, LoggerEvent e)
-        {
-            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
-                || (HDiffPatch.LogVerbosity == Verbosity.Debug
-                    && !(e.LogLevel == Verbosity.Debug ||
-                         e.LogLevel == Verbosity.Verbose ||
-                         e.LogLevel == Verbosity.Info))
-                || (HDiffPatch.LogVerbosity == Verbosity.Verbose
-                    && !(e.LogLevel == Verbosity.Verbose ||
-                         e.LogLevel == Verbosity.Info))
-                || (HDiffPatch.LogVerbosity == Verbosity.Info
-                    && e.LogLevel != Verbosity.Info))
-            {
-                return;
-            }
-
-            LogType type = e.LogLevel switch
-                           {
-                               Verbosity.Verbose => LogType.Debug,
-                               Verbosity.Debug => LogType.Debug,
-                               _ => LogType.Default
-                           };
-
-            LogWriteLine(e.Message, type, true);
         }
 
         public virtual List<PkgVersionProperties> TryGetHDiffList()
@@ -1815,7 +1772,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                         try
                         {
-                            prop.fileSize = HDiffPatch.GetHDiffNewSize(filePath);
+                            prop.fileSize = GetHDiffNewSize(filePath);
                             LogWriteLine($"hdiff entry: {prop.remoteName}", LogType.Default, true);
 
                             _out.Add(prop);
@@ -1837,6 +1794,36 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return _out;
+        }
+
+        protected static long GetHDiffNewSize(string filePath)
+        {
+            HDiffInfo hdiffInfo = HPatch.CreateInstance(filePath);
+
+            try
+            {
+                return GetHDiffNewSize(hdiffInfo);
+            }
+            finally
+            {
+                hdiffInfo.Dispose();
+            }
+        }
+
+        protected static unsafe long GetHDiffNewSize(HDiffInfo hdiffInfo)
+        {
+            if (!hdiffInfo.TryGetPatchMetadata(out PatchMetadata patchMetadata))
+            {
+                throw new InvalidOperationException("File is not a supported HDIFF file");
+            }
+
+            if (hdiffInfo.TryGetDirectoryPatchMetadata(out DirectoryPatchMetadata dirPatchMetadata))
+            {
+                return dirPatchMetadata.OutputPathCountSizeInfoP->Size +
+                       dirPatchMetadata.SameFilePathCountSizeInfoP->Size;
+            }
+
+            return patchMetadata.DiffNewSize;
         }
 
         protected virtual string GetLanguageLocaleCodeByID(int id)
@@ -3311,51 +3298,23 @@ namespace CollapseLauncher.InstallManager.Base
             base.UpdateProgress();
         }
 
-        protected void DeltaPatchCheckProgress(object? sender, PatchEvent e)
+        private void DeltaPatchProgress(long totalWritten, long totalSize, int currentlyWritten)
         {
+            double speed = CalculateSpeed(currentlyWritten);
             if (!CheckIfNeedRefreshStopwatch())
             {
                 return;
             }
 
-            lock (Progress)
-            {
-                Progress.ProgressAllPercentage  = e.ProgressPercentage;
-                Progress.ProgressAllTimeLeft    = e.TimeLeft;
-                Progress.ProgressAllSpeed       = e.Speed;
-                Progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
-                Progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
-            }
+            Progress.ProgressAllPercentage  = Math.Round(totalWritten / (double)totalSize * 100, 2);
+            Progress.ProgressAllTimeLeft    = TimeSpan.FromSeconds((totalSize - totalWritten) / speed.UnNanOrInfinity());
+            Progress.ProgressAllSpeed       = speed;
+            Progress.ProgressAllSizeTotal   = totalSize;
+            Progress.ProgressAllSizeCurrent = totalWritten;
 
             Status.IsProgressAllIndetermined = false;
             UpdateProgressBase();
             UpdateStatus();
-        }
-
-        protected void DeltaPatchCheckLogEvent(object? sender, LoggerEvent e)
-        {
-            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
-                || (HDiffPatch.LogVerbosity == Verbosity.Debug
-                    && !(e.LogLevel == Verbosity.Debug ||
-                         e.LogLevel == Verbosity.Verbose ||
-                         e.LogLevel == Verbosity.Info))
-                || (HDiffPatch.LogVerbosity == Verbosity.Verbose
-                    && !(e.LogLevel == Verbosity.Verbose ||
-                         e.LogLevel == Verbosity.Info))
-                || (HDiffPatch.LogVerbosity == Verbosity.Info
-                    && e.LogLevel != Verbosity.Info))
-            {
-                return;
-            }
-
-            LogType type = e.LogLevel switch
-                           {
-                               Verbosity.Verbose => LogType.Debug,
-                               Verbosity.Debug => LogType.Debug,
-                               _ => LogType.Default
-                           };
-
-            LogWriteLine(e.Message, type, true);
         }
 
         protected void DeltaPatchCheckProgress(object? sender, TotalPerFileProgress e)
