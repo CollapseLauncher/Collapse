@@ -6,9 +6,11 @@ using Hi3Helper.Plugin.Core.Utility;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Globalization;
+using Microsoft.UI.Text;
 using static CollapseLauncher.Statics.GamePropertyVault;
 
 #nullable enable
@@ -73,10 +75,19 @@ public sealed partial class PluginGameSettingsPage : Page
             });
         }
 
+        Grid sectionGrid = new() { ColumnSpacing = 32, RowSpacing = 28 };
         foreach (GameSettingsSection section in page.Sections)
         {
-            sectionsPanel.Children.Add(CreateSection(section));
+            // Informational sections, including plugin warnings, remain full width.
+            if (section.Entries.Count == 0)
+                sectionsPanel.Children.Add(CreateSection(section));
+            else
+                sectionGrid.Children.Add(CreateSection(section));
         }
+
+        sectionsPanel.Children.Add(sectionGrid);
+        sectionGrid.SizeChanged += (_, args) => ArrangeGrid(sectionGrid, args.NewSize.Width >= 900 ? 2 : 1);
+        ArrangeGrid(sectionGrid, 1);
 
         ScrollViewer scrollViewer = new()
         {
@@ -90,8 +101,9 @@ public sealed partial class PluginGameSettingsPage : Page
             Padding = new Thickness(32, 16, 32, 16),
             Background = Application.Current.Resources["GameSettingsApplyGridBrush"] as Brush
         };
-        applyPanel.ColumnDefinitions.Add(new ColumnDefinition());
         applyPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        applyPanel.ColumnDefinitions.Add(new ColumnDefinition());
+        Grid.SetColumn(_statusText, 1);
         applyPanel.Children.Add(_statusText);
 
         Button applyButton = new()
@@ -102,7 +114,7 @@ public sealed partial class PluginGameSettingsPage : Page
             Style = Application.Current.Resources["AccentButtonStyle"] as Style
         };
         applyButton.Click += OnApply;
-        Grid.SetColumn(applyButton, 1);
+        Grid.SetColumn(applyButton, 0);
         applyPanel.Children.Add(applyButton);
         Grid.SetRow(applyPanel, 1);
         root.Children.Add(applyPanel);
@@ -110,9 +122,29 @@ public sealed partial class PluginGameSettingsPage : Page
         return root;
     }
 
+    private static void ArrangeGrid(Grid grid, int columns)
+    {
+        int rows = (grid.Children.Count + columns - 1) / columns;
+        if (grid.ColumnDefinitions.Count == columns && grid.RowDefinitions.Count == rows)
+            return;
+
+        grid.ColumnDefinitions.Clear();
+        grid.RowDefinitions.Clear();
+        for (int column = 0; column < columns; column++)
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+        for (int row = 0; row < rows; row++)
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        for (int index = 0; index < grid.Children.Count; index++)
+        {
+            FrameworkElement child = (FrameworkElement)grid.Children[index];
+            Grid.SetColumn(child, index % columns);
+            Grid.SetRow(child, index / columns);
+        }
+    }
+
     private FrameworkElement CreateSection(GameSettingsSection section)
     {
-        StackPanel panel = new() { Spacing = 8 };
+        StackPanel panel = new() { Spacing = 12, VerticalAlignment = VerticalAlignment.Top };
         panel.Children.Add(new TextBlock
         {
             Text = section.Title,
@@ -130,45 +162,50 @@ public sealed partial class PluginGameSettingsPage : Page
             });
         }
 
+        Grid entries = new() { ColumnSpacing = 16, RowSpacing = 16 };
         foreach (GameSettingEntry entry in section.Entries)
-        {
-            panel.Children.Add(CreateEntry(entry));
-        }
+            entries.Children.Add(CreateEntry(entry));
 
+        if (entries.Children.Count > 0)
+        {
+            entries.SizeChanged += (_, args) =>
+                ArrangeGrid(entries, args.NewSize.Width >= 520 ? 3 : args.NewSize.Width >= 340 ? 2 : 1);
+            ArrangeGrid(entries, 1);
+            panel.Children.Add(entries);
+        }
         return panel;
     }
 
     private FrameworkElement CreateEntry(GameSettingEntry entry)
     {
-        Grid card = new()
-        {
-            Padding = new Thickness(16, 12, 16, 12),
-            ColumnSpacing = 24,
-            Background = Application.Current.Resources["CardBackgroundFillColorDefaultBrush"] as Brush,
-            CornerRadius = new CornerRadius(8)
-        };
-        card.ColumnDefinitions.Add(new ColumnDefinition());
-        card.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        FrameworkElement editor = CreateEditor(entry);
+        editor.HorizontalAlignment = HorizontalAlignment.Stretch;
+        editor.VerticalAlignment = VerticalAlignment.Top;
+        AutomationProperties.SetName(editor, entry.Title);
 
-        StackPanel text = new() { VerticalAlignment = VerticalAlignment.Center, Spacing = 2 };
-        text.Children.Add(new TextBlock { Text = entry.Title, TextWrapping = TextWrapping.Wrap });
-        if (!string.IsNullOrWhiteSpace(entry.Description))
+        StackPanel panel = new() { Spacing = 6 };
+        if (entry.Kind != GameSettingKind.Toggle)
         {
-            text.Children.Add(new TextBlock
+            panel.Children.Add(new TextBlock
             {
-                Text = entry.Description,
-                Opacity = 0.72,
+                Text = entry.Title,
+                FontWeight = FontWeights.SemiBold,
                 TextWrapping = TextWrapping.Wrap
             });
         }
-        card.Children.Add(text);
-
-        FrameworkElement editor = CreateEditor(entry);
-        editor.MinWidth = entry.Kind is GameSettingKind.Toggle ? 0 : 180;
-        editor.VerticalAlignment = VerticalAlignment.Center;
-        Grid.SetColumn(editor, 1);
-        card.Children.Add(editor);
-        return card;
+        panel.Children.Add(editor);
+        if (!string.IsNullOrWhiteSpace(entry.Description))
+        {
+            panel.Children.Add(new TextBlock
+            {
+                Text = entry.Description,
+                FontSize = 12,
+                Opacity = 0.72,
+                TextWrapping = TextWrapping.Wrap
+            });
+            AutomationProperties.SetHelpText(editor, entry.Description);
+        }
+        return panel;
     }
 
     private FrameworkElement CreateEditor(GameSettingEntry entry) => entry.Kind switch
@@ -181,10 +218,15 @@ public sealed partial class PluginGameSettingsPage : Page
         _ => throw new ArgumentOutOfRangeException(nameof(entry.Kind))
     };
 
-    private ToggleSwitch CreateToggle(GameSettingEntry entry)
+    private CheckBox CreateToggle(GameSettingEntry entry)
     {
-        ToggleSwitch control = new() { IsOn = bool.TryParse(entry.Value, out bool value) && value };
-        control.Toggled += (_, _) => SetValue(entry.Key, control.IsOn ? bool.TrueString : bool.FalseString);
+        CheckBox control = new()
+        {
+            Content = new TextBlock { Text = entry.Title, TextWrapping = TextWrapping.Wrap },
+            IsChecked = bool.TryParse(entry.Value, out bool value) && value
+        };
+        control.Checked += (_, _) => SetValue(entry.Key, bool.TrueString);
+        control.Unchecked += (_, _) => SetValue(entry.Key, bool.FalseString);
         return control;
     }
 
@@ -222,8 +264,10 @@ public sealed partial class PluginGameSettingsPage : Page
             Minimum = entry.Minimum,
             Maximum = entry.Maximum,
             StepFrequency = entry.Step,
-            Value = ParseNumber(entry.Value, entry.Minimum),
-            Width = 220
+            Style = Application.Current.Resources["FatSliderStyle"] as Style,
+            TickFrequency = Math.Max(entry.Step, (entry.Maximum - entry.Minimum) / 10),
+            TickPlacement = Microsoft.UI.Xaml.Controls.Primitives.TickPlacement.Outside,
+            Value = ParseNumber(entry.Value, entry.Minimum)
         };
         control.ValueChanged += (_, args) =>
             SetValue(entry.Key, args.NewValue.ToString(CultureInfo.InvariantCulture));
@@ -232,7 +276,7 @@ public sealed partial class PluginGameSettingsPage : Page
 
     private ComboBox CreateChoice(GameSettingEntry entry)
     {
-        ComboBox control = new();
+        ComboBox control = new() { CornerRadius = new CornerRadius(14) };
         foreach (GameSettingChoice choice in entry.Choices ?? [])
         {
             ComboBoxItem item = new() { Content = choice.Title, Tag = choice.Value };
