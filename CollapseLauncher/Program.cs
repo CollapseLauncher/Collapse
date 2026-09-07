@@ -179,7 +179,10 @@ namespace CollapseLauncher
             // Make sure that the XamlOptionalChanges APIs are available among 2.3.x releases. If not, then remove them.
             // As per PR below, this opt-in features should be removed in the next release:
             // https://github.com/sundaramramaswamy/microsoft-ui-xaml/blob/069fbc9683b3b07df5549961e00251439a6916cd/specs/XamlOptionalChanges/XamlOptionalChanges-Spec.md#xamlchangeid-enum
-            EnableXamlOpts(Enum.GetValues<XamlChangeId>());
+            EnableXamlOpts(XamlChangeId.DefaultStyleOptimizations,
+                           XamlChangeId.DeferContextFlyoutInit,
+                           XamlChangeId.IconNoGridOptimization,
+                           XamlChangeId.OptimizeApplyStyles);
             return;
 
             static void EnableXamlOpts(params ReadOnlySpan<XamlChangeId> ids)
@@ -200,7 +203,7 @@ namespace CollapseLauncher
                     }
 
                     bool isEnabled = XamlOptionalChanges.IsChangeEnabled(id);
-                    Logger.LogWriteLine($"[XAML_EXPERIMENTAL_OPTS]: {id} ({(int)id}) {(isEnabled ? "has been enabled" : "is not supported")} ({(!isPreviouslyEnabled ? "was previously disabled" : "was already enabled")})", LogType.Debug, true);
+                    LogWriteLine($"[XAML_EXPERIMENTAL_OPTS]: {id} ({(int)id}) {(isEnabled ? "has been enabled" : "is not supported")} ({(!isPreviouslyEnabled ? "was previously disabled" : "was already enabled")})", LogType.Debug, true);
                 }
             }
         }

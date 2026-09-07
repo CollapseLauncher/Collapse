@@ -289,7 +289,7 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+            AppDiscordPresence.SetActivity(DiscordActivityType.AppSettings);
 #endif
         }
 
@@ -703,7 +703,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool e = AppDiscordPresence.IsRpcEnabled;
+                bool e = AppDiscordPresence.IsEnabled;
                 ToggleDiscordGameStatus.IsEnabled = e;
                 if (e)
                 {
@@ -730,25 +730,21 @@ namespace CollapseLauncher.Pages
                     ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
 
-                AppDiscordPresence.IsRpcEnabled   = value;
+                AppDiscordPresence.IsEnabled   = value;
                 ToggleDiscordGameStatus.IsEnabled = value;
             }
         }
 
         private bool IsDiscordGameStatusEnabled
         {
-            get => GetAppConfigValue("EnableDiscordGameStatus");
-            set
-            {
-                SetAndSaveConfigValue("EnableDiscordGameStatus", value);
-                AppDiscordPresence.SetupPresence(null);
-            }
+            get => AppDiscordPresence.IsGameStatusEnabled;
+            set => AppDiscordPresence.IsGameStatusEnabled = value;
         }
 
         private bool IsDiscordIdleStatusEnabled
         {
-            get => AppDiscordPresence.IdleEnabled;
-            set => AppDiscordPresence.IdleEnabled = value;
+            get => AppDiscordPresence.IsShowOnIdle;
+            set => AppDiscordPresence.IsShowOnIdle = value;
         }
 #else
         private bool IsDiscordRPCEnabled

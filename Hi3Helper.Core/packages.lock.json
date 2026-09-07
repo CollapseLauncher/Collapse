@@ -16,9 +16,9 @@
       },
       "Sentry": {
         "type": "Direct",
-        "requested": "[6.9.0, )",
-        "resolved": "6.9.0",
-        "contentHash": "qQIvEwuvjAB6fDLVLLcDj/5f8n5jOyPyHjj3a/GQ1ogTLLQqsSxgQj1fEEquNT9HQuj4ZTyCg3c1DCBMUIvJGQ=="
+        "requested": "[6.10.0, )",
+        "resolved": "6.10.0",
+        "contentHash": "jDiLbMSNuwMNJmJc5l8XaO3bgHxTbBkttqqSLQTDP415ucNM4F/Ckktg3L/Ww6v2Skcwt7wFC7vSW+f8W12Vqg=="
       },
       "Google.Protobuf": {
         "type": "Transitive",

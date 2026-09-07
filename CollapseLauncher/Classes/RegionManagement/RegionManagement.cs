@@ -395,8 +395,8 @@ namespace CollapseLauncher
 
             LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
         #if !DISABLEDISCORD
-            if (AppDiscordPresence.IsRpcEnabled)
-                AppDiscordPresence.SetupPresence(gameRegion);
+            if (AppDiscordPresence.IsEnabled)
+                AppDiscordPresence.SetPresence(gameRegion);
         #endif
         }
 
