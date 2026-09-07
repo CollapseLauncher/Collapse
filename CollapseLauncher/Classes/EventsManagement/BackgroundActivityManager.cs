@@ -259,6 +259,12 @@ namespace CollapseLauncher
             activity!.ProgressChanged += progressChangedEventHandler;
             activity!.StatusChanged += statusChangedEventHandler;
 
+            // The notification can be attached after the operation has already
+            // started. Hydrate it immediately instead of waiting for another
+            // progress/status event and leaving the placeholder text visible.
+            progressChangedEventHandler(activity, activity.Progress);
+            statusChangedEventHandler(activity, activity.Status);
+
             activity.FlushingTrigger += (_, _) =>
             {
                 activity.ProgressChanged -= progressChangedEventHandler;
