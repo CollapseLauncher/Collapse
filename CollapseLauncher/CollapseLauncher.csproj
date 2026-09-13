@@ -323,6 +323,7 @@
         <ProjectReference Include="..\Hi3Helper.LocaleSourceGen\Hi3Helper.LocaleSourceGen.csproj" />
         <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj" />
+        <ProjectReference Include="..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
@@ -477,10 +478,6 @@
         -->
     </ItemGroup>
 
-    <Target Name="PreBuild-TaskSheduler" BeforeTargets="PreBuildEvent" Inputs="$(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj;@(ProjectReference->'%(FullPath)')" Outputs="$(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe">
-        <Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
-    </Target>
-
     <Target Name="PostBuild-RemoveFiles" AfterTargets="PostBuildEvent">
         <Exec Command="del $(ProjectDir)$(OutDir)swresample-*.dll $(ProjectDir)$(OutDir)swscale-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)av*-*.dll $(ProjectDir)$(OutDir)swresample.lib $(ProjectDir)$(OutDir)swscale.lib $(ProjectDir)$(OutDir)av*.lib&#xD;&#xA;rd /s /q $(ProjectDir)$(OutDir)Lib\win-arm64 &amp; exit 0" />
         <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
@@ -494,7 +491,6 @@
     
     <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
         <Exec Command="del $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
-        <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />

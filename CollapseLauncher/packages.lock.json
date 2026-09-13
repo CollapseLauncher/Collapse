@@ -570,6 +570,12 @@
           "System.IO.Hashing": "[10.0.12, )"
         }
       },
+      "hi3helper.taskscheduler": {
+        "type": "Project",
+        "dependencies": {
+          "Hi3Helper.Win32": "[1.0.0, )"
+        }
+      },
       "hi3helper.win32": {
         "type": "Project",
         "dependencies": {

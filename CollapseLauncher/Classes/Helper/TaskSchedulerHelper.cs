@@ -2,296 +2,149 @@
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.TaskScheduler;
 using Hi3Helper.Win32.ShellLinkCOM;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment
 
 #nullable enable
-namespace CollapseLauncher.Helper
+namespace CollapseLauncher.Helper;
+
+internal static class TaskSchedulerHelper
 {
-    internal static class TaskSchedulerHelper
+    private static readonly string StubLocation            = VelopackLocatorExtension.FindCollapseStubPath();
+    private const           string CollapseStartupTaskName = "CollapseLauncherStartupTask";
+
+    private static bool _cachedIsOnTrayEnabled;
+    private static bool _cachedIsEnabled;
+
+    internal static bool IsOnTrayEnabled()
     {
-        private const string CollapseStartupTaskName = "CollapseLauncherStartupTask";
+        IsEnabled();
+        return _cachedIsOnTrayEnabled;
+    }
 
-        private static bool _isInitialized;
-        private static bool _cachedIsOnTrayEnabled;
-        private static bool _cachedIsEnabled;
+    internal static bool IsEnabled()
+    {
+        int    returnCode = TaskSchedulerUtil.IsEnabled(CollapseStartupTaskName, StubLocation);
 
-        internal static bool IsOnTrayEnabled()
+        (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
         {
-            if (!_isInitialized)
-                InvokeGetStatusCommand();
+            // -1 means task is disabled with tray enabled
+            -1 => (false, true),
+            // 0 means task is disabled with tray disabled
+            0  => (false, false),
+            // 1 means task is enabled with tray disabled
+            1  => (true, false),
+            // 2 means task is enabled with tray enabled
+            2  => (true, true),
+            // Otherwise, return both disabled (due to failure)
+            _  => (false, false)
+        };
 
-            return _cachedIsOnTrayEnabled;
-        }
+        return _cachedIsEnabled;
+    }
 
-        internal static bool IsEnabled()
+    internal static void ToggleTrayEnabled(bool isEnabled)
+    {
+        _cachedIsOnTrayEnabled = isEnabled;
+        TaskSchedulerUtil.ToggleTask(_cachedIsEnabled, _cachedIsOnTrayEnabled, CollapseStartupTaskName, StubLocation);
+    }
+
+    internal static void ToggleEnabled(bool isEnabled)
+    {
+        _cachedIsEnabled = isEnabled;
+        TaskSchedulerUtil.ToggleTask(_cachedIsEnabled, _cachedIsOnTrayEnabled, CollapseStartupTaskName, StubLocation);
+    }
+
+    internal static void RecreateIconShortcuts()
+    {
+        // Get icons paths
+        (string iconLocationStartMenu, string iconLocationDesktop)
+            = GetIconLocationPaths(
+                out _,
+                out string? appDescription,
+                out string? executablePath,
+                out string? workingDirPath);
+
+        // Create shell link instance and save the shortcut under Desktop and User's Start menu
+        CreateShortcut(iconLocationStartMenu, appDescription, executablePath, workingDirPath);
+        CreateShortcut(iconLocationDesktop, appDescription, executablePath, workingDirPath);
+    }
+
+    private static void CreateShortcut(
+        string iconLocation,
+        string? appDescription,
+        string? executablePath,
+        string? workingDirPath)
+    {
+        // Try create icon location directory
+        string iconLocationDir = Path.GetDirectoryName(iconLocation) ?? "";
+
+        // Try create directory
+        Directory.CreateDirectory(iconLocationDir);
+        
+        // Create ShellLink instance
+        ShellLink shellLink = new();
+
+        // If existing icon exist, try open it
+        try
         {
-            if (!_isInitialized)
-                InvokeGetStatusCommand();
-
-            return _cachedIsEnabled;
+            if (File.Exists(iconLocation))
+                shellLink.Open(iconLocation);
         }
-
-        private static void InvokeGetStatusCommand()
+        catch (Exception ex)
         {
-            // Build the argument and mode to set
-            var argumentBuilder = new StringBuilder();
-            argumentBuilder.Append("IsEnabled");
-
-            // Append task name and stub path
-            AppendTaskNameAndPathArgument(argumentBuilder);
-
-            // Store argument builder as string
-            var argumentString = argumentBuilder.ToString();
-
-            // Invoke command and get return code
-            var returnCode = GetInvokeCommandReturnCode(argumentString);
-
-            (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
-            {
-                // -1 means task is disabled with tray enabled
-                -1 => (false, true),
-                // 0 means task is disabled with tray disabled
-                0  => (false, false),
-                // 1 means task is enabled with tray disabled
-                1  => (true, false),
-                // 2 means task is enabled with tray enabled
-                2  => (true, true),
-                // Otherwise, return both disabled (due to failure)
-                _ => (false, false)
-            };
-
-            // Print init determination
-            CheckInitDetermination(returnCode);
+            string msg = $"An error occurred while opening existing icon file at: {iconLocation}";
+            SentryHelper.ExceptionHandler(new Exception(msg, ex));
+            Logger.LogWriteLine(msg + $"\r\n{ex}", LogType.Error, true);
         }
+        
+        // Set params on the shortcut instance
+        shellLink.IconIndex         = 0;
+        shellLink.IconPath          = executablePath ?? "";
+        shellLink.DisplayMode       = LinkDisplayMode.edmNormal;
+        shellLink.WorkingDirectory  = workingDirPath ?? "";
+        shellLink.Target            = executablePath ?? "";
+        shellLink.Description       = appDescription ?? "";
 
-        private static void CheckInitDetermination(int returnCode)
-        {
-            // If the return code is within range, then set as initialized
-            if (returnCode is > -2 and < 3)
-            {
-                // Set as initialized
-                _isInitialized = true;
-            }
-            // Otherwise, log the return code
-            else
-            {
-                string reason = returnCode switch
-                {
-                    int.MaxValue => "ARGUMENT_INVALID",
-                    int.MinValue => "UNHANDLED_ERROR",
-                    short.MaxValue => "INTERNALINVOKE_ERROR",
-                    short.MinValue => "APPLET_NOTFOUND",
-                    _ => $"UNKNOWN_{returnCode}"
-                };
-                Logger.LogWriteLine($"Error while getting task status from applet with reason: {reason}", LogType.Error, true);
-            }
-        }
+        // Save the icons
+        shellLink.Save(iconLocation);
+    }
 
-        internal static void ToggleTrayEnabled(bool isEnabled)
-        {
-            _cachedIsOnTrayEnabled = isEnabled;
-            InvokeToggleCommand();
-        }
+    internal static (string IconStartMenu, string IconDesktop) GetIconLocationPaths(
+        out string? appProductName,
+        out string? appDescription,
+        out string? executablePath,
+        out string? workingDirPath)
+    {
+        // Get current executable path as its target.
+        executablePath = LauncherConfig.AppExecutablePath;
+        workingDirPath = Path.GetDirectoryName(executablePath);
 
-        internal static void ToggleEnabled(bool isEnabled)
-        {
-            _cachedIsEnabled = isEnabled;
-            InvokeToggleCommand();
-        }
+        // Get exe's description
+        FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(executablePath);
+        appDescription = currentExecVersionInfo.FileDescription ?? "";
 
-        private static void InvokeToggleCommand()
-        {
-            // Build the argument and mode to set
-            StringBuilder argumentBuilder = new StringBuilder();
-            argumentBuilder.Append(_cachedIsEnabled ? "Enable" : "Disable");
+        // Get paths
+        appProductName = currentExecVersionInfo.ProductName;
+        string shortcutFilename = appProductName + ".lnk";
+        string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
+        string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        string iconLocationStartMenu = Path.Combine(
+            startMenuLocation,
+            "Programs",
+            currentExecVersionInfo.CompanyName ?? "",
+            shortcutFilename);
+        string iconLocationDesktop = Path.Combine(
+            desktopLocation,
+            shortcutFilename);
 
-            // Append argument whether to toggle the tray or not
-            if (_cachedIsOnTrayEnabled)
-                argumentBuilder.Append("ToTray");
-
-            // Append task name and stub path
-            AppendTaskNameAndPathArgument(argumentBuilder);
-
-            // Store argument builder as string
-            string argumentString = argumentBuilder.ToString();
-
-            // Invoke applet
-            int returnCode = GetInvokeCommandReturnCode(argumentString);
-
-            // Print init determination
-            CheckInitDetermination(returnCode);
-        }
-
-        private static void AppendTaskNameAndPathArgument(StringBuilder argumentBuilder)
-        {
-            // Get current stub or main executable path
-            string currentExecPath = VelopackLocatorExtension.FindCollapseStubPath();
-
-            // Build argument to the task name
-            argumentBuilder.Append(" \"");
-            argumentBuilder.Append(CollapseStartupTaskName);
-            argumentBuilder.Append('"');
-
-            // Build argument to the executable path
-            argumentBuilder.Append(" \"");
-            argumentBuilder.Append(currentExecPath);
-            argumentBuilder.Append('"');
-        }
-
-        internal static void RecreateIconShortcuts()
-        {
-            // Get icons paths
-            (string iconLocationStartMenu, string iconLocationDesktop)
-                = GetIconLocationPaths(
-                    out _,
-                    out string? appDescription,
-                    out string? executablePath,
-                    out string? workingDirPath);
-
-            // Create shell link instance and save the shortcut under Desktop and User's Start menu
-            CreateShortcut(iconLocationStartMenu, appDescription, executablePath, workingDirPath);
-            CreateShortcut(iconLocationDesktop, appDescription, executablePath, workingDirPath);
-        }
-
-        private static void CreateShortcut(
-            string iconLocation,
-            string? appDescription,
-            string? executablePath,
-            string? workingDirPath)
-        {
-            // Try create icon location directory
-            string iconLocationDir = Path.GetDirectoryName(iconLocation) ?? "";
-
-            // Try create directory
-            Directory.CreateDirectory(iconLocationDir);
-            
-            // Create ShellLink instance
-            ShellLink shellLink = new();
-
-            // If existing icon exist, try open it
-            try
-            {
-                if (File.Exists(iconLocation))
-                    shellLink.Open(iconLocation);
-            }
-            catch (Exception ex)
-            {
-                string msg = $"An error occurred while opening existing icon file at: {iconLocation}";
-                SentryHelper.ExceptionHandler(new Exception(msg, ex));
-                Logger.LogWriteLine(msg + $"\r\n{ex}", LogType.Error, true);
-            }
-            
-            // Set params on the shortcut instance
-            shellLink.IconIndex         = 0;
-            shellLink.IconPath          = executablePath ?? "";
-            shellLink.DisplayMode       = LinkDisplayMode.edmNormal;
-            shellLink.WorkingDirectory  = workingDirPath ?? "";
-            shellLink.Target            = executablePath ?? "";
-            shellLink.Description       = appDescription ?? "";
-
-            // Save the icons
-            shellLink.Save(iconLocation);
-        }
-
-        internal static (string IconStartMenu, string IconDesktop) GetIconLocationPaths(
-            out string? appProductName,
-            out string? appDescription,
-            out string? executablePath,
-            out string? workingDirPath)
-        {
-            // Get current executable path as its target.
-            executablePath = LauncherConfig.AppExecutablePath;
-            workingDirPath = Path.GetDirectoryName(executablePath);
-
-            // Get exe's description
-            FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(executablePath);
-            appDescription = currentExecVersionInfo.FileDescription ?? "";
-
-            // Get paths
-            appProductName = currentExecVersionInfo.ProductName;
-            string shortcutFilename = appProductName + ".lnk";
-            string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
-            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            string iconLocationStartMenu = Path.Combine(
-                startMenuLocation,
-                "Programs",
-                currentExecVersionInfo.CompanyName ?? "",
-                shortcutFilename);
-            string iconLocationDesktop = Path.Combine(
-                desktopLocation,
-                shortcutFilename);
-
-            return (iconLocationStartMenu, iconLocationDesktop);
-        }
-
-        private static int GetInvokeCommandReturnCode(string argument)
-        {
-            const string retValMark = "RETURNVAL_";
-
-            // Get the applet path and check if the file exist
-            string appletPath = Path.Combine(LauncherConfig.AppExecutableDir, "Lib", "win-x64", "Hi3Helper.TaskScheduler.exe");
-            if (!File.Exists(appletPath))
-            {
-                Logger.LogWriteLine($"Task Scheduler Applet does not exist in this path: {appletPath}", LogType.Error, true);
-                return short.MinValue;
-            }
-
-            // Try to make process instance for the applet
-            using Process process = new Process();
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName               = appletPath,
-                Arguments              = argument,
-                UseShellExecute        = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow         = true
-            };
-
-#if DEBUG
-            Logger.LogWriteLine("[TaskSchedulerHelper] Running TaskSchedulerHelper with command:\r\n" + appletPath + " " + argument, LogType.Debug, true);
-#endif
-
-            int lastErrCode = short.MaxValue;
-            try
-            {
-                // Start the applet and wait until it exit.
-                process.Start();
-                while (process.StandardOutput.ReadLine() is {} consoleStdOut)
-                {
-                    Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
-
-                    // Parse if it has RETURNVAL_
-                    if (!consoleStdOut.StartsWith(retValMark))
-                    {
-                        continue;
-                    }
-
-                    ReadOnlySpan<char> span = consoleStdOut.AsSpan(retValMark.Length);
-                    if (int.TryParse(span, null, out int resultReturnCode))
-                    {
-                        lastErrCode = resultReturnCode;
-                    }
-                }
-                process.WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                // If error happened, then return.
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
-                return short.MaxValue;
-            }
-
-            // Get return code
-            return lastErrCode;
-        }
+        return (iconLocationStartMenu, iconLocationDesktop);
     }
 }
