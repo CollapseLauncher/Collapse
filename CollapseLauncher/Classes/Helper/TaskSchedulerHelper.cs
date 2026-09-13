@@ -31,35 +31,60 @@ internal static class TaskSchedulerHelper
 
     internal static bool IsEnabled()
     {
-        int    returnCode = TaskSchedulerUtil.IsEnabled(CollapseStartupTaskName, StubLocation);
-
-        (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
+        try
         {
-            // -1 means task is disabled with tray enabled
-            -1 => (false, true),
-            // 0 means task is disabled with tray disabled
-            0  => (false, false),
-            // 1 means task is enabled with tray disabled
-            1  => (true, false),
-            // 2 means task is enabled with tray enabled
-            2  => (true, true),
-            // Otherwise, return both disabled (due to failure)
-            _  => (false, false)
-        };
+            int returnCode = TaskSchedulerUtil.IsEnabled(CollapseStartupTaskName, StubLocation);
+            (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
+            {
+                // -1 means task is disabled with tray enabled
+                -1 => (false, true),
+                // 0 means task is disabled with tray disabled
+                0  => (false, false),
+                // 1 means task is enabled with tray disabled
+                1  => (true, false),
+                // 2 means task is enabled with tray enabled
+                2  => (true, true),
+                // Otherwise, return both disabled (due to failure)
+                _  => (false, false)
+            };
 
-        return _cachedIsEnabled;
+            return _cachedIsEnabled;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"An error occurred while trying to check TaskSchedulerUtil.IsEnabled\r\n{ex}",
+                                LogType.Error,
+                                true);
+            SentryHelper.ExceptionHandler(ex);
+            return false;
+        }
     }
 
     internal static void ToggleTrayEnabled(bool isEnabled)
     {
         _cachedIsOnTrayEnabled = isEnabled;
-        TaskSchedulerUtil.ToggleTask(_cachedIsEnabled, _cachedIsOnTrayEnabled, CollapseStartupTaskName, StubLocation);
+        ToggleCore();
     }
 
     internal static void ToggleEnabled(bool isEnabled)
     {
         _cachedIsEnabled = isEnabled;
-        TaskSchedulerUtil.ToggleTask(_cachedIsEnabled, _cachedIsOnTrayEnabled, CollapseStartupTaskName, StubLocation);
+        ToggleCore();
+    }
+
+    private static void ToggleCore()
+    {
+        try
+        {
+            TaskSchedulerUtil.ToggleTask(_cachedIsEnabled, _cachedIsOnTrayEnabled, CollapseStartupTaskName, StubLocation);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"An error occurred while trying to toggle Task Scheduler Task using TaskSchedulerUtil.ToggleTask\r\n{ex}",
+                                LogType.Error,
+                                true);
+            SentryHelper.ExceptionHandler(ex);
+        }
     }
 
     internal static void RecreateIconShortcuts()
