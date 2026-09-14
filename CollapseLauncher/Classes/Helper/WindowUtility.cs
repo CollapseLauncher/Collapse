@@ -14,6 +14,7 @@ using Hi3Helper.Win32.TaskbarListCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.Extensions.Logging;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -598,12 +599,16 @@ namespace CollapseLauncher.Helper
                                 {
                                     ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
                                     InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
+                                    ToggleDeferVisibility(Visibility.Collapsed);
+                                    CanvasDevice sharedDevice = CanvasDevice.GetSharedDevice();
+                                    sharedDevice.Trim();
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
                                     ImageBackgroundManager.Shared.SetWindowRestoreEvent();
                                     InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
+                                    ToggleDeferVisibility(Visibility.Visible);
                                     break;
                                 }
                         }
@@ -614,11 +619,15 @@ namespace CollapseLauncher.Helper
                     {
                         if (wParam == 0)
                         {
+                            ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
                             InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
+                            ToggleDeferVisibility(Visibility.Collapsed);
                         }
                         else
                         {
+                            ImageBackgroundManager.Shared.SetWindowRestoreEvent();
                             InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
+                            ToggleDeferVisibility(Visibility.Visible);
                         }
                         break;
                     }
@@ -709,7 +718,24 @@ namespace CollapseLauncher.Helper
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
+
+            static void ToggleDeferVisibility(Visibility visibility)
+            {
+                if (CurrentWindow.IsObjectDisposed() ||
+                    CurrentWindow is not { } currentWindow)
+                {
+                    return;
+                }
+
+                ref SystemBackdrop? lastBackdrop =
+                    ref CollectionsMarshal.GetValueRefOrAddDefault(_windowBackdrops, currentWindow.GetHashCode(), out _);
+
+                currentWindow.SystemBackdrop     = visibility == Visibility.Collapsed ? null : lastBackdrop;
+                currentWindow.Content.Visibility = visibility;
+            }
         }
+
+        private static readonly Dictionary<int, SystemBackdrop?> _windowBackdrops = [];
 
         #endregion
 
