@@ -1,10 +1,12 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.RegistryUtils;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -94,7 +96,9 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             VerticalAlignment   = VerticalAlignment.Center,
             Style               = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
             TextWrapping        = TextWrapping.Wrap,
-            Visibility          = Visibility.Collapsed
+            Visibility          = Visibility.Collapsed,
+            FontSize            = 14,
+            FontWeight          = FontWeights.SemiBold
         };
         ApplyTextForeground      = ApplyText.Foreground;
         ApplyTextForegroundError = new SolidColorBrush(new Color { A = 255, R = 255 });
@@ -196,6 +200,79 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
         }
     }
+    
+    protected virtual async void OnRegistryDbUploadButtonClick(object sender, RoutedEventArgs args)
+    {
+        await SuspendRegistryMonitorOnActionAsync(Impl);
+        return;
+
+        async Task Impl()
+        {
+            try
+            {
+                if (!DbHandler.IsEnabled ?? false)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotSetup", true);
+                }
+
+                if (!DbHandler.IsInitialized)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotInitialized", true);
+                }
+                
+                Exception? exc = await (Settings?.PushToDatabase() ?? Task.FromResult<Exception?>(null));
+
+                if (exc != null) throw exc;
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBExported");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                SetApplyTextStatus(ex.Message, true);
+                ErrorSender.SendException(ex);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+    }
+    
+    protected virtual async void OnRegistryDbDownloadButtonClick(object sender, RoutedEventArgs args)
+    {
+        await SuspendRegistryMonitorOnActionAsync(Impl);
+        return;
+
+        async Task Impl()
+        {
+            try
+            {
+                if (!DbHandler.IsEnabled ?? false)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotSetup", true);
+                }
+
+                if (!DbHandler.IsInitialized)
+                {
+                    SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBNotInitialized", true);
+                }
+                
+                Exception? exc = await (Settings?.GetFromDatabase() ?? Task.FromResult<Exception?>(null));
+
+                if (exc != null) throw exc;
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsDBImported");
+            }
+            catch (OperationCanceledException)
+            {
+                SetApplyTextStatus("Lang._GameSettingsPage.SettingsRegErr1", true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                SetApplyTextStatus(ex.Message, true);
+                ErrorSender.SendException(ex);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+    }
+    
 
     protected virtual void SuspendRegistryMonitorOnAction(Action action)
     {
