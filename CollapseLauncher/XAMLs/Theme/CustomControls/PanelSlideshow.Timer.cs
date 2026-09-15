@@ -28,7 +28,7 @@ public partial class PanelSlideshow
             {
                 if (newDurationSeconds == 0)
                 {
-                    _countdownProgressBar.Value = 0;
+                    _countdownProgressBar.Width = 0;
                 }
                 DisposeAndDeregisterTimer();
 
@@ -40,19 +40,18 @@ public partial class PanelSlideshow
                 return;
             }
 
-            _countdownProgressBar.Minimum = 0;
-            _countdownProgressBar.Maximum = 1;
+            _countdownProgressBar.Width = 0;
 
             Interlocked.Exchange(ref _timerStoryboard, new Storyboard());
             DoubleAnimation animation = new()
             {
                 Duration                 = new Duration(TimeSpan.FromSeconds(newDurationSeconds)),
                 From                     = 0d,
-                To                       = 1d,
+                To                       = GetParentWidth(_countdownProgressBar),
                 EnableDependentAnimation = true
             };
             Storyboard.SetTarget(animation, _countdownProgressBar);
-            Storyboard.SetTargetProperty(animation, "Value");
+            Storyboard.SetTargetProperty(animation, "Width");
 
             _timerStoryboard?.Children.Add(animation);
 
@@ -70,6 +69,9 @@ public partial class PanelSlideshow
             Console.WriteLine(e);
         }
         return;
+
+        static double GetParentWidth<T>(T element) where T : FrameworkElement =>
+            element.Parent is FrameworkElement progressBarParent ? progressBarParent.ActualWidth : 0d;
 
         async void TimerStoryboardOnCompleted(object? sender, object e)
         {

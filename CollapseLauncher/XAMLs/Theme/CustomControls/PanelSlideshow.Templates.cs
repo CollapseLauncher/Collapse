@@ -12,7 +12,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 [TemplatePart(Name = TemplateNamePresenterGrid,        Type = typeof(Grid))]
 [TemplatePart(Name = TemplateNamePreviousButton,       Type = typeof(Button))]
 [TemplatePart(Name = TemplateNameNextButton,           Type = typeof(Button))]
-[TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(ProgressBar))]
+[TemplatePart(Name = TemplateNameCountdownProgressBar, Type = typeof(Border))]
 [TemplatePart(Name = TemplateNamePreviousButtonShadow, Type = typeof(AttachedDropShadow))]
 [TemplatePart(Name = TemplateNameNextButtonShadow,     Type = typeof(AttachedDropShadow))]
 
@@ -52,7 +52,7 @@ public partial class PanelSlideshow
     private Button             _nextButton           = null!;
     private AttachedDropShadow _nextButtonShadow     = null!;
     private Grid               _nextButtonGrid       = null!;
-    private ProgressBar        _countdownProgressBar = null!;
+    private Border             _countdownProgressBar = null!;
 
     private bool _isTemplateLoaded;
 
@@ -75,7 +75,7 @@ public partial class PanelSlideshow
         _previousButtonShadow = this.GetTemplateChild<AttachedDropShadow>(TemplateNamePreviousButtonShadow);
         _nextButton           = this.GetTemplateChild<Button>(TemplateNameNextButton);
         _nextButtonShadow     = this.GetTemplateChild<AttachedDropShadow>(TemplateNameNextButtonShadow);
-        _countdownProgressBar = this.GetTemplateChild<ProgressBar>(TemplateNameCountdownProgressBar);
+        _countdownProgressBar = this.GetTemplateChild<Border>(TemplateNameCountdownProgressBar);
 
         Loaded   += PanelSlideshow_Loaded;
         Unloaded += PanelSlideshow_Unloaded;
