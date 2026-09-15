@@ -1,6 +1,7 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
@@ -373,6 +374,11 @@ namespace CollapseLauncher
                  * Module: MagicScaler External Codecs for Image Decoding
                  */
                 InitMagicScalerExternalCodecs();
+
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: Waifu2X (Start device test in the background and cache it)
+                 */
+                ImageLoaderHelper.EnsureWaifu2X();
             }
             catch (Exception ex)
             {

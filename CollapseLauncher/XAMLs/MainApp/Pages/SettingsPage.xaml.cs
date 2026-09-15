@@ -246,14 +246,6 @@ namespace CollapseLauncher.Pages
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
 #endif
-
-            Task.Run(() =>
-                     {
-                         if (ImageLoaderHelper.EnsureWaifu2X())
-                         {
-                             DispatcherQueue.TryEnqueue(Bindings.Update);
-                         }
-                     });
         }
 
         private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
