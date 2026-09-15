@@ -435,6 +435,19 @@
     "RegImportTitle": "导入",
     "RegImportTooltip": "从 Collapse 注册表文件中导入注册表",
 
+    "DBImportExport": "上传/恢复至数据库",
+    "DBImportExportTooltip": "从数据库恢复游戏设置/上传游戏设置至数据库",
+    "DBUploadTitle": "上传",
+    "DBUploadTooltip": "将游戏设置注册表上传至应用设置中配置的数据库",
+    "DBRestoreTitle": "恢复",
+    "DBRestoreTooltip": "从应用设置中配置的数据库恢复游戏设置数据",
+
+    "SettingsDBExported": "设置数据已上传！",
+    "SettingsDBExportTitle": "上传设置数据至数据库",
+    "SettingsDBImported": "设置数据已从数据库导入！（需要重启启动器以应用导入的更改）",
+    "SettingsDBNotSetup": "数据库功能尚未启用。请检查应用设置！",
+    "SettingsDBNotInitialized": "数据库子系统未初始化或启动失败，请检查日志/控制台！",
+
     "OverlayNotInstalledTitle": "由于该区服尚未安装或需要更新，您无法使用此功能！",
     "OverlayNotInstalledSubtitle": "请先在游戏启动器页面下载/更新游戏！",
     "OverlayGameRunningTitle": "游戏正在运行！",
@@ -837,10 +850,18 @@
     "ListViewFooterWarning1": "您需要重启您的启动器以应用更新！",
     "ListViewFooterRestartButton": "重启启动器",
 
-    "RightPanelImportTitle1": "点击以添加",
+    "RightPanelImportTitle1": "点击以选择或拖入",
     "RightPanelImportTitle2": "或",
-    "RightPanelImportTitle3": "这里",
-    "RightPanelImportTitle4": "框里的任何位置都可以！"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "将插件文件拖放到此面板中的任意位置",
+
+    "Error_NoPluginImported": "由于以下错误，未导入任何插件：",
+    "Error_AccessDeniedPluginInstall": "读取或安装该插件时权限不足。",
+    "Error_PluginPackageMissingManifest": "该插件包缺少其清单文件或其他必需文件。",
+    "Error_PluginPackageInvalidManifest": "该压缩包或清单文件无效。",
+    "Error_IOErrorCannotBeInstalled": "无法读取或安装该压缩包。",
+    "Error_IOErrorCannotBeRead": "无法读取清单文件或其引用的文件。",
+    "Error_PluginNotSupportedOrInvalid": "该文件不是有效或受支持的插件。"
   },
 
   "_Misc": {
