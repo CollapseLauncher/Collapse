@@ -362,7 +362,7 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            if (CurrentBackgroundElement is LayeredBackgroundImage existingLayer &&
+            if (CurrentBackgroundElement is { } existingLayer &&
                 IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
                 IsSameLocalFile(existingLayer.BackgroundStaticSource, backgroundStaticFilePath))
             {
@@ -445,7 +445,8 @@ public partial class ImageBackgroundManager
         };
 
         if (!CurrentIsEnableCustomImage &&
-            !GlobalIsEnableCustomImage)
+            !GlobalIsEnableCustomImage &&
+            backgroundStaticFilePath != null)
         {
             layerElement.BindProperty(LayeredBackgroundImage.IsVideoAutoplayProperty,
                                       this,
