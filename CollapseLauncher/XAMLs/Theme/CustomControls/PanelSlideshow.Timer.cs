@@ -35,25 +35,19 @@ public partial class PanelSlideshow
                 return;
             }
 
-            if (_timerStoryboard != null)
-            {
-                return;
-            }
-
             _countdownProgressBar.Width = 0;
 
-            Interlocked.Exchange(ref _timerStoryboard, new Storyboard());
-            DoubleAnimation animation = new()
-            {
-                Duration                 = new Duration(TimeSpan.FromSeconds(newDurationSeconds)),
-                From                     = 0d,
-                To                       = GetParentWidth(_countdownProgressBar),
-                EnableDependentAnimation = true
-            };
-            Storyboard.SetTarget(animation, _countdownProgressBar);
-            Storyboard.SetTargetProperty(animation, "Width");
+            _timerStoryboard ??= new Storyboard();
+            DoubleAnimationUsingKeyFrames keyframe = CreateLowFrequencyAnimation(
+                 0d,
+                 GetParentWidth(_countdownProgressBar),
+                 TimeSpan.FromSeconds(newDurationSeconds),
+                 TimeSpan.FromSeconds(.075));
+            Storyboard.SetTarget(keyframe, _countdownProgressBar);
+            Storyboard.SetTargetProperty(keyframe, "Width");
 
-            _timerStoryboard?.Children.Add(animation);
+            _timerStoryboard?.Children.Clear();
+            _timerStoryboard?.Children.Add(keyframe);
 
             await Task.Delay(delayBeforeStartMs);
             VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeIn, true);
@@ -69,6 +63,35 @@ public partial class PanelSlideshow
             Console.WriteLine(e);
         }
         return;
+
+        static DoubleAnimationUsingKeyFrames CreateLowFrequencyAnimation(
+            double   from,
+            double   to,
+            TimeSpan duration,
+            TimeSpan frequencySecond)
+        {
+            var animation = new DoubleAnimationUsingKeyFrames
+            {
+                Duration                 = duration,
+                EnableDependentAnimation = true
+            };
+
+            int steps = (int)(duration.TotalSeconds / frequencySecond.TotalSeconds);
+
+            for (int i = 0; i <= steps; i++)
+            {
+                double   progress = (double)i / steps;
+                TimeSpan keyTime  = TimeSpan.FromTicks(frequencySecond.Ticks * i);
+                double   value    = from + (to - from) * progress;
+
+                animation.KeyFrames.Add(CreateKeyFrame<DiscreteDoubleKeyFrame>(keyTime, value));
+            }
+
+            return animation;
+        }
+
+        static T CreateKeyFrame<T>(TimeSpan keyTime, double value) where T : DoubleKeyFrame, new()
+            => new() { KeyTime = keyTime, Value = value };
 
         static double GetParentWidth<T>(T element) where T : FrameworkElement =>
             element.Parent is FrameworkElement progressBarParent ? progressBarParent.ActualWidth : 0d;
@@ -87,7 +110,7 @@ public partial class PanelSlideshow
                 VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
                 await Task.Delay(500);
 
-                DisposeAndDeregisterTimer();
+                storyboard.Stop();
                 ItemIndex++;
             }
             catch (Exception ex)
