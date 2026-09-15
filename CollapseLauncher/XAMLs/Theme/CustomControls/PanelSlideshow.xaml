@@ -87,7 +87,7 @@
                                                                   Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -142,7 +142,7 @@
                                                                   Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -195,7 +195,7 @@
                                                                     Value="False" />
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -238,23 +238,13 @@
                                   Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
                                   Opacity="{StaticResource SlideshowCountdownBarSmokeOpacity}"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}" />
-                            <Grid x:Name="CountdownProgressBarContainer"
-                                  Margin="{TemplateBinding CountdownProgressMargin}"
-                                  VerticalAlignment="Bottom"
-                                  HorizontalAlignment="Stretch"
-                                  Height="2"
-                                  CornerRadius="1"
-                                  Opacity="{StaticResource SlideshowCountdownBarOpacity}"
-                                  Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}">
-                                <Border x:Name="CountdownProgressBarBg"
-                                        HorizontalAlignment="Stretch"
-                                        Background="{ThemeResource ProgressBarBackground}"
-                                        Opacity="0.5"/>
-                                <Border x:Name="CountdownProgressBar"
-                                        HorizontalAlignment="Left"
-                                        CornerRadius="1"
-                                        Background="{ThemeResource ProgressBarForeground}"/>
-                            </Grid>
+                            <ProgressBar x:Name="CountdownProgressBar"
+                                         Margin="{TemplateBinding CountdownProgressMargin}"
+                                         VerticalAlignment="Bottom"
+                                         Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
+                                         Opacity="{StaticResource SlideshowCountdownBarOpacity}"
+                                         Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
+                                         Value="0" />
                         </Grid>
                         <Grid Margin="{TemplateBinding PreviousButtonMargin}"
                               Padding="24"

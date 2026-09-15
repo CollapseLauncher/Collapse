@@ -28,24 +28,27 @@ public partial class PanelSlideshow
             {
                 if (newDurationSeconds == 0)
                 {
-                    _countdownProgressBar.Width = 0;
+                    _countdownProgressBar.Value = 0;
                 }
                 DisposeAndDeregisterTimer();
 
                 return;
             }
 
-            _countdownProgressBar.Width = 0;
+            _countdownProgressBar.Minimum = 0d;
+            _countdownProgressBar.Maximum = 1d;
+            _countdownProgressBar.Value   = 0d;
 
             _timerStoryboard ??= new Storyboard();
             DoubleAnimationUsingKeyFrames keyframe = CreateLowFrequencyAnimation(
                  0d,
-                 GetParentWidth(_countdownProgressBar),
+                 1d,
                  TimeSpan.FromSeconds(newDurationSeconds),
-                 TimeSpan.FromSeconds(.075));
+                 TimeSpan.FromSeconds(1));
             Storyboard.SetTarget(keyframe, _countdownProgressBar);
-            Storyboard.SetTargetProperty(keyframe, "Width");
+            Storyboard.SetTargetProperty(keyframe, "Value");
 
+            _timerStoryboard?.Stop();
             _timerStoryboard?.Children.Clear();
             _timerStoryboard?.Children.Add(keyframe);
 
@@ -93,9 +96,6 @@ public partial class PanelSlideshow
         static T CreateKeyFrame<T>(TimeSpan keyTime, double value) where T : DoubleKeyFrame, new()
             => new() { KeyTime = keyTime, Value = value };
 
-        static double GetParentWidth<T>(T element) where T : FrameworkElement =>
-            element.Parent is FrameworkElement progressBarParent ? progressBarParent.ActualWidth : 0d;
-
         async void TimerStoryboardOnCompleted(object? sender, object e)
         {
             try
@@ -110,7 +110,6 @@ public partial class PanelSlideshow
                 VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
                 await Task.Delay(500);
 
-                storyboard.Stop();
                 ItemIndex++;
             }
             catch (Exception ex)
