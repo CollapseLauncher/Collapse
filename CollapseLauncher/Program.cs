@@ -182,7 +182,6 @@ namespace CollapseLauncher
             // https://github.com/sundaramramaswamy/microsoft-ui-xaml/blob/069fbc9683b3b07df5549961e00251439a6916cd/specs/XamlOptionalChanges/XamlOptionalChanges-Spec.md#xamlchangeid-enum
             EnableXamlOpts(XamlChangeId.DefaultStyleOptimizations,
                            XamlChangeId.DeferContextFlyoutInit,
-                           XamlChangeId.IconNoGridOptimization,
                            XamlChangeId.OptimizeApplyStyles);
             return;
 
