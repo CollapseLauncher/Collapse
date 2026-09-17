@@ -246,14 +246,6 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            // -- Get upscaled image file if Waifu2X is enabled
-            if (GlobalIsWaifu2XEnabled)
-            {
-                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
-                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
-                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
-            }
-
             token.ThrowIfCancellationRequested();
 
             // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
@@ -261,6 +253,14 @@ public partial class ImageBackgroundManager
             if (!isSupported)
             {
                 return;
+            }
+
+            // -- Get upscaled image file if Waifu2X is enabled
+            if (GlobalIsWaifu2XEnabled)
+            {
+                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
+                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
+                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
             }
 
             // Try to force loading static image if requested.
