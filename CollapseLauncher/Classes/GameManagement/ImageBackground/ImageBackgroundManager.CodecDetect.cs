@@ -18,13 +18,13 @@ public partial class ImageBackgroundManager
 
     private async ValueTask<(bool IsSupported, bool IsVideo)> CheckCodecOrSpawnDialog(Uri? fileUri)
     {
-        // -- Cancel if null
-        if (fileUri == null)
+        // -- Cancel if null or URI is not a local file
+        if (fileUri == null || !fileUri.IsFile)
         {
             return (false, false);
         }
 
-        string filePath = fileUri.IsFile ? fileUri.LocalPath : fileUri.ToString();
+        string filePath = fileUri.LocalPath;
 
         // -- Check for supported extension first
         if (!IsMediaFileExtensionSupported(filePath))

@@ -376,7 +376,7 @@ public partial class ImageBackgroundManager
     private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
     {
         if (newFilePath == null) return currentSource == null;
-        string? newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
+        string newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
         string? currentPath = currentSource switch
         {
             Uri uri => uri.IsFile ? uri.LocalPath : uri.OriginalString,
@@ -389,7 +389,7 @@ public partial class ImageBackgroundManager
     private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
     {
         string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
-        if (!string.IsNullOrEmpty(savedHex) && savedHex!.Length >= 6 && ThemeRootElement != null)
+        if (!string.IsNullOrEmpty(savedHex) && savedHex.Length >= 6 && ThemeRootElement != null)
         {
             if (TryParseHexColor(savedHex, out Color accentColor))
             {
