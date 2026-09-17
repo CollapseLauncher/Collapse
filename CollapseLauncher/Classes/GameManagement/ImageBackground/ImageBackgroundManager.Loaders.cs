@@ -414,7 +414,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private static bool TryParseHexColor(string hex, out Color color)
+    private static bool TryParseHexColor(ReadOnlySpan<char> hex, out Color color)
     {
         color = default;
         if (hex.Length < 6) return false;
@@ -645,7 +645,7 @@ public partial class ImageBackgroundManager
             Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
                                                    .ConfigureAwait(false);
 
-            if (color == default(Color)) return;
+            if (color == default) return;
 
             string hex = $"{color.R:X2}{color.G:X2}{color.B:X2}";
             if (!string.IsNullOrEmpty(configKey))

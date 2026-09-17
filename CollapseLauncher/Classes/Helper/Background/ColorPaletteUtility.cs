@@ -336,7 +336,7 @@ internal static class ColorPaletteUtility
             }
 
             static unsafe ref T AsRef<T>(Span<byte> span)
-                => ref Unsafe.AsRef<T>(Unsafe.AsPointer(ref MemoryMarshal.AsRef<byte>(span)));
+                => ref Unsafe.As<byte, T>(ref MemoryMarshal.AsRef<byte>(span));
         }
         catch (Exception ex)
         {
