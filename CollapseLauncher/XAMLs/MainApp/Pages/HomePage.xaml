@@ -1303,11 +1303,11 @@
               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
-              CornerRadius="8"
+              CornerRadius="20"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
               Shadow="{ThemeResource SharedShadow}"
-              Translation="0,0,32"
+              Translation="0,0,16"
               Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
             <Grid.RenderTransform>
                 <CompositeTransform />
@@ -1323,9 +1323,12 @@
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited"
                       Background="{ThemeResource CarouselBackgroundBrush}"
-                      CornerRadius="8">
+                      CornerRadius="16"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      Margin="4">
                     <c:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
-                                      CountdownProgressMargin="8"
+                                      CountdownProgressMargin="6"
                                       CountdownSmokeHeight="80"
                                       ItemsSource="{x:Bind GameCarouselData, Mode=OneWay}"
                                       NextButtonMargin="-16"
@@ -1411,7 +1414,7 @@
                 <Grid x:Name="PostPanel"
                       Grid.Row="1"
                       Padding="8,6,8,0"
-                      Translation="0,0,48"
+                      Margin="0,0,0,8"
                       Height="{x:Bind CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
                       Visibility="{x:Bind IsNewsPanelAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                     <Pivot HorizontalAlignment="Left"

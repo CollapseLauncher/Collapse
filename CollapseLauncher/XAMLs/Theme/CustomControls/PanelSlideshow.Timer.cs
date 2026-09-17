@@ -1,4 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Pages;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading;
@@ -35,16 +38,27 @@ public partial class PanelSlideshow
                 return;
             }
 
+            Binding tickerTextBinding = new()
+            {
+                Converter          = StaticConverter<ReverseProgressBarValue>.Shared,
+                ConverterParameter = this,
+                Mode               = BindingMode.OneWay,
+                Source             = _countdownProgressBar,
+                Path               = new PropertyPath("Value")
+            };
+
+            _countdownProgressBarTickerText.SetBinding(TextBlock.TextProperty, tickerTextBinding);
+
             _countdownProgressBar.Minimum = 0d;
-            _countdownProgressBar.Maximum = 1d;
+            _countdownProgressBar.Maximum = newDurationSeconds;
             _countdownProgressBar.Value   = 0d;
 
             _timerStoryboard ??= new Storyboard();
-            DoubleAnimationUsingKeyFrames keyframe = CreateLowFrequencyAnimation(
-                 0d,
-                 1d,
-                 TimeSpan.FromSeconds(newDurationSeconds),
-                 TimeSpan.FromSeconds(1));
+            DoubleAnimationUsingKeyFrames keyframe =
+                CreateLowFrequencyAnimation(0d,
+                                            newDurationSeconds,
+                                            TimeSpan.FromSeconds(newDurationSeconds),
+                                            TimeSpan.FromSeconds(1));
             Storyboard.SetTarget(keyframe, _countdownProgressBar);
             Storyboard.SetTargetProperty(keyframe, "Value");
 
@@ -73,7 +87,7 @@ public partial class PanelSlideshow
             TimeSpan duration,
             TimeSpan frequencySecond)
         {
-            var animation = new DoubleAnimationUsingKeyFrames
+            DoubleAnimationUsingKeyFrames animation = new()
             {
                 Duration                 = duration,
                 EnableDependentAnimation = true
@@ -87,7 +101,8 @@ public partial class PanelSlideshow
                 TimeSpan keyTime  = TimeSpan.FromTicks(frequencySecond.Ticks * i);
                 double   value    = from + (to - from) * progress;
 
-                animation.KeyFrames.Add(CreateKeyFrame<DiscreteDoubleKeyFrame>(keyTime, value));
+                DiscreteDoubleKeyFrame frame = CreateKeyFrame<DiscreteDoubleKeyFrame>(keyTime, value);
+                animation.KeyFrames.Add(frame);
             }
 
             return animation;
