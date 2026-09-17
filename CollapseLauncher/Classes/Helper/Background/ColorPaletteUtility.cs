@@ -62,7 +62,7 @@ internal static class ColorPaletteUtility
         }
     }
 
-    public static async Task<Color> GetMediaAccentColorFromAsync(
+    public static async ValueTask<Color> GetMediaAccentColorFromAsync(
         Uri               uri,
         bool              useFfmpegForVideo,
         CancellationToken token = default)
