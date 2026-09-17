@@ -203,11 +203,13 @@ public partial class MainPage : Page
                 GameNameType.StarRail => typeof(StarRailGameSettingsPage),
                 GameNameType.Genshin  => typeof(GenshinGameSettingsPage),
                 GameNameType.Zenless  => typeof(ZenlessGameSettingsPage),
+                GameNameType.Plugin when presetConfig is PluginPresetConfigWrapper
+                    { GameSettingsContext.HasPage: true } => typeof(PluginGameSettingsPage),
                 _                     => null
             };
 
             NavigationViewItemsContext.GameSettingsPage.Item.Tag = gspPageType;
-            NavigationViewItemsContext.GameSettingsPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
+            NavigationViewItemsContext.GameSettingsPage.Item.Visibility = gspPageType == null ? Visibility.Collapsed : Visibility.Visible;
             NavigationViewItemsContext.FileCleanupPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
         }
     }
