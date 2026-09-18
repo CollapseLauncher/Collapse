@@ -929,7 +929,6 @@ namespace CollapseLauncher.Pages
             PluginManager.SetPluginLocaleId(selectedKey);
 
             ((INotifyAllPropertyChanged)ImageBackgroundManager.Shared).NotifyAllChanged();
-            VideoCodecFfmpegDecodingMethod.UpdateLayout();
             GameLaunchedBehaviorSelector.UpdateLayoutAndBinding();
             InitializeSettingsSearch();
         }
