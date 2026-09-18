@@ -1310,5 +1310,14 @@ namespace CollapseLauncher.Extension
 
             return element;
         }
+
+        internal static void UpdateLayoutAndBinding(this ComboBox comboBox)
+        {
+            comboBox.UpdateLayout();
+            object? lastSelectedItem = comboBox.SelectedItem;
+            comboBox.SelectedItem = null;
+            comboBox.SelectedItem = lastSelectedItem;
+            comboBox.UpdateLayout();
+        }
     }
 }

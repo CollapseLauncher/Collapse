@@ -1,7 +1,9 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,42 +19,79 @@ namespace CollapseLauncher.Pages.SettingsContext
         public event EventHandler? PropertySavedChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public string? DefaultExternalDnsProvider => field ??= ExternalDnsProviderList?.FirstOrDefault();
+        public string? DefaultExternalDnsProvider => field ??= ExternalDnsProviderList.FirstOrDefault();
 
-        public List<string>? ExternalDnsConnectionTypeList
+        public List<TextBlock> ExternalDnsConnectionTypeListUI
         {
-            get => field ??= GetExternalDnsConnectionTypeList();
-            set;
+            get
+            {
+                if (field != null) return field;
+
+                List<TextBlock> returnList = [];
+                foreach (DnsConnectionType connectionType in Enum.GetValues<DnsConnectionType>())
+                {
+                    string localePropName = $"Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_Selection{connectionType}";
+
+                    TextBlock dnsConnectionSelection = new()
+                    {
+                        TextWrapping = TextWrapping.Wrap
+                    };
+                    dnsConnectionSelection.BindProperty(TextBlock.TextProperty,
+                                                        Locale.Current,
+                                                        localePropName,
+                                                        bindingMode: BindingMode.OneWay);
+                    returnList.Add(dnsConnectionSelection);
+                }
+
+                return field = returnList;
+            }
         }
 
-        public List<string>? ExternalDnsProviderList
+        public List<string> ExternalDnsProviderList
         {
-            get => field ??= GetExternalDnsProviderList();
-            set;
+            get
+            {
+                if (field != null) return field;
+
+                List<string> list =
+                [
+                    .. HttpClientBuilder.DnsServerTemplate.Keys,
+                    Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ProviderSelection_SelectionCustom ?? ""
+                ];
+
+                return field = list;
+            }
         }
 
-        private static List<string> GetExternalDnsProviderList()
+        public List<TextBlock> ExternalDnsProviderListUI
         {
-            List<string> list = [];
-            list.AddRange(HttpClientBuilder.DnsServerTemplate.Keys);
-            list.Add(Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ProviderSelection_SelectionCustom ?? "");
+            get
+            {
+                if (field != null) return field;
 
-            return list;
-        }
-
-        private static List<string> GetExternalDnsConnectionTypeList()
-        {
-            List<string> returnList = [];
-            returnList.AddRange(Enum.GetValues<DnsConnectionType>()
-                                    .Select(type => type switch
+                List<TextBlock> list =
+                [
+                    .. HttpClientBuilder.DnsServerTemplate
+                                        .Keys
+                                        .Select(dnsServer =>
+                                                    new TextBlock
                                                     {
-                                                        DnsConnectionType.Udp => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionUdp ?? "",
-                                                        DnsConnectionType.DoH => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionDoH ?? "",
-                                                        DnsConnectionType.DoT => Locale.Current.Lang?._SettingsPage?.NetworkSettings_Dns_ConnectionType_SelectionDoT ?? "",
-                                                        _ => type.ToString()
-                                                    }));
+                                                        Text         = dnsServer,
+                                                        TextWrapping = TextWrapping.Wrap
+                                                    })
+                ];
 
-            return returnList;
+                TextBlock dnsServerCustom = new()
+                {
+                    TextWrapping = TextWrapping.Wrap
+                };
+                dnsServerCustom.BindProperty(TextBlock.TextProperty,
+                                             Locale.Current,
+                                             "Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection_SelectionCustom",
+                                             bindingMode: BindingMode.OneWay);
+                list.Add(dnsServerCustom);
+                return field = list;
+            }
         }
 
         public int ExternalDnsProvider
@@ -73,7 +112,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                 }
 
                 customDnsHostTextbox.Visibility = Visibility.Visible;
-                return field = (ExternalDnsProviderList?.Count ?? 1) - 1;
+                return field = ExternalDnsProviderList.Count - 1;
             }
             set
             {
@@ -87,8 +126,8 @@ namespace CollapseLauncher.Pages.SettingsContext
                     return;
                 }
 
-                int customIndex = (ExternalDnsProviderList?.Count ?? 1) - 1;
-                bool isCustom = (field = value) == customIndex;
+                int  customIndex = ExternalDnsProviderList.Count - 1;
+                bool isCustom    = (field = value) == customIndex;
 
                 customDnsHostTextbox.Visibility = isCustom ? Visibility.Visible : Visibility.Collapsed;
                 if (isCustom)
@@ -96,8 +135,8 @@ namespace CollapseLauncher.Pages.SettingsContext
                     return;
                 }
 
-                string? key = ExternalDnsProviderList?[value];
-                string addressKey = $"${key?.ToLower()}";
+                string key = ExternalDnsProviderList[value];
+                string addressKey = $"${key.ToLower()}";
                 ExternalDnsAddresses = addressKey;
                 OnPropertyChanged();
             }
