@@ -121,7 +121,7 @@ public partial class PanelSlideshow
                 }
 
                 storyboard.Completed -= TimerStoryboardOnCompleted;
-                await Task.Delay(150);
+                await Task.Delay(500);
                 VisualStateManager.GoToState(this, StateNameCountdownProgressBarFadeOut, true);
                 await Task.Delay(500);
 
