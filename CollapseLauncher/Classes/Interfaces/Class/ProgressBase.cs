@@ -1443,12 +1443,12 @@ internal abstract class ProgressBase : GamePropertyBase
 
     protected virtual Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
     {
-        return asset.GetReadStream(DownloadThreadCount);
+        return asset.GetReadStream();
     }
 
     protected virtual void DeleteSingleOrSegmentedDownloadStream(GameInstallPackage asset)
     {
-        asset.DeleteFile(DownloadThreadCount);
+        asset.DeleteFile();
     }
 
 

@@ -3,7 +3,6 @@ using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
 using Hi3Helper;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -20,33 +19,9 @@ using WinRT;
 namespace CollapseLauncher.GameSettings.Zenless
 {
     [GeneratedBindableCustomProperty]
-    internal sealed partial class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
+    internal sealed partial class GeneralData : MagicNodeBaseValues<GeneralData>
     {
-        #region Disposer
-
-        ~GeneralData()
-        {
-            _systemSettingDataMap = null;
-            _keyboardBindingMap = null;
-            _mouseBindingMap = null;
-            _gamepadBindingMap = null;
-
-            GC.Collect();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
-
         #region Node Based Properties
-
-        private JsonNode? _systemSettingDataMap;
-        private JsonNode? _keyboardBindingMap;
-        private JsonNode? _mouseBindingMap;
-        private JsonNode? _gamepadBindingMap;
 
         [JsonPropertyName("SystemSettingDataMap")]
         [JsonIgnore] // We ignore this one from getting serialized to default JSON value
@@ -55,8 +30,8 @@ namespace CollapseLauncher.GameSettings.Zenless
             // Cache the SystemSettingDataMap inside the parent SettingsJsonNode
             // and ensure that the node for SystemSettingDataMap exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _systemSettingDataMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("SystemSettingDataMap");
-            set => _systemSettingDataMap?.SetAsJsonNode("SystemSettingDataMap", value);
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("SystemSettingDataMap");
+            set => field?.SetAsJsonNode("SystemSettingDataMap", value);
         }
 
         [JsonPropertyName("KeyboardBindingMap")]
@@ -66,8 +41,8 @@ namespace CollapseLauncher.GameSettings.Zenless
             // Cache the KeyboardBindingMap inside the parent SettingsJsonNode
             // and ensure that the node for KeyboardBindingMap exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _keyboardBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("KeyboardBindingMap");
-            set => _keyboardBindingMap?.SetAsJsonNode("KeyboardBindingMap", value);
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("KeyboardBindingMap");
+            set => field?.SetAsJsonNode("KeyboardBindingMap", value);
         }
 
         [JsonPropertyName("MouseBindingMap")]
@@ -77,8 +52,8 @@ namespace CollapseLauncher.GameSettings.Zenless
             // Cache the MouseBindingMap inside the parent SettingsJsonNode
             // and ensure that the node for MouseBindingMap exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _mouseBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("MouseBindingMap");
-            set => _mouseBindingMap?.SetAsJsonNode("MouseBindingMap", value);
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("MouseBindingMap");
+            set => field?.SetAsJsonNode("MouseBindingMap", value);
         }
 
         [JsonPropertyName("GamepadBindingMap")]
@@ -88,26 +63,23 @@ namespace CollapseLauncher.GameSettings.Zenless
             // Cache the GamepadBindingMap inside the parent SettingsJsonNode
             // and ensure that the node for GamepadBindingMap exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _gamepadBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("GamepadBindingMap");
-            set => _gamepadBindingMap?.SetAsJsonNode("GamepadBindingMap", value);
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("GamepadBindingMap");
+            set => field?.SetAsJsonNode("GamepadBindingMap", value);
         }
 
         [JsonPropertyName("PlayerPrefs_StringContainer")]
-        [JsonIgnore]
-        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsStringContainer
         {
             // Cache the PlayerPrefsStringContainer inside the parent SettingsJsonNode
             // and ensure that the node for PlayerPrefsStringContainer exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => field ??=
-                SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_StringContainer");
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_StringContainer");
             set => field?.SetAsJsonNode("PlayerPrefs_StringContainer", value);
         }
 
         [JsonPropertyName("PlayerPrefs_IntContainer")]
-        [JsonIgnore]
-        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsIntContainer
         {
             // Cache the PlayerPrefsIntContainer inside the parent SettingsJsonNode
@@ -118,15 +90,13 @@ namespace CollapseLauncher.GameSettings.Zenless
         }
 
         [JsonPropertyName("PlayerPrefs_FloatContainer")]
-        [JsonIgnore]
-        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsFloatContainer
         {
             // Cache the PlayerPrefsFloatContainer inside the parent SettingsJsonNode
             // and ensure that the node for PlayerPrefsFloatContainer exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => field ??=
-                SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_FloatContainer");
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_FloatContainer");
             set => field?.SetAsJsonNode("PlayerPrefs_FloatContainer", value);
         }
 
@@ -617,22 +587,22 @@ namespace CollapseLauncher.GameSettings.Zenless
         public new static GeneralData LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager,
                                                     JsonTypeInfo<GeneralData?> typeInfo)
         {
-            var returnVal = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, typeInfo);
+            GeneralData returnVal = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, typeInfo);
 
 #if DEBUG
-                const bool isPrintDebug = true;
-                if (isPrintDebug)
-                {
-                    Logger.LogWriteLine($"Zenless GeneralData parsed value:\r\n\t" +
-                                        $"FPS   : {returnVal.Fps}\r\n\t" +
-                                        $"VSync : {returnVal.VSync}\r\n\t" +
-                                        $"RenRes: {returnVal.RenderResolution}\r\n\t" +
-                                        $"AA    : {returnVal.AntiAliasing}\r\n\t" +
-                                        $"Shadow: {returnVal.ShadowQuality}\r\n\t" +
-                                        $"CharQ : {returnVal.CharacterQuality}\r\n\t" +
-                                        $"RelfQ : {returnVal.ReflectionQuality}\r\n\t",
-                                        LogType.Debug, true);
-                }
+            const bool isPrintDebug = true;
+            if (isPrintDebug)
+            {
+                Logger.LogWriteLine($"Zenless GeneralData parsed value:\r\n\t" +
+                                    $"FPS   : {returnVal.Fps}\r\n\t" +
+                                    $"VSync : {returnVal.VSync}\r\n\t" +
+                                    $"RenRes: {returnVal.RenderResolution}\r\n\t" +
+                                    $"AA    : {returnVal.AntiAliasing}\r\n\t" +
+                                    $"Shadow: {returnVal.ShadowQuality}\r\n\t" +
+                                    $"CharQ : {returnVal.CharacterQuality}\r\n\t" +
+                                    $"RelfQ : {returnVal.ReflectionQuality}\r\n\t",
+                                    LogType.Debug, true);
+            }
 #endif
 
             return returnVal;

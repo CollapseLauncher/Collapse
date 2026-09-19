@@ -2,6 +2,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Libsql.Client;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ internal static class DbHandler
             field              = value;
             DbConfig.DbEnabled = value ?? false;
 
-            _isFirstInit = true; // Force first init
+            IsInitialized = false; // Force first init
             if (!(value ?? false)) Dispose(); // Dispose instance if user disabled database function globally
         }
     }
@@ -45,11 +46,11 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field          = value;
             DbConfig.DbUrl = value;
-            _isFirstInit   = true;
+            IsInitialized   = false;
         }
     }
         
@@ -65,11 +66,11 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field            = value;
             DbConfig.DbToken = value;
-            _isFirstInit     = true;
+            IsInitialized     = false;
         }
     }
         
@@ -93,7 +94,7 @@ internal static class DbHandler
         }
         set
         {
-            if (value != field) _isFirstInit = true; // Force first init if value changed
+            if (value != field) IsInitialized = false; // Force first init if value changed
                 
             field             = value;
             DbConfig.UserGuid = value;
@@ -101,17 +102,18 @@ internal static class DbHandler
             if (string.IsNullOrWhiteSpace(value))
             {
                 _userIdHash  = null;
-                _isFirstInit = true;
+                IsInitialized = false;
                 return;
             }
             
             var byteUidH = System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(value));
             _userIdHash  = Convert.ToHexStringLower(byteUidH);
-            _isFirstInit = true;
+            IsInitialized = false;
         }
     }
+    
+    public static bool IsInitialized { get; private set; } = false;
 
-    private static bool _isFirstInit = true;
     #endregion
         
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -156,14 +158,18 @@ internal static class DbHandler
                                                         opts.AuthToken = Token;
                                                     });
 
-            if (_isFirstInit)
+            if (!IsInitialized)
             {
                 LogWriteLine("[DbHandler::Init] Initializing database system...");
                 // Ensure table exist at first initialization
                 await
                     _database
                        .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
-                _isFirstInit = false;
+
+                await
+                    _database
+                       .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}-blob\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' BLOB)");
+                IsInitialized = true;
             }
             else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
         }
@@ -218,7 +224,7 @@ internal static class DbHandler
     
     private const int MaxAttempts = 5;
 
-    public static async Task<string?> QueryKey(string key, bool redirectThrow = false)
+    public static async Task<string?> QueryKey(string key, bool redirectThrow = false, bool isBlob = false)
     {
         if (!(IsEnabled ?? false)) return null;
     #if DEBUG
@@ -229,7 +235,7 @@ internal static class DbHandler
     #endif
         for (var i = 0; i < MaxAttempts; i++)
         {
-            var retVal = await QueryKeyInternal(key
+            var retVal = await QueryKeyInternal(key, isBlob
                                             #if DEBUG
                                               , sId
                                             #endif
@@ -237,8 +243,16 @@ internal static class DbHandler
             if (retVal.result == 200)
             {
             #if DEBUG
-                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{retVal.returnedValue}",
-                             LogType.Debug, true);
+                if (isBlob)
+                {
+                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB",
+                                 LogType.Debug, true);
+                }
+                else
+                {
+                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{retVal.returnedValue}",
+                                 LogType.Debug, true);
+                }
             #endif
                 return retVal.returnedValue;
             }
@@ -278,24 +292,43 @@ internal static class DbHandler
         return null;
     }
 
-    public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false)
+    public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false,
+                                           bool isBlob = false, byte[]? blobValue = null)
     {
         if (!(IsEnabled ?? false)) return;
     #if DEBUG
         var t   = Stopwatch.StartNew();
         var r   = new Random();
         var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
-        LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
-                     true);
+        if (isBlob)
+        {
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
+                         true);
+        }
+        else
+        {
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
+                         true);
+        }
+       
     #endif
         for (var i = 0; i < MaxAttempts; i++)
         {
-            var retVal = await StoreKeyValueInternal(key, value);
+            var retVal = await StoreKeyValueInternal(key, value, isBlob, blobValue);
             if (retVal.result == 200)
             {
             #if DEBUG
-                LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
-                             LogType.Debug, true);
+                if (isBlob)
+                {
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tIS BLOB",
+                                 LogType.Debug, true);
+                }
+                else
+                {
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
+                                 LogType.Debug, true);
+                }
+                
             #endif
                 return;
             }
@@ -338,7 +371,7 @@ internal static class DbHandler
 
     #region Private Methods
 
-    private static async Task<(int result, string? returnedValue, Exception? exceptionValue)> QueryKeyInternal(string key
+    private static async Task<(int result, string? returnedValue, Exception? exceptionValue)> QueryKeyInternal(string key, bool isBlob
         #if DEBUG
           , int sId = 0
     #endif
@@ -347,22 +380,53 @@ internal static class DbHandler
         try
         {
             if (_database == null) await Init(true);
+            var tableName = "uid-"  + _userIdHash + (isBlob ? "-blob" : "");
             // Get table row for exact key
             var rs =
                 await
                     _database!
-                       .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key = ?", key);
+                       .Execute($"SELECT value FROM \"{tableName}\" WHERE key = ?", key);
             if (rs == null)
             {
                 return (200, null, null);
             }
+            
+            string str = "";
 
-            // freaking black magic to convert the column row to the value 
-            var str =
-                string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
+            if (isBlob)
+            {
+                var     firstRow = rs.Rows.FirstOrDefault();
+                object? rcv      = firstRow?.FirstOrDefault();
+
+                if (rcv is Blob { Value: IEnumerable<byte> byteEnumerable })
+                {
+                    str = Convert.ToHexString(byteEnumerable.ToArray());
+                }
+                // ReSharper disable once ConvertTypeCheckPatternToNullCheck
+                else if (rcv is Blob { Value: byte[] directBytes })
+                {
+                    str = Convert.ToHexString(directBytes);
+                }
+            }
+            else
+            {
+                // freaking black magic to convert the column row to the value
+                str =
+                    string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
+            }
+           
         #if DEBUG
-            LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
-                         true);
+            if (isBlob)
+            {
+                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
+                             true);
+            }
+            else
+            {
+                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
+                             true);
+            }
+            
         #endif
             return (200, str, null); // 200: OK, return value
         }
@@ -386,16 +450,18 @@ internal static class DbHandler
         }
     }
 
-    private static async Task<(int result, Exception? exceptionValue)> StoreKeyValueInternal(string key, string value)
+    private static async Task<(int result, Exception? exceptionValue)> StoreKeyValueInternal(string key, string value, bool isBlob = false, byte[]? blobValue = null)
     {
         try
         {
             if (_database == null) await Init(true);
+            var tableName = "uid-"  + _userIdHash + (isBlob ? "-blob" : "");
+            object dbValue   = isBlob && blobValue != null ? blobValue : value;
                     
             // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
-            var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
+            var command = $"INSERT INTO \"{tableName}\" (key, value) VALUES (?, ?) " +
                           $"ON CONFLICT(key) DO UPDATE SET value = ?";
-            var parameters = new object[] { key, value, value };
+            var parameters = new object[] { key, dbValue, dbValue };
             await _database!.Execute(command, parameters);
                 
             return (200, null); // 200: OK

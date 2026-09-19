@@ -1,6 +1,7 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
@@ -181,7 +182,6 @@ namespace CollapseLauncher
             // https://github.com/sundaramramaswamy/microsoft-ui-xaml/blob/069fbc9683b3b07df5549961e00251439a6916cd/specs/XamlOptionalChanges/XamlOptionalChanges-Spec.md#xamlchangeid-enum
             EnableXamlOpts(XamlChangeId.DefaultStyleOptimizations,
                            XamlChangeId.DeferContextFlyoutInit,
-                           XamlChangeId.IconNoGridOptimization,
                            XamlChangeId.OptimizeApplyStyles);
             return;
 
@@ -319,10 +319,12 @@ namespace CollapseLauncher
              * Module: Libzstd
              */
 
+#if !NET11_0_OR_GREATER
             // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
             // But due to AOT build uses Static Library in favor of Shared ones (that comes
             // with .dll files), the check will be ignored.
             ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
+#endif
 
             /* ---------------------------------------------------------------------------------------------
              * Module: Velopack
@@ -371,6 +373,11 @@ namespace CollapseLauncher
                  * Module: MagicScaler External Codecs for Image Decoding
                  */
                 InitMagicScalerExternalCodecs();
+
+                /* ---------------------------------------------------------------------------------------------
+                 * Module: Waifu2X (Start device test in the background and cache it)
+                 */
+                ImageLoaderHelper.EnsureWaifu2X();
             }
             catch (Exception ex)
             {

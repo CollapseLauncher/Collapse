@@ -246,14 +246,6 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            // -- Get upscaled image file if Waifu2X is enabled
-            if (GlobalIsWaifu2XEnabled)
-            {
-                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
-                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
-                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
-            }
-
             token.ThrowIfCancellationRequested();
 
             // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
@@ -261,6 +253,14 @@ public partial class ImageBackgroundManager
             if (!isSupported)
             {
                 return;
+            }
+
+            // -- Get upscaled image file if Waifu2X is enabled
+            if (GlobalIsWaifu2XEnabled)
+            {
+                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
+                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
+                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
             }
 
             // Try to force loading static image if requested.
@@ -362,7 +362,7 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            if (CurrentBackgroundElement is LayeredBackgroundImage existingLayer &&
+            if (CurrentBackgroundElement is { } existingLayer &&
                 IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
                 IsSameLocalFile(existingLayer.BackgroundStaticSource, backgroundStaticFilePath))
             {
@@ -376,7 +376,7 @@ public partial class ImageBackgroundManager
     private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
     {
         if (newFilePath == null) return currentSource == null;
-        string? newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
+        string newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
         string? currentPath = currentSource switch
         {
             Uri uri => uri.IsFile ? uri.LocalPath : uri.OriginalString,
@@ -389,7 +389,7 @@ public partial class ImageBackgroundManager
     private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
     {
         string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
-        if (!string.IsNullOrEmpty(savedHex) && savedHex!.Length >= 6 && ThemeRootElement != null)
+        if (!string.IsNullOrEmpty(savedHex) && savedHex.Length >= 6 && ThemeRootElement != null)
         {
             if (TryParseHexColor(savedHex, out Color accentColor))
             {
@@ -414,7 +414,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private static bool TryParseHexColor(string hex, out Color color)
+    private static bool TryParseHexColor(ReadOnlySpan<char> hex, out Color color)
     {
         color = default;
         if (hex.Length < 6) return false;
@@ -445,7 +445,8 @@ public partial class ImageBackgroundManager
         };
 
         if (!CurrentIsEnableCustomImage &&
-            !GlobalIsEnableCustomImage)
+            !GlobalIsEnableCustomImage &&
+            backgroundStaticFilePath != null)
         {
             layerElement.BindProperty(LayeredBackgroundImage.IsVideoAutoplayProperty,
                                       this,
@@ -644,7 +645,7 @@ public partial class ImageBackgroundManager
             Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
                                                    .ConfigureAwait(false);
 
-            if (color == default(Color)) return;
+            if (color == default) return;
 
             string hex = $"{color.R:X2}{color.G:X2}{color.B:X2}";
             if (!string.IsNullOrEmpty(configKey))

@@ -435,6 +435,19 @@
     "RegImportTitle": "インポート",
     "RegImportTooltip": "Collapse レジストリファイルからレジストリキーをインポートします。",
 
+    "DBImportExport": "データベースにアップロード/復元",
+    "DBImportExportTooltip": "データベースにゲーム設定をアップロード/復元",
+    "DBUploadTitle": "アップロード",
+    "DBUploadTooltip": "ゲーム設定のレジストリ値をランチャー設定で指定したデータベースにアップロードします",
+    "DBRestoreTitle": "復元",
+    "DBRestoreTooltip": "ゲーム設定をランチャー設定で指定したデータベースから復元します",
+
+    "SettingsDBExported": "設定データがアップロードされました！",
+    "SettingsDBExportTitle": "データベースに設定データをアップロード",
+    "SettingsDBImported": "設定データをデータベースからインポートしました！（変更を適用するにはランチャーを再起動してください）",
+    "SettingsDBNotSetup": "データベース機能が有効化されていません。ランチャー設定を確認してください！",
+    "SettingsDBNotInitialized": "データベースのサブシステムが初期化されていないか、障害が発生しています。エラーログ/コンソールを確認してください！",
+
     "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",

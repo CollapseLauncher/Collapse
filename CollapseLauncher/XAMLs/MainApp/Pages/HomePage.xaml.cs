@@ -98,7 +98,7 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        private readonly bool IsRpcEnabled_QS = AppDiscordPresence.IsRpcEnabled; 
+        private readonly bool IsRpcEnabled_QS = AppDiscordPresence.IsEnabled; 
 
         public static int RefreshRateDefault => 500;
         public static int RefreshRateSlow    => 1000;
@@ -220,7 +220,10 @@ namespace CollapseLauncher.Pages
                 }
 
             #if !DISABLEDISCORD
-                AppDiscordPresence.SetActivity(ActivityType.Idle);
+                if (!CurrentGameProperty.IsGameRunning)
+                {
+                    AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
+                }
             #endif
 
                 if (IsGameStatusComingSoon || IsGameStatusPreRegister)
