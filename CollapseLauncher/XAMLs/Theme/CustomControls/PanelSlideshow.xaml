@@ -255,7 +255,7 @@
                                               IsIndeterminate="False"
                                               Width="24"
                                               Height="24"
-                                              Background="{ThemeResource ProgressBarBackgroundThemeBrush}"
+                                              Foreground="{ThemeResource ButtonForegroundThemeBrush}"
                                               Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
                                               Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
                                               Value="0"/>
