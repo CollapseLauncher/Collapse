@@ -1507,7 +1507,7 @@
                             <StackPanel Orientation="Horizontal"
                                         Spacing="4"
                                         extension:UIElementExtensions.CursorType="Hand">
-                                <FontIcon Glyph="&#xE7C1;"
+                                <FontIcon Glyph="&#xE789;"
                                           FontSize="12"
                                           Margin="0,0,0,8"
                                           VerticalAlignment="Center"/>
