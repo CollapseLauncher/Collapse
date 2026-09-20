@@ -270,7 +270,7 @@ namespace CollapseLauncher.Pages
             else
             {
             #if !DISABLEDISCORD
-                AppDiscordPresence.SetActivity(ActivityType.Cache);
+                AppDiscordPresence.SetActivity(DiscordActivityType.Cache);
             #endif
             }
         }

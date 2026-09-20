@@ -705,7 +705,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
     }
 
-    public void Flush() => FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    public void Flush()
+    {
+        UpdateCompletenessStatus(CompletenessStatus.Idle);
+        AssetIndex.Clear();
+
+        FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    }
 
     public async ValueTask<bool> IsPreloadCompleted(CancellationToken token = default)
     {
@@ -829,7 +835,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsCompleted = false;
                 Status.IsCanceled  = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Update);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Update);
 #endif
                 break;
             case CompletenessStatus.Completed:
@@ -840,7 +846,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 lock (Progress)
                 {
@@ -856,7 +862,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 break;
             case CompletenessStatus.Idle:
@@ -867,7 +873,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 break;
         }

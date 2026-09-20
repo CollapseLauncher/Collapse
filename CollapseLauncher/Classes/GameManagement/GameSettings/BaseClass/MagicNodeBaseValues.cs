@@ -28,13 +28,6 @@ namespace CollapseLauncher.GameSettings.Base
 
     internal static class MagicNodeBaseValuesExt
     {
-        // ReSharper disable once UnusedMember.Local
-        private static readonly JsonSerializerOptions JsonSerializerOpts = new()
-        {
-            AllowTrailingCommas = true,
-            ReadCommentHandling = JsonCommentHandling.Skip
-        };
-
         private static JsonObject EnsureCreatedObject(this JsonNode? node, string keyName)
         {
             // If the node is empty, then create a new instance of it
@@ -336,7 +329,11 @@ namespace CollapseLauncher.GameSettings.Base
         private SettingsGameVersionManager GameVersionManager { get; set; }
 
         [JsonIgnore]
-        protected JsonNode? SettingsJsonNode { get; private set; }
+        protected JsonNode? SettingsJsonNode
+        {
+            get;
+            private set;
+        }
 
         [JsonIgnore]
         public IGameSettings ParentGameSettings => null!;
@@ -406,15 +403,14 @@ namespace CollapseLauncher.GameSettings.Base
         {
             // Get the file and dir path
             string filePath = GameVersionManager.ConfigFilePath;
-            string? fileDirPath = Path.GetDirectoryName(filePath);
-
-            // Create the dir if not exist
-            if (string.IsNullOrEmpty(fileDirPath) && !Directory.Exists(fileDirPath))
-                Directory.CreateDirectory(fileDirPath!);
 
             // Write into the file
             string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false, true);
             Sleepy.WriteString(filePath, jsonString, Magic);
+
+#if DEBUG
+            Logger.LogWriteLine($"Serialized data:\r\n{jsonString}", LogType.Debug, true);
+#endif
         }
 
         public override bool Equals(object? obj)

@@ -114,12 +114,15 @@ public partial class LayeredBackgroundImage
             {
                 if (_functionTableBeginDraw == null! ||
                     _functionTableDrawImage == null! ||
+                    _functionTableCopyFrameToVideoSurface == null! ||
                     _functionTableDispose == null!)
                 {
                     SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
                                                                                _canvasRenderTargetNativePtr,
+                                                                               _videoPlayerPtr,
                                                                                out _functionTableBeginDraw,
                                                                                out _functionTableDrawImage,
+                                                                               out _functionTableCopyFrameToVideoSurface,
                                                                                out _functionTableDispose,
                                                                                in _canvasRenderSize);
                 }
@@ -128,9 +131,10 @@ public partial class LayeredBackgroundImage
             {
                 Interlocked.Exchange(ref _useSafeFrameRenderer, true); // Fallback
 
-                _functionTableBeginDraw = null;
-                _functionTableDrawImage = null;
-                _functionTableDispose   = null;
+                _functionTableBeginDraw               = null;
+                _functionTableDrawImage               = null;
+                _functionTableCopyFrameToVideoSurface = null;
+                _functionTableDispose                 = null;
                 Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
                                     LogType.Error,
                                     true);
@@ -256,8 +260,9 @@ public partial class LayeredBackgroundImage
     {
         // -- Note to myself @neon-nyan:
         //    Release IMediaPlayer5 reference first, then dispose the whole MediaPlayer.
-        //    This is necessary as we just cast the _videoPlayer object (as IWinRTObject, then took its direct pointer) into IMediaPlayer5.
-        //    If not released, the reference on the IWinRTObject will not be zeroed, causing leak.
+        //    This is necessary as we just cast/QueryInterface the _videoPlayer object
+        //    (as IWinRTObject, then took its direct pointer) into IMediaPlayer5. If not
+        //    released, the reference on the IWinRTObject will not be zeroed, causing leak.
         if (_videoPlayerPtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _videoPlayerPtr, nint.Zero));
     }
 
@@ -265,8 +270,9 @@ public partial class LayeredBackgroundImage
     {
         // -- Note to myself @neon-nyan:
         //    Release IDirect3DSurface reference first, then dispose the whole CanvasRenderTarget.
-        //    This is necessary as we just cast the _canvasRenderTargetNativePtr (which is obtained from IWinRTObject's direct pointer) into IDirect3DSurface.
-        //    If not released, the reference on the IWinRTObject will not be zeroed, causing leak.
+        //    This is necessary as we just cast/QueryInterface the _canvasRenderTargetNativePtr (which
+        //    is obtained from IWinRTObject's direct pointer) into IDirect3DSurface. If not released,
+        //    the reference on the IWinRTObject will not be zeroed, causing leak.
         if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _canvasRenderTargetAsSurfacePtr, nint.Zero));
 
         // -- Nullify IWinRTObject direct pointers.

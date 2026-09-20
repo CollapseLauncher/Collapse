@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Buffers.Text;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,7 +13,11 @@ using System.Threading;
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
 // ReSharper disable StringLiteralTypo
+#if NET11_0_OR_GREATER
+using ZstdDecompressStream = System.IO.Compression.ZstandardStream;
+#else
 using ZstdDecompressStream = ZstdNet.DecompressionStream;
+#endif
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -179,10 +184,10 @@ namespace CollapseLauncher.Helper.Metadata
                         throw new FormatException($"Decompression format is not supported! ({compressionType})");
                 }
 
-            #if DEBUG
+#if DEBUG
                 Logger.LogWriteLine($"[DataCooker::ServeV3Data()] Loaded ServeV3 data [IsPooled: {isDecryptPoolUsed}][TCompress: {compressionType} | IsEncrypt: {isUseEncryption}][CompSize: {compressedSize} | UncompSize: {decompressedSize}]",
                                     LogType.Debug, true);
-            #endif
+#endif
             }
             finally
             {
@@ -214,28 +219,31 @@ namespace CollapseLauncher.Helper.Metadata
 
         private static unsafe int DecompressDataFromZstd(Span<byte> outData, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
         {
-            fixed (byte* inputBuffer = &dataRawBuffer[0])
-                fixed (byte* outputBuffer = &outData[0])
-                {
-                    int decompressedWritten = 0;
+            byte* inputBuffer         = (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(dataRawBuffer));
+            byte* outputBuffer        = (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(outData));
+            int   decompressedWritten = 0;
 
-                    byte[] buffer = new byte[4 << 10];
+            Span<byte> buffer = stackalloc byte[1 << 10];
 
-                    using UnmanagedMemoryStream inputStream  = new(inputBuffer, dataRawBuffer.Length);
-                    using UnmanagedMemoryStream outputStream = new(outputBuffer, outData.Length);
-                    using ZstdDecompressStream  decompStream = new(inputStream);
+            using UnmanagedMemoryStream inputStream  = new(inputBuffer, dataRawBuffer.Length);
+            using UnmanagedMemoryStream outputStream = new(outputBuffer, outData.Length);
 
-                    int read;
-                    while ((read = decompStream.Read(buffer)) > 0)
-                    {
-                        outputStream.Write(buffer, 0, read);
-                        decompressedWritten += read;
-                    }
+#if NET11_0_OR_GREATER
+            using ZstdDecompressStream decompStream = new(inputStream, CompressionMode.Decompress);
+#else
+            using ZstdDecompressStream decompStream = new(inputStream);
+#endif
 
-                    return decompressedSize != decompressedWritten
-                        ? throw new DataMisalignedException("Decompressed data is misaligned!")
-                        : decompressedWritten;
-                }
+            int read;
+            while ((read = decompStream.Read(buffer)) > 0)
+            {
+                outputStream.Write(buffer[..read]);
+                decompressedWritten += read;
+            }
+
+            return decompressedSize != decompressedWritten
+                ? throw new DataMisalignedException("Decompressed data is misaligned!")
+                : decompressedWritten;
         }
     }
 }
