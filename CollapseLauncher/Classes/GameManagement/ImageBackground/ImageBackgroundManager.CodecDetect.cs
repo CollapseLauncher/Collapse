@@ -1,4 +1,6 @@
 ﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Helper.InternalPInvoke;
+using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.Win32.WinRT.WindowsCodec;
 using System;
@@ -16,12 +18,12 @@ public partial class ImageBackgroundManager
 {
     #region Codec Checks
 
-    private async ValueTask<(bool IsSupported, bool IsVideo)> CheckCodecOrSpawnDialog(Uri? fileUri)
+    private async ValueTask<(bool IsSupported, bool IsVideo, bool ForceFFmpeg)> CheckCodecOrSpawnDialog(Uri? fileUri)
     {
         // -- Cancel if null or URI is not a local file
         if (fileUri == null || !fileUri.IsFile)
         {
-            return (false, false);
+            return (false, false, false);
         }
 
         string filePath = fileUri.LocalPath;
@@ -30,7 +32,7 @@ public partial class ImageBackgroundManager
         if (!IsMediaFileExtensionSupported(filePath))
         {
             await SimpleDialogs.Dialog_SpawnMediaExtensionNotSupportedDialog(filePath);
-            return (false, false);
+            return (false, false, false);
         }
 
         // -- Check for supported image codec
@@ -38,11 +40,20 @@ public partial class ImageBackgroundManager
         {
             if (WindowsCodecHelper.IsFileSupportedImage(filePath))
             {
-                return (true, false);
+                return (true, false, false);
             }
 
             await SimpleDialogs.Dialog_SpawnImageNotSupportedDialog(filePath);
-            return (false, false);
+            return (false, false, false);
+        }
+
+        // -- Check using FFmpeg if available
+        MediaSupport    codecInfo   = FFmpegPInvoke.GetMediaSupport(filePath);
+        PixelColorModel pixelFormat = codecInfo.VideoPixelFormatInfo.ColorModel;
+        if ((GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable) ||
+            (codecInfo.Video.DecoderAvailable && pixelFormat.HasFlag(PixelColorModel.Rgb)))
+        {
+            return (true, true, true);
         }
 
         // -- Check for supported video codec
@@ -53,7 +64,7 @@ public partial class ImageBackgroundManager
                                                     out Guid audioCodecGuid) ||
             (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable))
         {
-            return (true, true);
+            return (true, true, true);
         }
 
         return (await SimpleDialogs
@@ -61,7 +72,7 @@ public partial class ImageBackgroundManager
                                                         canPlayVideo,
                                                         canPlayAudio,
                                                         videoCodecGuid,
-                                                        audioCodecGuid), true);
+                                                        audioCodecGuid), true, false);
     }
 
     #endregion

@@ -1,19 +1,34 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+// ReSharper disable StringLiteralTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Helper.InternalPInvoke;
 
 internal static class CollapsePInvoke
 {
-    private const string LibraryExtension = ".dll";
+    internal const string LibraryExtension = ".dll";
+
+    public static Dictionary<string, DllImportResolver> CustomResolvers = new(StringComparer.OrdinalIgnoreCase);
 
     internal static nint DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
     {
+        // Try to resolve the library from the Custom Resolvers first.
+        if (CustomResolvers.TryGetValue(libraryName, out DllImportResolver customResolver) &&
+            customResolver(libraryName, assembly, searchPath) is var customResolverResult &&
+            customResolverResult != nint.Zero)
+        {
+            return customResolverResult;
+        }
+
         bool retryFirst = false;
         string pathToLoad = libraryName;
     LoadFirst:

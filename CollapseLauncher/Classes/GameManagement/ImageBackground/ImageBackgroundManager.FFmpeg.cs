@@ -1,14 +1,13 @@
 ﻿using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.FFmpegPInvoke;
+using CollapseLauncher.Helper.InternalPInvoke;
+using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 using CollapseLauncher.Helper.StreamUtility;
 using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
-using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -23,46 +22,30 @@ public partial class ImageBackgroundManager
     #region Shared/Static Properties and Fields
 
     private const string GlobalIsUseFFmpegConfigKey        = "GlobalIsUseFFmpeg";
-    private const string GlobalFFmpegVersionToUseConfigKey = "GlobalFFmpegVersionToUse";
-    private const string GlobalFFmpegCustomPathConfigKey   = "GlobalFFmpegCustomPath";
     private const string GlobalFFmpegDecodingModeConfigKey = "GlobalFFmpegDecodingMode";
-
-    private const int GlobalFFmpegDefaultVersionKey = 80;
 
     public VideoDecoderMode[] AvailableFFmpegDecodingModes => field ??= Enum.GetValues<VideoDecoderMode>();
 
     public int GlobalFFmpegVersionToUse
     {
-        get
-        {
-            int version = LauncherConfig.GetAppConfigValue(GlobalFFmpegVersionToUseConfigKey);
-            return FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(version) ?
-                version :
-                GlobalFFmpegDefaultVersionKey;
-        }
+        get => FFmpegPInvoke.FFmpegVersionToUse;
         set
         {
-            if (!FFmpegPInvoke.FFmpegVersionLibNames.ContainsKey(value))
-            {
-                return;
-            }
-
-            LauncherConfig.SetAndSaveConfigValue(GlobalFFmpegVersionToUseConfigKey, value);
+            FFmpegPInvoke.FFmpegVersionToUse = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(GlobalFFmpegLibraryNames)); // Notify FFmpeg library names update too.
         }
     }
 
-    public FFmpegPInvoke.FFmpegLibraryNames GlobalFFmpegLibraryNames
-    {
-        get
-        {
-            if (FFmpegPInvoke.FFmpegVersionLibNames.TryGetValue(GlobalFFmpegVersionToUse, out FFmpegPInvoke.FFmpegLibraryNames names))
-            {
-                return names;
-            }
+    public FFmpegLibraryNames GlobalFFmpegLibraryNames => FFmpegPInvoke.FFmpegLibraryNamings;
 
-            return FFmpegPInvoke.FFmpegVersionLibNames.Values.FirstOrDefault();
+    public string? GlobalCustomFFmpegPath
+    {
+        get => FFmpegPInvoke.CustomFFmpegPath;
+        set
+        {
+            FFmpegPInvoke.CustomFFmpegPath = value;
+            OnPropertyChanged();
         }
     }
 
@@ -76,17 +59,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public string? GlobalCustomFFmpegPath
-    {
-        get => LauncherConfig.GetAppConfigValue(GlobalFFmpegCustomPathConfigKey);
-        set
-        {
-            LauncherConfig.SetAndSaveConfigValue(GlobalFFmpegCustomPathConfigKey, value);
-            OnPropertyChanged();
-        }
-    }
-
-    public bool GlobalIsFFmpegAvailable => IsFFmpegAvailable(Directory.GetCurrentDirectory(), GlobalFFmpegLibraryNames, out _);
+    public bool GlobalIsFFmpegAvailable => FFmpegPInvoke.IsFFmpegAvailable(Directory.GetCurrentDirectory(), GlobalFFmpegLibraryNames, out _);
 
     public bool GlobalIsFFmpegCurrentlyUsed
     {
@@ -144,17 +117,17 @@ public partial class ImageBackgroundManager
                 return false;
             }
 
-            FFmpegPInvoke.FFmpegLibraryNames names = GlobalFFmpegLibraryNames;
+            FFmpegLibraryNames names = GlobalFFmpegLibraryNames;
 
             string  curDir       = LauncherConfig.AppExecutableDir;
             string  stockDir     = Path.Combine(curDir, "Lib");
-            string? stockFindDir = FindFFmpegInstallFolder(stockDir, names);
+            string? stockFindDir = FFmpegPInvoke.FindFFmpegInstallFolder(stockDir, names);
 
             string? customFFmpegDirPath = GlobalCustomFFmpegPath;
 
             // -- 1. Check from custom path first. If it exists, then pass.
             if (!string.IsNullOrEmpty(customFFmpegDirPath) &&
-                IsFFmpegAvailable(customFFmpegDirPath, names, out exception) &&
+                FFmpegPInvoke.IsFFmpegAvailable(customFFmpegDirPath, names, out exception) &&
                 TryLinkFFmpegLibrary(customFFmpegDirPath, curDir, names, out exception))
             {
                 return result = true;
@@ -162,7 +135,7 @@ public partial class ImageBackgroundManager
 
             // -- 2. Link stock library to the root directory
             if (!string.IsNullOrEmpty(stockFindDir) &&
-                IsFFmpegAvailable(stockFindDir, names, out exception) &&
+                FFmpegPInvoke.IsFFmpegAvailable(stockFindDir, names, out exception) &&
                 TryLinkFFmpegLibrary(stockFindDir, curDir, names, out exception))
             {
                 return result = true;
@@ -170,8 +143,14 @@ public partial class ImageBackgroundManager
 
             // -- 3. Find one from environment variables. If it exists, then pass.
             //       Otherwise, return false.
-            return result = TryFindFFmpegInstallFromEnvVar(names, out string? envVarPath, out exception) &&
-                            TryLinkFFmpegLibrary(envVarPath, curDir, names, out exception);
+            if (!FFmpegPInvoke.TryFindFFmpegInstallFromEnvVar(names, out string? envVarPath, out exception) ||
+                !TryLinkFFmpegLibrary(envVarPath, curDir, names, out exception))
+            {
+                return false;
+            }
+
+            GlobalCustomFFmpegPath = envVarPath; // Set as custom path
+            return true;
         }
         finally
         {
@@ -184,81 +163,9 @@ public partial class ImageBackgroundManager
         }
     }
 
-    internal bool TryFindFFmpegInstallFromEnvVar(FFmpegPInvoke.FFmpegLibraryNames libraries, [NotNullWhen(true)] out string? path, out Exception? exception)
-    {
-        return FindIn(EnvironmentVariableTarget.User,    out path, out exception) ||
-               FindIn(EnvironmentVariableTarget.Machine, out path, out exception);
-
-        bool FindIn(EnvironmentVariableTarget target, [NotNullWhen(true)] out string? innerPath, out Exception? exception)
-        {
-            const string separators = ";,";
-            Unsafe.SkipInit(out innerPath);
-            Unsafe.SkipInit(out exception);
-
-            foreach (object? varValue in Environment.GetEnvironmentVariables(target))
-            {
-                if (varValue is not DictionaryEntry { Value: string varValueStr })
-                {
-                    continue;
-                }
-
-                ReadOnlySpan<char> envVar = varValueStr;
-                foreach (Range envVarRange in envVar.SplitAny(separators))
-                {
-                    ReadOnlySpan<char> envVarPath = envVar[envVarRange].Trim(" '\"");
-                    if (envVarPath.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    string thisPath = envVarPath.ToString();
-
-                    if (!Path.IsPathFullyQualified(thisPath) ||
-                        !IsFFmpegAvailable(thisPath, libraries, out exception)) continue;
-
-                    innerPath              = thisPath;
-                    GlobalCustomFFmpegPath = thisPath; // Set as custom path
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-
-    internal static bool IsFFmpegAvailable(string? checkOnDirectory,
-                                           FFmpegPInvoke.FFmpegLibraryNames libraries,
-                                           [NotNullWhen(false)]
-                                           out Exception? exception)
-    {
-        if (string.IsNullOrEmpty(checkOnDirectory))
-        {
-            exception = new NullReferenceException($"Argument: {nameof(checkOnDirectory)} is null!");
-            return false;
-        }
-
-        checkOnDirectory = FileUtility.GetFullyQualifiedPath(checkOnDirectory);
-
-        string dllPathAvcodec    = Path.Combine(checkOnDirectory, libraries.Codec);
-        string dllPathAvdevice   = Path.Combine(checkOnDirectory, libraries.Device);
-        string dllPathAvfilter   = Path.Combine(checkOnDirectory, libraries.Filter);
-        string dllPathAvformat   = Path.Combine(checkOnDirectory, libraries.Format);
-        string dllPathAvutil     = Path.Combine(checkOnDirectory, libraries.Util);
-        string dllPathSwresample = Path.Combine(checkOnDirectory, libraries.Resample);
-        string dllPathSwscale    = Path.Combine(checkOnDirectory, libraries.Scale);
-
-        return FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvcodec,    out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvdevice,   out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvfilter,   out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvformat,   out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathAvutil,     out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwresample, out _, out exception) &&
-               FileUtility.IsFileExistOrSymbolicLinkResolved(dllPathSwscale,    out _, out exception);
-    }
-
     internal static string[] GetFFmpegRequiredDllFilenames()
     {
-        FFmpegPInvoke.FFmpegLibraryNames names = Shared.GlobalFFmpegLibraryNames;
+        FFmpegLibraryNames names = Shared.GlobalFFmpegLibraryNames;
         return [
             names.Codec,
             names.Device,
@@ -270,35 +177,10 @@ public partial class ImageBackgroundManager
         ];
     }
 
-    internal static string? FindFFmpegInstallFolder(string checkOnDirectory, FFmpegPInvoke.FFmpegLibraryNames libraries)
-    {
-        try
-        {
-            if (IsFFmpegAvailable(checkOnDirectory, libraries, out _))
-            {
-                return checkOnDirectory;
-            }
-
-            foreach (string dirPath in FileUtility.EnumerateDirectoryRecursive(checkOnDirectory))
-            {
-                if (IsFFmpegAvailable(dirPath, libraries, out _))
-                {
-                    return dirPath;
-                }
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return null;
-    }
-
     public static bool TryLinkFFmpegLibrary(
-        string? sourceDir,
-        string? targetDir,
-        FFmpegPInvoke.FFmpegLibraryNames libraries,
+        string?            sourceDir,
+        string?            targetDir,
+        FFmpegLibraryNames libraries,
         [NotNullWhen(false)]
         out Exception? exception)
     {

@@ -1,4 +1,9 @@
-﻿namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
+﻿// ReSharper disable StringLiteralTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+#pragma warning disable IDE0130
+namespace CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 
 // https://ffmpeg.org/doxygen/7.0/group__lavu__misc.html#ga9a84bba4713dfced21a1a56163be1f48
 public enum AVMediaType
