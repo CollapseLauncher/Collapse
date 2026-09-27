@@ -187,7 +187,7 @@ internal static class SenadinaExtension
             Logger.LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
             return response.Deserialize(ServeV3FileContextContext.Default.DictionaryStringServeV3FileContext);
 #else
-            return await fileIdentifierStreamDecoder.DeserializeAsync(ServeV3FileContextContext.Default.DictionaryStringServeV3FileContext, token: token);
+            return await remoteStreamDecrypt.DeserializeAsync(ServeV3FileContextContext.Default.DictionaryStringServeV3FileContext, token: token);
 #endif
         }
         catch (Exception ex)
