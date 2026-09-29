@@ -367,7 +367,11 @@ public partial class LayeredBackgroundImage
                 // Only initialize once.
                 if (Interlocked.Exchange(ref _isVideoInitialized, 1) == 0)
                 {
-                    InitializeRenderTarget();
+                    if (!InitializeRenderTarget())
+                    {
+                        Interlocked.Exchange(ref _isVideoInitialized, 0);
+                        return;
+                    }
 
                     // Seek to last position if source was the same
                     if (_videoPlayer.CanSeek &&

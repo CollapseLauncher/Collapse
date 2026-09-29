@@ -151,6 +151,8 @@ public partial class LayeredBackgroundImage
     private static void BackgroundSource_UseStatic(LayeredBackgroundImage element)
     {
         Grid grid = element._backgroundGrid;
+        // Static artwork already includes the foreground used by the video.
+        element._foregroundGrid.Visibility = Visibility.Collapsed;
 
         element.LoadFromSourceAsyncDetached(BackgroundStaticSourceProperty,
                                             nameof(BackgroundStretch),
@@ -166,6 +168,7 @@ public partial class LayeredBackgroundImage
     private static void BackgroundSource_UseNormal(LayeredBackgroundImage element)
     {
         Grid grid = element._backgroundGrid;
+        element._foregroundGrid.Visibility = Visibility.Visible;
         element.LoadFromSourceAsyncDetached(BackgroundSourceProperty,
                                             nameof(BackgroundStretch),
                                             nameof(BackgroundHorizontalAlignment),
@@ -435,8 +438,15 @@ public partial class LayeredBackgroundImage
                         return false;
                     }
 
-                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
+                    if (player == null || !ReferenceEquals(player, instance._videoPlayer) || player.IsObjectDisposed())
+                    {
+                        ffmpegMediaSource.Dispose();
+                        isError = true;
+                        return false;
+                    }
+
                     Interlocked.Exchange(ref instance._videoFfmpegMediaSource, ffmpegMediaSource);
+                    await ffmpegMediaSource.OpenWithMediaPlayerAsync(player);
 
                     // HACK:
                     // Sometimes the media source isn't ready when the window just get restored from minimized state,
@@ -533,10 +543,18 @@ public partial class LayeredBackgroundImage
 
         void Impl()
         {
-            if (!IsLoaded)
+            if (!IsLoaded || !ReferenceEquals(sender, _videoPlayer) || sender.IsObjectDisposed())
             {
                 return;
             }
+
+            if (ReferenceEquals(_videoFramePlayer, sender)) return;
+
+            MediaPlaybackSession session = sender.PlaybackSession;
+            session.NaturalVideoSizeChanged -= InitializeVideoFrameOnSizeChanged;
+            session.NaturalVideoSizeChanged += InitializeVideoFrameOnSizeChanged;
+            if (!InitializeRenderTargetSize(session)) return;
+            session.NaturalVideoSizeChanged -= InitializeVideoFrameOnSizeChanged;
 
             // Update Media Duration and Update Binding to it.
             SetValue(MediaDurationProperty, sender.NaturalDuration);
@@ -563,16 +581,27 @@ public partial class LayeredBackgroundImage
                                VerticalAlignmentProperty,
                                BindingMode.OneWay);
 
-            InitializeRenderTargetSize(sender.PlaybackSession);
-
             // Register events
             image.Loaded   += Image_VideoFrameOnLoaded;
             image.Unloaded += Image_VideoFrameOnUnloaded;
 
             // Add to children
             image.Transitions.Add(new ContentThemeTransition());
+            _videoFramePlayer = sender;
             _backgroundGrid.Children.Add(image);
         }
+    }
+
+    private void InitializeVideoFrameOnSizeChanged(MediaPlaybackSession sender, object args)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (_videoPlayer is { } player && !player.IsObjectDisposed() &&
+                ReferenceEquals(sender, player.PlaybackSession))
+            {
+                InitializeVideoFrameOnMediaOpened(player, args);
+            }
+        });
     }
 
     private static void Image_VideoFrameOnLoaded(object sender, RoutedEventArgs e)
@@ -582,7 +611,8 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        if (!parentGrid.Item2.IsVideoAutoplay) return;
+        if (!parentGrid.Item2.IsVideoAutoplay &&
+            parentGrid.Item2._videoState is not (VideoState.RequestedPlay or VideoState.Playing)) return;
 
         Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
         parentGrid.Item2.InitializeAndPlayVideoView();
