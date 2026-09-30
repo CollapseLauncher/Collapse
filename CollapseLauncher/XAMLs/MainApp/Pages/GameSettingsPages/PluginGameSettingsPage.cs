@@ -85,6 +85,7 @@ public sealed partial class PluginGameSettingsPage
         }
 
         sectionsPanel.Children.Add(sectionGrid);
+        sectionsPanel.Children.Add(CreateCustomArgumentsSection());
         sectionGrid.SizeChanged += (_, args) => ArrangeGrid(sectionGrid, args.NewSize.Width >= 900 ? 2 : 1);
         ArrangeGrid(sectionGrid, 1);
 
@@ -98,6 +99,44 @@ public sealed partial class PluginGameSettingsPage
         return root;
     }
 
+    private FrameworkElement CreateCustomArgumentsSection()
+    {
+        var settings = GetCurrentGameProperty().GameSettings;
+        StackPanel panel = new() { Spacing = 12 };
+        panel.Children.Add(new TextBlock
+        {
+            Text = Locale.Current.Lang?._GameSettingsPage?.CustomArgs_Title ?? "Custom arguments",
+            Style = Application.Current.Resources["SubtitleTextBlockStyle"] as Style,
+            TextWrapping = TextWrapping.Wrap
+        });
+        ToggleSwitch toggle = new()
+        {
+            Header = Locale.Current.Lang?._GameSettingsPage?.CustomArgs_Subtitle ?? "Use custom launch arguments",
+            IsOn = settings?.SettingsCollapseMisc.UseCustomArguments ?? false,
+            IsEnabled = settings != null
+        };
+        TextBox arguments = new()
+        {
+            Text = settings?.SettingsCustomArgument.CustomArgumentValue ?? string.Empty,
+            IsEnabled = toggle.IsOn,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        AutomationProperties.SetName(arguments, "Custom launch arguments");
+        toggle.Toggled += (_, _) =>
+        {
+            if (settings == null) return;
+            settings.SettingsCollapseMisc.UseCustomArguments = toggle.IsOn;
+            arguments.IsEnabled = toggle.IsOn;
+        };
+        arguments.TextChanged += (_, _) =>
+        {
+            if (settings != null)
+                settings.SettingsCustomArgument.CustomArgumentValue = arguments.Text;
+        };
+        panel.Children.Add(toggle);
+        panel.Children.Add(arguments);
+        return panel;
+    }
     private static void ArrangeGrid(Grid grid, int columns)
     {
         int rows = (grid.Children.Count + columns - 1) / columns;

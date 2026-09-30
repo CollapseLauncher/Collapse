@@ -10,6 +10,7 @@
     <Grid>
         <Grid x:Name="PageContent">
             <ScrollViewer x:Name="SettingsScrollViewer"
+                          Padding="0,0,0,74"
                           VerticalScrollBarVisibility="Auto">
                 <Grid x:Name="ElementContent"/>
             </ScrollViewer>
