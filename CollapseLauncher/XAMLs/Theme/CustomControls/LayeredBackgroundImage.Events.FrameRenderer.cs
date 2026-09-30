@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -65,6 +65,7 @@ public partial class LayeredBackgroundImage
     private nint                _canvasRenderTargetAsSurfacePtr;
 
     private int _isBlockVideoFrameDraw = 1;
+    private readonly object _videoFrameRenderLock = new();
     private int _isVideoFrameDrawInProgress;
     private int _isVideoInitialized;
 
@@ -91,6 +92,7 @@ public partial class LayeredBackgroundImage
     private unsafe void VideoPlayer_VideoFrameAvailableUnsafe(MediaPlayer sender, object args)
     {
         nint drawingSessionPpv = nint.Zero;
+        var functionTableDispose = _functionTableDispose;
         try
         {
             if (Interlocked.Decrement(ref _videoToSkipFrames) > 0)
@@ -98,24 +100,28 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            if (_isBlockVideoFrameDraw == 1 ||
-                _canvasImageSourceNativePtr == nint.Zero ||
-                _canvasRenderTargetNativePtr == nint.Zero ||
-                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
+            lock (_videoFrameRenderLock)
             {
+                if (_isBlockVideoFrameDraw == 1 ||
+                    _canvasImageSourceNativePtr == nint.Zero ||
+                    _canvasRenderTargetNativePtr == nint.Zero ||
+                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
+                {
 #if DEBUG
-                Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
+                    Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
 #endif
-                return;
-            }
+                    return;
+                }
 
-            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
-            drawingSessionPpv = SwapChainPanelHelper
-               .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
-                                        _canvasRenderTargetNativePtr,
-                                        _functionTableBeginDraw,
-                                        _functionTableDrawImage,
-                                        in _canvasRenderSize);
+                functionTableDispose = _functionTableDispose;
+                SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
+                drawingSessionPpv = SwapChainPanelHelper
+                   .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
+                                            _canvasRenderTargetNativePtr,
+                                            _functionTableBeginDraw,
+                                            _functionTableDrawImage,
+                                            in _canvasRenderSize);
+            }
         }
         // Device lost error. If happened, reinitialize render target
         catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
@@ -143,7 +149,10 @@ public partial class LayeredBackgroundImage
             {
                 try
                 {
-                    SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, _functionTableDispose);
+                    lock (_videoFrameRenderLock)
+                    {
+                        SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, functionTableDispose);
+                    }
                 }
                 // Device lost error. If happened, reinitialize render target
                 catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)

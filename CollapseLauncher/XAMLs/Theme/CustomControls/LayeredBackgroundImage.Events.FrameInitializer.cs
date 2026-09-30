@@ -105,12 +105,13 @@ public partial class LayeredBackgroundImage
 
     private unsafe bool InitializeRenderTarget()
     {
+        bool initialized = false;
+        Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1);
         try
         {
             // Play() can arrive before MediaOpened. Read this player's size before creating any surfaces.
             if (_videoPlayer == null || !InitializeRenderTargetSize(_videoPlayer.PlaybackSession)) return false;
 
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
             DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
 
             _canvasDevice ??= CanvasDevice.GetSharedDevice();
@@ -127,7 +128,7 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _useSafeFrameRenderer, false);
             if (_useSafeFrameRenderer)
             {
-                return true;
+                return initialized = true;
             }
 
             _canvasImageSourceNativePtr  = ((IWinRTObject)_canvasImageSource).NativeObject.ThisPtr;
@@ -167,7 +168,7 @@ public partial class LayeredBackgroundImage
                                     LogType.Error,
                                     true);
             }
-            return true;
+            return initialized = true;
         }
         catch (Exception e)
         {
@@ -178,11 +179,11 @@ public partial class LayeredBackgroundImage
         }
         finally
         {
-            if (_canvasImageSource != null)
+            if (initialized && _canvasImageSource != null)
             {
                 SetRenderImageSource(_canvasImageSource.Source);
             }
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Unblock frame drawing routine
+            Interlocked.Exchange(ref _isBlockVideoFrameDraw, initialized ? 0 : 1);
         }
     }
 
@@ -277,12 +278,16 @@ public partial class LayeredBackgroundImage
                             LogType.Warning,
                             true);
 
-        // -- Nullify _canvasImageSource so CanvasDevice and other dependencies are reinitialized too
-        Interlocked.Exchange(ref _canvasImageSource, null!);
-        InitializeRenderTarget();
+        lock (_videoFrameRenderLock)
+        {
+            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1);
+            NullifyRenderTargetNativePointers();
+            // Drop the image source only after invalidating its borrowed native pointer.
+            Interlocked.Exchange(ref _canvasImageSource, null!);
+            InitializeRenderTarget();
 
-        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
-        Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
+            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
+        }
     }
 
     #endregion
