@@ -1,16 +1,22 @@
-using CollapseLauncher.Plugins;
-using CollapseLauncher.Helper;
+using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Plugins;
+using Hi3Helper;
 using Hi3Helper.Plugin.Core.UI.Settings;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Globalization;
-using Microsoft.UI.Text;
+using System.Numerics;
 using static CollapseLauncher.Statics.GamePropertyVault;
 
 #nullable enable
@@ -19,7 +25,7 @@ namespace CollapseLauncher.Pages;
 /// <summary>
 /// Renders the declarative game settings page exposed by a v0.1.6 plugin.
 /// </summary>
-public sealed partial class PluginGameSettingsPage : Page
+public sealed partial class PluginGameSettingsPage
 {
     private readonly GameSettingsExtension.GameSettingsContext _context;
     private readonly TextBlock _statusText = new()
@@ -29,11 +35,14 @@ public sealed partial class PluginGameSettingsPage : Page
         TextWrapping = TextWrapping.Wrap
     };
 
-    public PluginGameSettingsPage()
+    public PluginGameSettingsPage() : base(null!, null!)
     {
         InitializeComponent();
 
-        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Disabled;
+        ApplyButton.Translation           = new Vector3(0, 0, 32);
+        GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
+
+        SetApplyTextContainer(GameSettingsApplyGrid, gridColumn: 1);
 
         if (GetCurrentGameProperty().GamePreset is not PluginPresetConfigWrapper preset)
         {
@@ -41,23 +50,13 @@ public sealed partial class PluginGameSettingsPage : Page
         }
 
         _context = preset.GameSettingsContext;
-        Content = CreateContent();
-
-        ImageBackgroundManager.Shared.IsBackgroundElevated = true;
-        ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
-        ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
     }
 
-    private UIElement CreateContent()
+    private FrameworkElement? CreateContent(out Exception? error)
     {
-        if (!_context.TryGetPage(out GameSettingsPage? page, out Exception? error) || page == null)
+        if (!_context.TryGetPage(out GameSettingsPage? page, out error) || page == null)
         {
-            return new TextBlock
-            {
-                Margin = new Thickness(32, 40, 32, 32),
-                Text = error?.Message ?? "This plugin did not provide a game settings page.",
-                TextWrapping = TextWrapping.Wrap
-            };
+            return null;
         }
 
         Grid root = new();
@@ -95,29 +94,6 @@ public sealed partial class PluginGameSettingsPage : Page
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto
         };
         root.Children.Add(scrollViewer);
-
-        Grid applyPanel = new()
-        {
-            Padding = new Thickness(32, 16, 32, 16),
-            Background = Application.Current.Resources["GameSettingsApplyGridBrush"] as Brush
-        };
-        applyPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        applyPanel.ColumnDefinitions.Add(new ColumnDefinition());
-        Grid.SetColumn(_statusText, 1);
-        applyPanel.Children.Add(_statusText);
-
-        Button applyButton = new()
-        {
-            Content = Locale.Current.Lang?._GameSettingsPage?.ApplyBtn ?? "Apply settings",
-            MinWidth = 144,
-            CornerRadius = new CornerRadius(16),
-            Style = Application.Current.Resources["AccentButtonStyle"] as Style
-        };
-        applyButton.Click += OnApply;
-        Grid.SetColumn(applyButton, 0);
-        applyPanel.Children.Add(applyButton);
-        Grid.SetRow(applyPanel, 1);
-        root.Children.Add(applyPanel);
 
         return root;
     }
@@ -313,22 +289,91 @@ public sealed partial class PluginGameSettingsPage : Page
         }
     }
 
-    private void OnApply(object sender, RoutedEventArgs args)
+    private void SetStatus(string? text, bool isError = false)
+    {
+        _statusText.Text       = text ?? string.Empty;
+        _statusText.Foreground = isError ? new SolidColorBrush(Colors.IndianRed) : null;
+    }
+
+    #region Overriden Methods from Game Settings Base Page
+    protected override async void OnLoaded(object? sender, RoutedEventArgs args)
+    {
+        try
+        {
+            GameInstallStateEnum gameStatus = await CurrentGameProperty.GameVersion!.GetGameState();
+
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
+
+            if (CurrentGameProperty.IsGameRunning)
+            {
+#if !GSPBYPASSGAMERUNNING
+                Overlay.Visibility     = Visibility.Visible;
+                PageContent.Visibility = Visibility.Collapsed;
+                OverlayTitle.Text      = Locale.Current.Lang?._GameSettingsPage?.OverlayGameRunningTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._GameSettingsPage?.OverlayGameRunningSubtitle;
+#endif
+            }
+            else if (gameStatus
+                     is GameInstallStateEnum.NotInstalled
+                     or GameInstallStateEnum.NeedsUpdate
+                     or GameInstallStateEnum.InstalledHavePlugin
+                     or GameInstallStateEnum.GameBroken)
+            {
+                Overlay.Visibility     = Visibility.Visible;
+                PageContent.Visibility = Visibility.Collapsed;
+                OverlayTitle.Text      = Locale.Current.Lang?._GameSettingsPage?.OverlayNotInstalledTitle;
+                OverlaySubtitle.Text   = Locale.Current.Lang?._GameSettingsPage?.OverlayNotInstalledSubtitle;
+            }
+            else
+            {
+#if !DISABLEDISCORD
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.GameSettings);
+#endif
+
+                FrameworkElement? elementContent = CreateContent(out Exception? createPageError);
+                if (elementContent != null)
+                {
+                    ElementContent.AddElementToGridRowColumn(elementContent);
+                    SettingsScrollViewer.EnableImplicitAnimation(true);
+                    return;
+                }
+
+                Overlay.Visibility     = Visibility.Visible;
+                PageContent.Visibility = Visibility.Collapsed;
+                OverlayTitle.Text      = "Game Settings feature is not available.";
+                OverlaySubtitle.Text   = createPageError?.Message ?? "This plugin did not provide a game settings page.";
+                
+                if (createPageError != null)
+                {
+                    Logger.LogWriteLine($"An error has occurred while trying to create plugin-based game settings page.\r\n{createPageError}", LogType.Error, true);
+                    ErrorSender.SendException(createPageError);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
+            ErrorSender.SendException(ex);
+        }
+    }
+
+    protected override void OnUnloaded(object? sender, RoutedEventArgs args)
+    {
+    }
+
+    protected override void OnApplyButtonClick(object sender, RoutedEventArgs args)
     {
         try
         {
             _context.Apply();
-            SetStatus(Locale.Current.Lang?._GameSettingsPage?.SettingsApplied ?? "Settings applied.");
+            SetApplyTextStatus("Lang._StarRailGameSettingsPage.SettingsApplied");
         }
         catch (Exception ex)
         {
-            SetStatus(ex.Message, true);
+            SetApplyTextStatus(ex.Message, true);
         }
     }
-
-    private void SetStatus(string? text, bool isError = false)
-    {
-        _statusText.Text = text ?? string.Empty;
-        _statusText.Foreground = isError ? new SolidColorBrush(Colors.IndianRed) : null;
-    }
+    #endregion
 }
