@@ -109,7 +109,7 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            _functionTableCopyFrameToVideoSurface(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
+            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
             drawingSessionPpv = SwapChainPanelHelper
                .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
                                         _canvasRenderTargetNativePtr,
