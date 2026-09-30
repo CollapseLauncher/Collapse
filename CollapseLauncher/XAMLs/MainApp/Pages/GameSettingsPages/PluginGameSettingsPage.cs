@@ -33,19 +33,19 @@ public sealed partial class PluginGameSettingsPage : Page
     {
         InitializeComponent();
 
-        ImageBackgroundManager.Shared.IsBackgroundElevated = true;
-        ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
-        ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
-
         NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Disabled;
 
-        if (GetCurrentGameProperty().GameVersion.GamePreset is not PluginPresetConfigWrapper preset)
+        if (GetCurrentGameProperty().GamePreset is not PluginPresetConfigWrapper preset)
         {
             throw new InvalidOperationException("The current game preset is not provided by a plugin");
         }
 
         _context = preset.GameSettingsContext;
         Content = CreateContent();
+
+        ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+        ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+        ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
     }
 
     private UIElement CreateContent()

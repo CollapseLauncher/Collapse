@@ -380,10 +380,17 @@ public partial class MainPage : Page
         {
             case Type pageType:
             {
-                if (pageType.Name.EndsWith("GameSettingsPage") &&
-                    !IsGameInstalled())
+                if (pageType.Name.EndsWith("GameSettingsPage"))
                 {
-                    pageType = typeof(NotInstalledPage);
+                    if (!IsLoadRegionComplete)
+                    {
+                        return false;
+                    }
+
+                    if (!IsGameInstalled())
+                    {
+                        pageType = typeof(NotInstalledPage);
+                    }
                 }
 
                 LauncherFrame.Navigate(pageType, null, transitionInfo ?? new DrillInNavigationTransitionInfo());
