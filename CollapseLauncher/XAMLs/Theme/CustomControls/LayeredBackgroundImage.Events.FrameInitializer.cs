@@ -59,9 +59,12 @@ public partial class LayeredBackgroundImage
 
     private void VideoPlayer_OnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
     {
-        Logger.LogWriteLine($"[LayeredBackgroundImage::MediaFailed] Decoder: {(UseFfmpegDecoder ? "FFmpeg" : "Windows")}; {args.Error}: {args.ErrorMessage}\r\n{args.ExtendedErrorCode}",
-                            LogType.Error,
-                            true);
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            Logger.LogWriteLine($"[LayeredBackgroundImage::MediaFailed] Decoder: {(UseFfmpegDecoder ? "FFmpeg" : "Windows")}; {args.Error}: {args.ErrorMessage}\r\n{args.ExtendedErrorCode}",
+                                LogType.Error,
+                                true);
+        });
     }
 
     private bool InitializeRenderTargetSize(MediaPlaybackSession playbackSession)
