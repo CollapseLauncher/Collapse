@@ -734,7 +734,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
     }
 
-    public void Flush() => FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    public void Flush()
+    {
+        UpdateCompletenessStatus(CompletenessStatus.Idle);
+        AssetIndex.Clear();
+
+        FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    }
 
     public async ValueTask<bool> IsPreloadCompleted(CancellationToken token = default)
     {

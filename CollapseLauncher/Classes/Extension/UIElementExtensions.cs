@@ -57,7 +57,11 @@ namespace CollapseLauncher.Extension
         internal static T BindTooltipToLocale<T>(this T element, object? localeObjBinding, string localePropertyName, IValueConverter? converter = null, object? converterParameter = null)
             where T : DependencyObject
         {
-            TextBlock tooltipTextBlock = new();
+            TextBlock tooltipTextBlock = new()
+            {
+                TextWrapping = TextWrapping.Wrap,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
             tooltipTextBlock.BindProperty(TextBlock.TextProperty,
                                           localeObjBinding,
                                           localePropertyName,
@@ -1305,6 +1309,15 @@ namespace CollapseLauncher.Extension
             DispatcherQueueExtensions.TryEnqueue(() => setAttributeDelegate?.Invoke(element));
 
             return element;
+        }
+
+        internal static void UpdateLayoutAndBinding(this ComboBox comboBox)
+        {
+            comboBox.UpdateLayout();
+            object? lastSelectedItem = comboBox.SelectedItem;
+            comboBox.SelectedItem = null;
+            comboBox.SelectedItem = lastSelectedItem;
+            comboBox.UpdateLayout();
         }
     }
 }

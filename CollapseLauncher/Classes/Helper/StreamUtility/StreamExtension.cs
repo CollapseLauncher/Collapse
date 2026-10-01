@@ -3,9 +3,12 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -388,6 +391,124 @@ namespace CollapseLauncher.Helper.StreamUtility
             return firstLetter is >= 'a' and <= 'z' &&
                    path[1] == ':' &&
                    path[2] is '\\' or '/';
+        }
+
+        extension(Stream stream)
+        {
+            [SkipLocalsInit]
+            internal void Write<T>(T source)
+                where T : unmanaged
+            {
+                ReadOnlySpan<byte> asSpan = MemoryMarshal.AsBytes(new ReadOnlySpan<T>(in source));
+                stream.Write(asSpan);
+            }
+
+            [SkipLocalsInit]
+            internal unsafe void WriteArray<T>(ReadOnlySpan<T> source)
+                where T : unmanaged
+            {
+                ReadOnlySpan<byte> dataAsBytes = MemoryMarshal.AsBytes(source);
+                ushort sizeOfElement = (ushort)sizeof(T);
+
+                stream.Write(sizeOfElement);
+                stream.Write(dataAsBytes.Length);
+                stream.Write(dataAsBytes);
+            }
+
+            [SkipLocalsInit]
+            internal unsafe T Read<T>()
+                where T : unmanaged
+            {
+                T result = default;
+                Span<byte> buffer = MemoryMarshal.AsBytes(new Span<T>(ref result));
+
+                int read = stream.Read(buffer);
+                return read != sizeof(T)
+                    ? throw new EndOfStreamException("Stream has been reaching end-of-data")
+                    : result;
+            }
+
+            [SkipLocalsInit]
+            internal unsafe T[] ReadArray<T>()
+                where T : unmanaged
+            {
+                int sizeOfElement = stream.Read<ushort>();
+                int lengthInBytes = stream.Read<int>();
+
+                return sizeOfElement != sizeof(T)
+                    ? throw new InvalidCastException($"Data type size unmatched! Expecting: {sizeOfElement} bytes, but requesting ({typeof(T).Name}): {sizeof(T)} bytes instead!")
+                    : stream.ReadArray<T>(lengthInBytes / sizeOfElement);
+            }
+
+            internal unsafe T[] ReadArray<T>(int elementCount)
+                where T : unmanaged
+            {
+                T[] array = GC.AllocateUninitializedArray<T>(elementCount);
+                Span<byte> arrayAsBytes = MemoryMarshal.AsBytes(array.AsSpan());
+                int length = arrayAsBytes.Length;
+
+                int offsetRead = 0;
+                while (!arrayAsBytes.IsEmpty)
+                {
+                    int read = stream.Read(arrayAsBytes = arrayAsBytes.Slice(offsetRead, length - offsetRead));
+                    offsetRead += read;
+
+                    if (read == 0)
+                        throw new EndOfStreamException($"Stream is reaching end-of-data. Expecting: {length} bytes, but got: {offsetRead} bytes instead");
+                }
+
+                return array;
+            }
+
+            internal void SeekTo(int bytesToAdvance)
+            {
+                if (bytesToAdvance == 0)
+                    return;
+
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bytesToAdvance);
+
+                // Seek the position if supported.
+                if (stream.CanSeek)
+                {
+                    stream.Position += bytesToAdvance;
+                    return;
+                }
+
+                // Otherwise, dummy read the data.
+                byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+                int read;
+
+                while ((read = stream.Read(buffer.AsSpan(0, Math.Min(buffer.Length, bytesToAdvance)))) > 0)
+                {
+                    bytesToAdvance -= read;
+                }
+            }
+
+            internal async ValueTask SeekToAsync(
+                int bytesToAdvance,
+                CancellationToken token)
+            {
+                if (bytesToAdvance == 0)
+                    return;
+
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bytesToAdvance);
+
+                // Seek the position if supported.
+                if (stream.CanSeek)
+                {
+                    stream.Position += bytesToAdvance;
+                    return;
+                }
+
+                // Otherwise, dummy read the data.
+                byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+                int read;
+
+                while ((read = await stream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, bytesToAdvance)), token)) > 0)
+                {
+                    bytesToAdvance -= read;
+                }
+            }
         }
     }
 }

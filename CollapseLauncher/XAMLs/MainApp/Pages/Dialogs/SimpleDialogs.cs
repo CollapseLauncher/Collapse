@@ -2,6 +2,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
@@ -1523,7 +1524,7 @@ namespace CollapseLauncher.Dialogs
                     goto StartOver;
                 }
 
-                foundFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(ffmpegDir, ffmpegLibNames);
+                foundFfmpegDir = FFmpegPInvoke.FindFFmpegInstallFolder(ffmpegDir, ffmpegLibNames);
                 if (string.IsNullOrEmpty(foundFfmpegDir))
                 {
                     await SpawnDialog(Locale.Current.Lang?._Dialogs?.Media_VideoFFmpegCodecPrepareLocateFailedTitle,
