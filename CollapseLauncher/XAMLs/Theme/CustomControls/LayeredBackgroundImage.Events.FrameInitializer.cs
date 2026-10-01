@@ -104,10 +104,10 @@ public partial class LayeredBackgroundImage
             DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
 
             _canvasDevice ??= CanvasDevice.GetSharedDevice();
-            _canvasImageSource ??= new CanvasImageSource(_canvasDevice,
-                                                         _canvasWidth,
-                                                         _canvasHeight,
-                                                         96f);
+            _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
+                                                                _canvasWidth,
+                                                                _canvasHeight,
+                                                                96f);
 
             _canvasRenderTarget ??= new CanvasRenderTarget(_canvasDevice,
                                                            _canvasWidth,
@@ -170,7 +170,7 @@ public partial class LayeredBackgroundImage
         {
             if (initialized && _canvasImageSource != null)
             {
-                SetRenderImageSource(_canvasImageSource);
+                SetRenderImageSource(_canvasImageSource.Source);
             }
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, initialized ? 0 : 1);
         }

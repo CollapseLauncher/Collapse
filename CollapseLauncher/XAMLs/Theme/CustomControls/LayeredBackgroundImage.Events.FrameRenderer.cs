@@ -68,9 +68,9 @@ public partial class LayeredBackgroundImage
     private int _isVideoFrameDrawInProgress;
     private int _isVideoInitialized;
 
-    private CanvasDevice?      _canvasDevice;
-    private CanvasImageSource? _canvasImageSource;
-    private nint               _canvasImageSourceNativePtr = nint.Zero;
+    private CanvasDevice?             _canvasDevice;
+    private CanvasVirtualImageSource? _canvasImageSource;
+    private nint                      _canvasImageSourceNativePtr = nint.Zero;
 
     private int  _canvasWidth;
     private int  _canvasHeight;
@@ -102,9 +102,13 @@ public partial class LayeredBackgroundImage
         }
 
         _functionTableCopyFrameToVideoSurface(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
-        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, Draw);
+
+        return;
+
+        void Draw()
         {
-        StartDraw:
+        // StartDraw:
             try
             {
                 nint drawingSessionPpv = SwapChainPanelHelper
@@ -124,13 +128,21 @@ public partial class LayeredBackgroundImage
             // Trying to recreate the context instead of re-creating the entire canvas
             catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x802B0020u)
             {
-                Logger.LogWriteLine($"[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Recreating the context...\r\n{comEx}",
-                                    LogType.Error,
+                Logger.LogWriteLine($"[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Re-creating the context...\r\n{comEx}",
+                                    LogType.Warning,
                                     true);
 
-                // Re-create the context and start redrawing.
+                /* TODO: Re-create the context and start redrawing.
+                 * Use it for CanvasImageSource later. Needs some fixes with how I can re-create the RenderTarget and the ImageSource without
+                 * dealing with the lock and stuffs.
+                using CanvasLock? canvasLock = _canvasDevice?.Lock();
                 _canvasImageSource?.Recreate(_canvasDevice);
+                Logger.LogWriteLine("[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable] Trying to re-draw after re-creating the context...",
+                                    LogType.Warning,
+                                    true);
                 goto StartDraw;
+                */
+                CanvasDevice_OnDeviceLost();
             }
             // Device lost error. If happened, reinitialize render target
             catch (COMException comEx) when (unchecked((uint)comEx.HResult) is 0x887A0005u or 0x8899000Cu)
@@ -155,7 +167,7 @@ public partial class LayeredBackgroundImage
             {
                 Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
-        });
+        }
     }
 
     private void VideoPlayerSafe_OnVideoFrameAvailable(MediaPlayer sender, object args)
@@ -172,9 +184,13 @@ public partial class LayeredBackgroundImage
         }
 
         _videoPlayer?.CopyFrameToVideoSurface(_canvasRenderTarget);
-        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, Draw);
+
+        return;
+
+        void Draw()
         {
-        StartDraw:
+        // StartDraw:
             try
             {
                 using CanvasDrawingSession? ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
@@ -188,13 +204,21 @@ public partial class LayeredBackgroundImage
             // Trying to recreate the context instead of re-creating the entire canvas
             catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x802B0020u)
             {
-                Logger.LogWriteLine($"[LayeredBackgroundImage::SafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Recreating the context...\r\n{comEx}",
-                                    LogType.Error,
+                Logger.LogWriteLine($"[LayeredBackgroundImage::SafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Re-creating the context...\r\n{comEx}",
+                                    LogType.Warning,
                                     true);
 
-                // Re-create the context and start redrawing.
+                /* TODO: Re-create the context and start redrawing.
+                 * Use it for CanvasImageSource later. Needs some fixes with how I can re-create the RenderTarget and the ImageSource without
+                 * dealing with the lock and stuffs.
+                using CanvasLock? canvasLock = _canvasDevice?.Lock();
                 _canvasImageSource?.Recreate(_canvasDevice);
+                Logger.LogWriteLine("[LayeredBackgroundImage::SafeOnVideoFrameAvailable] Trying to re-draw after re-creating the context...",
+                                    LogType.Warning,
+                                    true);
                 goto StartDraw;
+                */
+                CanvasDevice_OnDeviceLost();
             }
             // Device lost error. If happened, reinitialize render target
             catch (COMException comEx) when (unchecked((uint)comEx.HResult) is 0x887A0005u or 0x8899000Cu)
@@ -214,7 +238,7 @@ public partial class LayeredBackgroundImage
             {
                 Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
-        });
+        }
     }
 
     #endregion
