@@ -19,11 +19,10 @@ using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
 // ReSharper disable IdentifierTypo
-#pragma warning disable IDE0051
-#pragma warning disable CS8321 // Local function is declared but never used
-
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
+#pragma warning disable IDE0051
+#pragma warning disable CS8321 // Local function is declared but never used
 #pragma warning disable CsWinRT1032
 
 #nullable enable
@@ -459,8 +458,8 @@ public partial class LayeredBackgroundImage
                         // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
                         Interlocked.Exchange(ref instance._isVideoInitialized, 0);
                         player?.VideoFrameAvailable -= !instance._useSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+                            ? instance.VideoPlayerUnsafe_OnVideoFrameAvailable
+                            : instance.VideoPlayerSafe_OnVideoFrameAvailable;
 
                         ffmpegMediaSource.Dispose();
                         sourceStreamRandom?.Dispose();

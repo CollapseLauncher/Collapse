@@ -42,7 +42,6 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _videoPlayer, player);
 
             player.MediaOpened += InitializeVideoFrameOnMediaOpened;
-            player.MediaFailed += VideoPlayer_OnMediaFailed;
 
             if (!_useSafeFrameRenderer)
             {
@@ -55,16 +54,6 @@ public partial class LayeredBackgroundImage
                                 LogType.Error,
                                 true);
         }
-    }
-
-    private void VideoPlayer_OnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
-    {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::MediaFailed] Decoder: {(UseFfmpegDecoder ? "FFmpeg" : "Windows")}; {args.Error}: {args.ErrorMessage}\r\n{args.ExtendedErrorCode}",
-                                LogType.Error,
-                                true);
-        });
     }
 
     private bool InitializeRenderTargetSize(MediaPlaybackSession playbackSession)
@@ -115,10 +104,10 @@ public partial class LayeredBackgroundImage
             DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
 
             _canvasDevice ??= CanvasDevice.GetSharedDevice();
-            _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
-                                                                _canvasWidth,
-                                                                _canvasHeight,
-                                                                96f);
+            _canvasImageSource ??= new CanvasImageSource(_canvasDevice,
+                                                         _canvasWidth,
+                                                         _canvasHeight,
+                                                         96f);
 
             _canvasRenderTarget ??= new CanvasRenderTarget(_canvasDevice,
                                                            _canvasWidth,
@@ -145,14 +134,14 @@ public partial class LayeredBackgroundImage
                     _functionTableCopyFrameToVideoSurface == null! ||
                     _functionTableDispose == null!)
                 {
-                    SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
-                                                                               _canvasRenderTargetNativePtr,
-                                                                               _videoPlayerPtr,
-                                                                               out _functionTableBeginDraw,
-                                                                               out _functionTableDrawImage,
-                                                                               out _functionTableCopyFrameToVideoSurface,
-                                                                               out _functionTableDispose,
-                                                                               in _canvasRenderSize);
+                    SwapChainPanelHelper.GetFuncForCanvasImageSource(_canvasImageSourceNativePtr,
+                                                                     _canvasRenderTargetNativePtr,
+                                                                     _videoPlayerPtr,
+                                                                     out _functionTableBeginDraw,
+                                                                     out _functionTableDrawImage,
+                                                                     out _functionTableCopyFrameToVideoSurface,
+                                                                     out _functionTableDispose,
+                                                                     in _canvasRenderSize);
                 }
             }
             catch (Exception e)
@@ -181,7 +170,7 @@ public partial class LayeredBackgroundImage
         {
             if (initialized && _canvasImageSource != null)
             {
-                SetRenderImageSource(_canvasImageSource.Source);
+                SetRenderImageSource(_canvasImageSource);
             }
             Interlocked.Exchange(ref _isBlockVideoFrameDraw, initialized ? 0 : 1);
         }
@@ -193,13 +182,12 @@ public partial class LayeredBackgroundImage
 
     private void DetachVideoPlayerEvents(MediaPlayer player)
     {
-        player.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-        player.MediaFailed -= VideoPlayer_OnMediaFailed;
+        player.MediaOpened                             -= InitializeVideoFrameOnMediaOpened;
         player.PlaybackSession.NaturalVideoSizeChanged -= InitializeVideoFrameOnSizeChanged;
-        player.VideoFrameAvailable -= NotifyVideoLoaded;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableUnsafe;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableSafe;
-        player.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
+        player.VideoFrameAvailable                     -= NotifyVideoLoaded;
+        player.VideoFrameAvailable                     -= VideoPlayerUnsafe_OnVideoFrameAvailable;
+        player.VideoFrameAvailable                     -= VideoPlayerSafe_OnVideoFrameAvailable;
+        player.PlaybackSession.PositionChanged         -= MediaDurationPosition_OnChangedBridge;
     }
 
     private void DisposeVideoPlayer(bool disposeRenderImageSource = true)
@@ -278,16 +266,17 @@ public partial class LayeredBackgroundImage
                             LogType.Warning,
                             true);
 
-        lock (_videoFrameRenderLock)
-        {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1);
-            NullifyRenderTargetNativePointers();
-            // Drop the image source only after invalidating its borrowed native pointer.
-            Interlocked.Exchange(ref _canvasImageSource, null!);
-            InitializeRenderTarget();
+        // Note from: @neon-nyan.
+        // -- Use atomic exchange instead of locking :)
+        if (Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1) == 1)
+            return;
 
-            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-        }
+        NullifyRenderTargetNativePointers();
+        // Drop the image source only after invalidating its borrowed native pointer.
+        Interlocked.Exchange(ref _canvasImageSource, null!);
+        InitializeRenderTarget();
+
+        Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
     }
 
     #endregion

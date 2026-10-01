@@ -65,13 +65,12 @@ public partial class LayeredBackgroundImage
     private nint                _canvasRenderTargetAsSurfacePtr;
 
     private int _isBlockVideoFrameDraw = 1;
-    private readonly object _videoFrameRenderLock = new();
     private int _isVideoFrameDrawInProgress;
     private int _isVideoInitialized;
 
-    private CanvasDevice?             _canvasDevice;
-    private CanvasVirtualImageSource? _canvasImageSource;
-    private nint                      _canvasImageSourceNativePtr = nint.Zero;
+    private CanvasDevice?      _canvasDevice;
+    private CanvasImageSource? _canvasImageSource;
+    private nint               _canvasImageSourceNativePtr = nint.Zero;
 
     private int  _canvasWidth;
     private int  _canvasHeight;
@@ -89,163 +88,66 @@ public partial class LayeredBackgroundImage
 
     #region Video Frame Drawing
 
-    private unsafe void VideoPlayer_VideoFrameAvailableUnsafe(MediaPlayer sender, object args)
+    private unsafe void VideoPlayerUnsafe_OnVideoFrameAvailable(MediaPlayer sender, object args)
     {
-        nint drawingSessionPpv = nint.Zero;
-        var functionTableDispose = _functionTableDispose;
-        try
+        if (_isBlockVideoFrameDraw == 1)
+            return;
+
+        if (Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) > 0)
         {
-            if (Interlocked.Decrement(ref _videoToSkipFrames) > 0)
-            {
-                return;
-            }
-
-            lock (_videoFrameRenderLock)
-            {
-                if (_isBlockVideoFrameDraw == 1 ||
-                    _canvasImageSourceNativePtr == nint.Zero ||
-                    _canvasRenderTargetNativePtr == nint.Zero ||
-                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
-                {
 #if DEBUG
-                    Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
+            Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
 #endif
-                    return;
-                }
+            return;
+        }
 
-                functionTableDispose = _functionTableDispose;
-                SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
-                drawingSessionPpv = SwapChainPanelHelper
+        _functionTableCopyFrameToVideoSurface(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
+        {
+        StartDraw:
+            try
+            {
+                nint drawingSessionPpv = SwapChainPanelHelper
                    .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
                                             _canvasRenderTargetNativePtr,
                                             _functionTableBeginDraw,
                                             _functionTableDrawImage,
                                             in _canvasRenderSize);
+                if (drawingSessionPpv != nint.Zero)
+                    SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, _functionTableDispose);
             }
-        }
-        // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
-        {
-            DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
-        }
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
-        {
-            // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
-            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableUnsafe|OtherThread] {ex}",
-                                LogType.Error,
-                                true);
-        }
-        finally
-        {
-            if (drawingSessionPpv != nint.Zero)
+            // Ignore DCOMPOSITION_ERROR_SURFACE_BEING_RENDERED
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x88980801u)
             {
-                DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
+                // ignored
             }
-            void DrawFrame()
+            // Trying to recreate the context instead of re-creating the entire canvas
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x802B0020u)
             {
-                try
-                {
-                    lock (_videoFrameRenderLock)
-                    {
-                        SwapChainPanelHelper.DrawingDisposeUnsafe(drawingSessionPpv, functionTableDispose);
-                    }
-                }
-                // Device lost error. If happened, reinitialize render target
-                catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
-                {
-                    DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
-                }
-                catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
-                {
-                    // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
-                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableUnsafe|UIThread] {ex}",
-                                        LogType.Error,
-                                        true);
-                }
-                finally
-                {
-                    Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-                }
-            }
-        }
-    }
+                Logger.LogWriteLine($"[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Recreating the context...\r\n{comEx}",
+                                    LogType.Error,
+                                    true);
 
-    private void VideoPlayer_VideoFrameAvailableSafe(MediaPlayer sender, object args)
-    {
-        Unsafe.SkipInit(out CanvasDrawingSession? ds);
-
-        try
-        {
-            if (Interlocked.Decrement(ref _videoToSkipFrames) > 0)
-            {
-                return;
-            }
-
-            if (_isBlockVideoFrameDraw == 1 ||
-                _canvasImageSource == null! ||
-                _canvasRenderTarget == null! ||
-                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
-            {
-#if DEBUG
-                Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
-#endif
-                return;
-            }
-
-            _videoPlayer?.CopyFrameToVideoSurface(_canvasRenderTarget);
-            ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
-            ds?.DrawImage(_canvasRenderTarget, _canvasRenderSize);
-        }
-        // Device lost error. If happened, reinitialize render target
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
-        {
-            DispatcherQueue.TryEnqueue(CanvasDevice_OnDeviceLost);
-        }
-        catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
-        {
-            // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
-            Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|OtherThread] {ex}",
-                                LogType.Error,
-                                true);
-        }
-        finally
-        {
-            DispatcherQueue?.TryEnqueue(DispatcherQueuePriority.High, DrawFrame);
-        }
-
-        return;
-
-        void DrawFrame()
-        {
-            try
-            {
-                ds?.Dispose();
+                // Re-create the context and start redrawing.
+                _canvasImageSource?.Recreate(_canvasDevice);
+                goto StartDraw;
             }
             // Device lost error. If happened, reinitialize render target
-            catch (COMException comEx) when ((uint)comEx.HResult is 0x887A0005u or 0x802B0020u or 0x8899000Cu)
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) is 0x887A0005u or 0x8899000Cu)
             {
+                Logger.LogWriteLine($"[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable] Direct3D device is lost! Trying to reinitialize it...\r\n{comEx}",
+                                    LogType.Error,
+                                    true);
                 CanvasDevice_OnDeviceLost();
-            }
-            catch (COMException comEx) when ((uint)comEx.HResult is 0x88980801u)
-            {
-                // Try to unlock if any error caused by DCOMPOSITION_ERROR_SURFACE_NOT_BEING_RENDERED
-                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[LayeredBackgroundImage::VideoPlayer_VideoFrameAvailableSafe|UIThread] {ex}",
+                Logger.LogWriteLine($"[LayeredBackgroundImage::UnsafeOnVideoFrameAvailable]" +
+                                    $"\r\n_videoPlayerPtr: 0x{_videoPlayerPtr:x8}" +
+                                    $"\r\n_canvasRenderTargetAsSurfacePtr: 0x{_canvasRenderTargetAsSurfacePtr:x8}" +
+                                    $"\r\n_canvasImageSourceNativePtr: 0x{_canvasImageSourceNativePtr:x8}" +
+                                    $"\r\n_canvasRenderTargetNativePtr: 0x{_canvasRenderTargetNativePtr:x8}" +
+                                    $"\r\n{ex}",
                                     LogType.Error,
                                     true);
             }
@@ -253,7 +155,66 @@ public partial class LayeredBackgroundImage
             {
                 Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
             }
+        });
+    }
+
+    private void VideoPlayerSafe_OnVideoFrameAvailable(MediaPlayer sender, object args)
+    {
+        if (_isBlockVideoFrameDraw == 1)
+            return;
+
+        if (Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 1) == 1)
+        {
+#if DEBUG
+            Logger.LogWriteLine($@"Skipping frame at: {sender.Position:hh\:mm\:ss\.ffffff}");
+#endif
+            return;
         }
+
+        _videoPlayer?.CopyFrameToVideoSurface(_canvasRenderTarget);
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
+        {
+        StartDraw:
+            try
+            {
+                using CanvasDrawingSession? ds = _canvasImageSource?.CreateDrawingSession(default, _canvasRenderSize);
+                ds?.DrawImage(_canvasRenderTarget, _canvasRenderSize);
+            }
+            // Ignore DCOMPOSITION_ERROR_SURFACE_BEING_RENDERED
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x88980801u)
+            {
+                // ignored
+            }
+            // Trying to recreate the context instead of re-creating the entire canvas
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) == 0x802B0020u)
+            {
+                Logger.LogWriteLine($"[LayeredBackgroundImage::SafeOnVideoFrameAvailable] CanvasImageSource has lost its context. Recreating the context...\r\n{comEx}",
+                                    LogType.Error,
+                                    true);
+
+                // Re-create the context and start redrawing.
+                _canvasImageSource?.Recreate(_canvasDevice);
+                goto StartDraw;
+            }
+            // Device lost error. If happened, reinitialize render target
+            catch (COMException comEx) when (unchecked((uint)comEx.HResult) is 0x887A0005u or 0x8899000Cu)
+            {
+                Logger.LogWriteLine($"[LayeredBackgroundImage::SafeOnVideoFrameAvailable] Direct3D device is lost! Trying to reinitialize it...\r\n{comEx}",
+                                    LogType.Error,
+                                    true);
+                CanvasDevice_OnDeviceLost();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[LayeredBackgroundImage::SafeOnVideoFrameAvailable] {ex}",
+                                    LogType.Error,
+                                    true);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
+            }
+        });
     }
 
     #endregion
@@ -432,8 +393,8 @@ public partial class LayeredBackgroundImage
                 void ActionVideoAfterPlay()
                 {
                     _videoPlayer.VideoFrameAvailable += !_useSafeFrameRenderer
-                        ? VideoPlayer_VideoFrameAvailableUnsafe
-                        : VideoPlayer_VideoFrameAvailableSafe;
+                        ? VideoPlayerUnsafe_OnVideoFrameAvailable
+                        : VideoPlayerSafe_OnVideoFrameAvailable;
                 }
             }
             else if (BackgroundSource != null)
