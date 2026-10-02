@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
@@ -154,8 +154,7 @@ public partial class ImageBackgroundManager
                 bool isVideo     = IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!);
 
                 MediaSupport    codecInfo   = isVideo ? FFmpegPInvoke.GetMediaSupport(localBackground) : default;
-                PixelColorModel pixelFormat = codecInfo.VideoPixelFormatInfo.ColorModel;
-                if (isUseFFmpeg || (codecInfo.Video.DecoderAvailable && pixelFormat.HasFlag(PixelColorModel.Rgb)))
+                if (isUseFFmpeg || RequiresFFmpegDecoder(codecInfo))
                 {
                     isUseFFmpeg = true;
                 }
@@ -367,6 +366,7 @@ public partial class ImageBackgroundManager
 
         if (!forceReload &&
             CurrentBackgroundElement != null &&
+            CurrentBackgroundElement.UseFfmpegDecoder == (forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable)) &&
             _displayedContext != null)
         {
             if (context.Equals(_displayedContext))
@@ -448,9 +448,10 @@ public partial class ImageBackgroundManager
     {
         LayeredBackgroundImage layerElement = new()
         {
+            Opacity                   = 0,
             BackgroundSource          = backgroundFilePath,
             BackgroundStaticSource    = backgroundStaticFilePath,
-            ForegroundSource          = overlayFilePath,
+            ForegroundSource          = isVideo ? overlayFilePath : null,
             UseFfmpegDecoder          = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable),
             Tag                       = context,
             ParallaxResetOnUnfocused  = false,
@@ -567,6 +568,8 @@ public partial class ImageBackgroundManager
 
             PresenterGrid.Background = null;
         }
+
+        layerElement.Opacity = 1;
 
         if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
         {

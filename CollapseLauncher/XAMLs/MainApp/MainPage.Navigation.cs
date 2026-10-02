@@ -203,11 +203,13 @@ public partial class MainPage : Page
                 GameNameType.StarRail => typeof(StarRailGameSettingsPage),
                 GameNameType.Genshin  => typeof(GenshinGameSettingsPage),
                 GameNameType.Zenless  => typeof(ZenlessGameSettingsPage),
+                GameNameType.Plugin when presetConfig is PluginPresetConfigWrapper
+                    { GameSettingsContext.HasPage: true } => typeof(PluginGameSettingsPage),
                 _                     => null
             };
 
             NavigationViewItemsContext.GameSettingsPage.Item.Tag = gspPageType;
-            NavigationViewItemsContext.GameSettingsPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
+            NavigationViewItemsContext.GameSettingsPage.Item.Visibility = gspPageType == null ? Visibility.Collapsed : Visibility.Visible;
             NavigationViewItemsContext.FileCleanupPage.Item.Visibility = isPluginGame ? Visibility.Collapsed : Visibility.Visible;
         }
     }
@@ -378,10 +380,17 @@ public partial class MainPage : Page
         {
             case Type pageType:
             {
-                if (pageType.Name.EndsWith("GameSettingsPage") &&
-                    !IsGameInstalled())
+                if (pageType.Name.EndsWith("GameSettingsPage"))
                 {
-                    pageType = typeof(NotInstalledPage);
+                    if (!IsLoadRegionComplete)
+                    {
+                        return false;
+                    }
+
+                    if (!IsGameInstalled())
+                    {
+                        pageType = typeof(NotInstalledPage);
+                    }
                 }
 
                 LauncherFrame.Navigate(pageType, null, transitionInfo ?? new DrillInNavigationTransitionInfo());

@@ -25,6 +25,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
     public           DiscordPresenceExtension.DiscordPresenceContext    DiscordPresenceContext { get; }
     public           GameManagerExtension.RunGameFromGameManagerContext RunGameContext         { get; }
+    public           GameSettingsExtension.GameSettingsContext          GameSettingsContext     { get; }
     public readonly  PluginInfo                                         PluginInfo;
     public readonly  IPlugin                                            Plugin;
     private readonly IPluginPresetConfig                                _config;
@@ -50,6 +51,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
         };
 
         DiscordPresenceContext = new DiscordPresenceExtension.DiscordPresenceContext(pluginInfo.Handle, config);
+        GameSettingsContext = new GameSettingsExtension.GameSettingsContext(pluginInfo.Handle, config);
     }
 
     public unsafe GameManagerExtension.RunGameFromGameManagerContext UseToggledGameLaunchContext()

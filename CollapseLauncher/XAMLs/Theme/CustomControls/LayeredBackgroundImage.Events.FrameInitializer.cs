@@ -18,6 +18,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
+    private MediaPlayer? _videoFramePlayer;
+
     #region Initializers
 
     private void InitializeVideoPlayer()
@@ -54,38 +56,51 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private void InitializeRenderTargetSize(MediaPlaybackSession playbackSession)
+    private bool InitializeRenderTargetSize(MediaPlaybackSession playbackSession)
     {
         try
         {
-            double currentCanvasWidth  = playbackSession.NaturalVideoWidth;
-            double currentCanvasHeight = playbackSession.NaturalVideoHeight;
-
-            _canvasWidth      = (int)currentCanvasWidth;
-            _canvasHeight     = (int)currentCanvasHeight;
-            _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
+            int width  = (int)playbackSession.NaturalVideoWidth;
+            int height = (int)playbackSession.NaturalVideoHeight;
 
             // In some occasion, MediaPlayer reportedly 0x0px size which causes E_INVALIDARG while rendering frame
             // if FFmpeg source is used. So, use size reported by FFmpeg instead.
-            if (_canvasRenderSize != default || _videoFfmpegMediaSource == null) return;
+            if ((width <= 0 || height <= 0) && _videoFfmpegMediaSource?.CurrentVideoStream is { } videoStream)
+            {
+                width  = videoStream.PixelWidth;
+                height = videoStream.PixelHeight;
+            }
 
-            _canvasWidth      = _videoFfmpegMediaSource.CurrentVideoStream.PixelWidth;
-            _canvasHeight     = _videoFfmpegMediaSource.CurrentVideoStream.PixelHeight;
+            if (width <= 0 || height <= 0) return false;
+
+            _canvasWidth      = width;
+            _canvasHeight     = height;
             _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
+            return true;
+        }
+        catch (COMException ex) when ((uint)ex.HResult == 0xC00D3E85u)
+        {
+            // A queued MediaOpened callback can outlive the playback session.
+            return false;
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeVideoPlayer] {ex}",
+            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTargetSize] {ex}",
                                 LogType.Error,
                                 true);
+            return false;
         }
     }
 
-    private unsafe void InitializeRenderTarget()
+    private unsafe bool InitializeRenderTarget()
     {
+        bool initialized = false;
+        Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1);
         try
         {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
+            // Play() can arrive before MediaOpened. Read this player's size before creating any surfaces.
+            if (_videoPlayer == null || !InitializeRenderTargetSize(_videoPlayer.PlaybackSession)) return false;
+
             DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
 
             _canvasDevice ??= CanvasDevice.GetSharedDevice();
@@ -102,33 +117,36 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _useSafeFrameRenderer, false);
             if (_useSafeFrameRenderer)
             {
-                return;
+                return initialized = true;
             }
 
-            _canvasRenderTargetNativePtr = ((IWinRTObject)_canvasRenderTarget).NativeObject.ThisPtr;
             _canvasImageSourceNativePtr  = ((IWinRTObject)_canvasImageSource).NativeObject.ThisPtr;
-            
-            ((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(typeof(IDirect3DSurface).GUID, out _canvasRenderTargetAsSurfacePtr);
 
             try
             {
+                // DrawImageToRect requires ICanvasBitmap, not the render target's default ICanvasRenderTarget interface.
+                Guid canvasBitmapIid = new("C57532ED-709E-4AC2-86BE-A1EC3A7FA8FE");
+                Marshal.ThrowExceptionForHR(((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(canvasBitmapIid, out _canvasRenderTargetNativePtr));
+                Marshal.ThrowExceptionForHR(((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(typeof(IDirect3DSurface).GUID, out _canvasRenderTargetAsSurfacePtr));
+
                 if (_functionTableBeginDraw == null! ||
                     _functionTableDrawImage == null! ||
                     _functionTableCopyFrameToVideoSurface == null! ||
                     _functionTableDispose == null!)
                 {
-                    SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
-                                                                               _canvasRenderTargetNativePtr,
-                                                                               _videoPlayerPtr,
-                                                                               out _functionTableBeginDraw,
-                                                                               out _functionTableDrawImage,
-                                                                               out _functionTableCopyFrameToVideoSurface,
-                                                                               out _functionTableDispose,
-                                                                               in _canvasRenderSize);
+                    SwapChainPanelHelper.GetFuncForCanvasImageSource(_canvasImageSourceNativePtr,
+                                                                     _canvasRenderTargetNativePtr,
+                                                                     _videoPlayerPtr,
+                                                                     out _functionTableBeginDraw,
+                                                                     out _functionTableDrawImage,
+                                                                     out _functionTableCopyFrameToVideoSurface,
+                                                                     out _functionTableDispose,
+                                                                     in _canvasRenderSize);
                 }
             }
             catch (Exception e)
             {
+                NullifyRenderTargetNativePointers();
                 Interlocked.Exchange(ref _useSafeFrameRenderer, true); // Fallback
 
                 _functionTableBeginDraw               = null;
@@ -139,20 +157,22 @@ public partial class LayeredBackgroundImage
                                     LogType.Error,
                                     true);
             }
+            return initialized = true;
         }
         catch (Exception e)
         {
             Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] FATAL: {e}",
                                 LogType.Error,
                                 true);
+            return false;
         }
         finally
         {
-            if (_canvasImageSource != null)
+            if (initialized && _canvasImageSource != null)
             {
                 SetRenderImageSource(_canvasImageSource.Source);
             }
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Unblock frame drawing routine
+            Interlocked.Exchange(ref _isBlockVideoFrameDraw, initialized ? 0 : 1);
         }
     }
 
@@ -162,11 +182,12 @@ public partial class LayeredBackgroundImage
 
     private void DetachVideoPlayerEvents(MediaPlayer player)
     {
-        player.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-        player.VideoFrameAvailable -= NotifyVideoLoaded;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableUnsafe;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableSafe;
-        player.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
+        player.MediaOpened                             -= InitializeVideoFrameOnMediaOpened;
+        player.PlaybackSession.NaturalVideoSizeChanged -= InitializeVideoFrameOnSizeChanged;
+        player.VideoFrameAvailable                     -= NotifyVideoLoaded;
+        player.VideoFrameAvailable                     -= VideoPlayerUnsafe_OnVideoFrameAvailable;
+        player.VideoFrameAvailable                     -= VideoPlayerSafe_OnVideoFrameAvailable;
+        player.PlaybackSession.PositionChanged         -= MediaDurationPosition_OnChangedBridge;
     }
 
     private void DisposeVideoPlayer(bool disposeRenderImageSource = true)
@@ -206,6 +227,7 @@ public partial class LayeredBackgroundImage
         }
         finally
         {
+            _videoFramePlayer = null;
             Interlocked.Exchange(ref _isVideoInitialized, 0);
         }
     }
@@ -244,11 +266,16 @@ public partial class LayeredBackgroundImage
                             LogType.Warning,
                             true);
 
-        // -- Nullify _canvasImageSource so CanvasDevice and other dependencies are reinitialized too
+        // Note from: @neon-nyan.
+        // -- Use atomic exchange instead of locking :)
+        if (Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1) == 1)
+            return;
+
+        NullifyRenderTargetNativePointers();
+        // Drop the image source only after invalidating its borrowed native pointer.
         Interlocked.Exchange(ref _canvasImageSource, null!);
         InitializeRenderTarget();
 
-        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
         Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
     }
 
@@ -270,13 +297,15 @@ public partial class LayeredBackgroundImage
     {
         // -- Note to myself @neon-nyan:
         //    Release IDirect3DSurface reference first, then dispose the whole CanvasRenderTarget.
-        //    This is necessary as we just cast/QueryInterface the _canvasRenderTargetNativePtr (which
-        //    is obtained from IWinRTObject's direct pointer) into IDirect3DSurface. If not released,
+        //    This is necessary as we queried the render target's native object for
+        //    IDirect3DSurface. If not released,
         //    the reference on the IWinRTObject will not be zeroed, causing leak.
         if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _canvasRenderTargetAsSurfacePtr, nint.Zero));
 
-        // -- Nullify IWinRTObject direct pointers.
-        Interlocked.Exchange(ref _canvasRenderTargetNativePtr, nint.Zero);
+        // -- Release the ICanvasBitmap reference acquired for DrawImageToRect.
+        if (_canvasRenderTargetNativePtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _canvasRenderTargetNativePtr, nint.Zero));
+
+        // -- Nullify the borrowed IWinRTObject pointer.
         Interlocked.Exchange(ref _canvasImageSourceNativePtr,  nint.Zero);
     }
 

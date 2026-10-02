@@ -11,6 +11,8 @@ namespace CollapseLauncher.Interfaces
         event EventHandler<TotalPerFileStatus> StatusChanged;
         event EventHandler FlushingTrigger;
 
+        TotalPerFileProgress Progress { get; }
+        TotalPerFileStatus Status { get; }
         bool IsRunning { get; }
         UIElement ParentUI { get; }
         void CancelRoutine();

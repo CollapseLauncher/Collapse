@@ -73,6 +73,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private          InstallProgressState         _currentInstallState = InstallProgressState.Idle;
     private          string                       _lastActivityStatus  = string.Empty;
     private          float                        _lastLoggedPercentage = -1f;
+    private          bool                         _resetSpeedBaseline = true;
 
     private PerFileProgressCallbackNative? _perFileProgressDelegate;
     private GCHandle                       _perFileProgressGcHandle;
@@ -558,7 +559,18 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 long downloadedBytes = delegateProgress.DownloadedBytes;
                 long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
 
-                long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
+                long readDownload = 0;
+                if (_resetSpeedBaseline)
+                {
+                    _resetSpeedBaseline = false;
+                    _updateProgressProperty.LastDownloaded = downloadedBytes;
+                }
+                else if (downloadedBytes >= _updateProgressProperty.LastDownloaded)
+                {
+                    readDownload = downloadedBytes - _updateProgressProperty.LastDownloaded;
+                    _updateProgressProperty.LastDownloaded = downloadedBytes;
+                }
+
                 double currentSpeed = CalculateSpeed(readDownload);
 
                 Progress.ProgressAllSizeCurrent = downloadedBytes;
@@ -605,8 +617,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                         : 0;
                 }
 
-                _updateProgressProperty.LastDownloaded = downloadedBytes;
-
                 PublishProgressUi(updateProgressBar: true);
             }
         }
@@ -623,7 +633,26 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             using (_updateStatusLock.EnterScope())
             {
-                _currentInstallState = delegateState;
+                if (_currentInstallState != delegateState)
+                {
+                    _currentInstallState = delegateState;
+                    _resetSpeedBaseline = true;
+                    ResetSpeedCalculator();
+                    Progress.ProgressAllSpeed = 0;
+                }
+
+                if (delegateState == InstallProgressState.Completed)
+                {
+                    Progress.ProgressAllTimeLeft = TimeSpan.Zero;
+                    if (Progress.ProgressPerFileSizeTotal > 0)
+                    {
+                        Progress.ProgressPerFilePercentage = Math.Min(100d,
+                            ConverterTool.ToPercentage(
+                                Progress.ProgressPerFileSizeTotal,
+                                Progress.ProgressPerFileSizeCurrent));
+                    }
+                }
+
                 ApplyActivityStatusFromProperty();
                 PublishProgressUi(updateProgressBar: true);
             }
