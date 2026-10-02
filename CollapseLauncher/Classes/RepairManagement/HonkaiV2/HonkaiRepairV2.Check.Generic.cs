@@ -1,11 +1,11 @@
 ﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
-using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.IO;
@@ -158,71 +158,85 @@ internal partial class HonkaiRepairV2
         hmacKey ??= (asset.AssociatedObject as CacheAssetInfo)?.HmacSha1Salt;
 
         HashOperationStatus resultStatus = HashOperationStatus.InvalidOperation;
-        switch (hashSize)
+        if (asset.AssociatedObject is ServeV3FileContext daftarPustakaContext)
         {
-            case 8:
+            NonCryptographicHashAlgorithm hasher = daftarPustakaContext.DataHashType switch
             {
-                MhyMurmurHash264B              hasher   = new((ulong)assetFileInfo.Length);
-                HashUtility<MhyMurmurHash264B> hashUtil = HashUtility<MhyMurmurHash264B>.ThreadSafe;
+                nameof(XxHash3)   => new XxHash3(),
+                nameof(XxHash32)  => new XxHash32(),
+                nameof(XxHash64)  => new XxHash64(),
+                nameof(XxHash128) => new XxHash128(),
+                nameof(Crc32)     => new Crc32(),
+                nameof(Crc64)     => new Crc64(),
 
-                (resultStatus, _) =
-                    await hashUtil
-                       .TryGetHashFromStreamAsync(hasher,
-                                                  assetFileStream,
-                                                  hashBufferSpan,
-                                                  ImplReadBytesAction,
-                                                  bufferSize,
-                                                  token);
-                break;
-            }
-            case MD5.HashSizeInBytes when asset.AssociatedObject is SenadinaFileIdentifier:
+                _ => throw new NotSupportedException()
+            };
+
+            (resultStatus, _) = await (daftarPustakaContext.DataHashType switch
             {
-                XxHash128              hasher   = new();
-                HashUtility<XxHash128> hashUtil = HashUtility<XxHash128>.ThreadSafe;
+                nameof(XxHash3) => HashUtility<XxHash3>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
+                nameof(XxHash32) => HashUtility<XxHash32>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
+                nameof(XxHash64) => HashUtility<XxHash64>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
+                nameof(XxHash128) => HashUtility<XxHash128>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
+                nameof(Crc32) => HashUtility<Crc32>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
+                nameof(Crc64) => HashUtility<Crc64>.ThreadSafe.TryGetHashFromStreamAsync(hasher, assetFileStream, hashBufferSpan, ImplReadBytesAction, bufferSize, token),
 
-                (resultStatus, _) =
-                    await hashUtil
-                       .TryGetHashFromStreamAsync(hasher,
-                                                  assetFileStream,
-                                                  hashBufferSpan,
-                                                  ImplReadBytesAction,
-                                                  bufferSize,
-                                                  token);
-                break;
-            }
-            case MD5.HashSizeInBytes:
+                _ => throw new NotSupportedException()
+            });
+        }
+        else
+        {
+            switch (hashSize)
             {
-                using HashAlgorithm    hasher   = hmacKey != null ? new HMACMD5(hmacKey) : MD5.Create();
-                CryptoHashUtility<MD5> hashUtil = CryptoHashUtility<MD5>.ThreadSafe;
+                case 8:
+                    {
+                        MhyMurmurHash264B hasher = new((ulong)assetFileInfo.Length);
+                        HashUtility<MhyMurmurHash264B> hashUtil = HashUtility<MhyMurmurHash264B>.ThreadSafe;
 
-                (resultStatus, _) =
-                    await hashUtil
-                       .TryGetHashFromStreamAsync(hasher,
-                                                  assetFileStream,
-                                                  hashBufferSpan,
-                                                  ImplReadBytesAction,
-                                                  hmacKey,
-                                                  bufferSize,
-                                                  false,
-                                                  token);
-                break;
-            }
-            case SHA1.HashSizeInBytes:
-            {
-                using HashAlgorithm     hasher   = hmacKey != null ? new HMACSHA1(hmacKey) : SHA1.Create();
-                CryptoHashUtility<SHA1> hashUtil = CryptoHashUtility<SHA1>.ThreadSafe;
+                        (resultStatus, _) =
+                            await hashUtil
+                               .TryGetHashFromStreamAsync(hasher,
+                                                          assetFileStream,
+                                                          hashBufferSpan,
+                                                          ImplReadBytesAction,
+                                                          bufferSize,
+                                                          token);
+                        break;
+                    }
+                case MD5.HashSizeInBytes:
+                    {
+                        using HashAlgorithm hasher = hmacKey != null ? new HMACMD5(hmacKey) : MD5.Create();
+                        CryptoHashUtility<MD5> hashUtil = CryptoHashUtility<MD5>.ThreadSafe;
 
-                (resultStatus, _) =
-                    await hashUtil
-                       .TryGetHashFromStreamAsync(hasher,
-                                                  assetFileStream,
-                                                  hashBufferSpan,
-                                                  ImplReadBytesAction,
-                                                  hmacKey,
-                                                  bufferSize,
-                                                  false,
-                                                  token);
-                break;
+                        (resultStatus, _) =
+                            await hashUtil
+                               .TryGetHashFromStreamAsync(hasher,
+                                                          assetFileStream,
+                                                          hashBufferSpan,
+                                                          ImplReadBytesAction,
+                                                          hmacKey,
+                                                          bufferSize,
+                                                          false,
+                                                          token);
+                        break;
+                    }
+                case SHA1.HashSizeInBytes:
+                    {
+                        using HashAlgorithm hasher = hmacKey != null ? new HMACSHA1(hmacKey) : SHA1.Create();
+                        CryptoHashUtility<SHA1> hashUtil = CryptoHashUtility<SHA1>.ThreadSafe;
+
+                        (resultStatus, _) =
+                            await hashUtil
+                               .TryGetHashFromStreamAsync(hasher,
+                                                          assetFileStream,
+                                                          hashBufferSpan,
+                                                          ImplReadBytesAction,
+                                                          hmacKey,
+                                                          bufferSize,
+                                                          false,
+                                                          token);
+                        break;
+                    }
             }
         }
 

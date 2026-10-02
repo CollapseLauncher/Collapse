@@ -219,7 +219,7 @@ namespace CollapseLauncher.Helper.Image
                     Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
                     return Waifu2XStatus.D3DMappingLayers;
                 }
-                var status = Waifu2XPInvoke.waifu2x_self_test(0);
+                Waifu2XStatus status = Waifu2XPInvoke.waifu2x_self_test(0);
                 switch (status)
                 {
                     case Waifu2XStatus.CpuMode:
@@ -248,7 +248,7 @@ namespace CollapseLauncher.Helper.Image
                 return ReturnAsFailedDllInit(ex);
             }
 
-            Waifu2XStatus ReturnAsFailedDllInit<T>(T ex)
+            static Waifu2XStatus ReturnAsFailedDllInit<T>(T ex)
                 where T : Exception
             {
                 Logger.LogWriteLine($"Cannot load Waifu2X as the library failed to load!\r\n{ex}", LogType.Error, true);

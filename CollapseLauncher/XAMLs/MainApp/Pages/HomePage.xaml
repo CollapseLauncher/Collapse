@@ -46,11 +46,15 @@
         <pages:PluginVerticalAlignmentConverter x:Key="PluginVerticalAlignmentConverter" />
         <pages:PluginDoublePositionToThicknessConverter x:Key="PluginDoublePositionToThicknessConverter" />
         <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
+        <x:String x:Key="BooleanTrue">true</x:String>
+        <x:String x:Key="BooleanFalse">false</x:String>
 
         <MenuFlyout x:Key="BackgroundContextMenuFlyout"
                     Placement="Bottom"
                     ShouldConstrainToRootBounds="False">
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgText, Mode=OneWay}"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="{StaticResource BooleanTrue}"
                             ToolTipService.Placement="Left"
                             ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveCurrentBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
@@ -58,6 +62,8 @@
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
             <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgText, Mode=OneWay}"
+                            Command="{x:Bind BackgroundImageContextMenuSaveCommand}"
+                            CommandParameter="{StaticResource BooleanFalse}"
                             ToolTipService.Placement="Left"
                             ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_SaveAllBgTooltip, Mode=OneWay}">
                 <MenuFlyoutItem.Icon>
@@ -1297,29 +1303,31 @@
               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
-              CornerRadius="8"
+              CornerRadius="20"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
               Shadow="{ThemeResource SharedShadow}"
-              Translation="0,0,32"
+              Translation="0,0,16"
               Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
             <Grid.RenderTransform>
                 <CompositeTransform />
             </Grid.RenderTransform>
-            <Grid x:Name="ImageCarouselAndPostPanel"
+            <StackPanel x:Name="ImageCarouselAndPostPanel"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Bottom"
                   Background="{ThemeResource PostAcrylicBrush}">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <StackPanel.Resources>
+                    <Thickness x:Key="PivotHeaderItemMargin">12,0,4,0</Thickness>
+                </StackPanel.Resources>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited"
                       Background="{ThemeResource CarouselBackgroundBrush}"
-                      CornerRadius="8">
+                      CornerRadius="16"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      Margin="4">
                     <c:PanelSlideshow x:Name="ImageCarouselEventSlideshow"
-                                      CountdownProgressMargin="8"
+                                      CountdownProgressMargin="6"
                                       CountdownSmokeHeight="80"
                                       ItemsSource="{x:Bind GameCarouselData, Mode=OneWay}"
                                       NextButtonMargin="-16"
@@ -1402,255 +1410,266 @@
                                         SelectedPipButtonStyle="{ThemeResource NewPipsPagerButtonBaseSelectedMiniStyle}" />
                     </Grid>
                 </Grid>
-                <Grid x:Name="PostPanel"
-                      Grid.Row="1"
-                      Padding="8,6,8,0"
-                      Translation="0,0,48"
-                      Height="{x:Bind CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
-                      Visibility="{x:Bind IsNewsPanelAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
-                    <Pivot HorizontalAlignment="Left"
-                           SelectedIndex="{x:Bind DefaultNewsPanelIndex, Mode=OneWay}">
-                        <Pivot.Resources>
-                            <Style BasedOn="{StaticResource MinScrollBarStyle}"
-                                   TargetType="ScrollBar" />
-                        </Pivot.Resources>
-                        <PivotItem Margin="12,0,-2,0">
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,6"
-                                           extension:UIElementExtensions.CursorType="Hand"
-                                           FontSize="13"
+                <Pivot HorizontalAlignment="Left"
+                       Margin="4,4,0,0"
+                       SelectedIndex="{x:Bind DefaultNewsPanelIndex, Mode=OneWay}"
+                       Height="{x:Bind CurrentWindowSize.PostPanelBounds.Height, Mode=OneWay}"
+                       Visibility="{x:Bind IsNewsPanelAvailable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                    <Pivot.Resources>
+                        <Style BasedOn="{StaticResource MinScrollBarStyle}"
+                               TargetType="ScrollBar" />
+                    </Pivot.Resources>
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="4"
+                                        extension:UIElementExtensions.CursorType="Hand">
+                                <FontIcon Glyph="&#xF763;"
+                                          FontSize="12"
+                                          Margin="0,0,0,8"
+                                          VerticalAlignment="Center"/>
+                                <TextBlock Margin="0,0,0,8"
+                                           FontSize="12"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Events, Mode=OneWay}" />
-                            </PivotItem.Header>
-                            <Grid>
-                                <ScrollViewer Margin="0,4,0,0"
-                                              VerticalScrollMode="Auto"
+                            </StackPanel>
+                        </PivotItem.Header>
+                        <Grid>
+                            <StackPanel HorizontalAlignment="Right"
+                                        Orientation="Horizontal"
+                                        Visibility="{x:Bind IsNewsEventPanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
+                                        Margin="0,-32,-16,-8">
+                                <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
+                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
+                                           FontWeight="Black"
+                                           Opacity="0.8"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
+                                           TextAlignment="Right"
+                                           TextWrapping="Wrap" />
+                                <Image HorizontalAlignment="Right"
+                                       VerticalAlignment="Stretch"
+                                       IsHitTestVisible="False"
+                                       Margin="8,0,-32,0"
+                                       Source="{x:Bind NoNewsSplashMascot}" />
+                            </StackPanel>
+                            <ScrollViewer VerticalScrollMode="Auto"
+                                          Margin="0,8,-12,0">
+                                <ItemsControl IsTabStop="False"
+                                              ItemsSource="{x:Bind GameNewsDataEventKind}"
+                                              TabFocusNavigation="Once"
+                                              Margin="0,0,16,0"
+                                              XYFocusKeyboardNavigation="Enabled"
                                               Visibility="{x:Bind IsNewsEventPanelVisible, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
-                                    <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind GameNewsDataEventKind, Mode=OneWay}"
-                                                      TabFocusNavigation="Once"
-                                                      XYFocusKeyboardNavigation="Enabled">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
-                                                    <Button HorizontalAlignment="Stretch"
-                                                            extension:UIElementExtensions.CursorType="Hand"
-                                                            Click="OpenButtonLinkFromTag"
-                                                            Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{Binding ClickLink}">
-                                                        <Grid Margin="0,2"
-                                                              HorizontalAlignment="Stretch"
-                                                              Background="Transparent"
-                                                              PointerEntered="HyperLink_OnPointerEntered"
-                                                              PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{Binding Description}">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
-                                                                                       HorizontalAlignment="Left"
-                                                                                       VerticalAlignment="Center"
-                                                                                       FontSize="12"
-                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                       Text="{Binding Title}"
-                                                                                       TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock Grid.Column="1"
-                                                                       HorizontalAlignment="Right"
-                                                                       VerticalAlignment="Center"
-                                                                       FontSize="12"
-                                                                       FontWeight="Bold"
-                                                                       Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{Binding Date}" />
-                                                        </Grid>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </ScrollViewer>
-                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
-                                            HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsNewsEventPanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
-                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
-                                                   HorizontalAlignment="Right"
-                                                   VerticalAlignment="Bottom"
-                                                   FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
-                                                   FontWeight="Black"
-                                                   Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
-                                                   TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
-                                        <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </PivotItem>
-                        <PivotItem Margin="12,0,-2,0">
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,6"
-                                           extension:UIElementExtensions.CursorType="Hand"
-                                           FontSize="13"
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
+                                            <Button HorizontalAlignment="Stretch"
+                                                    extension:UIElementExtensions.CursorType="Hand"
+                                                    Click="OpenButtonLinkFromTag"
+                                                    Style="{ThemeResource DraftButtonStyle}"
+                                                    Tag="{Binding ClickLink}"
+                                                    Margin="0,0,0,4">
+                                                <Grid HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      PointerEntered="HyperLink_OnPointerEntered"
+                                                      PointerExited="HyperLink_OnPointerExited"
+                                                      ToolTipService.ToolTip="{Binding Description}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                               HorizontalAlignment="Left"
+                                                                               VerticalAlignment="Center"
+                                                                               FontSize="12"
+                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                               Text="{Binding Title}"
+                                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1"
+                                                               HorizontalAlignment="Right"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="{ThemeResource AccentColor}"
+                                                               Text="{Binding Date}" />
+                                                </Grid>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="4"
+                                        extension:UIElementExtensions.CursorType="Hand">
+                                <FontIcon Glyph="&#xE789;"
+                                          FontSize="12"
+                                          Margin="0,0,0,8"
+                                          VerticalAlignment="Center"/>
+                                <TextBlock Margin="0,0,0,8"
+                                           FontSize="12"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Notices, Mode=OneWay}" />
-                            </PivotItem.Header>
-                            <Grid>
-                                <ScrollViewer Margin="0,4,0,0"
-                                              VerticalScrollMode="Auto"
+                            </StackPanel>
+                        </PivotItem.Header>
+                        <Grid>
+                            <StackPanel HorizontalAlignment="Right"
+                                        Orientation="Horizontal"
+                                        Visibility="{x:Bind IsNewsNoticePanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
+                                        Margin="0,-32,-16,-8">
+                                <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
+                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
+                                           FontWeight="Black"
+                                           Opacity="0.8"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
+                                           TextAlignment="Right"
+                                           TextWrapping="Wrap" />
+                                <Image HorizontalAlignment="Right"
+                                       VerticalAlignment="Stretch"
+                                       IsHitTestVisible="False"
+                                       Margin="8,0,-32,0"
+                                       Source="{x:Bind NoNewsSplashMascot}" />
+                            </StackPanel>
+                            <ScrollViewer VerticalScrollMode="Auto"
+                                          Margin="0,8,-12,0">
+                                <ItemsControl IsTabStop="False"
+                                              ItemsSource="{x:Bind GameNewsDataAnnouncementKind}"
+                                              TabFocusNavigation="Once"
+                                              Margin="0,0,16,0"
+                                              XYFocusKeyboardNavigation="Enabled"
                                               Visibility="{x:Bind IsNewsNoticePanelVisible, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
-                                    <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind GameNewsDataAnnouncementKind}"
-                                                      TabFocusNavigation="Once"
-                                                      XYFocusKeyboardNavigation="Enabled">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
-                                                    <Button HorizontalAlignment="Stretch"
-                                                            extension:UIElementExtensions.CursorType="Hand"
-                                                            Click="OpenButtonLinkFromTag"
-                                                            Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{Binding ClickLink}">
-                                                        <Grid Margin="0,2"
-                                                              HorizontalAlignment="Stretch"
-                                                              Background="Transparent"
-                                                              PointerEntered="HyperLink_OnPointerEntered"
-                                                              PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{Binding Description}">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
-                                                                                       HorizontalAlignment="Left"
-                                                                                       VerticalAlignment="Center"
-                                                                                       FontSize="12"
-                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                       Text="{Binding Title}"
-                                                                                       TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock Grid.Column="1"
-                                                                       HorizontalAlignment="Right"
-                                                                       VerticalAlignment="Center"
-                                                                       FontSize="12"
-                                                                       FontWeight="Bold"
-                                                                       Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{Binding Date}" />
-                                                        </Grid>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </ScrollViewer>
-                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
-                                            HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsNewsNoticePanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
-                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
-                                                   HorizontalAlignment="Right"
-                                                   VerticalAlignment="Bottom"
-                                                   FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
-                                                   FontWeight="Black"
-                                                   Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
-                                                   TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
-                                        <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </PivotItem>
-                        <PivotItem Margin="12,0,-2,0">
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,6"
-                                           extension:UIElementExtensions.CursorType="Hand"
-                                           FontSize="13"
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
+                                            <Button HorizontalAlignment="Stretch"
+                                                    extension:UIElementExtensions.CursorType="Hand"
+                                                    Click="OpenButtonLinkFromTag"
+                                                    Style="{ThemeResource DraftButtonStyle}"
+                                                    Tag="{Binding ClickLink}"
+                                                    Margin="0,0,0,4">
+                                                <Grid HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      PointerEntered="HyperLink_OnPointerEntered"
+                                                      PointerExited="HyperLink_OnPointerExited"
+                                                      ToolTipService.ToolTip="{Binding Description}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                               HorizontalAlignment="Left"
+                                                                               VerticalAlignment="Center"
+                                                                               FontSize="12"
+                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                               Text="{Binding Title}"
+                                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1"
+                                                               HorizontalAlignment="Right"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="{ThemeResource AccentColor}"
+                                                               Text="{Binding Date}" />
+                                                </Grid>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="4"
+                                        extension:UIElementExtensions.CursorType="Hand">
+                                <FontIcon Glyph="&#xE773;"
+                                          FontSize="12"
+                                          Margin="0,0,0,8"
+                                          VerticalAlignment="Center"/>
+                                <TextBlock Margin="0,0,0,8"
+                                           FontSize="12"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_Info, Mode=OneWay}" />
-                            </PivotItem.Header>
-                            <Grid>
-                                <ScrollViewer Margin="0,4,0,0"
-                                              VerticalScrollMode="Auto"
+                            </StackPanel>
+                        </PivotItem.Header>
+                        <Grid>
+                            <StackPanel HorizontalAlignment="Right"
+                                        Orientation="Horizontal"
+                                        Visibility="{x:Bind IsNewsInfoPanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}"
+                                        Margin="0,-32,-16,-8">
+                                <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
+                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
+                                           FontWeight="Black"
+                                           Opacity="0.8"
+                                           Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
+                                           TextAlignment="Right"
+                                           TextWrapping="Wrap" />
+                                <Image HorizontalAlignment="Right"
+                                       VerticalAlignment="Stretch"
+                                       IsHitTestVisible="False"
+                                       Margin="8,0,-32,0"
+                                       Source="{x:Bind NoNewsSplashMascot}" />
+                            </StackPanel>
+                            <ScrollViewer VerticalScrollMode="Auto"
+                                          Margin="0,8,-12,0">
+                                <ItemsControl IsTabStop="False"
+                                              ItemsSource="{x:Bind GameNewsDataInformationKind}"
+                                              TabFocusNavigation="Once"
+                                              Margin="0,0,16,0"
+                                              XYFocusKeyboardNavigation="Enabled"
                                               Visibility="{x:Bind IsNewsInfoPanelVisible, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
-                                    <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind GameNewsDataInformationKind}"
-                                                      TabFocusNavigation="Once"
-                                                      XYFocusKeyboardNavigation="Enabled">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
-                                                    <Button HorizontalAlignment="Stretch"
-                                                            extension:UIElementExtensions.CursorType="Hand"
-                                                            Click="OpenButtonLinkFromTag"
-                                                            Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{Binding ClickLink}">
-                                                        <Grid Margin="0,2"
-                                                              HorizontalAlignment="Stretch"
-                                                              Background="Transparent"
-                                                              PointerEntered="HyperLink_OnPointerEntered"
-                                                              PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{Binding Description}">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <theme:CompressedTextBlock Margin="0,0,8,0"
-                                                                                       HorizontalAlignment="Left"
-                                                                                       VerticalAlignment="Center"
-                                                                                       FontSize="12"
-                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                       Text="{Binding Title}"
-                                                                                       TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock Grid.Column="1"
-                                                                       HorizontalAlignment="Right"
-                                                                       VerticalAlignment="Center"
-                                                                       FontSize="12"
-                                                                       FontWeight="Bold"
-                                                                       Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{Binding Date}" />
-                                                        </Grid>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </ScrollViewer>
-                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
-                                            HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsNewsInfoPanelVisible, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind NewsEmptyMascotTextWidth}"
-                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
-                                                   HorizontalAlignment="Right"
-                                                   VerticalAlignment="Bottom"
-                                                   FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
-                                                   FontWeight="Black"
-                                                   Opacity="0.8"
-                                                   Text="{x:Bind helper:Locale.Current.Lang._HomePage.PostPanel_NoNews, Mode=OneWay}"
-                                                   TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
-                                        <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </PivotItem>
-                    </Pivot>
-                </Grid>
-            </Grid>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
+                                            <Button HorizontalAlignment="Stretch"
+                                                    extension:UIElementExtensions.CursorType="Hand"
+                                                    Click="OpenButtonLinkFromTag"
+                                                    Style="{ThemeResource DraftButtonStyle}"
+                                                    Tag="{Binding ClickLink}"
+                                                    Margin="0,0,0,4">
+                                                <Grid HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      PointerEntered="HyperLink_OnPointerEntered"
+                                                      PointerExited="HyperLink_OnPointerExited"
+                                                      ToolTipService.ToolTip="{Binding Description}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <theme:CompressedTextBlock Margin="0,0,8,0"
+                                                                               HorizontalAlignment="Left"
+                                                                               VerticalAlignment="Center"
+                                                                               FontSize="12"
+                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                               Text="{Binding Title}"
+                                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1"
+                                                               HorizontalAlignment="Right"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="{ThemeResource AccentColor}"
+                                                               Text="{Binding Date}" />
+                                                </Grid>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </PivotItem>
+                </Pivot>
+            </StackPanel>
         </Grid>
         <Grid x:Name="SophonProgressStatusGrid"
               Grid.Row="1"

@@ -9,13 +9,14 @@
     <x:Double x:Key="SlideshowButtonOpacityPointerOver">1</x:Double>
     <x:Double x:Key="SlideshowButtonScale">.8</x:Double>
     <x:Double x:Key="SlideshowButtonScalePointerOver">1</x:Double>
-    <x:Double x:Key="SlideshowCountdownBarOpacity">.5</x:Double>
-    <x:Double x:Key="SlideshowCountdownBarOpacityPointerOver">1</x:Double>
+    <x:Double x:Key="SlideshowCountdownBarOpacity">1</x:Double>
+    <x:Double x:Key="SlideshowCountdownBarOpacityPointerOver">0</x:Double>
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacity">.5</x:Double>
     <x:Double x:Key="SlideshowCountdownBarSmokeOpacityPointerOver">1</x:Double>
 
     <customControls:MoreThanZeroToVisibilityConverter x:Key="MoreThanZeroToVisibilityConverter" />
     <customControls:CornerRadiusToDoubleConverter x:Key="CornerRadiusToDoubleConverter" />
+    <customControls:ReverseProgressBarValue x:Key="ReverseProgressBarValue" />
 
     <Style TargetType="customControls:PanelSlideshow">
         <Setter Property="PreviousButtonCornerRadius" Value="16" />
@@ -40,8 +41,8 @@
         <Setter Property="NextButtonForegroundBrush" Value="{ThemeResource ButtonForegroundThemeBrush}" />
         <Setter Property="NextButtonStyle" Value="{ThemeResource SlideshowNextButtonStyle}" />
 
-        <Setter Property="CountdownProgressMargin" Value="16" />
-        <Setter Property="CountdownSmokeHeight" Value="256" />
+        <Setter Property="CountdownProgressMargin" Value="8" />
+        <Setter Property="CountdownSmokeHeight" Value="192" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="customControls:PanelSlideshow">
@@ -87,7 +88,7 @@
                                                                   Value="{StaticResource SlideshowButtonOpacity}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -142,7 +143,7 @@
                                                                   Value="{StaticResource SlideshowButtonOpacityPointerOver}" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -195,7 +196,7 @@
                                                                     Value="False" />
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBar"
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownProgressBarContainer"
                                                                        Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                   KeyTime="{StaticResource ControlFastAnimationDuration}"
@@ -229,22 +230,42 @@
                               CornerRadius="{TemplateBinding CornerRadius}" />
                         <Grid x:Name="CountdownProgressBarGrid"
                               HorizontalAlignment="Stretch"
-                              VerticalAlignment="Bottom"
+                              VerticalAlignment="Stretch"
                               IsHitTestVisible="False"
                               Opacity="0"
                               Visibility="{TemplateBinding ProgressBarVisibility}">
                             <Grid x:Name="CountdownProgressBarSmoke"
                                   Height="{TemplateBinding CountdownSmokeHeight}"
-                                  Background="{ThemeResource SlideshowProgressBarSmokeBackground}"
                                   Opacity="{StaticResource SlideshowCountdownBarSmokeOpacity}"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}" />
-                            <ProgressBar x:Name="CountdownProgressBar"
-                                         Margin="{TemplateBinding CountdownProgressMargin}"
-                                         VerticalAlignment="Bottom"
-                                         Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
-                                         Opacity="{StaticResource SlideshowCountdownBarOpacity}"
-                                         Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
-                                         Value="0" />
+                            <Grid x:Name="CountdownProgressBarContainer"
+                                  Width="28"
+                                  Height="28"
+                                  VerticalAlignment="Top"
+                                  HorizontalAlignment="Right"
+                                  Margin="{TemplateBinding CountdownProgressMargin}"
+                                  Opacity="{StaticResource SlideshowCountdownBarOpacity}"
+                                  CornerRadius="14"
+                                  Padding="2"
+                                  Shadow="{ThemeResource SharedShadow}"
+                                  Translation="0,0,16">
+                                <Grid Margin="-2"
+                                      Background="{TemplateBinding NextButtonBackgroundBrush}"/>
+                                <ProgressRing x:Name="CountdownProgressBar"
+                                              IsIndeterminate="False"
+                                              Width="24"
+                                              Height="24"
+                                              Foreground="{ThemeResource ButtonForegroundThemeBrush}"
+                                              Maximum="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Mode=OneWay}"
+                                              Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=SlideshowDuration, Converter={StaticResource MoreThanZeroToVisibilityConverter}, Mode=OneWay}"
+                                              Value="0"/>
+                                <TextBlock x:Name="CountdownProgressBarTickerText"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           FontFamily="Consolas"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
                         </Grid>
                         <Grid Margin="{TemplateBinding PreviousButtonMargin}"
                               Padding="24"

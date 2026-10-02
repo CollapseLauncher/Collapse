@@ -49,18 +49,9 @@ namespace CollapseLauncher
         public static bool                      IsSkippingUpdateCheck = false;
         public static AppThemeMode              CurrentAppTheme;
 #if !DISABLEDISCORD
-        public static DiscordPresenceManager AppDiscordPresence
+        public static DiscordRpcManager AppDiscordPresence
         {
-            get
-            {
-                if (field != null) return field;
-
-                bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
-                field = new DiscordPresenceManager(isEnableDiscord);
-                AppDiscordPresence.SetActivity(ActivityType.Idle);
-
-                return field;
-            }
+            get => field ??= new DiscordRpcManager();
         }
 #endif
         public static bool IsAppThemeLight =>
@@ -73,7 +64,7 @@ namespace CollapseLauncher
 
         public static void SaveLocalNotificationData()
         {
-            NotificationPush localNotificationData = new NotificationPush
+            NotificationPush localNotificationData = new()
             {
                 AppPushIgnoreMsgIds    = NotificationData?.AppPushIgnoreMsgIds,
                 RegionPushIgnoreMsgIds = NotificationData?.RegionPushIgnoreMsgIds

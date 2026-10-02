@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
@@ -112,7 +113,7 @@ internal sealed partial class FFmpegCodecInstaller : ProgressBase, ICodecExtensi
                               extractFolder,
                               token);
 
-        string innerFfmpegDir = ImageBackgroundManager.FindFFmpegInstallFolder(extractFolder, ImageBackgroundManager.Shared.GlobalFFmpegLibraryNames) ??
+        string innerFfmpegDir = FFmpegPInvoke.FindFFmpegInstallFolder(extractFolder, ImageBackgroundManager.Shared.GlobalFFmpegLibraryNames) ??
                                 throw new FileNotFoundException("Library files are not found!");
 
         foreach (string dllFile in Directory.EnumerateFiles(innerFfmpegDir, "*.dll", SearchOption.TopDirectoryOnly))

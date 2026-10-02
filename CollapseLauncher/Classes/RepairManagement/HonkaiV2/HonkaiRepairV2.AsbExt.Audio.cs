@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -6,7 +7,6 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -34,19 +34,19 @@ internal static partial class AssetBundleExtension
 
     internal static async Task<List<FilePropertiesRemote>>
         GetAudioAssetListAsync<T>(
-            this HttpClient         assetBundleHttpClient,
-            PresetConfig            presetConfig,
-            GameVersion             gameVersion,
-            KianaDispatch           gameServerInfo,
-            SenadinaFileIdentifier? audioFileIdentifier,
-            ProgressBase<T>         progressibleInstance,
-            AudioPCKType[]?         ignoredAudioIds = null,
-            CancellationToken       token           = default)
+            this HttpClient     assetBundleHttpClient,
+            PresetConfig        presetConfig,
+            GameVersion         gameVersion,
+            KianaDispatch       gameServerInfo,
+            ServeV3FileContext? context,
+            ProgressBase<T>     progressibleInstance,
+            AudioPCKType[]?     ignoredAudioIds = null,
+            CancellationToken   token           = default)
         where T : IAssetIndexSummary
     {
-        HashSet<AudioPCKType> ignoredAudioHashset = new(ignoredAudioIds ?? []);
+        HashSet<AudioPCKType> ignoredAudioHashset = [.. ignoredAudioIds ?? []];
 
-        ArgumentNullException.ThrowIfNull(audioFileIdentifier);
+        ArgumentNullException.ThrowIfNull(context);
         int parallelThread = progressibleInstance.ThreadForIONormalized;
 
         // Update Progress
@@ -65,7 +65,7 @@ internal static partial class AssetBundleExtension
                .ManifestAudio
                .ManifestAudioRevision}");
 
-        await using Stream manifestStream = audioFileIdentifier.fileStream ?? throw new NullReferenceException("Senadina Audio Identifier Stream cannot be null!");
+        await using Stream manifestStream = context.Stream ?? throw new NullReferenceException("Senadina Audio Identifier Stream cannot be null!");
         KianaAudioManifest manifestData =
             new(manifestStream, gameVersion.VersionArrayManifest);
 

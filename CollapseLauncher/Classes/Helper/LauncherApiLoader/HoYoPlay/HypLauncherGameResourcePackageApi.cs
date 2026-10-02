@@ -69,10 +69,7 @@ public class HypPackageData
     public byte[]? PackageMD5Hash { get; init; }
 
     [JsonIgnore]
-    public string? PackageMD5HashString
-    {
-        get => field ??= HexTool.BytesToHexUnsafe(PackageMD5Hash);
-    }
+    public string? PackageMD5HashString => field ??= HexTool.BytesToHexUnsafe(PackageMD5Hash);
 
     [JsonPropertyName("size")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]

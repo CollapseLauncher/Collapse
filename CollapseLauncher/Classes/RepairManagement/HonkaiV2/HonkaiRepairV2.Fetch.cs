@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
@@ -7,7 +8,6 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using Microsoft.Win32;
@@ -35,10 +35,10 @@ internal partial class HonkaiRepairV2
 {
     internal class SenadinaFileResult
     {
-        public SenadinaFileIdentifier? Audio          { get; init; }
-        public SenadinaFileIdentifier? XmfMeta        { get; init; }
-        public SenadinaFileIdentifier? XmfInfoCurrent { get; init; }
-        public SenadinaFileIdentifier? XmfPatch       { get; init; }
+        public ServeV3FileContext? Audio          { get; init; }
+        public ServeV3FileContext? XmfMeta        { get; init; }
+        public ServeV3FileContext? XmfInfoCurrent { get; init; }
+        public ServeV3FileContext? XmfPatch       { get; init; }
     }
 
     #region Fetch by Sophon
@@ -303,7 +303,7 @@ internal partial class HonkaiRepairV2
 
     private async Task FinalizeAudioAssetsPath(List<FilePropertiesRemote> originAssetList,
                                                List<FilePropertiesRemote> assetList,
-                                               SenadinaFileIdentifier?    audioManifestIdentifier,
+                                               ServeV3FileContext?        context,
                                                CancellationToken          token)
     {
         // Edit: 2025-05-01
@@ -342,19 +342,18 @@ internal partial class HonkaiRepairV2
                            .EnsureNoReadOnly()
                            .StripAlternateDataStream();
 
-        if (audioManifestIdentifier != null)
+        if (context != null)
         {
-            if (audioManifestIdentifier.lastOriginHash?.Length != 0)
+            if (context.OriginFileHash.Length != 0)
             {
                 FilePropertiesRemote manifestAsset = new()
                 {
-                    AssociatedObject = audioManifestIdentifier,
-                    CRC              = HexTool.BytesToHexUnsafe(audioManifestIdentifier.lastOriginHash),
+                    AssociatedObject = context,
+                    CRC              = HexTool.BytesToHexUnsafe(context.OriginFileHash),
                     FT               = FileType.Generic,
-                    RN               = audioManifestIdentifier.GetOriginalFileUrl(),
+                    RN               = context.GetOriginalFileUrl(),
                     N                = Path.Combine(AssetBundleExtension.RelativePathAudio, "manifest.m"),
-                    S = (await HttpClientAssetBundle.GetURLStatusCode(audioManifestIdentifier.GetOriginalFileUrl(),
-                                                                      token)).FileSize
+                    S = (await HttpClientAssetBundle.GetURLStatusCode(context.GetOriginalFileUrl(), token)).FileSize
                 };
                 assetList.Add(manifestAsset);
             }
@@ -367,9 +366,7 @@ internal partial class HonkaiRepairV2
                                            .StripAlternateDataStream();
 
 
-                CDNCacheResult originManifestResponse =
-                    await audioManifestIdentifier
-                       .GetOriginalFileHttpResponse(HttpClientAssetBundle, token: token);
+                CDNCacheResult originManifestResponse = await context.GetOriginalFileHttpResponse(HttpClientAssetBundle, token: token);
                 if (originManifestResponse.IsSuccessStatusCode)
                 {
                     await using Stream     originManifestStreamRemote = originManifestResponse.Stream;
@@ -494,26 +491,26 @@ internal partial class HonkaiRepairV2
 
         return;
 
-        async Task AddBlockAndMetaToAssetList(string                  targetFilename,
-                                              SenadinaFileIdentifier? identifier,
-                                              CancellationToken       innerToken)
+        async Task AddBlockAndMetaToAssetList(string              targetFilename,
+                                              ServeV3FileContext? identifier,
+                                              CancellationToken   innerToken)
         {
             if (identifier == null)
             {
                 return;
             }
 
-            if (identifier.lastOriginHash?.Length != 0)
+            if (identifier.OriginFileHash.Length != 0)
             {
                 FilePropertiesRemote manifestAsset = new()
                 {
                     AssociatedObject = identifier,
-                    CRC              = HexTool.BytesToHexUnsafe(identifier.lastOriginHash),
+                    CRC              = HexTool.BytesToHexUnsafe(identifier.OriginFileHash),
                     FT               = FileType.Generic,
                     RN               = identifier.GetOriginalFileUrl(),
                     N                = Path.Combine(AssetBundleExtension.RelativePathBlock, targetFilename),
-                    S = (await HttpClientAssetBundle.GetURLStatusCode(identifier.GetOriginalFileUrl(),
-                                                                      innerToken)).FileSize
+
+                    S = (await HttpClientAssetBundle.GetURLStatusCode(identifier.GetOriginalFileUrl(), innerToken)).FileSize
                 };
                 targetAssetList.Add(manifestAsset);
             }
@@ -525,9 +522,7 @@ internal partial class HonkaiRepairV2
                                    .EnsureNoReadOnly()
                                    .StripAlternateDataStream();
 
-                CDNCacheResult originResponse =
-                    await identifier
-                       .GetOriginalFileHttpResponse(HttpClientAssetBundle, token: innerToken);
+                CDNCacheResult originResponse = await identifier.GetOriginalFileHttpResponse(HttpClientAssetBundle, token: innerToken);
                 if (originResponse.IsSuccessStatusCode)
                 {
                     await using Stream     originStreamRemote = originResponse.Stream;

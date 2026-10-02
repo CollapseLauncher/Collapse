@@ -36,14 +36,14 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private static Task<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
+    private static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
     {
         return !Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri)
             ? throw new InvalidOperationException($"File path or URL is misformed! {filePath}")
             : OpenStreamFromFileOrUrl(uri, token);
     }
 
-    private static async Task<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
+    private static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
     {
         if (uri.IsFile)
         {
@@ -63,7 +63,7 @@ public partial class ImageBackgroundManager
         }
 
         HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
-        status = await sharedClient.GetCachedUrlStatus(uri, token);
+        status = await sharedClient.GetCachedUrlStatus(uri, token).ConfigureAwait(false);
         status.EnsureSuccessStatusCode();
 
         if (status.FileSize == 0)
@@ -82,9 +82,14 @@ public partial class ImageBackgroundManager
             downloadedFilePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
 
         using HttpResponseMessage responseMessage =
-            await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
-        await using Stream responseStream = await responseMessage.Content.ReadAsStreamAsync(token);
-        await responseStream.CopyToAsync(downloadedFileStream, token);
+            await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token)
+                              .ConfigureAwait(false);
+        await using Stream responseStream =
+            await responseMessage.Content
+                                 .ReadAsStreamAsync(token)
+                                 .ConfigureAwait(false);
+        await responseStream.CopyToAsync(downloadedFileStream, token)
+                            .ConfigureAwait(false);
 
         // Write stamp for future cache metadata
         ReadOnlySpan<byte> stampData = AsSpan(in status);
@@ -97,13 +102,13 @@ public partial class ImageBackgroundManager
             where T : unmanaged => new(Unsafe.AsPointer(in data), sizeof(T));
     }
 
-    internal static async Task<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
+    internal static async ValueTask<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
     {
         await using FileStream stream = await OpenStreamFromFileOrUrl(uri, token);
         return new Uri(stream.Name);
     }
 
-    internal static async Task<string> GetLocalOrDownloadedFilePath(string path, CancellationToken token)
+    internal static async ValueTask<string> GetLocalOrDownloadedFilePath(string path, CancellationToken token)
     {
         Uri uri = await GetLocalOrDownloadedFilePath(new Uri(path), token);
         return uri.IsFile

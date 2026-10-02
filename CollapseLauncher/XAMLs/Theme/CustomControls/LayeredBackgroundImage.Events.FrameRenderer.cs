@@ -50,6 +50,7 @@ public partial class LayeredBackgroundImage
 
     private static unsafe delegate* unmanaged[Stdcall]<nint, uint, ref readonly Rect, out nint, int> _functionTableBeginDraw;
     private static unsafe delegate* unmanaged[Stdcall]<nint, nint, ref readonly Rect, int>           _functionTableDrawImage;
+    private static unsafe delegate* unmanaged[Stdcall]<nint, nint, int>                              _functionTableCopyFrameToVideoSurface;
     private static unsafe delegate* unmanaged[Stdcall]<nint, int>                                    _functionTableDispose;
 
     #endregion
@@ -108,9 +109,7 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            SwapChainPanelHelper.MediaPlayerCopyFrameUnsafe(_videoPlayerPtr,
-                                                            _canvasRenderTargetAsSurfacePtr);
-            
+            _functionTableCopyFrameToVideoSurface(_videoPlayerPtr, _canvasRenderTargetAsSurfacePtr);
             drawingSessionPpv = SwapChainPanelHelper
                .CanvasSessionDrawUnsafe(_canvasImageSourceNativePtr,
                                         _canvasRenderTargetNativePtr,

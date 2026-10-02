@@ -14,6 +14,7 @@ using Hi3Helper.Win32.TaskbarListCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.Extensions.Logging;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -25,8 +26,11 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Graphics;
 using Windows.UI;
 using WinRT.Interop;
@@ -598,12 +602,14 @@ namespace CollapseLauncher.Helper
                                 {
                                     ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
                                     InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
+                                    ToggleDeferVisibility(Visibility.Collapsed, FlushSharedCanvasDevice);
                                     break;
                                 }
                             case SC_RESTORE:
                                 {
                                     ImageBackgroundManager.Shared.SetWindowRestoreEvent();
                                     InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
+                                    ToggleDeferVisibility(Visibility.Visible);
                                     break;
                                 }
                         }
@@ -614,11 +620,15 @@ namespace CollapseLauncher.Helper
                     {
                         if (wParam == 0)
                         {
+                            ImageBackgroundManager.Shared.SetWindowMinimizeEvent();
                             InnerLauncherConfig.m_homePage?.StopCarouselSlideshow();
+                            ToggleDeferVisibility(Visibility.Collapsed, FlushSharedCanvasDevice);
                         }
                         else
                         {
+                            ImageBackgroundManager.Shared.SetWindowRestoreEvent();
                             InnerLauncherConfig.m_homePage?.StartCarouselSlideshow();
+                            ToggleDeferVisibility(Visibility.Visible);
                         }
                         break;
                     }
@@ -709,7 +719,83 @@ namespace CollapseLauncher.Helper
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
+
+            static void FlushSharedCanvasDevice()
+            {
+                CanvasDevice sharedDevice = CanvasDevice.GetSharedDevice();
+                sharedDevice.Trim();
+            }
+
+            static void ToggleDeferVisibility(Visibility visibility, Action? runActionBeforeGC = null)
+            {
+                if (CurrentWindow.IsObjectDisposed() ||
+                    CurrentWindow is not { } currentWindow)
+                {
+                    return;
+                }
+
+                ref SystemBackdrop? lastBackdrop =
+                    ref CollectionsMarshal.GetValueRefOrAddDefault(_windowBackdrops, currentWindow.GetHashCode(), out _);
+
+                currentWindow.SystemBackdrop     = visibility == Visibility.Collapsed ? null : lastBackdrop;
+                currentWindow.Content.Visibility = visibility;
+
+                CancellationTokenSource newCts = new();
+                CancellationTokenSource? oldCts = Interlocked.Exchange(ref _gcJobMinimizedCts, newCts);
+                oldCts?.Cancel();
+                oldCts?.Dispose();
+
+                if (visibility == Visibility.Collapsed)
+                {
+                    // Run GC collection task in the background for 300 seconds approx.
+                    // This however shouldn't bother any functionality of the launcher as the task will be cancelled
+                    // immediately as the token is renewed and cancelled.
+                    StartAggressiveGCCollectTask(10, 30, runActionBeforeGC, newCts.Token);
+                }
+            }
+
+            static async void StartAggressiveGCCollectTask(double delayIntervalSec, int attempt, Action? runActionBeforeGC = null, CancellationToken token = default)
+            {
+                try
+                {
+                    int attemptT = attempt;
+                    while (--attempt >= 0)
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        await Task.Delay(TimeSpan.FromSeconds(delayIntervalSec), token);
+                        runActionBeforeGC?.Invoke();
+
+                        GC.Collect(GC.MaxGeneration,
+                                   GCCollectionMode.Forced,
+                                   blocking: true,
+                                   compacting: true);
+
+                        GC.WaitForPendingFinalizers();
+                    }
+
+                    Logger.LogWriteLine($"[StartAggressiveGCCollectTask] Background GC Collection has been finished executing in: {attemptT * delayIntervalSec} seconds",
+                                        LogType.Info,
+                                        true);
+                }
+                catch (OperationCanceledException)
+                {
+                    Logger.LogWriteLine("[StartAggressiveGCCollectTask] Background GC Collection Task was cancelled.",
+                                        LogType.Warning,
+                                        true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWriteLine($"[StartAggressiveGCCollectTask] {ex}", LogType.Error, true);
+                }
+            }
         }
+
+        private static readonly Dictionary<int, SystemBackdrop?> _windowBackdrops = [];
+        private static          CancellationTokenSource?         _gcJobMinimizedCts;
 
         #endregion
 

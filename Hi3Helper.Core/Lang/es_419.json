@@ -435,6 +435,19 @@
     "RegImportTitle": "Importar",
     "RegImportTooltip": "Importar claves de registro de un archivo de Registro de Collapse",
 
+    "DBImportExport": "Cargar/Restaurar en el DB",
+    "DBImportExportTooltip": "Restaurar/Cargar los Ajustes del Juego hacia/desde la base de datos",
+    "DBUploadTitle": "Cargar",
+    "DBUploadTooltip": "Carga los Ajustes del juego a la base de datos indicada en los Ajustes de la Aplicación",
+    "DBRestoreTitle": "Restaurar",
+    "DBRestoreTooltip": "Restaura los Ajustes del juego de la base de datos indicada en los Ajustes de la Aplicación",
+
+    "SettingsDBExported": "¡Se han cargado los datos de ajustes!",
+    "SettingsDBExportTitle": "Cargar Ajustes a la Base de datos",
+    "SettingsDBImported": "¡Se han importado los datos de ajustes desde la base de datos! (Es necesario reiniciar el launcher para aplicar los cambios)",
+    "SettingsDBNotSetup": "La funcion de Base de datos no esta habilitada. Verifica los Ajustes de la aplicación",
+    "SettingsDBNotInitialized": "El subsistema de la base de datos no está iniciado o ha fallado. ¡Revisa los registros/consola!",
+
     "OverlayNotInstalledTitle": "¡No puedes usar esta característica porque la región no está instalada o necesita ser actualizada!",
     "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del launcher del juego!",
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
@@ -559,7 +572,7 @@
     "VideoBackground_FFmpegInstallStatus_NotInstalled": "No instalado",
     "VideoBackground_FFmpegInstallBtn_InstallationWizard": "Iniciar una nueva instalación o localizar asistente de instalación",
     "VideoBackground_FFmpegInstallNote": "Aviso",
-    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 8.x. Otras versiones de FFmpeg no son compatibles por el momento.",
+    "VideoBackground_FFmpegInstallNoteContent": "Collapse solo soporta FFmpeg versión 8.x. Otras versiones de FFmpeg no son compatibles.",
     "VideoBackground_FFmpegInstallLockedTitle": "Modificar la instalación de FFmpeg está bloqueada",
     "VideoBackground_FFmpegInstallLockedContent": "FFmpeg esta siendo utilizado para decodificar su fondo. Para modificar la instalación desactiva primero la opción \"Usar FFmpeg para la decodificación de vídeo\", luego reinicia tu launcher y vuelve a aquí.",
 
@@ -837,10 +850,18 @@
     "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
     "ListViewFooterRestartButton": "Reiniciar el Launcher",
 
-    "RightPanelImportTitle1": "Haz clic para agregar el",
+    "RightPanelImportTitle1": "Haz clic en Buscar",
     "RightPanelImportTitle2": "o",
-    "RightPanelImportTitle3": "aquí",
-    "RightPanelImportTitle4": "¡En cualquier parte del cuadro está bien!"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "Suelta los archivos del plugin en este panel",
+
+    "Error_NoPluginImported": "El plugin no fue importado debido al siguiente error:",
+    "Error_AccessDeniedPluginInstall": "Se denegó el permiso mientras se leía o instalaba el plugin.",
+    "Error_PluginPackageMissingManifest": "Al paquete le falta su manifiesto u otro archivo requerido.",
+    "Error_PluginPackageInvalidManifest": "El archivo o su manifiesto es invalido.",
+    "Error_IOErrorCannotBeInstalled": "No se puede leer o instalar el archivo.",
+    "Error_IOErrorCannotBeRead": "No fue posible leer el manifiesto o sus archivos relacionados.",
+    "Error_PluginNotSupportedOrInvalid": "El archivo no es un plugin valido o soportado."
   },
 
   "_Misc": {

@@ -28,7 +28,7 @@ public readonly struct SystemSettingLocalData<TData>
     public void SetDataEnum<TDataEnum>(TDataEnum value, JsonEnumStoreType enumStoreType = JsonEnumStoreType.AsNumber)
         where TDataEnum : struct, Enum => _node.SetNodeValueEnum("Data", value, enumStoreType);
 
-    public SystemSettingLocalData([NotNull] JsonNode node, TData defaultData = default, int defaultVersion = 1)
+    public SystemSettingLocalData([NotNull] JsonNode node, TData defaultData = default, int defaultVersion = 0)
     {
         ArgumentNullException.ThrowIfNull(node);
         _node = node;
@@ -44,7 +44,7 @@ public readonly struct SystemSettingLocalData<TData>
 public static class SystemSettingLocalDataExt
 {
     public static SystemSettingLocalData<TData> AsSystemSettingLocalData<TData>(
-        [NotNull] this JsonNode? node, string keyName, TData defaultData = default, int defaultVersion = 1)
+        [NotNull] this JsonNode? node, string keyName, TData defaultData = default, int defaultVersion = 0)
         where TData : struct
     {
         ArgumentNullException.ThrowIfNull(node);
