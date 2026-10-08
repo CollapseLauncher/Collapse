@@ -117,14 +117,14 @@ public partial class LayeredBackgroundImage
                     _functionTableCopyFrameToVideoSurface == null! ||
                     _functionTableDispose == null!)
                 {
-                    SwapChainPanelHelper.GetDirectNativeDelegateForDrawRoutine(_canvasImageSourceNativePtr,
-                                                                               _canvasRenderTargetNativePtr,
-                                                                               _videoPlayerPtr,
-                                                                               out _functionTableBeginDraw,
-                                                                               out _functionTableDrawImage,
-                                                                               out _functionTableCopyFrameToVideoSurface,
-                                                                               out _functionTableDispose,
-                                                                               in _canvasRenderSize);
+                    SwapChainPanelHelper.GetFuncForCanvasImageSource(_canvasImageSourceNativePtr,
+                                                                     _canvasRenderTargetNativePtr,
+                                                                     _videoPlayerPtr,
+                                                                     out _functionTableBeginDraw,
+                                                                     out _functionTableDrawImage,
+                                                                     out _functionTableCopyFrameToVideoSurface,
+                                                                     out _functionTableDispose,
+                                                                     in _canvasRenderSize);
                 }
             }
             catch (Exception e)
