@@ -403,6 +403,10 @@ public partial class LayeredBackgroundImage
                 size = image.RenderSize;
             }
         }
+        else if (canvasElement is FrameworkElement element)
+        {
+            size = new Size(element.ActualWidth, element.ActualHeight);
+        }
 
         SetValue(CanvasWidthProperty,  size.Width);
         SetValue(CanvasHeightProperty, size.Height);

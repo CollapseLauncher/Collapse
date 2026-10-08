@@ -1,13 +1,9 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 using Hi3Helper;
-using Hi3Helper.Win32.WinRT.SwapChainPanelHelper;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Windows.Foundation;
-using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Media.Playback;
 using WinRT;
 
@@ -40,11 +36,8 @@ public partial class LayeredBackgroundImage
             Interlocked.Exchange(ref _videoPlayer, player);
 
             player.MediaOpened += InitializeVideoFrameOnMediaOpened;
-
-            if (!_useSafeFrameRenderer)
-            {
-                ((IWinRTObject)player).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
-            }
+            ((IWinRTObject)player).NativeObject.TryAs(IMediaPlayer5_IID, out _videoPlayerPtr);
+            _videoPresenter = new MediaFoundationPresenter();
         }
         catch (Exception ex)
         {
@@ -61,17 +54,15 @@ public partial class LayeredBackgroundImage
             double currentCanvasWidth  = playbackSession.NaturalVideoWidth;
             double currentCanvasHeight = playbackSession.NaturalVideoHeight;
 
-            _canvasWidth      = (int)currentCanvasWidth;
-            _canvasHeight     = (int)currentCanvasHeight;
-            _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
+            _canvasWidth  = (int)currentCanvasWidth;
+            _canvasHeight = (int)currentCanvasHeight;
 
             // In some occasion, MediaPlayer reportedly 0x0px size which causes E_INVALIDARG while rendering frame
             // if FFmpeg source is used. So, use size reported by FFmpeg instead.
-            if (_canvasRenderSize != default || _videoFfmpegMediaSource == null) return;
+            if ((_canvasWidth == 0 && _canvasHeight == 0) || _videoFfmpegMediaSource == null) return;
 
             _canvasWidth      = _videoFfmpegMediaSource.CurrentVideoStream.PixelWidth;
             _canvasHeight     = _videoFfmpegMediaSource.CurrentVideoStream.PixelHeight;
-            _canvasRenderSize = new Rect(0, 0, _canvasWidth, _canvasHeight);
         }
         catch (Exception ex)
         {
@@ -81,91 +72,15 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private unsafe void InitializeRenderTarget()
-    {
-        try
-        {
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 1); // Block frame drawing routine
-            DisposeRenderTarget(_canvasImageSource == null); // Always ensure the previous render target has been disposed
-
-            _canvasDevice ??= CanvasDevice.GetSharedDevice();
-            _canvasImageSource ??= new CanvasVirtualImageSource(_canvasDevice,
-                                                                _canvasWidth,
-                                                                _canvasHeight,
-                                                                96f);
-
-            _canvasRenderTarget ??= new CanvasRenderTarget(_canvasDevice,
-                                                           _canvasWidth,
-                                                           _canvasHeight,
-                                                           96f);
-
-            Interlocked.Exchange(ref _useSafeFrameRenderer, false);
-            if (_useSafeFrameRenderer)
-            {
-                return;
-            }
-
-            _canvasRenderTargetNativePtr = ((IWinRTObject)_canvasRenderTarget).NativeObject.ThisPtr;
-            _canvasImageSourceNativePtr  = ((IWinRTObject)_canvasImageSource).NativeObject.ThisPtr;
-            
-            ((IWinRTObject)_canvasRenderTarget).NativeObject.TryAs(typeof(IDirect3DSurface).GUID, out _canvasRenderTargetAsSurfacePtr);
-
-            try
-            {
-                if (_functionTableBeginDraw == null! ||
-                    _functionTableDrawImage == null! ||
-                    _functionTableCopyFrameToVideoSurface == null! ||
-                    _functionTableDispose == null!)
-                {
-                    SwapChainPanelHelper.GetFuncForCanvasImageSource(_canvasImageSourceNativePtr,
-                                                                     _canvasRenderTargetNativePtr,
-                                                                     _videoPlayerPtr,
-                                                                     out _functionTableBeginDraw,
-                                                                     out _functionTableDrawImage,
-                                                                     out _functionTableCopyFrameToVideoSurface,
-                                                                     out _functionTableDispose,
-                                                                     in _canvasRenderSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Interlocked.Exchange(ref _useSafeFrameRenderer, true); // Fallback
-
-                _functionTableBeginDraw               = null;
-                _functionTableDrawImage               = null;
-                _functionTableCopyFrameToVideoSurface = null;
-                _functionTableDispose                 = null;
-                Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] Failed to initialize fast-unsafe method for frame rendering. Fallback to safe renderer.\r\n{e}",
-                                    LogType.Error,
-                                    true);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::InitializeRenderTarget] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-        finally
-        {
-            if (_canvasImageSource != null)
-            {
-                SetRenderImageSource(_canvasImageSource.Source);
-            }
-            Interlocked.Exchange(ref _isBlockVideoFrameDraw, 0); // Unblock frame drawing routine
-        }
-    }
-
     #endregion
 
     #region Disposers
 
     private void DetachVideoPlayerEvents(MediaPlayer player)
     {
-        player.MediaOpened -= InitializeVideoFrameOnMediaOpened;
-        player.VideoFrameAvailable -= NotifyVideoLoaded;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableUnsafe;
-        player.VideoFrameAvailable -= VideoPlayer_VideoFrameAvailableSafe;
+        player.MediaOpened                     -= InitializeVideoFrameOnMediaOpened;
+        player.VideoFrameAvailable             -= NotifyVideoLoaded;
+        player.VideoFrameAvailable             -= VideoPlayer_VideoFrameAvailableUnsafe;
         player.PlaybackSession.PositionChanged -= MediaDurationPosition_OnChangedBridge;
     }
 
@@ -188,15 +103,12 @@ public partial class LayeredBackgroundImage
                 _ = SaveMediaPosition(BackgroundSource, player.Position);
             }
 
-            if (!_useSafeFrameRenderer)
-            {
-                NullifyMediaPlayerNativePointers();
-            }
+            NullifyMediaPlayerNativePointers();
+            if (disposeRenderImageSource)
+                Interlocked.Exchange(ref _videoPresenter, null)?.Dispose();
 
             Interlocked.Exchange(ref _videoFfmpegMediaSource, null)?.Dispose();
-            Interlocked.Exchange(ref _videoPlayer, null)?.Dispose();
-
-            DisposeRenderTarget(disposeRenderImageSource);
+            Interlocked.Exchange(ref _videoPlayer,            null)?.Dispose();
         }
         catch (Exception ex)
         {
@@ -208,48 +120,6 @@ public partial class LayeredBackgroundImage
         {
             Interlocked.Exchange(ref _isVideoInitialized, 0);
         }
-    }
-
-    private void DisposeRenderTarget(bool disposeRenderImageSource = true)
-    {
-        try
-        {
-            if (disposeRenderImageSource)
-            {
-                SetRenderImageSource(null);
-                Interlocked.Exchange(ref _canvasImageSource,  null);
-                Interlocked.Exchange(ref _canvasRenderTarget, null)?.Dispose();
-            }
-
-            if (!_useSafeFrameRenderer)
-            {
-                NullifyRenderTargetNativePointers();
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::DisposeRenderTarget] FATAL: {e}",
-                                LogType.Error,
-                                true);
-        }
-    }
-
-    #endregion
-
-    #region On Device Lost Handler
-
-    private void CanvasDevice_OnDeviceLost()
-    {
-        Logger.LogWriteLine("[LayeredBackgroundImage::CanvasDevice_OnDeviceLost] Render device has been lost! Re-initialize render device and textures...",
-                            LogType.Warning,
-                            true);
-
-        // -- Nullify _canvasImageSource so CanvasDevice and other dependencies are reinitialized too
-        Interlocked.Exchange(ref _canvasImageSource, null!);
-        InitializeRenderTarget();
-
-        // Try to unlock video draw progress (if a throw happened inside frame drawing routine)
-        Interlocked.Exchange(ref _isVideoFrameDrawInProgress, 0);
     }
 
     #endregion
@@ -264,20 +134,6 @@ public partial class LayeredBackgroundImage
         //    (as IWinRTObject, then took its direct pointer) into IMediaPlayer5. If not
         //    released, the reference on the IWinRTObject will not be zeroed, causing leak.
         if (_videoPlayerPtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _videoPlayerPtr, nint.Zero));
-    }
-
-    private void NullifyRenderTargetNativePointers()
-    {
-        // -- Note to myself @neon-nyan:
-        //    Release IDirect3DSurface reference first, then dispose the whole CanvasRenderTarget.
-        //    This is necessary as we just cast/QueryInterface the _canvasRenderTargetNativePtr (which
-        //    is obtained from IWinRTObject's direct pointer) into IDirect3DSurface. If not released,
-        //    the reference on the IWinRTObject will not be zeroed, causing leak.
-        if (_canvasRenderTargetAsSurfacePtr != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _canvasRenderTargetAsSurfacePtr, nint.Zero));
-
-        // -- Nullify IWinRTObject direct pointers.
-        Interlocked.Exchange(ref _canvasRenderTargetNativePtr, nint.Zero);
-        Interlocked.Exchange(ref _canvasImageSourceNativePtr,  nint.Zero);
     }
 
     #endregion

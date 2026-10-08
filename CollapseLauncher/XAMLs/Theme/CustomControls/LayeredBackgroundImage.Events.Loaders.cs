@@ -3,10 +3,10 @@ using FFmpegInteropX;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.WinRT.WindowsStream;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
+using Windows.UI;
+using WindowId = Microsoft.UI.WindowId;
+
 // ReSharper disable IdentifierTypo
 #pragma warning disable IDE0051
 #pragma warning disable CS8321 // Local function is declared but never used
@@ -448,9 +451,7 @@ public partial class LayeredBackgroundImage
 
                         // Unsubscribe frame renderer event to avoid double call, and then mark deinitialization.
                         Interlocked.Exchange(ref instance._isVideoInitialized, 0);
-                        player?.VideoFrameAvailable -= !instance._useSafeFrameRenderer
-                            ? instance.VideoPlayer_VideoFrameAvailableUnsafe
-                            : instance.VideoPlayer_VideoFrameAvailableSafe;
+                        player?.VideoFrameAvailable -= instance.VideoPlayer_VideoFrameAvailableUnsafe;
 
                         ffmpegMediaSource.Dispose();
                         sourceStreamRandom?.Dispose();
@@ -543,13 +544,14 @@ public partial class LayeredBackgroundImage
             SetValue(IsCurrentMediaSeekableProperty, sender.CanSeek);
 
             // Create instance
-            Image image = new()
+            Grid image = new()
             {
-                Tag = (_backgroundGrid, this),
+                Tag  = (_backgroundGrid, this),
                 Name = "VideoRenderFrame"
             };
 
             // Bind property
+            /*
             image.BindProperty(this,
                                nameof(BackgroundStretch),
                                Image.StretchProperty,
@@ -562,8 +564,10 @@ public partial class LayeredBackgroundImage
                                nameof(BackgroundVerticalAlignment),
                                VerticalAlignmentProperty,
                                BindingMode.OneWay);
+            */
 
             InitializeRenderTargetSize(sender.PlaybackSession);
+            _videoPresenter?.Initialize(image);
 
             // Register events
             image.Loaded   += Image_VideoFrameOnLoaded;
@@ -577,7 +581,7 @@ public partial class LayeredBackgroundImage
 
     private static void Image_VideoFrameOnLoaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        if (sender is not FrameworkElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
         {
             return;
         }
@@ -586,22 +590,26 @@ public partial class LayeredBackgroundImage
 
         Interlocked.Exchange(ref parentGrid.Item2._videoState, VideoState.Playing);
         parentGrid.Item2.InitializeAndPlayVideoView();
+
         Image_ImageOpened(sender, e);
     }
 
     private static void Image_VideoFrameOnUnloaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
+        if (sender is not FrameworkElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid })
         {
             return;
         }
 
-        parentGrid.Item2.DisposeAndPauseVideoView();
+        if (!parentGrid.Item2.IsLoaded)
+        {
+            parentGrid.Item2.DisposeAndPauseVideoView();
+        }
     }
 
     private static void Image_ImageOpened(object sender, RoutedEventArgs e)
     {
-        if (sender is not Image { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid } image)
+        if (sender is not FrameworkElement { Tag: ValueTuple<Grid, LayeredBackgroundImage> parentGrid } image)
         {
             return;
         }

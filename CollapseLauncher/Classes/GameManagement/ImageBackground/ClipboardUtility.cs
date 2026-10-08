@@ -32,6 +32,7 @@ public static class ClipboardUtility
         ImageBackgroundManager? instance,
         FrameToCopyType frameToCopyType)
     {
+        /*
         bool isBackgroundVideo = false;
 
         try
@@ -118,6 +119,7 @@ public static class ClipboardUtility
                 instance?.CurrentBackgroundElement?.UnlockCanvasRenderTarget();
             }
         }
+        */
     }
 
     private static CanvasRenderTarget ResizeCanvasToSizeOf(CanvasRenderTarget canvasToResize, int width, int height)
