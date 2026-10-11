@@ -376,7 +376,7 @@ public partial class ImageBackgroundManager
 
             if (CurrentBackgroundElement is { } existingLayer &&
                 IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
-                IsSameLocalFile(existingLayer.BackgroundStaticSource, backgroundStaticFilePath))
+                IsSameLocalFile(existingLayer.PlaceholderSource, backgroundStaticFilePath))
             {
                 return;
             }
@@ -449,7 +449,7 @@ public partial class ImageBackgroundManager
         LayeredBackgroundImage layerElement = new()
         {
             BackgroundSource          = backgroundFilePath,
-            BackgroundStaticSource    = backgroundStaticFilePath,
+            PlaceholderSource         = backgroundStaticFilePath,
             ForegroundSource          = overlayFilePath,
             UseFfmpegDecoder          = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable),
             Tag                       = context,
@@ -528,7 +528,7 @@ public partial class ImageBackgroundManager
                                   bindingMode: BindingMode.OneWay,
                                   converter: StaticConverter<InverseBooleanConverter>.Shared);
 
-        layerElement.ImageLoaded += LayerElementOnLoaded;
+        // layerElement.ImageLoaded += LayerElementOnLoaded;
         PresenterGrid?.Children.Add(layerElement);
 
         layerElement.Tag = isVideo;
@@ -538,7 +538,7 @@ public partial class ImageBackgroundManager
 
     private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
     {
-        layerElement.ImageLoaded -= LayerElementOnLoaded;
+        // layerElement.ImageLoaded -= LayerElementOnLoaded;
         layerElement.Transitions.Add(new PopupThemeTransition());
 
         if (PresenterGrid != null)
@@ -548,7 +548,7 @@ public partial class ImageBackgroundManager
             {
                 if (oldElement is LayeredBackgroundImage oldLayer)
                 {
-                    oldLayer.ImageLoaded -= LayerElementOnLoaded;
+                    // oldLayer.ImageLoaded -= LayerElementOnLoaded;
 
                     if (oldLayer.Tag == null)
                     {

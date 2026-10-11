@@ -313,8 +313,8 @@ namespace CollapseLauncher.Pages
 #endif
 
             AppBGCustomizerNote.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppBG_Note,
-                                                     ImageLoaderHelper.SupportedImageFormats,
-                                                     ImageLoaderHelper.SupportedVideoFormats
+                                                     LayeredBackgroundImage.SupportedImageFormatsFilter,
+                                                     LayeredBackgroundImage.SupportedVideoFormatsFilter
                                                     );
 
 #if !ENABLEUSERFEEDBACK
@@ -686,7 +686,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+            string file = await FileDialogNative.GetFilePicker(LayeredBackgroundImage.SupportedAllBackgroundFormatsFilter);
             if (string.IsNullOrEmpty(file) ||
                 string.IsNullOrWhiteSpace(file))
             {

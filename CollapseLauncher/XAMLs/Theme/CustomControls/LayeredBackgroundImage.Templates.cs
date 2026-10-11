@@ -4,7 +4,6 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using System.Numerics;
-using System.Threading;
 
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
@@ -36,8 +35,6 @@ public partial class LayeredBackgroundImage
     private Visual     _elevateGridVisual     = null!;
     private Compositor _elevateGridCompositor = null!;
 
-    private bool _isTemplateLoaded;
-
     private CubicBezierEasingFunction _parallaxEasingFunction;
     private CubicBezierEasingFunction _elevateEasingFunction;
 
@@ -59,12 +56,8 @@ public partial class LayeredBackgroundImage
         _elevateGridVisual     = ElementCompositionPreview.GetElementVisual(_elevateGrid);
         _elevateGridCompositor = _elevateGridVisual.Compositor;
 
-        _parallaxEasingFunction = _parallaxGridCompositor
-           .CreateCubicBezierEasingFunction(new Vector2(.45f, .05f), new Vector2(.55f, .95f));
-        _elevateEasingFunction = _parallaxGridCompositor
-           .CreateCubicBezierEasingFunction(new Vector2(0.19f, 1), new Vector2(0.22f, 1));
-
-        Interlocked.Exchange(ref _isTemplateLoaded, true);
+        _parallaxEasingFunction = _parallaxGridCompositor.CreateCubicBezierEasingFunction(new Vector2(.45f, .05f), new Vector2(.55f, .95f));
+        _elevateEasingFunction = _parallaxGridCompositor.CreateCubicBezierEasingFunction(new Vector2(0.19f, 1), new Vector2(0.22f, 1));
 
         base.OnApplyTemplate();
     }

@@ -12,14 +12,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 // ReSharper disable GrammarMistakeInComment
-
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
-internal static class LayeredBackgroundImageExtensions
+internal static partial class LayeredBackgroundImageExtensions
 {
     private static readonly HttpClient Client;
 

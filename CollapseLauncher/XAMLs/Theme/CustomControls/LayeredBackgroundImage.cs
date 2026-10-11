@@ -1,4 +1,8 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #nullable enable
@@ -12,5 +16,17 @@ public partial class LayeredBackgroundImage : Control
         Unloaded += LayeredBackgroundImage_OnUnloaded;
 
         DefaultStyleKey = typeof(LayeredBackgroundImage);
+    }
+
+    private static void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)sender;
+        instance.LoadAllPresenters();
+    }
+
+    private static void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)sender;
+        instance.UnloadAllPresenters();
     }
 }

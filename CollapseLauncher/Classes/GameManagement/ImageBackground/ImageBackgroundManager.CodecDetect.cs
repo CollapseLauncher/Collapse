@@ -64,7 +64,7 @@ public partial class ImageBackgroundManager
                                                     out Guid audioCodecGuid) ||
             (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable))
         {
-            return (true, true, true);
+            return (true, true, false);
         }
 
         return (await SimpleDialogs

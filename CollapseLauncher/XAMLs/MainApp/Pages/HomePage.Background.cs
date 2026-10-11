@@ -245,7 +245,7 @@ public sealed partial class HomePage
         LayeredBackgroundImage?        currentElement = ImageBackgroundManager.Shared.CurrentBackgroundElement;
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
         bool isUseStaticBackground = !(currentElement?.IsVideoPlay ?? true) &&
-                                     currentElement.BackgroundStaticSource != null;
+                                     currentElement.PlaceholderSource != null;
 
         if (isUseStaticBackground &&
             !Uri.TryCreate(currentContext?.OriginBackgroundStaticImagePath, UriKind.Absolute, out sourceUri))

@@ -35,21 +35,6 @@ namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        internal static readonly string SupportedImageFormats =
-            string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExtensions.Select(x => $"*{x}")) + ";" +
-            string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExternalCodecExtensions.Select(x => $"*{x}")) + ";" +
-            string.Join(";", LayeredBackgroundImage.SupportedImageVectorExtensions.Select(x => $"*{x}"));
-
-        internal static readonly string SupportedVideoFormats =
-            string.Join(";", LayeredBackgroundImage.SupportedVideoExtensions.Select(x => $"*{x}"));
-
-        internal static readonly Dictionary<string, string> SupportedBackgroundFormats =
-            new() {
-                { "All supported formats", SupportedImageFormats + ';' + SupportedVideoFormats },
-                { "Image formats", SupportedImageFormats },
-                { "Video formats", SupportedVideoFormats }
-            };
-
         #region Waifu2X
         public static Waifu2X Waifu2X;
         private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;

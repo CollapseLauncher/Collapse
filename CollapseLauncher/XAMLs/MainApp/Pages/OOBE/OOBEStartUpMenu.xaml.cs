@@ -5,9 +5,9 @@ using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -427,7 +427,7 @@ namespace CollapseLauncher.Pages.OOBE
                 return;
             }
 
-            string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+            string selectedPath = await FileDialogNative.GetFilePicker(LayeredBackgroundImage.SupportedAllBackgroundFormatsFilter);
             if (string.IsNullOrEmpty(selectedPath))
             {
                 OOBEBackgroundManager.Initialize(null);
