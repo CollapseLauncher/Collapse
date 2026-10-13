@@ -126,10 +126,10 @@ namespace CollapseLauncher.Pages
 
         private readonly Dictionary<string, FrameworkElement>               _settingsControls    = new();
         private readonly Lock                                               _highlightLock       = new();
-        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = [with([])];
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = [];
         private          int                                                _highlightCurrentIndex;
-        private          Brush                                              _highlightBrush;
-        private          Brush                                              _highlightSelectedBrush;
+        private readonly Brush                                              _highlightBrush;
+        private readonly Brush                                              _highlightSelectedBrush;
         private readonly List<MethodInfo>                                   _dialogMethods;
 
         private List<string> DialogMethodNames { get; }
@@ -146,13 +146,87 @@ namespace CollapseLauncher.Pages
 
         private CDNSelectionContext CdnSelectionContext { get; } = new();
 
-        private List<TextBlock> FFmpegDecodingModeSelectionItems { get; } = BuildFFmpegDecodingModeSelectionItems();
+        private List<TextBlock> FFmpegDecodingModeSelectionItems
+        {
+            get
+            {
+                if (field != null) return field;
 
-        private List<StackPanel> FFmpegDecodingModeHelpItems { get; } = BuildFFmpegDecodingModeHelpItems();
+                List<TextBlock> list = [];
+                foreach (VideoDecoderMode mode in Enum.GetValues<VideoDecoderMode>())
+                {
+                    TextBlock textBlock = new();
+                    textBlock.BindProperty(TextBlock.TextProperty,
+                                           Locale.Current,
+                                           "Lang._DictKvpFFmpegDecodingMode",
+                                           StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                           bindingMode: BindingMode.OneWay,
+                                           converterParameter: mode);
+
+                    textBlock.BindTooltipToLocale(Locale.Current,
+                                                  "Lang._DictKvpFFmpegDecodingModeTooltip",
+                                                  converter: StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                  converterParameter: mode);
+
+                    list.Add(textBlock);
+                }
+
+                return field = list;
+            }
+        }
+
+        private List<StackPanel> FFmpegDecodingModeHelpItems
+        {
+            get
+            {
+                if (field != null) return field;
+
+                List<StackPanel> list = [];
+                foreach (VideoDecoderMode mode in Enum.GetValues<VideoDecoderMode>())
+                {
+                    StackPanel stackPanel = new()
+                    {
+                        Orientation = Orientation.Vertical,
+                        Margin      = new Thickness(0, 8, 0, 8),
+                        Spacing     = 4,
+                        MaxWidth    = 420
+                    };
+
+                    TextBlock textBlockHeader = stackPanel.AddElementToStackPanel(new TextBlock
+                    {
+                        Style        = CollapseUIExt.GetApplicationResource<Style>("BodyLargeStrongTextBlockStyle"),
+                        TextWrapping = TextWrapping.Wrap
+                    });
+
+                    TextBlock textBlockContent = stackPanel.AddElementToStackPanel(new TextBlock
+                    {
+                        TextWrapping = TextWrapping.Wrap
+                    });
+
+                    textBlockHeader.BindProperty(TextBlock.TextProperty,
+                                                 Locale.Current,
+                                                 "Lang._DictKvpFFmpegDecodingMode",
+                                                 StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                 bindingMode: BindingMode.OneWay,
+                                                 converterParameter: mode);
+
+                    textBlockContent.BindProperty(TextBlock.TextProperty,
+                                                  Locale.Current,
+                                                  "Lang._DictKvpFFmpegDecodingModeTooltip",
+                                                  StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                  bindingMode: BindingMode.OneWay,
+                                                  converterParameter: mode);
+
+                    list.Add(stackPanel);
+                }
+
+                return field = list;
+            }
+        }
 
         private Dictionary<string, PluginInfo> PluginInstances => PluginManager.PluginInstances;
 
-        private bool IsPreviewBuild => LauncherConfig.IsPreview;
+        private bool IsPreviewBuild => IsPreview;
 
 #nullable enable
         private string? _previousSearchQuery;
@@ -246,14 +320,6 @@ namespace CollapseLauncher.Pages
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
 #endif
-
-            Task.Run(() =>
-                     {
-                         if (ImageLoaderHelper.EnsureWaifu2X())
-                         {
-                             DispatcherQueue.TryEnqueue(Bindings.Update);
-                         }
-                     });
         }
 
         private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -289,7 +355,7 @@ namespace CollapseLauncher.Pages
             InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+            AppDiscordPresence.SetActivity(DiscordActivityType.AppSettings);
 #endif
         }
 
@@ -703,7 +769,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool e = AppDiscordPresence.IsRpcEnabled;
+                bool e = AppDiscordPresence.IsEnabled;
                 ToggleDiscordGameStatus.IsEnabled = e;
                 if (e)
                 {
@@ -730,25 +796,21 @@ namespace CollapseLauncher.Pages
                     ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
 
-                AppDiscordPresence.IsRpcEnabled   = value;
+                AppDiscordPresence.IsEnabled   = value;
                 ToggleDiscordGameStatus.IsEnabled = value;
             }
         }
 
         private bool IsDiscordGameStatusEnabled
         {
-            get => GetAppConfigValue("EnableDiscordGameStatus");
-            set
-            {
-                SetAndSaveConfigValue("EnableDiscordGameStatus", value);
-                AppDiscordPresence.SetupPresence(null);
-            }
+            get => AppDiscordPresence.IsGameStatusEnabled;
+            set => AppDiscordPresence.IsGameStatusEnabled = value;
         }
 
         private bool IsDiscordIdleStatusEnabled
         {
-            get => AppDiscordPresence.IdleEnabled;
-            set => AppDiscordPresence.IdleEnabled = value;
+            get => AppDiscordPresence.IsShowOnIdle;
+            set => AppDiscordPresence.IsShowOnIdle = value;
         }
 #else
         private bool IsDiscordRPCEnabled
@@ -867,9 +929,7 @@ namespace CollapseLauncher.Pages
             PluginManager.SetPluginLocaleId(selectedKey);
 
             ((INotifyAllPropertyChanged)ImageBackgroundManager.Shared).NotifyAllChanged();
-            CustomDnsConnectionTypeComboBox.UpdateLayout();
-            CustomDnsProviderListComboBox.UpdateLayout();
-            VideoCodecFfmpegDecodingMethod.UpdateLayout();
+            GameLaunchedBehaviorSelector.UpdateLayoutAndBinding();
             InitializeSettingsSearch();
         }
 
@@ -1371,76 +1431,6 @@ namespace CollapseLauncher.Pages
                 DnsSettingsTestTextSuccess.Visibility = Visibility.Collapsed;
                 senderAsButton.IsEnabled              = true;
             }
-        }
-
-        private static List<TextBlock> BuildFFmpegDecodingModeSelectionItems()
-        {
-            List<TextBlock> list = [];
-
-            foreach (VideoDecoderMode mode in Enum.GetValues<VideoDecoderMode>())
-            {
-                TextBlock textBlock = new();
-                textBlock.BindProperty(TextBlock.TextProperty,
-                                       Locale.Current,
-                                       "Lang._DictKvpFFmpegDecodingMode",
-                                       StaticConverter<ObjectToLocaleKvpConverter>.Shared,
-                                       bindingMode: BindingMode.OneWay,
-                                       converterParameter: mode);
-
-                textBlock.BindTooltipToLocale(Locale.Current,
-                                              "Lang._DictKvpFFmpegDecodingModeTooltip",
-                                              converter: StaticConverter<ObjectToLocaleKvpConverter>.Shared,
-                                              converterParameter: mode);
-
-                list.Add(textBlock);
-            }
-
-            return list;
-        }
-
-        private static List<StackPanel> BuildFFmpegDecodingModeHelpItems()
-        {
-            List<StackPanel> list = [];
-
-            foreach (VideoDecoderMode mode in Enum.GetValues<VideoDecoderMode>())
-            {
-                StackPanel stackPanel = new()
-                {
-                    Orientation = Orientation.Vertical,
-                    Margin = new Thickness(0, 8, 0, 8),
-                    Spacing = 4,
-                    MaxWidth = 420
-                };
-
-                TextBlock textBlockHeader = stackPanel.AddElementToStackPanel(new TextBlock()
-                {
-                    Style = CollapseUIExt.GetApplicationResource<Style>("BodyLargeStrongTextBlockStyle"),
-                    TextWrapping = TextWrapping.Wrap
-                });
-
-                TextBlock textBlockContent = stackPanel.AddElementToStackPanel(new TextBlock()
-                {
-                    TextWrapping = TextWrapping.Wrap
-                });
-
-                textBlockHeader.BindProperty(TextBlock.TextProperty,
-                                             Locale.Current,
-                                             "Lang._DictKvpFFmpegDecodingMode",
-                                             StaticConverter<ObjectToLocaleKvpConverter>.Shared,
-                                             bindingMode: BindingMode.OneWay,
-                                             converterParameter: mode);
-
-                textBlockContent.BindProperty(TextBlock.TextProperty,
-                                              Locale.Current,
-                                              "Lang._DictKvpFFmpegDecodingModeTooltip",
-                                              StaticConverter<ObjectToLocaleKvpConverter>.Shared,
-                                              bindingMode: BindingMode.OneWay,
-                                              converterParameter: mode);
-
-                list.Add(stackPanel);
-            }
-
-            return list;
         }
 #nullable restore
         #endregion

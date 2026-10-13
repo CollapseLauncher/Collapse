@@ -2,6 +2,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.InternalPInvoke;
+using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Pages;
@@ -21,7 +23,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -149,13 +150,22 @@ public partial class ImageBackgroundManager
                 OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
                 OnPropertyChanged(nameof(CurrentBackgroundCount));
 
+                bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+                bool isVideo     = IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!);
+
+                MediaSupport    codecInfo   = isVideo ? FFmpegPInvoke.GetMediaSupport(localBackground) : default;
+                PixelColorModel pixelFormat = codecInfo.VideoPixelFormatInfo.ColorModel;
+                if (isUseFFmpeg || (codecInfo.Video.DecoderAvailable && pixelFormat.HasFlag(PixelColorModel.Rgb)))
+                {
+                    isUseFFmpeg = true;
+                }
+
                 CurrentBackgroundElement = CreateLayerElement(localOverlay != null ? new Uri(localOverlay) : null,
                                                               new Uri(localBackground),
                                                               localStatic != null ? new Uri(localStatic) : null,
                                                               context,
-                                                              IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!));
-
-                bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+                                                              isVideo,
+                                                              isUseFFmpeg);
                 new Thread(async void (ctx) =>
                 {
                     try
@@ -246,21 +256,21 @@ public partial class ImageBackgroundManager
                 return;
             }
 
+            token.ThrowIfCancellationRequested();
+
+            // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
+            (bool isSupported, bool isVideo, bool forceFFmpeg) = await CheckCodecOrSpawnDialog(downloadedBackgroundUri);
+            if (!isSupported) return;
+
+            // -- Force the use of FFmpeg if necessary.
+            if (forceFFmpeg) isUseFFmpeg = true;
+
             // -- Get upscaled image file if Waifu2X is enabled
-            if (GlobalIsWaifu2XEnabled)
+            if (GlobalIsWaifu2XEnabled && !isVideo)
             {
                 downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
                 downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
                 downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-
-            // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
-            (bool isSupported, bool isVideo) = await CheckCodecOrSpawnDialog(downloadedBackgroundUri);
-            if (!isSupported)
-            {
-                return;
             }
 
             // Try to force loading static image if requested.
@@ -312,6 +322,7 @@ public partial class ImageBackgroundManager
                                                   downloadedBackgroundUri,
                                                   downloadedBackgroundStaticUri,
                                                   isVideo,
+                                                  forceFFmpeg,
                                                   context,
                                                   captureGen,
                                                   forceReload: captureForceReload));
@@ -340,13 +351,14 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private void SpawnImageLayer(Uri? overlayFilePath,
-                                 Uri? backgroundFilePath,
-                                 Uri? backgroundStaticFilePath,
-                                 bool isVideo,
+    private void SpawnImageLayer(Uri?                          overlayFilePath,
+                                 Uri?                          backgroundFilePath,
+                                 Uri?                          backgroundStaticFilePath,
+                                 bool                          isVideo,
+                                 bool                          forceFFmpeg,
                                  LayeredImageBackgroundContext context,
-                                 int loadGeneration,
-                                 bool forceReload = false)
+                                 int                           loadGeneration,
+                                 bool                          forceReload = false)
     {
         if (loadGeneration != _loadGeneration)
         {
@@ -362,7 +374,7 @@ public partial class ImageBackgroundManager
                 return;
             }
 
-            if (CurrentBackgroundElement is LayeredBackgroundImage existingLayer &&
+            if (CurrentBackgroundElement is { } existingLayer &&
                 IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
                 IsSameLocalFile(existingLayer.BackgroundStaticSource, backgroundStaticFilePath))
             {
@@ -370,13 +382,13 @@ public partial class ImageBackgroundManager
             }
         }
 
-        CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo);
+        CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo, forceFFmpeg);
     }
 
     private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
     {
         if (newFilePath == null) return currentSource == null;
-        string? newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
+        string newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
         string? currentPath = currentSource switch
         {
             Uri uri => uri.IsFile ? uri.LocalPath : uri.OriginalString,
@@ -389,7 +401,7 @@ public partial class ImageBackgroundManager
     private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
     {
         string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
-        if (!string.IsNullOrEmpty(savedHex) && savedHex!.Length >= 6 && ThemeRootElement != null)
+        if (!string.IsNullOrEmpty(savedHex) && savedHex.Length >= 6 && ThemeRootElement != null)
         {
             if (TryParseHexColor(savedHex, out Color accentColor))
             {
@@ -414,7 +426,7 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private static bool TryParseHexColor(string hex, out Color color)
+    private static bool TryParseHexColor(ReadOnlySpan<char> hex, out Color color)
     {
         color = default;
         if (hex.Length < 6) return false;
@@ -427,25 +439,27 @@ public partial class ImageBackgroundManager
         return true;
     }
 
-    private LayeredBackgroundImage CreateLayerElement(Uri? overlayFilePath,
-                                                      Uri? backgroundFilePath,
-                                                      Uri? backgroundStaticFilePath,
+    private LayeredBackgroundImage CreateLayerElement(Uri?                          overlayFilePath,
+                                                      Uri?                          backgroundFilePath,
+                                                      Uri?                          backgroundStaticFilePath,
                                                       LayeredImageBackgroundContext context,
-                                                      bool isVideo)
+                                                      bool                          isVideo,
+                                                      bool                          forceFFmpeg)
     {
         LayeredBackgroundImage layerElement = new()
         {
             BackgroundSource          = backgroundFilePath,
             BackgroundStaticSource    = backgroundStaticFilePath,
             ForegroundSource          = overlayFilePath,
-            UseFfmpegDecoder          = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable,
+            UseFfmpegDecoder          = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable),
             Tag                       = context,
             ParallaxResetOnUnfocused  = false,
             BackgroundElevationPixels = 64d
         };
 
         if (!CurrentIsEnableCustomImage &&
-            !GlobalIsEnableCustomImage)
+            !GlobalIsEnableCustomImage &&
+            backgroundStaticFilePath != null)
         {
             layerElement.BindProperty(LayeredBackgroundImage.IsVideoAutoplayProperty,
                                       this,
@@ -644,7 +658,7 @@ public partial class ImageBackgroundManager
             Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
                                                    .ConfigureAwait(false);
 
-            if (color == default(Color)) return;
+            if (color == default) return;
 
             string hex = $"{color.R:X2}{color.G:X2}{color.B:X2}";
             if (!string.IsNullOrEmpty(configKey))

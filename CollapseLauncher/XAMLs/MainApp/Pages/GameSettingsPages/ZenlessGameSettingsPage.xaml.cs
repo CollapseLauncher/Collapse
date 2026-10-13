@@ -131,8 +131,6 @@ namespace CollapseLauncher.Pages
             ];
         }
 
-        private Size SizeProp { get; set; }
-
         private void InitializeSettings(object sender, RoutedEventArgs e)
         {
             try
@@ -141,15 +139,13 @@ namespace CollapseLauncher.Pages
                 ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
                 ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
 
-                SizeProp = ScreenProp.CurrentResolution;
-
                 // Get the native resolution first
                 Size nativeResSize = GetNativeDefaultResolution();
                 string nativeResString = string.Format(Locale.Current.Lang?._GameSettingsPage?.Graphics_ResPrefixFullscreen ?? "", nativeResSize.Width, nativeResSize.Height) + $" [{Locale.Current.Lang?._Misc?.Default}]";
 
                 // Then get the rest of the list
                 List<string> resFullscreen = GetResPairs_Fullscreen(nativeResSize);
-                List<string> resWindowed   = GetResPairs_Windowed();
+                List<string> resWindowed   = GetResPairs_Windowed(nativeResSize);
 
                 // Add the index of fullscreen and windowed resolution booleans
                 ScreenResolutionIsFullscreenIdx.Add(true);
@@ -159,10 +155,10 @@ namespace CollapseLauncher.Pages
                 // Add native resolution string, other fullscreen resolutions, and windowed resolutions
                 List<string> resolutionList =
                 [
-                    nativeResString
+                    nativeResString,
+                    .. resFullscreen,
+                    .. resWindowed
                 ];
-                resolutionList.AddRange(resFullscreen);
-                resolutionList.AddRange(resWindowed);
 
                 GameResolutionSelector.ItemsSource   = resolutionList;
                 _isAllowResolutionIndexChanged       = true; // Unlock resolution change
@@ -191,7 +187,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
                 #if !DISABLEDISCORD
-                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.GameSettings);
                 #endif
                 }
             }
@@ -213,9 +209,9 @@ namespace CollapseLauncher.Pages
                 currentAcceptedRes.MaxBy(x => (x.Width, x.Height));
         }
         
-        private List<string> GetResPairs_Fullscreen(Size defaultResolution)
+        private static List<string> GetResPairs_Fullscreen(Size defaultResolution)
         {
-            double       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            double    nativeAspRatio    = (double)defaultResolution.Width / defaultResolution.Height;
             List<int> acH               = AcceptableHeight;
             int       acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
@@ -223,8 +219,7 @@ namespace CollapseLauncher.Pages
             //acH.RemoveAll(h => h > 1600);
 
             // Get the resolution pairs and initialize default resolution index
-            List<string> resPairs          = [];
-            int          indexOfDefaultRes = -1;
+            List<string> resPairs = [];
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             // ReSharper disable once ForCanBeConvertedToForeach
@@ -234,26 +229,16 @@ namespace CollapseLauncher.Pages
                 int h = acH[i];
                 int w = (int)Math.Round(h * nativeAspRatio);
 
-                // If the resolution is the same as default, set the index
-                if (h == defaultResolution.Height && w == defaultResolution.Width)
-                    indexOfDefaultRes = i;
-
                 // Add the resolution pair to the list
                 resPairs.Add(string.Format(Locale.Current.Lang?._GameSettingsPage?.Graphics_ResPrefixFullscreen ?? "", w, h));
-            }
-
-            // If the index of default resolution is found, remove it from the list
-            if (indexOfDefaultRes != -1)
-            {
-                resPairs.RemoveAt(indexOfDefaultRes);
             }
 
             return resPairs;
         }
 
-        private List<string> GetResPairs_Windowed()
+        private static List<string> GetResPairs_Windowed(Size defaultResolution)
         {
-            double       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            double       nativeAspRatio    = (double)defaultResolution.Width / defaultResolution.Height;
             const double wideRatio         = (double)16 / 9;
             const double ulWideRatio       = (double)21 / 9;
             List<int>    acH               = AcceptableHeight;
@@ -265,7 +250,7 @@ namespace CollapseLauncher.Pages
 
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
-                resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
+                resPairs.Add($"{defaultResolution.Width}x{defaultResolution.Height}");
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             // ReSharper disable once ForCanBeConvertedToForeach
