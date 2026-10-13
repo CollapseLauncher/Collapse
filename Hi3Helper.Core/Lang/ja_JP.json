@@ -850,10 +850,10 @@
     "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
     "ListViewFooterRestartButton": "ランチャーを再起動",
 
-    "RightPanelImportTitle1": "ここをクリックして",
+    "RightPanelImportTitle1": "クリックまたはドロップで",
     "RightPanelImportTitle2": "か",
     "RightPanelImportTitle3": "",
-    "RightPanelImportTitle4": "範囲内ならどこにドロップしても大丈夫！",
+    "RightPanelImportTitle4": "範囲内のどこにドロップしてもOK！",
 
     "Error_NoPluginImported": "以下のエラーのため、プラグインがインポートされませんでした：",
     "Error_AccessDeniedPluginInstall": "プラグインの読み取りまたはインストール中に、権限が拒否されました。",
@@ -1477,7 +1477,7 @@
     "UpdateHeader4": "速度:",
     "UpdateHeader5PlaceHolder": "アップデートをダウンロードしています [- / -]:",
 
-    "UpdateForcedHeader": "重大な変更が行われたため、適切な動作を保証するためにランチャーを強制更新します。",
+    "UpdateForcedHeader": "動作の維持に必要な緊急の修正が行われたため、ランチャーを強制更新します。",
 
     "UpdateStatus1": "アップデートを取得中:",
     "UpdateMessage1": "アップデートリポジトリに接続しています...",
