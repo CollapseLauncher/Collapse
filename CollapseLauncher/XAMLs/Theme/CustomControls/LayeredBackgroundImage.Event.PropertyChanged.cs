@@ -1,8 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -32,27 +29,26 @@ public partial class LayeredBackgroundImage
     private static void PropertyPlaceholderSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        PropertyMediaSource_OnChange(instance._placeholderGrid, obj, args);
+        PropertyMediaSource_OnChange(instance._placeholderGrid, instance, args);
     }
 
     private static void PropertyBackgroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        PropertyMediaSource_OnChange(instance._backgroundGrid, obj, args);
+        PropertyMediaSource_OnChange(instance._backgroundGrid, instance, args);
     }
 
     private static void PropertyForegroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        PropertyMediaSource_OnChange(instance._foregroundGrid, obj, args);
+        PropertyMediaSource_OnChange(instance._foregroundGrid, instance, args);
     }
 
     private static async void PropertyMediaSource_OnChange(
         Grid                               grid,
-        DependencyObject                   obj,
+        LayeredBackgroundImage             instance,
         DependencyPropertyChangedEventArgs args)
     {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
         if (!instance.IsLoaded)
         {
             return;

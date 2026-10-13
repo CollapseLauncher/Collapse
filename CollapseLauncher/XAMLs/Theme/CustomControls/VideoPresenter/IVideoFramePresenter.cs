@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using System;
 using Windows.Graphics.DirectX.Direct3D11;
-using Microsoft.UI.Xaml;
 
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 

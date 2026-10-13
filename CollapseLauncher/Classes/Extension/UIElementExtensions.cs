@@ -148,14 +148,14 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static void BindProperty(this FrameworkElement element,
-                                          object?               objectToBind,
-                                          string                propertyName,
-                                          DependencyProperty    dependencyProperty,
-                                          BindingMode           bindingMode,
-                                          IValueConverter?      converter = null)
+        internal static void BindProperty(this FrameworkElement? element,
+                                          object?                objectToBind,
+                                          string                 propertyName,
+                                          DependencyProperty     dependencyProperty,
+                                          BindingMode            bindingMode,
+                                          IValueConverter?       converter = null)
         {
-            element.SetBinding(dependencyProperty, new Binding
+            element?.SetBinding(dependencyProperty, new Binding
             {
                 Source    = objectToBind,
                 Mode      = bindingMode,

@@ -17,6 +17,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 using System;
+using System.Collections.Concurrent;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
@@ -39,6 +40,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 /// </summary>
 public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoFramePresenter
 {
+    private static ConcurrentDictionary<MediaFoundationPresenter, bool> LoadedPresenters = [];
+
     private static readonly Guid IID_IDXGISurface                      = typeof(IDXGISurface).GUID;
     private static readonly Guid IID_ID3D11Texture2D                   = typeof(ID3D11Texture2D).GUID;
     private static readonly Guid IID_IDirect3DSurface                  = typeof(IDirect3DSurface).GUID;
@@ -159,6 +162,8 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         EffectiveViewportChanged += OnEffectiveViewportChanged;
         SizeChanged              += OnSizeChanged;
         _visibilityCallbackToken =  RegisterPropertyChangedCallback(VisibilityProperty, OnVisibilityChanged);
+
+        LoadedPresenters.TryAdd(this, true);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs args)
@@ -348,6 +353,9 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
             SizeChanged              -= OnSizeChanged;
             UnregisterPropertyChangedCallback(VisibilityProperty, _visibilityCallbackToken);
         }
+
+        LoadedPresenters.TryRemove(this, out _);
+        Console.WriteLine($"Total Remained MediaFoundationPresenter instances: {LoadedPresenters.Count} instances");
 
         UpdatePresentationState();
     }

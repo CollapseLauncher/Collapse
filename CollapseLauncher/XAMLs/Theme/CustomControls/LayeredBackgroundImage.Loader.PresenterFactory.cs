@@ -2,14 +2,15 @@
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 using FFmpegInteropX;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Windows.Media.Core;
 using Windows.Media.Playback;
+// ReSharper disable AccessToModifiedClosure
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -19,9 +20,14 @@ public partial class LayeredBackgroundImage
     private async ValueTask<Image?> AddImagePresenterAsync(
         Panel                        parent,
         object?                      source,
+        SourceContext                sourceContext,
         RoutedEventHandler?          onLoadedEventHandler,
-        ExceptionRoutedEventHandler? onFailedEventHandler = null)
+        ExceptionRoutedEventHandler? onFailedEventHandler = null,
+        CancellationToken            token                = default)
     {
+        if (token.IsCancellationRequested)
+            return null;
+
         if (!LayeredBackgroundImageExtensions
                .TryGetBindingPropertyNames(parent,
                                            out string? stretchNameOf,
@@ -31,11 +37,17 @@ public partial class LayeredBackgroundImage
             return null;
         }
 
-        ImageSource? imageSource = await LayeredBackgroundImageExtensions.CreateImageSourceFromObjectAsync(source);
+        ImageSource? imageSource = await LayeredBackgroundImageExtensions
+           .CreateImageSourceFromObjectAsync(source, token);
+
         if (imageSource is null)
             return null;
 
-        Image image = new();
+        sourceContext.MediaSource = imageSource;
+        Image image = new()
+        {
+            Tag = sourceContext
+        };
         parent.Children.Add(image);
 
         image.ImageOpened += onLoadedEventHandler;
@@ -56,6 +68,7 @@ public partial class LayeredBackgroundImage
                            VerticalAlignmentProperty,
                            BindingMode.OneWay);
 
+        image.Source = imageSource;
         return image;
     }
 
@@ -63,8 +76,12 @@ public partial class LayeredBackgroundImage
         Panel               parent,
         object?             source,
         SourceContext       sourceContext,
-        RoutedEventHandler? onLoadedEventHandler)
+        RoutedEventHandler? onLoadedEventHandler,
+        CancellationToken   token)
     {
+        if (token.IsCancellationRequested)
+            return null;
+
         if (!LayeredBackgroundImageExtensions
                .TryGetBindingPropertyNames(parent,
                                            out string? stretchNameOf,
@@ -74,22 +91,32 @@ public partial class LayeredBackgroundImage
             return null;
         }
 
-        bool isUseFfmpeg = UseFfmpegDecoder && ImageBackgroundManager.Shared.GlobalIsFFmpegAvailable;
-        object? mediaSource = await LayeredBackgroundImageExtensions.CreateMediaSourceFromObjectAsync(source, isUseFfmpeg, FfmpegDecoderMode);
-        if (mediaSource is null)
+        bool     isUseFfmpeg = UseFfmpegDecoder && ImageBackgroundManager.Shared.GlobalIsFFmpegAvailable;
+        WindowId windowId    = parent.GetElementWindowId();
+
+        MediaFoundationPresenter? presenter = null;
+
+        (MediaPlayer? mediaPlayer, FFmpegMediaSource? ffmpegMediaSource) =
+            await LayeredBackgroundImageExtensions
+               .CreateMediaSourceFromObjectAsync(source,
+                                                 isUseFfmpeg,
+                                                 FfmpegDecoderMode,
+                                                 windowId,
+                                                 IsVideoAutoplay,
+                                                 OnMediaOpened,
+                                                 token: token);
+
+        if (mediaPlayer is null)
             return null;
 
-        MediaPlayer mediaPlayer = new()
+        presenter = new MediaFoundationPresenter
         {
-            IsLoopingEnabled          = true,
-            IsVideoFrameServerEnabled = true,
-            AutoPlay                  = true
+            Tag = sourceContext
         };
-        sourceContext.Player = mediaPlayer;
 
-        MediaFoundationPresenter presenter = new();
+        sourceContext.Player          = mediaPlayer;
         sourceContext.PlayerPresenter = presenter;
-        mediaPlayer.MediaOpened += MediaPlayerOnMediaOpened;
+        sourceContext.MediaSource     = ffmpegMediaSource;
 
         /*
         presenter.BindProperty(this,
@@ -109,23 +136,8 @@ public partial class LayeredBackgroundImage
                                BindingMode.OneWay);
 
         parent.Children.Add(presenter);
-
-        if (mediaSource is FFmpegMediaSource ffmpegMediaSource)
-        {
-            await ffmpegMediaSource.OpenWithMediaPlayerAsync(mediaPlayer);
-        }
-
-        if (mediaSource is MediaSource asMediaSource)
-        {
-            mediaPlayer.Source = asMediaSource;
-        }
-
         return presenter;
 
-        void MediaPlayerOnMediaOpened(MediaPlayer sender, object args)
-        {
-            mediaPlayer.MediaOpened -= MediaPlayerOnMediaOpened;
-            presenter.DispatcherQueue.TryEnqueue(() => onLoadedEventHandler?.Invoke(presenter, null));
-        }
+        void OnMediaOpened() => presenter?.DispatcherQueue.TryEnqueue(() => onLoadedEventHandler?.Invoke(presenter, null));
     }
 }

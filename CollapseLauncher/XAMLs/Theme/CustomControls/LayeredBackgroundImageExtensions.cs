@@ -432,7 +432,7 @@ internal static partial class LayeredBackgroundImageExtensions
                          });
     }
 
-    internal static WindowId GetElementWindowId(this LayeredBackgroundImage element)
+    internal static WindowId GetElementWindowId(this FrameworkElement element)
     {
         XamlRoot root     = element.XamlRoot;
         WindowId windowId = root.ContentIslandEnvironment.AppWindowId;

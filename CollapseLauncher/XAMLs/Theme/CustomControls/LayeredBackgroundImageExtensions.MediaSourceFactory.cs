@@ -1,15 +1,16 @@
 ﻿using FFmpegInteropX;
 using Hi3Helper.Data;
-using Microsoft.UI.Xaml.Media;
+using Microsoft.UI;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media.Core;
+using Windows.Media.Playback;
 using Windows.Storage.Streams;
 // ReSharper disable InconsistentNaming
-
+// ReSharper disable AccessToDisposedClosure
+// ReSharper disable AccessToModifiedClosure
 // ReSharper disable IdentifierTypo
 
 #nullable enable
@@ -17,77 +18,131 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 internal static partial class LayeredBackgroundImageExtensions
 {
-    internal static async Task<object?> CreateMediaSourceFromObjectAsync(
-        object?          source,
-        bool             useFFmpeg,
-        VideoDecoderMode ffmpegDecoderMode)
+    internal static async Task<(MediaPlayer? MediaPlayer, FFmpegMediaSource? FFmpegMediaSource)>
+        CreateMediaSourceFromObjectAsync(
+            object?           source,
+            bool              useFFmpeg,
+            VideoDecoderMode  ffmpegDecoderMode,
+            WindowId          windowId,
+            bool              isAutoPlay,
+            Action?           onMediaOpened  = null,
+            TimeSpan          lastOpenedTime = default,
+            CancellationToken token          = default)
     {
-        return useFFmpeg
-            ? await CreateMediaSourceFromFFmpegAsync(source, ffmpegDecoderMode)
-            : await CreateMediaSourceFromMFTAsync(source);
-    }
+        if (token.IsCancellationRequested)
+            return (null, null);
 
-    private static async Task<FFmpegMediaSource?> CreateMediaSourceFromFFmpegAsync(object? source, VideoDecoderMode decoderMode)
-    {
-        MediaSourceConfig ffmpegConfig = new()
+        MediaPlayer? mediaPlayer = new()
         {
-            Video =
-            {
-                MaxDecoderThreads     = (uint)Environment.ProcessorCount,
-                VideoOutputAllow10bit = true,
-                VideoOutputAllowBgra8 = true,
-                VideoOutputAllowNv12  = true,
-                VideoDecoderMode      = decoderMode
-            },
-            General =
-            {
-                ReadAheadBufferEnabled  = true,
-                ReadAheadBufferDuration = TimeSpan.FromSeconds(15)
-            }
+            IsLoopingEnabled          = true,
+            IsVideoFrameServerEnabled = true,
+            CommandManager            = { IsEnabled = false },
+            AutoPlay                  = isAutoPlay
         };
+
+        if (onMediaOpened != null)
+        {
+            mediaPlayer.MediaOpened += MediaPlayerOnMediaOpened;
+        }
+
+        IMediaPlaybackSource? mediaPlaybackSource = null;
+        FFmpegMediaSource?    ffmpegMediaSource   = null;
 
         try
         {
-            if (source is IRandomAccessStream or Stream)
-            {
-                IRandomAccessStream? randomStream = source as IRandomAccessStream;
-                randomStream ??= (source as Stream)?.AsRandomAccessStream();
+            mediaPlaybackSource = !useFFmpeg ? CreateMediaSourceFromMFTAsync(source) : null;
 
-                return await FFmpegMediaSource.CreateFromStreamAsync(randomStream, ffmpegConfig);
-            }
-
-            if (source is Uri sourceAsUri ||
-                (source is string sourceUriAsString &&
-                 Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!)))
+            if (useFFmpeg)
             {
-                if (sourceAsUri.IsFile)
+                MediaSourceConfig ffmpegConfig = new()
                 {
-                    string fullyQualifiedPath = sourceAsUri.LocalPath.GetFullyQualifiedPath();
-                    return await FFmpegMediaSource.CreateFromFileAsync(fullyQualifiedPath,
-                                                                       ffmpegConfig);
-                }
-                return await FFmpegMediaSource.CreateFromUriAsync(sourceAsUri.ToString(),
-                                                                  ffmpegConfig);
-            }
+                    Video =
+                    {
+                        MaxDecoderThreads = (uint)Environment.ProcessorCount,
+                        VideoDecoderMode  = ffmpegDecoderMode
+                    },
+                    General =
+                    {
+                        ReadAheadBufferEnabled  = true,
+                        ReadAheadBufferDuration = TimeSpan.FromSeconds(15)
+                    }
+                };
 
-            if (source is string sourceAsString)
-            {
-                sourceAsString = sourceAsString.GetFullyQualifiedPath();
-                if (Uri.TryCreate(sourceAsString, UriKind.Absolute, out Uri? localPathUri))
+                if (token.IsCancellationRequested)
+                    return (null, null);
+
+                if (source is IRandomAccessStream or Stream)
                 {
-                    return await FFmpegMediaSource.CreateFromFileAsync(localPathUri.LocalPath, ffmpegConfig);
+                    IRandomAccessStream? randomStream = source as IRandomAccessStream;
+                    randomStream ??= (source as Stream)?.AsRandomAccessStream();
+
+                    ffmpegMediaSource = await FFmpegMediaSource
+                       .CreateFromStreamAsync(randomStream,
+                                              ffmpegConfig,
+                                              windowId.Value);
+                }
+
+                if (source is Uri sourceAsUri ||
+                    (source is string sourceUriAsString &&
+                     Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!)))
+                {
+                    if (sourceAsUri.IsFile)
+                    {
+                        string fullyQualifiedPath = sourceAsUri.LocalPath.GetFullyQualifiedPath();
+                        ffmpegMediaSource = await FFmpegMediaSource
+                           .CreateFromFileAsync(fullyQualifiedPath,
+                                                ffmpegConfig,
+                                                windowId.Value);
+                    }
+
+                    ffmpegMediaSource ??= await FFmpegMediaSource
+                       .CreateFromUriAsync(sourceAsUri.ToString(),
+                                           ffmpegConfig,
+                                           windowId.Value);
+                }
+
+                if (source is string sourceAsString)
+                {
+                    sourceAsString = sourceAsString.GetFullyQualifiedPath();
+                    if (Uri.TryCreate(sourceAsString, UriKind.Absolute, out Uri? localPathUri))
+                    {
+                        ffmpegMediaSource = await FFmpegMediaSource
+                           .CreateFromFileAsync(localPathUri.LocalPath,
+                                                ffmpegConfig,
+                                                windowId.Value);
+                    }
+                }
+
+                if (ffmpegMediaSource != null)
+                {
+                    mediaPlaybackSource = ffmpegMediaSource.CreateMediaPlaybackItem(lastOpenedTime);
                 }
             }
 
-            return null;
+            if (mediaPlaybackSource != null)
+            {
+                mediaPlayer.Source = mediaPlaybackSource;
+            }
         }
-        catch
+        finally
         {
-            return null;
+            if (mediaPlaybackSource == null)
+            {
+                mediaPlayer.Dispose();
+                mediaPlayer = null;
+            }
+        }
+
+        return (mediaPlayer, ffmpegMediaSource);
+
+        void MediaPlayerOnMediaOpened(MediaPlayer sender, object args)
+        {
+            mediaPlayer.MediaOpened -= MediaPlayerOnMediaOpened;
+            onMediaOpened();
         }
     }
 
-    private static async Task<MediaSource?> CreateMediaSourceFromMFTAsync(object? source)
+    private static MediaSource? CreateMediaSourceFromMFTAsync(object? source)
     {
         try
         {

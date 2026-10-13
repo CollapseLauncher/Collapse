@@ -27,11 +27,13 @@ internal static partial class LayeredBackgroundImageExtensions
             CancellationTokenSource currentCts   = CancellationTokenSource.CreateLinkedTokenSource(coopToken);
             CancellationToken       currentToken = currentCts.Token;
 
-            fromValue /= 100d;
-            toValue /= 100d;
+            bool isFadeOut = fromValue > toValue;
 
             double timeDelta = resolutionMs / durationMs;
             double step      = Math.Abs(Math.Max(fromValue, toValue) * timeDelta);
+
+            if (isFadeOut)
+                step *= -1;
 
             Unsafe.SkipInit(out Timer timer); // HACK: Ignore Error CS0165
             timer = new Timer(Impl, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(resolutionMs));

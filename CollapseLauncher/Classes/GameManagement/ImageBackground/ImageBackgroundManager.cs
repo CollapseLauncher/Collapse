@@ -321,8 +321,6 @@ public partial class ImageBackgroundManager
 
     private int _previousContextHash;
 
-    private volatile int _loadGeneration;
-
     private LayeredImageBackgroundContext? _displayedContext;
 
     internal FrameworkElement? ThemeRootElement { get; set; }
@@ -562,8 +560,6 @@ public partial class ImageBackgroundManager
         {
             return;
         }
-
-        Interlocked.Increment(ref _loadGeneration);
 
         ImageContextSources.Clear(); // Flush list
         ref IList<LayeredImageBackgroundContext>? backedList =

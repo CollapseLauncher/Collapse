@@ -6,24 +6,19 @@ using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
-using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,7 +59,7 @@ public partial class ImageBackgroundManager
         {
             try
             {
-                await LoadImageAtIndexCore(index, forceLoadToStatic, token, forceReload).ConfigureAwait(false);
+                await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -87,116 +82,7 @@ public partial class ImageBackgroundManager
         IsBackgroundLoading = false;
     }
 
-    public void PreloadBackground(PresetConfig? preset, Grid? presenterGrid)
-    {
-        if (preset == null || presenterGrid == null) return;
-
-        CancelCurrentBackgroundLoad();
-        Interlocked.Increment(ref _loadGeneration);
-
-        PresenterGrid = presenterGrid;
-        string autoPlayKey = $"LastIsEnableBackgroundAutoPlay-{preset.GameName}-{preset.ZoneName}";
-        CurrentIsEnableBackgroundAutoPlayKey = autoPlayKey;
-
-        string cachedBgKey = $"CachedBg-{preset.GameName}-{preset.ZoneName}";
-        string? backgroundUrl    = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-Background").ToString();
-        string? staticBgUrl      = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-StaticBackground").ToString();
-        string? overlayUrl       = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-Overlay").ToString();
-
-        if (string.IsNullOrEmpty(backgroundUrl) && string.IsNullOrEmpty(staticBgUrl))
-        {
-            IsBackgroundLoading = true;
-            return;
-        }
-
-        string? primaryBg = backgroundUrl ?? staticBgUrl;
-
-        LayeredImageBackgroundContext context = new()
-        {
-            OriginOverlayImagePath          = overlayUrl,
-            OriginBackgroundImagePath       = backgroundUrl,
-            OriginBackgroundStaticImagePath = staticBgUrl,
-            OverlayImagePath                = overlayUrl,
-            BackgroundImagePath             = primaryBg,
-            BackgroundImageStaticPath       = staticBgUrl,
-            IsVideo                         = IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!),
-            IsCustom                        = false
-        };
-
-        if (CheckIsContextCached(context))
-        {
-            string? localOverlay    = TryGetCachedLocalPath(overlayUrl);
-            string? localBackground = TryGetCachedLocalPath(primaryBg);
-            string? localStatic     = TryGetCachedLocalPath(staticBgUrl);
-
-            bool overlayRequired  = !string.IsNullOrEmpty(overlayUrl);
-            bool staticRequired   = !string.IsNullOrEmpty(staticBgUrl);
-
-            if (localBackground != null &&
-                (!overlayRequired || localOverlay != null) &&
-                (!staticRequired  || localStatic != null))
-            {
-                bool willDisplayStatic = (!IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!) ||
-                                          (!CurrentIsEnableCustomImage &&
-                                           !GlobalIsEnableCustomImage &&
-                                           !CurrentIsEnableBackgroundAutoPlay))
-                                         && localStatic != null;
-                Uri accentPreviewUri = willDisplayStatic ? new Uri(localStatic!) : new Uri(localBackground);
-
-                _ = RestoreSavedAccent(cachedBgKey, accentPreviewUri);
-
-                ImageContextSources.Clear();
-                ImageContextSources.Add(context);
-                OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
-                OnPropertyChanged(nameof(CurrentBackgroundCount));
-
-                bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
-                bool isVideo     = IsVideoMediaFileExtensionSupported(primaryBg ?? staticBgUrl!);
-
-                MediaSupport    codecInfo   = isVideo ? FFmpegPInvoke.GetMediaSupport(localBackground) : default;
-                PixelColorModel pixelFormat = codecInfo.VideoPixelFormatInfo.ColorModel;
-                if (isUseFFmpeg || (codecInfo.Video.DecoderAvailable && pixelFormat.HasFlag(PixelColorModel.Rgb)))
-                {
-                    isUseFFmpeg = true;
-                }
-
-                CurrentBackgroundElement = CreateLayerElement(localOverlay != null ? new Uri(localOverlay) : null,
-                                                              new Uri(localBackground),
-                                                              localStatic != null ? new Uri(localStatic) : null,
-                                                              context,
-                                                              isVideo,
-                                                              isUseFFmpeg);
-                new Thread(async void (ctx) =>
-                {
-                    try
-                    {
-                        await GetMediaAccentColor(ctx).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogWriteLine($"{e}", LogType.Error, true);
-                    }
-                })
-                {
-                    IsBackground = true
-                }.UnsafeStart((accentPreviewUri, isUseFFmpeg, cachedBgKey));
-                return;
-            }
-        }
-
-        // Show preset placeholder.
-        string placeholderPath = GetPlaceholderBackgroundImageFrom(null);
-        PresenterGrid.Background = new ImageBrush
-        {
-            ImageSource = new BitmapImage(new Uri(placeholderPath)),
-            Stretch     = Stretch.UniformToFill
-        };
-        CurrentBackgroundElement = null;
-        _displayedContext = null;
-        IsBackgroundLoading = true;
-    }
-
-    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token, bool forceReload = false)
+    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token)
     {
         Stopwatch? stopwatch = null;
         try
@@ -314,18 +200,13 @@ public partial class ImageBackgroundManager
             }
 
             // -- Use UI thread and load image layer
-            int captureGen = _loadGeneration;
-            bool captureForceReload = forceReload;
             DispatcherQueueExtensions
                .CurrentDispatcherQueue
                .TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri,
                                                   downloadedBackgroundUri,
                                                   downloadedBackgroundStaticUri,
-                                                  isVideo,
                                                   forceFFmpeg,
-                                                  context,
-                                                  captureGen,
-                                                  forceReload: captureForceReload));
+                                                  context));
 
             GlobalIsFFmpegCurrentlyUsed = isVideo && isUseFFmpeg;
         }
@@ -353,18 +234,11 @@ public partial class ImageBackgroundManager
 
     private void SpawnImageLayer(Uri?                          overlayFilePath,
                                  Uri?                          backgroundFilePath,
-                                 Uri?                          backgroundStaticFilePath,
-                                 bool                          isVideo,
+                                 Uri?                          placeholderFilePath,
                                  bool                          forceFFmpeg,
                                  LayeredImageBackgroundContext context,
-                                 int                           loadGeneration,
                                  bool                          forceReload = false)
     {
-        if (loadGeneration != _loadGeneration)
-        {
-            return;
-        }
-
         if (!forceReload &&
             CurrentBackgroundElement != null &&
             _displayedContext != null)
@@ -376,13 +250,17 @@ public partial class ImageBackgroundManager
 
             if (CurrentBackgroundElement is { } existingLayer &&
                 IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
-                IsSameLocalFile(existingLayer.PlaceholderSource, backgroundStaticFilePath))
+                IsSameLocalFile(existingLayer.PlaceholderSource, placeholderFilePath))
             {
                 return;
             }
         }
 
-        CurrentBackgroundElement = CreateLayerElement(overlayFilePath, backgroundFilePath, backgroundStaticFilePath, context, isVideo, forceFFmpeg);
+        LayeredBackgroundImage element = CreateOrGetLayerElement();
+        element.UseFfmpegDecoder  = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
+        element.PlaceholderSource = placeholderFilePath;
+        element.BackgroundSource  = backgroundFilePath;
+        element.ForegroundSource  = overlayFilePath;
     }
 
     private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
@@ -439,145 +317,72 @@ public partial class ImageBackgroundManager
         return true;
     }
 
-    private LayeredBackgroundImage CreateLayerElement(Uri?                          overlayFilePath,
-                                                      Uri?                          backgroundFilePath,
-                                                      Uri?                          backgroundStaticFilePath,
-                                                      LayeredImageBackgroundContext context,
-                                                      bool                          isVideo,
-                                                      bool                          forceFFmpeg)
+    private LayeredBackgroundImage CreateOrGetLayerElement()
     {
-        LayeredBackgroundImage layerElement = new()
+        if (CurrentBackgroundElement == null)
         {
-            BackgroundSource          = backgroundFilePath,
-            PlaceholderSource         = backgroundStaticFilePath,
-            ForegroundSource          = overlayFilePath,
-            UseFfmpegDecoder          = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable),
-            Tag                       = context,
-            ParallaxResetOnUnfocused  = false,
-            BackgroundElevationPixels = 64d
-        };
-
-        if (!CurrentIsEnableCustomImage &&
-            !GlobalIsEnableCustomImage &&
-            backgroundStaticFilePath != null)
-        {
-            layerElement.BindProperty(LayeredBackgroundImage.IsVideoAutoplayProperty,
-                                      this,
-                                      nameof(CurrentIsEnableBackgroundAutoPlay),
-                                      bindingMode: BindingMode.OneWay,
-                                      converter: StaticConverter<MediaAutoplayWindowOverrideConverter>.Shared);
-        }
-        else
-        {
-            layerElement.IsVideoAutoplay = WindowUtility.CurrentWindowIsVisible;
-        }
-
-        layerElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
-                                  this,
-                                  nameof(GlobalFFmpegDecodingMode),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
-                                  this,
-                                  nameof(GlobalParallaxHoverSource),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
-                                  this,
-                                  nameof(GlobalIsBackgroundParallaxEffectEnabled),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
-                                  this,
-                                  nameof(GlobalBackgroundParallaxPixelShift),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
-                                  this,
-                                  nameof(GlobalBackgroundParallaxPixelShift),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
-                                  this,
-                                  nameof(GlobalBackgroundAudioEnabled),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
-                                  this,
-                                  nameof(GlobalBackgroundAudioVolume),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
-                                  this,
-                                  nameof(IsBackgroundElevated),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
-                                  this,
-                                  nameof(ForegroundOpacity),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
-                                  this,
-                                  nameof(SmokeOpacity),
-                                  bindingMode: BindingMode.OneWay);
-
-        layerElement.BindProperty(LayeredBackgroundImage.UseImageCacheProperty,
-                                  context,
-                                  nameof(context.ForceReload),
-                                  bindingMode: BindingMode.OneWay,
-                                  converter: StaticConverter<InverseBooleanConverter>.Shared);
-
-        // layerElement.ImageLoaded += LayerElementOnLoaded;
-        PresenterGrid?.Children.Add(layerElement);
-
-        layerElement.Tag = isVideo;
-        _displayedContext = context;
-        return layerElement;
-    }
-
-    private void LayerElementOnLoaded(LayeredBackgroundImage layerElement)
-    {
-        // layerElement.ImageLoaded -= LayerElementOnLoaded;
-        layerElement.Transitions.Add(new PopupThemeTransition());
-
-        if (PresenterGrid != null)
-        {
-            List<UIElement> toRemove = PresenterGrid.Children.Where(element => element != layerElement).ToList();
-            foreach (UIElement oldElement in toRemove)
+            CurrentBackgroundElement = new LayeredBackgroundImage
             {
-                if (oldElement is LayeredBackgroundImage oldLayer)
-                {
-                    // oldLayer.ImageLoaded -= LayerElementOnLoaded;
+                ParallaxResetOnUnfocused  = false,
+                BackgroundElevationPixels = 64d
+            };
 
-                    if (oldLayer.Tag == null)
-                    {
-                        oldLayer.Opacity = 0;
-                    }
-                    else
-                    {
-                        PresenterGrid.Children.Remove(oldElement);
-                    }
-                }
-                else
-                {
-                    PresenterGrid.Children.Remove(oldElement);
-                }
-            }
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
+                                                  this,
+                                                  nameof(GlobalFFmpegDecodingMode),
+                                                  bindingMode: BindingMode.OneWay);
 
-            PresenterGrid.Background = null;
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
+                                                  this,
+                                                  nameof(GlobalParallaxHoverSource),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
+                                                  this,
+                                                  nameof(GlobalIsBackgroundParallaxEffectEnabled),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
+                                                  this,
+                                                  nameof(GlobalBackgroundParallaxPixelShift),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
+                                                  this,
+                                                  nameof(GlobalBackgroundParallaxPixelShift),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
+                                                  this,
+                                                  nameof(GlobalBackgroundAudioEnabled),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
+                                                  this,
+                                                  nameof(GlobalBackgroundAudioVolume),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
+                                                  this,
+                                                  nameof(IsBackgroundElevated),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
+                                                  this,
+                                                  nameof(ForegroundOpacity),
+                                                  bindingMode: BindingMode.OneWay);
+
+            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
+                                                  this,
+                                                  nameof(SmokeOpacity),
+                                                  bindingMode: BindingMode.OneWay);
+
+            // layerElement.ImageLoaded += LayerElementOnLoaded;
+            PresenterGrid?.Children.Clear();
+            PresenterGrid?.Children.Add(CurrentBackgroundElement);
         }
 
-        if (CurrentIsEnableBackgroundAutoPlay && WindowUtility.CurrentWindowIsVisible)
-        {
-            Play(false);
-        }
-
-        CurrentBackgroundIsVideo = CurrentSelectedBackgroundContext?.IsVideo ?? false;
-        if (layerElement.Tag is bool isDisplayControl)
-        {
-            CurrentBackgroundIsSeekable = isDisplayControl;
-        }
+        return CurrentBackgroundElement;
     }
 
     private static bool TryGetUpscaledFilePath(string     inputFilePath,

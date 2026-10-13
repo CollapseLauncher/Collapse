@@ -2,7 +2,9 @@
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Buffers;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 
@@ -11,8 +13,13 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 internal static partial class LayeredBackgroundImageExtensions
 {
-    internal static async Task<ImageSource?> CreateImageSourceFromObjectAsync(object? source)
+    internal static async Task<ImageSource?> CreateImageSourceFromObjectAsync(
+        object?           source,
+        CancellationToken token)
     {
+        if (token.IsCancellationRequested)
+            return null;
+
         if (source is ImageSource sourceAsImageSource)
         {
             return sourceAsImageSource;
@@ -20,7 +27,7 @@ internal static partial class LayeredBackgroundImageExtensions
 
         if (source is IRandomAccessStream or Stream)
         {
-            ImageSource? imageSource = await CreateImageSourceFromStreamAsync(source);
+            ImageSource? imageSource = await CreateImageSourceFromStreamAsync(source, token);
             return imageSource;
         }
 
@@ -60,42 +67,57 @@ internal static partial class LayeredBackgroundImageExtensions
             : new BitmapImage(uri);
     }
 
-    private static async Task<ImageSource?> CreateImageSourceFromStreamAsync(object? streamObj)
+    private static async Task<ImageSource?> CreateImageSourceFromStreamAsync(
+        object?           streamObj,
+        CancellationToken token)
     {
+        if (token.IsCancellationRequested)
+            return null;
+
         Stream? stream = streamObj as Stream;
         stream ??= (streamObj as IRandomAccessStream)?.AsStream();
 
         if (stream == null)
             return null;
 
+        byte[] bufferTemp = ArrayPool<byte>.Shared.Rent(1 << 10);
+        var    buffer     = new Memory<byte>(bufferTemp);
         try
         {
             stream.Position = 0;
-            Span<byte> bufferTemp = stackalloc byte[256];
-            bufferTemp = bufferTemp[..stream.Read(bufferTemp)];
+            Span<byte> bufferSpan = buffer[..await stream.ReadAsync(buffer, token)].Span;
 
             stream.Position = 0;
-            int indexOfLSign = bufferTemp.IndexOf((byte)'<');
+            int indexOfLSign = bufferSpan.IndexOf((byte)'<');
             if (indexOfLSign > 0)
             {
-                bufferTemp = bufferTemp[indexOfLSign..];
-                byte sLetter = (byte)((bufferTemp.Length >= 3 ? 0 : bufferTemp[(indexOfLSign + 1)..][0]) | 0x20);
-                byte vLetter = (byte)((bufferTemp.Length >= 3 ? 0 : bufferTemp[(indexOfLSign + 2)..][0]) | 0x20);
-                byte gLetter = (byte)((bufferTemp.Length >= 3 ? 0 : bufferTemp[(indexOfLSign + 3)..][0]) | 0x20);
+                bufferSpan = bufferSpan[indexOfLSign..];
+                byte sLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 1)..][0]) | 0x20);
+                byte vLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 2)..][0]) | 0x20);
+                byte gLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 3)..][0]) | 0x20);
                 if (sLetter == 's' &&
                     vLetter == 'v' &&
                     gLetter == 'g')
                 {
                     SvgImageSource svgSource = new();
                     using IRandomAccessStream svgStreamWrapper = stream.AsRandomAccessStream();
-                    await svgSource.SetSourceAsync(svgStreamWrapper);
 
+                    if (token.IsCancellationRequested)
+                        return null;
+
+                    await svgSource.SetSourceAsync(svgStreamWrapper);
                     return svgSource;
                 }
             }
 
-            SvgImageSource source = new();
+            if (token.IsCancellationRequested)
+                return null;
+
+            BitmapImage               source        = new();
             using IRandomAccessStream streamWrapper = stream.AsRandomAccessStream();
+            if (token.IsCancellationRequested)
+                return null;
+
             await source.SetSourceAsync(streamWrapper);
             return source;
         }
