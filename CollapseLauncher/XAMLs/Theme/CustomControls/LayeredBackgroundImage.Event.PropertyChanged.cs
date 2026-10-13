@@ -65,5 +65,6 @@ public partial class LayeredBackgroundImage
     private static void PropertyIsBackgroundElevated_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        instance.ElevateView_ToggleEnable((bool)args.NewValue);
     }
 }
