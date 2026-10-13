@@ -67,9 +67,9 @@ public partial class LayeredBackgroundImage
         set => SetValue(ParallaxVerticalShiftProperty, value);
     }
 
-    public UIElement? ParallaxHoverSource
+    public FrameworkElement? ParallaxHoverSource
     {
-        get => (UIElement?)GetValue(ParallaxHoverSourceProperty);
+        get => (FrameworkElement?)GetValue(ParallaxHoverSourceProperty);
         set => SetValue(ParallaxHoverSourceProperty, value);
     }
 

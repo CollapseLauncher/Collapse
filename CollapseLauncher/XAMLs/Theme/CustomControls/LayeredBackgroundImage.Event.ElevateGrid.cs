@@ -8,49 +8,32 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
-    private void ElevateView_ToggleEnable(bool isEnable)
+    private void ElevateGrid_ToggleEnable(bool isEnable)
     {
-        if (!IsLoaded)
-        {
-            return;
-        }
-
-        try
-        {
-            if (isEnable)
-            {
-                _elevateGrid.SizeChanged += ElevateGrid_OnSizeChanged;
-                return;
-            }
-
-            _parallaxGrid.SizeChanged -= ElevateGrid_OnSizeChanged;
-        }
-        finally
-        {
-            ElevateGrid_UpdateElevationSize(isEnable);
-        }
+        ElevateGrid_CalculateCenterPoint();
+        ElevateGrid_StartElevationAnimation(isEnable);
     }
 
     private void ElevateGrid_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        ElevateGrid_OnUpdateCenterPoint();
-    }
-
-    private void ElevateGrid_OnUpdateCenterPoint()
-    {
-        if (!IsLoaded)
+        bool isCurrentlyEnabled = IsBackgroundElevated;
+        if (!isCurrentlyEnabled)
         {
             return;
         }
 
+        ElevateGrid_CalculateCenterPoint();
+        ElevateGrid_StartElevationAnimation(true);
+    }
+
+    private void ElevateGrid_CalculateCenterPoint()
+    {
         _elevateGridVisual.CenterPoint = new Vector3((float)_elevateGrid.RenderSize.Width / 2,
                                                      (float)_elevateGrid.RenderSize.Height / 2,
                                                      0);
-
-        ElevateGrid_UpdateElevationSize(IsBackgroundElevated);
     }
 
-    private void ElevateGrid_UpdateElevationSize(bool enable)
+    private void ElevateGrid_StartElevationAnimation(bool enable)
     {
         double elevationOffset = enable
             ? BackgroundElevationPixels

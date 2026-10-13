@@ -91,6 +91,23 @@ public partial class LayeredBackgroundImage
                 => ((delegate* unmanaged[MemberFunction]<nint, nint, int>)(*(*(void***)_playerAbi + 10)))(_playerAbi, surfaceAbi);
         }
 
+        public void SetVolume(double volume, Action? onCompleted = null)
+        {
+            if (Player is null)
+                return;
+
+            if (Interlocked.Exchange(ref _volumeChangedCts, new CancellationTokenSource()) is { } lastCts)
+            {
+                lastCts.Cancel();
+                lastCts.Dispose();
+                Source = null;
+            }
+
+            Player.SetVolumeFadeCore(Player.Volume, volume, onCompleted: onCompleted, coopToken: _volumeChangedCts.Token);
+            LoadedContexts.TryRemove(this, out _);
+            Console.WriteLine($"Total Remained SourceContext instances: {LoadedContexts.Count} instances");
+        }
+
         public void Dispose()
         {
             if (Interlocked.Exchange(ref _disposed, true))

@@ -18,12 +18,14 @@ public partial class LayeredBackgroundImage : Control
     private static void LayeredBackgroundImage_OnLoaded(object sender, RoutedEventArgs e)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)sender;
+        instance.SubscribeGridEvents();
         instance.LoadAllPresenters();
     }
 
     private static void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)sender;
+        instance.UnsubscribeGridEvents();
         instance.UnloadAllPresenters();
     }
 }

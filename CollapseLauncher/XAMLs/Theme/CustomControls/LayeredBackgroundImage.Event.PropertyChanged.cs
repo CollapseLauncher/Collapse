@@ -6,6 +6,18 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
+    private void SubscribeGridEvents()
+    {
+        _elevateGrid.SizeChanged += ElevateGrid_OnSizeChanged;
+    }
+
+    private void UnsubscribeGridEvents()
+    {
+        _elevateGrid.SizeChanged -= ElevateGrid_OnSizeChanged;
+    }
+
+    #region Audio, Media Position and Volume
+
     private static void PropertyIsAudioEnabled_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
@@ -16,15 +28,36 @@ public partial class LayeredBackgroundImage
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
     }
 
+    private static void PropertyMediaDurationPosition_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+    }
+
+    #endregion
+
+    #region Parallax and Elevation
+
+    private static void PropertyIsBackgroundElevated_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        instance.ElevateGrid_ToggleEnable((bool)args.NewValue);
+    }
+
     private static void PropertyIsParallelEnabled_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        instance.ParallaxGrid_ToggleEnable((bool)args.NewValue);
     }
 
     private static void PropertyParallaxHoverSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        instance.ParallaxGrid_RegisterEffect(); // Register source events.
     }
+
+    #endregion
+
+    #region Media Sources
 
     private static void PropertyPlaceholderSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
@@ -57,14 +90,5 @@ public partial class LayeredBackgroundImage
         await instance.LoadPresenter(grid, args.NewValue);
     }
 
-    private static void PropertyMediaDurationPosition_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-    }
-
-    private static void PropertyIsBackgroundElevated_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        instance.ElevateView_ToggleEnable((bool)args.NewValue);
-    }
+    #endregion
 }
