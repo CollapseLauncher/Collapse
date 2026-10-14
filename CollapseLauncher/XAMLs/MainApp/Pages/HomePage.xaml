@@ -45,6 +45,7 @@
         <pages:PluginHorizontalAlignmentConverter x:Key="PluginHorizontalAlignmentConverter" />
         <pages:PluginVerticalAlignmentConverter x:Key="PluginVerticalAlignmentConverter" />
         <pages:PluginDoublePositionToThicknessConverter x:Key="PluginDoublePositionToThicknessConverter" />
+        <pages:MediaPlayerStateToVisibilityConverter x:Key="MediaPlayerStateToVisibilityConverter" />
         <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
         <x:String x:Key="BooleanTrue">true</x:String>
         <x:String x:Key="BooleanFalse">false</x:String>
@@ -1193,20 +1194,25 @@
                             Padding="4"
                             extension:UIElementExtensions.CursorType="Hand"
                             Click="BackgroundVideoPlayToggle_OnClick"
-                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}">
-                        <Grid>
-                            <FontIcon FontSize="12"
-                                      Glyph="&#xE768;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
-                            <FontIcon FontSize="12"
-                                      Glyph="&#xE769;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
-                        </Grid>
+                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                            DataContext="{Binding CurrentBackgroundElement}"
+                            Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}}">
+                        <FontIcon FontSize="12"
+                                  Glyph="&#xE769;" />
+                    </Button>
+                    <Button Grid.Column="0"
+                            Margin="2,0"
+                            Padding="4"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="BackgroundVideoPlayToggle_OnClick"
+                            Style="{ThemeResource TransparentDefaultButtonStyle}"
+                            DataContext="{Binding CurrentBackgroundElement}"
+                            Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}, ConverterParameter='true'}">
+                        <FontIcon FontSize="12"
+                                  Glyph="&#xE768;" />
                     </Button>
                     <Grid Grid.Column="1"
-                          DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                          Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                          DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}">
                         <Grid Width="300"
                               Margin="4,0"
                               VerticalAlignment="Center"

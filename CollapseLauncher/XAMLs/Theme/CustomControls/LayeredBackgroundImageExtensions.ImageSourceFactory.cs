@@ -64,7 +64,10 @@ internal static partial class LayeredBackgroundImageExtensions
               .SupportedImageVectorExtensionsLookup
               .Contains(extension)
             ? new SvgImageSource(uri)
-            : new BitmapImage(uri);
+            : new BitmapImage(uri)
+            {
+                CreateOptions = BitmapCreateOptions.IgnoreImageCache
+            };
     }
 
     private static async Task<ImageSource?> CreateImageSourceFromStreamAsync(
@@ -113,7 +116,10 @@ internal static partial class LayeredBackgroundImageExtensions
             if (token.IsCancellationRequested)
                 return null;
 
-            BitmapImage               source        = new();
+            BitmapImage source = new()
+            {
+                CreateOptions = BitmapCreateOptions.IgnoreImageCache
+            };
             using IRandomAccessStream streamWrapper = stream.AsRandomAccessStream();
             if (token.IsCancellationRequested)
                 return null;

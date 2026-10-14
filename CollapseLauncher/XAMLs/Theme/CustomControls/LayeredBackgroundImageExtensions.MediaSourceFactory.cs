@@ -37,7 +37,8 @@ internal static partial class LayeredBackgroundImageExtensions
             IsLoopingEnabled          = true,
             IsVideoFrameServerEnabled = true,
             CommandManager            = { IsEnabled = false },
-            AutoPlay                  = isAutoPlay
+            AutoPlay                  = isAutoPlay,
+            Volume                    = 0
         };
 
         if (onMediaOpened != null)

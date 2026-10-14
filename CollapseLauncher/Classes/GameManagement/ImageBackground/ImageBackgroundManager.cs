@@ -199,8 +199,6 @@ public partial class ImageBackgroundManager
     private Grid?                     PresenterGrid                        { get; set; }
     private PresetConfig?             PresetConfig                         { get; set; }
 
-    internal bool NeedFallbackPlaceholder { get; set; }
-
     public Action? OnBackgroundLoadFailed { get; set; }
 
     public string? CurrentCustomBackgroundImagePath
@@ -257,7 +255,7 @@ public partial class ImageBackgroundManager
 
             LauncherConfig.SetAndSaveConfigValue(CurrentSelectedBackgroundIndexKey, value);
             OnPropertyChanged();
-            LoadImageAtIndex(value, false, CancellationToken.None, true);
+            LoadImageAtIndex(value, token: CancellationToken.None);
         }
     }
 
@@ -287,16 +285,6 @@ public partial class ImageBackgroundManager
 
     public int CurrentBackgroundCount => ImageContextSources.Count;
 
-    public bool CurrentBackgroundIsSeekable
-    {
-        get;
-        private set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool CurrentBackgroundIsVideo
     {
         get;
@@ -320,8 +308,6 @@ public partial class ImageBackgroundManager
     } = [];
 
     private int _previousContextHash;
-
-    private LayeredImageBackgroundContext? _displayedContext;
 
     internal FrameworkElement? ThemeRootElement { get; set; }
 
@@ -536,25 +522,16 @@ public partial class ImageBackgroundManager
             return;
         }
 
-        UpdateContextListCore(token, skipPreviousContextCheck, imageContexts.ToArray());
+        UpdateContextListCore(token, skipPreviousContextCheck, [.. imageContexts]);
     }
 
     private void UpdateContextListCore(
         CancellationToken                                  token,
-        bool                                               skipPreviousContextCheck,
-        params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
-    {
-        UpdateContextListCore(token, skipPreviousContextCheck, false, imageContexts);
-    }
-
-    private void UpdateContextListCore(
-        CancellationToken                                  token,
-        bool                                               skipPreviousContextCheck,
-        bool                                               forceLoadToStatic,
+        bool                                               forceReload,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
         // Do not update if the previous contexts are equal
-        if ((!skipPreviousContextCheck &&
+        if ((!forceReload &&
             IsContextEqual(imageContexts)) ||
             imageContexts.IsEmpty)
         {
@@ -587,7 +564,7 @@ public partial class ImageBackgroundManager
         OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
         OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
         OnPropertyChanged(nameof(CurrentBackgroundCount));
-        LoadImageAtIndex(CurrentSelectedBackgroundIndex, forceLoadToStatic, token);
+        LoadImageAtIndex(CurrentSelectedBackgroundIndex, forceReload, token);
     }
 #pragma warning restore CA1068
 
@@ -612,7 +589,6 @@ public partial class ImageBackgroundManager
     {
         Interlocked.Exchange(ref _previousContextHash, 0);
         ImageContextSources.Clear();
-        NeedFallbackPlaceholder = false;
     }
 
     void INotifyAllPropertyChanged.NotifyAllChanged()

@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
+using Windows.Media.Playback;
 
 // ReSharper disable CheckNamespace
 
@@ -244,8 +245,8 @@ public sealed partial class HomePage
 
         LayeredBackgroundImage?        currentElement = ImageBackgroundManager.Shared.CurrentBackgroundElement;
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
-        bool isUseStaticBackground = !(currentElement?.IsVideoPlay ?? true) &&
-                                     currentElement.PlaceholderSource != null;
+        bool isUseStaticBackground = currentElement?.PlaceholderSource != null &&
+                                     !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay;
 
         if (isUseStaticBackground &&
             !Uri.TryCreate(currentContext?.OriginBackgroundStaticImagePath, UriKind.Absolute, out sourceUri))
@@ -389,7 +390,7 @@ public sealed partial class HomePage
             return;
         }
 
-        if (element.IsVideoPlay)
+        if (element.MediaState == MediaPlayerState.Playing)
         {
             CurrentBackgroundManager.Pause();
             return;

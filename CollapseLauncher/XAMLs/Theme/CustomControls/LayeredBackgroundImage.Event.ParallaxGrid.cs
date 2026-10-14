@@ -18,11 +18,6 @@ public partial class LayeredBackgroundImage
 
     private void ParallaxGrid_ToggleEnable(bool isEnable)
     {
-        if (isEnable == IsParallaxEnabled) // Avoid double toggling.
-        {
-            return;
-        }
-
         if (isEnable)
         {
             ParallaxGrid_RegisterEffect();

@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
-using System.Threading;
+﻿using System.Threading;
 
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable CheckNamespace
@@ -14,31 +13,35 @@ public partial class ImageBackgroundManager
 
     public void SetWindowFocusedEvent()
     {
-        if (GlobalKeepPlayVideoWhenWindowUnfocused)
+        if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
-            CurrentBackgroundElement?.FadeInAudio();
+            CurrentBackgroundElement?.Play();
+            return;
         }
-        else
-        {
-            Play(false);
-        }
+
+        CurrentBackgroundElement?.SetVolume(GlobalBackgroundAudioVolume);
     }
 
     public void SetWindowUnfocusedEvent()
     {
-        if (GlobalKeepPlayVideoWhenWindowUnfocused)
+        if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
-            CurrentBackgroundElement?.FadeOutAudio();
+            CurrentBackgroundElement?.Pause();
+            return;
         }
-        else
-        {
-            Pause(false);
-        }
+
+        CurrentBackgroundElement?.SetVolume(0);
     }
 
-    public void SetWindowMinimizeEvent() => Pause(false);
+    public void SetWindowMinimizeEvent()
+    {
+        CurrentBackgroundElement?.ReleaseViewAllocation();
+    }
 
-    public void SetWindowRestoreEvent() => Play(false);
+    public void SetWindowRestoreEvent()
+    {
+        CurrentBackgroundElement?.RestoreViewAllocation();
+    }
 
     public void Play(bool isUserRequest = true)
     {
@@ -58,11 +61,8 @@ public partial class ImageBackgroundManager
         bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
         if (isUserRequest && hasStaticImage && context != null)
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, CancellationToken.None, true);
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, token: CancellationToken.None);
         }
-
-        // Force to restore autoplay status to true.
-        CurrentBackgroundElement?.SetValue(LayeredBackgroundImage.IsVideoAutoplayProperty, true);
         
         Interlocked.Exchange(ref _isPausedByUser, false);
         CurrentBackgroundElement?.Play();
@@ -75,13 +75,13 @@ public partial class ImageBackgroundManager
             Interlocked.Exchange(ref _isPausedByUser, true);
             CurrentIsEnableBackgroundAutoPlay = false;
         }
-        
+
         // Alter to load static image if it has one instead of pausing.
         LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
         bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
         if (isUserRequest && hasStaticImage && context != null)
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, true, CancellationToken.None, true);
+            LoadImageAtIndex(CurrentSelectedBackgroundIndex, token: CancellationToken.None);
             return;
         }
 

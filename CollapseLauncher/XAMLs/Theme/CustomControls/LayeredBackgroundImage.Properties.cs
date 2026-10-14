@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
+using Windows.Media.Playback;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -22,8 +23,6 @@ public partial class LayeredBackgroundImage
         get => (bool)GetValue(IsVideoAutoplayProperty);
         set => SetValue(IsVideoAutoplayProperty, value);
     }
-
-    public bool IsVideoPlay => (bool)GetValue(IsVideoPlayProperty);
 
     public bool UseFfmpegDecoder
     {
@@ -157,15 +156,22 @@ public partial class LayeredBackgroundImage
         set => SetValue(ForegroundOpacityProperty, value);
     }
 
+    public MediaPlayerState MediaState
+    {
+        get => (MediaPlayerState)GetValue(MediaStateProperty);
+        set => SetValue(MediaStateProperty, value);
+    }
+
     public TimeSpan MediaDurationPosition
     {
         get => (TimeSpan)GetValue(MediaDurationPositionProperty);
         set => SetValue(MediaDurationPositionProperty, value);
     }
 
-    public TimeSpan MediaDuration => (TimeSpan)GetValue(MediaDurationProperty);
-
-    public bool IsCurrentMediaSeekable => (bool)GetValue(IsCurrentMediaSeekableProperty);
+    public TimeSpan MediaDuration
+    {
+        get => (TimeSpan)GetValue(MediaDurationProperty);
+    }
 
     public double BackgroundElevationPixels
     {
@@ -234,12 +240,6 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
-
-    public static readonly DependencyProperty IsVideoPlayProperty =
-        DependencyProperty.Register(nameof(IsVideoPlay),
-                                    typeof(bool),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty UseFfmpegDecoderProperty =
         DependencyProperty.Register(nameof(UseFfmpegDecoder),
@@ -367,6 +367,12 @@ public partial class LayeredBackgroundImage
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(1d));
 
+    public static readonly DependencyProperty MediaStateProperty =
+        DependencyProperty.Register(nameof(MediaState),
+                                    typeof(MediaPlayerState),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(MediaPlayerState.Stopped));
+
     public static readonly DependencyProperty MediaDurationPositionProperty =
         DependencyProperty.Register(nameof(MediaDurationPosition),
                                     typeof(TimeSpan),
@@ -378,12 +384,6 @@ public partial class LayeredBackgroundImage
                                     typeof(TimeSpan),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(TimeSpan.Zero));
-
-    public static readonly DependencyProperty IsCurrentMediaSeekableProperty =
-        DependencyProperty.Register(nameof(IsCurrentMediaSeekable),
-                                    typeof(bool),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty BackgroundElevationPixelsProperty =
         DependencyProperty.Register(nameof(BackgroundElevationPixels),

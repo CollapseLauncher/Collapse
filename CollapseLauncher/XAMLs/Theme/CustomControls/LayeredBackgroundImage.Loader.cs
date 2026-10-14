@@ -1,11 +1,16 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
+using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Media.Playback;
+
 // ReSharper disable AccessToModifiedClosure
 
 #nullable enable
@@ -13,6 +18,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
+    #region Loader
+
     private async void LoadAllPresenters()
     {
         Task placeholderLoadTask = LoadPresenter(_placeholderGrid, PlaceholderSource);
@@ -25,23 +32,25 @@ public partial class LayeredBackgroundImage
     }
 
     private async Task LoadPresenter(
-        Panel   parent,
-        object? source)
+        Panel         parent,
+        object?       source)
     {
         FrameworkElement? currentPresenter = null;
+        ulong             sourceContextGen = Interlocked.Increment(ref _sourceContextGeneration);
         try
         {
-            InvalidateLastLoadingToken(parent);
+            InvalidateLastSourceLoadingToken(parent);
             if (source == null)
                 return;
 
-            SourceContext sourceContext = new()
+            bool isBackgroundParent = parent.Name.StartsWith("Background", StringComparison.OrdinalIgnoreCase);
+            SourceContext sourceContext = new(this, sourceContextGen)
             {
                 Source = source
             };
 
-            CancellationToken    loadToken = sourceContext.SourceLoadingCts.Token;
-            TaskCompletionSource tcs       = new();
+            CancellationToken loadToken = sourceContext.SourceLoadingCts.Token;
+            TaskCompletionSource tcs = new();
 
             SourceGuessResult sourceGuessResult = LayeredBackgroundImageExtensions.GuessSourceType(source);
             if (sourceGuessResult.ObjectType == SourceObjectType.Unknown ||
@@ -94,9 +103,32 @@ public partial class LayeredBackgroundImage
                         return;
                     }
 
+                    // -- For Background Grid Only. Update MediaState and assign subscriber for it.
+                    if (isBackgroundParent &&
+                        sourceGuessResult.FormatType == SourceFormatType.Video &&
+                        presenter.Tag is SourceContext { Player: { } player } thisSourceContext)
+                    {
+                        SetVolume(AudioVolume);
+
+                        SetValue(MediaStateProperty,            player.CurrentState);    // Update the state one time.
+                        SetValue(MediaDurationPositionProperty, player.NaturalDuration); // Update the state one time.
+                        thisSourceContext.RegisterPlayerCallbacks(MediaPlayer_OnCurrentStateChanged,
+                                                                  MediaPlayer_OnPositionChanged);
+
+                        TimeSpan lastPosition = thisSourceContext.LoadPlayerLastPosition();
+                        player.Position = lastPosition; // Seek to the last position.
+                    }
+
                     await UnloadLastPresenter(parent, presenter);
                     tcs.TrySetResult();
                 }
+            }
+
+            // -- For Background Grid Only and notify if the source is loaded as image, notify
+            //    the MediaState as Closed.
+            if (isBackgroundParent && sourceGuessResult.FormatType == SourceFormatType.Image)
+            {
+                SetValue(MediaStateProperty, MediaPlayerState.Closed);
             }
 
             if (currentPresenter == null)
@@ -114,7 +146,11 @@ public partial class LayeredBackgroundImage
         }
     }
 
-    private static void InvalidateLastLoadingToken(Panel parent)
+    #endregion
+
+    #region Invalidator
+
+    private static void InvalidateLastSourceLoadingToken(Panel parent)
     {
         foreach (UIElement element in parent.Children)
         {
@@ -127,35 +163,49 @@ public partial class LayeredBackgroundImage
         }
     }
 
+    #endregion
+
+    #region Unloader
+
     private static async Task UnloadLastPresenter(
-        Panel             parent,
-        UIElement?        currentPresenter = null)
+        Panel      parent,
+        UIElement? currentPresenter = null)
     {
-        UIElement?      lastPresenter = parent.Children.LastOrDefault(x => x != currentPresenter);
-        List<UIElement> others        = [.. parent.Children.Where(other => currentPresenter != other)];
-
-        Task volumeFadeOutTask = Task.CompletedTask;
-        if (lastPresenter is FrameworkElement { Tag: SourceContext sourceContext })
-        {
-            TaskCompletionSource volumeFadeOutTcs = new();
-            volumeFadeOutTask = volumeFadeOutTcs.Task;
-
-            // If it has player in its source context, fade out the player first before disposing.
-            sourceContext.SetVolume(0, volumeFadeOutTcs.SetResult); // Tell to complete the task.
-        }
+        Task            volumeFadeOutTask = Task.CompletedTask;
+        List<UIElement> others            = [];
 
         try
         {
+            UIElement? lastPresenter = currentPresenter == null
+                ? parent.Children.LastOrDefault()
+                : parent.Children.LastOrDefault(x => x != currentPresenter);
+
+            others.AddRange(currentPresenter == null
+                                ? parent.Children
+                                : parent.Children.Where(other => currentPresenter != other));
+
+            if (lastPresenter is FrameworkElement { Tag: SourceContext lastSourceContext })
+            {
+                TaskCompletionSource volumeFadeOutTcs = new();
+                volumeFadeOutTask = volumeFadeOutTcs.Task;
+
+                // If it has player in its source context, fade out the player first before disposing.
+                lastSourceContext.SetVolume(0, () => volumeFadeOutTcs.TrySetResult()); // Tell to complete the task.
+            }
+
             Task visualFadeOutTask = LayeredBackgroundImageExtensions
                .StartFadeReplaceAnimationAsync(lastPresenter, currentPresenter);
 
             await Task.WhenAll(volumeFadeOutTask, visualFadeOutTask);
+
             foreach (UIElement other in others)
             {
                 parent.Children.Remove(other);
                 if (other is FrameworkElement { Tag: SourceContext otherSourceContext })
                     otherSourceContext.Dispose();
             }
+
+            Logger.LogWriteLine($"Parent Grid: {parent.Name} has remained: {parent.Children.Count} children", LogType.Debug);
         }
         catch (Exception ex)
         {
@@ -171,4 +221,30 @@ public partial class LayeredBackgroundImage
 
         await Task.WhenAll(placeholderTask, foregroundTask, backgroundTask);
     }
+
+    #endregion
+
+    #region Helper
+
+    public bool TryGetBackgroundSourceContext(
+        [NotNullWhen(true)] out SourceContext? sourceContext,
+        [NotNullWhen(true)] out MediaPlayer?   player)
+    {
+        Unsafe.SkipInit(out sourceContext);
+        Unsafe.SkipInit(out player);
+
+        if (_backgroundGrid.Children.LastOrDefault() is not FrameworkElement
+            {
+                Tag: SourceContext { Player: { } thisPlayer } thisSourceContext
+            })
+        {
+            return false;
+        }
+
+        player        = thisPlayer;
+        sourceContext = thisSourceContext;
+        return true;
+    }
+
+    #endregion
 }

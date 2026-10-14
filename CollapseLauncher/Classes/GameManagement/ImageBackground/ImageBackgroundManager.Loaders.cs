@@ -1,23 +1,16 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.InternalPInvoke;
-using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
-using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -37,7 +30,7 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private void LoadImageAtIndex(int index, bool forceLoadToStatic, CancellationToken token, bool forceReload = false)
+    private void LoadImageAtIndex(int index, bool forceReload = false, CancellationToken token = default)
     {
         if (ImageContextSources.Count <= index ||
             index < 0)
@@ -55,21 +48,14 @@ public partial class ImageBackgroundManager
         {
             IsBackgroundLoading = true;
         }
-        new Thread(async void () =>
+
+        new Thread(() =>
         {
-            try
-            {
-                await LoadImageAtIndexCore(index, forceLoadToStatic, token).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                Logger.LogWriteLine($"{e}", LogType.Error, true);
-            }
+            LoadImageAtIndexCore(index, forceReload, token).ConfigureAwait(false);
         })
         {
-            IsBackground = true,
-            Priority = ThreadPriority.Lowest
-        }.UnsafeStart();
+            IsBackground = true
+        }.Start();
     }
 
     private void CancelCurrentBackgroundLoad()
@@ -82,21 +68,13 @@ public partial class ImageBackgroundManager
         IsBackgroundLoading = false;
     }
 
-    private async Task LoadImageAtIndexCore(int index, bool forceLoadToStatic, CancellationToken token)
+    private async Task LoadImageAtIndexCore(int index, bool forceReload = false, CancellationToken token = default)
     {
         Stopwatch? stopwatch = null;
         try
         {
-            bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
             stopwatch = Stopwatch.StartNew();
 
-            // -- Notify changes on context menu properties
-            DispatcherQueueExtensions
-               .CurrentDispatcherQueue
-               .TryEnqueue(() => OnPropertyChanged(nameof(CurrentSelectedBackgroundHasOverlayImage)));
-
-            // -- Get context and invalidate previous CTS
-            LayeredImageBackgroundContext context = ImageContextSources[index];
             if (Interlocked.Exchange(ref _imageLoadingTokenSource,
                                      CancellationTokenSource.CreateLinkedTokenSource(token)) is { } lastCts)
             {
@@ -105,6 +83,13 @@ public partial class ImageBackgroundManager
             }
 
             token = _imageLoadingTokenSource.Token;
+            bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+
+            // -- Notify changes on context menu properties
+            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => OnPropertyChanged(nameof(CurrentSelectedBackgroundHasOverlayImage)));
+
+            // -- Get context and invalidate previous CTS
+            LayeredImageBackgroundContext context = ImageContextSources[index];
 
             // -- Download overlay.
             Unsafe.SkipInit(out Uri? downloadedOverlayUri);
@@ -136,7 +121,6 @@ public partial class ImageBackgroundManager
             {
                 if (!context.IsCustom)
                 {
-                    NeedFallbackPlaceholder = false;
                     OnBackgroundLoadFailed?.Invoke();
                 }
                 return;
@@ -159,37 +143,16 @@ public partial class ImageBackgroundManager
                 downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
             }
 
-            // Try to force loading static image if requested.
-            if (forceLoadToStatic && downloadedBackgroundStaticUri != null)
+            // Try to force loading static image if autoplay is not enabled and context has
+            // static background in it.
+            if (!CurrentIsEnableBackgroundAutoPlay && downloadedBackgroundStaticUri != null)
             {
-                isVideo                       = false;
-                downloadedBackgroundUri       = downloadedBackgroundStaticUri;
-                downloadedBackgroundStaticUri = null;
+                downloadedBackgroundUri = downloadedBackgroundStaticUri;
             }
 
             // Read accent color from the source that is actually displayed.
-            bool willDisplayStatic = !isVideo ||
-                                     (!CurrentIsEnableCustomImage &&
-                                      !GlobalIsEnableCustomImage &&
-                                      !CurrentIsEnableBackgroundAutoPlay);
-            Uri? accentSourceUri = willDisplayStatic
-                ? downloadedBackgroundStaticUri ?? downloadedBackgroundUri
-                : downloadedBackgroundUri;
-
-            new Thread(async void (ctx) =>
-            {
-                try
-                {
-                    await GetMediaAccentColor(ctx).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogWriteLine($"{e}", LogType.Error, true);
-                }
-            })
-            {
-                IsBackground = true
-            }.UnsafeStart((accentSourceUri, isUseFFmpeg, CurrentCachedBgKey));
+            Uri? accentSourceUri = downloadedBackgroundStaticUri ?? downloadedBackgroundUri ?? downloadedBackgroundUri;
+            await GetMediaAccentColor((accentSourceUri, isUseFFmpeg, CurrentCachedBgKey)).ConfigureAwait(false);
 
             if (!context.IsCustom &&
                 !string.IsNullOrEmpty(CurrentCachedBgKey))
@@ -202,13 +165,14 @@ public partial class ImageBackgroundManager
             // -- Use UI thread and load image layer
             DispatcherQueueExtensions
                .CurrentDispatcherQueue
-               .TryEnqueue(() => SpawnImageLayer(downloadedOverlayUri,
-                                                  downloadedBackgroundUri,
-                                                  downloadedBackgroundStaticUri,
-                                                  forceFFmpeg,
-                                                  context));
+               .TryEnqueue(DispatcherQueuePriority.High,
+                           () => SpawnImageLayer(downloadedOverlayUri,
+                                                 downloadedBackgroundUri,
+                                                 forceFFmpeg,
+                                                 forceReload));
 
             GlobalIsFFmpegCurrentlyUsed = isVideo && isUseFFmpeg;
+            CurrentBackgroundIsVideo    = isVideo;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -232,35 +196,19 @@ public partial class ImageBackgroundManager
         }
     }
 
-    private void SpawnImageLayer(Uri?                          overlayFilePath,
-                                 Uri?                          backgroundFilePath,
-                                 Uri?                          placeholderFilePath,
-                                 bool                          forceFFmpeg,
-                                 LayeredImageBackgroundContext context,
-                                 bool                          forceReload = false)
+    private void SpawnImageLayer(Uri? overlayFilePath,
+                                 Uri? backgroundFilePath,
+                                 bool forceFFmpeg,
+                                 bool forceReload = false)
     {
-        if (!forceReload &&
-            CurrentBackgroundElement != null &&
-            _displayedContext != null)
-        {
-            if (context.Equals(_displayedContext))
-            {
-                return;
-            }
-
-            if (CurrentBackgroundElement is { } existingLayer &&
-                IsSameLocalFile(existingLayer.BackgroundSource, backgroundFilePath) &&
-                IsSameLocalFile(existingLayer.PlaceholderSource, placeholderFilePath))
-            {
-                return;
-            }
-        }
-
         LayeredBackgroundImage element = CreateOrGetLayerElement();
-        element.UseFfmpegDecoder  = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
-        element.PlaceholderSource = placeholderFilePath;
-        element.BackgroundSource  = backgroundFilePath;
-        element.ForegroundSource  = overlayFilePath;
+
+        element.UseFfmpegDecoder = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
+        if (forceReload || !IsSameLocalFile(element.BackgroundSource, backgroundFilePath))
+            element.BackgroundSource = backgroundFilePath;
+
+        if (forceReload || !IsSameLocalFile(element.ForegroundSource, overlayFilePath))
+            element.ForegroundSource = overlayFilePath;
     }
 
     private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
@@ -274,47 +222,6 @@ public partial class ImageBackgroundManager
             _ => null
         };
         return string.Equals(currentPath, newPath, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private async Task RestoreSavedAccent(string cachedBgKey, Uri? fallbackSourceUri = null)
-    {
-        string? savedHex = LauncherConfig.GetAppConfigValue($"{cachedBgKey}-AccentColor").ToString();
-        if (!string.IsNullOrEmpty(savedHex) && savedHex.Length >= 6 && ThemeRootElement != null)
-        {
-            if (TryParseHexColor(savedHex, out Color accentColor))
-            {
-                ThemeRootElement.ChangeAccentColor(accentColor);
-                return;
-            }
-        }
-
-        if (fallbackSourceUri != null && ThemeRootElement != null)
-        {
-            try
-            {
-                Color syncColor = await ColorPaletteUtility.GetMediaAccentColorFromAsync(fallbackSourceUri, false);
-                ThemeRootElement.ChangeAccentColor(syncColor);
-                LauncherConfig.SetAndSaveConfigValue($"{cachedBgKey}-AccentColor",
-                    $"{syncColor.R:X2}{syncColor.G:X2}{syncColor.B:X2}");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"RestoreSavedAccent failed: {ex}", LogType.Error, true);
-            }
-        }
-    }
-
-    private static bool TryParseHexColor(ReadOnlySpan<char> hex, out Color color)
-    {
-        color = default;
-        if (hex.Length < 6) return false;
-        if (hex[0] == '#')
-            hex = hex[1..];
-        if (!uint.TryParse(hex, NumberStyles.HexNumber, null, out uint argb)) return false;
-        if (hex.Length <= 6)
-            argb = 0xFF_000000 | argb;
-        color = Color.FromArgb((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)argb);
-        return true;
     }
 
     private LayeredBackgroundImage CreateOrGetLayerElement()

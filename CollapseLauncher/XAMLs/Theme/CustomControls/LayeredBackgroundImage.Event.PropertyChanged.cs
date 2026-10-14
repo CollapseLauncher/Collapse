@@ -9,11 +9,17 @@ public partial class LayeredBackgroundImage
     private void SubscribeGridEvents()
     {
         _elevateGrid.SizeChanged += ElevateGrid_OnSizeChanged;
+
+        // Toggle parallax event explicitly for parallax animation
+        ParallaxGrid_ToggleEnable(IsParallaxEnabled);
     }
 
     private void UnsubscribeGridEvents()
     {
         _elevateGrid.SizeChanged -= ElevateGrid_OnSizeChanged;
+
+        // Unsubscribe event explicitly for parallax animation by toggling it off.
+        ParallaxGrid_ToggleEnable(false);
     }
 
     #region Audio, Media Position and Volume
@@ -21,11 +27,23 @@ public partial class LayeredBackgroundImage
     private static void PropertyIsAudioEnabled_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        if (!instance.IsLoaded)
+        {
+            return;
+        }
+
+        instance.ToggleMute(!(bool)args.NewValue);
     }
 
     private static void PropertyAudioVolume_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        if (!instance.IsLoaded)
+        {
+            return;
+        }
+
+        instance.SetVolume((double)args.NewValue);
     }
 
     private static void PropertyMediaDurationPosition_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
@@ -46,12 +64,22 @@ public partial class LayeredBackgroundImage
     private static void PropertyIsParallelEnabled_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        if (!instance.IsLoaded)
+        {
+            return;
+        }
+
         instance.ParallaxGrid_ToggleEnable((bool)args.NewValue);
     }
 
     private static void PropertyParallaxHoverSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        if (!instance.IsLoaded)
+        {
+            return;
+        }
+
         instance.ParallaxGrid_RegisterEffect(); // Register source events.
     }
 
@@ -65,20 +93,20 @@ public partial class LayeredBackgroundImage
         PropertyMediaSource_OnChange(instance._placeholderGrid, instance, args);
     }
 
-    private static void PropertyBackgroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        PropertyMediaSource_OnChange(instance._backgroundGrid, instance, args);
-    }
-
     private static void PropertyForegroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
         PropertyMediaSource_OnChange(instance._foregroundGrid, instance, args);
     }
 
+    private static void PropertyBackgroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+    {
+        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        PropertyMediaSource_OnChange(instance._backgroundGrid, instance, args);
+    }
+
     private static async void PropertyMediaSource_OnChange(
-        Grid                               grid,
+        Grid                               parent,
         LayeredBackgroundImage             instance,
         DependencyPropertyChangedEventArgs args)
     {
@@ -87,7 +115,7 @@ public partial class LayeredBackgroundImage
             return;
         }
 
-        await instance.LoadPresenter(grid, args.NewValue);
+        await instance.LoadPresenter(parent, args.NewValue);
     }
 
     #endregion

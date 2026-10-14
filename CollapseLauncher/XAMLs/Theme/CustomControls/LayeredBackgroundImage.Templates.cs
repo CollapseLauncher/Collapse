@@ -23,11 +23,18 @@ public partial class LayeredBackgroundImage
 
     #region Fields
 
+    // Container-level Grid
     private Grid _parallaxGrid    = null!;
+    private Grid _elevateGrid     = null!;
+
+    // Media Grid
     private Grid _placeholderGrid = null!;
     private Grid _backgroundGrid  = null!;
     private Grid _foregroundGrid  = null!;
-    private Grid _elevateGrid     = null!;
+
+    // Source Context Generation
+
+    private ulong _sourceContextGeneration = 0;
 
     private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;

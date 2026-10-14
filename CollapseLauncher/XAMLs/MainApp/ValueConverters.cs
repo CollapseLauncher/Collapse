@@ -25,6 +25,8 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
+using Windows.Media.Playback;
+
 // ReSharper disable IdentifierTypo
 
 // ReSharper disable PartialTypeWithSinglePart
@@ -1350,20 +1352,17 @@ namespace CollapseLauncher.Pages
         {
             if (value is not TFrom asStructFrom)
             {
-                throw new
-                    InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
+                throw new InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
             }
 
             int sizeOfFrom = sizeof(TFrom);
-            int sizeOfTo = sizeof(TTo);
-
+            int sizeOfTo   = sizeof(TTo);
             if (sizeOfFrom != sizeOfTo)
             {
                 throw new InvalidOperationException($"Size mismatch: {typeof(TFrom)} ({sizeOfFrom} bytes) vs {typeof(TTo)} ({sizeOfTo} bytes)");
             }
 
-            TTo result = default;
-            Unsafe.Copy(ref result, &asStructFrom);
+            TTo result = Unsafe.BitCast<TFrom, TTo>(asStructFrom);
             return result;
         }
     }
@@ -1385,4 +1384,36 @@ namespace CollapseLauncher.Pages
     public partial class PluginDoublePositionToThicknessConverter :
         StructToStructConverter<Hi3Helper.Plugin.Core.UI.DoublePosition,
                                 Thickness>;
+
+    public partial class MediaPlayerStateToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not MediaPlayerState state)
+            {
+                throw new InvalidCastException("Value is not a MediaPlayerState");
+            }
+
+            if (parameter is true ||
+                (parameter is string paramAsStr &&
+                 bool.TryParse(paramAsStr, out bool result) &&
+                 result))
+            {
+                return state is MediaPlayerState.Closed
+                             or MediaPlayerState.Paused
+                             or MediaPlayerState.Stopped
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+            return state is MediaPlayerState.Buffering
+                         or MediaPlayerState.Opening
+                         or MediaPlayerState.Playing
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
 }

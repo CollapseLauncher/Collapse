@@ -1,8 +1,10 @@
 ﻿using Hi3Helper;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Timers;
 using Windows.Media.Playback;
+using Timer = System.Timers.Timer;
+
 // ReSharper disable AccessToModifiedClosure
 
 #nullable enable
@@ -24,8 +26,8 @@ internal static partial class LayeredBackgroundImageExtensions
     {
         try
         {
-            CancellationTokenSource currentCts   = CancellationTokenSource.CreateLinkedTokenSource(coopToken);
-            CancellationToken       currentToken = currentCts.Token;
+            if (fromValue > 1) fromValue /= 100d;
+            if (toValue > 1) toValue     /= 100d;
 
             bool isFadeOut = fromValue > toValue;
 
@@ -35,46 +37,45 @@ internal static partial class LayeredBackgroundImageExtensions
             if (isFadeOut)
                 step *= -1;
 
-            Unsafe.SkipInit(out Timer timer); // HACK: Ignore Error CS0165
-            timer = new Timer(Impl, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(resolutionMs));
+            if (coopToken.IsCancellationRequested || mediaPlayer == null!)
+            {
+                onCompleted?.Invoke();
+                return;
+            }
+
+            Timer timer = new(TimeSpan.FromMilliseconds(resolutionMs));
+            coopToken.Register(timer.Dispose);
+            timer.Elapsed += Impl;
+            timer.Start();
 
             return;
 
-            void Impl(object? state)
+            void Impl(object? sender, ElapsedEventArgs args)
             {
+                if (coopToken.IsCancellationRequested || mediaPlayer == null!)
+                {
+                    timer.Stop();
+                    timer.Dispose();
+                    return;
+                }
+
                 try
                 {
-                    if (timer == null! ||
-                        currentToken.IsCancellationRequested)
-                    {
-                        timer?.Dispose();
-                        onCompleted?.Invoke();
-                        return;
-                    }
-
-                    durationMs -= resolutionMs;
                     fromValue += step;
-                    if (durationMs < 0)
+                    TrySetVolume(fromValue);
+
+                    if ((isFadeOut && fromValue <= toValue) ||
+                        (!isFadeOut && fromValue >= toValue))
                     {
-                        if (mediaPlayer != null!)
-                        {
-                            TrySetVolume(toValue);
-                        }
+                        timer.Stop();
                         timer.Dispose();
                         onCompleted?.Invoke();
-                        return;
                     }
-
-                    if (mediaPlayer != null!)
-                    {
-                        TrySetVolume(fromValue);
-                    }
+                    durationMs -= resolutionMs;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    timer.Dispose();
-                    onCompleted?.Invoke();
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::VolumeFadeCore::Impl] {e}",
+                    Logger.LogWriteLine($"[LayeredBackgroundImage::VolumeFadeCore::Impl] {ex}",
                                         LogType.Error,
                                         true);
                 }
@@ -84,7 +85,9 @@ internal static partial class LayeredBackgroundImageExtensions
             {
                 try
                 {
-                    mediaPlayer.Volume = value;
+                    mediaPlayer.Volume = isFadeOut
+                        ? Math.Max(value, toValue)
+                        : Math.Min(value, toValue);
                 }
                 catch (Exception e)
                 {
