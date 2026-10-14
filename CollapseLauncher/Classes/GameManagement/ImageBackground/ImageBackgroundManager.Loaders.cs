@@ -288,7 +288,6 @@ public partial class ImageBackgroundManager
                                                   nameof(SmokeOpacity),
                                                   bindingMode: BindingMode.OneWay);
 
-            // layerElement.ImageLoaded += LayerElementOnLoaded;
             PresenterGrid?.Children.Clear();
             PresenterGrid?.Children.Add(CurrentBackgroundElement);
         }

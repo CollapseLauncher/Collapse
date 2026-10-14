@@ -1418,7 +1418,7 @@ namespace CollapseLauncher.Pages
             => throw new NotImplementedException();
     }
 
-    public partial struct MinMaxToPercentConverter<T> : IValueConverter
+    public partial class MinMaxToPercentConverter<T> : IValueConverter
         where T : unmanaged, IBinaryNumber<T>
     {
         public MinMaxToPercentConverter(T min, T max)

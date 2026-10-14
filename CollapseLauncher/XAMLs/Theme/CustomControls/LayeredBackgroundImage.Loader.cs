@@ -46,8 +46,8 @@ public partial class LayeredBackgroundImage
                 Source = source
             };
 
-            CancellationToken loadToken = sourceContext.SourceLoadingCts.Token;
-            TaskCompletionSource tcs = new();
+            CancellationToken    loadToken = sourceContext.SourceLoadingCts.Token;
+            TaskCompletionSource tcs       = new();
 
             SourceGuessResult sourceGuessResult = LayeredBackgroundImageExtensions.GuessSourceType(source);
             if (sourceGuessResult.ObjectType == SourceObjectType.Unknown ||
@@ -134,6 +134,10 @@ public partial class LayeredBackgroundImage
                 tcs.TrySetResult();
 
             await tcs.Task;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"An error has occurred while loading source for: {parent.Name}\r\n{ex}", LogType.Error, true);
         }
         finally
         {

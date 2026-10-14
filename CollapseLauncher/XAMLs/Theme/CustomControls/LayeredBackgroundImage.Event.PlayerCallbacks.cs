@@ -24,6 +24,9 @@ public partial class LayeredBackgroundImage
         try
         {
             TimeSpan value = session.Position;
+            if (DispatcherQueue == null)
+                return;
+
             DispatcherQueue.TryEnqueue(() => SetValue(MediaDurationPositionProperty, value));
         }
         catch
