@@ -1,10 +1,10 @@
-﻿#nullable enable
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using System.Numerics;
 
+#nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
@@ -12,12 +12,9 @@ public partial class LayeredBackgroundImage
     #region Constants
 
     private const string TemplateNameParallaxGrid    = "ParallaxGrid";
-    private const string TemplateNamePlaceholderGrid = "PlaceholderGrid";
     private const string TemplateNameBackgroundGrid  = "BackgroundGrid";
     private const string TemplateNameForegroundGrid  = "ForegroundGrid";
     private const string TemplateNameElevateGrid     = "ElevateGrid";
-
-    private const string StateNamePlaceholderStateHidden = "PlaceholderStateHidden";
 
     #endregion
 
@@ -28,13 +25,12 @@ public partial class LayeredBackgroundImage
     private Grid _elevateGrid     = null!;
 
     // Media Grid
-    private Grid _placeholderGrid = null!;
     private Grid _backgroundGrid  = null!;
     private Grid _foregroundGrid  = null!;
 
     // Source Context Generation
 
-    private ulong _sourceContextGeneration = 0;
+    private ulong _sourceContextGeneration;
 
     private Visual     _parallaxGridVisual     = null!;
     private Compositor _parallaxGridCompositor = null!;
@@ -51,11 +47,10 @@ public partial class LayeredBackgroundImage
 
     protected override void OnApplyTemplate()
     {
-        _parallaxGrid    = this.GetTemplateChild<Grid>(TemplateNameParallaxGrid);
-        _placeholderGrid = this.GetTemplateChild<Grid>(TemplateNamePlaceholderGrid);
-        _backgroundGrid  = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
-        _foregroundGrid  = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
-        _elevateGrid     = this.GetTemplateChild<Grid>(TemplateNameElevateGrid);
+        _parallaxGrid   = this.GetTemplateChild<Grid>(TemplateNameParallaxGrid);
+        _backgroundGrid = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
+        _foregroundGrid = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
+        _elevateGrid    = this.GetTemplateChild<Grid>(TemplateNameElevateGrid);
 
         _parallaxGridVisual     = ElementCompositionPreview.GetElementVisual(_parallaxGrid);
         _parallaxGridCompositor = _parallaxGridVisual.Compositor;

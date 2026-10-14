@@ -19,7 +19,7 @@ public partial class ImageBackgroundManager
             return;
         }
 
-        CurrentBackgroundElement?.SetVolume(GlobalBackgroundAudioVolume);
+        CurrentBackgroundElement?.SetVolume(GlobalBackgroundAudioVolume / 100d);
     }
 
     public void SetWindowUnfocusedEvent()

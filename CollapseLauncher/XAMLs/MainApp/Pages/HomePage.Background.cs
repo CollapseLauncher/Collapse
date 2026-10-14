@@ -31,7 +31,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Media.Playback;
-
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -43,7 +42,7 @@ public sealed partial class HomePage
     {
         get
         {
-            ILauncherApi?              api  = CurrentPresetConfig?.GameLauncherApi;
+            ILauncherApi?              api  = CurrentPresetConfig == null! ? null : CurrentPresetConfig.GameLauncherApi;
             HypLauncherBackgroundList? data = api?.LauncherGameBackground?.Data;
             return data;
         }
@@ -174,7 +173,7 @@ public sealed partial class HomePage
         grid.Opacity   = 1f; // Trigger this bihhh to appear on the visual first since its own .Opacity and Visual.Opacity don't match.
         visual.Opacity = show ? 0f : 1f;
 
-        double duration = 200d;
+        const double duration = 200d;
 
         CompositionAnimationGroup animGroup = compositor.CreateAnimationGroup();
         CompositionEasingFunction? function = compositor.TryCreateEasingFunction(EasingType.Quintic);
@@ -243,9 +242,8 @@ public sealed partial class HomePage
             return;
         }
 
-        LayeredBackgroundImage?        currentElement = ImageBackgroundManager.Shared.CurrentBackgroundElement;
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
-        bool isUseStaticBackground = currentElement?.PlaceholderSource != null &&
+        bool isUseStaticBackground = !string.IsNullOrEmpty(currentContext?.BackgroundImageStaticPath) &&
                                      !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay;
 
         if (isUseStaticBackground &&
@@ -314,7 +312,7 @@ public sealed partial class HomePage
 
             List<LayeredImageBackgroundContext> contexts = onlyCurrent && ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext is {} currentContext
                 ? [currentContext]
-                : ImageBackgroundManager.Shared.ImageContextSources.ToList();
+                : [.. ImageBackgroundManager.Shared.ImageContextSources];
 
             foreach ((int Index, LayeredImageBackgroundContext Item) context in contexts.Index())
             {

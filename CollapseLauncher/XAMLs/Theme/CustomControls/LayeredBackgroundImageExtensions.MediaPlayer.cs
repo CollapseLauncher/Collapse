@@ -26,9 +26,6 @@ internal static partial class LayeredBackgroundImageExtensions
     {
         try
         {
-            if (fromValue > 1) fromValue /= 100d;
-            if (toValue > 1) toValue     /= 100d;
-
             bool isFadeOut = fromValue > toValue;
 
             double timeDelta = resolutionMs / durationMs;

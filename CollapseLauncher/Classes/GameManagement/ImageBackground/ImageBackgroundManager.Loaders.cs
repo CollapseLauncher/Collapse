@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -27,6 +28,8 @@ public partial class ImageBackgroundManager
     #region Fields
 
     private CancellationTokenSource? _imageLoadingTokenSource;
+
+    private static readonly MinMaxToPercentConverter<double> MinMaxToPercentConverter = new(0d, 100d);
 
     #endregion
 
@@ -267,7 +270,8 @@ public partial class ImageBackgroundManager
             CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
                                                   this,
                                                   nameof(GlobalBackgroundAudioVolume),
-                                                  bindingMode: BindingMode.OneWay);
+                                                  bindingMode: BindingMode.OneWay,
+                                                  converter: MinMaxToPercentConverter);
 
             CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
                                                   this,

@@ -78,30 +78,6 @@ public partial class LayeredBackgroundImage
         set => SetValue(ParallaxResetOnUnfocusedProperty, value);
     }
 
-    public object? PlaceholderSource
-    {
-        get => (object?)GetValue(PlaceholderSourceProperty);
-        set => SetValue(PlaceholderSourceProperty, value);
-    }
-
-    public Stretch PlaceholderStretch
-    {
-        get => (Stretch)GetValue(PlaceholderStretchProperty);
-        set => SetValue(PlaceholderStretchProperty, value);
-    }
-
-    public HorizontalAlignment PlaceholderHorizontalAlignment
-    {
-        get => (HorizontalAlignment)GetValue(PlaceholderHorizontalAlignmentProperty);
-        set => SetValue(PlaceholderHorizontalAlignmentProperty, value);
-    }
-
-    public VerticalAlignment PlaceholderVerticalAlignment
-    {
-        get => (VerticalAlignment)GetValue(PlaceholderVerticalAlignmentProperty);
-        set => SetValue(PlaceholderVerticalAlignmentProperty, value);
-    }
-
     public object? BackgroundSource
     {
         get => (object?)GetValue(BackgroundSourceProperty);
@@ -257,7 +233,7 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(AudioVolume),
                                     typeof(double),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(50d, PropertyAudioVolume_OnChange));
+                                    new PropertyMetadata(.5d, PropertyAudioVolume_OnChange));
 
     public static readonly DependencyProperty IsParallaxEnabledProperty =
         DependencyProperty.Register(nameof(IsParallaxEnabled),
@@ -288,30 +264,6 @@ public partial class LayeredBackgroundImage
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
-
-    public static readonly DependencyProperty PlaceholderSourceProperty =
-        DependencyProperty.Register(nameof(PlaceholderSource),
-                                    typeof(object),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, PropertyPlaceholderSource_OnChange));
-
-    public static readonly DependencyProperty PlaceholderStretchProperty =
-        DependencyProperty.Register(nameof(PlaceholderStretch),
-                                    typeof(Stretch),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(Stretch.UniformToFill));
-
-    public static readonly DependencyProperty PlaceholderHorizontalAlignmentProperty =
-        DependencyProperty.Register(nameof(PlaceholderHorizontalAlignment),
-                                    typeof(HorizontalAlignment),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(HorizontalAlignment.Center));
-
-    public static readonly DependencyProperty PlaceholderVerticalAlignmentProperty =
-        DependencyProperty.Register(nameof(PlaceholderVerticalAlignment),
-                                    typeof(VerticalAlignment),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(VerticalAlignment.Center));
 
     public static readonly DependencyProperty BackgroundSourceProperty =
         DependencyProperty.Register(nameof(BackgroundSource),

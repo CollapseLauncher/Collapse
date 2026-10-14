@@ -144,6 +144,13 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
+            if (Player.IsMuted)
+            {
+                Player.Volume = volume;
+                onCompleted?.Invoke();
+                return;
+            }
+
             CancellationToken token = CancellationToken.None;
             if (Interlocked.Exchange(ref _volumeChangedCts, new CancellationTokenSource()) is { } lastCts)
             {
@@ -173,36 +180,6 @@ public partial class LayeredBackgroundImage
             }
 
             return ParentElement.LastMediaSourcePosition.GetValueOrDefault(player.NaturalDuration);
-        }
-
-        public void ReleaseViewAllocation()
-        {
-            if (PlayerPresenter is not { } presenter)
-            {
-                return;
-            }
-
-            if (presenter.Visibility == Visibility.Collapsed)
-            {
-                return;
-            }
-
-            presenter.Visibility = Visibility.Collapsed;
-        }
-
-        public void RestoreViewAllocation()
-        {
-            if (PlayerPresenter is not { } presenter)
-            {
-                return;
-            }
-
-            if (presenter.Visibility == Visibility.Visible)
-            {
-                return;
-            }
-
-            presenter.Visibility = Visibility.Visible;
         }
 
         public void Dispose()

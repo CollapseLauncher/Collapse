@@ -87,12 +87,6 @@ public partial class LayeredBackgroundImage
 
     #region Media Sources
 
-    private static void PropertyPlaceholderSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-    {
-        LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        PropertyMediaSource_OnChange(instance._placeholderGrid, instance, args);
-    }
-
     private static void PropertyForegroundSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;

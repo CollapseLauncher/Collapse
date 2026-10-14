@@ -25,6 +25,7 @@ internal static partial class LayeredBackgroundImageExtensions
             VideoDecoderMode  ffmpegDecoderMode,
             WindowId          windowId,
             bool              isAutoPlay,
+            bool              isMuted,
             Action?           onMediaOpened  = null,
             TimeSpan          lastOpenedTime = default,
             CancellationToken token          = default)
@@ -36,6 +37,7 @@ internal static partial class LayeredBackgroundImageExtensions
         {
             IsLoopingEnabled          = true,
             IsVideoFrameServerEnabled = true,
+            IsMuted                   = isMuted,
             CommandManager            = { IsEnabled = false },
             AutoPlay                  = isAutoPlay,
             Volume                    = 0

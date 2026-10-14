@@ -1,6 +1,4 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
-using System.Linq;
-using Windows.Media.Playback;
+﻿using Windows.Media.Playback;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -9,51 +7,30 @@ public partial class LayeredBackgroundImage
 {
     public void ToggleMute(bool isMute)
     {
-        if (_backgroundGrid == null! ||
-            !TryGetBackgroundSourceContext(out SourceContext? sourceContext,
-                                           out MediaPlayer? player))
-        {
+        if (!TryGetBackgroundSourceContext(out _, out MediaPlayer? player))
             return;
-        }
 
         if (isMute)
         {
-            sourceContext.SetVolume(0d, () => player.IsMuted = true);
+            player.IsMuted = true;
             return;
         }
 
         player.IsMuted = false;
-        player.Volume  = 0;
-        sourceContext.SetVolume(AudioVolume / 100d);
     }
 
     public void SetVolume(double volume)
     {
-        if (_backgroundGrid == null! ||
-            _backgroundGrid.Children.LastOrDefault() is not MediaFoundationPresenter
-            {
-                Tag: SourceContext sourceContext
-            })
-        {
+        if (!TryGetBackgroundSourceContext(out SourceContext? sourceContext, out _))
             return;
-        }
 
-        sourceContext.SetVolume(volume / 100d);
+        sourceContext.SetVolume(volume);
     }
 
     public void Play()
     {
-        if (_backgroundGrid == null! ||
-            _backgroundGrid.Children.LastOrDefault() is not MediaFoundationPresenter
-            {
-                Tag: SourceContext
-                {
-                    Player: { } player
-                } sourceContext
-            })
-        {
+        if (!TryGetBackgroundSourceContext(out SourceContext? sourceContext, out MediaPlayer? player))
             return;
-        }
 
         player.Play();
         MediaPlayer_RaiseStateUpdate(player);
@@ -62,17 +39,8 @@ public partial class LayeredBackgroundImage
 
     public void Pause()
     {
-        if (_backgroundGrid == null! ||
-            _backgroundGrid.Children.LastOrDefault() is not MediaFoundationPresenter
-            {
-                Tag: SourceContext
-                {
-                    Player: { } player
-                } sourceContext
-            })
-        {
+        if (!TryGetBackgroundSourceContext(out SourceContext? sourceContext, out MediaPlayer? player))
             return;
-        }
 
         // Ignore if the player is already in paused, closed or stopped state.
         if (player.CurrentState

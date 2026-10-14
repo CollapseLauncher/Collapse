@@ -26,6 +26,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
 using Windows.Media.Playback;
+#pragma warning disable IDE0290
 
 // ReSharper disable IdentifierTypo
 
@@ -1415,5 +1416,30 @@ namespace CollapseLauncher.Pages
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
+    }
+
+    public partial struct MinMaxToPercentConverter<T> : IValueConverter
+        where T : unmanaged, IBinaryNumber<T>
+    {
+        public MinMaxToPercentConverter(T min, T max)
+        {
+            _min = min.TryGetDouble();
+            _max = max.TryGetDouble();
+        }
+
+        private readonly double _min;
+        private readonly double _max;
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueD = value.TryGetDouble();
+            return (valueD - _min) / _max - _min;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double valueD = value.TryGetDouble();
+            return (_max - _min) * valueD + _min;
+        }
     }
 }

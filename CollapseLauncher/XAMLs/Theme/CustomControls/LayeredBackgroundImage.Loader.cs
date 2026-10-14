@@ -22,13 +22,10 @@ public partial class LayeredBackgroundImage
 
     private async void LoadAllPresenters()
     {
-        Task placeholderLoadTask = LoadPresenter(_placeholderGrid, PlaceholderSource);
-        Task foregroundLoadTask  = LoadPresenter(_foregroundGrid,  ForegroundSource);
-        Task backgroundLoadTask  = LoadPresenter(_backgroundGrid,  BackgroundSource);
+        Task foregroundLoadTask = LoadPresenter(_foregroundGrid, ForegroundSource);
+        Task backgroundLoadTask = LoadPresenter(_backgroundGrid, BackgroundSource);
 
-        await Task.WhenAll(placeholderLoadTask,
-                           foregroundLoadTask,
-                           backgroundLoadTask);
+        await Task.WhenAll(foregroundLoadTask, backgroundLoadTask);
     }
 
     private async Task LoadPresenter(
@@ -108,7 +105,8 @@ public partial class LayeredBackgroundImage
                         sourceGuessResult.FormatType == SourceFormatType.Video &&
                         presenter.Tag is SourceContext { Player: { } player } thisSourceContext)
                     {
-                        SetVolume(AudioVolume);
+                        if (IsAudioEnabled)
+                            SetVolume(AudioVolume);
 
                         SetValue(MediaStateProperty,            player.CurrentState);    // Update the state one time.
                         SetValue(MediaDurationPositionProperty, player.NaturalDuration); // Update the state one time.
@@ -215,11 +213,10 @@ public partial class LayeredBackgroundImage
 
     private async void UnloadAllPresenters()
     {
-        Task placeholderTask = UnloadLastPresenter(_placeholderGrid);
-        Task foregroundTask  = UnloadLastPresenter(_foregroundGrid);
-        Task backgroundTask  = UnloadLastPresenter(_backgroundGrid);
+        Task foregroundTask = UnloadLastPresenter(_foregroundGrid);
+        Task backgroundTask = UnloadLastPresenter(_backgroundGrid);
 
-        await Task.WhenAll(placeholderTask, foregroundTask, backgroundTask);
+        await Task.WhenAll(foregroundTask, backgroundTask);
     }
 
     #endregion
@@ -233,7 +230,8 @@ public partial class LayeredBackgroundImage
         Unsafe.SkipInit(out sourceContext);
         Unsafe.SkipInit(out player);
 
-        if (_backgroundGrid.Children.LastOrDefault() is not FrameworkElement
+        if (_backgroundGrid == null! ||
+            _backgroundGrid.Children.LastOrDefault() is not FrameworkElement
             {
                 Tag: SourceContext { Player: { } thisPlayer } thisSourceContext
             })

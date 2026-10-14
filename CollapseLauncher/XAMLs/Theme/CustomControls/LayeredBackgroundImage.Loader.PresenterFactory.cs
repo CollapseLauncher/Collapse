@@ -84,7 +84,7 @@ public partial class LayeredBackgroundImage
 
         if (!LayeredBackgroundImageExtensions
                .TryGetBindingPropertyNames(parent,
-                                           out string? stretchNameOf,
+                                           out _,
                                            out string? hAlignNameOf,
                                            out string? vAlignNameOf))
         {
@@ -103,6 +103,7 @@ public partial class LayeredBackgroundImage
                                                  FfmpegDecoderMode,
                                                  windowId,
                                                  IsVideoAutoplay,
+                                                 !IsAudioEnabled,
                                                  OnMediaOpened,
                                                  token: token);
 
