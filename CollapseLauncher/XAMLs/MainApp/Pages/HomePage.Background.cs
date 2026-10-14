@@ -228,6 +228,7 @@ public sealed partial class HomePage
             grid.IsHitTestVisible = false;
         }
     }
+
     #endregion
 
     #region Background context menu commands

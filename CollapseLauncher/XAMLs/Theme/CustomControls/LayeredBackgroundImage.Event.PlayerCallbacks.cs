@@ -1,11 +1,12 @@
 ﻿using System;
 using Windows.Media.Playback;
 
+#nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
-    private void MediaPlayer_OnCurrentStateChanged(MediaPlayer player, object args)
+    private void MediaPlayer_OnCurrentStateChanged(MediaPlayer player, object? args)
     {
         MediaPlayerState value = player.CurrentState;
         DispatcherQueue.TryEnqueue(() =>
@@ -18,9 +19,16 @@ public partial class LayeredBackgroundImage
         });
     }
 
-    private void MediaPlayer_OnPositionChanged(SourceContext context, TimeSpan args)
+    private void MediaPlayer_OnPositionChanged(MediaPlaybackSession session, object? args)
     {
-        TimeSpan value = args;
-        DispatcherQueue.TryEnqueue(() => SetValue(MediaDurationPositionProperty, value));
+        try
+        {
+            TimeSpan value = session.Position;
+            DispatcherQueue.TryEnqueue(() => SetValue(MediaDurationPositionProperty, value));
+        }
+        catch
+        {
+            // ignored
+        }
     }
 }

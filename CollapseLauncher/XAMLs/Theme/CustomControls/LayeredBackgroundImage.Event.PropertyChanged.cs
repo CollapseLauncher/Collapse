@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
+using Windows.Media.Playback;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -48,7 +50,19 @@ public partial class LayeredBackgroundImage
 
     private static void PropertyMediaDurationPosition_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
+        TimeSpan pos = (TimeSpan)args.NewValue;
+        if (pos.Ticks >= 0)
+        {
+            return;
+        }
+
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
+        if (!instance.TryGetBackgroundSourceContext(out _, out MediaPlayer? player))
+        {
+            return;
+        }
+
+        player.Position = -pos;
     }
 
     #endregion

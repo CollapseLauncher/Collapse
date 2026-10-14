@@ -55,8 +55,8 @@ public partial class LayeredBackgroundImage
             }
         }
 
-        public TypedEventHandler<MediaPlayer, object>? CurrentStateChangedCallback { get; set; }
-        public TypedEventHandler<SourceContext, TimeSpan>? PositionChangedCallback { get; set; }
+        public TypedEventHandler<MediaPlayer, object>?          CurrentStateChangedCallback { get; set; }
+        public TypedEventHandler<MediaPlaybackSession, object>? PositionChangedCallback     { get; set; }
 
 
         public object? MediaSource { get; set; }
@@ -110,8 +110,8 @@ public partial class LayeredBackgroundImage
         }
 
         public void RegisterPlayerCallbacks(
-            TypedEventHandler<MediaPlayer, object>     currentStateChangedCallback,
-            TypedEventHandler<SourceContext, TimeSpan> positionChangedCallback)
+            TypedEventHandler<MediaPlayer, object>          currentStateChangedCallback,
+            TypedEventHandler<MediaPlaybackSession, object> positionChangedCallback)
         {
             if (Player is not { } player)
             {
@@ -121,8 +121,8 @@ public partial class LayeredBackgroundImage
             // -- Un-register previous callbacks before assigning a new one.
             UnregisterPlayerCallbacks();
 
-            player.CurrentStateChanged += CurrentStateChangedCallback = currentStateChangedCallback;
-            PositionChangedCallback    =  positionChangedCallback;
+            player.PlaybackSession.PositionChanged += PositionChangedCallback     = positionChangedCallback;
+            player.CurrentStateChanged             += CurrentStateChangedCallback = currentStateChangedCallback;
         }
 
         public void UnregisterPlayerCallbacks()
@@ -132,8 +132,8 @@ public partial class LayeredBackgroundImage
                 return;
             }
 
-            if (CurrentStateChangedCallback != null) player.CurrentStateChanged -= CurrentStateChangedCallback;
-            PositionChangedCallback = null;
+            if (CurrentStateChangedCallback != null) player.CurrentStateChanged         -= CurrentStateChangedCallback;
+            if (PositionChangedCallback != null) player.PlaybackSession.PositionChanged -= PositionChangedCallback;
         }
 
         public void SetVolume(double volume, Action? onCompleted = null)

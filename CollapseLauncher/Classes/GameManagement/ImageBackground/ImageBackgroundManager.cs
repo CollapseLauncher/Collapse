@@ -118,10 +118,10 @@ public partial class ImageBackgroundManager
 
     public double GlobalBackgroundAudioVolume
     {
-        get => LauncherConfig.GetAppConfigValue(GlobalBackgroundAudioVolumeConfigKey) / 100d;
+        get => LauncherConfig.GetAppConfigValue(GlobalBackgroundAudioVolumeConfigKey);
         set
         {
-            LauncherConfig.SetAndSaveConfigValue(GlobalBackgroundAudioVolumeConfigKey, value * 100d);
+            LauncherConfig.SetAndSaveConfigValue(GlobalBackgroundAudioVolumeConfigKey, value);
             OnPropertyChanged();
         }
     }

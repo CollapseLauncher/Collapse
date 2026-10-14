@@ -109,7 +109,8 @@ public partial class LayeredBackgroundImage
                             SetVolume(AudioVolume);
 
                         SetValue(MediaStateProperty,            player.CurrentState);    // Update the state one time.
-                        SetValue(MediaDurationPositionProperty, player.NaturalDuration); // Update the state one time.
+                        SetValue(MediaDurationPositionProperty, player.Position);        // Update the state one time.
+                        SetValue(MediaDurationProperty,         player.NaturalDuration); // Update the state one time.
                         thisSourceContext.RegisterPlayerCallbacks(MediaPlayer_OnCurrentStateChanged,
                                                                   MediaPlayer_OnPositionChanged);
 
@@ -200,7 +201,10 @@ public partial class LayeredBackgroundImage
             {
                 parent.Children.Remove(other);
                 if (other is FrameworkElement { Tag: SourceContext otherSourceContext })
+                {
+                    otherSourceContext.UnregisterPlayerCallbacks(); // Unregister callback early
                     otherSourceContext.Dispose();
+                }
             }
 
             Logger.LogWriteLine($"Parent Grid: {parent.Name} has remained: {parent.Children.Count} children", LogType.Debug);

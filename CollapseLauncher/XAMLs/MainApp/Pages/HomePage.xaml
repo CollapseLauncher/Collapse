@@ -1211,12 +1211,12 @@
                         <FontIcon FontSize="12"
                                   Glyph="&#xE768;" />
                     </Button>
-                    <Grid Grid.Column="1"
-                          DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}">
+                    <Grid Grid.Column="1">
                         <Grid Width="300"
                               Margin="4,0"
                               VerticalAlignment="Center"
                               ColumnSpacing="10"
+                              DataContext="{Binding CurrentBackgroundElement}"
                               Visibility="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanMoreThan15SecondsToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
