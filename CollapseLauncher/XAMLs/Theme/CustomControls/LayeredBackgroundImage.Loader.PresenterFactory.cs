@@ -37,8 +37,8 @@ public partial class LayeredBackgroundImage
             return null;
         }
 
-        ImageSource? imageSource = await LayeredBackgroundImageExtensions
-           .CreateImageSourceFromObjectAsync(source, token);
+        (ImageSource? imageSource, bool isAlreadyLoaded) =
+            await LayeredBackgroundImageExtensions.CreateImageSourceFromObjectAsync(source, token);
 
         if (imageSource is null)
             return null;
@@ -50,8 +50,16 @@ public partial class LayeredBackgroundImage
         };
         parent.Children.Add(image);
 
-        image.ImageOpened += onLoadedEventHandler;
-        image.ImageFailed += onFailedEventHandler;
+        if (!isAlreadyLoaded)
+        {
+            image.ImageOpened += onLoadedEventHandler;
+            image.ImageFailed += onFailedEventHandler;
+        }
+        else
+        {
+            // As preloaded ImageSource usually don't raise notifs for ImageOpened, so we assign it to Loaded instead.
+            image.Loaded += onLoadedEventHandler;
+        }
 
         image.BindProperty(this,
                            stretchNameOf,

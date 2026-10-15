@@ -1,5 +1,6 @@
 ﻿using FFmpegInteropX;
 using Hi3Helper.Data;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI;
 using System;
 using System.IO;
@@ -77,7 +78,7 @@ internal static partial class LayeredBackgroundImageExtensions
                 if (source is IRandomAccessStream or Stream)
                 {
                     IRandomAccessStream? randomStream = source as IRandomAccessStream;
-                    randomStream ??= (source as Stream)?.AsRandomAccessStream();
+                    randomStream ??= (source as Stream)?.AsRandomAccessStream(true, true);
 
                     ffmpegMediaSource = await FFmpegMediaSource
                        .CreateFromStreamAsync(randomStream,
@@ -152,7 +153,7 @@ internal static partial class LayeredBackgroundImageExtensions
             if (source is IRandomAccessStream or Stream)
             {
                 IRandomAccessStream? randomStream = source as IRandomAccessStream;
-                randomStream ??= (source as Stream)?.AsRandomAccessStream();
+                randomStream ??= (source as Stream)?.AsRandomAccessStream(true, true);
 
                 return MediaSource.CreateFromStream(randomStream, null);
             }

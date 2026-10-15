@@ -80,6 +80,7 @@ public partial class LayeredBackgroundImage
 
                     asImage.ImageOpened -= ImagePresenterOnLoaded;
                     asImage.ImageFailed -= ImagePresenterOnLoaded;
+                    asImage.Loaded      -= ImagePresenterOnLoaded;
                     await UnloadLastPresenter(parent, asImage);
                     tcs.TrySetResult();
                 }

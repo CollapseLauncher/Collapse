@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
@@ -13,29 +14,29 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 internal static partial class LayeredBackgroundImageExtensions
 {
-    internal static async Task<ImageSource?> CreateImageSourceFromObjectAsync(
+    internal static async Task<(ImageSource? Source, bool AlreadyLoaded)> CreateImageSourceFromObjectAsync(
         object?           source,
         CancellationToken token)
     {
         if (token.IsCancellationRequested)
-            return null;
+            return (null, false);
 
         if (source is ImageSource sourceAsImageSource)
         {
-            return sourceAsImageSource;
+            return (sourceAsImageSource, true);
         }
 
         if (source is IRandomAccessStream or Stream)
         {
-            ImageSource? imageSource = await CreateImageSourceFromStreamAsync(source, token);
-            return imageSource;
+            (ImageSource? imageSource, bool alreadyLoaded) = await CreateImageSourceFromStreamAsync(source, token);
+            return (imageSource, alreadyLoaded);
         }
 
         if (source is Uri sourceAsUri ||
             (source is string sourceUriAsString &&
              Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!)))
         {
-            return CreateImageSourceFromUriExtension(sourceAsUri);
+            return (CreateImageSourceFromUriExtension(sourceAsUri), false);
         }
 
         if (source is string sourceAsString)
@@ -43,11 +44,11 @@ internal static partial class LayeredBackgroundImageExtensions
             sourceAsString = sourceAsString.GetFullyQualifiedPath();
             if (Uri.TryCreate(sourceAsString, UriKind.Absolute, out Uri? localPathUri))
             {
-                return CreateImageSourceFromUriExtension(localPathUri);
+                return (CreateImageSourceFromUriExtension(localPathUri), false);
             }
         }
 
-        return null;
+        return (null, false);
     }
 
     private static ImageSource CreateImageSourceFromUriExtension(Uri uri)
@@ -70,18 +71,19 @@ internal static partial class LayeredBackgroundImageExtensions
             };
     }
 
-    private static async Task<ImageSource?> CreateImageSourceFromStreamAsync(
-        object?           streamObj,
-        CancellationToken token)
+    private static async Task<(ImageSource? Source, bool AlreadyLoaded)>
+        CreateImageSourceFromStreamAsync(
+            object?           streamObj,
+            CancellationToken token)
     {
         if (token.IsCancellationRequested)
-            return null;
+            return (null, false);
 
         Stream? stream = streamObj as Stream;
         stream ??= (streamObj as IRandomAccessStream)?.AsStream();
 
         if (stream == null)
-            return null;
+            return (null, false);
 
         byte[] bufferTemp = ArrayPool<byte>.Shared.Rent(1 << 10);
         var    buffer     = new Memory<byte>(bufferTemp);
@@ -102,30 +104,30 @@ internal static partial class LayeredBackgroundImageExtensions
                     vLetter == 'v' &&
                     gLetter == 'g')
                 {
-                    SvgImageSource svgSource = new();
-                    using IRandomAccessStream svgStreamWrapper = stream.AsRandomAccessStream();
+                    SvgImageSource            svgSource        = new();
+                    using IRandomAccessStream svgStreamWrapper = stream.AsRandomAccessStream(true, true);
 
                     if (token.IsCancellationRequested)
-                        return null;
+                        return (null, false);
 
                     await svgSource.SetSourceAsync(svgStreamWrapper);
-                    return svgSource;
+                    return (svgSource, true);
                 }
             }
 
             if (token.IsCancellationRequested)
-                return null;
+                return (null, false);
 
             BitmapImage source = new()
             {
                 CreateOptions = BitmapCreateOptions.IgnoreImageCache
             };
-            using IRandomAccessStream streamWrapper = stream.AsRandomAccessStream();
+            using IRandomAccessStream streamWrapper = stream.AsRandomAccessStream(true, true);
             if (token.IsCancellationRequested)
-                return null;
+                return (null, false);
 
             await source.SetSourceAsync(streamWrapper);
-            return source;
+            return (source, true);
         }
         finally
         {
