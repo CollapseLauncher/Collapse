@@ -21,7 +21,7 @@
           VerticalAlignment="Stretch">
         <Image VerticalAlignment="Center"
                Opacity="0.50"
-               Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
+               Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.avif"
                Stretch="UniformToFill" />
         <Grid x:Name="GameDetails">
             <Grid.ColumnDefinitions>
@@ -106,7 +106,7 @@
               Visibility="Collapsed">
             <Image Width="400"
                    Height="400"
-                   Source="ms-appx:///Assets/Images/GameMascot/AponiaFly.png" />
+                   Source="ms-appx:///Assets/Images/GameMascot/AponiaFly.avif" />
         </Grid>
     </Grid>
 </Page>

@@ -21,17 +21,17 @@ public partial class ImageBackgroundManager
     #region Fields
 
     private static readonly string[] PlaceholderBackgroundImageRelPath = [
-        @"Assets\Images\PageBackground\default_genshin.webp",
-        @"Assets\Images\PageBackground\default_honkai.webp",
-        @"Assets\Images\PageBackground\default_starrail.webp",
-        @"Assets\Images\PageBackground\default_zzz.webp",
+        @"Assets\Images\PageBackground\default_genshin.avif",
+        @"Assets\Images\PageBackground\default_honkai.avif",
+        @"Assets\Images\PageBackground\default_starrail.avif",
+        @"Assets\Images\PageBackground\default_zzz.avif",
     ];
 
     private static readonly string[] PlaceholderBackgroundImagePngRelPath = [
-        @"Assets\Images\GamePoster\poster_genshin.png",
-        @"Assets\Images\GamePoster\poster_honkai.png",
-        @"Assets\Images\GamePoster\poster_starrail.png",
-        @"Assets\Images\GamePoster\poster_zzz.png",
+        @"Assets\Images\GamePoster\poster_genshin.avif",
+        @"Assets\Images\GamePoster\poster_honkai.avif",
+        @"Assets\Images\GamePoster\poster_starrail.avif",
+        @"Assets\Images\GamePoster\poster_zzz.avif",
     ];
 
     #endregion

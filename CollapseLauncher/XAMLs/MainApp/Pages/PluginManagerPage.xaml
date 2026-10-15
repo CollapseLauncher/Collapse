@@ -87,7 +87,7 @@
                    MaxWidth="260"
                    Margin="0,16,0,0"
                    Opacity=".4"
-                   Source="ms-appx:///Assets/Images/GameMascot/PaimonThreateningAura.png" />
+                   Source="ms-appx:///Assets/Images/GameMascot/PaimonThreateningAura.avif" />
         </Grid>
         <Grid x:Name="PluginManagementContainer"
               Grid.Column="0"

@@ -33,8 +33,9 @@
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
-                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage}"
-                                                   MediaSourceCacheDir="{x:Bind PlaceholderDecodedCacheDir}">
+                                                   ParallaxResetOnUnfocused="False"
+                                                   BackgroundElevationPixels="64"
+                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage}">
                 <customControls:LayeredBackgroundImage.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.2" />
                 </customControls:LayeredBackgroundImage.OpacityTransition>
@@ -537,7 +538,7 @@
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    Opacity="1"
-                                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
+                                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.avif" />
                             <Grid Padding="24,8"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"

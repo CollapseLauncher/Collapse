@@ -368,7 +368,7 @@ namespace CollapseLauncher.Helper
                     Guid existingAumidGuidFromShell = TrayIcon.Current.CollapseTaskbar.Id;
 
                     // Use custom defined path for the Toast icon
-                    string iconPath = Path.Combine(LauncherConfig.AppAssetsFolder, "CollapseLauncherLogoSmall.png");
+                    string iconPath = Path.Combine(LauncherConfig.AppAssetsFolder, "CollapseLauncherLogoSmall.avif");
 
                     // Initialize Toast Notification service
                     CurrentAumidInGuid = field.Initialize(appAumidFromShortcut ?? MainEntryPoint.AppAumid,

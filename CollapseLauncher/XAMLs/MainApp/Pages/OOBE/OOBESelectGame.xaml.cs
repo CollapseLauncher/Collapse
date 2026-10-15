@@ -111,7 +111,7 @@ namespace CollapseLauncher.Pages.OOBE
                 string? appIconUrl   = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl);
                 string? appPosterUrl = ImageLoaderHelper.CopyToLocalIfBase64(posterUrl);
 
-                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.png");
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.avif", appPosterUrl ?? @"Assets\Images\PageBackground\GamePreviewProtoDesign.avif");
             }
 
             // Get logo name and poster name
@@ -124,8 +124,8 @@ namespace CollapseLauncher.Pages.OOBE
             };
 
             // Return paths
-            return ($@"Assets\Images\GameLogo\{logoName}-logo.png",
-                    $@"Assets\Images\GamePoster\poster_{posterName}.png");
+            return ($@"Assets\Images\GameLogo\{logoName}-logo.avif",
+                    $@"Assets\Images\GamePoster\poster_{posterName}.avif");
         }
 
 
