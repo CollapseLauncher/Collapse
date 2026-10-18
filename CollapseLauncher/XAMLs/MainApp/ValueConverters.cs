@@ -945,24 +945,6 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public partial class MediaAutoplayWindowOverrideConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (!WindowUtility.CurrentWindowIsVisible)
-            {
-                return false;
-            }
-
-            return value is true;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public partial class BackgroundParallaxPixelToComboBoxIndexConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

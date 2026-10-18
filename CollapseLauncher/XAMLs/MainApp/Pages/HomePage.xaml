@@ -194,7 +194,7 @@
                  Visibility="{Binding FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}">
             <Grid x:Name="ImageEventImgContainerGrid"
                   DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                  Visibility="{Binding CurrentSelectedBackgroundContext.IsCustom, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                  Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
                 <Grid Width="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Width, Mode=OneWay}"
                       Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Height, Mode=OneWay}"
                       HorizontalAlignment="Center"

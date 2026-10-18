@@ -9,8 +9,6 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 
 public partial class ImageBackgroundManager
 {
-    private bool _isPausedByUser;
-
     public void SetWindowFocusedEvent()
     {
         if (!GlobalKeepPlayVideoWhenWindowUnfocused)
@@ -40,6 +38,10 @@ public partial class ImageBackgroundManager
 
     public void SetWindowRestoreEvent()
     {
+        // Trynna spawn the background element if not loaded from first start-up.
+        if (CurrentBackgroundElement == null)
+            LoadImage();
+
         CurrentBackgroundElement?.RestoreViewAllocation();
     }
 
@@ -51,7 +53,6 @@ public partial class ImageBackgroundManager
         }
 
         // Alter to load static image if it has one instead of pausing.
-        LoadImage();
         CurrentBackgroundElement?.Play();
     }
 
@@ -63,7 +64,6 @@ public partial class ImageBackgroundManager
         }
 
         // Alter to load static image if it has one instead of pausing.
-        LoadImage();
         CurrentBackgroundElement?.Pause();
     }
 }

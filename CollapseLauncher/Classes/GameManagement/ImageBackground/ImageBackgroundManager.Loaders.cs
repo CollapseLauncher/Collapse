@@ -115,7 +115,7 @@ public partial class ImageBackgroundManager
                             return;
                         }
 
-                        // -- Avoid the same background to get loaded.
+                        // -- Avoid the same background to get loaded (unless Force reload is requested).
                         if (Interlocked.Exchange(ref _lastBackgroundSource, backgroundToUse) != lastBackgroundToUse &&
                             !context.ForceReload)
                         {
