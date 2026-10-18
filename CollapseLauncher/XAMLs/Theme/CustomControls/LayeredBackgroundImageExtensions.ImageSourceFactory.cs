@@ -1,139 +1,250 @@
-﻿using Hi3Helper.Data;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper;
 using Hi3Helper.Win32.WinRT.WindowsStream;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using PhotoSauce.MagicScaler;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+// ReSharper disable AccessToDisposedClosure
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 internal static partial class LayeredBackgroundImageExtensions
 {
-    internal static async Task<(ImageSource? Source, bool AlreadyLoaded)> CreateImageSourceFromObjectAsync(
-        object?           source,
-        CancellationToken token)
+    private static readonly ProcessImageSettings DecodingSettings = new()
     {
-        if (token.IsCancellationRequested)
-            return (null, false);
+        EncoderOptions = PngEncoderOptions.Default
+    };
 
-        if (source is ImageSource sourceAsImageSource)
+    public static ImageSource? GetImageSource(object?           sourceObj,
+                                              ILogger?          logger = null,
+                                              CancellationToken token  = default)
+    {
+        switch (sourceObj)
         {
-            return (sourceAsImageSource, true);
+            case null:
+                return null;
+            case ImageSource asImageSource:
+                return asImageSource;
         }
 
-        if (source is IRandomAccessStream or Stream)
-        {
-            (ImageSource? imageSource, bool alreadyLoaded) = await CreateImageSourceFromStreamAsync(source, token);
-            return (imageSource, alreadyLoaded);
-        }
+        Uri?    sourceAsUri    = sourceObj as Uri;
+        string? sourceAsString = sourceObj as string;
+        Stream? sourceAsStream = sourceObj as Stream;
+        IRandomAccessStream? sourceAsIRandomStream = sourceObj as IRandomAccessStream ??
+                                                     sourceAsStream?.AsRandomAccessStream(false, true);
+        bool isOwnIRandomStream = sourceAsStream is null && sourceAsIRandomStream != null;
 
-        if (source is Uri sourceAsUri ||
-            (source is string sourceUriAsString &&
-             Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!)))
-        {
-            return (CreateImageSourceFromUriExtension(sourceAsUri), false);
-        }
+        if (sourceAsUri != null)
+            return GetImageSourceFromUri(sourceAsUri, logger, token);
 
-        if (source is string sourceAsString)
+        if (sourceAsString != null && sourceAsUri == null)
         {
-            sourceAsString = sourceAsString.GetFullyQualifiedPath();
-            if (Uri.TryCreate(sourceAsString, UriKind.Absolute, out Uri? localPathUri))
+            if (Uri.TryCreate(sourceAsString, UriKind.RelativeOrAbsolute, out sourceAsUri))
+                return GetImageSourceFromUri(sourceAsUri, logger, token);
+
+            if (!Uri.TryCreate(sourceAsString, UriKind.RelativeOrAbsolute, out sourceAsUri) &&
+                StringUtility.TryGetStreamFromUrlDataString(sourceAsString,
+                                                            out _,
+                                                            out MemoryStream? memoryStreamFromB64))
             {
-                return (CreateImageSourceFromUriExtension(localPathUri), false);
+                isOwnIRandomStream = true;
+                sourceAsIRandomStream = memoryStreamFromB64.AsRandomAccessStream(false);
             }
         }
 
-        return (null, false);
+        if (sourceAsIRandomStream == null)
+            return null;
+
+        return GetImageSourceFromRandomStream(sourceAsIRandomStream, isOwnIRandomStream, logger, token);
     }
 
-    private static ImageSource CreateImageSourceFromUriExtension(Uri uri)
+    private static ImageSource? GetImageSourceFromUri(Uri uri, ILogger? logger = null, CancellationToken token = default)
     {
-        ReadOnlySpan<char> pathAndQuery = uri.PathAndQuery;
-        int indexOfQuery = pathAndQuery.IndexOf('?');
-        if (indexOfQuery >= 0)
+        ReadOnlySpan<char> fileExtension     = TryGetFileExtensionFromUri(uri);
+        ImageSource?       returnImageSource = null;
+        if (LayeredBackgroundImage.SupportedImageBitmapExtensionsLookup
+                                  .Contains(fileExtension) ||
+            LayeredBackgroundImage.SupportedImageBitmapExternalCodecExtensionsLookup
+                                  .Contains(fileExtension))
         {
-            pathAndQuery = pathAndQuery[..indexOfQuery];
+            returnImageSource = new BitmapImage();
+            ReadBitmapImageFromUriDetached(uri, returnImageSource, logger, token);
+            return returnImageSource;
         }
 
-        ReadOnlySpan<char> extension = Path.GetExtension(pathAndQuery);
-        return LayeredBackgroundImage
-              .SupportedImageVectorExtensionsLookup
-              .Contains(extension)
-            ? new SvgImageSource(uri)
-            : new BitmapImage(uri)
-            {
-                CreateOptions = BitmapCreateOptions.IgnoreImageCache
-            };
+        if (LayeredBackgroundImage.SupportedImageVectorExtensionsLookup
+                                  .Contains(fileExtension))
+        {
+            returnImageSource = new SvgImageSource(uri);
+        }
+
+        return returnImageSource;
     }
 
-    private static async Task<(ImageSource? Source, bool AlreadyLoaded)>
-        CreateImageSourceFromStreamAsync(
-            object?           streamObj,
-            CancellationToken token)
+    private static ImageSource? GetImageSourceFromRandomStream(IRandomAccessStream stream,
+                                                               bool                isOwn,
+                                                               ILogger?            logger,
+                                                               CancellationToken   token)
     {
-        if (token.IsCancellationRequested)
-            return (null, false);
+        // Guess format
+        if (!IsImageStreamSupported(stream,
+                                    out bool isSvg,
+                                    out bool requireExternalDecoder))
+        {
+            if (isOwn) stream.Dispose(); // Dispose early
+            return null;
+        }
 
-        Stream? stream = streamObj as Stream;
-        stream ??= (streamObj as IRandomAccessStream)?.AsStream();
+        stream.Seek(0);
+        if (isSvg)
+        {
+            SvgImageSource svgImageSource = new();
+            ReadVectorImageFromStreamDetached(stream, svgImageSource, logger, isOwn);
+            return svgImageSource;
+        }
 
-        if (stream == null)
-            return (null, false);
+        BitmapImage bitmapImage = new();
+        ReadBitmapImageFromStreamDetached(stream, bitmapImage, requireExternalDecoder, isOwn, logger, token);
+        return bitmapImage;
+    }
 
-        byte[] bufferTemp = ArrayPool<byte>.Shared.Rent(1 << 10);
-        var    buffer     = new Memory<byte>(bufferTemp);
+    private static async void ReadBitmapImageFromUriDetached(Uri               uri,
+                                                             ImageSource       imageSource,
+                                                             ILogger?          logger,
+                                                             CancellationToken token)
+    {
         try
         {
-            stream.Position = 0;
-            Span<byte> bufferSpan = buffer[..await stream.ReadAsync(buffer, token)].Span;
+            if (imageSource is not BitmapImage asBitmapImage)
+                return;
 
-            stream.Position = 0;
-            int indexOfLSign = bufferSpan.IndexOf((byte)'<');
-            if (indexOfLSign > 0)
-            {
-                bufferSpan = bufferSpan[indexOfLSign..];
-                byte sLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 1)..][0]) | 0x20);
-                byte vLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 2)..][0]) | 0x20);
-                byte gLetter = (byte)((bufferSpan.Length >= 3 ? 0 : bufferSpan[(indexOfLSign + 3)..][0]) | 0x20);
-                if (sLetter == 's' &&
-                    vLetter == 'v' &&
-                    gLetter == 'g')
-                {
-                    SvgImageSource            svgSource        = new();
-                    using IRandomAccessStream svgStreamWrapper = stream.AsRandomAccessStream(true, true);
+            // Download file if URL is a remote and get its cached path, or get the local path (if it's already local).
+            Uri cachedUri = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(uri, token);
 
-                    if (token.IsCancellationRequested)
-                        return (null, false);
+            // Decode the image or get the cached one.
+            (cachedUri, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(cachedUri, token);
 
-                    await svgSource.SetSourceAsync(svgStreamWrapper);
-                    return (svgSource, true);
-                }
-            }
+            // Load the load
+            await using FileStream fileStream = File.Open(cachedUri.LocalPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using IRandomAccessStream randomFileStream = fileStream.AsRandomAccessStream();
+            await asBitmapImage.SetSourceAsync(randomFileStream);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "An error has occurred while trying to load BitmapImage from: {uri}", uri);
+        }
+    }
 
-            if (token.IsCancellationRequested)
-                return (null, false);
-
-            BitmapImage source = new()
-            {
-                CreateOptions = BitmapCreateOptions.IgnoreImageCache
-            };
-            using IRandomAccessStream streamWrapper = stream.AsRandomAccessStream(true, true);
-            if (token.IsCancellationRequested)
-                return (null, false);
-
-            await source.SetSourceAsync(streamWrapper);
-            return (source, true);
+    private static async void ReadVectorImageFromStreamDetached(IRandomAccessStream stream,
+                                                                SvgImageSource      imageSource,
+                                                                ILogger?            logger,
+                                                                bool                isOwn)
+    {
+        try
+        {
+            await imageSource.SetSourceAsync(stream);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "An error has occurred while trying to load SvgImageSource from Stream");
         }
         finally
         {
-            stream.Position = 0;
-            if (streamObj is IRandomAccessStream)
-                await stream.DisposeAsync();
+            if (isOwn) stream.Dispose();
         }
+    }
+
+    private static async void ReadBitmapImageFromStreamDetached(IRandomAccessStream stream,
+                                                                BitmapImage         imageSource,
+                                                                bool                requireExternalDecoder,
+                                                                bool                isOwn,
+                                                                ILogger?            logger,
+                                                                CancellationToken   token)
+    {
+        try
+        {
+            stream.Seek(0);
+            if (!requireExternalDecoder)
+            {
+                await imageSource.SetSourceAsync(stream);
+                return;
+            }
+
+            await using Stream encodedStream = stream.AsStream(true);
+            await using MemoryStream decodedStream = new();
+
+            await Task.Factory.StartNew(() =>
+            {
+                using ProcessingPipeline decodingPipeline = MagicImageProcessor.BuildPipeline(encodedStream, DecodingSettings);
+                decodingPipeline.WriteOutput(decodedStream);
+                decodedStream.Position = 0;
+            }, token);
+
+            TaskCompletionSource tcs = new();
+            imageSource.DispatcherQueue.TryEnqueue(async void () =>
+            {
+                try
+                {
+                    using IRandomAccessStream randomDecodedStream = decodedStream.AsRandomAccessStream();
+                    await imageSource.SetSourceAsync(randomDecodedStream);
+
+                    tcs.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            });
+
+            await tcs.Task;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "An error has occurred while trying to load BitmapImage from Stream");
+        }
+        finally
+        {
+            if (isOwn) stream.Dispose();
+        }
+    }
+
+    private static bool IsImageStreamSupported(IRandomAccessStream stream, out bool isSvg, out bool requireExternalDecoder)
+    {
+        Span<byte> buffer = stackalloc byte[512];
+        using Stream asStream = stream.AsStream(true);
+        _ = asStream.Read(buffer);
+
+        ImageExternalCodecType internalType = ExtensionDetectUtility.IsHeaderInternalCodecImage(buffer);
+        if (internalType == ImageExternalCodecType.Svg)
+        {
+            requireExternalDecoder = false;
+            isSvg = true;
+            return true;
+        }
+
+        ImageExternalCodecType externalType = ExtensionDetectUtility.IsHeaderExternalCodecImage(buffer);
+        isSvg = false;
+        requireExternalDecoder = externalType != ImageExternalCodecType.NotSupported &&
+                                 internalType == ImageExternalCodecType.NotSupported;
+
+        return internalType != ImageExternalCodecType.NotSupported ||
+               externalType != ImageExternalCodecType.NotSupported;
+    }
+
+    private static ReadOnlySpan<char> TryGetFileExtensionFromUri(Uri uri)
+    {
+        ReadOnlySpan<char> pathAndQuery = uri.PathAndQuery;
+        int indexOfQuerySign = pathAndQuery.IndexOf('?');
+        if (indexOfQuerySign > 0)
+            pathAndQuery = pathAndQuery[..indexOfQuerySign];
+
+        return Path.GetExtension(pathAndQuery);
     }
 }

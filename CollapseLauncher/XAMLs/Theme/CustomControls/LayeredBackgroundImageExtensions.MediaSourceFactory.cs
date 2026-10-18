@@ -20,7 +20,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 internal static partial class LayeredBackgroundImageExtensions
 {
     internal static async Task<(MediaPlayer? MediaPlayer, FFmpegMediaSource? FFmpegMediaSource)>
-        CreateMediaSourceFromObjectAsync(
+        GetMediaSourceAsync(
             object?           source,
             bool              useFFmpeg,
             VideoDecoderMode  ffmpegDecoderMode,

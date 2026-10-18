@@ -17,7 +17,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
-    private async ValueTask<Image?> AddImagePresenterAsync(
+    private Image? AddImagePresenterAsync(
         Panel                        parent,
         object?                      source,
         SourceContext                sourceContext,
@@ -37,30 +37,19 @@ public partial class LayeredBackgroundImage
             return null;
         }
 
-        (ImageSource? imageSource, bool isAlreadyLoaded) =
-            await LayeredBackgroundImageExtensions.CreateImageSourceFromObjectAsync(source, token);
-
-        if (imageSource is null)
-            return null;
-
-        sourceContext.MediaSource = imageSource;
         Image image = new()
         {
             Tag = sourceContext
         };
         parent.Children.Add(image);
+        image.ImageOpened += onLoadedEventHandler;
+        image.ImageFailed += onFailedEventHandler;
 
-        if (!isAlreadyLoaded)
-        {
-            image.ImageOpened += onLoadedEventHandler;
-            image.ImageFailed += onFailedEventHandler;
-        }
-        else
-        {
-            // As preloaded ImageSource usually don't raise notifs for ImageOpened, so we assign it to Loaded instead.
-            image.Loaded += onLoadedEventHandler;
-        }
+        ImageSource? imageSource = LayeredBackgroundImageExtensions.GetImageSource(source, null, token);
+        if (imageSource is null)
+            return null;
 
+        sourceContext.MediaSource = imageSource;
         image.BindProperty(this,
                            stretchNameOf,
                            Image.StretchProperty,
@@ -77,6 +66,12 @@ public partial class LayeredBackgroundImage
                            BindingMode.OneWay);
 
         image.Source = imageSource;
+
+        // As the source might be ImageSource, and we can't rely on its ImageOpened might be
+        // triggered early before this method, so we notify the event handler manually.
+        if (source is ImageSource)
+            onLoadedEventHandler?.Invoke(image, null!);
+
         return image;
     }
 
@@ -105,15 +100,14 @@ public partial class LayeredBackgroundImage
         MediaFoundationPresenter? presenter = null;
 
         (MediaPlayer? mediaPlayer, FFmpegMediaSource? ffmpegMediaSource) =
-            await LayeredBackgroundImageExtensions
-               .CreateMediaSourceFromObjectAsync(source,
-                                                 isUseFfmpeg,
-                                                 FfmpegDecoderMode,
-                                                 windowId,
-                                                 IsVideoAutoplay,
-                                                 !IsAudioEnabled,
-                                                 OnMediaOpened,
-                                                 token: token);
+            await LayeredBackgroundImageExtensions.GetMediaSourceAsync(source,
+                                                                       isUseFfmpeg,
+                                                                       FfmpegDecoderMode,
+                                                                       windowId,
+                                                                       IsVideoAutoplay,
+                                                                       !IsAudioEnabled,
+                                                                       OnMediaOpened,
+                                                                       token: token);
 
         if (mediaPlayer is null)
             return null;

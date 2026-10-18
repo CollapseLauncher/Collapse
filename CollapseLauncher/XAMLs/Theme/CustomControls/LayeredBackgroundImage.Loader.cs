@@ -65,11 +65,11 @@ public partial class LayeredBackgroundImage
 
             if (sourceGuessResult.FormatType == SourceFormatType.Image)
             {
-                currentPresenter = await AddImagePresenterAsync(parent,
-                                                                source,
-                                                                sourceContext,
-                                                                ImagePresenterOnLoaded,
-                                                                token: loadToken);
+                currentPresenter = AddImagePresenterAsync(parent,
+                                                          source,
+                                                          sourceContext,
+                                                          ImagePresenterOnLoaded,
+                                                          token: loadToken);
 
                 async void ImagePresenterOnLoaded(object sender, RoutedEventArgs e)
                 {
