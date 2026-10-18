@@ -15,7 +15,7 @@ public partial class ImageBackgroundManager
     {
         if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
-            CurrentBackgroundElement?.Play();
+            Play(false);
             return;
         }
 
@@ -26,7 +26,7 @@ public partial class ImageBackgroundManager
     {
         if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
-            CurrentBackgroundElement?.Pause();
+            Pause(false);
             return;
         }
 
@@ -45,26 +45,13 @@ public partial class ImageBackgroundManager
 
     public void Play(bool isUserRequest = true)
     {
-        // Block play request for window event if paused by user
-        if (!isUserRequest && (_isPausedByUser || !CurrentIsEnableBackgroundAutoPlay))
-        {
-            return;
-        }
-
         if (isUserRequest)
         {
             CurrentIsEnableBackgroundAutoPlay = true;
         }
-        
+
         // Alter to load static image if it has one instead of pausing.
-        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
-        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
-        if (isUserRequest && hasStaticImage && context != null)
-        {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, token: CancellationToken.None);
-        }
-        
-        Interlocked.Exchange(ref _isPausedByUser, false);
+        LoadImage();
         CurrentBackgroundElement?.Play();
     }
 
@@ -72,19 +59,11 @@ public partial class ImageBackgroundManager
     {
         if (isUserRequest)
         {
-            Interlocked.Exchange(ref _isPausedByUser, true);
             CurrentIsEnableBackgroundAutoPlay = false;
         }
 
         // Alter to load static image if it has one instead of pausing.
-        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
-        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
-        if (isUserRequest && hasStaticImage && context != null)
-        {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, token: CancellationToken.None);
-            return;
-        }
-
+        LoadImage();
         CurrentBackgroundElement?.Pause();
     }
 }

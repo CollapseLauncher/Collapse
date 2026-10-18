@@ -1,9 +1,7 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.EncTool;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -124,7 +122,7 @@ public partial class ImageBackgroundManager
             : uri.ToString();
     }
 
-    private static bool TryGetCroppedImageFilePath(string filePath,
+    internal static bool TryGetCroppedImageFilePath(string     filePath,
                                                    out string croppedFilePath)
     {
         string imageDirPath = LauncherConfig.AppGameImgFolder;
@@ -134,8 +132,8 @@ public partial class ImageBackgroundManager
         return IsFileExistAndNotEmpty(croppedFilePath);
     }
 
-    private static bool TryGetDecodedTemporaryFile(string filePath,
-                                                   out string decodedFilePath)
+    internal static bool TryGetDecodedTemporaryFile(string     filePath,
+                                                    out string decodedFilePath)
     {
         string imageDirPath = LauncherConfig.AppGameImgFolder;
         string fileName = $"decoded_{Path.GetFileNameWithoutExtension(filePath)}.png";
@@ -150,10 +148,10 @@ public partial class ImageBackgroundManager
         return fileInfo is { Exists: true, Length: > 0 };
     }
 
-    private static bool TryGetDownloadedFile(Uri           filePath,
-                                             out FileInfo  downloadedFilePath,
-                                             out FileInfo  downloadStampFilePath,
-                                             out UrlStatus urlStatusStamp)
+    internal static bool TryGetDownloadedFile(Uri           filePath,
+                                              out FileInfo  downloadedFilePath,
+                                              out FileInfo  downloadStampFilePath,
+                                              out UrlStatus urlStatusStamp)
     {
         string imageDirPath   = LauncherConfig.AppGameImgFolder;
         string fileHashedName = $"{Path.GetFileName(filePath.AbsolutePath)}";
@@ -219,30 +217,5 @@ public partial class ImageBackgroundManager
             : PlaceholderBackgroundImageRelPath;
 
         return source[Random.Shared.Next(0, source.Length - 1)];
-    }
-
-    internal static bool CheckIsContextCached(LayeredImageBackgroundContext ctx)
-    {
-        bool backgroundCached = false;
-        if (!string.IsNullOrEmpty(ctx.BackgroundImagePath) &&
-            TryGetDownloadedFile(new Uri(ctx.BackgroundImagePath), out _, out _, out _))
-        {
-            backgroundCached = true;
-        }
-        else if (!string.IsNullOrEmpty(ctx.BackgroundImageStaticPath) &&
-                 TryGetDownloadedFile(new Uri(ctx.BackgroundImageStaticPath), out _, out _, out _))
-        {
-            backgroundCached = true;
-        }
-
-        return backgroundCached;
-    }
-
-    public static async Task<LoadedImageSurface> CreateImageSurfaceAsync(Uri uri, CancellationToken token = default)
-    {
-        uri = await GetLocalOrDownloadedFilePath(uri, token);
-        (uri, _) = await GetNativeOrDecodedImagePath(uri, token);
-
-        return DispatcherQueueExtensions.TryEnqueue(() => LoadedImageSurface.StartLoadFromUri(uri));
     }
 }

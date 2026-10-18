@@ -52,7 +52,7 @@ public static class ClipboardUtility
 
             string? usedBackgroundPath = isStaticBackgroundShowing
                 ? instance.CurrentSelectedBackgroundContext?
-                   .OriginBackgroundStaticImagePath
+                   .OriginPlaceholderImagePath
                 : instance.CurrentSelectedBackgroundContext?
                    .OriginBackgroundImagePath;
 

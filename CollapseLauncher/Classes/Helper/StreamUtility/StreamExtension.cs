@@ -154,6 +154,9 @@ namespace CollapseLauncher.Helper.StreamUtility
             }
         }
 
+        internal static bool TryDeleteFile(string filePath, bool throwIfFailed = false)
+            => new FileInfo(filePath).TryDeleteFile(throwIfFailed);
+
         internal static bool TryDeleteFile(this FileInfo filePath, bool throwIfFailed = false)
         {
             try

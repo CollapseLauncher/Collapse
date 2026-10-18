@@ -244,11 +244,11 @@ public sealed partial class HomePage
         }
 
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
-        bool isUseStaticBackground = !string.IsNullOrEmpty(currentContext?.BackgroundImageStaticPath) &&
+        bool isUseStaticBackground = !string.IsNullOrEmpty(currentContext?.OriginPlaceholderImagePath) &&
                                      !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay;
 
         if (isUseStaticBackground &&
-            !Uri.TryCreate(currentContext?.OriginBackgroundStaticImagePath, UriKind.Absolute, out sourceUri))
+            !Uri.TryCreate(currentContext?.OriginPlaceholderImagePath, UriKind.Absolute, out sourceUri))
         {
             return;
         }

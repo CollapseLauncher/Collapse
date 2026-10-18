@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
-using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
@@ -9,16 +8,14 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Data;
-using PhotoSauce.MagicScaler;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.GameManagement.ImageBackground;
@@ -31,200 +28,164 @@ public partial class ImageBackgroundManager
 
     private static readonly MinMaxToPercentConverter<double> MinMaxToPercentConverter = new(0d, 100d);
 
+    private string? _lastBackgroundSource;
+
     #endregion
 
-    private void LoadImageAtIndex(int index, bool forceReload = false, CancellationToken token = default)
+    private void LoadImage(CancellationToken token = default)
     {
-        if (ImageContextSources.Count <= index ||
-            index < 0)
+        if (ImageContextSources.Count == 0 ||
+            CurrentSelectedBackgroundIndex < 0)
         {
             return;
         }
 
-        if (IsBackgroundLoading)
-        {
-            CancelCurrentBackgroundLoad();
-        }
+        new Thread(Impl) { IsBackground = true }.Start();
+        return;
 
-        // Only show loading indicator when a download is required.
-        if (!CheckIsContextCached(ImageContextSources[index]))
+        async void Impl()
         {
-            IsBackgroundLoading = true;
-        }
-
-        new Thread(() =>
-        {
-            LoadImageAtIndexCore(index, forceReload, token).ConfigureAwait(false);
-        })
-        {
-            IsBackground = true
-        }.Start();
-    }
-
-    private void CancelCurrentBackgroundLoad()
-    {
-        if (Interlocked.Exchange(ref _imageLoadingTokenSource, null) is { } lastCts)
-        {
-            lastCts.Cancel();
-            lastCts.Dispose();
-        }
-        IsBackgroundLoading = false;
-    }
-
-    private async Task LoadImageAtIndexCore(int index, bool forceReload = false, CancellationToken token = default)
-    {
-        Stopwatch? stopwatch = null;
-        try
-        {
-            stopwatch = Stopwatch.StartNew();
-
-            if (Interlocked.Exchange(ref _imageLoadingTokenSource,
-                                     CancellationTokenSource.CreateLinkedTokenSource(token)) is { } lastCts)
+            Stopwatch? stopwatch = null;
+            try
             {
-                await lastCts.CancelAsync();
-                lastCts.Dispose();
-            }
+                // -- Get context and invalidate previous CTS
+                LayeredImageBackgroundContext? context = CurrentSelectedBackgroundContext;
+                if (context == null)
+                    return;
 
-            token = _imageLoadingTokenSource.Token;
-            bool isUseFFmpeg = GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable;
+                // -- Invalidate last Cancellation Token (and thus, cancel all asynchronous routines)
+                //    and then renew the token. Also toggle the background loading indicator.
+                DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => IsBackgroundLoading = true );
+                token = InvalidateAndRenewCancelToken(token);
 
-            // -- Notify changes on context menu properties
-            DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => OnPropertyChanged(nameof(CurrentSelectedBackgroundHasOverlayImage)));
+                stopwatch = Stopwatch.StartNew();
 
-            // -- Get context and invalidate previous CTS
-            LayeredImageBackgroundContext context = ImageContextSources[index];
+                // -- Notify changes on context menu properties
+                DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => OnPropertyChanged(nameof(CurrentSelectedBackgroundHasOverlayImage)));
 
-            // -- Download overlay.
-            Unsafe.SkipInit(out Uri? downloadedOverlayUri);
-            if (Uri.TryCreate(context.OverlayImagePath, UriKind.Absolute, out Uri? overlayImageUri))
-            {
-                downloadedOverlayUri      = await GetLocalOrDownloadedFilePath(overlayImageUri, token).ConfigureAwait(false);
-                (downloadedOverlayUri, _) = await GetNativeOrDecodedImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
-            }
-
-            // -- Download background.
-            Unsafe.SkipInit(out Uri? downloadedBackgroundUri);
-            if (Uri.TryCreate(context.BackgroundImagePath, UriKind.Absolute, out Uri? backgroundImageUri))
-            {
-                downloadedBackgroundUri      = await GetLocalOrDownloadedFilePath(backgroundImageUri, token).ConfigureAwait(false);
-                (downloadedBackgroundUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
-            }
-
-            // -- Download static background.
-            Unsafe.SkipInit(out Uri? downloadedBackgroundStaticUri);
-            if (Uri.TryCreate(context.BackgroundImageStaticPath, UriKind.Absolute, out Uri? backgroundStaticImageUri))
-            {
-                downloadedBackgroundStaticUri      = await GetLocalOrDownloadedFilePath(backgroundStaticImageUri, token).ConfigureAwait(false);
-                (downloadedBackgroundStaticUri, _) = await GetNativeOrDecodedImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
-            }
-
-            // Try to use static bg URL if normal bg is not available.
-            downloadedBackgroundUri ??= downloadedBackgroundStaticUri;
-            if (downloadedBackgroundUri == null)
-            {
-                if (!context.IsCustom)
+                // -- Start clean-up if force reload requested
+                if (context.ForceReload)
                 {
-                    OnBackgroundLoadFailed?.Invoke();
+                    context.DeleteCachedImagePath(context.OriginOverlayImagePath);
+                    context.DeleteCachedImagePath(context.OriginBackgroundImagePath);
+                    context.DeleteCachedImagePath(context.OriginPlaceholderImagePath);
                 }
+
+                // -- Get Cached path.
+                string? downloadedOverlayUri = null;
+                string? downloadedBackgroundUri = null;
+                string? downloadedPlaceholderUri = null;
+
+                Task overlayLoadTask     = context.GetCachedImagePathAsync(context.OriginOverlayImagePath,     token).GetResultFromAction(result => downloadedOverlayUri = result);
+                Task backgroundLoadTask  = context.GetCachedImagePathAsync(context.OriginBackgroundImagePath,  token).GetResultFromAction(result => downloadedBackgroundUri = result);
+                Task placeholderLoadTask = context.GetCachedImagePathAsync(context.OriginPlaceholderImagePath, token).GetResultFromAction(result => downloadedPlaceholderUri = result);
+
+                await Task.WhenAll(overlayLoadTask,
+                                   backgroundLoadTask,
+                                   placeholderLoadTask);
+
+                token.ThrowIfCancellationRequested();
+
+                if (!string.IsNullOrEmpty(CurrentCachedBgKey))
+                {
+                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Background", context.OriginBackgroundImagePath ?? "");
+                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-StaticBackground", context.OriginPlaceholderImagePath ?? "");
+                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Overlay", context.OriginOverlayImagePath ?? "");
+                }
+
+                // -- Use UI thread and load image layer
+                DispatcherQueueExtensions
+                   .CurrentDispatcherQueue
+                   .TryEnqueue(DispatcherQueuePriority.High,
+                               AssignSource);
+
                 return;
+
+                async void AssignSource()
+                {
+                    try
+                    {
+                        string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay ? downloadedBackgroundUri : downloadedPlaceholderUri) ?? downloadedBackgroundUri;
+                        string? lastBackgroundToUse = _lastBackgroundSource;
+
+                        // -- Avoid spawning element while window is currently not visible
+                        //    (for example: Minimized at start).
+                        if (!WindowUtility.CurrentWindowIsVisible)
+                        {
+                            return;
+                        }
+
+                        // -- Avoid the same background to get loaded.
+                        if (Interlocked.Exchange(ref _lastBackgroundSource, backgroundToUse) != lastBackgroundToUse &&
+                            !context.ForceReload)
+                        {
+                            return;
+                        }
+
+                        // -- Reset force reload request.
+                        bool forceReloadRequested = context.ForceReload;
+                        context.ForceReload = false;
+
+                        // -- Check media support and whether to force FFmpeg in some cases.
+                        (bool isSupported, bool forceFFmpeg) = await CheckCodecOrSpawnDialog(backgroundToUse);
+                        if (!isSupported)
+                        {
+                            return;
+                        }
+
+                        // -- Notify whether the background is a video or not.
+                        CurrentBackgroundIsVideo = context.IsVideo;
+
+                        // -- Create or Get element and set background.
+                        LayeredBackgroundImage element = CreateOrGetLayerElement();
+                        bool useFFmpeg = forceFFmpeg || (context.IsVideo && GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
+
+                        // -- If Force Reload previously requested, rapidly nullify the background source.
+                        if (forceReloadRequested)
+                            element.BackgroundSource = null;
+
+                        element.UseFfmpegDecoder = useFFmpeg;
+                        element.BackgroundSource = backgroundToUse;
+                        element.ForegroundSource = downloadedOverlayUri;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
             }
-
-            token.ThrowIfCancellationRequested();
-
-            // -- Check for codec support (Also spawn dialog to install either native WIC/MediaFoundation decoder or using Ffmpeg decoder)
-            (bool isSupported, bool isVideo, bool forceFFmpeg) = await CheckCodecOrSpawnDialog(downloadedBackgroundUri);
-            if (!isSupported) return;
-
-            // -- Force the use of FFmpeg if necessary.
-            if (forceFFmpeg) isUseFFmpeg = true;
-
-            // -- Get upscaled image file if Waifu2X is enabled
-            if (GlobalIsWaifu2XEnabled && !isVideo)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                downloadedOverlayUri          = await TryGetScaledWaifu2XImagePath(downloadedOverlayUri, token).ConfigureAwait(false);
-                downloadedBackgroundUri       = await TryGetScaledWaifu2XImagePath(downloadedBackgroundUri, token).ConfigureAwait(false);
-                downloadedBackgroundStaticUri = await TryGetScaledWaifu2XImagePath(downloadedBackgroundStaticUri, token).ConfigureAwait(false);
+                _ = SentryHelper.ExceptionHandlerAsync(ex);
+                Logger.LogWriteLine($"[ImageBackgroundManager::LoadImage] {ex}",
+                                    LogType.Error,
+                                    true);
             }
-
-            // Try to force loading static image if autoplay is not enabled and context has
-            // static background in it.
-            if (!CurrentIsEnableBackgroundAutoPlay && downloadedBackgroundStaticUri != null)
+            catch (OperationCanceledException)
             {
-                downloadedBackgroundUri = downloadedBackgroundStaticUri;
+                // Suppress: cancellation is expected on game switch or rapid load cycles.
             }
-
-            // Read accent color from the source that is actually displayed.
-            Uri? accentSourceUri = downloadedBackgroundStaticUri ?? downloadedBackgroundUri ?? downloadedBackgroundUri;
-            await GetMediaAccentColor((accentSourceUri, isUseFFmpeg, CurrentCachedBgKey)).ConfigureAwait(false);
-
-            if (!context.IsCustom &&
-                !string.IsNullOrEmpty(CurrentCachedBgKey))
+            finally
             {
-                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Background",       context.OriginBackgroundImagePath ?? "");
-                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-StaticBackground", context.OriginBackgroundStaticImagePath ?? "");
-                LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Overlay",          context.OriginOverlayImagePath ?? "");
-            }
+                stopwatch?.Stop();
+                Logger.LogWriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
 
-            // -- Use UI thread and load image layer
-            DispatcherQueueExtensions
-               .CurrentDispatcherQueue
-               .TryEnqueue(DispatcherQueuePriority.High,
-                           () => SpawnImageLayer(downloadedOverlayUri,
-                                                 downloadedBackgroundUri,
-                                                 forceFFmpeg,
-                                                 forceReload));
-
-            GlobalIsFFmpegCurrentlyUsed = isVideo && isUseFFmpeg;
-            CurrentBackgroundIsVideo    = isVideo;
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            _ = SentryHelper.ExceptionHandlerAsync(ex);
-            Logger.LogWriteLine($"[ImageBackgroundManager::LoadImageAtIndex] {ex}",
-                                LogType.Error,
-                                true);
-        }
-        catch (OperationCanceledException)
-        {
-            // Suppress: cancellation is expected on game switch or rapid load cycles.
-        }
-        finally
-        {
-            stopwatch?.Stop();
-            Logger.LogWriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
-            if (!token.IsCancellationRequested)
-            {
-                IsBackgroundLoading = false;
+                DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => IsBackgroundLoading = false);
             }
         }
     }
 
-    private void SpawnImageLayer(Uri? overlayFilePath,
-                                 Uri? backgroundFilePath,
-                                 bool forceFFmpeg,
-                                 bool forceReload = false)
+    private CancellationToken InvalidateAndRenewCancelToken(CancellationToken coopToken = default)
     {
-        LayeredBackgroundImage element = CreateOrGetLayerElement();
+        CancellationTokenSource  newCts;
+        CancellationTokenSource? lastCts =
+            Interlocked.Exchange(ref _imageLoadingTokenSource,
+                                 newCts = CancellationTokenSource.CreateLinkedTokenSource(coopToken));
 
-        element.UseFfmpegDecoder = forceFFmpeg || (GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
-        if (forceReload || !IsSameLocalFile(element.BackgroundSource, backgroundFilePath))
-            element.BackgroundSource = backgroundFilePath;
+        lastCts?.Cancel();
+        lastCts?.Dispose();
 
-        if (forceReload || !IsSameLocalFile(element.ForegroundSource, overlayFilePath))
-            element.ForegroundSource = overlayFilePath;
-    }
-
-    private static bool IsSameLocalFile(object? currentSource, Uri? newFilePath)
-    {
-        if (newFilePath == null) return currentSource == null;
-        string newPath = newFilePath.IsFile ? newFilePath.LocalPath : newFilePath.OriginalString;
-        string? currentPath = currentSource switch
-        {
-            Uri uri => uri.IsFile ? uri.LocalPath : uri.OriginalString,
-            string str => str,
-            _ => null
-        };
-        return string.Equals(currentPath, newPath, StringComparison.OrdinalIgnoreCase);
+        return newCts.Token;
     }
 
     private LayeredBackgroundImage CreateOrGetLayerElement()
@@ -293,72 +254,6 @@ public partial class ImageBackgroundManager
         }
 
         return CurrentBackgroundElement;
-    }
-
-    private static bool TryGetUpscaledFilePath(string     inputFilePath,
-                                               out string upscaledFilePath)
-    {
-        upscaledFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, $"scaled_{Path.GetFileNameWithoutExtension(inputFilePath)}.png");
-        if (LayeredBackgroundImage.SupportedVideoExtensionsLookup.Contains(Path.GetExtension(inputFilePath))) // Ignore if file is a video.
-        {
-            upscaledFilePath = inputFilePath;
-            return true;
-        }
-
-        FileInfo outputFileInfo = new(upscaledFilePath);
-        return outputFileInfo is { Exists: true, Length: > 0 };
-    }
-
-    private static async Task<Uri?> TryGetScaledWaifu2XImagePath(Uri? uri, CancellationToken token)
-    {
-        if (uri == null)
-        {
-            return null;
-        }
-
-        if (!uri.IsFile)
-        {
-            throw new InvalidOperationException("You must provide a local file path!");
-        }
-
-        // Ignore if the input file is a video
-        string inputFilePath = uri.LocalPath;
-        if (TryGetUpscaledFilePath(inputFilePath, out string outputFilePath))
-        {
-            return new Uri(outputFilePath);
-        }
-
-        FileInfo outputFileInfo = new(outputFilePath);
-        outputFileInfo.Directory?.Create();
-
-        await Task.Run(Impl, token);
-        outputFileInfo.Refresh();
-
-        try
-        {
-            token.ThrowIfCancellationRequested();
-            return new Uri(outputFileInfo.FullName);
-        }
-        catch
-        {
-            outputFileInfo.TryDeleteFile();
-            throw;
-        }
-
-        void Impl()
-        {
-            using ProcessingPipeline pipeline =
-                MagicImageProcessor
-                   .BuildPipeline(inputFilePath,
-                                  ProcessImageSettings.Default);
-
-            using FileStream outputFileStream = outputFileInfo.Open(FileMode.Create,
-                                                                    FileAccess.Write,
-                                                                    FileShare.ReadWrite);
-
-            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
-            pipeline.WriteOutput(outputFileStream);
-        }
     }
 
     private async Task GetMediaAccentColor(object? context)

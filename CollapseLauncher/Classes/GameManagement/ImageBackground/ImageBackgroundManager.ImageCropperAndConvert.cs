@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -90,14 +91,9 @@ public partial class ImageBackgroundManager
             Uri backgroundImageUri = new(decodedBackgroundPath);
 
             // -- Create elements, load image and spawn the dialog box.
-            Grid parentGrid = UIElementExtensions
-               .Create<Grid>(SetParentGridProperties);
-
-            ContentDialogOverlay dialog = UIElementExtensions
-               .Create<ContentDialogOverlay>(SetDialogProperties);
-
-            ImageCropper cropper = UIElementExtensions
-               .Create<ImageCropper>(SetImageCropperProperties);
+            Grid                 parentGrid = UIElementExtensions.Create<Grid>(SetParentGridProperties);
+            ContentDialogOverlay dialog     = UIElementExtensions.Create<ContentDialogOverlay>(SetDialogProperties);
+            ImageCropper         cropper    = UIElementExtensions.Create<ImageCropper>(SetImageCropperProperties);
 
             // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
             if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
@@ -131,20 +127,8 @@ public partial class ImageBackgroundManager
             await SaveCroppedImageToFilePath(backgroundUrlOrPath, croppedBackgroundPath, cropper, token);
 
             // -- If there's an upscaled image, delete it.
-            if (TryGetUpscaledFilePath(croppedBackgroundPath,
-                                       out string croppedImagePath))
-            {
-                try
-                {
-                    File.Delete(croppedImagePath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine($"An error has occurred while trying to delete previous upscaled image: {ex}",
-                                        LogType.Error,
-                                        true);
-                }
-            }
+            if (TryGetUpscaledFilePath(croppedBackgroundPath, out string croppedImagePath))
+                StreamExtension.TryDeleteFile(croppedImagePath);
 
             return (null, croppedBackgroundPath, false);
 
@@ -190,6 +174,72 @@ public partial class ImageBackgroundManager
         catch (OperationCanceledException)
         {
             return (null, null, true);
+        }
+    }
+
+    public static bool TryGetUpscaledFilePath(string     inputFilePath,
+                                              out string upscaledFilePath)
+    {
+        upscaledFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, $"scaled_{Path.GetFileNameWithoutExtension(inputFilePath)}.png");
+        if (LayeredBackgroundImage.SupportedVideoExtensionsLookup.Contains(Path.GetExtension(inputFilePath))) // Ignore if file is a video.
+        {
+            upscaledFilePath = inputFilePath;
+            return true;
+        }
+
+        FileInfo outputFileInfo = new(upscaledFilePath);
+        return outputFileInfo is { Exists: true, Length: > 0 };
+    }
+
+    public static async Task<Uri> TryGetScaledWaifu2XImagePath(Uri uri, CancellationToken token)
+    {
+        if (uri == null!)
+        {
+            return null!;
+        }
+
+        if (!uri.IsFile)
+        {
+            throw new InvalidOperationException("You must provide a local file path!");
+        }
+
+        // Ignore if the input file is a video
+        string inputFilePath = uri.LocalPath;
+        if (TryGetUpscaledFilePath(inputFilePath, out string outputFilePath))
+        {
+            return new Uri(outputFilePath);
+        }
+
+        FileInfo outputFileInfo = new(outputFilePath);
+        outputFileInfo.Directory?.Create();
+
+        await Task.Run(Impl, token);
+        outputFileInfo.Refresh();
+
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            return new Uri(outputFileInfo.FullName);
+        }
+        catch
+        {
+            outputFileInfo.TryDeleteFile();
+            throw;
+        }
+
+        void Impl()
+        {
+            using ProcessingPipeline pipeline =
+                MagicImageProcessor
+                   .BuildPipeline(inputFilePath,
+                                  ProcessImageSettings.Default);
+
+            using FileStream outputFileStream = outputFileInfo.Open(FileMode.Create,
+                                                                    FileAccess.Write,
+                                                                    FileShare.ReadWrite);
+
+            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
+            pipeline.WriteOutput(outputFileStream);
         }
     }
 
