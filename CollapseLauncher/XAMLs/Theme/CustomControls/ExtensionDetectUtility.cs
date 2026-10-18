@@ -37,12 +37,12 @@ public static class ExtensionDetectUtility
         }
     }
 
-    private static ImageExternalCodecType IsHeaderInternalCodecImage(scoped Span<byte> buffer)
+    public static ImageExternalCodecType IsHeaderInternalCodecImage(scoped Span<byte> buffer)
     {
         // Checks for JPEG
         ReadOnlySpan<byte> jpegSig1    = [0xFF, 0xD8, 0xFF];
-        ReadOnlySpan<byte> jpegSigJfif = "JFIF"u8;
-        ReadOnlySpan<byte> jpegSigExif = "Exif"u8;
+        var                jpegSigJfif = "JFIF"u8;
+        var                jpegSigExif = "Exif"u8;
 
         bool isJpeg = buffer.StartsWith(jpegSig1) && (buffer[6..].StartsWith(jpegSigJfif) || buffer[6..].StartsWith(jpegSigExif));
         if (isJpeg)
@@ -60,7 +60,7 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for BMP
-        ReadOnlySpan<byte> bmpSig = "BM"u8;
+        var bmpSig = "BM"u8;
 
         bool isBmp = buffer.StartsWith(bmpSig);
         if (isBmp)
@@ -69,8 +69,8 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for GIF
-        ReadOnlySpan<byte> gifSig1 = "GIF87a"u8;
-        ReadOnlySpan<byte> gifSig2 = "GIF89a"u8;
+        var gifSig1 = "GIF87a"u8;
+        var gifSig2 = "GIF89a"u8;
 
         bool isGif = buffer.StartsWith(gifSig1) || buffer.StartsWith(gifSig2);
         if (isGif)
@@ -79,8 +79,8 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for TIFF
-        ReadOnlySpan<byte> tiffSig1 = "II*\0"u8; // Little-endian
-        ReadOnlySpan<byte> tiffSig2 = "MM\0*"u8; // Big-endian
+        var tiffSig1 = "II*\0"u8; // Little-endian
+        var tiffSig2 = "MM\0*"u8; // Big-endian
 
         bool isTiff = buffer.StartsWith(tiffSig1) || buffer.StartsWith(tiffSig2);
         if (isTiff)
@@ -98,14 +98,18 @@ public static class ExtensionDetectUtility
         }
 
         // Checks for SVG
-        ReadOnlySpan<byte> svgSig = "<svg"u8;
-        bool           isSvg  = buffer.IndexOf(svgSig) >= 0;
+        var svgSig = "<svg"u8;
+        // Try to lowercase the buffer
+        for (int i = 0; i < 4; i++)
+            buffer[i] |= 0x20;
+
+        bool isSvg = buffer.IndexOf(svgSig) >= 0;
         return isSvg
             ? ImageExternalCodecType.Svg
             : ImageExternalCodecType.NotSupported;
     }
 
-    private static ImageExternalCodecType IsHeaderExternalCodecImage(scoped Span<byte> buffer)
+    public static ImageExternalCodecType IsHeaderExternalCodecImage(scoped Span<byte> buffer)
     {
         // Checks for VP8
         if (buffer.StartsWith("RIFF"u8) &&

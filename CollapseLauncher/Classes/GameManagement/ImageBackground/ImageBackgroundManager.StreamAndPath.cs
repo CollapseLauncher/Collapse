@@ -1,7 +1,9 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.EncTool;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -36,15 +38,21 @@ public partial class ImageBackgroundManager
 
     #endregion
 
-    private static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
+    public static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
     {
         return !Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri)
             ? throw new InvalidOperationException($"File path or URL is misformed! {filePath}")
             : OpenStreamFromFileOrUrl(uri, token);
     }
 
-    private static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
+    public static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
     {
+        if (uri.Scheme.StartsWith("ms-appx"))
+        {
+            string uwpResPath = Path.Combine(AppContext.BaseDirectory, uri.LocalPath.TrimStart("\\/").ToString());
+            uri = new Uri(uwpResPath);
+        }
+
         if (uri.IsFile)
         {
             string localPath = uri.LocalPath;
@@ -230,23 +238,11 @@ public partial class ImageBackgroundManager
         return backgroundCached;
     }
 
-    internal static string? TryGetCachedLocalPath(string? urlOrPath)
+    public static async Task<LoadedImageSurface> CreateImageSurfaceAsync(Uri uri, CancellationToken token = default)
     {
-        if (string.IsNullOrEmpty(urlOrPath))
-        {
-            return null;
-        }
+        uri = await GetLocalOrDownloadedFilePath(uri, token);
+        (uri, _) = await GetNativeOrDecodedImagePath(uri, token);
 
-        if (TryGetDecodedTemporaryFile(urlOrPath, out string decodedFilePath))
-        {
-            return decodedFilePath;
-        }
-
-        if (TryGetDownloadedFile(new Uri(urlOrPath), out FileInfo downloadedFile, out _, out _))
-        {
-            return downloadedFile.FullName;
-        }
-
-        return null;
+        return DispatcherQueueExtensions.TryEnqueue(() => LoadedImageSurface.StartLoadFromUri(uri));
     }
 }

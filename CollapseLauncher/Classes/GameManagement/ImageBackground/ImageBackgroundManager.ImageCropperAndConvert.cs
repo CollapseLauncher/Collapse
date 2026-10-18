@@ -478,7 +478,7 @@ public partial class ImageBackgroundManager
     /// Get native or redirected decoded image path.
     /// </summary>
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
-    internal static async ValueTask<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token)
+    internal static async ValueTask<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token = default)
     {
         // Try to get decoded temporary file. If it exists, return the file path.
         if (TryGetDecodedTemporaryFile(filePath, out string decodedFilePath))
@@ -511,7 +511,7 @@ public partial class ImageBackgroundManager
     /// </summary>
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
     internal static async ValueTask<(Uri, ImageExternalCodecType)> GetNativeOrDecodedImagePath(
-        Uri filePath, CancellationToken token)
+        Uri filePath, CancellationToken token = default)
     {
         (string, ImageExternalCodecType) result = await GetNativeOrDecodedImagePath(filePath.ToString(), token);
         return (new Uri(result.Item1), result.Item2);
