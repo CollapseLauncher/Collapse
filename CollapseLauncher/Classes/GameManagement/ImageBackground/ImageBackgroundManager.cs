@@ -625,7 +625,7 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     public bool IsVideo
     {
         get;
-        private set;
+        private init;
     }
 
     public bool IsCustom
