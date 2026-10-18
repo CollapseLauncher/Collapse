@@ -1191,28 +1191,29 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
-                            Margin="2,0"
-                            Padding="4"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="BackgroundVideoPlayToggle_OnClick"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}"
-                            DataContext="{Binding CurrentBackgroundElement}"
-                            Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}}">
-                        <FontIcon FontSize="12"
-                                  Glyph="&#xE769;" />
-                    </Button>
-                    <Button Grid.Column="0"
-                            Margin="2,0"
-                            Padding="4"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="BackgroundVideoPlayToggle_OnClick"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}"
-                            DataContext="{Binding CurrentBackgroundElement}"
-                            Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}, ConverterParameter='true'}">
-                        <FontIcon FontSize="12"
-                                  Glyph="&#xE768;" />
-                    </Button>
+                    <ItemsControl Grid.Column="0"
+                                  IsEnabled="{Binding IsBackgroundLoading, Converter={StaticResource InverseBooleanConverter}}">
+                        <Button Margin="2,0"
+                                Padding="4"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Click="BackgroundVideoPlayToggle_OnClick"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                DataContext="{Binding CurrentBackgroundElement}"
+                                Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}}">
+                            <FontIcon FontSize="12"
+                                      Glyph="&#xE769;" />
+                        </Button>
+                        <Button Margin="2,0"
+                                Padding="4"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Click="BackgroundVideoPlayToggle_OnClick"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                DataContext="{Binding CurrentBackgroundElement}"
+                                Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}, ConverterParameter='true'}">
+                            <FontIcon FontSize="12"
+                                      Glyph="&#xE768;" />
+                        </Button>
+                    </ItemsControl>
                     <Grid Grid.Column="1">
                         <Grid Width="300"
                               Margin="4,0"
