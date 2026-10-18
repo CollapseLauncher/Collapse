@@ -179,7 +179,7 @@
                    HorizontalAlignment="Right"
                    VerticalAlignment="Bottom"
                    PointerPressed="PaimonClicked"
-                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.avif" />
+                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
         </Grid>
         <Grid x:Name="OverlayFrameBg"
               Margin="-32"

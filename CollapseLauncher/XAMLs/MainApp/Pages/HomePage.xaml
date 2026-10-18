@@ -1359,7 +1359,7 @@
                                                      extension:UIElementExtensions.CursorType="Hand"
                                                      EnableLazyLoading="True"
                                                      IsCacheEnabled="False"
-                                                     PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.avif"
+                                                     PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                      PointerPressed="OpenImageLinkFromTag"
                                                      Source="{Binding Image.ImageUrl, Mode=OneWay, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImagePathConverter}}"
                                                      Stretch="UniformToFill"

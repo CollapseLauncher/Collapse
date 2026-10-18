@@ -37,7 +37,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Opacity="0.5"
-                   Source="ms-appx:///Assets/Images/PageBackground/GamePreviewProtoDesign.avif"
+                   Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
                    Stretch="UniformToFill" />
             <Grid x:Name="ContainerGrid"
                   Margin="48"
@@ -61,7 +61,7 @@
                            Opacity="0.8"
                            PointerEntered="GridBG_Icon_PointerEntered"
                            PointerExited="GridBG_Icon_PointerExited"
-                           Source="ms-appx:///Assets/CollapseLauncherLogo.avif">
+                           Source="ms-appx:///Assets/CollapseLauncherLogo.png">
                         <Image.OpacityTransition>
                             <ScalarTransition />
                         </Image.OpacityTransition>

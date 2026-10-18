@@ -112,10 +112,10 @@ namespace CollapseLauncher.Pages.OOBE
 
                 _gamePosterPath = config.GameType switch
                                 {
-                                    GameNameType.Honkai => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_honkai.avif"),
-                                    GameNameType.Genshin => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_genshin.avif"),
-                                    GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.avif"),
-                                    GameNameType.Zenless => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_zzz.avif"),
+                                    GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GamePoster\poster_honkai.png"),
+                                    GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
+                                    GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
+                                    GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
                                     _ => DecideOtherPosterPath(config)
                                 };
                 _gameLogoPath = config.ZoneLogoURL;
