@@ -52,7 +52,13 @@ public partial class ImageBackgroundManager
             CurrentIsEnableBackgroundAutoPlay = true;
         }
 
-        // Alter to load static image if it has one instead of pausing.
+        // Alter to restore video if it has static image.
+        if (isUserRequest && !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginPlaceholderImagePath))
+        {
+            LoadImage();
+            return;
+        }
+
         CurrentBackgroundElement?.Play();
     }
 
@@ -64,6 +70,12 @@ public partial class ImageBackgroundManager
         }
 
         // Alter to load static image if it has one instead of pausing.
+        if (isUserRequest && !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginPlaceholderImagePath))
+        {
+            LoadImage();
+            return;
+        }
+
         CurrentBackgroundElement?.Pause();
     }
 }
