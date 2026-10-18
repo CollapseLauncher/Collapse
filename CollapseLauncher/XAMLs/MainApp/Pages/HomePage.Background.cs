@@ -236,31 +236,18 @@ public sealed partial class HomePage
     public ICommand BackgroundImageContextMenuCopyUrlToClipboardCommand { get; } = new RelayCommand<object?>(OnBackgroundImageContextMenuCopyUrlToClipboardCommand);
     private static void OnBackgroundImageContextMenuCopyUrlToClipboardCommand(object? sourcePath)
     {
-        Uri? sourceUri = sourcePath as Uri;
-        if (sourcePath is string asString &&
-            !Uri.TryCreate(asString, UriKind.Absolute, out sourceUri))
-        {
+        if (sourcePath is not string sourcePathAsString)
             return;
-        }
 
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
-        bool isUseStaticBackground = !string.IsNullOrEmpty(currentContext?.OriginPlaceholderImagePath) &&
-                                     !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay;
+        bool overrideToPlaceholder = !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay &&
+                                     !string.IsNullOrEmpty(currentContext?.OriginPlaceholderImagePath) &&
+                                     currentContext.OriginBackgroundImagePath == sourcePathAsString;
 
-        if (isUseStaticBackground &&
-            !Uri.TryCreate(currentContext?.OriginPlaceholderImagePath, UriKind.Absolute, out sourceUri))
-        {
-            return;
-        }
+        if (overrideToPlaceholder)
+            sourcePathAsString = currentContext?.OriginPlaceholderImagePath ?? "";
 
-        if (sourceUri == null)
-        {
-            return;
-        }
-
-        Clipboard.CopyStringToClipboard(sourceUri.IsFile
-                                        ? sourceUri.LocalPath
-                                        : sourceUri.AbsoluteUri);
+        Clipboard.CopyStringToClipboard(sourcePathAsString);
     }
 
     public ICommand BackgroundImageContextMenuCopyImageToClipboardCommand { get; } = new RelayCommand<int>(OnBackgroundImageContextMenuCopyImageToClipboardCommand);
