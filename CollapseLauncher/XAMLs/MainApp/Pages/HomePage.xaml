@@ -110,7 +110,9 @@
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
