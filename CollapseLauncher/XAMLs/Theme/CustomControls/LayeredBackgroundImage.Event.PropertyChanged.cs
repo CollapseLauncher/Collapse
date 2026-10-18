@@ -34,6 +34,19 @@ public partial class LayeredBackgroundImage
             return;
         }
 
+        bool previousState = (bool?)args.OldValue ?? false;
+        if (!previousState)
+        {
+            instance.ToggleMute(!(bool)args.NewValue);
+            if (instance.TryGetBackgroundSourceContext(out SourceContext? sourceContext,
+                                                       out _))
+            {
+                sourceContext.SetVolume(instance.AudioVolume);
+            }
+
+            return;
+        }
+
         instance.ToggleMute(!(bool)args.NewValue);
     }
 
