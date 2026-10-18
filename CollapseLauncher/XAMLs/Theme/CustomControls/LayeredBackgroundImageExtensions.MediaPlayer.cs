@@ -49,15 +49,15 @@ internal static partial class LayeredBackgroundImageExtensions
 
             void Impl(object? sender, ElapsedEventArgs args)
             {
-                if (coopToken.IsCancellationRequested || mediaPlayer == null!)
-                {
-                    timer.Stop();
-                    timer.Dispose();
-                    return;
-                }
-
                 try
                 {
+                    if (coopToken.IsCancellationRequested || mediaPlayer == null!)
+                    {
+                        timer.Stop();
+                        timer.Dispose();
+                        return;
+                    }
+
                     fromValue += step;
                     TrySetVolume(fromValue);
 
@@ -75,6 +75,9 @@ internal static partial class LayeredBackgroundImageExtensions
                     Logger.LogWriteLine($"[LayeredBackgroundImage::VolumeFadeCore::Impl] {ex}",
                                         LogType.Error,
                                         true);
+
+                    timer.Stop();
+                    timer.Dispose();
                 }
             }
 
