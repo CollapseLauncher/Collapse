@@ -137,7 +137,6 @@ namespace CollapseLauncher
         {
             try
             {
-                WindowUtility.WindowMinimize();
                 NavigationViewItemsContext ??= NavigationViewItemsContext.Create(NavigationViewControl);
                 await ShowFFmpegInstallationDialog();
 
