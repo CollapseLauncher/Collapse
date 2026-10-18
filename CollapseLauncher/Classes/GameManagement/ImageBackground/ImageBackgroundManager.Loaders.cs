@@ -147,6 +147,10 @@ public partial class ImageBackgroundManager
                         element.UseFfmpegDecoder = useFFmpeg;
                         element.BackgroundSource = backgroundToUse;
                         element.ForegroundSource = downloadedOverlayUri;
+
+                        // -- Load color accent
+                        if (!string.IsNullOrEmpty(backgroundToUse))
+                            LoadMediaAccentColor(new Uri(backgroundToUse), useFFmpeg);
                     }
                     catch (Exception e)
                     {
@@ -256,33 +260,18 @@ public partial class ImageBackgroundManager
         return CurrentBackgroundElement;
     }
 
-    private async Task GetMediaAccentColor(object? context)
+    private async void LoadMediaAccentColor(Uri mediaUri, bool useFFmpeg)
     {
         try
         {
-            if (context is not (Uri asUri, bool useFfmpegForVideo, string configKey))
-            {
-                return;
-            }
-
-            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(asUri, useFfmpegForVideo)
+            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(mediaUri, useFFmpeg)
                                                    .ConfigureAwait(false);
-
-            if (color == default) return;
-
-            string hex = $"{color.R:X2}{color.G:X2}{color.B:X2}";
-            if (!string.IsNullOrEmpty(configKey))
-            {
-                string? savedHex = LauncherConfig.GetAppConfigValue($"{configKey}-AccentColor").ToString();
-                if (savedHex == hex) return;
-                LauncherConfig.SetAndSaveConfigValue($"{configKey}-AccentColor", hex);
-            }
 
             ColorAccentChanged?.Invoke(color);
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"GetMediaAccentColor failed: {ex}", LogType.Error, true);
+            Logger.LogWriteLine($"LoadMediaAccentColor failed: {ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex);
         }
     }
