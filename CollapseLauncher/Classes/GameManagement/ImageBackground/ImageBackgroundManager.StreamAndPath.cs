@@ -72,11 +72,6 @@ public partial class ImageBackgroundManager
         status = await sharedClient.GetCachedUrlStatus(uri, token).ConfigureAwait(false);
         status.EnsureSuccessStatusCode();
 
-        if (status.FileSize == 0)
-        {
-            throw new HttpRequestException($"File URL is reachable but it returns 0 bytes. {uri}");
-        }
-
         downloadedFilePath = downloadedFilePath
                             .EnsureCreationOfDirectory()
                             .EnsureNoReadOnly();
