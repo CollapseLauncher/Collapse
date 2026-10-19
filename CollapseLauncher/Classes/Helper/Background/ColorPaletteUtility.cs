@@ -87,7 +87,7 @@ internal static class ColorPaletteUtility
         {
             IsBackground = true,
             Name         = "Collapse Launcher Media Accent Color Picker"
-        }.Start();
+        }.UnsafeStart();
         return new ValueTask<Color>(processTcs.Task);
 
         async void Impl()
@@ -99,7 +99,7 @@ internal static class ColorPaletteUtility
                 cachedPaletteFileInfo.Directory?.Create();
 
                 // -- Get source stream
-                object? sourceStreamObj = await GetMediaFrameStream(filePath, token);
+                object? sourceStreamObj = await GetMediaFrameStream(filePath, token).ConfigureAwait(false);
 
                 using IRandomAccessStream? sourceRandomStream = sourceStreamObj as IRandomAccessStream;
                 await using Stream?        sourceStream = sourceStreamObj as Stream ?? sourceRandomStream?.AsStream();
@@ -110,24 +110,27 @@ internal static class ColorPaletteUtility
                     return;
                 }
 
-                ImageFileInfo           fileInfo  = ImageFileInfo.Load(sourceStream);
-                ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
-                sourceStream.Seek(0, SeekOrigin.Begin);
+                processTcs.SetResult(await Task.Run(() =>
+                {
+                    ImageFileInfo           fileInfo  = ImageFileInfo.Load(sourceStream);
+                    ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
+                    sourceStream.Seek(0, SeekOrigin.Begin);
 
-                // -- Process palette
-                int channels = frameInfo.HasAlpha ? 4 : 3;
-                byte[] tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
-                using MemoryStream tempStream = new(tempBuffer);
-                ProcessImageSettings settings = new();
-                settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
-                MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
+                    // -- Process palette
+                    int channels = frameInfo.HasAlpha ? 4 : 3;
+                    byte[] tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
+                    using MemoryStream tempStream = new(tempBuffer);
+                    ProcessImageSettings settings = new();
+                    settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
+                    MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
 
-                Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
-                Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
-                ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+                    Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
+                    Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
+                    ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
 
-                File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
-                processTcs.SetResult(colorArray);
+                    File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
+                    return colorArray;
+                }, token));
             }
             catch (Exception ex)
             {
