@@ -27,13 +27,14 @@
         <pages:StringUppercaseConverter x:Key="StringUppercaseConverter" />
         <pages:GameChannelToVisibilityConverter x:Key="GameChannelToVisibilityConverter" />
         <pages:UrlToCachedImagePathConverter x:Key="UrlToCachedImagePathConverter" />
+        <pages:ImageDecoderValueConverter x:Key="ImageDecoderValueConverter" />
     </Page.Resources>
     <Grid x:Name="MainPageGrid"
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
-                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage}">
+                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage, Converter={StaticResource ImageDecoderValueConverter}}">
                 <customControls:LayeredBackgroundImage.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.2" />
                 </customControls:LayeredBackgroundImage.OpacityTransition>

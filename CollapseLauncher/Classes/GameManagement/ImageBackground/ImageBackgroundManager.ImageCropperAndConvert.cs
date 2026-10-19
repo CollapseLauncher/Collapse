@@ -432,7 +432,7 @@ public partial class ImageBackgroundManager
     /// <summary>
     /// Converts any (seekable) image stream to PNG.
     /// </summary>
-    private static Task ConvertImageToPngFromStream(
+    private static async Task ConvertImageToPngFromStream(
         Stream            sourceStream,
         Stream            targetStream,
         Rectangle         cropArea = default,
@@ -444,7 +444,8 @@ public partial class ImageBackgroundManager
             IsBackground = true
         }.Start((sourceStream, targetStream, tcs, token, cropArea));
 
-        return tcs.Task;
+        await tcs.Task;
+        return;
 
         static void Impl(object? state)
         {
@@ -457,6 +458,8 @@ public partial class ImageBackgroundManager
 
             try
             {
+                innerSourceStream.Position = 0;
+
                 // We won't do any post-processing and just do a straight conversion to PNG.
                 // The post-processing (like resizing with Waifu2X) will be done on image loading process.
                 ProcessImageSettings settings = new()

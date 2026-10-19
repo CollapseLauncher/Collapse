@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Platforms>x64</Platforms>
+        <Configurations>Debug;Release</Configurations>
+        <LangVersion>preview</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>enable</Nullable>
+        <DebugType>portable</DebugType>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <TieredCompilation>true</TieredCompilation>
+        <!-- Assembly Info Properties -->
+        <AssemblyName>Hi3Helper.MagicScaler.LibheifCL</AssemblyName>
+        <ProductName>Hi3Helper.MagicScaler.LibheifCL</ProductName>
+        <Product>Hi3Helper.MagicScaler.LibheifCL</Product>
+        <Description>A temporary library replacing MagicScaler.Libheif's functionality to properly decode AVIF/HEIF images.</Description>
+        <Company>Collapse Launcher Team</Company>
+        <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+        <Copyright>Copyright 2022-2026 $(Company)</Copyright>
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <Optimize>False</Optimize>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
+      <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="1.23.5-preview1" />
+    </ItemGroup>
+
+</Project>

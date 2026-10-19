@@ -37,7 +37,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Opacity="0.5"
-                   Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
+                   extension:UIElementExtensions.ExternalDecoderSource="ms-appx:///Assets/Images/PageBackground/StartupBackground2.avif"
                    Stretch="UniformToFill" />
             <Grid x:Name="ContainerGrid"
                   Margin="48"

@@ -111,7 +111,7 @@ namespace CollapseLauncher.Pages.OOBE
                 string? appIconUrl   = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl);
                 string? appPosterUrl = ImageLoaderHelper.CopyToLocalIfBase64(posterUrl);
 
-                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.png");
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.avif");
             }
 
             // Get logo name and poster name
