@@ -233,14 +233,39 @@ public partial class LayeredBackgroundImage
             if (obj is DependencyObject depsObj &&
                 !depsObj.DispatcherQueue.HasThreadAccess)
             {
-                depsObj.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => (obj as IDisposable)?.Dispose());
+                depsObj.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TryCatchIDisposable);
             }
             else
             {
-                (obj as IDisposable)?.Dispose();
+                TryCatchIDisposable();
             }
 
-            (obj as IWinRTObject)?.NativeObject.Dispose();
+            TryCatchNativeObjectDispose();
+            return;
+
+            void TryCatchIDisposable()
+            {
+                try
+                {
+                    (obj as IDisposable)?.Dispose();
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+            void TryCatchNativeObjectDispose()
+            {
+                try
+                {
+                    (obj as IWinRTObject)?.NativeObject.Dispose();
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
     }
 }
