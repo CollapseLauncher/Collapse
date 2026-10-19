@@ -330,6 +330,11 @@ namespace CollapseLauncher
 #endif
 
             /* ---------------------------------------------------------------------------------------------
+             * Module: MagicScaler External Codecs for Image Decoding
+             */
+            InitMagicScalerExternalCodecs();
+
+            /* ---------------------------------------------------------------------------------------------
              * Module: Velopack
              */
 
@@ -371,11 +376,6 @@ namespace CollapseLauncher
                  * Module: Database Handler for Synchronization
                  */
                 await InitDatabaseHandler();
-
-                /* ---------------------------------------------------------------------------------------------
-                 * Module: MagicScaler External Codecs for Image Decoding
-                 */
-                InitMagicScalerExternalCodecs();
 
                 /* ---------------------------------------------------------------------------------------------
                  * Module: Waifu2X (Start device test in the background and cache it)
