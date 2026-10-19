@@ -65,6 +65,9 @@ public partial class LayeredBackgroundImage
 
             if (sourceGuessResult.FormatType == SourceFormatType.Image)
             {
+                // Notify duration earlier
+                SetValue(MediaDurationPositionProperty, TimeSpan.Zero);
+                SetValue(MediaDurationProperty,         TimeSpan.Zero);
                 currentPresenter = AddImagePresenterAsync(parent,
                                                           source,
                                                           sourceContext,
