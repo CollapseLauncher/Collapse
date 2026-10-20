@@ -186,31 +186,24 @@ public partial class ImageBackgroundManager
         return true;
     }
 
-    internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig, bool usePngVersion = false)
+    internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig)
     {
-        string[] source = usePngVersion
-            ? PlaceholderBackgroundImagePngRelPath
-            : PlaceholderBackgroundImageRelPath;
-
-        string relPath = presetConfig?.GameName ??
-                         LauncherConfig.GetAppConfigValue("GameCategory").Value switch
+        string[] source = PlaceholderBackgroundImageRelPath;
+        string relPath = presetConfig?.GameName switch
                          {
                              "Genshin Impact" => source[0],
                              "Honkai Impact 3rd" => source[1],
                              "Honkai: Star Rail" => source[2],
                              "Zenless Zone Zero" => source[3],
-                             _ => GetRandomPlaceholderImage(usePngVersion)
+                             _ => GetRandomPlaceholderImage()
                          };
 
         return Path.Combine(LauncherConfig.AppExecutableDir, relPath);
     }
 
-    public static string GetRandomPlaceholderImage(bool usePngVersion = false)
+    public static string GetRandomPlaceholderImage()
     {
-        string[] source = usePngVersion
-            ? PlaceholderBackgroundImagePngRelPath
-            : PlaceholderBackgroundImageRelPath;
-
-        return source[Random.Shared.Next(0, source.Length - 1)];
+        string[] source = PlaceholderBackgroundImageRelPath;
+        return source[new Random(Environment.TickCount).Next(0, source.Length - 1)];
     }
 }
