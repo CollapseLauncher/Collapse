@@ -465,14 +465,13 @@ public partial class ImageBackgroundManager
             }
 
             // -- Try to perform cropped or pass through processing
-            (_, string? croppedBackgroundPath, bool isCancelProcess) =
-                await GetCroppedCustomImage(null,
-                                            imagePath,
-                                            performCropRequest,
-                                            token);
+            GetCroppedResult cropResult = await GetCroppedCustomImage(null,
+                                                                      imagePath,
+                                                                      performCropRequest,
+                                                                      token);
 
             // -- Do not process custom background if cancelled.
-            if (isCancelProcess)
+            if (cropResult.IsCancelResize)
             {
                 return false;
             }
@@ -487,8 +486,8 @@ public partial class ImageBackgroundManager
             // -- Apply background
             LayeredImageBackgroundContext context = new()
             {
-                OriginBackgroundImagePath = croppedBackgroundPath,
-                ForceReload               = true // Request force reload (skip cache)
+                OriginBackgroundImagePath = cropResult.ProcessedBackgroundPath,
+                ForceReload               = cropResult.WasCropPerformed // Only do force reload if crop was performed.
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
