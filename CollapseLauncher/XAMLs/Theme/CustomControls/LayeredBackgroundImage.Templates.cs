@@ -3,6 +3,7 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using System.Numerics;
+using System.Threading;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -40,6 +41,8 @@ public partial class LayeredBackgroundImage
 
     private CubicBezierEasingFunction _parallaxEasingFunction;
     private CubicBezierEasingFunction _elevateEasingFunction;
+    private bool                      _templateInitialized;
+    private bool                      _requireOnLoadedCall = true;
 
     #endregion
 
@@ -47,6 +50,9 @@ public partial class LayeredBackgroundImage
 
     protected override void OnApplyTemplate()
     {
+        if (Interlocked.Exchange(ref _templateInitialized, true))
+            return;
+
         _parallaxGrid   = this.GetTemplateChild<Grid>(TemplateNameParallaxGrid);
         _backgroundGrid = this.GetTemplateChild<Grid>(TemplateNameBackgroundGrid);
         _foregroundGrid = this.GetTemplateChild<Grid>(TemplateNameForegroundGrid);
@@ -62,6 +68,13 @@ public partial class LayeredBackgroundImage
         _elevateEasingFunction = _parallaxGridCompositor.CreateCubicBezierEasingFunction(new Vector2(0.19f, 1), new Vector2(0.22f, 1));
 
         base.OnApplyTemplate();
+
+        // Help the uncalled OnLoaded routine to be called after this.
+        // 
+        // Note to myself @neon-nyan:
+        //   See the reason on the comments under the OnLoaded code in case you forgot :)
+        if (_requireOnLoadedCall)
+            LayeredBackgroundImage_OnLoaded(this, null!);
     }
 
     #endregion
