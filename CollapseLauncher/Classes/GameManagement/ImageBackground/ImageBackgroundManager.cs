@@ -523,14 +523,6 @@ public partial class ImageBackgroundManager
         bool                                               forceReload,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
-        // Do not update if the previous contexts are equal
-        if ((!forceReload &&
-            IsContextEqual(imageContexts)) ||
-            imageContexts.IsEmpty)
-        {
-            return;
-        }
-
         ImageContextSources.Clear(); // Flush list
         ref IList<LayeredImageBackgroundContext>? backedList =
             ref ObservableCollectionExtension<LayeredImageBackgroundContext>
@@ -560,23 +552,6 @@ public partial class ImageBackgroundManager
         LoadImage(token);
     }
 #pragma warning restore CA1068
-
-    private bool IsContextEqual(ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
-    {
-        if (ImageContextSources.Count != imageContexts.Length)
-        {
-            return false;
-        }
-
-        HashCode hashCode = default;
-        foreach (LayeredImageBackgroundContext context in imageContexts)
-        {
-            hashCode.Add(context);
-        }
-
-        int hashCodeRes = hashCode.ToHashCode();
-        return Interlocked.Exchange(ref _previousContextHash, hashCodeRes) == hashCodeRes;
-    }
 
     public void ResetContexts()
     {
