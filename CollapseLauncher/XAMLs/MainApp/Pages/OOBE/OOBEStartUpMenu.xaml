@@ -15,6 +15,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
       Background="Transparent"
+      Loaded="OOBEStartUpMenu_OnLoaded"
       mc:Ignorable="d">
     <Grid x:Name="ParentGrid">
         <Grid.Resources>
@@ -32,7 +33,7 @@
                 <PopupThemeTransition />
             </Grid.ChildrenTransitions>
             <Grid x:Name="BackgroundGrid"
-                  Opacity="0.25" />
+                  Opacity="0.5" />
             <Image x:Name="ContainerBackgroundImage"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -99,7 +100,7 @@
                                     </AnimatedIcon.FallbackIconSource>
                                 </AnimatedIcon>
                                 <TextBlock FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.SetupBackButton}" />
+                                           Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.SetupBackButton, Mode=OneWay}" />
                             </StackPanel>
                         </Button.Content>
                     </Button>
@@ -113,12 +114,12 @@
                                 Orientation="Vertical">
                         <TextBlock FontSize="48"
                                    FontWeight="Light"
-                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Title1}"
+                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Title1, Mode=OneWay}"
                                    TextWrapping="Wrap" />
                         <TextBlock Margin="0,0,0,0"
                                    FontSize="48"
                                    FontWeight="Bold"
-                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Title2}"
+                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Title2, Mode=OneWay}"
                                    TextWrapping="Wrap" />
                     </StackPanel>
                 </Grid>
@@ -137,22 +138,22 @@
                                    FontSize="32"
                                    Foreground="{ThemeResource SystemAccentColor}"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle1}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle1, Mode=OneWay}" />
                         <TextBlock FontWeight="Normal"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle2}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle2, Mode=OneWay}" />
                         <TextBlock Margin="0,0,0,32"
                                    FontWeight="Normal"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle3}" />
+                                   Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle3, Mode=OneWay}" />
                         <TextBlock Margin="0,0,0,16"
                                    Style="{ThemeResource SubtitleTextBlockStyle}">
                             <Run FontWeight="Normal"
-                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_1}" />
+                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_1, Mode=OneWay}" />
                             <Run Foreground="{ThemeResource SystemAccentColor}"
-                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_2}" />
+                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_2, Mode=OneWay}" />
                             <Run FontWeight="Normal"
-                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_3}" />
+                                 Text="{x:Bind helper:Locale.Current.Lang._StartupPage.Subtitle4_3, Mode=OneWay}" />
                         </TextBlock>
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Name="ErrMsg"
@@ -174,7 +175,7 @@
                                               FontSize="14"
                                               Glyph="&#xE8D5;" />
                                     <TextBlock FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.ChooseFolderBtn}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.ChooseFolderBtn, Mode=OneWay}"
                                                TextWrapping="Wrap" />
                                 </StackPanel>
                             </Button>
@@ -197,17 +198,25 @@
                     <TextBlock Grid.Row="0"
                                Margin="0,0,0,16"
                                FontSize="24"
-                               Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationTitle}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationTitle, Mode=OneWay}" />
+                    <Grid Grid.Row="1"
+                          CornerRadius="12"
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,64"
+                          Opacity=".5"/>
                     <ScrollViewer Grid.Row="1"
-                                  CornerRadius="8">
+                                  Margin="1"
+                                  CornerRadius="12"
+                                  Background="{ThemeResource UpdatePageAcrylicBrush}">
                         <StackPanel x:Name="SettingsCardContainer"
                                     CornerRadius="8"
+                                    Margin="8"
                                     Spacing="4">
                             <controls:SettingsCard x:Name="SettingsCardItemLanguage"
                                                    Margin="0,2"
                                                    CornerRadius="6"
-                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageDescription}"
-                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader}">
+                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageDescription, Mode=OneWay}"
+                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader, Mode=OneWay}">
                                 <controls:SettingsCard.HeaderIcon>
                                     <FontIcon Glyph="&#xE774;" />
                                 </controls:SettingsCard.HeaderIcon>
@@ -263,8 +272,8 @@
                             <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
                                                    Margin="0,2"
                                                    CornerRadius="6"
-                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeDescription}"
-                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}">
+                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeDescription, Mode=OneWay}"
+                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader, Mode=OneWay}">
                                 <controls:SettingsCard.HeaderIcon>
                                     <FontIcon Glyph="&#xE944;" />
                                 </controls:SettingsCard.HeaderIcon>
@@ -272,15 +281,15 @@
                                           extension:UIElementExtensions.CursorType="Hand"
                                           SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
                                           SelectionChanged="FixComboBoxSize">
-                                    <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppWindowSize_Normal}" />
-                                    <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppWindowSize_Small}" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppWindowSize_Normal, Mode=OneWay}" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppWindowSize_Small, Mode=OneWay}" />
                                 </ComboBox>
                             </controls:SettingsCard>
                             <controls:SettingsCard x:Name="SettingsCardItemPreferredCDN"
                                                    Margin="0,2"
                                                    CornerRadius="6"
-                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsCDNDescription}"
-                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsCDNHeader}">
+                                                   Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsCDNDescription, Mode=OneWay}"
+                                                   Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsCDNHeader, Mode=OneWay}">
                                 <controls:SettingsCard.HeaderIcon>
                                     <FontIcon Glyph="&#xEC05;" />
                                 </controls:SettingsCard.HeaderIcon>
@@ -309,31 +318,31 @@
                                                     <TextBlock TextWrapping="WrapWholeWords">
                                                         <Run FontSize="20"
                                                              FontWeight="Bold"
-                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_1}" />
+                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_1, Mode=OneWay}" />
                                                         <Run FontSize="12"
-                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_2}" />
+                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_2, Mode=OneWay}" />
                                                         <Run FontSize="12"
                                                              FontWeight="Bold"
-                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_3}" />
+                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_3, Mode=OneWay}" />
                                                         <Run FontSize="12"
-                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_4}" />
+                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpTitle_4, Mode=OneWay}" />
                                                     </TextBlock>
                                                     <TextBlock MaxWidth="380"
                                                                Margin="0,8,0,0"
                                                                TextWrapping="Wrap">
-                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_1}" />
+                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_1, Mode=OneWay}" />
                                                         <Run FontWeight="Bold"
-                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_2}" />
-                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_3}" />
+                                                             Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_2, Mode=OneWay}" />
+                                                        <Run Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_3, Mode=OneWay}" />
                                                     </TextBlock>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_4}" />
+                                                    <TextBlock Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNHelpDetail_4, Mode=OneWay}" />
                                                     <TextBlock Margin="0,12,0,0"
                                                                FontSize="20"
                                                                FontWeight="Bold"
-                                                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNsAvailable}" />
+                                                               Text="{x:Bind helper:Locale.Current.Lang._StartupPage.CDNsAvailable, Mode=OneWay}" />
                                                     <ItemsControl MaxWidth="380"
                                                                   Margin="0,0,0,-8"
-                                                                  ItemsSource="{x:Bind collapse:FallbackCDNUtil.CDNList}">
+                                                                  ItemsSource="{x:Bind collapse:FallbackCDNUtil.CDNList, Mode=OneWay}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate x:DataType="collapse:CDNURLProperty">
                                                                 <StackPanel Margin="0,8">
@@ -359,14 +368,15 @@
                             <controls:SettingsExpander x:Name="SettingsCardItemTheme"
                                                        Margin="0,2"
                                                        CornerRadius="6"
-                                                       Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleDescription}"
-                                                       Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleHeader}">
+                                                       Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleDescription, Mode=OneWay}"
+                                                       Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleHeader, Mode=OneWay}"
+                                                       DataContext="{x:Bind OOBEBackgroundManager}">
                                 <controls:SettingsExpander.HeaderIcon>
                                     <FontIcon Glyph="&#xE790;" />
                                 </controls:SettingsExpander.HeaderIcon>
                                 <controls:SettingsExpander.Items>
-                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription}"
-                                                           Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader}">
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription, Mode=OneWay}"
+                                                           Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader, Mode=OneWay}">
                                         <controls:SettingsCard.HeaderIcon>
                                             <FontIcon Glyph="&#xE7A1;" />
                                         </controls:SettingsCard.HeaderIcon>
@@ -374,25 +384,24 @@
                                                   extension:UIElementExtensions.CursorType="Hand"
                                                   SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}"
                                                   SelectionChanged="FixComboBoxSize">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Default}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Light}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Dark}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Default, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Light, Mode=OneWay}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppThemes_Dark, Mode=OneWay}" />
                                         </ComboBox>
                                     </controls:SettingsCard>
-                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription}"
-                                                           Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader}">
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription, Mode=OneWay}"
+                                                           Header="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader, Mode=OneWay}">
                                         <controls:SettingsCard.HeaderIcon>
                                             <FontIcon Glyph="&#xE8B9;" />
                                         </controls:SettingsCard.HeaderIcon>
                                         <CheckBox extension:UIElementExtensions.CursorType="Hand"
                                                   Checked="CustomBackgroundCheckedOpen"
-                                                  Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppBG_Checkbox}"
-                                                  DataContext="{x:Bind OOBEBackgroundManager}"
+                                                  Content="{x:Bind helper:Locale.Current.Lang._SettingsPage.AppBG_Checkbox, Mode=OneWay}"
                                                   IsChecked="{Binding GlobalIsEnableCustomImage, Mode=TwoWay}"
                                                   Unchecked="CustomBackgroundCheckedClose" />
                                     </controls:SettingsCard>
-                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip}"
-                                                           Header="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText}">
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioTooltip, Mode=OneWay}"
+                                                           Header="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableAudioText, Mode=OneWay}">
                                         <controls:SettingsCard.HeaderIcon>
                                             <FontIcon Glyph="&#xE8D6;" />
                                         </controls:SettingsCard.HeaderIcon>
@@ -401,7 +410,6 @@
                                             <Slider Width="150"
                                                     VerticalAlignment="Center"
                                                     extension:UIElementExtensions.CursorType="Hand"
-                                                    DataContext="{x:Bind OOBEBackgroundManager}"
                                                     Maximum="100"
                                                     Minimum="0"
                                                     Visibility="{Binding ElementName=BackgroundAudioToggle, Path=IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}"
@@ -410,23 +418,23 @@
                                                           VerticalAlignment="Center"
                                                           extension:UIElementExtensions.CursorType="Hand"
                                                           IsOn="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
-                                                          OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                                          OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                                          OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                          OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                         </StackPanel>
                                     </controls:SettingsCard>
-                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip}"
-                                                           Header="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxText}">
+                                    <controls:SettingsCard Description="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxTooltip, Mode=OneWay}"
+                                                           Header="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_EnableParallaxText, Mode=OneWay}">
                                         <controls:SettingsCard.HeaderIcon>
                                             <FontIcon Glyph="&#xE7B3;" />
                                         </controls:SettingsCard.HeaderIcon>
                                         <StackPanel Orientation="Horizontal"
-                                                    Spacing="16">
+                                                    Spacing="16"
+                                                    DataContext="{x:Bind OOBEBackgroundManager}">
                                             <TextBlock VerticalAlignment="Center"
                                                        FontSize="12"
-                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText}"
+                                                       Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_ParallaxPixelShiftParentText, Mode=OneWay}"
                                                        Visibility="{Binding ElementName=BackgroundParallaxEffectToggle, Path=IsOn, Mode=OneWay}" />
                                             <ComboBox extension:UIElementExtensions.CursorType="Hand"
-                                                      DataContext="{x:Bind OOBEBackgroundManager}"
                                                       SelectedIndex="{Binding GlobalBackgroundParallaxPixelShift, Mode=OneWay, Converter={StaticResource BackgroundParallaxPixelToComboBoxIndexConverter}}"
                                                       SelectionChanged="SelectAnyParallaxPixelAmount_OnSelectionChanged"
                                                       Visibility="{Binding ElementName=BackgroundParallaxEffectToggle, Path=IsOn, Mode=OneWay}">
@@ -438,8 +446,8 @@
                                             <ToggleSwitch x:Name="BackgroundParallaxEffectToggle"
                                                           extension:UIElementExtensions.CursorType="Hand"
                                                           IsOn="{Binding GlobalIsBackgroundParallaxEffectEnabled, Mode=TwoWay}"
-                                                          OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled}"
-                                                          OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled}" />
+                                                          OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                                          OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                         </StackPanel>
                                     </controls:SettingsCard>
                                 </controls:SettingsExpander.Items>
@@ -484,7 +492,7 @@
                                     <TextBlock Grid.Row="0"
                                                Grid.Column="1"
                                                Margin="12,0,0,0"
-                                               Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoToAppSettingsBtn}" />
+                                               Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoToAppSettingsBtn, Mode=OneWay}" />
                                 </Grid>
                             </Button>
                         </StackPanel>
@@ -510,7 +518,7 @@
                             <TextBlock FontSize="16"
                                        FontStretch="UltraExpanded"
                                        FontWeight="SemiBold"
-                                       Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.SetupNextButton}" />
+                                       Text="{x:Bind helper:Locale.Current.Lang._OOBEStartUpMenu.SetupNextButton, Mode=OneWay}" />
                             <AnimatedIcon x:Name="DropDownGlyph"
                                           Width="24"
                                           MinHeight="{ThemeResource ComboBoxMinHeight}"
@@ -615,7 +623,7 @@
                                FontSize="14"
                                FontWeight="Medium"
                                HorizontalTextAlignment="Left"
-                               Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoBackOverlayFrameBtn}" />
+                               Text="{x:Bind helper:Locale.Current.Lang._DisconnectedPage.GoBackOverlayFrameBtn, Mode=OneWay}" />
                 </Grid>
             </Button>
         </Grid>
