@@ -28,6 +28,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.UI.Text;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
@@ -428,32 +429,20 @@ namespace CollapseLauncher.Pages.OOBE
             }
 
             string selectedPath = await FileDialogNative.GetFilePicker(LayeredBackgroundImage.SupportedAllBackgroundFormatsFilter);
-            if (string.IsNullOrEmpty(selectedPath))
+            if (!string.IsNullOrEmpty(selectedPath) && await OOBEBackgroundManager.SetGlobalCustomBackground(selectedPath))
             {
-                OOBEBackgroundManager.Initialize(null);
-                OOBEBackgroundManager.GlobalCustomBackgroundImagePath = null;
-                OOBEBackgroundManager.GlobalIsEnableCustomImage       = false;
-                BackgroundGrid.Children.Clear();
-                return;
-            }
-
-            OOBEBackgroundManager.Initialize(BackgroundGrid);
-            if (await OOBEBackgroundManager.SetGlobalCustomBackground(selectedPath))
-            {
+                OOBEBackgroundManager.GlobalIsEnableCustomImage = true;
                 await StartBackgroundTransition(false, IsAppThemeLight ? 0.2f : 0.175f, 0.5f);
                 return;
             }
 
-            OOBEBackgroundManager.GlobalIsEnableCustomImage = false;
+            CustomBackgroundCheckedClose(sender, e);
         }
 
         private async void CustomBackgroundCheckedClose(object? sender, RoutedEventArgs e)
         {
-            CheckBox? senderSource = sender as CheckBox;
-            if (senderSource == null) return;
-
-            OOBEBackgroundManager.Initialize(null);
-            BackgroundGrid.Children.Clear();
+            OOBEBackgroundManager.GlobalIsEnableCustomImage       = false;
+            OOBEBackgroundManager.GlobalCustomBackgroundImagePath = null;
             await StartBackgroundTransition(true, IsAppThemeLight ? 0.2f : 0.175f, 0.5f);
         }
 
@@ -471,27 +460,17 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 ContainerBackgroundImage.Visibility = Visibility.Visible;
                 await ContainerBackgroundImage.StartAnimation(transitionDuration,
-                                                              currentCompositor
-                                                                 .CreateScalarKeyFrameAnimation("Opacity", toOpacity, 0),
-                                                              currentCompositor.CreateVector3KeyFrameAnimation("Scale",
-                                                                  new Vector3(1f), new Vector3(toScale)),
-                                                              currentCompositor
-                                                                 .CreateVector3KeyFrameAnimation("Translation",
-                                                                      new Vector3(0),
-                                                                      new Vector3(toTranslateX, toTranslateY, 0))
+                                                              currentCompositor.CreateScalarKeyFrameAnimation("Opacity", toOpacity, 0),
+                                                              currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1f), new Vector3(toScale)),
+                                                              currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0), new Vector3(toTranslateX, toTranslateY, 0))
                                                              );
                 return;
             }
 
             await ContainerBackgroundImage.StartAnimation(transitionDuration,
-                                                          currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0,
-                                                              fromOpacity),
-                                                          currentCompositor.CreateVector3KeyFrameAnimation("Scale",
-                                                              new Vector3(toScale), new Vector3(1f)),
-                                                          currentCompositor
-                                                             .CreateVector3KeyFrameAnimation("Translation",
-                                                                  new Vector3(toTranslateX, toTranslateY, 0),
-                                                                  new Vector3(0))
+                                                          currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, fromOpacity),
+                                                          currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale), new Vector3(1f)),
+                                                          currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(toTranslateX, toTranslateY, 0), new Vector3(0))
                                                          );
             ContainerBackgroundImage.Visibility = Visibility.Collapsed;
         }
@@ -542,10 +521,8 @@ namespace CollapseLauncher.Pages.OOBE
             if (!LastTitleTextInitialScale.HasValue || !LastLogoInitialScale.HasValue) return;
 
             ErrMsg.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
-            Vector3 titleTextAnimScaleVect =
-                new Vector3(isInSmallMode ? (float)SmallWindowFactor + 0.09f : (float)SmallWindowFactor - 0.075f);
-            Vector3 logoAnimScaleVect =
-                new Vector3(isInSmallMode ? (float)SmallWindowFactor - 0.2f : (float)SmallWindowFactor - 0.1f);
+            Vector3 titleTextAnimScaleVect = new(isInSmallMode ? (float)SmallWindowFactor + 0.09f : (float)SmallWindowFactor - 0.075f);
+            Vector3 logoAnimScaleVect = new(isInSmallMode ? (float)SmallWindowFactor - 0.2f : (float)SmallWindowFactor - 0.1f);
 
             TimeSpan animDuration     = TimeSpan.FromMilliseconds(500);
             int      titleTextXOffset = isInSmallMode ? 90 : 100;
@@ -685,7 +662,7 @@ namespace CollapseLauncher.Pages.OOBE
                     selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    var folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
+                    string folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Locale.Current.Lang?._Dialogs?.FolderDialogTitle1);
                     if (!string.IsNullOrEmpty(folder))
                     {
                         AppGameFolder = folder;
@@ -756,77 +733,66 @@ namespace CollapseLauncher.Pages.OOBE
                                              );
         }
 
-        private readonly List<FrameworkElement>                           _previouslyHiddenUIsList        = [];
-        private readonly List<Tuple<float, Vector3, Vector3, Visibility>> _previouslyFromHiddenUIsElement = [];
-        private readonly List<Tuple<float, Vector3, Vector3, Visibility>> _previouslyToHiddenUIsElement   = [];
+        private struct PreviousHiddenUIInfo
+        {
+            public FrameworkElement                                Element;
+            public ValueTuple<float, Vector3, Vector3, Visibility> FromTuple;
+            public ValueTuple<float, Vector3, Vector3, Visibility> ToTuple;
+        }
+
+        private readonly List<PreviousHiddenUIInfo> _previouslyHiddenUIsList = [];
 
         private async void HideUIs(params FrameworkElement[] elements)
         {
             _previouslyHiddenUIsList.Clear();
-            _previouslyFromHiddenUIsElement.Clear();
-            _previouslyToHiddenUIsElement.Clear();
             TimeSpan duration = TimeSpan.FromSeconds(0.5f);
-            await Task.WhenAll(elements.Select(async x =>
+
+            List<Task> tasks = [];
+            foreach (FrameworkElement element in elements)
             {
-                // float toScale      = 1.2f;
-                // float toTranslateX = -((float)x.ActualWidth * (toScale - 1f) / 2);
-                // float toTranslateY = -((float)x.ActualHeight * (toScale - 1f) / 2);
+                (float, Vector3, Vector3, Visibility) fromTuple = ((float)element.Opacity, new Vector3(1f), new Vector3(0), element.Visibility);
+                (float, Vector3, Vector3, Visibility) toTuple   = (0f, new Vector3(1f), new Vector3(0, -(float)element.ActualHeight, 0), Visibility.Collapsed);
 
-                Tuple<float, Vector3, Vector3, Visibility>
-                    from = new((float)x.Opacity, new Vector3(1f), new Vector3(0),
-                               x.Visibility),
-                    to = new(0f, new Vector3(1f),
-                             new Vector3(0, -(float)x.ActualHeight, 0),
-                             Visibility.Collapsed);
-                _previouslyHiddenUIsList.Add(x);
-                _previouslyFromHiddenUIsElement.Add(from);
-                _previouslyToHiddenUIsElement.Add(to);
+                _previouslyHiddenUIsList.Add(new PreviousHiddenUIInfo
+                {
+                    Element = element,
+                    FromTuple = fromTuple,
+                    ToTuple = toTuple
+                });
 
-                // PreviouslyFromHiddenUIsElement.Add(new Tuple<float, Vector3, Vector3, Visibility>((float)x.Opacity, new Vector3(1f), new Vector3(0), x.Visibility));
-                // PreviouslyToHiddenUIsElement.Add(new Tuple<float, Vector3, Vector3, Visibility>(0f, new Vector3(toScale), new Vector3(toTranslateX, toTranslateY, 0), Visibility.Collapsed));
+                ScalarKeyFrameAnimation opacityAnim = currentCompositor.CreateScalarKeyFrameAnimation("Opacity", toTuple.Item1, fromTuple.Item1);
+                Vector3KeyFrameAnimation scaleAnim = currentCompositor.CreateVector3KeyFrameAnimation("Scale", toTuple.Item2, fromTuple.Item2);
+                Vector3KeyFrameAnimation translationAnim = currentCompositor.CreateVector3KeyFrameAnimation("Translation", toTuple.Item3, fromTuple.Item3);
 
-                Task task = x.StartAnimation(duration,
-                                                 currentCompositor
-                                                    .CreateScalarKeyFrameAnimation("Opacity",
-                                                         to.Item1, from.Item1),
-                                                 currentCompositor
-                                                    .CreateVector3KeyFrameAnimation("Scale",
-                                                         to.Item2, from.Item2),
-                                                 currentCompositor
-                                                    .CreateVector3KeyFrameAnimation("Translation",
-                                                         to.Item3, from.Item3)
-                                            );
-                await task;
-                DispatcherQueue?.TryEnqueue(() => x.Visibility = to.Item4);
-                return Task.CompletedTask;
-            }));
+                Task task = element.StartAnimation(duration, opacityAnim, scaleAnim, translationAnim)
+                                   .ContinueWith(_ =>
+                                   {
+                                       DispatcherQueue?.TryEnqueue(() => element.Visibility = toTuple.Item4);
+                                   });
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         private async void ShowResetUIs()
         {
-            TimeSpan duration = TimeSpan.FromSeconds(0.5f);
-            int      len      = _previouslyHiddenUIsList.Count;
-
+            TimeSpan   duration = TimeSpan.FromSeconds(0.5f);
             List<Task> animTask = [];
-            for (int i = 0; i < len; i++)
+
+            foreach (PreviousHiddenUIInfo info in _previouslyHiddenUIsList)
             {
-                FrameworkElement                           element   = _previouslyHiddenUIsList[i];
-                Tuple<float, Vector3, Vector3, Visibility> fromValue = _previouslyToHiddenUIsElement[i];
-                Tuple<float, Vector3, Vector3, Visibility> toValue   = _previouslyFromHiddenUIsElement[i];
-                animTask.Add(Task.Run(async () =>
-                {
-                    DispatcherQueue?.TryEnqueue(() => element.Visibility = toValue.Item4);
-                    await element.StartAnimation(duration,
-                                                 currentCompositor
-                                                    .CreateScalarKeyFrameAnimation("Opacity",
-                                                         toValue.Item1, fromValue.Item1),
-                                                 currentCompositor
-                                                    .CreateVector3KeyFrameAnimation("Scale",
-                                                         toValue.Item2, fromValue.Item2),
-                                                 currentCompositor
-                                                    .CreateVector3KeyFrameAnimation("Translation",
-                                                         toValue.Item3, fromValue.Item3));
-                }));
+                FrameworkElement                      element   = info.Element;
+                (float, Vector3, Vector3, Visibility) fromTuple = info.FromTuple;
+                (float, Vector3, Vector3, Visibility) toTuple   = info.ToTuple;
+
+                ScalarKeyFrameAnimation opacityAnim = currentCompositor.CreateScalarKeyFrameAnimation("Opacity", fromTuple.Item1, toTuple.Item1);
+                Vector3KeyFrameAnimation scaleAnim = currentCompositor.CreateVector3KeyFrameAnimation("Scale", fromTuple.Item2, toTuple.Item2);
+                Vector3KeyFrameAnimation translationAnim = currentCompositor.CreateVector3KeyFrameAnimation("Translation", fromTuple.Item3, toTuple.Item3);
+
+                DispatcherQueue?.TryEnqueue(() => element.Visibility = fromTuple.Item4);
+                Task task = element.StartAnimation(duration, opacityAnim, scaleAnim, translationAnim);
+                animTask.Add(task);
             }
 
             await Task.WhenAll(animTask);
@@ -844,29 +810,24 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 if (!IsSelectLauncherFolderDone)
                 {
-                    await Task.WhenAll(
+                    await Task.WhenAll(Task.Run(async () =>
+                                       {
+                                           DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize, IsLauncherCustomizationDone));
+                                           await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
+                                                    currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                    currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0))
+                                               );
+
+                                           DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Collapsed);
+                                       }),
                                        Task.Run(async () =>
-                                                {
-                                                    DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize,
-                                                                                    IsLauncherCustomizationDone));
-                                                    await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
-                                                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0,
-                                                            1),
-                                                        currentCompositor.CreateVector3KeyFrameAnimation("Translation",
-                                                            new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                                                    DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility =
-                                                                                    Visibility.Collapsed);
-                                                }),
-                                       Task.Run(async () =>
-                                                {
-                                                    DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility =
-                                                                                    Visibility.Visible);
-                                                    await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
-                                                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1,
-                                                            0),
-                                                        currentCompositor.CreateVector3KeyFrameAnimation("Translation",
-                                                            new Vector3(0, 0, 0), new Vector3(0, 32, 0)));
-                                                }));
+                                       {
+                                           DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Visible);
+                                           await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
+                                                    currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
+                                                    currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0))
+                                               );
+                                       }));
                     IsSelectLauncherFolderDone = true;
                     return;
                 }
@@ -889,8 +850,8 @@ namespace CollapseLauncher.Pages.OOBE
 
             OOBEBackgroundManager.Play(false);
             IsLauncherCustomizationDone = false;
-            ShowResetUIs();
             OverlayFrame.GoBack();
+            ShowResetUIs();
             await OverlayFrame.StartAnimation(TimeSpan.FromSeconds(0.5),
                                               currentCompositor.CreateVector3KeyFrameAnimation("Translation",
                                                        new Vector3(0, (float)OverlayFrame.ActualHeight, 0),
@@ -904,29 +865,24 @@ namespace CollapseLauncher.Pages.OOBE
             if (IsLauncherCustomizationDone) IsLauncherCustomizationDone = false;
             if (!IsSelectLauncherFolderDone) return;
 
-            await Task.WhenAll(
-            Task.Run(async () =>
-            {
-                DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize,
-                                                     IsLauncherCustomizationDone));
-                await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
-                         currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0,
-                                  1),
-                         currentCompositor.CreateVector3KeyFrameAnimation("Translation",
-                                  new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility =
-                                                Visibility.Collapsed);
-            }),
-            Task.Run(async () =>
-            {
-                DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility =
-                                                Visibility.Visible);
-                await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
-                         currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1,
-                                  0),
-                         currentCompositor.CreateVector3KeyFrameAnimation("Translation",
-                                  new Vector3(0, 0, 0), new Vector3(0, 32, 0)));
-            }));
+            await Task.WhenAll(Task.Run(async () =>
+                               {
+                                   DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize, IsLauncherCustomizationDone));
+                                   await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
+                                                                               currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                                               currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0))
+                                                                              );
+
+                                   DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Collapsed);
+                               }),
+                               Task.Run(async () =>
+                               {
+                                   DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Visible);
+                                   await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
+                                                                                    currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
+                                                                                    currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0))
+                                                                               );
+                               }));
             IsSelectLauncherFolderDone = false;
         }
 
@@ -939,15 +895,15 @@ namespace CollapseLauncher.Pages.OOBE
         {
             // Sync PlaceholderText with current selected item
             // Fix https://github.com/microsoft/microsoft-ui-xaml/issues/4551
-            var comboBox = sender as ComboBox;
+            ComboBox? comboBox = sender as ComboBox;
             if (comboBox == null || comboBox.SelectedValue == null) return;
 
-            var selectedValueString = comboBox.SelectedValue switch
+            string selectedValueString = comboBox.SelectedValue switch
             {
                 ContentControl contentControl => contentControl.Content as string ?? "",
-                TextBlock textBlock => textBlock.Text,
-                string str => str,
-                _ => ""
+                TextBlock textBlock           => textBlock.Text,
+                string str                    => str,
+                _                             => ""
             };
 
             comboBox.PlaceholderText = selectedValueString;
@@ -1000,6 +956,12 @@ namespace CollapseLauncher.Pages.OOBE
 
             SettingsPageFrame.Visibility = Visibility.Collapsed;
             btn.Visibility               = Visibility.Collapsed;
+        }
+
+        private void OOBEStartUpMenu_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            OOBEBackgroundManager.Initialize(BackgroundGrid);
+            OOBEBackgroundManager.GlobalParallaxHoverSource = this;
         }
     }
 }
