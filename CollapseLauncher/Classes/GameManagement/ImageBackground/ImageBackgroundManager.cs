@@ -370,6 +370,7 @@ public partial class ImageBackgroundManager
                 // -- Try to initialize custom image first
                 //    -- A. Check for per-region custom background
                 if (CurrentIsEnableCustomImage &&
+                    !string.IsNullOrEmpty(CurrentCustomBackgroundImagePath) &&
                     await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
                 {
                     return;
@@ -378,6 +379,7 @@ public partial class ImageBackgroundManager
                 //   -- B. Check for global custom background
                 if (!CurrentIsEnableCustomImage &&
                     GlobalIsEnableCustomImage &&
+                    !string.IsNullOrEmpty(GlobalCustomBackgroundImagePath) &&
                     await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
                 {
                     return;
