@@ -35,7 +35,8 @@ public partial class ImageBackgroundManager
     private void LoadImage(CancellationToken token = default)
     {
         if (ImageContextSources.Count == 0 ||
-            CurrentSelectedBackgroundIndex < 0)
+            CurrentSelectedBackgroundIndex < 0 ||
+            PresenterGrid == null)
         {
             return;
         }
@@ -106,7 +107,6 @@ public partial class ImageBackgroundManager
                     try
                     {
                         string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay ? downloadedBackgroundUri : downloadedPlaceholderUri) ?? downloadedBackgroundUri;
-                        string? lastBackgroundToUse = _lastBackgroundSource;
 
                         // -- Avoid spawning element while window is currently not visible
                         //    (for example: Minimized at start).
@@ -116,11 +116,13 @@ public partial class ImageBackgroundManager
                         }
 
                         // -- Avoid the same background to get loaded (unless Force reload is requested).
-                        if (Interlocked.Exchange(ref _lastBackgroundSource, backgroundToUse) != lastBackgroundToUse &&
-                            !context.ForceReload)
+                        if (_lastBackgroundSource == backgroundToUse && !context.ForceReload)
                         {
                             return;
                         }
+
+                        // -- Update last background source.
+                        _lastBackgroundSource = backgroundToUse;
 
                         // -- Reset force reload request.
                         bool forceReloadRequested = context.ForceReload;

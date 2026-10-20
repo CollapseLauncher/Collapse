@@ -36,6 +36,39 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 
 public partial class ImageBackgroundManager
 {
+    private readonly struct GetCroppedResult
+    {
+        public readonly string? ProcessedOverlayPath;
+        public readonly string? ProcessedBackgroundPath;
+        public readonly bool    IsCancelResize;
+        public readonly bool    WasCropPerformed;
+
+        private GetCroppedResult(string? processedOverlayPath,
+                                 string? processedBackgroundPath,
+                                 bool    isCancelResize,
+                                 bool    wasCropPerformed)
+        {
+            ProcessedOverlayPath    = processedOverlayPath;
+            ProcessedBackgroundPath = processedBackgroundPath;
+            IsCancelResize          = isCancelResize;
+            WasCropPerformed        = wasCropPerformed;
+        }
+
+        public static GetCroppedResult Create(string? processedOverlayPath,
+                                                       string? processedBackgroundPath,
+                                                       bool    isCancelResize,
+                                                       bool    wasCropPerformed)
+        {
+            return new GetCroppedResult(processedOverlayPath,
+                                        processedBackgroundPath,
+                                        isCancelResize,
+                                        wasCropPerformed);
+        }
+
+        public static readonly GetCroppedResult Cancelled = Create(null, null, true,  false);
+        public static readonly GetCroppedResult Skip      = Create(null, null, false, false);
+    }
+
     /// <summary>
     /// Get local path of the resized/cropped custom image. The return values are cropped image path.
     /// If the input path is a video, then it will return the input path.
@@ -43,7 +76,7 @@ public partial class ImageBackgroundManager
     /// To perform cropping request, you must set <paramref name="performCropRequest"/> to <see langword="true"/>.
     /// Otherwise, it will return the input paths.
     /// </summary>
-    private static async Task<(string? ProcessedOverlayPath, string? ProcessedBackgroundPath, bool IsCancelResize)>
+    private static async Task<GetCroppedResult>
         GetCroppedCustomImage(string?           overlayUrlOrPath,
                               string?           backgroundUrlOrPath,
                               bool              performCropRequest,
@@ -53,21 +86,21 @@ public partial class ImageBackgroundManager
              string.IsNullOrEmpty(backgroundUrlOrPath)) ||
              string.IsNullOrEmpty(backgroundUrlOrPath))
         {
-            return (null, null, false); // Skip from processing
+            return GetCroppedResult.Skip;
         }
 
         // -- Check if the file is video or image
         if (LayeredBackgroundImage.SupportedVideoExtensionsLookup
                                   .Contains(Path.GetExtension(backgroundUrlOrPath)))
         {
-            return (overlayUrlOrPath, backgroundUrlOrPath, false);
+            return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
         }
 
         // -- Try to get existing image file path
         if (TryGetCroppedImageFilePath(backgroundUrlOrPath, out string croppedBackgroundPath) &&
             !performCropRequest)
         {
-            return (null, croppedBackgroundPath, false);
+            return GetCroppedResult.Create(null, croppedBackgroundPath, false, false);
         }
 
         try
@@ -98,14 +131,14 @@ public partial class ImageBackgroundManager
             // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
             if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
             {
-                return (overlayUrlOrPath, backgroundUrlOrPath, false);
+                return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
             }
 
             // -- Register to close dialog if cancellation is triggered outside the event.
             token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
             {
-                return (null, null, true);
+                return GetCroppedResult.Cancelled;
             }
 
             DispatcherQueueExtensions
@@ -120,7 +153,7 @@ public partial class ImageBackgroundManager
             ContentDialogResult dialogResult = await dialog.QueueAndSpawnDialog();
             if (dialogResult is ContentDialogResult.Secondary or ContentDialogResult.None)
             {
-                return (null, null, true);
+                return GetCroppedResult.Cancelled;
             }
 
             // -- Save cropped image
@@ -130,7 +163,8 @@ public partial class ImageBackgroundManager
             if (TryGetUpscaledFilePath(croppedBackgroundPath, out string croppedImagePath))
                 StreamExtension.TryDeleteFile(croppedImagePath);
 
-            return (null, croppedBackgroundPath, false);
+
+            return GetCroppedResult.Create(null, croppedBackgroundPath, false, true);
 
             void SetDialogProperties(ContentDialogOverlay element)
             {
@@ -173,7 +207,7 @@ public partial class ImageBackgroundManager
         }
         catch (OperationCanceledException)
         {
-            return (null, null, true);
+            return GetCroppedResult.Cancelled;
         }
     }
 
