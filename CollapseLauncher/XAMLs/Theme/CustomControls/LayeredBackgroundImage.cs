@@ -41,6 +41,11 @@ public partial class LayeredBackgroundImage : Control
     private static void LayeredBackgroundImage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)sender;
+
+        // Same reason as above. If OnApplyTemplate not yet called, don't do anything.
+        if (!instance._templateInitialized)
+            return;
+
         instance.UnsubscribeGridEvents();
         instance.UnloadAllPresenters();
     }
