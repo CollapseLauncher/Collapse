@@ -27,7 +27,17 @@ public partial class LayeredBackgroundImage
             if (DispatcherQueue == null)
                 return;
 
-            DispatcherQueue.TryEnqueue(() => SetValue(MediaDurationPositionProperty, value));
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    SetValue(MediaDurationPositionProperty, value);
+                }
+                catch
+                {
+                    // ignored
+                }
+            });
         }
         catch
         {
