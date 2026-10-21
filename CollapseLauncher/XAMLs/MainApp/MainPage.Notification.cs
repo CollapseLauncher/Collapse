@@ -291,9 +291,6 @@ public partial class MainPage
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 (_, string? heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty.GamePreset);
 
-                if (!string.IsNullOrEmpty(heroImage))
-                    (heroImage, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(heroImage);
-
                 // Create notification
                 NotificationContent toastContent = NotificationContent.Create()
                                                                       .SetTitle(Locale.Current.Lang?._NotificationToast?.LauncherUpdated_NotifTitle)

@@ -28,13 +28,6 @@ public partial class ImageBackgroundManager
         @"Assets\Images\PageBackground\default_zzz.avif"
     ];
 
-    private static readonly string[] PlaceholderBackgroundImagePngRelPath = [
-        @"Assets\Images\GamePoster\poster_genshin.avif",
-        @"Assets\Images\GamePoster\poster_honkai.avif",
-        @"Assets\Images\GamePoster\poster_starrail.avif",
-        @"Assets\Images\GamePoster\poster_zzz.avif"
-    ];
-
     #endregion
 
     public static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)

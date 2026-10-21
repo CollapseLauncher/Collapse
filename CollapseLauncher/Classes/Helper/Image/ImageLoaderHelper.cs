@@ -415,9 +415,6 @@ namespace CollapseLauncher.Helper.Image
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
-
-                url      = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(url, token);
-                (url, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(url, token);
                 return url;
             }
 
@@ -428,18 +425,14 @@ namespace CollapseLauncher.Helper.Image
             FileInfo fInfo = new(cachePath);
             if (await IsFileCompletelyDownloadedAsync(fInfo, !isSkipHashCheck))
             {
-                (cachePath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(cachePath, token);
                 return cachePath;
             }
 
             if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, isSkipHashCheck, token))
             {
-                url      = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(url, token);
-                (url, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(url, token);
                 return url;
             }
 
-            (cachePath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(cachePath, token);
             return cachePath;
         }
 

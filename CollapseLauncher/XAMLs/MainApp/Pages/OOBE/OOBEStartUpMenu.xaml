@@ -10,7 +10,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:CollapseLauncher.Helper"
-      xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localeMetadata="using:Hi3Helper.LocaleSourceGen"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
@@ -38,7 +37,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Opacity="0.5"
-                   extension:UIElementExtensions.ExternalDecoderSource="ms-appx:///Assets/Images/PageBackground/StartupBackground2.avif"
+                   Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
                    Stretch="UniformToFill" />
             <Grid x:Name="ContainerGrid"
                   Margin="48"

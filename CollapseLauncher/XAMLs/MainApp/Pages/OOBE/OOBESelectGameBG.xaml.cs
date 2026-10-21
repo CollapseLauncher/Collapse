@@ -26,6 +26,7 @@ namespace CollapseLauncher.Pages.OOBE
     public sealed partial class OOBESelectGameBG
     {
         internal static bool IsUseBackgroundMask;
+        private         Uri  StaticBackgroundUrl => field ??= new Uri("ms-appx:///Assets/Images/PageBackground/StartupBackground2.avif");
 
         public OOBESelectGameBG()
         {
@@ -131,8 +132,6 @@ namespace CollapseLauncher.Pages.OOBE
                 }
 
                 // -- Load logo images.
-                _gameLogoPath = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(_gameLogoPath, CancellationToken.None);
-                (_gameLogoPath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(_gameLogoPath, CancellationToken.None);
                 _gameLogoBitmapImage = new BitmapImage(new Uri(_gameLogoPath));
             }
             catch (Exception ex)

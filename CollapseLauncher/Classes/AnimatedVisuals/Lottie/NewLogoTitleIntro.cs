@@ -155,21 +155,14 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
                 res.CreateAnimations();
                 return res;
         }
-        async void EnsureImageLoadingStarted()
+        void EnsureImageLoadingStarted()
         {
             if (!_isImageLoadingStarted)
             {
                 var eventHandler = new TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs>(HandleLoadCompleted);
-                string path = Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.avif");
-                _image_image_0               =  LoadedImageSurface.StartLoadFromStream((await GetDecodedImage(path)).AsRandomAccessStream());
+                _image_image_0               =  LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
                 _image_image_0.LoadCompleted += eventHandler;
                 _isImageLoadingStarted       =  true;
-            }
-
-            async Task<FileStream> GetDecodedImage(string path)
-            {
-                (path, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(path);
-                return File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             }
         }
 

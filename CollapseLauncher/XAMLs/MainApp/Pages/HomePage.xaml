@@ -46,7 +46,6 @@
         <pages:PluginVerticalAlignmentConverter x:Key="PluginVerticalAlignmentConverter" />
         <pages:PluginDoublePositionToThicknessConverter x:Key="PluginDoublePositionToThicknessConverter" />
         <pages:MediaPlayerStateToVisibilityConverter x:Key="MediaPlayerStateToVisibilityConverter" />
-        <pages:ImageDecoderValueConverter x:Key="ImageDecoderValueConverter" />
         <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
         <x:String x:Key="BooleanTrue">true</x:String>
         <x:String x:Key="BooleanFalse">false</x:String>
@@ -1363,7 +1362,7 @@
                                                      extension:UIElementExtensions.CursorType="Hand"
                                                      EnableLazyLoading="True"
                                                      IsCacheEnabled="False"
-                                                     extension:UIElementExtensions.ExternalDecoderImageExPlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.avif"
+                                                     PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                      PointerPressed="OpenImageLinkFromTag"
                                                      Source="{Binding Image.ImageUrl, Mode=OneWay, FallbackValue={x:Null}, Converter={StaticResource UrlToCachedImagePathConverter}}"
                                                      Stretch="UniformToFill"
@@ -1463,7 +1462,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay, Converter={StaticResource ImageDecoderValueConverter}}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">
@@ -1546,7 +1545,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay, Converter={StaticResource ImageDecoderValueConverter}}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">
@@ -1629,7 +1628,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay, Converter={StaticResource ImageDecoderValueConverter}}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">

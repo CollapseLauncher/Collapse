@@ -2247,7 +2247,7 @@
                                    Grid.Column="0"
                                    Height="36"
                                    HorizontalAlignment="Left"
-                                   ext:UIElementExtensions.ExternalDecoderSource="ms-appx:///Assets/CollapseLauncherLogoWithTextDark.avif"
+                                   Source="ms-appx:///Assets/CollapseLauncherLogoWithTextDark.png"
                                    Stretch="Uniform" />
                             <StackPanel Grid.Column="1"
                                         HorizontalAlignment="Right"
