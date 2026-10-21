@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;

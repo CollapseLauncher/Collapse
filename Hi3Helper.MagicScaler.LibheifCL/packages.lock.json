@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[10.0.13, )",
+        "resolved": "10.0.13",
+        "contentHash": "40yrBMsLEcjixBR4G+FiUaBPvxXIPSKJ2OgSrbOZcmSDBda4Sb0k7BWrfDpIvn3IvvDzwOL/tEPa6gDQfh6aRw=="
+      },
+      "PhotoSauce.MagicScaler": {
+        "type": "Direct",
+        "requested": "[0.15.0, )",
+        "resolved": "0.15.0",
+        "contentHash": "ajPOdS5wGIZrHGT0NHvmmrQ7sJb0Vp+Ex3JauD7Ru+U+F+N7tTYRVDcvXW2ER56MLzC+VSqK3KjRn4Sntkf3vA=="
+      },
+      "PhotoSauce.NativeCodecs.Libheif": {
+        "type": "Direct",
+        "requested": "[1.23.5-preview1, )",
+        "resolved": "1.23.5-preview1",
+        "contentHash": "hjIqlOeqX6mMeVs1eBNQi9xgvkZEtQBWC0nU8ytGtW3rzidQlnW2TFvFcU2ZWkTszgwZh8xq9yViLFHcAYW2Lg==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.15.0]"
+        }
+      }
+    }
+  }
+}

@@ -435,6 +435,19 @@
     "RegImportTitle": "Import",
     "RegImportTooltip": "Import registry keys from a Collapse Registry file",
 
+    "DBImportExport": "Upload/Restore to DB",
+    "DBImportExportTooltip": "Restore/Upload Game Settings from/to Database",
+    "DBUploadTitle": "Upload",
+    "DBUploadTooltip": "Upload Game Settings registry to Database set in App Settings",
+    "DBRestoreTitle": "Restore",
+    "DBRestoreTooltip": "Restore Game Settings data to Database set in App Settings",
+
+    "SettingsDBExported": "Settings data has been uploaded!",
+    "SettingsDBExportTitle": "Upload Settings data to Database",
+    "SettingsDBImported": "Settings data has been imported from DB! (A launcher restart is required to apply the imported changes)",
+    "SettingsDBNotSetup": "Database function is not yet enabled. Check app settings!",
+    "SettingsDBNotInitialized": "Database subsystem is not initialized or has failed, check logs/console!",
+
     "OverlayNotInstalledTitle": "You cannot use this feature as the region isn't installed or needs to be updated!",
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
     "OverlayGameRunningTitle": "Game is Currently Running!",
@@ -1464,7 +1477,7 @@
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
 
-    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+    "UpdateForcedHeader": "The launcher will be forcibly updated due to urgent fixes required to maintain functionality.",
 
     "UpdateStatus1": "Fetching Update:",
     "UpdateMessage1": "Connecting to Update Repository...",

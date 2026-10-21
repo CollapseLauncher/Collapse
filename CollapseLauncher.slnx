@@ -53,6 +53,10 @@
   <Project Path="Hi3Helper.LocaleSourceGen/Hi3Helper.LocaleSourceGen.csproj">
     <Platform Project="x64" />
   </Project>
+  <Project Path="Hi3Helper.MagicScaler.LibheifCL/Hi3Helper.MagicScaler.LibheifCL.csproj">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
   <Project Path="Hi3Helper.Plugin.Core/Hi3Helper.Plugin.Core.csproj">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />

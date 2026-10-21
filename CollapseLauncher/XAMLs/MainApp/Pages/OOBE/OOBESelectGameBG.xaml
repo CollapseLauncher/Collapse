@@ -7,6 +7,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:oobe="using:CollapseLauncher.Pages.OOBE"
       xmlns:s="using:CommunityToolkit.WinUI"
       Background="Transparent"
@@ -16,12 +17,13 @@
                               BlurRadius="32"
                               CastTo="{x:Bind GameDetailsLogoShadow}"
                               Opacity="1" />
+        <pages:ImageDecoderValueConverter x:Key="ImageDecoderValueConverter" />
     </Page.Resources>
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Image VerticalAlignment="Center"
                Opacity="0.50"
-               Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
+               Source="{x:Bind StaticBackgroundUrl, Converter={StaticResource ImageDecoderValueConverter}}"
                Stretch="UniformToFill" />
         <Grid x:Name="GameDetails">
             <Grid.ColumnDefinitions>
@@ -78,8 +80,8 @@
                         Click="GameDetailsHomepage_Click"
                         CornerRadius="0,0,8,8"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Tag="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}"
-                        ToolTipService.ToolTip="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}">
+                        Tag="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink, Mode=OneWay}"
+                        ToolTipService.ToolTip="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink, Mode=OneWay}">
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -88,7 +90,7 @@
                         <TextBlock x:Name="GameDetailsHomepageText"
                                    HorizontalAlignment="Left"
                                    FontWeight="SemiBold"
-                                   Text="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}"
+                                   Text="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" />
                         <FontIcon Grid.Column="1"
                                   Margin="10,0,0,-3"

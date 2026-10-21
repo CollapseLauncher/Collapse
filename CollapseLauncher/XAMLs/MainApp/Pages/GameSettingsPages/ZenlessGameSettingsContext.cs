@@ -7,11 +7,16 @@ using WinRT;
 namespace CollapseLauncher.Pages;
 
 [GeneratedBindableCustomProperty]
-internal partial class ZenlessGameSettingsContext(ZenlessSettings settings) : NotifyPropertyChanged
+internal partial class ZenlessGameSettingsContext : NotifyPropertyChanged
 {
-    public ZenlessSettings Settings { get; init; } = settings;
+    internal ZenlessGameSettingsContext(ZenlessSettings settings)
+    {
+        Settings = settings;
+    }
 
-    public GeneralData GenericData { get; init; } = settings.GeneralData;
+    public ZenlessSettings Settings { get; }
+
+    public GeneralData GenericData => Settings.GeneralData;
 
     public LocalUiLayoutPlatform LocalUILayoutPlatform
     {

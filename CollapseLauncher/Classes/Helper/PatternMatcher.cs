@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace CollapseLauncher.Helper
 {
-    public static class PatternMatcher
+    public static partial class PatternMatcher
     {
         /// <summary>
         /// Determines whether the specified input string matches the given pattern.
@@ -132,5 +132,10 @@ namespace CollapseLauncher.Helper
 
             return builder.ToString();
         }
+
+        [GeneratedRegex(@"\.[0-9][0-9][0-9]$", RegexOptions.NonBacktracking)]
+        public static partial Regex MatchChunkFilePath();
+
+        public static bool IsChunkedFilePath(this string filePath) => MatchChunkFilePath().IsMatch(filePath);
     }
 }

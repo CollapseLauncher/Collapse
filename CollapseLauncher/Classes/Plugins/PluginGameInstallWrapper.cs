@@ -73,6 +73,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private          InstallProgressState         _currentInstallState = InstallProgressState.Idle;
     private          string                       _lastActivityStatus  = string.Empty;
     private          float                        _lastLoggedPercentage = -1f;
+    private          bool                         _resetSpeedBaseline = true;
 
     private PerFileProgressCallbackNative? _perFileProgressDelegate;
     private GCHandle                       _perFileProgressGcHandle;
@@ -558,7 +559,18 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 long downloadedBytes = delegateProgress.DownloadedBytes;
                 long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
 
-                long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
+                long readDownload = 0;
+                if (_resetSpeedBaseline)
+                {
+                    _resetSpeedBaseline = false;
+                    _updateProgressProperty.LastDownloaded = downloadedBytes;
+                }
+                else if (downloadedBytes >= _updateProgressProperty.LastDownloaded)
+                {
+                    readDownload = downloadedBytes - _updateProgressProperty.LastDownloaded;
+                    _updateProgressProperty.LastDownloaded = downloadedBytes;
+                }
+
                 double currentSpeed = CalculateSpeed(readDownload);
 
                 Progress.ProgressAllSizeCurrent = downloadedBytes;
@@ -605,8 +617,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                         : 0;
                 }
 
-                _updateProgressProperty.LastDownloaded = downloadedBytes;
-
                 PublishProgressUi(updateProgressBar: true);
             }
         }
@@ -623,7 +633,26 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             using (_updateStatusLock.EnterScope())
             {
-                _currentInstallState = delegateState;
+                if (_currentInstallState != delegateState)
+                {
+                    _currentInstallState = delegateState;
+                    _resetSpeedBaseline = true;
+                    ResetSpeedCalculator();
+                    Progress.ProgressAllSpeed = 0;
+                }
+
+                if (delegateState == InstallProgressState.Completed)
+                {
+                    Progress.ProgressAllTimeLeft = TimeSpan.Zero;
+                    if (Progress.ProgressPerFileSizeTotal > 0)
+                    {
+                        Progress.ProgressPerFilePercentage = Math.Min(100d,
+                            ConverterTool.ToPercentage(
+                                Progress.ProgressPerFileSizeTotal,
+                                Progress.ProgressPerFileSizeCurrent));
+                    }
+                }
+
                 ApplyActivityStatusFromProperty();
                 PublishProgressUi(updateProgressBar: true);
             }
@@ -705,7 +734,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
     }
 
-    public void Flush() => FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    public void Flush()
+    {
+        UpdateCompletenessStatus(CompletenessStatus.Idle);
+        AssetIndex.Clear();
+
+        FlushingTrigger?.Invoke(this, EventArgs.Empty);
+    }
 
     public async ValueTask<bool> IsPreloadCompleted(CancellationToken token = default)
     {
@@ -829,7 +864,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsCompleted = false;
                 Status.IsCanceled  = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Update);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Update);
 #endif
                 break;
             case CompletenessStatus.Completed:
@@ -840,7 +875,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 lock (Progress)
                 {
@@ -856,7 +891,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 break;
             case CompletenessStatus.Idle:
@@ -867,7 +902,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 Status.IsProgressAllIndetermined     = false;
                 Status.IsProgressPerFileIndetermined = false;
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Idle);
+                InnerLauncherConfig.AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
 #endif
                 break;
         }

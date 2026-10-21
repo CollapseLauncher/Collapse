@@ -435,6 +435,19 @@
     "RegImportTitle": "インポート",
     "RegImportTooltip": "Collapse レジストリファイルからレジストリキーをインポートします。",
 
+    "DBImportExport": "データベースにアップロード/復元",
+    "DBImportExportTooltip": "データベースにゲーム設定をアップロード/復元",
+    "DBUploadTitle": "アップロード",
+    "DBUploadTooltip": "ゲーム設定のレジストリ値をランチャー設定で指定したデータベースにアップロードします",
+    "DBRestoreTitle": "復元",
+    "DBRestoreTooltip": "ゲーム設定をランチャー設定で指定したデータベースから復元します",
+
+    "SettingsDBExported": "設定データがアップロードされました！",
+    "SettingsDBExportTitle": "データベースに設定データをアップロード",
+    "SettingsDBImported": "設定データをデータベースからインポートしました！（変更を適用するにはランチャーを再起動してください）",
+    "SettingsDBNotSetup": "データベース機能が有効化されていません。ランチャー設定を確認してください！",
+    "SettingsDBNotInitialized": "データベースのサブシステムが初期化されていないか、障害が発生しています。エラーログ/コンソールを確認してください！",
+
     "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
@@ -837,10 +850,10 @@
     "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
     "ListViewFooterRestartButton": "ランチャーを再起動",
 
-    "RightPanelImportTitle1": "ここをクリックして",
+    "RightPanelImportTitle1": "クリックまたはドロップで",
     "RightPanelImportTitle2": "か",
     "RightPanelImportTitle3": "",
-    "RightPanelImportTitle4": "範囲内ならどこにドロップしても大丈夫！",
+    "RightPanelImportTitle4": "範囲内のどこにドロップしてもOK！",
 
     "Error_NoPluginImported": "以下のエラーのため、プラグインがインポートされませんでした：",
     "Error_AccessDeniedPluginInstall": "プラグインの読み取りまたはインストール中に、権限が拒否されました。",
@@ -1464,7 +1477,7 @@
     "UpdateHeader4": "速度:",
     "UpdateHeader5PlaceHolder": "アップデートをダウンロードしています [- / -]:",
 
-    "UpdateForcedHeader": "重大な変更が行われたため、適切な動作を保証するためにランチャーを強制更新します。",
+    "UpdateForcedHeader": "動作の維持に必要な緊急の修正が行われたため、ランチャーを強制更新します。",
 
     "UpdateStatus1": "アップデートを取得中:",
     "UpdateMessage1": "アップデートリポジトリに接続しています...",

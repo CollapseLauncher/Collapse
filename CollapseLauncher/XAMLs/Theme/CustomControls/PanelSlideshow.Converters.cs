@@ -30,3 +30,21 @@ internal partial class CornerRadiusToDoubleConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+internal partial class ReverseProgressBarValue : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        double doubleValue = value.TryGetDouble();
+        return parameter switch
+        {
+            PanelSlideshow slideshow => slideshow.SlideshowDuration - doubleValue,
+            _ => 0d
+        };
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
+    }
+}

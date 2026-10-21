@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Shared.Region;
 using System;
@@ -21,36 +22,45 @@ public partial class ImageBackgroundManager
     #region Fields
 
     private static readonly string[] PlaceholderBackgroundImageRelPath = [
-        @"Assets\Images\PageBackground\default_genshin.webp",
-        @"Assets\Images\PageBackground\default_honkai.webp",
-        @"Assets\Images\PageBackground\default_starrail.webp",
-        @"Assets\Images\PageBackground\default_zzz.webp",
-    ];
-
-    private static readonly string[] PlaceholderBackgroundImagePngRelPath = [
-        @"Assets\Images\GamePoster\poster_genshin.png",
-        @"Assets\Images\GamePoster\poster_honkai.png",
-        @"Assets\Images\GamePoster\poster_starrail.png",
-        @"Assets\Images\GamePoster\poster_zzz.png",
+        @"Assets\Images\PageBackground\default_genshin.avif",
+        @"Assets\Images\PageBackground\default_honkai.avif",
+        @"Assets\Images\PageBackground\default_starrail.avif",
+        @"Assets\Images\PageBackground\default_zzz.avif"
     ];
 
     #endregion
 
-    private static Task<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
+    public static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
     {
-        return !Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri)
+        return !Uri.TryCreate(filePath, UriKind.RelativeOrAbsolute, out Uri? uri)
             ? throw new InvalidOperationException($"File path or URL is misformed! {filePath}")
             : OpenStreamFromFileOrUrl(uri, token);
     }
 
-    private static async Task<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
+    public static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
     {
-        if (uri.IsFile)
+        if (!uri.IsAbsoluteUri && !uri.IsWellFormedOriginalString())
         {
-            string localPath = uri.LocalPath;
+            string localPath = uri.OriginalString.GetFullyQualifiedPath();
             return !File.Exists(localPath)
                 ? throw new FileNotFoundException($"File: {localPath} does not exist!")
                 : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
+        if (uri.IsFile)
+        {
+            string localPath = uri.LocalPath.GetFullyQualifiedPath();
+            return !File.Exists(localPath)
+                ? throw new FileNotFoundException($"File: {localPath} does not exist!")
+                : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
+        if (uri.Scheme.StartsWith("ms-appx"))
+        {
+            string uwpResPath = uri.LocalPath.TrimStart("\\/").GetFullyQualifiedPath();
+            return !File.Exists(uwpResPath)
+                ? throw new FileNotFoundException($"File: {uwpResPath} does not exist!")
+                : File.Open(uwpResPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
         // Find stamp file. Try read the metadata in it and just use locally cached files if matches.
@@ -63,13 +73,8 @@ public partial class ImageBackgroundManager
         }
 
         HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
-        status = await sharedClient.GetCachedUrlStatus(uri, token);
+        status = await sharedClient.GetCachedUrlStatus(uri, token).ConfigureAwait(false);
         status.EnsureSuccessStatusCode();
-
-        if (status.FileSize == 0)
-        {
-            throw new HttpRequestException($"File URL is reachable but it returns 0 bytes. {uri}");
-        }
 
         downloadedFilePath = downloadedFilePath
                             .EnsureCreationOfDirectory()
@@ -82,9 +87,14 @@ public partial class ImageBackgroundManager
             downloadedFilePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
 
         using HttpResponseMessage responseMessage =
-            await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
-        await using Stream responseStream = await responseMessage.Content.ReadAsStreamAsync(token);
-        await responseStream.CopyToAsync(downloadedFileStream, token);
+            await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token)
+                              .ConfigureAwait(false);
+        await using Stream responseStream =
+            await responseMessage.Content
+                                 .ReadAsStreamAsync(token)
+                                 .ConfigureAwait(false);
+        await responseStream.CopyToAsync(downloadedFileStream, token)
+                            .ConfigureAwait(false);
 
         // Write stamp for future cache metadata
         ReadOnlySpan<byte> stampData = AsSpan(in status);
@@ -97,13 +107,13 @@ public partial class ImageBackgroundManager
             where T : unmanaged => new(Unsafe.AsPointer(in data), sizeof(T));
     }
 
-    internal static async Task<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
+    internal static async ValueTask<Uri> GetLocalOrDownloadedFilePath(Uri uri, CancellationToken token)
     {
         await using FileStream stream = await OpenStreamFromFileOrUrl(uri, token);
         return new Uri(stream.Name);
     }
 
-    internal static async Task<string> GetLocalOrDownloadedFilePath(string path, CancellationToken token)
+    internal static async ValueTask<string> GetLocalOrDownloadedFilePath(string path, CancellationToken token)
     {
         Uri uri = await GetLocalOrDownloadedFilePath(new Uri(path), token);
         return uri.IsFile
@@ -111,7 +121,7 @@ public partial class ImageBackgroundManager
             : uri.ToString();
     }
 
-    private static bool TryGetCroppedImageFilePath(string filePath,
+    internal static bool TryGetCroppedImageFilePath(string     filePath,
                                                    out string croppedFilePath)
     {
         string imageDirPath = LauncherConfig.AppGameImgFolder;
@@ -121,8 +131,8 @@ public partial class ImageBackgroundManager
         return IsFileExistAndNotEmpty(croppedFilePath);
     }
 
-    private static bool TryGetDecodedTemporaryFile(string filePath,
-                                                   out string decodedFilePath)
+    internal static bool TryGetDecodedTemporaryFile(string     filePath,
+                                                    out string decodedFilePath)
     {
         string imageDirPath = LauncherConfig.AppGameImgFolder;
         string fileName = $"decoded_{Path.GetFileNameWithoutExtension(filePath)}.png";
@@ -137,10 +147,10 @@ public partial class ImageBackgroundManager
         return fileInfo is { Exists: true, Length: > 0 };
     }
 
-    private static bool TryGetDownloadedFile(Uri           filePath,
-                                             out FileInfo  downloadedFilePath,
-                                             out FileInfo  downloadStampFilePath,
-                                             out UrlStatus urlStatusStamp)
+    internal static bool TryGetDownloadedFile(Uri           filePath,
+                                              out FileInfo  downloadedFilePath,
+                                              out FileInfo  downloadStampFilePath,
+                                              out UrlStatus urlStatusStamp)
     {
         string imageDirPath   = LauncherConfig.AppGameImgFolder;
         string fileHashedName = $"{Path.GetFileName(filePath.AbsolutePath)}";
@@ -180,68 +190,24 @@ public partial class ImageBackgroundManager
         return true;
     }
 
-    internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig, bool usePngVersion = false)
+    internal static string GetPlaceholderBackgroundImageFrom(PresetConfig? presetConfig)
     {
-        string[] source = usePngVersion
-            ? PlaceholderBackgroundImagePngRelPath
-            : PlaceholderBackgroundImageRelPath;
-
-        string relPath = presetConfig?.GameName ??
-                         LauncherConfig.GetAppConfigValue("GameCategory").Value switch
+        string[] source = PlaceholderBackgroundImageRelPath;
+        string relPath = presetConfig?.GameName switch
                          {
                              "Genshin Impact" => source[0],
                              "Honkai Impact 3rd" => source[1],
                              "Honkai: Star Rail" => source[2],
                              "Zenless Zone Zero" => source[3],
-                             _ => GetRandomPlaceholderImage(usePngVersion)
+                             _ => GetRandomPlaceholderImage()
                          };
 
         return Path.Combine(LauncherConfig.AppExecutableDir, relPath);
     }
 
-    public static string GetRandomPlaceholderImage(bool usePngVersion = false)
+    public static string GetRandomPlaceholderImage()
     {
-        string[] source = usePngVersion
-            ? PlaceholderBackgroundImagePngRelPath
-            : PlaceholderBackgroundImageRelPath;
-
-        return source[Random.Shared.Next(0, source.Length - 1)];
-    }
-
-    internal static bool CheckIsContextCached(LayeredImageBackgroundContext ctx)
-    {
-        bool backgroundCached = false;
-        if (!string.IsNullOrEmpty(ctx.BackgroundImagePath) &&
-            TryGetDownloadedFile(new Uri(ctx.BackgroundImagePath), out _, out _, out _))
-        {
-            backgroundCached = true;
-        }
-        else if (!string.IsNullOrEmpty(ctx.BackgroundImageStaticPath) &&
-                 TryGetDownloadedFile(new Uri(ctx.BackgroundImageStaticPath), out _, out _, out _))
-        {
-            backgroundCached = true;
-        }
-
-        return backgroundCached;
-    }
-
-    internal static string? TryGetCachedLocalPath(string? urlOrPath)
-    {
-        if (string.IsNullOrEmpty(urlOrPath))
-        {
-            return null;
-        }
-
-        if (TryGetDecodedTemporaryFile(urlOrPath, out string decodedFilePath))
-        {
-            return decodedFilePath;
-        }
-
-        if (TryGetDownloadedFile(new Uri(urlOrPath), out FileInfo downloadedFile, out _, out _))
-        {
-            return downloadedFile.FullName;
-        }
-
-        return null;
+        string[] source = PlaceholderBackgroundImageRelPath;
+        return source[new Random(Environment.TickCount).Next(0, source.Length - 1)];
     }
 }

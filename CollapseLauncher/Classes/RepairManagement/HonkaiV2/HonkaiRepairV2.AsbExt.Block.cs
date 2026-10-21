@@ -58,8 +58,8 @@ internal static partial class AssetBundleExtension
         progressibleInstance.Status.IsIncludePerFileIndicator = false;
         progressibleInstance.UpdateStatus();
 
-        await using Stream xmfMetaCurrentFileStream  = senadinaResults.XmfMeta?.fileStream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
-        await using Stream xmfPatchCurrentFileStream = senadinaResults.XmfPatch?.fileStream ?? throw new NullReferenceException("Senadina BlockPatch Identifier Stream cannot be null!");
+        await using Stream xmfMetaCurrentFileStream  = senadinaResults.XmfMeta?.Stream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
+        await using Stream xmfPatchCurrentFileStream = senadinaResults.XmfPatch?.Stream ?? throw new NullReferenceException("Senadina BlockPatch Identifier Stream cannot be null!");
 
         XMFParser          xmfMetaParser  = new(string.Empty, xmfMetaCurrentFileStream, true);
         BlockPatchManifest xmfPatchParser = new(xmfPatchCurrentFileStream);
@@ -101,8 +101,7 @@ internal static partial class AssetBundleExtension
 
         foreach (XMFBlock xmfBlock in xmfMetaParser.BlockEntry)
         {
-            ref BlockPatchInfo patchInfoRef =
-                ref CollectionsMarshal.GetValueRefOrNullRef(patchInfos, xmfBlock.BlockName);
+            ref BlockPatchInfo patchInfoRef = ref CollectionsMarshal.GetValueRefOrNullRef(patchInfos, xmfBlock.BlockName);
 
             string asbBaseUrl = progressibleInstance.GetRandomAsbBaseUrl(gameServerInfo);
             string assetUrl =

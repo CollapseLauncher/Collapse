@@ -256,10 +256,7 @@ internal partial class WpfPackageContext
             string gameNameTranslated   = MetadataHelper.GetTranslatedTitle(gameName);
             string gameRegionTranslated = MetadataHelper.GetTranslatedRegion(regionName);
 
-            string icon = await ImageLoaderHelper
-                             .GetCachedSpritesAsync(WpfPackageIconUrl,
-                                                    false,
-                                                    CancellationToken.None)
+            string icon = await ImageLoaderHelper.GetCachedSpritesAsync(WpfPackageIconUrl, false, CancellationToken.None)
                           ?? "";
 
             // Create Toast Notification Content

@@ -2,8 +2,8 @@
   "profiles": {
     "Collapse Launcher": {
       "commandName": "Project",
-      "nativeDebugging": false,
-      "hotReloadEnabled": true
+      "hotReloadEnabled": true,
+      "debugEngines": "managed-dotnet"
     },
     "OOBE Setup": {
       "commandName": "Project",

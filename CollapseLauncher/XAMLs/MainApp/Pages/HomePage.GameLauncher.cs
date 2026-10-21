@@ -833,7 +833,7 @@ public partial class HomePage
 
                         #if !DISABLEDISCORD
                             if (ToggleRegionPlayingRpc)
-                                AppDiscordPresence.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                                AppDiscordPresence.SetActivity(DiscordActivityType.Play, fromActivityOffset.ToUniversalTime());
                         #endif
 
                             int height = gameSettings.SettingsScreen?.height ?? 0;
@@ -892,7 +892,7 @@ public partial class HomePage
             PlaytimeRunningStack.Visibility = Visibility.Collapsed;
                 
         #if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.Idle);
+            AppDiscordPresence.SetActivity(DiscordActivityType.Idle);
         #endif
         }
         catch (TaskCanceledException)

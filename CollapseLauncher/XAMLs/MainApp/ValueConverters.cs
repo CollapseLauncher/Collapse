@@ -25,6 +25,9 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Windows.Globalization.NumberFormatting;
+using Windows.Media.Playback;
+#pragma warning disable IDE0290
+
 // ReSharper disable IdentifierTypo
 
 // ReSharper disable PartialTypeWithSinglePart
@@ -942,24 +945,6 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public partial class MediaAutoplayWindowOverrideConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (!WindowUtility.CurrentWindowIsVisible)
-            {
-                return false;
-            }
-
-            return value is true;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public partial class BackgroundParallaxPixelToComboBoxIndexConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -1350,20 +1335,17 @@ namespace CollapseLauncher.Pages
         {
             if (value is not TFrom asStructFrom)
             {
-                throw new
-                    InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
+                throw new InvalidOperationException($"Type mismatch: expected {typeof(TFrom)}, but got {value?.GetType()}");
             }
 
             int sizeOfFrom = sizeof(TFrom);
-            int sizeOfTo = sizeof(TTo);
-
+            int sizeOfTo   = sizeof(TTo);
             if (sizeOfFrom != sizeOfTo)
             {
                 throw new InvalidOperationException($"Size mismatch: {typeof(TFrom)} ({sizeOfFrom} bytes) vs {typeof(TTo)} ({sizeOfTo} bytes)");
             }
 
-            TTo result = default;
-            Unsafe.Copy(ref result, &asStructFrom);
+            TTo result = Unsafe.BitCast<TFrom, TTo>(asStructFrom);
             return result;
         }
     }
@@ -1385,4 +1367,61 @@ namespace CollapseLauncher.Pages
     public partial class PluginDoublePositionToThicknessConverter :
         StructToStructConverter<Hi3Helper.Plugin.Core.UI.DoublePosition,
                                 Thickness>;
+
+    public partial class MediaPlayerStateToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not MediaPlayerState state)
+            {
+                throw new InvalidCastException("Value is not a MediaPlayerState");
+            }
+
+            if (parameter is true ||
+                (parameter is string paramAsStr &&
+                 bool.TryParse(paramAsStr, out bool result) &&
+                 result))
+            {
+                return state is MediaPlayerState.Closed
+                             or MediaPlayerState.Paused
+                             or MediaPlayerState.Stopped
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+            return state is MediaPlayerState.Buffering
+                         or MediaPlayerState.Opening
+                         or MediaPlayerState.Playing
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
+
+    public partial class MinMaxToPercentConverter<T> : IValueConverter
+        where T : unmanaged, IBinaryNumber<T>
+    {
+        public MinMaxToPercentConverter(T min, T max)
+        {
+            _min = min.TryGetDouble();
+            _max = max.TryGetDouble();
+        }
+
+        private readonly double _min;
+        private readonly double _max;
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double valueD = value.TryGetDouble();
+            return (valueD - _min) / _max - _min;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            double valueD = value.TryGetDouble();
+            return (_max - _min) * valueD + _min;
+        }
+    }
 }

@@ -137,12 +137,6 @@ namespace CollapseLauncher
                 {
                     ImageLoaderHelper.InitWaifu2X();
                 }
-
-                // Initialize support for MagicScaler's WebP decoding
-                CodecManager.Configure(codecs =>
-                {
-                    codecs.UseLibwebp();
-                });
             }
             catch (Exception ex)
             {

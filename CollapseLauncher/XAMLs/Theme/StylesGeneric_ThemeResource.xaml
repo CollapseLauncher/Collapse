@@ -4,7 +4,6 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <!--  For dark theme  -->
-            <x:String x:Key="AppLogo">ms-appx:///Assets/CollapseLauncherLogo.png</x:String>
             <x:String x:Key="AppLogoOutline">ms-appx:///Assets/CollapseLauncherLogoOutlineLight.png</x:String>
             <!--  Base accent color  -->
             <winui:Color x:Key="TemplateAccentColor">#ffd52a</winui:Color>
@@ -367,7 +366,6 @@
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <!--  For light theme  -->
-            <x:String x:Key="AppLogo">ms-appx:///Assets/CollapseLauncherLogo.png</x:String>
             <x:String x:Key="AppLogoOutline">ms-appx:///Assets/CollapseLauncherLogoOutlineDark.png</x:String>
             <!--  Base accent color  -->
             <winui:Color x:Key="TemplateAccentColor">#693758</winui:Color>
@@ -721,7 +719,6 @@
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
             <!--  Logos  -->
-            <x:String x:Key="AppLogo">ms-appx:///Assets/CollapseLauncherLogo.png</x:String>
             <x:String x:Key="AppLogoOutline">ms-appx:///Assets/CollapseLauncherLogoOutlineLight.png</x:String>
             <!--  Accent colors: map to system HC highlight  -->
             <StaticResource x:Key="TemplateAccentColor"

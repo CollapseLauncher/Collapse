@@ -1,6 +1,7 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
@@ -8,6 +9,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.MagicScaler.LibheifCL;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.ManagedTools;
@@ -18,13 +20,15 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Settings;
 using Microsoft.Win32;
 using PhotoSauce.MagicScaler;
-using PhotoSauce.NativeCodecs.Libheif;
 using PhotoSauce.NativeCodecs.Libjxl;
 using PhotoSauce.NativeCodecs.Libwebp;
 using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -181,7 +185,6 @@ namespace CollapseLauncher
             // https://github.com/sundaramramaswamy/microsoft-ui-xaml/blob/069fbc9683b3b07df5549961e00251439a6916cd/specs/XamlOptionalChanges/XamlOptionalChanges-Spec.md#xamlchangeid-enum
             EnableXamlOpts(XamlChangeId.DefaultStyleOptimizations,
                            XamlChangeId.DeferContextFlyoutInit,
-                           XamlChangeId.IconNoGridOptimization,
                            XamlChangeId.OptimizeApplyStyles);
             return;
 
@@ -319,10 +322,17 @@ namespace CollapseLauncher
              * Module: Libzstd
              */
 
+#if !NET11_0_OR_GREATER
             // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
             // But due to AOT build uses Static Library in favor of Shared ones (that comes
             // with .dll files), the check will be ignored.
             ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
+#endif
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: MagicScaler External Codecs for Image Decoding
+             */
+            InitMagicScalerExternalCodecs();
 
             /* ---------------------------------------------------------------------------------------------
              * Module: Velopack
@@ -368,9 +378,9 @@ namespace CollapseLauncher
                 await InitDatabaseHandler();
 
                 /* ---------------------------------------------------------------------------------------------
-                 * Module: MagicScaler External Codecs for Image Decoding
+                 * Module: Waifu2X (Start device test in the background and cache it)
                  */
-                InitMagicScalerExternalCodecs();
+                ImageLoaderHelper.EnsureWaifu2X();
             }
             catch (Exception ex)
             {
@@ -382,18 +392,36 @@ namespace CollapseLauncher
         {
             try
             {
-                CodecManager.Configure(codecs =>
-                                       {
-                                           codecs.UseLibwebp();
-                                           codecs.UseLibheif();
-                                           codecs.UseLibjxl();
-                                       });
+                CodecManager.Configure(RegisterExternalCodec);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
                              LogType.Error,
                              true);
+            }
+
+            return;
+
+            static void RegisterExternalCodec(CodecCollection codecs)
+            {
+                // Remove built-in WIC decoder from the list before adding another ones.
+                SearchValues<string> searchValues = SearchValues.Create([
+                    "Microsoft HEIF",
+                    "Microsoft Webp",
+                    "Microsoft JPEG-XL",
+                    "Microsoft JXL"
+                ], StringComparison.OrdinalIgnoreCase);
+
+                List<IImageCodecInfo> toDeleteList = [.. codecs.Where(x => x.Name.ContainsAny(searchValues))];
+                foreach (IImageCodecInfo toDelete in toDeleteList)
+                {
+                    codecs.Remove(toDelete);
+                }
+
+                codecs.UseLibwebp();
+                codecs.UseLibheifCL();
+                codecs.UseLibjxl();
             }
         }
 

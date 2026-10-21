@@ -43,6 +43,9 @@
 // | Gradient stops           |     6 |
 // | CompositionVisualSurface |    42 |
 // ------------------------------------
+
+using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.Image;
 using Hi3Helper.Shared.Region;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Effects;
@@ -55,6 +58,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 
@@ -156,9 +160,9 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
             if (!_isImageLoadingStarted)
             {
                 var eventHandler = new TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs>(HandleLoadCompleted);
-                _image_image_0 = LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
+                _image_image_0               =  LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
                 _image_image_0.LoadCompleted += eventHandler;
-                _isImageLoadingStarted = true;
+                _isImageLoadingStarted       =  true;
             }
         }
 

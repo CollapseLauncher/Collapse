@@ -30,7 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
-
+using Windows.Media.Playback;
 // ReSharper disable CheckNamespace
 
 #nullable enable
@@ -42,7 +42,7 @@ public sealed partial class HomePage
     {
         get
         {
-            ILauncherApi?              api  = CurrentPresetConfig?.GameLauncherApi;
+            ILauncherApi?              api  = CurrentPresetConfig == null! ? null : CurrentPresetConfig.GameLauncherApi;
             HypLauncherBackgroundList? data = api?.LauncherGameBackground?.Data;
             return data;
         }
@@ -173,7 +173,7 @@ public sealed partial class HomePage
         grid.Opacity   = 1f; // Trigger this bihhh to appear on the visual first since its own .Opacity and Visual.Opacity don't match.
         visual.Opacity = show ? 0f : 1f;
 
-        double duration = 200d;
+        const double duration = 200d;
 
         CompositionAnimationGroup animGroup = compositor.CreateAnimationGroup();
         CompositionEasingFunction? function = compositor.TryCreateEasingFunction(EasingType.Quintic);
@@ -228,6 +228,7 @@ public sealed partial class HomePage
             grid.IsHitTestVisible = false;
         }
     }
+
     #endregion
 
     #region Background context menu commands
@@ -235,32 +236,18 @@ public sealed partial class HomePage
     public ICommand BackgroundImageContextMenuCopyUrlToClipboardCommand { get; } = new RelayCommand<object?>(OnBackgroundImageContextMenuCopyUrlToClipboardCommand);
     private static void OnBackgroundImageContextMenuCopyUrlToClipboardCommand(object? sourcePath)
     {
-        Uri? sourceUri = sourcePath as Uri;
-        if (sourcePath is string asString &&
-            !Uri.TryCreate(asString, UriKind.Absolute, out sourceUri))
-        {
+        if (sourcePath is not string sourcePathAsString)
             return;
-        }
 
-        LayeredBackgroundImage?        currentElement = ImageBackgroundManager.Shared.CurrentBackgroundElement;
         LayeredImageBackgroundContext? currentContext = ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext;
-        bool isUseStaticBackground = !(currentElement?.IsVideoPlay ?? true) &&
-                                     currentElement.BackgroundStaticSource != null;
+        bool overrideToPlaceholder = !ImageBackgroundManager.Shared.CurrentIsEnableBackgroundAutoPlay &&
+                                     !string.IsNullOrEmpty(currentContext?.OriginPlaceholderImagePath) &&
+                                     currentContext.OriginBackgroundImagePath == sourcePathAsString;
 
-        if (isUseStaticBackground &&
-            !Uri.TryCreate(currentContext?.OriginBackgroundStaticImagePath, UriKind.Absolute, out sourceUri))
-        {
-            return;
-        }
+        if (overrideToPlaceholder)
+            sourcePathAsString = currentContext?.OriginPlaceholderImagePath ?? "";
 
-        if (sourceUri == null)
-        {
-            return;
-        }
-
-        Clipboard.CopyStringToClipboard(sourceUri.IsFile
-                                        ? sourceUri.LocalPath
-                                        : sourceUri.AbsoluteUri);
+        Clipboard.CopyStringToClipboard(sourcePathAsString);
     }
 
     public ICommand BackgroundImageContextMenuCopyImageToClipboardCommand { get; } = new RelayCommand<int>(OnBackgroundImageContextMenuCopyImageToClipboardCommand);
@@ -313,7 +300,7 @@ public sealed partial class HomePage
 
             List<LayeredImageBackgroundContext> contexts = onlyCurrent && ImageBackgroundManager.Shared.CurrentSelectedBackgroundContext is {} currentContext
                 ? [currentContext]
-                : ImageBackgroundManager.Shared.ImageContextSources.ToList();
+                : [.. ImageBackgroundManager.Shared.ImageContextSources];
 
             foreach ((int Index, LayeredImageBackgroundContext Item) context in contexts.Index())
             {
@@ -389,7 +376,7 @@ public sealed partial class HomePage
             return;
         }
 
-        if (element.IsVideoPlay)
+        if (element.MediaState == MediaPlayerState.Playing)
         {
             CurrentBackgroundManager.Pause();
             return;

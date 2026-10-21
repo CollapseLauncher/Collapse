@@ -1,6 +1,3 @@
-// ReSharper disable CommentTypo
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedVariable
 /*
  * Initial Implementation Credit by: @Shatyuka
  */
@@ -10,16 +7,19 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
+// ReSharper disable RedundantUnsafeContext
+// ReSharper disable UnusedMember.Local
 // ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameSettings.Zenless;
 
 #nullable enable
-internal static class Sleepy
+internal static unsafe class Sleepy
 {
     // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L7C1-L32C6
-    private enum BinaryHeaderEnum
+    private enum BinaryHeaderEnum : byte
     {
         SerializedStreamHeader    = 0,
         Object                    = 1,
@@ -44,47 +44,12 @@ internal static class Sleepy
         CrossAppDomainAssembly    = 20,
         MethodCall                = 21,
         MethodReturn              = 22,
-        BinaryReference           = -1
-    }
-
-    // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L35
-    private enum BinaryTypeEnum
-    {
-        Primitive      = 0,
-        String         = 1,
-        Object         = 2,
-        ObjectUrt      = 3,
-        ObjectUser     = 4,
-        ObjectArray    = 5,
-        StringArray    = 6,
-        PrimitiveArray = 7
-    }
-
-    // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L47
-    private enum BinaryArrayTypeEnum
-    {
-        Single            = 0,
-        Jagged            = 1,
-        Rectangular       = 2,
-        SingleOffset      = 3,
-        JaggedOffset      = 4,
-        RectangularOffset = 5
-    }
-
-    // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L99
-    private enum InternalArrayTypeE
-    {
-        Empty       = 0,
-        Single      = 1,
-        Jagged      = 2,
-        Rectangular = 3,
-        Base64      = 4
     }
 
     internal static string ReadString(string filePath, ReadOnlySpan<byte> magic)
     {
         // Get the FileInfo
-        FileInfo fileInfo = new FileInfo(filePath).EnsureNoReadOnly(out bool isExist);
+        FileInfo fileInfo = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly(out bool isExist);
         if (!isExist)
             throw new FileNotFoundException("[Sleepy::ReadString] File does not exist!");
 
@@ -93,76 +58,53 @@ internal static class Sleepy
         return ReadString(stream, magic);
     }
 
-    internal static unsafe string ReadString(Stream stream, ReadOnlySpan<byte> magic)
+    [SkipLocalsInit]
+    internal static string ReadString(Stream stream, ReadOnlySpan<byte> magic)
     {
         // Stream assertion
         if (!stream.CanRead) throw new ArgumentException("[Sleepy::ReadString] Stream must be readable!", nameof(stream));
 
         // Assign the reader
-        using BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        // Emulate and Assert the BinaryFormatter header info
-        reader.EmulateSleepyBinaryFormatterHeaderAssertion();
+        // Emulate and Assert the BinaryFormatter header
+        reader.EmulateReadAssert();
 
         // Get the data length
-        int length      = reader.GetBinaryFormatterDataLength();
-        int magicLength = magic.Length;
+        int length = reader.Read7BitEncodedInt();
 
         // Alloc temporary buffers
-        char[] bufferChars = ArrayPool<char>.Shared.Rent(length);
+        Span<bool> evil         = stackalloc bool[magic.Length];
+        byte[]     evilBuffer   = ArrayPool<byte>.Shared.Rent(length);
+        char[]     unevilBuffer = ArrayPool<char>.Shared.Rent(length);
 
-        // Do the do
-        CreateEvil(magic, out bool[] evil, out int evilsCount);
-        fixed (bool* evp = &evil[0])
-            fixed (char* bp = &bufferChars[0])
-            {
-                try
-                {
-                    // Do the do (pt. 2)
-                    int j = InternalDecode(magic, evp, reader, length, magicLength, bp);
+        // Read evil data to evil buffer >:)
+        reader.BaseStream.ReadExactly(evilBuffer, 0, length);
 
-                    // Emulate and Assert the BinaryFormatter footer
-                    reader.EmulateSleepyBinaryFormatterFooterAssertion();
-
-                    // Return
-                    return new string(bp, 0, j);
-                }
-                finally
-                {
-                    // Return and clear the buffer, to only returns the return string.
-                    ArrayPool<char>.Shared.Return(bufferChars, true);
-                }
-            }
-    }
-
-    private static unsafe int InternalDecode(ReadOnlySpan<byte> magic, bool* evil, BinaryReader reader, int length, int magicLength, char* bp)
-    {
-        bool eepy = false;
-
-        int j = 0;
-        int i = 0;
-
-        amimir:
-        var  n  = i % magicLength;
-        byte c  = reader.ReadByte();
-        byte ch = (byte)(c ^ magic[n]);
-
-        if (*(evil + n))
+        try
         {
-            eepy = ch != 0;
-        }
-        else
-        {
-            if (eepy)
-            {
-                ch   += 0x40;
-                eepy =  false;
-            }
-            *(bp + j++) = (char)ch;
-        }
+            // Do the do
+            CreateEvil(magic, evil);
 
-        if (++i < length) goto amimir;
-        return j;
+            // Do the do (pt. 2)
+            int j = InternalRead(magic,
+                                 evil,
+                                 evilBuffer.AsSpan(0, length),
+                                 unevilBuffer.AsSpan(0, length));
+
+            // Emulate and Assert the BinaryFormatter footer
+            reader.EmulateReadAssertMessageEnd();
+
+            // Return
+            return new string(unevilBuffer, 0, j);
+        }
+        finally
+        {
+            // Return and clear the buffer, to only returns the return string.
+            evil.Clear();
+            ArrayPool<byte>.Shared.Return(evilBuffer, true);
+            ArrayPool<char>.Shared.Return(unevilBuffer, true);
+        }
     }
 
     internal static void WriteString(string filePath, ReadOnlySpan<char> content, ReadOnlySpan<byte> magic)
@@ -182,7 +124,8 @@ internal static class Sleepy
         WriteString(stream, content, magic);
     }
 
-    internal static unsafe void WriteString(Stream stream, ReadOnlySpan<char> content, ReadOnlySpan<byte> magic)
+    [SkipLocalsInit]
+    internal static void WriteString(Stream stream, ReadOnlySpan<char> content, ReadOnlySpan<byte> magic)
     {
         // Stream assertion
         if (!stream.CanWrite) throw new ArgumentException("[Sleepy::WriteString] Stream must be writable!", nameof(stream));
@@ -191,178 +134,206 @@ internal static class Sleepy
         if (magic.Length == 0) throw new ArgumentException("[Sleepy::WriteString] Magic cannot be empty!", nameof(magic));
 
         // Assign the writer
-        using BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
 
         // Emulate to write the BinaryFormatter header
-        writer.EmulateSleepyBinaryFormatterHeaderWrite();
+        writer.EmulateWrite();
 
         // Do the do
-        int  contentLen = content.Length;
-        int  bufferLen  = contentLen * 2;
+        int contentLen = content.Length;
+        int bufferLen  = Encoding.UTF8.GetMaxByteCount(contentLen);
 
         // Alloc temporary buffers
-        byte[] contentBytes = ArrayPool<byte>.Shared.Rent(bufferLen);
-        byte[] encodedBytes = ArrayPool<byte>.Shared.Rent(bufferLen);
+        Span<bool> evil         = stackalloc bool[magic.Length];
+        byte[]     evilBuffer   = ArrayPool<byte>.Shared.Rent(bufferLen);
+        byte[]     unevilBuffer = ArrayPool<byte>.Shared.Rent(bufferLen);
 
-        // Do the do
-        CreateEvil(magic, out bool[] evil, out int evilsCount);
+        try
+        {
+            // Encode content to unevil UTF-8 buffer
+            int unevilBufferLen = Encoding.UTF8.GetBytes(content, unevilBuffer);
 
-        fixed (char* cp = &content[0])
-            fixed (byte* bp = &contentBytes[0])
-                fixed (byte* ep = &encodedBytes[0])
-                    fixed (bool* evp = &evil[0])
-                    {
-                        try
-                        {
-                            // Get the string bytes
-                            _ = Encoding.UTF8.GetBytes(cp, contentLen, bp, bufferLen);
+            // Do the do
+            CreateEvil(magic, evil);
 
-                            // Do the do (pt. 2)
-                            int h = InternalWrite(magic, contentLen, bp, ep, evp);
+            // Do the do (pt. 2)
+            int h = InternalWrite(magic,
+                                  evil,
+                                  evilBuffer,
+                                  unevilBuffer.AsSpan(0, unevilBufferLen));
 
-                            writer.Write7BitEncodedInt(h);
-                            writer.BaseStream.Write(encodedBytes, 0, h);
-                            writer.EmulateSleepyBinaryFormatterFooterWrite();
-                        }
-                        finally
-                        {
-                            // Return and clear the buffer.
-                            ArrayPool<byte>.Shared.Return(contentBytes, true);
-                            ArrayPool<byte>.Shared.Return(encodedBytes, true);
-                        }
-                    }
+            writer.Write7BitEncodedInt(h);
+            writer.BaseStream.Write(evilBuffer, 0, h);
+            writer.EmulateWriteMessageEnd();
+        }
+        finally
+        {
+            // Return and clear the buffer.
+            evil.Clear();
+            ArrayPool<byte>.Shared.Return(evilBuffer,   true);
+            ArrayPool<byte>.Shared.Return(unevilBuffer, true);
+        }
     }
 
-    private static unsafe int InternalWrite(ReadOnlySpan<byte> magic, int contentLen, byte* bp, byte* ep, bool* evil)
+    private static int InternalRead(
+        ReadOnlySpan<byte>        magic,
+        scoped ReadOnlySpan<bool> evil,
+        ReadOnlySpan<byte>        evilBuffer,
+        Span<char>                unevilBuffer)
+    {
+        bool eepy = false;
+
+        int j = 0;
+        int i = 0;
+
+    amimir:
+        int  n  = i % magic.Length;
+        byte c  = evilBuffer[i];
+        byte ch = (byte)(c ^ magic[n]);
+
+        if (evil[n])
+        {
+            eepy = ch != 0;
+        }
+        else
+        {
+            if (eepy)
+            {
+                ch   += 0x40;
+                eepy =  false;
+            }
+            unevilBuffer[j++] = (char)ch;
+        }
+
+        if (++i < evilBuffer.Length) goto amimir;
+        return j;
+    }
+
+    private static int InternalWrite(
+        ReadOnlySpan<byte>        magic,
+        scoped ReadOnlySpan<bool> evil,
+        Span<byte>                evilBuffer,
+        ReadOnlySpan<byte>        unevilBuffer)
     {
         int h = 0;
         int i = 0;
         int j = 0;
 
-        amimir:
+    amimir:
         int  n  = i % magic.Length;
-        byte ch = *(bp + j);
-        if (*(evil + n))
+        byte ch = unevilBuffer[j];
+        if (evil[n])
         {
             byte eepy = 0;
-            if (*(bp + j) >= 0x40)
+            if (unevilBuffer[j] >= 0x40)
             {
                 ch   -= 0x40;
                 eepy =  1;
             }
-            *(ep + h++) = (byte)(eepy ^ magic[n]);
+            evilBuffer[h++] = (byte)(eepy ^ magic[n]);
 
             n = ++i % magic.Length;
         }
 
-        *(ep + h++) = (byte)(ch ^ magic[n]);
+        evilBuffer[h++] = (byte)(ch ^ magic[n]);
         ++i;
         ++j;
-        if (j < contentLen) goto amimir;
+        if (j < unevilBuffer.Length) goto amimir;
         return h;
     }
 
-    private static void CreateEvil(ReadOnlySpan<byte> magic, out bool[] evilist, out int evilsCount)
+    private static void CreateEvil(ReadOnlySpan<byte> magic, scoped Span<bool> evilist)
     {
         int magicLength = magic.Length;
         int i           = 0;
-        evilist    = new bool[magicLength];
-        evilsCount = 0;
-        evilist:
+
+    evilist:
         int n = i % magicLength;
         evilist[i] = (magic[n] & 0xC0) == 0xC0;
-        if (evilist[i]) ++evilsCount;
+
         if (++i < magicLength) goto evilist;
     }
 
-    private static void EmulateSleepyBinaryFormatterHeaderAssertion(this BinaryReader reader)
+    extension(BinaryReader reader)
     {
-        // Do assert [class] -> [string object]
-        // START!
-        // Check if the first byte is SerializedStreamHeader
-        reader.LogAssertInfoByteEnum(BinaryHeaderEnum.SerializedStreamHeader);
-
-        // Check if the type is an Object
-        reader.LogAssertInfoInt32Enum(BinaryHeaderEnum.Object);
-
-        // Check if the type is a BinaryReference
-        reader.LogAssertInfoInt32Enum(BinaryHeaderEnum.BinaryReference);
-
-        // Check if the BinaryReference type is a String
-        reader.LogAssertInfoInt32Enum(BinaryTypeEnum.String);
-
-        // Check for the binary array type and check if it's Single
-        reader.LogAssertInfoInt32Enum(BinaryArrayTypeEnum.Single);
-
-        // Check for the binary type and check if it's StringArray (UTF-8)
-        reader.LogAssertInfoByteEnum(BinaryTypeEnum.StringArray);
-
-        // Check for the internal array type and check if it's Single
-        reader.LogAssertInfoInt32Enum(InternalArrayTypeE.Single);
-    }
-
-    // Do assert [class] -> [EOF mark]
-    // START!
-    private static void EmulateSleepyBinaryFormatterFooterAssertion(this BinaryReader reader) =>
-        reader.LogAssertInfoByteEnum(BinaryHeaderEnum.MessageEnd);
-
-    private static void EmulateSleepyBinaryFormatterHeaderWrite(this BinaryWriter writer)
-    {
-        // Emulate to write Sleepy BinaryFormatter header information
-        writer.WriteEnumAsByte(BinaryHeaderEnum.SerializedStreamHeader);
-        writer.WriteEnumAsInt32(BinaryHeaderEnum.Object);
-        writer.WriteEnumAsInt32(BinaryHeaderEnum.BinaryReference);
-        writer.WriteEnumAsInt32(BinaryTypeEnum.String);
-        writer.WriteEnumAsInt32(BinaryArrayTypeEnum.Single);
-        writer.WriteEnumAsByte(BinaryTypeEnum.StringArray);
-        writer.WriteEnumAsInt32(InternalArrayTypeE.Single);
-    }
-
-    // Emulate to write Sleepy BinaryFormatter footer EOF
-    private static void EmulateSleepyBinaryFormatterFooterWrite(this BinaryWriter writer) =>
-        writer.WriteEnumAsByte(BinaryHeaderEnum.MessageEnd);
-
-    private static void WriteEnumAsByte<T>(this BinaryWriter writer, T headerEnum)
-        where T : struct, Enum
-    {
-        int enumValue = Unsafe.As<T, int>(ref headerEnum);
-        writer.Write((byte)enumValue);
-    }
-
-    private static void WriteEnumAsInt32<T>(this BinaryWriter writer, T headerEnum)
-        where T : struct, Enum
-    {
-        int enumValue = Unsafe.As<T, int>(ref headerEnum);
-        writer.Write(enumValue);
-    }
-
-    private static void LogAssertInfoByteEnum<T>(this BinaryReader stream, T assertHeaderEnum)
-        where T : struct, Enum
-    {
-        int currentInt = stream.ReadByte();
-        LogAssertInfo(stream, ref assertHeaderEnum, ref currentInt);
-    }
-
-    private static void LogAssertInfoInt32Enum<T>(this BinaryReader stream, T assertHeaderEnum)
-        where T : struct, Enum
-    {
-        int currentInt = stream.ReadInt32();
-        LogAssertInfo(stream, ref assertHeaderEnum, ref currentInt);
-    }
-
-    private static void LogAssertInfo<T>(BinaryReader reader, ref T assertHeaderEnum, ref int currentInt)
-        where T : struct, Enum
-    {
-        int intAssertCasted = Unsafe.As<T, int>(ref assertHeaderEnum);
-        if (intAssertCasted != currentInt)
+        private void EmulateReadAssert()
         {
-            string? assertHeaderEnumValueName   = Enum.GetName(assertHeaderEnum);
-            T       comparedEnumCasted          = Unsafe.As<int, T>(ref currentInt);
-            string? comparedHeaderEnumValueName = Enum.GetName(comparedEnumCasted);
+            // Check if the record type is a SerializedStreamHeader
+            reader.ReadAssert(BinaryHeaderEnum.SerializedStreamHeader);
 
-            throw new InvalidDataException($"[Sleepy::LogAssertInfo] BinaryFormatter header is not valid at stream pos: {reader.BaseStream.Position:x8}. Expecting object enum: {assertHeaderEnumValueName} but getting: {comparedHeaderEnumValueName} instead!");
+            // Check if Root object ID == 1
+            reader.ReadAssert(1);
+
+            // Check if No header object is required
+            reader.ReadAssert(-1);
+
+            // Check if the major version is 1
+            reader.ReadAssert(1);
+
+            // Check if the minor version is 0
+            reader.ReadAssert(0);
+
+            // Check if the record type is an ObjectString
+            reader.ReadAssert(BinaryHeaderEnum.ObjectString);
+
+            // Check if Root object ID == 1
+            reader.ReadAssert(1);
+        }
+
+        private void EmulateReadAssertMessageEnd() =>
+            reader.ReadAssert(BinaryHeaderEnum.MessageEnd);
+
+        [SkipLocalsInit]
+        private void ReadAssert<T>(T assertWith)
+            where T : unmanaged
+        {
+            Span<byte> buffer = stackalloc byte[sizeof(T)];
+            _ = reader.BaseStream.Read(buffer);
+
+            ref T thisEnum = ref MemoryMarshal.AsRef<T>(buffer);
+            if (IsEqual(ref thisEnum, ref assertWith))
+                return;
+
+            throw new InvalidDataException($"[Sleepy::LogAssertInfo] BinaryFormatter header is not valid at stream pos: {reader.BaseStream.Position:x8}. Expecting value: {assertWith} but getting: {thisEnum} instead!");
         }
     }
 
-    private static int GetBinaryFormatterDataLength(this BinaryReader reader) => reader.Read7BitEncodedInt();
+
+    extension(BinaryWriter writer)
+    {
+        private void EmulateWrite()
+        {
+            // Emulate to write Sleepy BinaryFormatter header information
+            writer.Write(BinaryHeaderEnum.SerializedStreamHeader);
+            writer.Write(1);
+            writer.Write(-1);
+            writer.Write(1);
+            writer.Write(0);
+            writer.Write(BinaryHeaderEnum.ObjectString);
+            writer.Write(1);
+        }
+
+        // Emulate to write Sleepy BinaryFormatter footer EOF
+        private void EmulateWriteMessageEnd() =>
+            writer.Write(BinaryHeaderEnum.MessageEnd);
+
+        private void Write<T>(T value)
+            where T : unmanaged
+        {
+            ReadOnlySpan<byte> buffer = MemoryMarshal.AsBytes(new ReadOnlySpan<T>(ref value));
+            writer.BaseStream.Write(buffer);
+        }
+    }
+
+    private static bool IsEqual<T>(ref T from, ref T to)
+        where T : unmanaged
+        => sizeof(T) switch
+        {
+            1  => Unsafe.As<T, byte>(ref from) == Unsafe.As<T, byte>(ref to),
+            2  => Unsafe.As<T, short>(ref from) == Unsafe.As<T, short>(ref to),
+            4  => Unsafe.As<T, int>(ref from) == Unsafe.As<T, int>(ref to),
+            8  => Unsafe.As<T, long>(ref from) == Unsafe.As<T, long>(ref to),
+            16 => Unsafe.As<T, Int128>(ref from) == Unsafe.As<T, Int128>(ref to),
+            _  => MemoryMarshal.AsBytes(new Span<T>(ref from)).SequenceEqual(MemoryMarshal.AsBytes(new Span<T>(ref to)))
+        };
 }
