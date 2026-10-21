@@ -6,7 +6,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.WindowSize;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -182,40 +181,6 @@ public sealed partial class HomePage
             OnPropertyChanged();
         }
     }
-
-    internal int CurrentBannerIconHeight =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconHeight :
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconHeightHYP;
-
-    internal Thickness CurrentBannerIconMargin =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
-
-    internal int CurrentBannerIconColumn =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            1 :
-            0;
-
-    internal static int CurrentBannerIconColumnSpan => 1;
-
-    internal int CurrentBannerIconRow =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            1 :
-            0;
-
-    internal static int CurrentBannerIconRowSpan => 1;
-
-    internal HorizontalAlignment CurrentBannerIconHorizontalAlign =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
-
-    internal VerticalAlignment CurrentBannerIconVerticalAlign =>
-        CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
-            WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
 
     private ImageBackgroundManager CurrentBackgroundManager => field ??= ImageBackgroundManager.Shared;
 

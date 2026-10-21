@@ -45,6 +45,7 @@
         <pages:PluginHorizontalAlignmentConverter x:Key="PluginHorizontalAlignmentConverter" />
         <pages:PluginVerticalAlignmentConverter x:Key="PluginVerticalAlignmentConverter" />
         <pages:PluginDoublePositionToThicknessConverter x:Key="PluginDoublePositionToThicknessConverter" />
+        <pages:MediaPlayerStateToVisibilityConverter x:Key="MediaPlayerStateToVisibilityConverter" />
         <c:IndexAddOneConverter x:Key="IndexAddOneConverter" />
         <x:String x:Key="BooleanTrue">true</x:String>
         <x:String x:Key="BooleanFalse">false</x:String>
@@ -109,7 +110,9 @@
                                 Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardOverlayTooltip, Mode=OneWay}" />
-                <MenuFlyoutItem Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
+                <MenuFlyoutItem Command="{x:Bind BackgroundImageContextMenuCopyUrlToClipboardCommand}"
+                                CommandParameter="{Binding CurrentSelectedBackgroundContext.OriginBackgroundImagePath, FallbackValue={x:Null}, Mode=OneWay}"
+                                Text="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundText, Mode=OneWay}"
                                 ToolTipService.Placement="Left"
                                 ToolTipService.ToolTip="{x:Bind helper:Locale.Current.Lang._HomePage.BgContextMenu_CopyUrlToClipboardBackgroundTooltip, Mode=OneWay}" />
             </MenuFlyoutSubItem>
@@ -193,7 +196,7 @@
                  Visibility="{Binding FeaturedEventIconUrl, Mode=OneWay, Converter={StaticResource NullableVisibilityConverter}}">
             <Grid x:Name="ImageEventImgContainerGrid"
                   DataContext="{x:Bind CurrentBackgroundManager, Mode=OneWay}"
-                  Visibility="{Binding CurrentSelectedBackgroundContext.IsCustom, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                  Visibility="{Binding CurrentIsEnableCustomImage, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}">
                 <Grid Width="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Width, Mode=OneWay}"
                       Height="{x:Bind CurrentPresetConfig.GameEventButtonPosition.FrameSize.Height, Mode=OneWay}"
                       HorizontalAlignment="Center"
@@ -1188,29 +1191,35 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
-                            Margin="2,0"
-                            Padding="4"
-                            extension:UIElementExtensions.CursorType="Hand"
-                            Click="BackgroundVideoPlayToggle_OnClick"
-                            DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}">
-                        <Grid>
+                    <ItemsControl Grid.Column="0"
+                                  IsEnabled="{Binding IsBackgroundLoading, Converter={StaticResource InverseBooleanConverter}}">
+                        <Button Margin="2,0"
+                                Padding="4"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Click="BackgroundVideoPlayToggle_OnClick"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                DataContext="{Binding CurrentBackgroundElement}"
+                                Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}}">
                             <FontIcon FontSize="12"
-                                      Glyph="&#xE768;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                                      Glyph="&#xE769;" />
+                        </Button>
+                        <Button Margin="2,0"
+                                Padding="4"
+                                extension:UIElementExtensions.CursorType="Hand"
+                                Click="BackgroundVideoPlayToggle_OnClick"
+                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                DataContext="{Binding CurrentBackgroundElement}"
+                                Visibility="{Binding MediaState, Converter={StaticResource MediaPlayerStateToVisibilityConverter}, ConverterParameter='true'}">
                             <FontIcon FontSize="12"
-                                      Glyph="&#xE769;"
-                                      Visibility="{Binding IsVideoPlay, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}" />
-                        </Grid>
-                    </Button>
-                    <Grid Grid.Column="1"
-                          DataContext="{Binding CurrentBackgroundElement, Mode=OneWay}"
-                          Visibility="{Binding IsCurrentMediaSeekable, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                                      Glyph="&#xE768;" />
+                        </Button>
+                    </ItemsControl>
+                    <Grid Grid.Column="1">
                         <Grid Width="300"
                               Margin="4,0"
                               VerticalAlignment="Center"
                               ColumnSpacing="10"
+                              DataContext="{Binding CurrentBackgroundElement}"
                               Visibility="{Binding MediaDuration, Mode=OneWay, Converter={StaticResource TimeSpanMoreThan15SecondsToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -1453,7 +1462,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">
@@ -1536,7 +1545,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">
@@ -1619,7 +1628,7 @@
                                        VerticalAlignment="Stretch"
                                        IsHitTestVisible="False"
                                        Margin="8,0,-32,0"
-                                       Source="{x:Bind NoNewsSplashMascot}" />
+                                       Source="{x:Bind NoNewsSplashMascot, Mode=OneWay}" />
                             </StackPanel>
                             <ScrollViewer VerticalScrollMode="Auto"
                                           Margin="0,8,-12,0">

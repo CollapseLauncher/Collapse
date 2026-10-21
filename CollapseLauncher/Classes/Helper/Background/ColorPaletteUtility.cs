@@ -62,17 +62,16 @@ internal static class ColorPaletteUtility
         }
     }
 
-    public static async ValueTask<Color> GetMediaAccentColorFromAsync(
+    public static ValueTask<Color> GetMediaAccentColorFromAsync(
         Uri               uri,
         bool              useFfmpegForVideo,
         CancellationToken token = default)
     {
         // -- Ignore if file doesn't exist or not a file URI
         string filePath = uri.LocalPath;
-        if (!uri.IsFile ||
-            !File.Exists(filePath))
+        if (!uri.IsFile || !File.Exists(filePath))
         {
-            return default;
+            return ValueTask.FromResult(Color.FromArgb(255, 255, 255, 255));
         }
 
         // -- Try to get cached palette data
@@ -80,47 +79,63 @@ internal static class ColorPaletteUtility
                                     out Color cachedColors,
                                     out string cachedPaletteFile))
         {
-            return cachedColors;
+            return ValueTask.FromResult(cachedColors);
         }
 
-        // -- If not cached due to it not existing or has invalid format, generate new palette data
-        FileInfo cachedPaletteFileInfo = new FileInfo(cachedPaletteFile)
-           .EnsureCreationOfDirectory();
-        cachedPaletteFileInfo.Directory?.Create();
-
-        // -- Get source stream
-        object? sourceStreamObj = await GetMediaFrameStream(filePath, token);
-
-        return await Task.Factory.StartNew(Impl, TaskCreationOptions.DenyChildAttach);
-
-        Color Impl()
+        TaskCompletionSource<Color> processTcs = new();
+        new Thread(Impl)
         {
-            using IRandomAccessStream? sourceRandomStream = sourceStreamObj as IRandomAccessStream;
-            using Stream?              sourceStream       = sourceStreamObj as Stream ?? sourceRandomStream?.AsStream();
+            IsBackground = true,
+            Name         = "Collapse Launcher Media Accent Color Picker"
+        }.UnsafeStart();
+        return new ValueTask<Color>(processTcs.Task);
 
-            if (sourceStream == null)
+        async void Impl()
+        {
+            try
             {
-                return default;
+                // -- If not cached due to it not existing or has invalid format, generate new palette data
+                FileInfo cachedPaletteFileInfo = new FileInfo(cachedPaletteFile).EnsureCreationOfDirectory();
+                cachedPaletteFileInfo.Directory?.Create();
+
+                // -- Get source stream
+                object? sourceStreamObj = await GetMediaFrameStream(filePath, token).ConfigureAwait(false);
+
+                using IRandomAccessStream? sourceRandomStream = sourceStreamObj as IRandomAccessStream;
+                await using Stream?        sourceStream = sourceStreamObj as Stream ?? sourceRandomStream?.AsStream();
+
+                if (sourceStream == null)
+                {
+                    processTcs.SetResult(Color.FromArgb(255, 255, 255, 255));
+                    return;
+                }
+
+                processTcs.SetResult(await Task.Run(() =>
+                {
+                    ImageFileInfo           fileInfo  = ImageFileInfo.Load(sourceStream);
+                    ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
+                    sourceStream.Seek(0, SeekOrigin.Begin);
+
+                    // -- Process palette
+                    int channels = frameInfo.HasAlpha ? 4 : 3;
+                    byte[] tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
+                    using MemoryStream tempStream = new(tempBuffer);
+                    ProcessImageSettings settings = new();
+                    settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
+                    MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
+
+                    Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
+                    Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
+                    ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+
+                    File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
+                    return colorArray;
+                }, token));
             }
-
-            ImageFileInfo           fileInfo  = ImageFileInfo.Load(sourceStream);
-            ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
-            sourceStream.Seek(0, SeekOrigin.Begin);
-
-            // -- Process palette
-            int                  channels   = frameInfo.HasAlpha ? 4 : 3;
-            byte[]               tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
-            using MemoryStream   tempStream = new(tempBuffer);
-            ProcessImageSettings settings   = new();
-            settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
-            MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
-
-            Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
-            Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
-            ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
-
-            File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
-            return colorArray;
+            catch (Exception ex)
+            {
+                processTcs.SetException(ex);
+            }
         }
     }
 

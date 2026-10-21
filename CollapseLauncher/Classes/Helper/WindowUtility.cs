@@ -156,7 +156,7 @@ namespace CollapseLauncher.Helper
             get
             {
                 WS_STYLE windowStyle = PInvoke.GetWindowLong(CurrentWindowPtr, GWL_INDEX.GWL_STYLE);
-                bool     isHide      = windowStyle.HasFlag(WS_STYLE.WS_MINIMIZE);
+                bool     isHide      = windowStyle.HasFlag(WS_STYLE.WS_MINIMIZE) || !windowStyle.HasFlag(WS_STYLE.WS_VISIBLE);
                 return !isHide;
             }
         }

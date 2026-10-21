@@ -12,6 +12,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 #endif
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
@@ -313,8 +314,8 @@ namespace CollapseLauncher.Pages
 #endif
 
             AppBGCustomizerNote.Text = string.Format(Locale.Current.Lang?._SettingsPage?.AppBG_Note,
-                                                     ImageLoaderHelper.SupportedImageFormats,
-                                                     ImageLoaderHelper.SupportedVideoFormats
+                                                     LayeredBackgroundImage.SupportedImageFormatsFilter,
+                                                     LayeredBackgroundImage.SupportedVideoFormatsFilter
                                                     );
 
 #if !ENABLEUSERFEEDBACK
@@ -432,10 +433,14 @@ namespace CollapseLauncher.Pages
             try
             {
                 (sender as Button).IsEnabled = false;
-                if (Directory.Exists(AppGameImgFolder))
-                    Directory.Delete(AppGameImgFolder, true);
+                DirectoryInfo dir = new(AppGameImgFolder);
+                if (!dir.Exists)
+                    return;
 
-                Directory.CreateDirectory(AppGameImgFolder);
+                foreach (FileInfo fileInfo in dir.EnumerateFiles("*", SearchOption.AllDirectories))
+                {
+                    fileInfo.TryDeleteFile();
+                }
             }
             catch (Exception ex)
             {
@@ -443,9 +448,11 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex);
                 LogWriteLine(msg, LogType.Error, true);
             }
-
-            await Task.Delay(1000);
-            (sender as Button).IsEnabled = true;
+            finally
+            {
+                await Task.Delay(1000);
+                (sender as Button).IsEnabled = true;
+            }
         }
 
         private async void ClearLogsFolder(object sender, RoutedEventArgs e)
@@ -686,7 +693,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+            string file = await FileDialogNative.GetFilePicker(LayeredBackgroundImage.SupportedAllBackgroundFormatsFilter);
             if (string.IsNullOrEmpty(file) ||
                 string.IsNullOrWhiteSpace(file))
             {

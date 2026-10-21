@@ -72,7 +72,6 @@ namespace CollapseLauncher
         private int  _currentGameRegion    = -1;
 
         internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
-        internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
         internal ImageBackgroundManager CurrentBackgroundManager => ImageBackgroundManager.Shared;
 
         #endregion

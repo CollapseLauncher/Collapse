@@ -1,7 +1,4 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
-using System.Threading;
-
-// ReSharper disable ConvertIfStatementToSwitchStatement
+﻿// ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
@@ -10,61 +7,56 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 
 public partial class ImageBackgroundManager
 {
-    private bool _isPausedByUser;
-
     public void SetWindowFocusedEvent()
     {
-        if (GlobalKeepPlayVideoWhenWindowUnfocused)
-        {
-            CurrentBackgroundElement?.FadeInAudio();
-        }
-        else
+        if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
             Play(false);
+            return;
         }
+
+        CurrentBackgroundElement?.SetVolume(GlobalBackgroundAudioVolume / 100d);
     }
 
     public void SetWindowUnfocusedEvent()
     {
-        if (GlobalKeepPlayVideoWhenWindowUnfocused)
-        {
-            CurrentBackgroundElement?.FadeOutAudio();
-        }
-        else
+        if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
             Pause(false);
-        }
-    }
-
-    public void SetWindowMinimizeEvent() => Pause(false);
-
-    public void SetWindowRestoreEvent() => Play(false);
-
-    public void Play(bool isUserRequest = true)
-    {
-        // Block play request for window event if paused by user
-        if (!isUserRequest && (_isPausedByUser || !CurrentIsEnableBackgroundAutoPlay))
-        {
             return;
         }
 
+        CurrentBackgroundElement?.SetVolume(0);
+    }
+
+    public void SetWindowMinimizeEvent()
+    {
+        CurrentBackgroundElement?.ReleaseViewAllocation();
+    }
+
+    public void SetWindowRestoreEvent()
+    {
+        // Trynna spawn the background element if not loaded from first start-up.
+        if (CurrentBackgroundElement == null)
+            LoadImage();
+
+        CurrentBackgroundElement?.RestoreViewAllocation();
+    }
+
+    public void Play(bool isUserRequest = true)
+    {
         if (isUserRequest)
         {
             CurrentIsEnableBackgroundAutoPlay = true;
         }
-        
-        // Alter to load static image if it has one instead of pausing.
-        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
-        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
-        if (isUserRequest && hasStaticImage && context != null)
+
+        // Alter to restore video if it has static image.
+        if (isUserRequest && !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginPlaceholderImagePath))
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, false, CancellationToken.None, true);
+            LoadImage();
+            return;
         }
 
-        // Force to restore autoplay status to true.
-        CurrentBackgroundElement?.SetValue(LayeredBackgroundImage.IsVideoAutoplayProperty, true);
-        
-        Interlocked.Exchange(ref _isPausedByUser, false);
         CurrentBackgroundElement?.Play();
     }
 
@@ -72,16 +64,13 @@ public partial class ImageBackgroundManager
     {
         if (isUserRequest)
         {
-            Interlocked.Exchange(ref _isPausedByUser, true);
             CurrentIsEnableBackgroundAutoPlay = false;
         }
-        
+
         // Alter to load static image if it has one instead of pausing.
-        LayeredImageBackgroundContext? context        = CurrentSelectedBackgroundContext;
-        bool                           hasStaticImage = !string.IsNullOrEmpty(context?.BackgroundImageStaticPath);
-        if (isUserRequest && hasStaticImage && context != null)
+        if (isUserRequest && !string.IsNullOrEmpty(CurrentSelectedBackgroundContext?.OriginPlaceholderImagePath))
         {
-            LoadImageAtIndex(CurrentSelectedBackgroundIndex, true, CancellationToken.None, true);
+            LoadImage();
             return;
         }
 

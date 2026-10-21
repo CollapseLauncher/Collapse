@@ -9,6 +9,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.MagicScaler.LibheifCL;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.ManagedTools;
@@ -19,13 +20,15 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Settings;
 using Microsoft.Win32;
 using PhotoSauce.MagicScaler;
-using PhotoSauce.NativeCodecs.Libheif;
 using PhotoSauce.NativeCodecs.Libjxl;
 using PhotoSauce.NativeCodecs.Libwebp;
 using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -327,6 +330,11 @@ namespace CollapseLauncher
 #endif
 
             /* ---------------------------------------------------------------------------------------------
+             * Module: MagicScaler External Codecs for Image Decoding
+             */
+            InitMagicScalerExternalCodecs();
+
+            /* ---------------------------------------------------------------------------------------------
              * Module: Velopack
              */
 
@@ -370,11 +378,6 @@ namespace CollapseLauncher
                 await InitDatabaseHandler();
 
                 /* ---------------------------------------------------------------------------------------------
-                 * Module: MagicScaler External Codecs for Image Decoding
-                 */
-                InitMagicScalerExternalCodecs();
-
-                /* ---------------------------------------------------------------------------------------------
                  * Module: Waifu2X (Start device test in the background and cache it)
                  */
                 ImageLoaderHelper.EnsureWaifu2X();
@@ -389,18 +392,36 @@ namespace CollapseLauncher
         {
             try
             {
-                CodecManager.Configure(codecs =>
-                                       {
-                                           codecs.UseLibwebp();
-                                           codecs.UseLibheif();
-                                           codecs.UseLibjxl();
-                                       });
+                CodecManager.Configure(RegisterExternalCodec);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
                              LogType.Error,
                              true);
+            }
+
+            return;
+
+            static void RegisterExternalCodec(CodecCollection codecs)
+            {
+                // Remove built-in WIC decoder from the list before adding another ones.
+                SearchValues<string> searchValues = SearchValues.Create([
+                    "Microsoft HEIF",
+                    "Microsoft Webp",
+                    "Microsoft JPEG-XL",
+                    "Microsoft JXL"
+                ], StringComparison.OrdinalIgnoreCase);
+
+                List<IImageCodecInfo> toDeleteList = [.. codecs.Where(x => x.Name.ContainsAny(searchValues))];
+                foreach (IImageCodecInfo toDelete in toDeleteList)
+                {
+                    codecs.Remove(toDelete);
+                }
+
+                codecs.UseLibwebp();
+                codecs.UseLibheifCL();
+                codecs.UseLibjxl();
             }
         }
 
