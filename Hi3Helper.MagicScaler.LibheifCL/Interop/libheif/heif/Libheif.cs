@@ -44,7 +44,7 @@ internal static unsafe partial class Libheif
     public static extern void heif_context_free(void* param0);
 
     [DllImport("heif", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-    public static extern heif_error heif_context_read_from_reader(void* param0, heif_reader* reader, void* userdata, void* param3);
+    public static extern heif_error heif_context_read_from_memory_without_copy(void* param0, nint data, nuint length, nint  options);
 
     [DllImport("heif", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
     public static extern heif_error heif_context_get_primary_image_handle(void* ctx, void** param1);

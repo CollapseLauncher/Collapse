@@ -17,14 +17,14 @@ namespace Hi3Helper.MagicScaler.LibheifCL;
 
 internal sealed unsafe class HeifContainer : IImageContainer
 {
-	private void* _handle;
-	private StreamWrapper* _stream;
+	private          void*         _handle;
+	private readonly StreamWrapper _stream;
 
-	private HeifContainer(string mime, StreamWrapper* stm, void* frm)
+	private HeifContainer(string mime, StreamWrapper stm, void* frm)
 	{
 		MimeType = mime;
-		_stream = stm;
-		_handle = frm;
+		_stream  = stm;
+		_handle  = frm;
 	}
 
 	public string MimeType { get; }
@@ -41,19 +41,15 @@ internal sealed unsafe class HeifContainer : IImageContainer
 
 	public static HeifContainer? TryLoad(Stream imgStream, IDecoderOptions? opts)
 	{
-		byte*      buff = stackalloc byte[12];
+		byte* buff = stackalloc byte[12];
 		_ = imgStream.Read(new Span<byte>(buff, 12));
 		imgStream.Seek(-12, SeekOrigin.Current);
 
 		string mime = HeifFactory.GetMimeType(buff, 12);
 
-		StreamWrapper* stream = StreamWrapper.Wrap(imgStream);
-		if (stream is null)
-			throw new OutOfMemoryException();
-
-		void* ctx = HeifFactory.CreateContext();
-
-		if (Succeeded(heif_context_read_from_reader(ctx, HeifReader.Impl, stream, null)))
+		StreamWrapper stream = StreamWrapper.Read(imgStream);
+		void* ctx = heif_context_alloc();
+		if (Succeeded(heif_context_read_from_memory_without_copy(ctx, stream.Buffer, stream.Length, 0)))
 		{
 			void* hfrm;
 			if (Succeeded(heif_context_get_primary_image_handle(ctx, &hfrm)))
@@ -64,16 +60,13 @@ internal sealed unsafe class HeifContainer : IImageContainer
 		}
 
 		heif_context_free(ctx);
-		stream->Seek(0, SeekOrigin.Begin);
-		StreamWrapper.Free(stream);
-
+		stream.Dispose();
+		imgStream.Position = 0;
 		return null;
 	}
 
 	public void CheckResult(heif_error err)
 	{
-		_stream->ThrowIfExceptional();
-
 		if (err.code != heif_error_code.heif_error_Ok)
 			throw new InvalidOperationException(new string(err.message));
 	}
@@ -85,7 +78,9 @@ internal sealed unsafe class HeifContainer : IImageContainer
 		ObjectDisposedException.ThrowIf(_handle == null, typeof(HeifContainer));
 	}
 
-	private void Dispose(bool disposing)
+	~HeifContainer() => Dispose();
+
+	public void Dispose()
 	{
 		if (_handle is null)
 			return;
@@ -93,18 +88,9 @@ internal sealed unsafe class HeifContainer : IImageContainer
 		heif_image_handle_release(_handle);
 		_handle = null;
 
-		StreamWrapper.Free(_stream);
-		_stream = null;
+		_stream.Dispose();
 
-		if (disposing)
-			GC.SuppressFinalize(this);
-	}
-
-	public void Dispose() => Dispose(true);
-
-	~HeifContainer()
-	{
-		Dispose(false);
+		GC.SuppressFinalize(this);
 	}
 
 	private sealed class HeifFrame(HeifContainer cont) : IImageFrame
@@ -186,11 +172,11 @@ internal sealed unsafe class HeifContainer : IImageContainer
 		{
 			cont.EnsureHandle();
 
-			Width    = heif_image_handle_get_width(cont._handle);
-			Height   = heif_image_handle_get_height(cont._handle);
+			Width     = heif_image_handle_get_width(cont._handle);
+			Height    = heif_image_handle_get_height(cont._handle);
 			_hasAlpha = heif_image_handle_has_alpha_channel(cont._handle) != 0;
-			Format   = _hasAlpha ? GuidWicPixelFormat32BppRgba : GuidWicPixelFormat24BppRgb;
-			_bpp = _hasAlpha ? 32 : 24;
+			Format    = _hasAlpha ? GuidWicPixelFormat32BppRgba : GuidWicPixelFormat24BppRgb;
+			_bpp      = _hasAlpha ? 32 : 24;
 
 			_container = cont;
 		}

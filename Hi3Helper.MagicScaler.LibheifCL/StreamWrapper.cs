@@ -1,121 +1,123 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-// ReSharper disable InconsistentNaming
-// ReSharper disable IdentifierTypo
+using System.Threading;
 
 namespace Hi3Helper.MagicScaler.LibheifCL;
 
-internal unsafe struct StreamWrapper
+internal sealed unsafe class StreamWrapper : IDisposable
 {
-    public static readonly bool CaptureExceptions = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    public const int MaxEncodedBytes = 128 * 1024 * 1024;
+    private const int InitialCapacity = 64 * 1024;
 
-    private readonly long offset;
-    private readonly GCHandle source;
-    private GCHandle exception;
+    private nint _buffer;
 
-    private StreamWrapper(Stream managedSource)
+    private StreamWrapper(nint buffer, uint length)
     {
-        offset = managedSource.Position;
-        source = GCHandle.Alloc(managedSource);
+        _buffer = buffer;
+        Length = length;
     }
 
-    public static StreamWrapper* Wrap(Stream managedSource)
+    public uint Length { get; }
+
+    public nint Buffer => _buffer;
+
+    public ReadOnlySpan<byte> Span
     {
-        var pinst = (StreamWrapper*)NativeMemory.AllocZeroed((nuint)sizeof(StreamWrapper));
-        if (pinst is null)
-            return null;
-
-        *pinst = new StreamWrapper(managedSource);
-        return pinst;
-    }
-
-    public static void Free(StreamWrapper* pinst)
-    {
-        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-        pinst->source.Free();
-
-        if (pinst->exception.IsAllocated)
-            pinst->exception.Free();
-
-        *pinst = default;
-        NativeMemory.Free(pinst);
-    }
-
-    public readonly uint Read(void* pb, uint cb)
-    {
-        Stream stm = Unsafe.As<Stream>(source.Target!);
-
-        uint read = 0;
-        if (cb == 1)
+        get
         {
-            int res = stm.ReadByte();
-            if (res < 0)
+            if (_buffer == nint.Zero)
+                throw new ObjectDisposedException(nameof(StreamWrapper));
+
+            return new ReadOnlySpan<byte>((void*)_buffer, checked((int)Length));
+        }
+    }
+
+    public static StreamWrapper Read(Stream stream)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        // Preserve the previous behavior for seekable streams. Non-seekable
+        // streams are read from their current position.
+        if (stream.CanSeek)
+            stream.Seek(0, SeekOrigin.Begin);
+
+        nuint capacity = InitialCapacity;
+        byte* buffer = (byte*)NativeMemory.Alloc(capacity);
+
+        if (buffer is null)
+            throw new OutOfMemoryException();
+
+        int length = 0;
+
+        try
+        {
+            while (true)
             {
-                return read;
+                if ((nuint)length == capacity)
+                {
+                    if (capacity >= MaxEncodedBytes)
+                    {
+                        Span<byte> overflow = stackalloc byte[1];
+                        int overflowRead = stream.Read(overflow);
+
+                        if (overflowRead == 0)
+                            break;
+
+                        if (overflowRead != 1)
+                        {
+                            throw new COMException("Invalid stream read count.");
+                        }
+
+                        throw new COMException("Encoded image exceeds the sample limit.");
+                    }
+
+                    nuint newCapacity = Math.Min(capacity * 2, MaxEncodedBytes);
+                    byte* resized = (byte*)NativeMemory.Realloc(buffer, newCapacity);
+                    if (resized is null) throw new OutOfMemoryException();
+
+                    buffer = resized;
+                    capacity = newCapacity;
+                }
+
+                int available = checked((int)(capacity - (nuint)length));
+
+                Span<byte> destination = new(buffer + length, available);
+                int read = stream.Read(destination);
+
+                // Protect against incorrectly implemented custom streams.
+                if ((uint)read > (uint)available)
+                {
+                    throw new COMException("Invalid stream read count.");
+                }
+
+                if (read == 0)
+                    break;
+
+                length = checked(length + read);
             }
 
-            *(byte*)pb = (byte)res;
-            read       = cb;
-
-            return read;
+            return new StreamWrapper((nint)buffer, checked((uint)length));
         }
-
-        read = 0;
-        var buff = new Span<byte>(pb, checked((int)cb));
-        while (!buff.IsEmpty)
+        catch
         {
-            int readByStream = stm.Read(buff);
-            read += (uint)readByStream;
-            buff =  buff[readByStream..];
+            NativeMemory.Free(buffer);
+            throw;
         }
-        return read;
     }
 
-    public readonly void Write(void* pb, uint cb)
+    public void Dispose()
     {
-        Stream stm = Unsafe.As<Stream>(source.Target!);
-        if (cb == 1)
-            stm.WriteByte(*(byte*)pb);
-        else
-            stm.Write(new ReadOnlySpan<byte>(pb, checked((int)cb)));
+        nint buffer = Interlocked.Exchange(ref _buffer, nint.Zero);
+
+        if (buffer != nint.Zero) NativeMemory.Free((void*)buffer);
+        GC.SuppressFinalize(this);
     }
 
-    public readonly long Seek(long npos, SeekOrigin origin)
+    ~StreamWrapper()
     {
-        Stream stm = Unsafe.As<Stream>(source.Target!);
-
-        if (origin == SeekOrigin.Begin)
-            npos += offset;
-
-        long cpos = stm.Position - offset;
-        if (!(origin == SeekOrigin.Current && npos == 0) && !(origin == SeekOrigin.Begin && npos == cpos))
-            cpos = stm.Seek(npos, origin) - offset;
-
-        return cpos;
-    }
-
-    public readonly bool IsEof()
-    {
-        Stream stm = Unsafe.As<Stream>(source.Target!);
-
-        return stm.Position == stm.Length;
-    }
-
-    public readonly bool IsPastEnd(long len)
-    {
-        Stream stm = Unsafe.As<Stream>(source.Target!);
-
-        return len > stm.Length - offset;
-    }
-
-    public void SetException(ExceptionDispatchInfo edi) => exception = GCHandle.Alloc(edi);
-
-    public readonly void ThrowIfExceptional()
-    {
-        if (exception.IsAllocated)
-            Unsafe.As<ExceptionDispatchInfo>(exception.Target!).Throw();
+        nint buffer = Interlocked.Exchange(ref _buffer, nint.Zero);
+        if (buffer != nint.Zero)
+            NativeMemory.Free((void*)buffer);
     }
 }
