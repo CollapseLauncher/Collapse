@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -35,6 +36,39 @@ namespace CollapseLauncher.GameManagement.ImageBackground;
 
 public partial class ImageBackgroundManager
 {
+    private readonly struct GetCroppedResult
+    {
+        public readonly string? ProcessedOverlayPath;
+        public readonly string? ProcessedBackgroundPath;
+        public readonly bool    IsCancelResize;
+        public readonly bool    WasCropPerformed;
+
+        private GetCroppedResult(string? processedOverlayPath,
+                                 string? processedBackgroundPath,
+                                 bool    isCancelResize,
+                                 bool    wasCropPerformed)
+        {
+            ProcessedOverlayPath    = processedOverlayPath;
+            ProcessedBackgroundPath = processedBackgroundPath;
+            IsCancelResize          = isCancelResize;
+            WasCropPerformed        = wasCropPerformed;
+        }
+
+        public static GetCroppedResult Create(string? processedOverlayPath,
+                                                       string? processedBackgroundPath,
+                                                       bool    isCancelResize,
+                                                       bool    wasCropPerformed)
+        {
+            return new GetCroppedResult(processedOverlayPath,
+                                        processedBackgroundPath,
+                                        isCancelResize,
+                                        wasCropPerformed);
+        }
+
+        public static readonly GetCroppedResult Cancelled = Create(null, null, true,  false);
+        public static readonly GetCroppedResult Skip      = Create(null, null, false, false);
+    }
+
     /// <summary>
     /// Get local path of the resized/cropped custom image. The return values are cropped image path.
     /// If the input path is a video, then it will return the input path.
@@ -42,7 +76,7 @@ public partial class ImageBackgroundManager
     /// To perform cropping request, you must set <paramref name="performCropRequest"/> to <see langword="true"/>.
     /// Otherwise, it will return the input paths.
     /// </summary>
-    private static async Task<(string? ProcessedOverlayPath, string? ProcessedBackgroundPath, bool IsCancelResize)>
+    private static async Task<GetCroppedResult>
         GetCroppedCustomImage(string?           overlayUrlOrPath,
                               string?           backgroundUrlOrPath,
                               bool              performCropRequest,
@@ -52,21 +86,21 @@ public partial class ImageBackgroundManager
              string.IsNullOrEmpty(backgroundUrlOrPath)) ||
              string.IsNullOrEmpty(backgroundUrlOrPath))
         {
-            return (null, null, false); // Skip from processing
+            return GetCroppedResult.Skip;
         }
 
         // -- Check if the file is video or image
         if (LayeredBackgroundImage.SupportedVideoExtensionsLookup
                                   .Contains(Path.GetExtension(backgroundUrlOrPath)))
         {
-            return (overlayUrlOrPath, backgroundUrlOrPath, false);
+            return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
         }
 
         // -- Try to get existing image file path
         if (TryGetCroppedImageFilePath(backgroundUrlOrPath, out string croppedBackgroundPath) &&
             !performCropRequest)
         {
-            return (null, croppedBackgroundPath, false);
+            return GetCroppedResult.Create(null, croppedBackgroundPath, false, false);
         }
 
         try
@@ -90,26 +124,21 @@ public partial class ImageBackgroundManager
             Uri backgroundImageUri = new(decodedBackgroundPath);
 
             // -- Create elements, load image and spawn the dialog box.
-            Grid parentGrid = UIElementExtensions
-               .Create<Grid>(SetParentGridProperties);
-
-            ContentDialogOverlay dialog = UIElementExtensions
-               .Create<ContentDialogOverlay>(SetDialogProperties);
-
-            ImageCropper cropper = UIElementExtensions
-               .Create<ImageCropper>(SetImageCropperProperties);
+            Grid                 parentGrid = UIElementExtensions.Create<Grid>(SetParentGridProperties);
+            ContentDialogOverlay dialog     = UIElementExtensions.Create<ContentDialogOverlay>(SetDialogProperties);
+            ImageCropper         cropper    = UIElementExtensions.Create<ImageCropper>(SetImageCropperProperties);
 
             // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
             if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
             {
-                return (overlayUrlOrPath, backgroundUrlOrPath, false);
+                return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
             }
 
             // -- Register to close dialog if cancellation is triggered outside the event.
             token.Register(dialog.Hide);
             if (token.IsCancellationRequested)
             {
-                return (null, null, true);
+                return GetCroppedResult.Cancelled;
             }
 
             DispatcherQueueExtensions
@@ -124,29 +153,18 @@ public partial class ImageBackgroundManager
             ContentDialogResult dialogResult = await dialog.QueueAndSpawnDialog();
             if (dialogResult is ContentDialogResult.Secondary or ContentDialogResult.None)
             {
-                return (null, null, true);
+                return GetCroppedResult.Cancelled;
             }
 
             // -- Save cropped image
             await SaveCroppedImageToFilePath(backgroundUrlOrPath, croppedBackgroundPath, cropper, token);
 
             // -- If there's an upscaled image, delete it.
-            if (TryGetUpscaledFilePath(croppedBackgroundPath,
-                                       out string croppedImagePath))
-            {
-                try
-                {
-                    File.Delete(croppedImagePath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWriteLine($"An error has occurred while trying to delete previous upscaled image: {ex}",
-                                        LogType.Error,
-                                        true);
-                }
-            }
+            if (TryGetUpscaledFilePath(croppedBackgroundPath, out string croppedImagePath))
+                StreamExtension.TryDeleteFile(croppedImagePath);
 
-            return (null, croppedBackgroundPath, false);
+
+            return GetCroppedResult.Create(null, croppedBackgroundPath, false, true);
 
             void SetDialogProperties(ContentDialogOverlay element)
             {
@@ -189,7 +207,73 @@ public partial class ImageBackgroundManager
         }
         catch (OperationCanceledException)
         {
-            return (null, null, true);
+            return GetCroppedResult.Cancelled;
+        }
+    }
+
+    public static bool TryGetUpscaledFilePath(string     inputFilePath,
+                                              out string upscaledFilePath)
+    {
+        upscaledFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, $"scaled_{Path.GetFileNameWithoutExtension(inputFilePath)}.png");
+        if (LayeredBackgroundImage.SupportedVideoExtensionsLookup.Contains(Path.GetExtension(inputFilePath))) // Ignore if file is a video.
+        {
+            upscaledFilePath = inputFilePath;
+            return true;
+        }
+
+        FileInfo outputFileInfo = new(upscaledFilePath);
+        return outputFileInfo is { Exists: true, Length: > 0 };
+    }
+
+    public static async Task<Uri> TryGetScaledWaifu2XImagePath(Uri uri, CancellationToken token)
+    {
+        if (uri == null!)
+        {
+            return null!;
+        }
+
+        if (!uri.IsFile)
+        {
+            throw new InvalidOperationException("You must provide a local file path!");
+        }
+
+        // Ignore if the input file is a video
+        string inputFilePath = uri.LocalPath;
+        if (TryGetUpscaledFilePath(inputFilePath, out string outputFilePath))
+        {
+            return new Uri(outputFilePath);
+        }
+
+        FileInfo outputFileInfo = new(outputFilePath);
+        outputFileInfo.Directory?.Create();
+
+        await Task.Run(Impl, token);
+        outputFileInfo.Refresh();
+
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            return new Uri(outputFileInfo.FullName);
+        }
+        catch
+        {
+            outputFileInfo.TryDeleteFile();
+            throw;
+        }
+
+        void Impl()
+        {
+            using ProcessingPipeline pipeline =
+                MagicImageProcessor
+                   .BuildPipeline(inputFilePath,
+                                  ProcessImageSettings.Default);
+
+            using FileStream outputFileStream = outputFileInfo.Open(FileMode.Create,
+                                                                    FileAccess.Write,
+                                                                    FileShare.ReadWrite);
+
+            pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
+            pipeline.WriteOutput(outputFileStream);
         }
     }
 
@@ -382,7 +466,7 @@ public partial class ImageBackgroundManager
     /// <summary>
     /// Converts any (seekable) image stream to PNG.
     /// </summary>
-    private static Task ConvertImageToPngFromStream(
+    private static async Task ConvertImageToPngFromStream(
         Stream            sourceStream,
         Stream            targetStream,
         Rectangle         cropArea = default,
@@ -394,7 +478,8 @@ public partial class ImageBackgroundManager
             IsBackground = true
         }.Start((sourceStream, targetStream, tcs, token, cropArea));
 
-        return tcs.Task;
+        await tcs.Task;
+        return;
 
         static void Impl(object? state)
         {
@@ -407,6 +492,8 @@ public partial class ImageBackgroundManager
 
             try
             {
+                innerSourceStream.Position = 0;
+
                 // We won't do any post-processing and just do a straight conversion to PNG.
                 // The post-processing (like resizing with Waifu2X) will be done on image loading process.
                 ProcessImageSettings settings = new()
@@ -478,40 +565,51 @@ public partial class ImageBackgroundManager
     /// Get native or redirected decoded image path.
     /// </summary>
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
-    internal static async Task<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token)
+    internal static ValueTask<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token = default)
     {
         // Try to get decoded temporary file. If it exists, return the file path.
         if (TryGetDecodedTemporaryFile(filePath, out string decodedFilePath))
         {
-            return (decodedFilePath, ImageExternalCodecType.Default);
+            return new ValueTask<(string, ImageExternalCodecType)>((decodedFilePath, ImageExternalCodecType.Default));
         }
 
-        // Check the extension type. If the type is native or a video file, then just return the original path.
-        if (await TryGetImageCodecType(filePath, token) is var codecType &&
-            codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
+        Task<(string, ImageExternalCodecType)> processTask = ImplAsync();
+        if (processTask.IsCompleted)
         {
-            return (filePath, codecType);
+            return new ValueTask<(string, ImageExternalCodecType)>(processTask.Result);
         }
 
-        // Return null if the codec type is not supported.
-        if (codecType == ImageExternalCodecType.NotSupported)
+        return new ValueTask<(string, ImageExternalCodecType)>(processTask);
+
+        async Task<(string, ImageExternalCodecType)> ImplAsync()
         {
-            throw new NotSupportedException($"The format of the image: {filePath} is not supported!");
+            // Check the extension type. If the type is native or a video file, then just return the original path.
+            if (await TryGetImageCodecType(filePath, token) is var codecType &&
+                codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
+            {
+                return (filePath, codecType);
+            }
+
+            // Return null if the codec type is not supported.
+            if (codecType == ImageExternalCodecType.NotSupported)
+            {
+                throw new NotSupportedException($"The format of the image: {filePath} is not supported!");
+            }
+
+            // Otherwise, try to convert the image to png and write it to given decoded file path.
+            await using Stream sourceStream = await OpenStreamFromFileOrUrl(filePath, token);
+            await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token: token);
+
+            return (decodedFilePath, codecType);
         }
-
-        // Otherwise, try to convert the image to png and write it to given decoded file path.
-        await using Stream sourceStream = await OpenStreamFromFileOrUrl(filePath, token);
-        await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token: token);
-
-        return (decodedFilePath, codecType);
     }
 
     /// <summary>
     /// Get native or redirected decoded image path.
     /// </summary>
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
-    internal static async Task<(Uri, ImageExternalCodecType)> GetNativeOrDecodedImagePath(
-        Uri filePath, CancellationToken token)
+    internal static async ValueTask<(Uri, ImageExternalCodecType)> GetNativeOrDecodedImagePath(
+        Uri filePath, CancellationToken token = default)
     {
         (string, ImageExternalCodecType) result = await GetNativeOrDecodedImagePath(filePath.ToString(), token);
         return (new Uri(result.Item1), result.Item2);

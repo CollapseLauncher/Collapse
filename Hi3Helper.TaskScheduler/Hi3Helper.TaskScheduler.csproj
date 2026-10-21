@@ -1,37 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netframework462</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <Nullable>enable</Nullable>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>portable</DebugType>
-    <ProductName>Task Scheduler Shell</ProductName>
-    <Product>Task Scheduler Shell</Product>
-    <Description>Collapse Launcher's Task Scheduler Shell</Description>
-    <AssemblyTitle>Collapse Launcher's Task Scheduler Shell</AssemblyTitle>
+    <ProductName>Task Scheduler Utility</ProductName>
+    <Product>Task Scheduler Utility</Product>
+    <Description>Collapse Launcher's Task Scheduler Utility</Description>
+    <AssemblyTitle>Collapse Launcher's Task Scheduler Utility</AssemblyTitle>
     <Company>Collapse Launcher Team</Company>
     <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
     <Copyright>Copyright 2022-2026 $(Company)</Copyright>
-    <LangVersion>8.0</LangVersion>
-    <Version>1.0.2</Version>
+    <LangVersion>latest</LangVersion>
+    <Version>2.0.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="6.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Fody" Version="6.9.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="TaskScheduler" Version="2.12.2" />
+    <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
   </ItemGroup>
 
 </Project>

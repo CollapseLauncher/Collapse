@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
@@ -35,21 +36,6 @@ namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        internal static readonly string SupportedImageFormats =
-            string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExtensions.Select(x => $"*{x}")) + ";" +
-            string.Join(";", LayeredBackgroundImage.SupportedImageBitmapExternalCodecExtensions.Select(x => $"*{x}")) + ";" +
-            string.Join(";", LayeredBackgroundImage.SupportedImageVectorExtensions.Select(x => $"*{x}"));
-
-        internal static readonly string SupportedVideoFormats =
-            string.Join(";", LayeredBackgroundImage.SupportedVideoExtensions.Select(x => $"*{x}"));
-
-        internal static readonly Dictionary<string, string> SupportedBackgroundFormats =
-            new() {
-                { "All supported formats", SupportedImageFormats + ';' + SupportedVideoFormats },
-                { "Image formats", SupportedImageFormats },
-                { "Video formats", SupportedVideoFormats }
-            };
-
         #region Waifu2X
         public static Waifu2X Waifu2X;
         private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;
@@ -420,8 +406,12 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(url) ||
-                ProcessingUrls.Contains(url))
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            if (ProcessingUrls.Contains(url))
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
@@ -432,7 +422,7 @@ namespace CollapseLauncher.Helper.Image
             if (!Directory.Exists(AppGameImgCachedFolder))
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
-            FileInfo fInfo = new FileInfo(cachePath);
+            FileInfo fInfo = new(cachePath);
             if (await IsFileCompletelyDownloadedAsync(fInfo, !isSkipHashCheck))
             {
                 return cachePath;
@@ -442,6 +432,7 @@ namespace CollapseLauncher.Helper.Image
             {
                 return url;
             }
+
             return cachePath;
         }
 

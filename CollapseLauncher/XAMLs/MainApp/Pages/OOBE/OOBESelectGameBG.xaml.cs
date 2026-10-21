@@ -26,6 +26,7 @@ namespace CollapseLauncher.Pages.OOBE
     public sealed partial class OOBESelectGameBG
     {
         internal static bool IsUseBackgroundMask;
+        private         Uri  StaticBackgroundUrl => field ??= new Uri("ms-appx:///Assets/Images/PageBackground/StartupBackground2.avif");
 
         public OOBESelectGameBG()
         {
@@ -111,13 +112,13 @@ namespace CollapseLauncher.Pages.OOBE
                 OOBESelectGameBG.IsUseBackgroundMask = config is PluginPresetConfigWrapper;
 
                 _gamePosterPath = config.GameType switch
-                                {
-                                    GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GamePoster\poster_honkai.png"),
-                                    GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
-                                    GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
-                                    GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
-                                    _ => DecideOtherPosterPath(config)
-                                };
+                {
+                    GameNameType.Honkai => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_honkai.avif"),
+                    GameNameType.Genshin => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_genshin.avif"),
+                    GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.avif"),
+                    GameNameType.Zenless => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_zzz.avif"),
+                    _ => DecideOtherPosterPath(config)
+                };
                 _gameLogoPath = config.ZoneLogoURL;
 
                 // -- Load poster images.
@@ -131,8 +132,6 @@ namespace CollapseLauncher.Pages.OOBE
                 }
 
                 // -- Load logo images.
-                _gameLogoPath = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(_gameLogoPath, CancellationToken.None);
-                (_gameLogoPath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(_gameLogoPath, CancellationToken.None);
                 _gameLogoBitmapImage = new BitmapImage(new Uri(_gameLogoPath));
             }
             catch (Exception ex)

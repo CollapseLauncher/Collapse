@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
+using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -616,7 +617,7 @@ public sealed partial class HomePage
             return;
         }
 
-        string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedBackgroundFormats);
+        string file = await FileDialogNative.GetFilePicker(LayeredBackgroundImage.SupportedAllBackgroundFormatsFilter);
         if (string.IsNullOrEmpty(file) ||
             string.IsNullOrWhiteSpace(file))
         {

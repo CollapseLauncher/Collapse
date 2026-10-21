@@ -72,7 +72,6 @@ namespace CollapseLauncher
         private int  _currentGameRegion    = -1;
 
         internal Uri PlaceholderBackgroundImage => new(ImageBackgroundManager.GetPlaceholderBackgroundImageFrom(CurrentGameProperty?.GamePreset));
-        internal string PlaceholderDecodedCacheDir => AppGameImgFolder;
         internal ImageBackgroundManager CurrentBackgroundManager => ImageBackgroundManager.Shared;
 
         #endregion
@@ -213,7 +212,7 @@ namespace CollapseLauncher
                 bool isEnableDiscord = GetAppConfigValue("EnableDiscordRPC");
                 if (isEnableDiscord)
                 {
-                    InnerLauncherConfig.AppDiscordPresence.SetupPresence(presetConfig);
+                    InnerLauncherConfig.AppDiscordPresence.SetPresence(presetConfig);
                 }
             }
 
@@ -841,8 +840,8 @@ namespace CollapseLauncher
                 if (await LoadRegionFromCurrentConfigV2(preset, gameName, gameRegion))
                 {
                 #if !DISABLEDISCORD
-                    if (InnerLauncherConfig.AppDiscordPresence.IsRpcEnabled && !sameRegion)
-                        InnerLauncherConfig.AppDiscordPresence.SetupPresence(preset);
+                    if (InnerLauncherConfig.AppDiscordPresence.IsEnabled && !sameRegion)
+                        InnerLauncherConfig.AppDiscordPresence.SetPresence(preset);
                 #endif
                     InvokeLoadingRegionPopup(false);
                     LauncherFrame.BackStack.Clear();

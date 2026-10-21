@@ -1,10 +1,11 @@
-﻿#nullable enable
-using FFmpegInteropX;
+﻿using FFmpegInteropX;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
+using Windows.Media.Playback;
 
+#nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
@@ -22,8 +23,6 @@ public partial class LayeredBackgroundImage
         get => (bool)GetValue(IsVideoAutoplayProperty);
         set => SetValue(IsVideoAutoplayProperty, value);
     }
-
-    public bool IsVideoPlay => (bool)GetValue(IsVideoPlayProperty);
 
     public bool UseFfmpegDecoder
     {
@@ -67,9 +66,9 @@ public partial class LayeredBackgroundImage
         set => SetValue(ParallaxVerticalShiftProperty, value);
     }
 
-    public UIElement? ParallaxHoverSource
+    public FrameworkElement? ParallaxHoverSource
     {
-        get => (UIElement?)GetValue(ParallaxHoverSourceProperty);
+        get => (FrameworkElement?)GetValue(ParallaxHoverSourceProperty);
         set => SetValue(ParallaxHoverSourceProperty, value);
     }
 
@@ -79,40 +78,10 @@ public partial class LayeredBackgroundImage
         set => SetValue(ParallaxResetOnUnfocusedProperty, value);
     }
 
-    public object? PlaceholderSource
-    {
-        get => (object?)GetValue(PlaceholderSourceProperty);
-        set => SetValue(PlaceholderSourceProperty, value);
-    }
-
-    public Stretch PlaceholderStretch
-    {
-        get => (Stretch)GetValue(PlaceholderStretchProperty);
-        set => SetValue(PlaceholderStretchProperty, value);
-    }
-
-    public HorizontalAlignment PlaceholderHorizontalAlignment
-    {
-        get => (HorizontalAlignment)GetValue(PlaceholderHorizontalAlignmentProperty);
-        set => SetValue(PlaceholderHorizontalAlignmentProperty, value);
-    }
-
-    public VerticalAlignment PlaceholderVerticalAlignment
-    {
-        get => (VerticalAlignment)GetValue(PlaceholderVerticalAlignmentProperty);
-        set => SetValue(PlaceholderVerticalAlignmentProperty, value);
-    }
-
     public object? BackgroundSource
     {
         get => (object?)GetValue(BackgroundSourceProperty);
         set => SetValue(BackgroundSourceProperty, value);
-    }
-
-    public object? BackgroundStaticSource
-    {
-        get => (object?)GetValue(BackgroundStaticSourceProperty);
-        set => SetValue(BackgroundStaticSourceProperty, value);
     }
 
     public Stretch BackgroundStretch
@@ -163,15 +132,22 @@ public partial class LayeredBackgroundImage
         set => SetValue(ForegroundOpacityProperty, value);
     }
 
+    public MediaPlayerState MediaState
+    {
+        get => (MediaPlayerState)GetValue(MediaStateProperty);
+        set => SetValue(MediaStateProperty, value);
+    }
+
     public TimeSpan MediaDurationPosition
     {
         get => (TimeSpan)GetValue(MediaDurationPositionProperty);
         set => SetValue(MediaDurationPositionProperty, value);
     }
 
-    public TimeSpan MediaDuration => (TimeSpan)GetValue(MediaDurationProperty);
-
-    public bool IsCurrentMediaSeekable => (bool)GetValue(IsCurrentMediaSeekableProperty);
+    public TimeSpan MediaDuration
+    {
+        get => (TimeSpan)GetValue(MediaDurationProperty);
+    }
 
     public double BackgroundElevationPixels
     {
@@ -215,23 +191,9 @@ public partial class LayeredBackgroundImage
         set => SetValue(MediaSourceCacheDirProperty, value);
     }
 
-    private bool CanUseStaticBackground => BackgroundStaticSource is not null;
-
-    private bool IsUseStaticBackgroundUsed
-    {
-        get;
-        set;
-    }
-
     public double CanvasWidth => (double)GetValue(CanvasWidthProperty);
 
     public double CanvasHeight => (double)GetValue(CanvasHeightProperty);
-
-    #endregion
-
-    #region Fields
-
-    private UIElement? _lastParallaxHoverSource;
 
     #endregion
 
@@ -247,19 +209,13 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(IsAudioEnabled),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false, IsAudioEnabled_OnChange));
+                                    new PropertyMetadata(false, PropertyIsAudioEnabled_OnChange));
 
     public static readonly DependencyProperty IsVideoAutoplayProperty =
         DependencyProperty.Register(nameof(IsVideoAutoplay),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
-
-    public static readonly DependencyProperty IsVideoPlayProperty =
-        DependencyProperty.Register(nameof(IsVideoPlay),
-                                    typeof(bool),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty UseFfmpegDecoderProperty =
         DependencyProperty.Register(nameof(UseFfmpegDecoder),
@@ -277,13 +233,13 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(AudioVolume),
                                     typeof(double),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(50d, AudioVolume_OnChange));
+                                    new PropertyMetadata(.5d, PropertyAudioVolume_OnChange));
 
     public static readonly DependencyProperty IsParallaxEnabledProperty =
         DependencyProperty.Register(nameof(IsParallaxEnabled),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false, IsParallaxEnabled_OnChange));
+                                    new PropertyMetadata(false, PropertyIsParallelEnabled_OnChange));
 
     public static readonly DependencyProperty ParallaxHorizontalShiftProperty =
         DependencyProperty.Register(nameof(ParallaxHorizontalShift),
@@ -301,7 +257,7 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(ParallaxHoverSource),
                                     typeof(UIElement),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, ParallaxHover_OnChange));
+                                    new PropertyMetadata(null!, PropertyParallaxHoverSource_OnChange));
 
     public static readonly DependencyProperty ParallaxResetOnUnfocusedProperty =
         DependencyProperty.Register(nameof(ParallaxResetOnUnfocused),
@@ -309,41 +265,11 @@ public partial class LayeredBackgroundImage
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(true));
 
-    public static readonly DependencyProperty PlaceholderSourceProperty =
-        DependencyProperty.Register(nameof(PlaceholderSource),
-                                    typeof(object),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, PlaceholderSource_OnChange));
-
-    public static readonly DependencyProperty PlaceholderStretchProperty =
-        DependencyProperty.Register(nameof(PlaceholderStretch),
-                                    typeof(Stretch),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(Stretch.UniformToFill));
-
-    public static readonly DependencyProperty PlaceholderHorizontalAlignmentProperty =
-        DependencyProperty.Register(nameof(PlaceholderHorizontalAlignment),
-                                    typeof(HorizontalAlignment),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(HorizontalAlignment.Center));
-
-    public static readonly DependencyProperty PlaceholderVerticalAlignmentProperty =
-        DependencyProperty.Register(nameof(PlaceholderVerticalAlignment),
-                                    typeof(VerticalAlignment),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(VerticalAlignment.Center));
-
     public static readonly DependencyProperty BackgroundSourceProperty =
         DependencyProperty.Register(nameof(BackgroundSource),
                                     typeof(object),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, BackgroundSource_OnChange));
-
-    public static readonly DependencyProperty BackgroundStaticSourceProperty =
-        DependencyProperty.Register(nameof(BackgroundStaticSource),
-                                    typeof(object),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, BackgroundSource_OnChange));
+                                    new PropertyMetadata(null!, PropertyBackgroundSource_OnChange));
 
     public static readonly DependencyProperty BackgroundStretchProperty =
         DependencyProperty.Register(nameof(BackgroundStretch),
@@ -367,7 +293,7 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(ForegroundSource),
                                     typeof(object),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(null!, ForegroundSource_OnChange));
+                                    new PropertyMetadata(null!, PropertyForegroundSource_OnChange));
 
     public static readonly DependencyProperty ForegroundStretchProperty =
         DependencyProperty.Register(nameof(ForegroundStretch),
@@ -393,23 +319,23 @@ public partial class LayeredBackgroundImage
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(1d));
 
+    public static readonly DependencyProperty MediaStateProperty =
+        DependencyProperty.Register(nameof(MediaState),
+                                    typeof(MediaPlayerState),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(MediaPlayerState.Stopped));
+
     public static readonly DependencyProperty MediaDurationPositionProperty =
         DependencyProperty.Register(nameof(MediaDurationPosition),
                                     typeof(TimeSpan),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(TimeSpan.Zero, MediaDurationPosition_OnChanged));
+                                    new PropertyMetadata(TimeSpan.Zero, PropertyMediaDurationPosition_OnChange));
 
     public static readonly DependencyProperty MediaDurationProperty =
         DependencyProperty.Register(nameof(MediaDuration),
                                     typeof(TimeSpan),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(TimeSpan.Zero));
-
-    public static readonly DependencyProperty IsCurrentMediaSeekableProperty =
-        DependencyProperty.Register(nameof(IsCurrentMediaSeekable),
-                                    typeof(bool),
-                                    typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false));
 
     public static readonly DependencyProperty BackgroundElevationPixelsProperty =
         DependencyProperty.Register(nameof(BackgroundElevationPixels),
@@ -421,7 +347,7 @@ public partial class LayeredBackgroundImage
         DependencyProperty.Register(nameof(IsBackgroundElevated),
                                     typeof(bool),
                                     typeof(LayeredBackgroundImage),
-                                    new PropertyMetadata(false, IsBackgroundElevated_OnChanged));
+                                    new PropertyMetadata(false, PropertyIsBackgroundElevated_OnChange));
 
     public static readonly DependencyProperty SmokeBackgroundProperty =
         DependencyProperty.Register(nameof(SmokeBackground),

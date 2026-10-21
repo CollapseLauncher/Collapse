@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -13,12 +14,14 @@ using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using WinRT;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
@@ -199,8 +202,6 @@ public partial class ImageBackgroundManager
     private Grid?                     PresenterGrid                        { get; set; }
     private PresetConfig?             PresetConfig                         { get; set; }
 
-    internal bool NeedFallbackPlaceholder { get; set; }
-
     public Action? OnBackgroundLoadFailed { get; set; }
 
     public string? CurrentCustomBackgroundImagePath
@@ -257,7 +258,7 @@ public partial class ImageBackgroundManager
 
             LauncherConfig.SetAndSaveConfigValue(CurrentSelectedBackgroundIndexKey, value);
             OnPropertyChanged();
-            LoadImageAtIndex(value, false, CancellationToken.None, true);
+            LoadImage();
         }
     }
 
@@ -287,16 +288,6 @@ public partial class ImageBackgroundManager
 
     public int CurrentBackgroundCount => ImageContextSources.Count;
 
-    public bool CurrentBackgroundIsSeekable
-    {
-        get;
-        private set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool CurrentBackgroundIsVideo
     {
         get;
@@ -320,10 +311,6 @@ public partial class ImageBackgroundManager
     } = [];
 
     private int _previousContextHash;
-
-    private volatile int _loadGeneration;
-
-    private LayeredImageBackgroundContext? _displayedContext;
 
     internal FrameworkElement? ThemeRootElement { get; set; }
 
@@ -383,6 +370,7 @@ public partial class ImageBackgroundManager
                 // -- Try to initialize custom image first
                 //    -- A. Check for per-region custom background
                 if (CurrentIsEnableCustomImage &&
+                    !string.IsNullOrEmpty(CurrentCustomBackgroundImagePath) &&
                     await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
                 {
                     return;
@@ -391,6 +379,7 @@ public partial class ImageBackgroundManager
                 //   -- B. Check for global custom background
                 if (!CurrentIsEnableCustomImage &&
                     GlobalIsEnableCustomImage &&
+                    !string.IsNullOrEmpty(GlobalCustomBackgroundImagePath) &&
                     await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
                 {
                     return;
@@ -408,8 +397,6 @@ public partial class ImageBackgroundManager
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
                             OriginBackgroundImagePath = bgPlaceholderPath,
-                            BackgroundImagePath       = bgPlaceholderPath,
-                            IsVideo                   = IsVideoMediaFileExtensionSupported(bgPlaceholderPath),
                             IsCustom                  = true
                         });
                         return;
@@ -419,20 +406,15 @@ public partial class ImageBackgroundManager
                     // ReSharper disable once LoopCanBeConvertedToQuery
                     foreach (HypLauncherBackgroundContentKindData contextEntry in contextList.SelectMany(x => x.Backgrounds))
                     {
-                        string? overlayImagePath = contextEntry.BackgroundOverlay?.ImageUrl;
-                        string? backgroundImagePath = contextEntry.BackgroundVideo?.ImageUrl ??
-                                                      contextEntry.BackgroundImage?.ImageUrl;
-                        string? backgroundImageStaticPath = contextEntry.BackgroundImage?.ImageUrl;
+                        string? overlayImagePath     = contextEntry.BackgroundOverlay?.ImageUrl;
+                        string? backgroundImagePath  = contextEntry.BackgroundVideo?.ImageUrl ?? contextEntry.BackgroundImage?.ImageUrl;
+                        string? placeholderImagePath = contextEntry.BackgroundImage?.ImageUrl;
 
                         imageContexts.Add(new LayeredImageBackgroundContext
                         {
-                            OriginOverlayImagePath          = overlayImagePath,
-                            OriginBackgroundImagePath       = backgroundImagePath,
-                            OriginBackgroundStaticImagePath = backgroundImageStaticPath,
-                            OverlayImagePath                = overlayImagePath,
-                            BackgroundImagePath             = backgroundImagePath,
-                            BackgroundImageStaticPath       = backgroundImageStaticPath,
-                            IsVideo                         = IsVideoMediaFileExtensionSupported(backgroundImagePath)
+                            OriginOverlayImagePath     = overlayImagePath,
+                            OriginBackgroundImagePath  = backgroundImagePath,
+                            OriginPlaceholderImagePath = placeholderImagePath
                         });
                     }
                 }
@@ -485,14 +467,13 @@ public partial class ImageBackgroundManager
             }
 
             // -- Try to perform cropped or pass through processing
-            (_, string? resultBackgroundPath, bool isCancelProcess) =
-                await GetCroppedCustomImage(null,
-                                            imagePath,
-                                            performCropRequest,
-                                            token);
+            GetCroppedResult cropResult = await GetCroppedCustomImage(null,
+                                                                      imagePath,
+                                                                      performCropRequest,
+                                                                      token);
 
             // -- Do not process custom background if cancelled.
-            if (isCancelProcess)
+            if (cropResult.IsCancelResize)
             {
                 return false;
             }
@@ -507,11 +488,8 @@ public partial class ImageBackgroundManager
             // -- Apply background
             LayeredImageBackgroundContext context = new()
             {
-                OriginBackgroundImagePath = imagePath,
-                BackgroundImagePath       = resultBackgroundPath,
-                ForceReload               = true, // Request force reload (skip cache)
-                IsVideo                   = IsVideoMediaFileExtensionSupported(resultBackgroundPath),
-                IsCustom                  = true
+                OriginBackgroundImagePath = cropResult.ProcessedBackgroundPath,
+                ForceReload               = cropResult.WasCropPerformed // Only do force reload if crop was performed.
             };
 
             UpdateContextListCore(token, skipPreviousContextCheck, context);
@@ -538,33 +516,14 @@ public partial class ImageBackgroundManager
             return;
         }
 
-        UpdateContextListCore(token, skipPreviousContextCheck, imageContexts.ToArray());
+        UpdateContextListCore(token, skipPreviousContextCheck, [.. imageContexts]);
     }
 
     private void UpdateContextListCore(
         CancellationToken                                  token,
-        bool                                               skipPreviousContextCheck,
+        bool                                               forceReload,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
-        UpdateContextListCore(token, skipPreviousContextCheck, false, imageContexts);
-    }
-
-    private void UpdateContextListCore(
-        CancellationToken                                  token,
-        bool                                               skipPreviousContextCheck,
-        bool                                               forceLoadToStatic,
-        params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
-    {
-        // Do not update if the previous contexts are equal
-        if ((!skipPreviousContextCheck &&
-            IsContextEqual(imageContexts)) ||
-            imageContexts.IsEmpty)
-        {
-            return;
-        }
-
-        Interlocked.Increment(ref _loadGeneration);
-
         ImageContextSources.Clear(); // Flush list
         ref IList<LayeredImageBackgroundContext>? backedList =
             ref ObservableCollectionExtension<LayeredImageBackgroundContext>
@@ -591,32 +550,14 @@ public partial class ImageBackgroundManager
         OnPropertyChanged(nameof(CurrentSelectedBackgroundIndex));
         OnPropertyChanged(nameof(CurrentSelectedBackgroundContext));
         OnPropertyChanged(nameof(CurrentBackgroundCount));
-        LoadImageAtIndex(CurrentSelectedBackgroundIndex, forceLoadToStatic, token);
+        LoadImage(token);
     }
 #pragma warning restore CA1068
-
-    private bool IsContextEqual(ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
-    {
-        if (ImageContextSources.Count != imageContexts.Length)
-        {
-            return false;
-        }
-
-        HashCode hashCode = default;
-        foreach (LayeredImageBackgroundContext context in imageContexts)
-        {
-            hashCode.Add(context);
-        }
-
-        int hashCodeRes = hashCode.ToHashCode();
-        return Interlocked.Exchange(ref _previousContextHash, hashCodeRes) == hashCodeRes;
-    }
 
     public void ResetContexts()
     {
         Interlocked.Exchange(ref _previousContextHash, 0);
         ImageContextSources.Clear();
-        NeedFallbackPlaceholder = false;
     }
 
     void INotifyAllPropertyChanged.NotifyAllChanged()
@@ -638,28 +579,14 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     public string? OriginBackgroundImagePath
     {
         get;
-        init;
+        init
+        {
+            IsVideo = ImageBackgroundManager.IsVideoMediaFileExtensionSupported(value);
+            field   = value;
+        }
     }
 
-    public string? OriginBackgroundStaticImagePath
-    {
-        get;
-        init;
-    }
-
-    public string? OverlayImagePath
-    {
-        get;
-        init;
-    }
-
-    public string? BackgroundImagePath
-    {
-        get;
-        init;
-    }
-
-    public string? BackgroundImageStaticPath
+    public string? OriginPlaceholderImagePath
     {
         get;
         init;
@@ -668,19 +595,63 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     public bool ForceReload
     {
         get;
-        init;
+        set;
     }
 
     public bool IsVideo
     {
         get;
-        init;
+        private init;
     }
 
     public bool IsCustom
     {
         get;
         init;
+    }
+
+    public async Task<string?> GetCachedImagePathAsync(string? path, CancellationToken token)
+    {
+        if (path == null)
+            return null;
+
+        path      = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(path, token).ConfigureAwait(false);
+        (path, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(path, token).ConfigureAwait(false);
+
+        if (IsVideo || !ImageBackgroundManager.Shared.GlobalIsWaifu2XEnabled)
+        {
+            return path;
+        }
+
+        Uri upscaledUri = await ImageBackgroundManager.TryGetScaledWaifu2XImagePath(new Uri(path), token).ConfigureAwait(false);
+        return upscaledUri.LocalPath;
+    }
+
+    public void DeleteCachedImagePath(string? path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return;
+
+        Uri uri = new(path);
+        if (ImageBackgroundManager.TryGetDownloadedFile(uri,
+                                                        out FileInfo downloadedFilePath,
+                                                        out _,
+                                                        out _))
+        {
+            downloadedFilePath.TryDeleteFile();
+        }
+
+        if (ImageBackgroundManager.TryGetDecodedTemporaryFile(downloadedFilePath.FullName,
+                                                              out string decodedFilePath))
+        {
+            StreamExtension.TryDeleteFile(decodedFilePath);
+        }
+
+        if (ImageBackgroundManager.TryGetUpscaledFilePath(decodedFilePath,
+                                                          out string upscaledFilePath))
+        {
+            StreamExtension.TryDeleteFile(upscaledFilePath);
+        }
     }
 
     public bool Equals(LayeredImageBackgroundContext? other) => other?.GetHashCode() == GetHashCode();
@@ -699,10 +670,7 @@ public partial class LayeredImageBackgroundContext : NotifyPropertyChanged, IEqu
     public override int GetHashCode() =>
         HashCode.Combine(OriginOverlayImagePath,
                          OriginBackgroundImagePath,
-                         OriginBackgroundStaticImagePath,
-                         OverlayImagePath,
-                         BackgroundImagePath,
-                         BackgroundImageStaticPath,
-                         ForceReload,
-                         IsVideo);
+                         OriginPlaceholderImagePath,
+                         IsVideo,
+                         IsCustom);
 }

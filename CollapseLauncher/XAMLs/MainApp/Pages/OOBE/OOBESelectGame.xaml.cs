@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
@@ -58,7 +59,7 @@ namespace CollapseLauncher.Pages.OOBE
             SpawnGreetingsToastNotification(asGameTitleString, asGameRegionConfig.ZoneName ?? "");
         }
 
-        private static void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
+        private static async void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
         {
             if (string.IsNullOrEmpty(gameTitle) || string.IsNullOrEmpty(gameRegion))
             {
@@ -77,19 +78,16 @@ namespace CollapseLauncher.Pages.OOBE
             // Get logo name and poster name
             (string? logoName, string? posterName) = GetLogoAndHeroImgPath(gamePresetConfig);
 
+            if (!string.IsNullOrEmpty(posterName))
+                (posterName, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(posterName);
+
             // Create Toast Notification Content
-            NotificationContent toastContent = NotificationContent.Create()
-                                                                  .SetTitle(Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeTitle)
-                                                                  .SetContent(
-                                                                              string.Format(
-                                                                                   Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeSubtitle ?? "",
-                                                                                   gameTitleTranslated,
-                                                                                   gameRegionTranslated))
-                                                                  .SetAppLogoPath(
-                                                                        logoName,
-                                                                        true)
-                                                                  .AddAppHeroImagePath(
-                                                                        posterName);
+            NotificationContent toastContent = NotificationContent
+                                              .Create()
+                                              .SetTitle(Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeTitle)
+                                              .SetContent(string.Format(Locale.Current.Lang?._NotificationToast?.OOBE_WelcomeSubtitle ?? "", gameTitleTranslated, gameRegionTranslated))
+                                              .SetAppLogoPath(logoName, true)
+                                              .AddAppHeroImagePath(posterName);
 
             // Create Toast Notification Service
             ToastNotification? toastService = WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
@@ -111,7 +109,7 @@ namespace CollapseLauncher.Pages.OOBE
                 string? appIconUrl   = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl);
                 string? appPosterUrl = ImageLoaderHelper.CopyToLocalIfBase64(posterUrl);
 
-                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.png");
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl);
             }
 
             // Get logo name and poster name
@@ -125,7 +123,7 @@ namespace CollapseLauncher.Pages.OOBE
 
             // Return paths
             return ($@"Assets\Images\GameLogo\{logoName}-logo.png",
-                    $@"Assets\Images\GamePoster\poster_{posterName}.png");
+                    $@"Assets\Images\GamePoster\poster_{posterName}.avif");
         }
 
 
