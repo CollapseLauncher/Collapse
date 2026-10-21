@@ -62,7 +62,7 @@
                            Opacity="0.8"
                            PointerEntered="GridBG_Icon_PointerEntered"
                            PointerExited="GridBG_Icon_PointerExited"
-                           Source="ms-appx:///Assets/CollapseLauncherLogo.png">
+                           Source="ms-appx:///Assets/CollapseLauncherLogoSmall.png">
                         <Image.OpacityTransition>
                             <ScalarTransition />
                         </Image.OpacityTransition>

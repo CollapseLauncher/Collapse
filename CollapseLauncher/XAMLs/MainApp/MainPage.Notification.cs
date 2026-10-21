@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
@@ -289,6 +290,9 @@ public partial class MainPage
                 // Get current game property, including game preset
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 (_, string? heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty.GamePreset);
+
+                if (!string.IsNullOrEmpty(heroImage))
+                    (heroImage, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(heroImage);
 
                 // Create notification
                 NotificationContent toastContent = NotificationContent.Create()

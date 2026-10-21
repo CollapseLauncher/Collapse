@@ -10,9 +10,6 @@ namespace CollapseLauncher.Extension;
 
 public static partial class UIElementExtensions
 {
-    /// <summary>
-    /// Sets uniform corner radius size. If value is set to -1, the rounded corner radius will be applied.
-    /// </summary>
     public static readonly DependencyProperty ExternalDecoderSourceProperty =
         DependencyProperty.RegisterAttached("ExternalDecoderSource",
                                             typeof(object),
@@ -29,5 +26,44 @@ public static partial class UIElementExtensions
         }
 
         image.Source = ImageDecoderValueConverter.Shared.Convert(value, typeof(object), null, null) as ImageSource;
+        obj.SetValue(ExternalDecoderSourceProperty, value);
+    }
+
+    public static readonly DependencyProperty ExternalDecoderImageExSourceProperty =
+        DependencyProperty.RegisterAttached("ExternalDecoderImageExSourceSource",
+                                            typeof(object),
+                                            typeof(ImageEx.ImageEx),
+                                            new PropertyMetadata(null));
+
+    public static readonly DependencyProperty ExternalDecoderImageExPlaceholderSourceProperty =
+        DependencyProperty.RegisterAttached("ExternalDecoderImageExPlaceholderSource",
+                                            typeof(object),
+                                            typeof(ImageEx.ImageEx),
+                                            new PropertyMetadata(null));
+
+    public static object? GetExternalDecoderImageExSource(DependencyObject obj) => obj.GetValue(ExternalDecoderImageExSourceProperty);
+
+    public static void SetExternalDecoderImageExSource(DependencyObject obj, object? value)
+    {
+        if (obj is not ImageEx.ImageEx image)
+        {
+            return;
+        }
+
+        image.Source = ImageDecoderValueConverter.Shared.Convert(value, typeof(object), null, null) as ImageSource;
+        obj.SetValue(ExternalDecoderImageExSourceProperty, value);
+    }
+
+    public static object? GetExternalDecoderImageExPlaceholderSource(DependencyObject obj) => obj.GetValue(ExternalDecoderImageExPlaceholderSourceProperty);
+
+    public static void SetExternalDecoderImageExPlaceholderSource(DependencyObject obj, object? value)
+    {
+        if (obj is not ImageEx.ImageEx image)
+        {
+            return;
+        }
+
+        image.PlaceholderSource = ImageDecoderValueConverter.Shared.Convert(value, typeof(object), null, null) as ImageSource;
+        obj.SetValue(ExternalDecoderImageExPlaceholderSourceProperty, value);
     }
 }

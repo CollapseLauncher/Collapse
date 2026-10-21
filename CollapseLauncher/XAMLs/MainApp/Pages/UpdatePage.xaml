@@ -24,7 +24,7 @@
                HorizontalAlignment="Left"
                VerticalAlignment="Bottom"
                Opacity="0.30"
-               Source="ms-appx:///Assets/Images/GameMascot/AiHappy-MonoTransparent.png" />
+               extension:UIElementExtensions.ExternalDecoderSource="ms-appx:///Assets/Images/GameMascot/AiHappy-MonoTransparent.avif" />
         <StackPanel Grid.Column="0">
             <TextBlock FontSize="78"
                        FontWeight="Light"

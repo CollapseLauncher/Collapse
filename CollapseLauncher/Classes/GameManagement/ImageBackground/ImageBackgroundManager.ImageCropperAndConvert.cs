@@ -565,32 +565,43 @@ public partial class ImageBackgroundManager
     /// Get native or redirected decoded image path.
     /// </summary>
     /// <exception cref="NotSupportedException">If the codec of the image is not supported.</exception>
-    internal static async ValueTask<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token = default)
+    internal static ValueTask<(string, ImageExternalCodecType)> GetNativeOrDecodedImagePath(string filePath, CancellationToken token = default)
     {
         // Try to get decoded temporary file. If it exists, return the file path.
         if (TryGetDecodedTemporaryFile(filePath, out string decodedFilePath))
         {
-            return (decodedFilePath, ImageExternalCodecType.Default);
+            return new ValueTask<(string, ImageExternalCodecType)>((decodedFilePath, ImageExternalCodecType.Default));
         }
 
-        // Check the extension type. If the type is native or a video file, then just return the original path.
-        if (await TryGetImageCodecType(filePath, token) is var codecType &&
-            codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
+        Task<(string, ImageExternalCodecType)> processTask = ImplAsync();
+        if (processTask.IsCompleted)
         {
-            return (filePath, codecType);
+            return new ValueTask<(string, ImageExternalCodecType)>(processTask.Result);
         }
 
-        // Return null if the codec type is not supported.
-        if (codecType == ImageExternalCodecType.NotSupported)
+        return new ValueTask<(string, ImageExternalCodecType)>(processTask);
+
+        async Task<(string, ImageExternalCodecType)> ImplAsync()
         {
-            throw new NotSupportedException($"The format of the image: {filePath} is not supported!");
+            // Check the extension type. If the type is native or a video file, then just return the original path.
+            if (await TryGetImageCodecType(filePath, token) is var codecType &&
+                codecType is ImageExternalCodecType.Default or ImageExternalCodecType.Svg)
+            {
+                return (filePath, codecType);
+            }
+
+            // Return null if the codec type is not supported.
+            if (codecType == ImageExternalCodecType.NotSupported)
+            {
+                throw new NotSupportedException($"The format of the image: {filePath} is not supported!");
+            }
+
+            // Otherwise, try to convert the image to png and write it to given decoded file path.
+            await using Stream sourceStream = await OpenStreamFromFileOrUrl(filePath, token);
+            await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token: token);
+
+            return (decodedFilePath, codecType);
         }
-
-        // Otherwise, try to convert the image to png and write it to given decoded file path.
-        await using Stream sourceStream = await OpenStreamFromFileOrUrl(filePath, token);
-        await ConvertImageToPngFromStream(sourceStream, decodedFilePath, token: token);
-
-        return (decodedFilePath, codecType);
     }
 
     /// <summary>

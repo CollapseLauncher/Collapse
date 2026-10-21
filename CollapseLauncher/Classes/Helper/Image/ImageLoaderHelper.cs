@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
@@ -405,11 +406,18 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(url) ||
-                ProcessingUrls.Contains(url))
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            if (ProcessingUrls.Contains(url))
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
+
+                url      = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(url, token);
+                (url, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(url, token);
                 return url;
             }
 
@@ -417,16 +425,21 @@ namespace CollapseLauncher.Helper.Image
             if (!Directory.Exists(AppGameImgCachedFolder))
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
-            FileInfo fInfo = new FileInfo(cachePath);
+            FileInfo fInfo = new(cachePath);
             if (await IsFileCompletelyDownloadedAsync(fInfo, !isSkipHashCheck))
             {
+                (cachePath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(cachePath, token);
                 return cachePath;
             }
 
             if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, isSkipHashCheck, token))
             {
+                url      = await ImageBackgroundManager.GetLocalOrDownloadedFilePath(url, token);
+                (url, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(url, token);
                 return url;
             }
+
+            (cachePath, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(cachePath, token);
             return cachePath;
         }
 

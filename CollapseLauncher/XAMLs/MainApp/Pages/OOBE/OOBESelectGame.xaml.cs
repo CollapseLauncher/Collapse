@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
@@ -58,7 +59,7 @@ namespace CollapseLauncher.Pages.OOBE
             SpawnGreetingsToastNotification(asGameTitleString, asGameRegionConfig.ZoneName ?? "");
         }
 
-        private static void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
+        private static async void SpawnGreetingsToastNotification(string? gameTitle, string? gameRegion)
         {
             if (string.IsNullOrEmpty(gameTitle) || string.IsNullOrEmpty(gameRegion))
             {
@@ -76,6 +77,12 @@ namespace CollapseLauncher.Pages.OOBE
 
             // Get logo name and poster name
             (string? logoName, string? posterName) = GetLogoAndHeroImgPath(gamePresetConfig);
+
+            if (!string.IsNullOrEmpty(logoName))
+                (logoName, _)   = await ImageBackgroundManager.GetNativeOrDecodedImagePath(logoName);
+
+            if (!string.IsNullOrEmpty(posterName))
+                (posterName, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(posterName);
 
             // Create Toast Notification Content
             NotificationContent toastContent = NotificationContent.Create()
@@ -111,7 +118,7 @@ namespace CollapseLauncher.Pages.OOBE
                 string? appIconUrl   = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl);
                 string? appPosterUrl = ImageLoaderHelper.CopyToLocalIfBase64(posterUrl);
 
-                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.avif");
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.avif", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.avif");
             }
 
             // Get logo name and poster name
@@ -124,8 +131,8 @@ namespace CollapseLauncher.Pages.OOBE
             };
 
             // Return paths
-            return ($@"Assets\Images\GameLogo\{logoName}-logo.png",
-                    $@"Assets\Images\GamePoster\poster_{posterName}.png");
+            return ($@"Assets\Images\GameLogo\{logoName}-logo.avif",
+                    $@"Assets\Images\GamePoster\poster_{posterName}.avif");
         }
 
 

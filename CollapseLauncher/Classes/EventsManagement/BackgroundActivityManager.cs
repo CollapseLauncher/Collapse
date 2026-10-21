@@ -58,11 +58,11 @@ namespace CollapseLauncher
         {
             string uri = presetConfig.GameType switch
             {
-                GameNameType.Honkai   => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                GameNameType.Genshin  => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
-                GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
-                GameNameType.Zenless  => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                _                     => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+                GameNameType.Honkai   => "ms-appx:///Assets/Images/GameLogo/honkai-logo.avif",
+                GameNameType.Genshin  => "ms-appx:///Assets/Images/GameLogo/genshin-logo.avif",
+                GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.avif",
+                GameNameType.Zenless  => "ms-appx:///Assets/Images/GameLogo/zenless-logo.avif",
+                _                     => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.avif"
             };
 
             if (presetConfig is not PluginPresetConfigWrapper pluginPresetConfig)

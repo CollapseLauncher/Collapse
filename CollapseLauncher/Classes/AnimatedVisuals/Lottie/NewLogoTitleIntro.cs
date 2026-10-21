@@ -43,6 +43,9 @@
 // | Gradient stops           |     6 |
 // | CompositionVisualSurface |    42 |
 // ------------------------------------
+
+using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Helper.Image;
 using Hi3Helper.Shared.Region;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Effects;
@@ -55,6 +58,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 
@@ -151,14 +155,21 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
                 res.CreateAnimations();
                 return res;
         }
-        void EnsureImageLoadingStarted()
+        async void EnsureImageLoadingStarted()
         {
             if (!_isImageLoadingStarted)
             {
                 var eventHandler = new TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs>(HandleLoadCompleted);
-                _image_image_0 = LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
+                string path = Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.avif");
+                _image_image_0               =  LoadedImageSurface.StartLoadFromStream((await GetDecodedImage(path)).AsRandomAccessStream());
                 _image_image_0.LoadCompleted += eventHandler;
-                _isImageLoadingStarted = true;
+                _isImageLoadingStarted       =  true;
+            }
+
+            async Task<FileStream> GetDecodedImage(string path)
+            {
+                (path, _) = await ImageBackgroundManager.GetNativeOrDecodedImagePath(path);
+                return File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             }
         }
 

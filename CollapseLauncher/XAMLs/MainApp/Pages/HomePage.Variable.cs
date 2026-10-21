@@ -152,10 +152,10 @@ public sealed partial class HomePage
             GameNameType? gameType = CurrentGameProperty.GamePreset.GameType;
             return gameType switch
             {
-                GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
-                GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
-                GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
-                _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+                GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.avif",
+                GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.avif",
+                GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.avif",
+                _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.avif"
             };
         }
     }

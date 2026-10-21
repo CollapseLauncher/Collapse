@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Shared.Region;
 using System;
@@ -38,25 +39,35 @@ public partial class ImageBackgroundManager
 
     public static ValueTask<FileStream> OpenStreamFromFileOrUrl(string? filePath, CancellationToken token)
     {
-        return !Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri)
+        return !Uri.TryCreate(filePath, UriKind.RelativeOrAbsolute, out Uri? uri)
             ? throw new InvalidOperationException($"File path or URL is misformed! {filePath}")
             : OpenStreamFromFileOrUrl(uri, token);
     }
 
     public static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
     {
-        if (uri.Scheme.StartsWith("ms-appx"))
+        if (!uri.IsAbsoluteUri && !uri.IsWellFormedOriginalString())
         {
-            string uwpResPath = Path.Combine(AppContext.BaseDirectory, uri.LocalPath.TrimStart("\\/").ToString());
-            uri = new Uri(uwpResPath);
+            string localPath = uri.OriginalString.GetFullyQualifiedPath();
+            return !File.Exists(localPath)
+                ? throw new FileNotFoundException($"File: {localPath} does not exist!")
+                : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
         if (uri.IsFile)
         {
-            string localPath = uri.LocalPath;
+            string localPath = uri.LocalPath.GetFullyQualifiedPath();
             return !File.Exists(localPath)
                 ? throw new FileNotFoundException($"File: {localPath} does not exist!")
                 : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
+        if (uri.Scheme.StartsWith("ms-appx"))
+        {
+            string uwpResPath = uri.LocalPath.TrimStart("\\/").GetFullyQualifiedPath();
+            return !File.Exists(uwpResPath)
+                ? throw new FileNotFoundException($"File: {uwpResPath} does not exist!")
+                : File.Open(uwpResPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
         // Find stamp file. Try read the metadata in it and just use locally cached files if matches.
