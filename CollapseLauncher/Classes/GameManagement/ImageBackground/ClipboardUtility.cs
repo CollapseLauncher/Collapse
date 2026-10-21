@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.XAMLs.Theme.CustomControls;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
@@ -8,13 +7,11 @@ using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.WinRT.WindowsStream;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
-using Microsoft.UI.Dispatching;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
@@ -30,11 +27,8 @@ public static class ClipboardUtility
 {
     public static async void CopyCurrentFrameToClipboard(
         ImageBackgroundManager? instance,
-        FrameToCopyType frameToCopyType)
+        FrameToCopyType         frameToCopyType)
     {
-        /*
-        bool isBackgroundVideo = false;
-
         try
         {
             if (instance == null)
@@ -44,67 +38,14 @@ public static class ClipboardUtility
 
             bool hasBackground = frameToCopyType.HasFlag(FrameToCopyType.Background);
             bool hasForeground = frameToCopyType.HasFlag(FrameToCopyType.Foreground);
-            bool hasBoth       = frameToCopyType == FrameToCopyType.Both;
 
             // Try to get video frame buffer first (if the background is video).
             LayeredBackgroundImage? currentElement = instance.CurrentBackgroundElement;
-            bool isStaticBackgroundShowing = currentElement is { BackgroundStaticSource: not null, IsVideoPlay: false };
-
-            string? usedBackgroundPath = isStaticBackgroundShowing
-                ? instance.CurrentSelectedBackgroundContext?
-                   .OriginPlaceholderImagePath
-                : instance.CurrentSelectedBackgroundContext?
-                   .OriginBackgroundImagePath;
-
-            CanvasRenderTarget? backgroundCanvas = hasBackground
-                ? isStaticBackgroundShowing ? null : currentElement?.LockCanvasRenderTarget()
-                : null;
-
-            ICanvasResourceCreator? canvasDevice = backgroundCanvas;
-            canvasDevice ??= CanvasDevice.GetSharedDevice();
-
-            if (backgroundCanvas != null)
-            {
-                // Copy bitmap to avoid arbitrary write to video frame buffer.
-                CanvasRenderTarget oldCanvas = backgroundCanvas;
-                backgroundCanvas = new CanvasRenderTarget(canvasDevice, backgroundCanvas.Size._width, backgroundCanvas.Size._height, 96f);
-                backgroundCanvas.CopyPixelsFromBitmap(oldCanvas);
-
-                isBackgroundVideo = true; // Mark as video so we can unlock the frame later.
-            }
-
-            // If it's still null (which most likely an image), get the canvas.
-            backgroundCanvas ??= hasBackground
-                ? await GetImageCanvasTargetBuffer(canvasDevice,
-                                                   usedBackgroundPath)
-                : await GetImageCanvasTargetBuffer(canvasDevice,
-                                                   instance.CurrentSelectedBackgroundContext?
-                                                      .OriginOverlayImagePath);
-
-            // If background canvas is still null, abort.
-            if (backgroundCanvas == null)
-            {
+            if (currentElement == null)
                 return;
-            }
 
-            // Get foreground canvas if available.
-            CanvasRenderTarget? foregroundCanvas = hasBoth && hasForeground
-                    ? await GetImageCanvasTargetBuffer(canvasDevice,
-                                                       instance.CurrentSelectedBackgroundContext?
-                                                          .OriginOverlayImagePath)
-                    : null;
-
-            int widthOfForeground = (int)(foregroundCanvas?.SizeInPixels.Width ?? 0u);
-            int heightOfForeground = (int)(foregroundCanvas?.SizeInPixels.Height ?? 0u);
-            if (foregroundCanvas != null &&
-                (backgroundCanvas.SizeInPixels.Width != widthOfForeground ||
-                 backgroundCanvas.SizeInPixels.Height != heightOfForeground))
-            {
-                backgroundCanvas = ResizeCanvasToSizeOf(backgroundCanvas, widthOfForeground, heightOfForeground);
-            }
-
-            MergeCanvasTargetWith(backgroundCanvas, foregroundCanvas); // Merge overlay (foreground) to background.
-            await CopyCanvasTargetBufferToClipboard(backgroundCanvas); // Copy to clipboard
+            using CanvasRenderTarget? sourceFrameCanvas = await currentElement.CopyCurrentFrame(hasBackground, hasForeground);
+            await CopyCanvasTargetBufferToClipboard(sourceFrameCanvas); // Copy to clipboard
         }
         catch (Exception ex)
         {
@@ -112,90 +53,6 @@ public static class ClipboardUtility
                                 LogType.Error,
                                 true);
         }
-        finally
-        {
-            if (isBackgroundVideo)
-            {
-                instance?.CurrentBackgroundElement?.UnlockCanvasRenderTarget();
-            }
-        }
-        */
-    }
-
-    private static CanvasRenderTarget ResizeCanvasToSizeOf(CanvasRenderTarget canvasToResize, int width, int height)
-    {
-        CanvasRenderTarget resizedCanvas = new(canvasToResize,
-                                               width,
-                                               height,
-                                               canvasToResize.Dpi);
-        using CanvasDrawingSession ds = resizedCanvas.CreateDrawingSession();
-        ds.DrawImage(canvasToResize,
-                     new Windows.Foundation.Rect(0, 0, width, height),
-                     new Windows.Foundation.Rect(0, 0,
-                                                 canvasToResize.SizeInPixels.Width,
-                                                 canvasToResize.SizeInPixels.Height),
-                     1f,
-                     CanvasImageInterpolation.HighQualityCubic);
-
-        canvasToResize.Dispose();
-        return resizedCanvas;
-    }
-
-    private static async Task<CanvasRenderTarget?> GetImageCanvasTargetBuffer(ICanvasResourceCreator canvasDevice, string? path)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            return null; // Ignore if path is null or empty.
-        }
-
-        // Get source image as native or decoded image (if it requires external codec decoding).
-        Uri sourceUri = new(path);
-        (sourceUri, _) = await ImageBackgroundManager
-           .GetNativeOrDecodedImagePath(sourceUri, CancellationToken.None);
-
-        using CanvasBitmap bitmap = sourceUri.IsFile ?
-            await CanvasBitmap.LoadAsync(canvasDevice,
-                                         sourceUri.LocalPath,
-                                         96f,
-                                         CanvasAlphaMode.Premultiplied) :
-            await CanvasBitmap.LoadAsync(canvasDevice,
-                                         sourceUri,
-                                         96f,
-                                         CanvasAlphaMode.Premultiplied);
-
-        // Load to render target
-        return await Task.Run(() =>
-        {
-            CanvasRenderTarget renderTarget = new(canvasDevice,
-                                                  bitmap.SizeInPixels.Width,
-                                                  bitmap.SizeInPixels.Height, bitmap.Dpi);
-            using CanvasDrawingSession ds = renderTarget.CreateDrawingSession();
-            ds.DrawImage(bitmap);
-            return renderTarget;
-        });
-    }
-
-    private static void MergeCanvasTargetWith(CanvasRenderTarget sourceCanvasTarget,
-                                              CanvasRenderTarget? withCanvasTarget)
-    {
-        if (withCanvasTarget == null)
-        {
-            return; // Abort
-        }
-
-        CanvasDrawingSession? ds = sourceCanvasTarget.CreateDrawingSession();
-        ds.DrawImage(withCanvasTarget);
-
-        // Dispose the overlay canvas
-        withCanvasTarget.Dispose();
-
-        if (DispatcherQueueExtensions.CurrentDispatcherQueue.HasThreadAccess)
-        {
-            ds.Dispose();
-            return;
-        }
-
-        DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, ds.Dispose);
     }
 
     private static double GetBitmapBitSize(DirectXPixelFormat pixelFormat)
@@ -302,9 +159,7 @@ public static class ClipboardUtility
     private static async Task CopyCanvasTargetBufferToClipboard(CanvasRenderTarget? sourceCanvasTarget)
     {
         if (sourceCanvasTarget == null)
-        {
             return;
-        }
 
         bool    isClipboardOpened = true;
         byte[]? buffer            = null;

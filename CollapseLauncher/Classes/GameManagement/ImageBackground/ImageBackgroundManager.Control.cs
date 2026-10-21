@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-// ReSharper disable ConvertIfStatementToSwitchStatement
+﻿// ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 

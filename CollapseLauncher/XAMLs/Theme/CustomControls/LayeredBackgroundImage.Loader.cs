@@ -29,8 +29,8 @@ public partial class LayeredBackgroundImage
     }
 
     private async Task LoadPresenter(
-        Panel         parent,
-        object?       source)
+        Panel   parent,
+        object? source)
     {
         FrameworkElement? currentPresenter = null;
         ulong             sourceContextGen = Interlocked.Increment(ref _sourceContextGeneration);
@@ -242,16 +242,43 @@ public partial class LayeredBackgroundImage
         Unsafe.SkipInit(out sourceContext);
         Unsafe.SkipInit(out player);
 
-        if (_backgroundGrid == null! ||
-            _backgroundGrid.Children.LastOrDefault() is not FrameworkElement
-            {
-                Tag: SourceContext { Player: { } thisPlayer } thisSourceContext
-            })
+        if (!TryGetPresenterSourceContextFromParent(_backgroundGrid, out sourceContext) ||
+            sourceContext is not { Player: { } thisPlayer })
         {
             return false;
         }
 
-        player        = thisPlayer;
+        player = thisPlayer;
+        return true;
+    }
+
+    private static bool TryGetPresenterSourceContextFromParent(
+        Panel                                  parent,
+        [NotNullWhen(true)] out SourceContext? sourceContext)
+    {
+        Unsafe.SkipInit(out sourceContext);
+
+        if (parent == null! ||
+            parent.Children.LastOrDefault() is not FrameworkElement presenter ||
+            !TryGetPresenterSourceContext(presenter, out sourceContext))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryGetPresenterSourceContext(
+        FrameworkElement?                      presenter,
+        [NotNullWhen(true)] out SourceContext? sourceContext)
+    {
+        Unsafe.SkipInit(out sourceContext);
+
+        if (presenter is not { Tag: SourceContext thisSourceContext })
+        {
+            return false;
+        }
+
         sourceContext = thisSourceContext;
         return true;
     }

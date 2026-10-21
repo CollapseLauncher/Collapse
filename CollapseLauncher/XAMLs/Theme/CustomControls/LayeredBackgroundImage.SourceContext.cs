@@ -1,13 +1,26 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 using Hi3Helper;
+using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.Native.Interfaces.D3D;
+using Hi3Helper.Win32.Native.Interfaces.DXGI;
+using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.Structs;
+using Hi3Helper.Win32.Native.Structs.DXGI;
+using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Graphics.DirectX;
+using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Media.Playback;
 using WinRT;
 // ReSharper disable InconsistentNaming
@@ -180,6 +193,106 @@ public partial class LayeredBackgroundImage
             }
 
             return ParentElement.LastMediaSourcePosition.GetValueOrDefault(player.NaturalDuration);
+        }
+
+        public async Task<CanvasRenderTarget?> CopyCurrentFrame()
+            => PlayerPresenter?.CopyCurrentFrame() ??
+               await TryCopyImageFrameFromBitmapSource();
+
+        private async Task<CanvasRenderTarget?> TryCopyImageFrameFromBitmapSource()
+        {
+            if (MediaSource is not BitmapImage bitmapImage)
+            {
+                return null;
+            }
+
+            if (Source is string localPath &&
+                Uri.TryCreate(localPath, UriKind.Absolute, out Uri? localPathUri) &&
+                localPathUri.IsFile)
+            {
+                return await TryCopyImageFrameFromLocalUri(localPathUri);
+            }
+
+            nint bitmapImageAbi = ((IWinRTObject)bitmapImage).NativeObject.ThisPtr;
+            Unsafe.SkipInit(out IDirect3DDxgiInterfaceAccess? access);
+            Unsafe.SkipInit(out IDXGISurface? dxgiSurface);
+            Unsafe.SkipInit(out nint accessAbi);
+            Unsafe.SkipInit(out nint dxgiSurfaceAbi);
+            Unsafe.SkipInit(out nint graphicsSurfaceAbi);
+
+            try
+            {
+                HResult hr = Marshal.QueryInterface(bitmapImageAbi, typeof(IDirect3DDxgiInterfaceAccess).GUID, out accessAbi);
+                if (!hr || !ComMarshal<IDirect3DDxgiInterfaceAccess>
+                       .TryCreateComObjectFromReference(bitmapImageAbi,
+                                                        out access,
+                                                        out _,
+                                                        releaseReference: false,
+                                                        useUnique: true))
+                {
+                    return null;
+                }
+
+                access.GetInterface(typeof(IDXGISurface).GUID, out dxgiSurfaceAbi);
+                hr = PInvoke.CreateDirect3D11SurfaceFromDXGISurface(dxgiSurfaceAbi, out graphicsSurfaceAbi);
+
+                if (!ComMarshal<IDXGISurface>
+                       .TryCreateComObjectFromReference(graphicsSurfaceAbi,
+                                                        out dxgiSurface,
+                                                        out _,
+                                                        releaseReference: false,
+                                                        useUnique: true))
+                {
+                    return null;
+                }
+
+                dxgiSurface.GetDesc(out DXGI_SURFACE_DESC dxgiSurfaceDesc);
+
+                if (!hr) return null;
+
+                using IDirect3DSurface surface = MarshalInterface<IDirect3DSurface>.FromAbi(graphicsSurfaceAbi);
+
+                CanvasDevice       device                  = CanvasDevice.GetSharedDevice();
+                using CanvasBitmap canvasBitmapFromSurface = CanvasBitmap.CreateFromDirect3D11Surface(device, surface);
+                CanvasRenderTarget target = new(device,
+                                                dxgiSurfaceDesc.Width,
+                                                dxgiSurfaceDesc.Height,
+                                                96,
+                                                (DirectXPixelFormat)dxgiSurfaceDesc.Format,
+                                                CanvasAlphaMode.Premultiplied);
+
+                target.CopyPixelsFromBitmap(canvasBitmapFromSurface);
+                return target;
+            }
+            finally
+            {
+                if (graphicsSurfaceAbi != nint.Zero) Marshal.Release(graphicsSurfaceAbi);
+                if (dxgiSurfaceAbi != nint.Zero) Marshal.Release(dxgiSurfaceAbi);
+                ComMarshal.FinalRelease(dxgiSurface);
+                ComMarshal.FinalRelease(access);
+                if (accessAbi != nint.Zero) Marshal.Release(accessAbi);
+            }
+
+            static async Task<CanvasRenderTarget?> TryCopyImageFrameFromLocalUri(Uri uri)
+            {
+                if (!uri.IsFile ||
+                    !File.Exists(uri.LocalPath))
+                {
+                    return null;
+                }
+
+                CanvasDevice       device = CanvasDevice.GetSharedDevice();
+                using CanvasBitmap bitmap = await CanvasBitmap.LoadAsync(device, uri.LocalPath);
+                CanvasRenderTarget target = new(device,
+                                                bitmap.SizeInPixels.Width,
+                                                bitmap.SizeInPixels.Height,
+                                                bitmap.Dpi,
+                                                bitmap.Format,
+                                                bitmap.AlphaMode);
+
+                target.CopyPixelsFromBitmap(bitmap);
+                return target;
+            }
         }
 
         public void Dispose()
