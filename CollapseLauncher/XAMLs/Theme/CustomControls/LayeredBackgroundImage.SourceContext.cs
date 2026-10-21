@@ -7,8 +7,6 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Native.Structs.DXGI;
 using Microsoft.Graphics.Canvas;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Concurrent;
@@ -325,60 +323,25 @@ public partial class LayeredBackgroundImage
             //    WinRT's MediaSource objects.
             nint oldPlayerAbi = Interlocked.Exchange(ref _playerAbi, nint.Zero);
             if (oldPlayerAbi != nint.Zero) Marshal.Release(oldPlayerAbi);
-            DisposeDisposableOrCOMObject(Player);
+            DisposeObject(Player);
             Player = null;
 
-            DisposeDisposableOrCOMObject(MediaSource);
+            DisposeObject(MediaSource);
             MediaSource = null;
 
             if (IsDisposeSource)
             {
-                DisposeDisposableOrCOMObject(Source);
+                DisposeObject(Source);
                 Source = null;
             }
 
-            DisposeDisposableOrCOMObject(PlayerPresenter);
+            DisposeObject(PlayerPresenter);
             PlayerPresenter = null;
         }
 
-        private static void DisposeDisposableOrCOMObject(object? obj)
+        private static void DisposeObject(object? obj)
         {
-            if (obj is DependencyObject depsObj &&
-                !depsObj.DispatcherQueue.HasThreadAccess)
-            {
-                depsObj.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TryCatchIDisposable);
-            }
-            else
-            {
-                TryCatchIDisposable();
-            }
-
-            TryCatchNativeObjectDispose();
-            return;
-
-            void TryCatchIDisposable()
-            {
-                try
-                {
-                    (obj as IDisposable)?.Dispose();
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            void TryCatchNativeObjectDispose()
-            {
-                try
-                {
-                    (obj as IWinRTObject)?.NativeObject.Dispose();
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            (obj as IDisposable)?.Dispose();
         }
     }
 }
