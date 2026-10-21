@@ -358,14 +358,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
 
-            string localeCode = (isUseMultiLang ? Locale.Current.Lang?.LanguageID?.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback) ?? "";
+            string localeCode = (isUseMultiLang ? Locale.Current.Lang?.LanguageID?.ToLowerInvariant() : PresetConfig?.LauncherSpriteURLMultiLangFallback) ?? "";
             string launcherGameInfoUrl = string.Format(PresetConfig?.LauncherGameInfoDisplayURL!, localeCode);
 
-            ActionTimeoutTaskAwaitableCallback<HypLauncherSophonBranchesApi?> hypLauncherGameInfoCallback =
+            ActionTimeoutTaskAwaitableCallback<HypLauncherGetGameApi?> hypLauncherGameInfoCallback =
                 innerToken =>
                     ApiResourceHttpClient
                        .GetFromCachedJsonAsync(launcherGameInfoUrl,
-                                               HypApiJsonContext.Default.HypLauncherSophonBranchesApi,
+                                               HypApiJsonContext.Default.HypLauncherGetGameApi,
                                                null,
                                                innerToken)
                        .ConfigureAwait(false);
@@ -375,7 +375,16 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                      ExecutionTimeoutStep,
                                      ExecutionTimeoutAttempt,
                                      onTimeoutRoutine,
-                                     result => LauncherGameSophonBranches = result,
+                                     result =>
+                                     {
+                                         LauncherGetGame = result;
+                                         if (result?.Data?.TryFindByBizOrId(PresetConfig?.LauncherBizName,
+                                                                            PresetConfig?.LauncherGameId,
+                                                                            out HypGameInfoData? gameInfoData) ?? false)
+                                         {
+                                             LauncherGameInfoField = gameInfoData;
+                                         }
+                                     },
                                      token);
         }
         #endregion
