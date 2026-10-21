@@ -49,9 +49,8 @@ public partial class ImageBackgroundManager
 
         // -- Check using FFmpeg if available
         MediaSupport    codecInfo   = FFmpegPInvoke.GetMediaSupport(filePath);
-        PixelColorModel pixelFormat = codecInfo.VideoPixelFormatInfo.ColorModel;
         if ((GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable) ||
-            (codecInfo.Video.DecoderAvailable && pixelFormat.HasFlag(PixelColorModel.Rgb)))
+            RequiresFFmpegDecoder(codecInfo))
         {
             return (true, true, true);
         }
@@ -76,6 +75,14 @@ public partial class ImageBackgroundManager
     }
 
     #endregion
+
+    private static bool RequiresFFmpegDecoder(MediaSupport codecInfo)
+    {
+        // Windows' H.264 decoder does not support the High 10 profile used by some backgrounds.
+        return codecInfo.Video.DecoderAvailable &&
+               (codecInfo.VideoPixelFormatInfo.ColorModel.HasFlag(PixelColorModel.Rgb) ||
+                codecInfo.VideoPixelFormatInfo.Format is AVPixelFormat.AV_PIX_FMT_YUV420P10LE or AVPixelFormat.AV_PIX_FMT_YUV420P10BE);
+    }
 
     private static bool IsMediaFileExtensionSupported(ReadOnlySpan<char> filePath)
     {
