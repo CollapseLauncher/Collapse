@@ -72,6 +72,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
     private IDXGISwapChain3?                   _swapChain;
     private ICompositionSurface?               _swapChainSurface;
 
+    private CanvasDevice?        _canvasDevice;
     private ID3D11Device?        _d3dDevice;
     private ID3D11DeviceContext? _d3dContext;
     private nint                 _d3dContextAbi;
@@ -376,8 +377,9 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
     {
         using (_renderLock.EnterScope())
         {
-            _d3dDevice = CreateD3DDeviceFromSharedCanvasDevice(Logger) ??
-                         CreateD3DDevice(out _d3dContext, Logger);
+            _canvasDevice = CanvasDevice.GetSharedDevice();
+            _d3dDevice    = CreateD3DDevice(_canvasDevice, Logger)
+                            ?? throw new InvalidOperationException("Could not obtain the native D3D11 device from the CanvasDevice.");
 
             if (_d3dContext == null)
                 _d3dDevice.GetImmediateContext(out _d3dContext);
@@ -431,135 +433,55 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         }
     }
 
-    private static unsafe ID3D11Device? CreateD3DDeviceFromSharedCanvasDevice(ILogger? logger)
+    private static unsafe ID3D11Device? CreateD3DDevice(CanvasDevice canvasDevice, ILogger? logger)
     {
-        CanvasDevice sharedCanvasDevice  = CanvasDevice.GetSharedDevice();
-        nint         sharedCanvasDeviceP = ((IWinRTObject)sharedCanvasDevice).NativeObject.ThisPtr;
-
-        // -- Obtain an existing D3D11 Device from a shared CanvasDevice.
-        if (!ComMarshal<IDirect3DDxgiInterfaceAccess>
-                .TryCreateComObjectFromReference(sharedCanvasDeviceP,
-                                                 out IDirect3DDxgiInterfaceAccess? access,
-                                                 out _,
-                                                 releaseReference: false,
-                                                 useUnique: true))
-        {
-            return null;
-        }
+        nint                          canvasDeviceP = ((IWinRTObject)canvasDevice).NativeObject.ThisPtr;
+        nint                          accessP       = nint.Zero;
+        IDirect3DDxgiInterfaceAccess? access        = null;
 
         try
         {
-            int hr = access.GetInterface(typeof(ID3D11Device).GUID, out nint d3d11DeviceFromSharedCanvasP);
-            if (hr != 0) return null;
+            int hr = Marshal.QueryInterface(canvasDeviceP,
+                                            typeof(IDirect3DDxgiInterfaceAccess).GUID,
+                                            out accessP);
 
-            // Release only our references, never dispose the shared CanvasDevice.
-            if (!ComMarshal<ID3D11Device>
-                    .TryCreateComObjectFromReference(d3d11DeviceFromSharedCanvasP,
-                                                     out ID3D11Device? d3d11Device,
-                                                     out _,
-                                                     useUnique: true))
+            if (hr < 0)
+                return null;
+
+            if (!ComMarshal<IDirect3DDxgiInterfaceAccess>
+                   .TryCreateComObjectFromReference(
+                                                    accessP,
+                                                    out access,
+                                                    out _,
+                                                    releaseReference: false,
+                                                    useUnique: true))
             {
                 return null;
             }
 
-            logger?.LogDebug("D3D11 Device Obtained from a Shared Win2D Device!");
-            return d3d11Device;
+            hr = access.GetInterface(typeof(ID3D11Device).GUID, out nint nativeDeviceP);
+            if (hr < 0)
+                return null;
+
+            if (!ComMarshal<ID3D11Device>
+                   .TryCreateComObjectFromReference(nativeDeviceP,
+                                                    out ID3D11Device? nativeDevice,
+                                                    out _,
+                                                    releaseReference: true,
+                                                    useUnique: true))
+            {
+                return null;
+            }
+
+            logger?.LogDebug("D3D11 Device Created!");
+            return nativeDevice;
         }
         finally
         {
             ComMarshal.FinalRelease(access);
-        }
-    }
 
-    private static unsafe ID3D11Device CreateD3DDevice(
-        out ID3D11DeviceContext? context,
-        ILogger?                 logger)
-    {
-        context = null;
-        const uint D3D11_SDK_VERSION = 7;
-        Span<D3D_FEATURE_LEVEL> levels =
-        [
-            D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_1,
-            D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_10_0
-        ];
-
-        D3D11_CREATE_DEVICE_FLAG flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#if DEBUG
-        flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-        D3D_FEATURE_LEVEL selectedFeatureLevel = 0;
-        nint deviceP  = nint.Zero;
-        nint contextP = nint.Zero;
-        try
-        {
-            int hr = PInvoke.D3D11CreateDevice(nint.Zero,
-                                               D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_HARDWARE,
-                                               0,
-                                               flags,
-                                               levels,
-                                               levels.Length,
-                                               D3D11_SDK_VERSION,
-                                               out deviceP,
-                                               ref selectedFeatureLevel,
-                                               out contextP);
-#if DEBUG
-            if (hr == unchecked((int)0x887A002D)) // Debug layer is not installed.
-            {
-                flags &= ~D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
-                hr = PInvoke.D3D11CreateDevice(nint.Zero,
-                                               D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_HARDWARE,
-                                               0,
-                                               flags,
-                                               levels,
-                                               levels.Length,
-                                               D3D11_SDK_VERSION,
-                                               out deviceP,
-                                               ref selectedFeatureLevel,
-                                               out contextP);
-            }
-#endif
-            if (hr < 0)
-            {
-                // Optional WARP fallback.
-                hr = PInvoke.D3D11CreateDevice(nint.Zero,
-                                               D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_WARP,
-                                               0,
-                                               flags,
-                                               levels,
-                                               levels.Length,
-                                               D3D11_SDK_VERSION,
-                                               out deviceP,
-                                               ref selectedFeatureLevel,
-                                               out contextP);
-            }
-            Marshal.ThrowExceptionForHR(hr);
-
-            if (!ComMarshal<ID3D11DeviceContext>
-                    .TryCreateComObjectFromReference(contextP,
-                                                     out context,
-                                                     out Exception? ex,
-                                                     releaseReference: false,
-                                                     useUnique: true) ||
-                !ComMarshal<ID3D11Device>
-                    .TryCreateComObjectFromReference(deviceP,
-                                                     out ID3D11Device? d3d11Device,
-                                                     out ex,
-                                                     releaseReference: false,
-                                                     useUnique: true))
-            {
-                throw ex;
-            }
-
-            logger?.LogDebug("D3D11 Device Created with flags: {flags}!", flags);
-            return d3d11Device;
-        }
-        finally
-        {
-            if (contextP != nint.Zero) Marshal.Release(contextP);
-            if (deviceP != nint.Zero) Marshal.Release(deviceP);
+            if (accessP != nint.Zero)
+                Marshal.Release(accessP);
         }
     }
 
@@ -706,6 +628,28 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         {
             QueueDeviceRecreation();
         }
+    }
+
+    public CanvasRenderTarget? CopyCurrentFrame()
+    {
+        using Lock.Scope renderScope = _renderLock.EnterScope();
+        if (_canvasDevice == null)
+            return null;
+
+        Windows.Graphics.DirectX.DirectXPixelFormat pixelFormat = (Windows.Graphics.DirectX.DirectXPixelFormat)PixelFormat;
+        CanvasAlphaMode alphaMode = _alphaMode switch
+        {
+            DirectXAlphaMode.Ignore        => CanvasAlphaMode.Ignore,
+            DirectXAlphaMode.Premultiplied => CanvasAlphaMode.Premultiplied,
+            DirectXAlphaMode.Straight      => throw new NotSupportedException(),
+
+            _ => CanvasAlphaMode.Premultiplied
+        };
+
+        CanvasRenderTarget renderTarget = new(_canvasDevice, RenderWidth, RenderHeight, 96f, pixelFormat, alphaMode);
+        using CanvasBitmap source = CanvasBitmap.CreateFromDirect3D11Surface(_canvasDevice, _frameSurface, 96, alphaMode);
+        renderTarget.CopyPixelsFromBitmap(source);
+        return renderTarget;
     }
 
     private static bool IsDeviceLost(int hr)
@@ -974,8 +918,10 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         if (_d3dContextAbi != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _d3dContextAbi, nint.Zero));
         ComMarshal.FinalRelease(_d3dContext);
         ComMarshal.FinalRelease(_d3dDevice);
-        _d3dContext = null;
-        _d3dDevice  = null;
+        _d3dContext   = null;
+        _d3dDevice    = null;
+        _canvasDevice = null;
+
         RenderWidth = RenderHeight = 0;
     }
 }
