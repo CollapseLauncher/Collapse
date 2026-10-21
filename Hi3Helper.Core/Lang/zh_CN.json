@@ -1477,7 +1477,7 @@
     "UpdateHeader4": "速度：",
     "UpdateHeader5PlaceHolder": "正在下载更新 [- / -]：",
 
-    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保正常工作。",
+    "UpdateForcedHeader": "为修复紧急问题、保障正常使用，启动器将强制更新。",
 
     "UpdateStatus1": "正在获取更新：",
     "UpdateMessage1": "正在连接到更新仓库……",
