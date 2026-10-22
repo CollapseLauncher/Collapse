@@ -116,7 +116,10 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         #region Check Game "Has" State
         public virtual bool IsGameHasPreload()
-            => GameDataSophonBranchPreload != null || GameDataPackagePreload is { CurrentVersion: not null };
+            => GameVersionAPIPreload.HasValue &&
+               GameVersionAPI.HasValue &&
+               GameVersionAPI.Value != GameVersionAPIPreload.Value &&
+               (GameDataSophonBranchPreload != null || GameDataPackagePreload is { CurrentVersion: not null });
 
         public virtual bool IsGameHasDeltaPatch() => false;
 
