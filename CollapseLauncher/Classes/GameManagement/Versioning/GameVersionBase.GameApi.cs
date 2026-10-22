@@ -182,7 +182,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 GameVersion? versionFromSophon  = GameDataSophonBranchPreload?.Tag;
                 GameVersion? versionFromPackage = GameDataPackagePreload?.CurrentVersion?.Version;
 
-                field ??= TryGetVersionFromSophonOrPackage(versionFromSophon, versionFromPackage);
+                GameVersion? versionDecided = TryGetVersionFromSophonOrPackage(versionFromSophon, versionFromPackage);
+                field ??= versionDecided == GameVersionAPI ? null : versionDecided;
                 return field;
             }
         }

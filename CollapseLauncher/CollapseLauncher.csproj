@@ -315,6 +315,7 @@
         <PackageReference Include="Roman-Numerals" Version="2.1.0" />
         <PackageReference Include="System.CommandLine" Version="2.0.13" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.13" />
+        <PackageReference Include="SharpHPatchZ" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -534,7 +535,6 @@
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
 
-
         <!-- Region: MagicScaler Decoders -->
         <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
@@ -550,8 +550,7 @@
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
 
         <!-- Region: libzstd -->
-        <ItemGroup Condition="'$(PublishAot)' == 'true'">
-            <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
-        </ItemGroup>
+        <Delete Files="$(PublishDir)Lib\win-x64\libzstd.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)Lib\win-x64\libzstd-bmi2.dll" Condition="'$(PublishAot)' == 'true'" />
     </Target>
 </Project>
