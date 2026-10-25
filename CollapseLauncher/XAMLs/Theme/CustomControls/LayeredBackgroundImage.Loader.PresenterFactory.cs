@@ -39,7 +39,8 @@ public partial class LayeredBackgroundImage
 
         Image image = new()
         {
-            Tag = sourceContext
+            Tag     = sourceContext,
+            Opacity = 0
         };
         parent.Children.Add(image);
         image.ImageOpened += onLoadedEventHandler;
@@ -114,7 +115,8 @@ public partial class LayeredBackgroundImage
 
         presenter = new MediaFoundationPresenter
         {
-            Tag = sourceContext
+            Tag     = sourceContext,
+            Opacity = 0
         };
 
         sourceContext.Player          = mediaPlayer;

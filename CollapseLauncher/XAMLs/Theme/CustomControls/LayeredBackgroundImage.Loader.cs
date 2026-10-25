@@ -208,11 +208,13 @@ public partial class LayeredBackgroundImage
             foreach (UIElement other in others)
             {
                 parent.Children.Remove(other);
-                if (other is FrameworkElement { Tag: SourceContext otherSourceContext })
+                if (other is not FrameworkElement { Tag: SourceContext otherSourceContext })
                 {
-                    otherSourceContext.UnregisterPlayerCallbacks(); // Unregister callback early
-                    otherSourceContext.Dispose();
+                    continue;
                 }
+
+                otherSourceContext.UnregisterPlayerCallbacks(); // Unregister callback early
+                otherSourceContext.Dispose();
             }
 
             Logger.LogWriteLine($"Parent Grid: {parent.Name} has remained: {parent.Children.Count} children", LogType.Debug);
