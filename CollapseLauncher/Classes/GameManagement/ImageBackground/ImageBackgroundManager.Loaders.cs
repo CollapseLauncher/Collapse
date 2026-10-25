@@ -137,6 +137,7 @@ public partial class ImageBackgroundManager
                         // -- Create or Get element and set background.
                         LayeredBackgroundImage element = CreateOrGetLayerElement();
                         bool useFFmpeg = forceFFmpeg || (context.IsVideo && GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
+                        GlobalIsFFmpegCurrentlyUsed = useFFmpeg;
 
                         // -- If Force Reload previously requested, rapidly nullify the background source.
                         if (forceReloadRequested)
