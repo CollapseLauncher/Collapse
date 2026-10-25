@@ -564,6 +564,7 @@
     "VideoBackground": "Video Background Settings",
     "VideoBackground_IsEnableAudio": "Enable Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
+    "VideoBackground_ForceStaticImageOverVideoBackground": "Force Static Image over Dynamic Background",
     "VideoBackground_AudioVolume": "Audio Volume",
     "VideoBackground_UseFFmpeg": "Use FFmpeg for Video Decoding",
     "VideoBackground_FFmpegVideoDecodingMethod": "FFmpeg Decoding Mode",

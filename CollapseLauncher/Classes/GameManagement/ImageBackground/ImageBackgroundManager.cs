@@ -56,6 +56,7 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "GlobalBackgroundParallaxPixelShift";
     private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
+    private const string GlobalForceStaticImageOverVideoKey               = "GlobalForceStaticImageOverVideo";
     private const string GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey  = "GlobalKeepPlayVideoWhenWindowUnfocused";
 
     public string? GlobalCustomBackgroundImagePath
@@ -136,6 +137,17 @@ public partial class ImageBackgroundManager
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalBackgroundAudioEnabledConfigKey, value);
             OnPropertyChanged();
+        }
+    }
+
+    public bool GlobalForceStaticImageOverVideo
+    {
+        get => LauncherConfig.GetAppConfigValue(GlobalForceStaticImageOverVideoKey);
+        set
+        {
+            LauncherConfig.SetAndSaveConfigValue(GlobalForceStaticImageOverVideoKey, value);
+            OnPropertyChanged();
+            LoadImage();
         }
     }
 

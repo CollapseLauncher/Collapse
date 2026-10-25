@@ -106,7 +106,11 @@ public partial class ImageBackgroundManager
                 {
                     try
                     {
-                        string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay ? downloadedBackgroundUri : downloadedPlaceholderUri) ?? downloadedBackgroundUri;
+                        string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay &&
+                                                   !GlobalForceStaticImageOverVideo
+                                                      ? downloadedBackgroundUri
+                                                      : downloadedPlaceholderUri)
+                                                  ?? downloadedBackgroundUri;
 
                         // -- Avoid spawning element while window is currently not visible
                         //    (for example: Minimized at start).
