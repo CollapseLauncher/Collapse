@@ -1,10 +1,9 @@
 // Copyright © Clinton Ingram and Contributors
 // SPDX-License-Identifier: MIT
 
+using PhotoSauce.MagicScaler;
 using System;
 using System.Linq;
-
-using PhotoSauce.MagicScaler;
 using static Hi3Helper.MagicScaler.LibheifCL.Libheif;
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -15,6 +14,8 @@ internal static unsafe class HeifFactory
 {
 	public const string DisplayName = $"{Libheif} {LIBHEIF_VERSION}";
 	public const string Libheif = nameof(Libheif);
+	
+	public static void* CreateContext() => heif_context_alloc();
 
 	public static string GetMimeType(byte* data, int len) => new(heif_get_file_mime_type(data, len));
 }
