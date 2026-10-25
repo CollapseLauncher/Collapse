@@ -383,7 +383,7 @@ public partial class ImageBackgroundManager
                 //    -- A. Check for per-region custom background
                 if (CurrentIsEnableCustomImage &&
                     !string.IsNullOrEmpty(CurrentCustomBackgroundImagePath) &&
-                    await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
+                    await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, token))
                 {
                     return;
                 }
@@ -392,7 +392,7 @@ public partial class ImageBackgroundManager
                 if (!CurrentIsEnableCustomImage &&
                     GlobalIsEnableCustomImage &&
                     !string.IsNullOrEmpty(GlobalCustomBackgroundImagePath) &&
-                    await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
+                    await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, token))
                 {
                     return;
                 }
@@ -436,7 +436,7 @@ public partial class ImageBackgroundManager
                        .CurrentDispatcherQueue
                        .TryEnqueue(() =>
                        {
-                           UpdateContextListCore(token, false, imageContexts);
+                           UpdateContextListCore(token, imageContexts);
                        });
                 }
             }
@@ -448,26 +448,25 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
+    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest = true, CancellationToken token = default)
     {
         GlobalCustomBackgroundImagePath = imagePath;
         // For global custom background, pass CurrentIsEnableCustomImage status so when it's set to true,
         // this code will only perform cropping but not applying it.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, skipPreviousContextCheck, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, token);
     }
 
-    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
+    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest = true, CancellationToken token = default)
     {
         CurrentCustomBackgroundImagePath = imagePath;
         // For current custom background, since we put the priority at the top.
         // So if it's done performing cropping, apply the change no matter what's the status for global background.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, true, skipPreviousContextCheck, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, true, token);
     }
 
     private async Task<bool> SetCustomBackgroundCore(string?           imagePath,
                                                      bool              performCropRequest,
                                                      bool              applyChanges,
-                                                     bool              skipPreviousContextCheck,
                                                      CancellationToken token)
     {
         try
@@ -504,7 +503,7 @@ public partial class ImageBackgroundManager
                 ForceReload               = cropResult.WasCropPerformed // Only do force reload if crop was performed.
             };
 
-            UpdateContextListCore(token, skipPreviousContextCheck, context);
+            UpdateContextListCore(token, context);
             return true;
         }
         catch (Exception ex)
@@ -519,21 +518,19 @@ public partial class ImageBackgroundManager
 #pragma warning disable CA1068
     private void UpdateContextListCore(
         CancellationToken                          token,
-        bool                                       skipPreviousContextCheck,
         IEnumerable<LayeredImageBackgroundContext> imageContexts)
     {
         if (imageContexts is List<LayeredImageBackgroundContext> asList)
         {
-            UpdateContextListCore(token, skipPreviousContextCheck, CollectionsMarshal.AsSpan(asList));
+            UpdateContextListCore(token, CollectionsMarshal.AsSpan(asList));
             return;
         }
 
-        UpdateContextListCore(token, skipPreviousContextCheck, [.. imageContexts]);
+        UpdateContextListCore(token, [.. imageContexts]);
     }
 
     private void UpdateContextListCore(
         CancellationToken                                  token,
-        bool                                               forceReload,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
         ImageContextSources.Clear(); // Flush list
