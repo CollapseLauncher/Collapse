@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
-using System;
+﻿using System;
 using System.IO;
 #pragma warning disable IDE0130
 

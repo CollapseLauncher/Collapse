@@ -11,6 +11,22 @@ internal static partial class DaftarPustakaUtil
 {
     public static class Decryptor
     {
+        /// <summary>
+        /// Creates an AES Decryption Stream.<br/><br/>
+        ///
+        /// Field Structure:<br/>
+        /// <code>
+        /// +------------------+-------------------+---------------+--------------+<br/>
+        /// | (I4) Cipher Mode | (I4) Padding Mode | (U1) Key Size | (U1) IV Size |<br/>
+        /// +------------------+-------------------+---------------+--------------+<br/>
+        /// |                         Encrypted Data Blob                         |<br/>
+        /// +---------------------------------------------------------------------+
+        /// </code>
+        /// </summary>
+        /// <param name="inputStream">The source <see cref="Stream"/> to decrypt.</param>
+        /// <param name="context">The context of the file, providing the information about the file and the salt for decryption.</param>
+        /// <param name="leaveOpen">Whether to dispose or keeping it open after disposing the decompression and decryption stream.</param>
+        /// <returns>An instance of the AES Decryption <see cref="CryptoStream"/>.</returns>
         public static CryptoStream CreateAesStream(
             Stream             inputStream,
             ServeV3FileContext context,
