@@ -5,7 +5,6 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Data;
 using System;
@@ -86,13 +85,6 @@ public partial class ImageBackgroundManager
                                    placeholderLoadTask);
 
                 token.ThrowIfCancellationRequested();
-
-                if (!string.IsNullOrEmpty(CurrentCachedBgKey))
-                {
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Background", context.OriginBackgroundImagePath ?? "");
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-StaticBackground", context.OriginPlaceholderImagePath ?? "");
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Overlay", context.OriginOverlayImagePath ?? "");
-                }
 
                 // -- Use UI thread and load image layer
                 DispatcherQueueExtensions

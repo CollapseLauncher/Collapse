@@ -38,35 +38,30 @@ public partial class ImageBackgroundManager
 {
     private readonly struct GetCroppedResult
     {
-        public readonly string? ProcessedOverlayPath;
         public readonly string? ProcessedBackgroundPath;
         public readonly bool    IsCancelResize;
         public readonly bool    WasCropPerformed;
 
-        private GetCroppedResult(string? processedOverlayPath,
-                                 string? processedBackgroundPath,
+        private GetCroppedResult(string? processedBackgroundPath,
                                  bool    isCancelResize,
                                  bool    wasCropPerformed)
         {
-            ProcessedOverlayPath    = processedOverlayPath;
             ProcessedBackgroundPath = processedBackgroundPath;
             IsCancelResize          = isCancelResize;
             WasCropPerformed        = wasCropPerformed;
         }
 
-        public static GetCroppedResult Create(string? processedOverlayPath,
-                                                       string? processedBackgroundPath,
+        public static GetCroppedResult Create(string? processedBackgroundPath,
                                                        bool    isCancelResize,
                                                        bool    wasCropPerformed)
         {
-            return new GetCroppedResult(processedOverlayPath,
-                                        processedBackgroundPath,
+            return new GetCroppedResult(processedBackgroundPath,
                                         isCancelResize,
                                         wasCropPerformed);
         }
 
-        public static readonly GetCroppedResult Cancelled = Create(null, null, true,  false);
-        public static readonly GetCroppedResult Skip      = Create(null, null, false, false);
+        public static readonly GetCroppedResult Cancelled = Create(null, true,  false);
+        public static readonly GetCroppedResult Skip      = Create(null, false, false);
     }
 
     /// <summary>
@@ -76,138 +71,135 @@ public partial class ImageBackgroundManager
     /// To perform cropping request, you must set <paramref name="performCropRequest"/> to <see langword="true"/>.
     /// Otherwise, it will return the input paths.
     /// </summary>
-    private static async Task<GetCroppedResult>
-        GetCroppedCustomImage(string?           overlayUrlOrPath,
-                              string?           backgroundUrlOrPath,
+    private static ValueTask<GetCroppedResult>
+        GetCroppedCustomImage(string?           backgroundUrlOrPath,
                               bool              performCropRequest,
                               CancellationToken token)
     {
-        if ((string.IsNullOrEmpty(overlayUrlOrPath) &&
-             string.IsNullOrEmpty(backgroundUrlOrPath)) ||
+        if ((string.IsNullOrEmpty(backgroundUrlOrPath)) ||
              string.IsNullOrEmpty(backgroundUrlOrPath))
         {
-            return GetCroppedResult.Skip;
+            return ValueTask.FromResult(GetCroppedResult.Skip);
         }
 
         // -- Check if the file is video or image
         if (LayeredBackgroundImage.SupportedVideoExtensionsLookup
                                   .Contains(Path.GetExtension(backgroundUrlOrPath)))
         {
-            return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
+            return ValueTask.FromResult(GetCroppedResult.Create(backgroundUrlOrPath, false, false));
         }
 
         // -- Try to get existing image file path
         if (TryGetCroppedImageFilePath(backgroundUrlOrPath, out string croppedBackgroundPath) &&
             !performCropRequest)
         {
-            return GetCroppedResult.Create(null, croppedBackgroundPath, false, false);
+            return ValueTask.FromResult(GetCroppedResult.Create(croppedBackgroundPath, false, false));
         }
 
-        try
+        return new ValueTask<GetCroppedResult>(Impl());
+
+        async Task<GetCroppedResult> Impl()
         {
-            // -- Try to get original or decoded image paths.
-            (string? decodedOverlayPath, _) = string.IsNullOrEmpty(overlayUrlOrPath)
-                ? (null, default)
-                : await GetNativeOrDecodedImagePath(overlayUrlOrPath, token);
-
-            (string decodedBackgroundPath, ImageExternalCodecType backgroundCodecType) =
-                await GetNativeOrDecodedImagePath(backgroundUrlOrPath, token);
-
-            // -- Create path of image to Uri
-            Uri overlayImageUri = !string.IsNullOrEmpty(decodedOverlayPath)
-                ? new Uri(decodedOverlayPath)
-                : new Uri(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\ImageCropperOverlay",
-                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile").ToEnum<WindowSizeProfile>() == WindowSizeProfile.Small
-                                           ? "small.png"
-                                           : "normal.png"));
-
-            Uri backgroundImageUri = new(decodedBackgroundPath);
-
-            // -- Create elements, load image and spawn the dialog box.
-            Grid                 parentGrid = UIElementExtensions.Create<Grid>(SetParentGridProperties);
-            ContentDialogOverlay dialog     = UIElementExtensions.Create<ContentDialogOverlay>(SetDialogProperties);
-            ImageCropper         cropper    = UIElementExtensions.Create<ImageCropper>(SetImageCropperProperties);
-
-            // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
-            if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
+            try
             {
-                return GetCroppedResult.Create(overlayUrlOrPath, backgroundUrlOrPath, false, false);
-            }
+                // -- Try to get original or decoded image paths.
+                (string decodedBackgroundPath, ImageExternalCodecType backgroundCodecType) =
+                    await GetNativeOrDecodedImagePath(backgroundUrlOrPath, token);
 
-            // -- Register to close dialog if cancellation is triggered outside the event.
-            token.Register(dialog.Hide);
-            if (token.IsCancellationRequested)
-            {
-                return GetCroppedResult.Cancelled;
-            }
+                // -- Create path of image to Uri
+                Uri overlayImageUri = new(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\ImageCropperOverlay",
+                                                       LauncherConfig.GetAppConfigValue("WindowSizeProfile").ToEnum<WindowSizeProfile>() == WindowSizeProfile.Small
+                                                           ? "small.png"
+                                                           : "normal.png"));
 
-            DispatcherQueueExtensions
-               .CurrentDispatcherQueue
-               .TryEnqueue(() => LoadImageCropperDetached(backgroundImageUri,
-                                                          cropper,
-                                                          parentGrid,
-                                                          dialog,
-                                                          backgroundCodecType == ImageExternalCodecType.Svg,
-                                                          token));
+                Uri backgroundImageUri = new(decodedBackgroundPath);
 
-            ContentDialogResult dialogResult = await dialog.QueueAndSpawnDialog();
-            if (dialogResult is ContentDialogResult.Secondary or ContentDialogResult.None)
-            {
-                return GetCroppedResult.Cancelled;
-            }
+                // -- Create elements, load image and spawn the dialog box.
+                Grid                 parentGrid = UIElementExtensions.Create<Grid>(SetParentGridProperties);
+                ContentDialogOverlay dialog     = UIElementExtensions.Create<ContentDialogOverlay>(SetDialogProperties);
+                ImageCropper         cropper    = UIElementExtensions.Create<ImageCropper>(SetImageCropperProperties);
 
-            // -- Save cropped image
-            await SaveCroppedImageToFilePath(backgroundUrlOrPath, croppedBackgroundPath, cropper, token);
-
-            // -- If there's an upscaled image, delete it.
-            if (TryGetUpscaledFilePath(croppedBackgroundPath, out string croppedImagePath))
-                StreamExtension.TryDeleteFile(croppedImagePath);
-
-
-            return GetCroppedResult.Create(null, croppedBackgroundPath, false, true);
-
-            void SetDialogProperties(ContentDialogOverlay element)
-            {
-                element.Title                  = Locale.Current.Lang?._Misc?.ImageCropperTitle;
-                element.Content                = parentGrid;
-                element.SecondaryButtonText    = Locale.Current.Lang?._Misc?.Cancel;
-                element.PrimaryButtonText      = Locale.Current.Lang?._Misc?.OkayHappy;
-                element.DefaultButton          = ContentDialogButton.Primary;
-                element.IsPrimaryButtonEnabled = false;
-
-                element.XamlRoot = (WindowUtility.CurrentWindow as MainWindow)?.Content.XamlRoot;
-            }
-
-            static void SetParentGridProperties(Grid element)
-            {
-                element.HorizontalAlignment = HorizontalAlignment.Stretch;
-                element.VerticalAlignment   = VerticalAlignment.Stretch;
-                element.CornerRadius        = new CornerRadius(12);
-            }
-
-            void SetImageCropperProperties(ImageCropper element)
-            {
-                element.AspectRatio         = 16d / 9d;
-                element.CropShape           = CropShape.Rectangular;
-                element.ThumbPlacement      = ThumbPlacement.Corners;
-                element.HorizontalAlignment = HorizontalAlignment.Stretch;
-                element.VerticalAlignment   = VerticalAlignment.Stretch;
-                element.Opacity             = 0;
-
-                // Why not use ImageBrush?
-                // https://github.com/microsoft/microsoft-ui-xaml/issues/7809
-                element.Overlay = new Hi3Helper.CommunityToolkit.WinUI.Media.ImageBlendBrush
+                // Skip spawning crop overlay when source dimensions do not meet minimum crop size.
+                if (!await CanOpenCropOverlay(backgroundImageUri, backgroundCodecType == ImageExternalCodecType.Svg, cropper, token))
                 {
-                    Opacity   = 0.5,
-                    Stretch   = Stretch.Fill,
-                    Mode      = ImageBlendMode.Multiply,
-                    SourceUri = overlayImageUri
-                };
+                    return GetCroppedResult.Create(backgroundUrlOrPath, false, false);
+                }
+
+                // -- Register to close dialog if cancellation is triggered outside the event.
+                token.Register(dialog.Hide);
+                if (token.IsCancellationRequested)
+                {
+                    return GetCroppedResult.Cancelled;
+                }
+
+                DispatcherQueueExtensions
+                   .CurrentDispatcherQueue
+                   .TryEnqueue(() => LoadImageCropperDetached(backgroundImageUri,
+                                                              cropper,
+                                                              parentGrid,
+                                                              dialog,
+                                                              backgroundCodecType == ImageExternalCodecType.Svg,
+                                                              token));
+
+                ContentDialogResult dialogResult = await dialog.QueueAndSpawnDialog();
+                if (dialogResult is ContentDialogResult.Secondary or ContentDialogResult.None)
+                {
+                    return GetCroppedResult.Cancelled;
+                }
+
+                // -- Save cropped image
+                await SaveCroppedImageToFilePath(backgroundUrlOrPath, croppedBackgroundPath, cropper, token);
+
+                // -- If there's an upscaled image, delete it.
+                if (TryGetUpscaledFilePath(croppedBackgroundPath, out string croppedImagePath))
+                    StreamExtension.TryDeleteFile(croppedImagePath);
+
+
+                return GetCroppedResult.Create(croppedBackgroundPath, false, true);
+
+                void SetDialogProperties(ContentDialogOverlay element)
+                {
+                    element.Title                  = Locale.Current.Lang?._Misc?.ImageCropperTitle;
+                    element.Content                = parentGrid;
+                    element.SecondaryButtonText    = Locale.Current.Lang?._Misc?.Cancel;
+                    element.PrimaryButtonText      = Locale.Current.Lang?._Misc?.OkayHappy;
+                    element.DefaultButton          = ContentDialogButton.Primary;
+                    element.IsPrimaryButtonEnabled = false;
+
+                    element.XamlRoot = (WindowUtility.CurrentWindow as MainWindow)?.Content.XamlRoot;
+                }
+
+                static void SetParentGridProperties(Grid element)
+                {
+                    element.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    element.VerticalAlignment   = VerticalAlignment.Stretch;
+                    element.CornerRadius        = new CornerRadius(12);
+                }
+
+                void SetImageCropperProperties(ImageCropper element)
+                {
+                    element.AspectRatio         = 16d / 9d;
+                    element.CropShape           = CropShape.Rectangular;
+                    element.ThumbPlacement      = ThumbPlacement.Corners;
+                    element.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    element.VerticalAlignment   = VerticalAlignment.Stretch;
+                    element.Opacity             = 0;
+
+                    // Why not use ImageBrush?
+                    // https://github.com/microsoft/microsoft-ui-xaml/issues/7809
+                    element.Overlay = new Hi3Helper.CommunityToolkit.WinUI.Media.ImageBlendBrush
+                    {
+                        Opacity   = 0.5,
+                        Stretch   = Stretch.Fill,
+                        Mode      = ImageBlendMode.Multiply,
+                        SourceUri = overlayImageUri
+                    };
+                }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            return GetCroppedResult.Cancelled;
+            catch (OperationCanceledException)
+            {
+                return GetCroppedResult.Cancelled;
+            }
         }
     }
 
@@ -225,11 +217,11 @@ public partial class ImageBackgroundManager
         return outputFileInfo is { Exists: true, Length: > 0 };
     }
 
-    public static async Task<Uri> TryGetScaledWaifu2XImagePath(Uri uri, CancellationToken token)
+    public static ValueTask<Uri> TryGetScaledWaifu2XImagePath(Uri uri, CancellationToken token)
     {
         if (uri == null!)
         {
-            return null!;
+            return ValueTask.FromResult<Uri>(null!);
         }
 
         if (!uri.IsFile)
@@ -241,39 +233,34 @@ public partial class ImageBackgroundManager
         string inputFilePath = uri.LocalPath;
         if (TryGetUpscaledFilePath(inputFilePath, out string outputFilePath))
         {
-            return new Uri(outputFilePath);
+            return ValueTask.FromResult(new Uri(outputFilePath));
         }
 
-        FileInfo outputFileInfo = new(outputFilePath);
-        outputFileInfo.Directory?.Create();
+        return new ValueTask<Uri>(Task.Run(Impl, token));
 
-        await Task.Run(Impl, token);
-        outputFileInfo.Refresh();
-
-        try
+        Uri Impl()
         {
-            token.ThrowIfCancellationRequested();
-            return new Uri(outputFileInfo.FullName);
-        }
-        catch
-        {
-            outputFileInfo.TryDeleteFile();
-            throw;
-        }
+            FileInfo outputFileInfo = new(outputFilePath);
+            outputFileInfo.Directory?.Create();
 
-        void Impl()
-        {
-            using ProcessingPipeline pipeline =
-                MagicImageProcessor
-                   .BuildPipeline(inputFilePath,
-                                  ProcessImageSettings.Default);
-
-            using FileStream outputFileStream = outputFileInfo.Open(FileMode.Create,
-                                                                    FileAccess.Write,
-                                                                    FileShare.ReadWrite);
+            using ProcessingPipeline pipeline = MagicImageProcessor.BuildPipeline(inputFilePath, ProcessImageSettings.Default);
+            using FileStream outputFileStream = outputFileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             pipeline.AddTransform(new Waifu2XTransform(ImageLoaderHelper.Waifu2X));
             pipeline.WriteOutput(outputFileStream);
+
+            outputFileInfo.Refresh();
+
+            try
+            {
+                token.ThrowIfCancellationRequested();
+                return new Uri(outputFileInfo.FullName);
+            }
+            catch
+            {
+                outputFileInfo.TryDeleteFile();
+                throw;
+            }
         }
     }
 

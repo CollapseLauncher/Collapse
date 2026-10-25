@@ -206,7 +206,6 @@ public partial class ImageBackgroundManager
     #region This Instance Properties
 
     private string                    CurrentCustomBackgroundConfigKey     { get; set; } = "";
-    private string                    CurrentCachedBgKey                   { get; set; } = "";
     private string                    CurrentIsEnableCustomImageConfigKey  { get; set; } = "";
     private string                    CurrentSelectedBackgroundIndexKey    { get; set; } = "";
     private string                    CurrentIsEnableBackgroundAutoPlayKey { get; set; } = "";
@@ -347,7 +346,6 @@ public partial class ImageBackgroundManager
         CurrentSelectedBackgroundIndexKey    = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableCustomImageConfigKey  = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableBackgroundAutoPlayKey = $"LastIsEnableBackgroundAutoPlay-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentCachedBgKey                   = $"CachedBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
         CurrentBackgroundApi = backgroundApi;
@@ -478,10 +476,7 @@ public partial class ImageBackgroundManager
             }
 
             // -- Try to perform cropped or pass through processing
-            GetCroppedResult cropResult = await GetCroppedCustomImage(null,
-                                                                      imagePath,
-                                                                      performCropRequest,
-                                                                      token);
+            GetCroppedResult cropResult = await GetCroppedCustomImage(imagePath, performCropRequest, token);
 
             // -- Do not process custom background if cancelled.
             if (cropResult.IsCancelResize)
