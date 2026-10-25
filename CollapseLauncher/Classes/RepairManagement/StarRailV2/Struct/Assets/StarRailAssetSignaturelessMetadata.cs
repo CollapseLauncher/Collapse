@@ -196,7 +196,8 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
             // uint firstAssetId = BinaryPrimitives.ReadUInt32BigEndian(buffer);
             int md5Offset = typeVersion switch
             {
-                3 or 4 => 4,
+                3 => 4,
+                4 => 8,
                 _ => throw new NotSupportedException($"Asset's \"MD5\" Field offset for Star Rail Metadata Version: {typeVersion} is not supported!")
             };
             int assetTypeOffset = typeVersion switch
