@@ -1,0 +1,11 @@
+<Project>
+    <!--
+      WinUI re-runs all XAML on every build. Workaround for:
+      https://github.com/microsoft/microsoft-ui-xaml/issues/11264
+      Remove once the upstream fix ships.
+    -->
+    <PropertyGroup>
+        <EnabledXamlOptionalChanges>,</EnabledXamlOptionalChanges>
+        <DisabledXamlOptionalChanges>,</DisabledXamlOptionalChanges>
+    </PropertyGroup>
+</Project>
