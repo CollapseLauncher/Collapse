@@ -491,6 +491,73 @@
         <Exec Command="&quot;$(ProjectDir)StaticLib\7za.exe&quot; x &quot;$(ProjectDir)StaticLib\StaticLib.7z.001&quot; -o&quot;$(ProjectDir)StaticLib\&quot; -y" />
     </Target>
     
+    <!--
+      GitInfo feeds its constants to a source generator via @(AdditionalFiles), and CoreCompile lists that in its Inputs.
+      The item identities there are constant names rather than file paths, so MSBuild never finds them and treats this
+      project as out of date on every build.
+      Emitting the same ThisAssembly.Git constants as an ordinary source file avoids that: the call sites stay unchanged,
+      and the compiler only sees a normal @(Compile) item, which remains incremental.
+    -->
+    <PropertyGroup>
+        <GitThisAssembly>false</GitThisAssembly>
+        <CoreCompileDependsOn>_GenerateGitConstants;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    </PropertyGroup>
+
+    <Target Name="_GenerateGitConstants" DependsOnTargets="GitVersion">
+        <PropertyGroup>
+            <_GitConstantsFile>$(IntermediateOutputPath)ThisAssembly.Git.g.cs</_GitConstantsFile>
+            <_GitIsDirtyBool>false</_GitIsDirtyBool>
+            <_GitIsDirtyBool Condition="'$(GitIsDirty)' == '1'">true</_GitIsDirtyBool>
+        </PropertyGroup>
+
+        <!-- Lines is split on ';', so write the C# terminators as %3B. -->
+        <ItemGroup>
+            <_GitConstLine Include="// &lt;auto-generated/&gt;" />
+            <_GitConstLine Include="// Generated from GitInfo properties by CollapseLauncher.csproj." />
+            <_GitConstLine Include="partial class ThisAssembly" />
+            <_GitConstLine Include="{" />
+            <_GitConstLine Include="    public partial class Git" />
+            <_GitConstLine Include="    {" />
+            <_GitConstLine Include="        public const bool IsDirty = $(_GitIsDirtyBool)%3B" />
+            <_GitConstLine Include="        public const string IsDirtyString = @&quot;$(GitIsDirty)&quot;%3B" />
+            <_GitConstLine Include="        public const string RepositoryUrl = @&quot;$(GitRepositoryUrl)&quot;%3B" />
+            <_GitConstLine Include="        public const string Branch = @&quot;$(GitBranch)&quot;%3B" />
+            <_GitConstLine Include="        public const string Commit = @&quot;$(GitCommit)&quot;%3B" />
+            <_GitConstLine Include="        public const string Sha = @&quot;$(GitSha)&quot;%3B" />
+            <_GitConstLine Include="        public const string CommitDate = @&quot;$(GitCommitDate)&quot;%3B" />
+            <_GitConstLine Include="        public const string Commits = @&quot;$(GitCommits)&quot;%3B" />
+            <_GitConstLine Include="        public const string Tag = @&quot;$(GitTag)&quot;%3B" />
+            <_GitConstLine Include="        public const string BaseTag = @&quot;$(GitBaseTag)&quot;%3B" />
+            <_GitConstLine Include=" " />
+            <_GitConstLine Include="        public partial class BaseVersion" />
+            <_GitConstLine Include="        {" />
+            <_GitConstLine Include="            public const string Major = @&quot;$(GitBaseVersionMajor)&quot;%3B" />
+            <_GitConstLine Include="            public const string Minor = @&quot;$(GitBaseVersionMinor)&quot;%3B" />
+            <_GitConstLine Include="            public const string Patch = @&quot;$(GitBaseVersionPatch)&quot;%3B" />
+            <_GitConstLine Include="        }" />
+            <_GitConstLine Include=" " />
+            <_GitConstLine Include="        public partial class SemVer" />
+            <_GitConstLine Include="        {" />
+            <_GitConstLine Include="            public const string Major = @&quot;$(GitSemVerMajor)&quot;%3B" />
+            <_GitConstLine Include="            public const string Minor = @&quot;$(GitSemVerMinor)&quot;%3B" />
+            <_GitConstLine Include="            public const string Patch = @&quot;$(GitSemVerPatch)&quot;%3B" />
+            <_GitConstLine Include="            public const string Label = @&quot;$(GitSemVerLabel)&quot;%3B" />
+            <_GitConstLine Include="            public const string DashLabel = @&quot;$(GitSemVerDashLabel)&quot;%3B" />
+            <_GitConstLine Include="            public const string Source = @&quot;$(GitSemVerSource)&quot;%3B" />
+            <_GitConstLine Include="        }" />
+            <_GitConstLine Include="    }" />
+            <_GitConstLine Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(_GitConstantsFile)" Lines="@(_GitConstLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+        <ItemGroup>
+            <_GitConstLine Remove="@(_GitConstLine)" />
+            <Compile Include="$(_GitConstantsFile)" />
+            <FileWrites Include="$(_GitConstantsFile)" />
+        </ItemGroup>
+    </Target>
+
     <Target Name="PostBuild-RemoveFiles" AfterTargets="Publish">
         <Exec Command="del $(PublishDir)swresample-*.dll $(PublishDir)swscale-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)av*-*.dll $(PublishDir)swresample.lib $(PublishDir)swscale.lib $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
