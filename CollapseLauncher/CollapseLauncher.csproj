@@ -47,6 +47,7 @@
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
+        <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(TargetFramework.Contains('net11.0'))">
