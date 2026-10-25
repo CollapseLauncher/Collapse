@@ -37,14 +37,14 @@ public partial class ImageBackgroundManager
             : OpenStreamFromFileOrUrl(uri, token);
     }
 
-    public static async ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
+    public static ValueTask<FileStream> OpenStreamFromFileOrUrl(Uri uri, CancellationToken token)
     {
         if (!uri.IsAbsoluteUri && !uri.IsWellFormedOriginalString())
         {
             string localPath = uri.OriginalString.GetFullyQualifiedPath();
             return !File.Exists(localPath)
                 ? throw new FileNotFoundException($"File: {localPath} does not exist!")
-                : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                : ValueTask.FromResult(File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
         }
 
         if (uri.IsFile)
@@ -52,7 +52,7 @@ public partial class ImageBackgroundManager
             string localPath = uri.LocalPath.GetFullyQualifiedPath();
             return !File.Exists(localPath)
                 ? throw new FileNotFoundException($"File: {localPath} does not exist!")
-                : File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                : ValueTask.FromResult(File.Open(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
         }
 
         if (uri.Scheme.StartsWith("ms-appx"))
@@ -60,7 +60,7 @@ public partial class ImageBackgroundManager
             string uwpResPath = uri.LocalPath.TrimStart("\\/").GetFullyQualifiedPath();
             return !File.Exists(uwpResPath)
                 ? throw new FileNotFoundException($"File: {uwpResPath} does not exist!")
-                : File.Open(uwpResPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                : ValueTask.FromResult(File.Open(uwpResPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
         }
 
         // Find stamp file. Try read the metadata in it and just use locally cached files if matches.
@@ -69,39 +69,34 @@ public partial class ImageBackgroundManager
                                  out FileInfo downloadStampFilePath,
                                  out UrlStatus status))
         {
-            return downloadedFilePath.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return ValueTask.FromResult(downloadedFilePath.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
         }
 
-        HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
-        status = await sharedClient.GetCachedUrlStatus(uri, token).ConfigureAwait(false);
-        status.EnsureSuccessStatusCode();
+        return new ValueTask<FileStream>(Impl());
 
-        downloadedFilePath = downloadedFilePath
-                            .EnsureCreationOfDirectory()
-                            .EnsureNoReadOnly();
-        downloadStampFilePath = downloadStampFilePath
-                               .EnsureCreationOfDirectory()
-                               .EnsureNoReadOnly();
+        async Task<FileStream> Impl()
+        {
+            HttpClient sharedClient = FallbackCDNUtil.GetGlobalHttpClient(true);
+            status = await sharedClient.GetCachedUrlStatus(uri, token).ConfigureAwait(false);
+            status.EnsureSuccessStatusCode();
 
-        FileStream downloadedFileStream =
-            downloadedFilePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            downloadedFilePath    = downloadedFilePath.EnsureCreationOfDirectory().EnsureNoReadOnly();
+            downloadStampFilePath = downloadStampFilePath.EnsureCreationOfDirectory().EnsureNoReadOnly();
 
-        using HttpResponseMessage responseMessage =
-            await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token)
-                              .ConfigureAwait(false);
-        await using Stream responseStream =
-            await responseMessage.Content
-                                 .ReadAsStreamAsync(token)
-                                 .ConfigureAwait(false);
-        await responseStream.CopyToAsync(downloadedFileStream, token)
-                            .ConfigureAwait(false);
+            FileStream downloadedFileStream = downloadedFilePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using HttpResponseMessage responseMessage = await sharedClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token)
+                                                                          .ConfigureAwait(false);
 
-        // Write stamp for future cache metadata
-        ReadOnlySpan<byte> stampData = AsSpan(in status);
-        File.WriteAllBytes(downloadStampFilePath.FullName, stampData);
+            await using Stream responseStream = await responseMessage.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            await responseStream.CopyToAsync(downloadedFileStream, token).ConfigureAwait(false);
 
-        downloadedFileStream.Position = 0;
-        return downloadedFileStream;
+            // Write stamp for future cache metadata
+            ReadOnlySpan<byte> stampData = AsSpan(in status);
+            File.WriteAllBytes(downloadStampFilePath.FullName, stampData);
+
+            downloadedFileStream.Position = 0;
+            return downloadedFileStream;
+        }
 
         static unsafe ReadOnlySpan<byte> AsSpan<T>(in T data)
             where T : unmanaged => new(Unsafe.AsPointer(in data), sizeof(T));
