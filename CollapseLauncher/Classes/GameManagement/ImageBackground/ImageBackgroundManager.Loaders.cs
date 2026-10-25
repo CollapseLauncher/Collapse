@@ -149,7 +149,7 @@ public partial class ImageBackgroundManager
 
                         // -- Load color accent
                         if (!string.IsNullOrEmpty(backgroundToUse))
-                            LoadMediaAccentColor(new Uri(backgroundToUse), useFFmpeg);
+                            LoadMediaAccentColor(new Uri(backgroundToUse));
                     }
                     catch (Exception e)
                     {
@@ -259,13 +259,11 @@ public partial class ImageBackgroundManager
         return CurrentBackgroundElement;
     }
 
-    private async void LoadMediaAccentColor(Uri mediaUri, bool useFFmpeg)
+    private async void LoadMediaAccentColor(Uri mediaUri)
     {
         try
         {
-            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(mediaUri, useFFmpeg)
-                                                   .ConfigureAwait(false);
-
+            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(mediaUri).ConfigureAwait(false);
             ColorAccentChanged?.Invoke(color);
         }
         catch (Exception ex)
