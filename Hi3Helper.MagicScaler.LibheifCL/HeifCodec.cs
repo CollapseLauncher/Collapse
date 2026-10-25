@@ -15,19 +15,8 @@ internal static unsafe class HeifFactory
 {
 	public const string DisplayName = $"{Libheif} {LIBHEIF_VERSION}";
 	public const string Libheif = nameof(Libheif);
-	public const uint Libver = LIBHEIF_NUMERIC_VERSION;
 
-	private static readonly Lazy<bool> DependencyValid = new(() => {
-		uint ver = heif_get_version_number();
-		if (ver != Libver)
-			throw new NotSupportedException($"Incorrect {Libheif} version was loaded.  Expected 0x{Libver:x8}, found 0x{ver:x8}.");
-
-		return true;
-	});
-
-	public static void* CreateContext() => DependencyValid.Value ? heif_context_alloc() : null;
-
-	public static string GetMimeType(byte* data, int len) => DependencyValid.Value ? new string(heif_get_file_mime_type(data, len)) : "image/heif";
+	public static string GetMimeType(byte* data, int len) => new(heif_get_file_mime_type(data, len));
 }
 
 /// <inheritdoc cref="WindowsCodecExtensions" />
