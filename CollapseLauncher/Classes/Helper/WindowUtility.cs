@@ -134,6 +134,11 @@ namespace CollapseLauncher.Helper
                 }
 
                 CurrentOverlappedPresenter.IsMaximizable = value;
+
+                if (!value)
+                {
+                    RestoreMaximizedWindow(CurrentWindowPtr);
+                }
             }
         }
 
@@ -420,6 +425,17 @@ namespace CollapseLauncher.Helper
 
             // Initialize FileDialogHandler
             FileDialogNative.InitHandlerPointer(CurrentWindowPtr);
+        }
+
+        private static void RestoreMaximizedWindow(nint hwnd)
+        {
+            // IsMaximizable only hides the affordances; it does not undo an applied maximize.
+            CurrentOverlappedPresenter?.Restore();
+
+            if ((PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_STYLE) & WS_STYLE.WS_MAXIMIZE) != 0)
+            {
+                PInvoke.ShowWindowAsync(hwnd, HandleEnum.SW_SHOWNORMAL);
+            }
         }
 
         internal static void SetFileDropEnabled(bool isEnabled)

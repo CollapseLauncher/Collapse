@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.84.7</Version>
+        <Version>1.84.8</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -47,6 +47,8 @@
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
+        <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
+        <UseTemplatedCode>true</UseTemplatedCode>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(TargetFramework.Contains('net11.0'))">

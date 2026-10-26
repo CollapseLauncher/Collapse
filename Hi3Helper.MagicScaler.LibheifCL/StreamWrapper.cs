@@ -3,11 +3,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+// ReSharper disable IdentifierTypo
 namespace Hi3Helper.MagicScaler.LibheifCL;
 
-internal sealed unsafe class StreamWrapper : IDisposable
+internal unsafe struct StreamWrapper : IDisposable
 {
-    public const int MaxEncodedBytes = 128 * 1024 * 1024;
+    public const  int MaxEncodedBytes = 128 * 1024 * 1024;
     private const int InitialCapacity = 64 * 1024;
 
     private nint _buffer;
@@ -26,10 +27,9 @@ internal sealed unsafe class StreamWrapper : IDisposable
     {
         get
         {
-            if (_buffer == nint.Zero)
-                throw new ObjectDisposedException(nameof(StreamWrapper));
-
-            return new ReadOnlySpan<byte>((void*)_buffer, checked((int)Length));
+            return _buffer == nint.Zero
+                ? throw new ObjectDisposedException(nameof(StreamWrapper))
+                : new ReadOnlySpan<byte>((void*)_buffer, checked((int)Length));
         }
     }
 
@@ -48,7 +48,8 @@ internal sealed unsafe class StreamWrapper : IDisposable
         if (buffer is null)
             throw new OutOfMemoryException();
 
-        int length = 0;
+        int        length   = 0;
+        Span<byte> overflow = stackalloc byte[1];
 
         try
         {
@@ -58,7 +59,6 @@ internal sealed unsafe class StreamWrapper : IDisposable
                 {
                     if (capacity >= MaxEncodedBytes)
                     {
-                        Span<byte> overflow = stackalloc byte[1];
                         int overflowRead = stream.Read(overflow);
 
                         if (overflowRead == 0)
@@ -109,15 +109,6 @@ internal sealed unsafe class StreamWrapper : IDisposable
     public void Dispose()
     {
         nint buffer = Interlocked.Exchange(ref _buffer, nint.Zero);
-
         if (buffer != nint.Zero) NativeMemory.Free((void*)buffer);
-        GC.SuppressFinalize(this);
-    }
-
-    ~StreamWrapper()
-    {
-        nint buffer = Interlocked.Exchange(ref _buffer, nint.Zero);
-        if (buffer != nint.Zero)
-            NativeMemory.Free((void*)buffer);
     }
 }

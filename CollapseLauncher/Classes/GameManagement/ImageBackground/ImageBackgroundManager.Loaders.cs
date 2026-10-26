@@ -5,7 +5,6 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Data;
 using System;
@@ -87,13 +86,6 @@ public partial class ImageBackgroundManager
 
                 token.ThrowIfCancellationRequested();
 
-                if (!string.IsNullOrEmpty(CurrentCachedBgKey))
-                {
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Background", context.OriginBackgroundImagePath ?? "");
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-StaticBackground", context.OriginPlaceholderImagePath ?? "");
-                    LauncherConfig.SetAndSaveConfigValue($"{CurrentCachedBgKey}-Overlay", context.OriginOverlayImagePath ?? "");
-                }
-
                 // -- Use UI thread and load image layer
                 DispatcherQueueExtensions
                    .CurrentDispatcherQueue
@@ -106,7 +98,11 @@ public partial class ImageBackgroundManager
                 {
                     try
                     {
-                        string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay ? downloadedBackgroundUri : downloadedPlaceholderUri) ?? downloadedBackgroundUri;
+                        string? backgroundToUse = (CurrentIsEnableBackgroundAutoPlay &&
+                                                   !GlobalForceStaticImageOverVideo
+                                                      ? downloadedBackgroundUri
+                                                      : downloadedPlaceholderUri)
+                                                  ?? downloadedBackgroundUri;
 
                         // -- Avoid spawning element while window is currently not visible
                         //    (for example: Minimized at start).
@@ -141,6 +137,7 @@ public partial class ImageBackgroundManager
                         // -- Create or Get element and set background.
                         LayeredBackgroundImage element = CreateOrGetLayerElement();
                         bool useFFmpeg = forceFFmpeg || (context.IsVideo && GlobalIsUseFFmpeg && GlobalIsFFmpegAvailable);
+                        GlobalIsFFmpegCurrentlyUsed = useFFmpeg;
 
                         // -- If Force Reload previously requested, rapidly nullify the background source.
                         if (forceReloadRequested)
@@ -152,7 +149,7 @@ public partial class ImageBackgroundManager
 
                         // -- Load color accent
                         if (!string.IsNullOrEmpty(backgroundToUse))
-                            LoadMediaAccentColor(new Uri(backgroundToUse), useFFmpeg);
+                            LoadMediaAccentColor(new Uri(backgroundToUse));
                     }
                     catch (Exception e)
                     {
@@ -262,13 +259,11 @@ public partial class ImageBackgroundManager
         return CurrentBackgroundElement;
     }
 
-    private async void LoadMediaAccentColor(Uri mediaUri, bool useFFmpeg)
+    private async void LoadMediaAccentColor(Uri mediaUri)
     {
         try
         {
-            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(mediaUri, useFFmpeg)
-                                                   .ConfigureAwait(false);
-
+            Color color = await ColorPaletteUtility.GetMediaAccentColorFromAsync(mediaUri).ConfigureAwait(false);
             ColorAccentChanged?.Invoke(color);
         }
         catch (Exception ex)

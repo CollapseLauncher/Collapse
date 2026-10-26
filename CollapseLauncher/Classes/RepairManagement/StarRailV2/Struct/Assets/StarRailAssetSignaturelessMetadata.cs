@@ -3,6 +3,7 @@ using Hi3Helper.EncTool;
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -85,8 +86,20 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
         StarRailBinaryDataHeaderStruct header      = Header;
         short                          typeVersion = header.TypeVersionFlag.ReverseEndianess();
 
-        const int parentDataBufferLen   = 32;
-        const int childrenDataBufferLen = 12;
+        // Starting from Star Rail 4.6 (Manifest Ver. 4) update, an unknown 4-bytes field is introduced within each struct header data.
+        // Dear Star Rail Dev Team, can you stop making changes on your game pls????
+        int parentDataBufferLen = typeVersion switch
+        {
+            3 => 32,
+            4 => 36,
+            _ => throw new NotSupportedException($"Parent-Data length for Star Rail Metadata Version: {typeVersion} is not supported!")
+        };
+        int childrenDataBufferLen = typeVersion switch
+        {
+            3 => 12,
+            4 => 16,
+            _ => throw new NotSupportedException($"Sub-Data length for Star Rail Metadata Version: {typeVersion} is not supported!")
+        };
 
         // -- Read the rest of the data buffer and parse it
         byte[]       parentDataBuffer       = ArrayPool<byte>.Shared.Rent(parentDataBufferLen);
@@ -97,7 +110,7 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
         Memory<byte> v3StringFieldLenBufferMemory = v3StringFieldLenBuffer.AsMemory();
 
         // -- Allocate list
-        DataList = [with(parentDataCount)];
+        DataList = new List<Metadata>(parentDataCount);
 
         try
         {
@@ -110,6 +123,7 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
                                                                    cancellationToken: token)
                                                  .ConfigureAwait(false);
                 Metadata.Parse(parentDataBuffer,
+                               typeVersion,
                                AssetExtension,
                                childrenDataBufferLen,
                                lastPos,
@@ -124,7 +138,7 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
                 {
                     // Starting from Star Rail 4.3 (Manifest Ver. 3) update, they are adding additional field which contains the subdirectory of the asset.
                     // So we need to read the string field, and append the subdirectory to the filename if found.
-                    case >= 3:
+                    case 3 or 4:
                         // Read the string length
                         await dataStream.ReadAtLeastAsync(v3StringFieldLenBufferMemory,
                                                           v3StringFieldLenBufferMemory.Length,
@@ -172,6 +186,7 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
     public class Metadata : StarRailAssetFlaggable
     {
         public static void Parse(ReadOnlySpan<byte> buffer,
+                                 int                typeVersion,
                                  string             assetExtension,
                                  int                subDataSize,
                                  long               lastDataStreamPos,
@@ -179,12 +194,37 @@ public abstract class StarRailAssetSignaturelessMetadata : StarRailAssetBinaryMe
                                  out Metadata       result)
         {
             // uint firstAssetId = BinaryPrimitives.ReadUInt32BigEndian(buffer);
-            uint assetType    = BinaryPrimitives.ReadUInt32BigEndian(buffer[20..]);
-            long fileSize     = BinaryPrimitives.ReadUInt32BigEndian(buffer[24..]);
-            int  subDataCount = BinaryPrimitives.ReadInt32BigEndian(buffer[28..]);
+            int md5Offset = typeVersion switch
+            {
+                3 => 4,
+                4 => 8,
+                _ => throw new NotSupportedException($"Asset's \"MD5\" Field offset for Star Rail Metadata Version: {typeVersion} is not supported!")
+            };
+            int assetTypeOffset = typeVersion switch
+            {
+                3 => 20,
+                4 => 24,
+                _ => throw new NotSupportedException($"Asset's \"Asset Type\" Field offset for Star Rail Metadata Version: {typeVersion} is not supported!")
+            };
+            int fileSizeOffset = typeVersion switch
+            {
+                3 => 24,
+                4 => 28,
+                _ => throw new NotSupportedException($"Asset's \"File Size\" Field offset for Star Rail Metadata Version: {typeVersion} is not supported!")
+            };
+            int subDataCountOffset = typeVersion switch
+            {
+                3 => 28,
+                4 => 32,
+                _ => throw new NotSupportedException($"Asset's \"Sub Data Count\" Field offset for Star Rail Metadata Version: {typeVersion} is not supported!")
+            };
+
+            uint assetType    = BinaryPrimitives.ReadUInt32BigEndian(buffer[assetTypeOffset..]);
+            long fileSize     = BinaryPrimitives.ReadUInt32BigEndian(buffer[fileSizeOffset..]);
+            int  subDataCount = BinaryPrimitives.ReadInt32BigEndian(buffer[subDataCountOffset..]);
 
             byte[] md5Hash = new byte[16];
-            buffer[4..20].CopyTo(md5Hash);
+            buffer[md5Offset..(md5Offset + md5Hash.Length)].CopyTo(md5Hash);
 
             // subDataCount = Number of sub-data struct count
             // subDataSize  = Number of sub-data struct size

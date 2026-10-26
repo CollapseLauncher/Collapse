@@ -9,6 +9,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Interfaces;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.WinRT.IBufferCOM;
@@ -18,7 +19,6 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.IO;
 using System.IO.Hashing;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -38,33 +38,8 @@ namespace CollapseLauncher.Helper.Background;
 
 internal static class ColorPaletteUtility
 {
-    private static          byte[]? _sharedBuffer;
-    private static readonly Lock    SharedBufferLock = new();
-
-    private static byte[] GetSharedBufferOrResizeTo(int size)
-    {
-        using (SharedBufferLock.EnterScope())
-        {
-            size = (int)BitOperations.RoundUpToPowerOf2((uint)size);
-
-            if (_sharedBuffer != null && _sharedBuffer.Length >= size) return _sharedBuffer;
-
-            if (_sharedBuffer == null)
-            {
-                _sharedBuffer = GC.AllocateUninitializedArray<byte>(size);
-                return _sharedBuffer;
-            }
-
-            byte[] newBuffer = GC.AllocateUninitializedArray<byte>(size);
-            Array.Copy(_sharedBuffer, newBuffer, _sharedBuffer.Length);
-            _sharedBuffer = newBuffer;
-            return _sharedBuffer;
-        }
-    }
-
     public static ValueTask<Color> GetMediaAccentColorFromAsync(
         Uri               uri,
-        bool              useFfmpegForVideo,
         CancellationToken token = default)
     {
         // -- Ignore if file doesn't exist or not a file URI
@@ -117,19 +92,28 @@ internal static class ColorPaletteUtility
                     sourceStream.Seek(0, SeekOrigin.Begin);
 
                     // -- Process palette
-                    int channels = frameInfo.HasAlpha ? 4 : 3;
-                    byte[] tempBuffer = GetSharedBufferOrResizeTo(frameInfo.Width * frameInfo.Height * channels + 54);
-                    using MemoryStream tempStream = new(tempBuffer);
-                    ProcessImageSettings settings = new();
-                    settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
-                    MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
+                    int    channels   = frameInfo.HasAlpha ? 4 : 3;
+                    int    bufferSize = frameInfo.Width * frameInfo.Height * channels + 54;
+                    byte[] tempBuffer = BigArrayPool<byte>.Shared.Rent(bufferSize);
 
-                    Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
-                    Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
-                    ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+                    try
+                    {
+                        using MemoryStream   tempStream = new(tempBuffer, 0, bufferSize);
+                        ProcessImageSettings settings   = new();
+                        settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
+                        MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
 
-                    File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
-                    return colorArray;
+                        Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
+                        Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
+                        ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+
+                        File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
+                        return colorArray;
+                    }
+                    finally
+                    {
+                        BigArrayPool<byte>.Shared.Return(tempBuffer);
+                    }
                 }, token));
             }
             catch (Exception ex)

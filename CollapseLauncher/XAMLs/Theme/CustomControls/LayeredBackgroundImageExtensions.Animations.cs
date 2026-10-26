@@ -8,8 +8,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 internal static partial class LayeredBackgroundImageExtensions
 {
-    private static readonly TimeSpan FadeDuration = TimeSpan.FromSeconds(0.2);
-    private static readonly TimeSpan FadeOutDelay = FadeDuration * 0.1d;
+    private static readonly TimeSpan FadeDuration = TimeSpan.FromSeconds(0.25);
+    private static readonly TimeSpan FadeOutDelay = FadeDuration * 0.5d;
 
     internal static async Task StartFadeReplaceAnimationAsync(
         UIElement? fromElement,
