@@ -1,12 +1,11 @@
 // Copyright © Clinton Ingram and Contributors
 // SPDX-License-Identifier: MIT
 
-using System;
-using System.IO;
-
 using PhotoSauce.MagicScaler;
+using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Hi3Helper.MagicScaler.LibheifCL.Libheif;
@@ -17,8 +16,8 @@ namespace Hi3Helper.MagicScaler.LibheifCL;
 
 internal sealed unsafe class HeifContainer : IImageContainer
 {
-	private          void*         _handle;
-	private readonly StreamWrapper _stream;
+	private void*         _handle;
+	private StreamWrapper _stream;
 
 	private HeifContainer(string mime, StreamWrapper stm, void* frm)
 	{
@@ -65,7 +64,7 @@ internal sealed unsafe class HeifContainer : IImageContainer
 		return null;
 	}
 
-	public void CheckResult(heif_error err)
+	public static void CheckResult(heif_error err)
 	{
 		if (err.code != heif_error_code.heif_error_Ok)
 			throw new InvalidOperationException(new string(err.message));
@@ -206,7 +205,7 @@ internal sealed unsafe class HeifContainer : IImageContainer
 			heif_error res = heif_decode_image(_container._handle, &img, heif_colorspace.heif_colorspace_RGB, decodeChroma, options);
 
 			heif_decoding_options_free(options);
-			_container.CheckResult(res);
+			CheckResult(res);
 
 			int hasChanHeif = heif_image_has_channel(img, chan);
 			int bppHeif     = heif_image_get_bits_per_pixel(img, chan);

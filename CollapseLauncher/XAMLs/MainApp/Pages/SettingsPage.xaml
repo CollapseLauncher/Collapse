@@ -290,6 +290,12 @@
                                               IsOn="{Binding GlobalBackgroundAudioEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                               OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
+                                <ToggleSwitch x:Name="VideoBackgroundForceStaticImageOverVideo"
+                                              Margin="0,4"
+                                              Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_ForceStaticImageOverVideoBackground, Mode=OneWay}"
+                                              IsOn="{Binding GlobalForceStaticImageOverVideo, Mode=TwoWay}"
+                                              OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                              OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}" />
                                 <TextBlock Margin="0,4"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_AudioVolume, Mode=OneWay}" />

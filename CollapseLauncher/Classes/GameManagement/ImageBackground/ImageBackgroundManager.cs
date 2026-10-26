@@ -56,6 +56,7 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundParallaxPixelShiftConfigKey      = "GlobalBackgroundParallaxPixelShift";
     private const string GlobalBackgroundAudioVolumeConfigKey             = "GlobalBackgroundAudioVolume";
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
+    private const string GlobalForceStaticImageOverVideoKey               = "GlobalForceStaticImageOverVideo";
     private const string GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey  = "GlobalKeepPlayVideoWhenWindowUnfocused";
 
     public string? GlobalCustomBackgroundImagePath
@@ -139,6 +140,17 @@ public partial class ImageBackgroundManager
         }
     }
 
+    public bool GlobalForceStaticImageOverVideo
+    {
+        get => LauncherConfig.GetAppConfigValue(GlobalForceStaticImageOverVideoKey);
+        set
+        {
+            LauncherConfig.SetAndSaveConfigValue(GlobalForceStaticImageOverVideoKey, value);
+            OnPropertyChanged();
+            LoadImage();
+        }
+    }
+
     public bool GlobalKeepPlayVideoWhenWindowUnfocused
     {
         get => LauncherConfig.GetAppConfigValue(GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey);
@@ -194,7 +206,6 @@ public partial class ImageBackgroundManager
     #region This Instance Properties
 
     private string                    CurrentCustomBackgroundConfigKey     { get; set; } = "";
-    private string                    CurrentCachedBgKey                   { get; set; } = "";
     private string                    CurrentIsEnableCustomImageConfigKey  { get; set; } = "";
     private string                    CurrentSelectedBackgroundIndexKey    { get; set; } = "";
     private string                    CurrentIsEnableBackgroundAutoPlayKey { get; set; } = "";
@@ -335,7 +346,6 @@ public partial class ImageBackgroundManager
         CurrentSelectedBackgroundIndexKey    = $"LastCustomBgIndex-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableCustomImageConfigKey  = $"LastIsCustomImageEnabled-{presetConfig.GameName}-{presetConfig.ZoneName}";
         CurrentIsEnableBackgroundAutoPlayKey = $"LastIsEnableBackgroundAutoPlay-{presetConfig.GameName}-{presetConfig.ZoneName}";
-        CurrentCachedBgKey                   = $"CachedBg-{presetConfig.GameName}-{presetConfig.ZoneName}";
 
         PresetConfig         = presetConfig;
         CurrentBackgroundApi = backgroundApi;
@@ -371,7 +381,7 @@ public partial class ImageBackgroundManager
                 //    -- A. Check for per-region custom background
                 if (CurrentIsEnableCustomImage &&
                     !string.IsNullOrEmpty(CurrentCustomBackgroundImagePath) &&
-                    await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, false, token))
+                    await SetCurrentCustomBackground(CurrentCustomBackgroundImagePath, false, token))
                 {
                     return;
                 }
@@ -380,7 +390,7 @@ public partial class ImageBackgroundManager
                 if (!CurrentIsEnableCustomImage &&
                     GlobalIsEnableCustomImage &&
                     !string.IsNullOrEmpty(GlobalCustomBackgroundImagePath) &&
-                    await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, false, token))
+                    await SetGlobalCustomBackground(GlobalCustomBackgroundImagePath, false, token))
                 {
                     return;
                 }
@@ -424,7 +434,7 @@ public partial class ImageBackgroundManager
                        .CurrentDispatcherQueue
                        .TryEnqueue(() =>
                        {
-                           UpdateContextListCore(token, false, imageContexts);
+                           UpdateContextListCore(token, imageContexts);
                        });
                 }
             }
@@ -436,26 +446,25 @@ public partial class ImageBackgroundManager
         }
     }
 
-    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
+    public Task<bool> SetGlobalCustomBackground(string? imagePath, bool performCropRequest = true, CancellationToken token = default)
     {
         GlobalCustomBackgroundImagePath = imagePath;
         // For global custom background, pass CurrentIsEnableCustomImage status so when it's set to true,
         // this code will only perform cropping but not applying it.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, skipPreviousContextCheck, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, !CurrentIsEnableCustomImage, token);
     }
 
-    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest = true, bool skipPreviousContextCheck = true, CancellationToken token = default)
+    public Task<bool> SetCurrentCustomBackground(string? imagePath, bool performCropRequest = true, CancellationToken token = default)
     {
         CurrentCustomBackgroundImagePath = imagePath;
         // For current custom background, since we put the priority at the top.
         // So if it's done performing cropping, apply the change no matter what's the status for global background.
-        return SetCustomBackgroundCore(imagePath, performCropRequest, true, skipPreviousContextCheck, token);
+        return SetCustomBackgroundCore(imagePath, performCropRequest, true, token);
     }
 
     private async Task<bool> SetCustomBackgroundCore(string?           imagePath,
                                                      bool              performCropRequest,
                                                      bool              applyChanges,
-                                                     bool              skipPreviousContextCheck,
                                                      CancellationToken token)
     {
         try
@@ -467,10 +476,7 @@ public partial class ImageBackgroundManager
             }
 
             // -- Try to perform cropped or pass through processing
-            GetCroppedResult cropResult = await GetCroppedCustomImage(null,
-                                                                      imagePath,
-                                                                      performCropRequest,
-                                                                      token);
+            GetCroppedResult cropResult = await GetCroppedCustomImage(imagePath, performCropRequest, token);
 
             // -- Do not process custom background if cancelled.
             if (cropResult.IsCancelResize)
@@ -492,7 +498,7 @@ public partial class ImageBackgroundManager
                 ForceReload               = cropResult.WasCropPerformed // Only do force reload if crop was performed.
             };
 
-            UpdateContextListCore(token, skipPreviousContextCheck, context);
+            UpdateContextListCore(token, context);
             return true;
         }
         catch (Exception ex)
@@ -507,21 +513,19 @@ public partial class ImageBackgroundManager
 #pragma warning disable CA1068
     private void UpdateContextListCore(
         CancellationToken                          token,
-        bool                                       skipPreviousContextCheck,
         IEnumerable<LayeredImageBackgroundContext> imageContexts)
     {
         if (imageContexts is List<LayeredImageBackgroundContext> asList)
         {
-            UpdateContextListCore(token, skipPreviousContextCheck, CollectionsMarshal.AsSpan(asList));
+            UpdateContextListCore(token, CollectionsMarshal.AsSpan(asList));
             return;
         }
 
-        UpdateContextListCore(token, skipPreviousContextCheck, [.. imageContexts]);
+        UpdateContextListCore(token, [.. imageContexts]);
     }
 
     private void UpdateContextListCore(
         CancellationToken                                  token,
-        bool                                               forceReload,
         params ReadOnlySpan<LayeredImageBackgroundContext> imageContexts)
     {
         ImageContextSources.Clear(); // Flush list

@@ -156,7 +156,7 @@ namespace CollapseLauncher.Pages.OOBE
                         if (IsLoadDescription &&
                             Uri.TryCreate(_gamePosterPath, UriKind.Absolute, out Uri? posterPath))
                         {
-                            Color paletteColor = await ColorPaletteUtility.GetMediaAccentColorFromAsync(posterPath, false);
+                            Color paletteColor = await ColorPaletteUtility.GetMediaAccentColorFromAsync(posterPath);
                             this.ChangeAccentColor(paletteColor);
                         }
                     }

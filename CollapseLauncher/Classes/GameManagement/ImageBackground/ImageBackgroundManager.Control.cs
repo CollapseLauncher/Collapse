@@ -1,5 +1,8 @@
 ﻿// ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable CheckNamespace
+
+using CollapseLauncher.Helper;
+
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -9,6 +12,9 @@ public partial class ImageBackgroundManager
 {
     public void SetWindowFocusedEvent()
     {
+        if (!WindowUtility.CurrentWindowIsVisible)
+            return;
+
         if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
             Play(false);
@@ -20,6 +26,9 @@ public partial class ImageBackgroundManager
 
     public void SetWindowUnfocusedEvent()
     {
+        if (!WindowUtility.CurrentWindowIsVisible)
+            return;
+
         if (!GlobalKeepPlayVideoWhenWindowUnfocused)
         {
             Pause(false);
