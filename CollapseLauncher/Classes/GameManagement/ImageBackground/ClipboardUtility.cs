@@ -168,7 +168,7 @@ public static class ClipboardUtility
             ILogger logger = ILoggerHelper.GetILogger("ClipboardUtility::CopyCanvasTargetBufferToClipboard");
 
             Direct3DSurfaceDescription desc          = sourceCanvasTarget.Description;
-            int                        bmpHeaderSize = Marshal.SizeOf<BITMAPV5HEADER>();
+            int                        bmpHeaderSize = sizeof(BITMAPHEADER);
             int                        strideSize    = GetBitmapStrideSize(desc);
             int                        bufferSize    = strideSize + bmpHeaderSize;
             buffer = BigArrayPool<byte>.Shared.Rent(bufferSize);
@@ -195,33 +195,36 @@ public static class ClipboardUtility
 
             // -- Copy as BMP
             // Prepare BITMAPV5HEADER
-            Span<byte> headerSpan = buffer.AsSpan(0, bmpHeaderSize);
-            headerSpan.Clear();
-            ref BITMAPV5HEADER header = ref AsRef<BITMAPV5HEADER>(headerSpan);
+            BITMAPHEADER header = default;
+            header.Init();
+
+            ref BITMAPV5HEADER dibHeader = ref header.TryReadAs<BITMAPV5HEADER>();
 
             int    bmpChannelCount  = GetBitmapChannelCount(desc.Format);
             double bmpBitPerChannel = GetBitmapBitSize(desc.Format);
             ushort bmpBitCount      = (ushort)(bmpBitPerChannel * bmpChannelCount);
 
-            header.bV5Size        = (uint)bmpHeaderSize;
-            header.bV5Width       = desc.Width;
-            header.bV5Height      = -desc.Height;
-            header.bV5Planes      = 1;
-            header.bV5BitCount    = bmpBitCount;
-            header.bV5Compression = 3;
-            header.bV5SizeImage   = (uint)strideSize;
-            header.bV5RedMask     = 0x00FF0000;
-            header.bV5GreenMask   = 0x0000FF00;
-            header.bV5BlueMask    = 0x000000FF;
-            header.bV5AlphaMask   = 0xFF000000;
-            header.bV5CSType      = 0x73524742; // 'sRGB'
+            dibHeader.V5Width     = desc.Width;
+            dibHeader.V5Height    = desc.Height;
+            dibHeader.V5Planes    = 1;
+            dibHeader.V5BitCount  = bmpBitCount;
+            dibHeader.V5SizeImage = (uint)strideSize;
+            dibHeader.V5RedMask   = 0x00FF0000;
+            dibHeader.V5GreenMask = 0x0000FF00;
+            dibHeader.V5BlueMask  = 0x000000FF;
+            dibHeader.V5AlphaMask = bmpChannelCount == 4 ? 0xFF000000 : 0;
+            dibHeader.V5CSType    = 0x73524742; // 'sRGB'
 
             await Task.Run(ImplWriteBmp);
             void ImplWriteBmp()
             {
                 IBuffer windowsBuffer = buffer.AsBuffer(bmpHeaderSize, strideSize, buffer.Length - bmpHeaderSize);
                 sourceCanvasTarget.GetPixelBytes(windowsBuffer);
-                Clipboard.CopyDataToClipboard(buffer.AsSpan(0, bufferSize), StandardClipboardFormats.CF_DIBV5, logger);
+
+                int dataSize = (int)(sizeof(BITMAPHEADER) + windowsBuffer.Length);
+                header.File.Size = (uint)dataSize;
+
+                Clipboard.CopyDataToClipboard(buffer.AsSpan(0, dataSize), StandardClipboardFormats.CF_DIBV5, logger);
             }
         }
         finally

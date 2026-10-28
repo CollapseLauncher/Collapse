@@ -87,33 +87,46 @@ internal static class ColorPaletteUtility
 
                 processTcs.SetResult(await Task.Run(() =>
                 {
-                    ImageFileInfo           fileInfo  = ImageFileInfo.Load(sourceStream);
-                    ImageFileInfo.FrameInfo frameInfo = fileInfo.Frames[0];
                     sourceStream.Seek(0, SeekOrigin.Begin);
 
-                    // -- Process palette
-                    int    channels   = frameInfo.HasAlpha ? 4 : 3;
-                    int    bufferSize = frameInfo.Width * frameInfo.Height * channels + 54;
-                    byte[] tempBuffer = BigArrayPool<byte>.Shared.Rent(bufferSize);
+                    ProcessImageSettings settings = new();
+                    settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
 
-                    try
+                    using MemoryStream       bmpTempStream = new();
+                    using ProcessingPipeline pipeline      = MagicImageProcessor.BuildPipeline(sourceStream, settings);
+                    pipeline.WriteOutput(bmpTempStream);
+
+                    byte[]           bmpTempBuffer = bmpTempStream.GetBuffer();
+                    ref BITMAPHEADER bmpHeader     = ref BmpImageUtil.TryGetHeader(bmpTempBuffer);
+
+                    if (Unsafe.IsNullRef(ref bmpHeader))
+                        throw new InvalidDataException("Output file contains an invalid BMP image file!");
+
+                    ref BITMAPV1HEADER bmpDibHeader = ref bmpHeader.TryReadAs<BITMAPV1HEADER>();
+                    if (Unsafe.IsNullRef(ref bmpDibHeader))
+                        throw new InvalidDataException("DIB Header of the BMP image is unsupported or invalid!");
+
+                    bool hasAlpha = false;
+                    if (bmpDibHeader.V1Size == sizeof(BITMAPV4HEADER))
                     {
-                        using MemoryStream   tempStream = new(tempBuffer, 0, bufferSize);
-                        ProcessImageSettings settings   = new();
-                        settings.TrySetEncoderFormat(ImageMimeTypes.Bmp);
-                        MagicImageProcessor.ProcessImage(sourceStream, tempStream, settings);
-
-                        Span<byte> tempDataSpan = tempBuffer.AsSpan(54, (int)tempStream.Position - 54);
-                        Color colorArray = GetPaletteFromSpan(tempDataSpan, frameInfo.Width, frameInfo.Height, channels);
-                        ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
-
-                        File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
-                        return colorArray;
+                        ref BITMAPV4HEADER bmpDibV4Header = ref bmpHeader.TryReadAs<BITMAPV4HEADER>();
+                        hasAlpha = bmpDibV4Header.V4BitCount is 16 or 32 && bmpDibV4Header.V4AlphaMask != 0;
                     }
-                    finally
-                    {
-                        BigArrayPool<byte>.Shared.Return(tempBuffer);
-                    }
+
+                    int width    = bmpDibHeader.V1Width;
+                    int height   = bmpDibHeader.V1Height;
+                    int channels = hasAlpha ? 4 : 3;
+
+                    int pixelOffset = (int)bmpHeader.File.PixelDataOffset;
+                    int pixelSize   = (int)bmpHeader.File.Size - pixelOffset;
+
+                    Span<byte> pixelSpan = bmpTempBuffer.AsSpan(pixelOffset, pixelSize);
+
+                    Color              colorArray       = GetPaletteFromSpan(pixelSpan, width, height, channels);
+                    ReadOnlySpan<byte> colorSpanAsBytes = MemoryMarshal.AsBytes([colorArray]);
+
+                    File.WriteAllBytes(cachedPaletteFile, colorSpanAsBytes);
+                    return colorArray;
                 }, token));
             }
             catch (Exception ex)
@@ -299,27 +312,24 @@ internal static class ColorPaletteUtility
 
             static unsafe FileStream CreateSvgTempStream(int width, int height, Span<byte> buffer)
             {
-                const uint biBitfields = 3;
-
                 int    stride   = width * height * 4;
                 string tempPath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + ".bmp");
 
-                int                sizeOfHeader = sizeof(BITMAPV5HEADER);
-                Span<byte>         headerSpan   = stackalloc byte[sizeOfHeader];
-                ref BITMAPV5HEADER header       = ref AsRef<BITMAPV5HEADER>(headerSpan);
+                BITMAPHEADER header = default;
+                header.Init();
+                ref BITMAPV5HEADER dibV5Header = ref header.TryReadAs<BITMAPV5HEADER>();
 
-                header.bV5Size        = (uint)sizeOfHeader;
-                header.bV5Width       = width;
-                header.bV5Height      = height;
-                header.bV5Planes      = 1;
-                header.bV5BitCount    = 32;
-                header.bV5Compression = biBitfields;
-                header.bV5SizeImage   = (uint)stride;
-                header.bV5RedMask     = 0x00FF0000;
-                header.bV5GreenMask   = 0x0000FF00;
-                header.bV5BlueMask    = 0x000000FF;
-                header.bV5AlphaMask   = 0xFF000000;
-                header.bV5CSType      = 0x73524742; // 'sRGB'
+                dibV5Header.V5Width       = width;
+                dibV5Header.V5Height      = height;
+                dibV5Header.V5Planes      = 1;
+                dibV5Header.V5BitCount    = 32;
+                dibV5Header.V5SizeImage   = (uint)stride;
+                dibV5Header.V5RedMask     = 0x00FF0000;
+                dibV5Header.V5GreenMask   = 0x0000FF00;
+                dibV5Header.V5BlueMask    = 0x000000FF;
+                dibV5Header.V5AlphaMask   = 0xFF000000;
+                dibV5Header.V5CSType      = 0x73524742; // 'sRGB'
+                header.File.Size          = (uint)(sizeof(BITMAPHEADER) + buffer.Length);
 
                 FileStream stream = File.Open(tempPath, new FileStreamOptions
                 {
@@ -327,7 +337,7 @@ internal static class ColorPaletteUtility
                     Access  = FileAccess.ReadWrite,
                     Share   = FileShare.ReadWrite
                 });
-                stream.Write(headerSpan);
+                stream.Write(in dibV5Header);
                 stream.Write(buffer);
 
                 stream.Position = 0;
