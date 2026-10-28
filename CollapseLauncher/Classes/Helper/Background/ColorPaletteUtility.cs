@@ -343,9 +343,6 @@ internal static class ColorPaletteUtility
                 stream.Position = 0;
                 return stream;
             }
-
-            static unsafe ref T AsRef<T>(Span<byte> span)
-                => ref Unsafe.As<byte, T>(ref MemoryMarshal.AsRef<byte>(span));
         }
         catch (Exception ex)
         {
