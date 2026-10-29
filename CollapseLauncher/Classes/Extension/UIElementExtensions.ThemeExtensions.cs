@@ -2,6 +2,7 @@
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
 using Windows.UI;
 
 #pragma warning disable IDE0130
@@ -86,6 +87,10 @@ namespace CollapseLauncher.Extension
                     page.RequestedTheme = target;
 
                     isComplete = true;
+                }
+                catch (ArgumentException ex) when (ex.HResult == unchecked((int)0x80070057))
+                {
+                    return;
                 }
                 catch
                 {
