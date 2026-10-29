@@ -16,30 +16,6 @@ namespace CollapseLauncher.Extension
 
         public static void ChangeAccentColor(this FrameworkElement element, Color baseColor)
         {
-            if (Application.Current.Resources.TryGetValue("AccentColor", out object? existing) &&
-                existing is SolidColorBrush existingBrush &&
-                existingBrush.Color.Equals(baseColor))
-            {
-                return;
-            }
-
-            Color accentColorMask        = baseColor;
-            Color accentColorTransparent = baseColor;
-
-            if (InnerLauncherConfig.IsAppThemeLight)
-            {
-                accentColorMask        = accentColorMask.SetSaturation(.3f).GetLightColor();
-                accentColorTransparent = accentColorTransparent.SetSaturation(.3f).GetLightColor();
-            }
-            else
-            {
-                accentColorMask        = accentColorMask.GetDarkColor(.8f);
-                accentColorTransparent = accentColorTransparent.GetDarkColor(.8f);
-            }
-
-            accentColorMask.A        = (byte)(InnerLauncherConfig.IsAppThemeLight ? 240 : 192);
-            accentColorTransparent.A = 0;
-
             const string searchKeyAccentColor     = "AccentColor";
             const string searchKeyMain            = "System" + searchKeyAccentColor;
             const string searchKeyMask            = searchKeyMain + "BackgroundMask";
@@ -50,13 +26,38 @@ namespace CollapseLauncher.Extension
             string searchKey2        = $"{searchKeyMain}{searchReversedKey}2";
             string searchKey3        = $"{searchKeyMain}{searchReversedKey}3";
 
-            SetApplicationResource(searchKeyAccentColor,     new SolidColorBrush(baseColor));
+            if (!TryGetResource(searchKeyAccentColor,     out SolidColorBrush? accentColorBrush))
+            {
+                return;
+            }
+
+            if (accentColorBrush.Color.Equals(baseColor))
+                return;
+
+            Color accentColorMask        = baseColor;
+            Color accentColorTransparent = baseColor with { A = 0 };
+
+            if (InnerLauncherConfig.IsAppThemeLight)
+            {
+                accentColorMask        = accentColorMask.SetSaturation(.3f).GetLightColor();
+                accentColorTransparent = accentColorTransparent.SetSaturation(.3f).GetLightColor();
+                accentColorMask.A      = 240;
+            }
+            else
+            {
+                accentColorMask        = accentColorMask.GetDarkColor(.8f);
+                accentColorTransparent = accentColorTransparent.GetDarkColor(.8f);
+                accentColorMask.A      = 192;
+            }
+
+            accentColorBrush.Color = baseColor;
+
             SetApplicationResource(searchKeyMain,            baseColor);
+            SetApplicationResource(searchKeyMask,            accentColorMask);
+            SetApplicationResource(searchKeyMaskTransparent, accentColorTransparent);
             SetApplicationResource(searchKey1,               baseColor);
             SetApplicationResource(searchKey2,               baseColor);
             SetApplicationResource(searchKey3,               baseColor);
-            SetApplicationResource(searchKeyMask,            accentColorMask);
-            SetApplicationResource(searchKeyMaskTransparent, accentColorTransparent);
 
             element.ReloadPageTheme();
         }
