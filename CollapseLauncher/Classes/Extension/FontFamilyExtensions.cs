@@ -61,7 +61,7 @@ internal static class FontCollections
 
     static FontCollections()
     {
-        foreach (KeyValuePair<object, object> resource in UIElementExtensions.CurrentResourceDictionary)
+        foreach (KeyValuePair<object, object?> resource in UIElementExtensions.EnumerateResource<object, object>())
         {
             if (resource.Value is not FontFamily family ||
                 resource.Key == null!)

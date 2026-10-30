@@ -21,6 +21,7 @@ using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
 using WinRT;
+
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -522,33 +523,152 @@ namespace CollapseLauncher.Extension
         }
 
         [field: AllowNull, MaybeNull]
-        public static ResourceDictionary CurrentResourceDictionary => field ??= Application.Current.Resources ?? throw new NullReferenceException("Application.Current.Resources is null or not initialized!");
+        private static IObjectReference ResourceDictionaryMethods => field ??= GetResourceDictionaryMethods(Application.Current.Resources ?? throw new NullReferenceException("Application.Current.Resources is null or not initialized!"));
+        private static IObjectReference ResourceEnumerableMethods => field ??= GetResourceEnumerableMethods(Application.Current.Resources ?? throw new NullReferenceException("Application.Current.Resources is null or not initialized!"));
 
-        internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get__objRef_global__System_Collections_Generic_IDictionary_object__object_")]
+        private static extern IObjectReference GetResourceDictionaryMethods(ResourceDictionary dict);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get__objRef_global__System_Collections_Generic_IEnumerable_global__System_Collections_Generic_KeyValuePair_object__object__")]
+        private static extern IObjectReference GetResourceEnumerableMethods(ResourceDictionary dict);
+
+#nullable enable
+        private static class ResourceLookupHelper<TKey>
+            where TKey : notnull
         {
-            if (!CurrentResourceDictionary.TryGetValue(resourceKey, out object resourceObj))
-                throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
+            private static readonly Dictionary<TKey, object?> LookupCache = [];
 
-            return resourceObj is not TReturnType resource
-                ? throw new InvalidCastException($"Object type for resource \"{resourceKey}\" is not valid! Trying to get type: {typeof(TReturnType).Name}, but the object type is: {resourceObj.GetType().Name}")
-                : resource;
-        }
-
-        internal static ref TReturnType GetApplicationResourceRef<TReturnType>(string resourceKey)
-            where TReturnType : struct
-        {
-            if (!CurrentResourceDictionary.TryGetValue(resourceKey, out object resourceObj))
+            public static bool TryGet<TValue>(
+                TKey        key,
+                out TValue? value)
             {
-                return ref Unsafe.NullRef<TReturnType>();
+                Unsafe.SkipInit(out value);
+
+                if (LookupCache.TryGetValue(key, out object? valueCachedObj))
+                {
+                    if (valueCachedObj is TValue valueCachedObjAsTarget)
+                    {
+                        value = valueCachedObjAsTarget;
+                    }
+
+                    return true;
+                }
+
+                if (!ABI.System.Collections.Generic
+                        .IDictionaryMethods<object, object>
+                        .TryGetValue(ResourceDictionaryMethods,
+                                     null,
+                                     key,
+                                     out object? valueObj) ||
+                    (valueObj is not null && valueObj is not TValue))
+                {
+                    return false;
+                }
+
+                try
+                {
+                    if (valueObj is null)
+                    {
+                        value = default;
+                        return true;
+                    }
+
+                    value = (TValue)valueObj;
+                    return true;
+                }
+                finally
+                {
+                    LookupCache.TryAdd(key, value);
+                }
             }
 
-            return ref Unsafe.Unbox<TReturnType>(resourceObj);
+            public static void Set<TValue>(
+                TKey    key,
+                TValue? value)
+            {
+                LookupCache[key] = value;
+                ABI.System.Collections.Generic.IDictionaryMethods<object, object?>.Indexer_Set(ResourceDictionaryMethods, key, value);
+            }
         }
 
-        internal static void SetApplicationResource(string resourceKey, object value)
+        internal static IEnumerable<KeyValuePair<TKey, TValue?>> EnumerateResource<TKey, TValue>()
+            where TKey : notnull
         {
-            CurrentResourceDictionary[resourceKey] = value;
+            using IEnumerator<KeyValuePair<object, object>> enumerator = ABI.System.Collections.Generic.IEnumerableMethods<KeyValuePair<object, object>>.GetEnumerator(ResourceEnumerableMethods);
+            while (enumerator.MoveNext())
+            {
+                if (KvpObjAsTarget(enumerator.Current,
+                                   out KeyValuePair<TKey, TValue?> target))
+                {
+                    yield return target;
+                }
+            }
+
+            yield break;
+
+            static bool KvpObjAsTarget(KeyValuePair<object, object>    source,
+                                       out KeyValuePair<TKey, TValue?> target)
+            {
+                object  keyObj   = source.Key;
+                object? valueObj = source.Value;
+
+                bool keyCorrect = keyObj is TKey;
+                switch (keyCorrect)
+                {
+                    case true when valueObj == null:
+                        target = new KeyValuePair<TKey, TValue?>((TKey)keyObj, default);
+                        return true;
+                    case true when valueObj is TValue asValue:
+                        target = new KeyValuePair<TKey, TValue?>((TKey)keyObj, asValue);
+                        return true;
+                    default:
+                        target = default;
+                        return false;
+                }
+            }
         }
+
+        internal static bool TryGetResource<TKey, TValue>(
+            TKey                            resourceKey,
+            [NotNullWhen(true)] out TValue? resourceValue)
+            where TKey : notnull
+            => ResourceLookupHelper<TKey>.TryGet(resourceKey, out resourceValue);
+
+        internal static TValue GetApplicationResource<TValue>(string resourceKey)
+        {
+            if (!TryGetResource(resourceKey, out TValue? resourceValue))
+                throw new KeyNotFoundException($"Application resource with key: {resourceKey} and type: {typeof(TValue).Name} does not exist!");
+
+            return resourceValue;
+        }
+
+        internal static TValue GetApplicationResource<TKey, TValue>(TKey resourceKey)
+            where TKey : notnull
+        {
+            if (!TryGetResource(resourceKey, out TValue? resourceValue))
+                throw new KeyNotFoundException($"Application resource with key: {resourceKey} and type: {typeof(TValue).Name} does not exist!");
+
+            return resourceValue;
+        }
+
+        internal static ref TValue GetApplicationResourceRef<TKey, TValue>(TKey resourceKey)
+            where TKey : notnull
+            where TValue : struct
+        {
+            if (!TryGetResource(resourceKey, out object? resourceObj))
+            {
+                return ref Unsafe.NullRef<TValue>();
+            }
+
+            return ref Unsafe.Unbox<TValue>(resourceObj);
+        }
+
+        internal static void SetApplicationResource<TKey, TValue>(TKey resourceKey, TValue? value)
+            where TKey : notnull
+        {
+            ResourceLookupHelper<TKey>.Set(resourceKey, value);
+        }
+#nullable restore
 
         internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)
         {

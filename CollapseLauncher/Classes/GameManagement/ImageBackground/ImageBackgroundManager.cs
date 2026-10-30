@@ -560,7 +560,9 @@ public partial class ImageBackgroundManager
 
     public void ResetContexts()
     {
-        Interlocked.Exchange(ref _previousContextHash, 0);
+        Interlocked.Exchange(ref _lastBackgroundSource, null);
+        Interlocked.Exchange(ref _previousContextHash,  0);
+        CurrentBackgroundElement = null;
         ImageContextSources.Clear();
     }
 
