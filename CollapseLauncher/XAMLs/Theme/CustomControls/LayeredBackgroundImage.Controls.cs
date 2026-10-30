@@ -5,6 +5,7 @@ using Windows.Foundation;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.Imaging;
 using Windows.Media.Playback;
+using Windows.UI;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls;
@@ -103,6 +104,7 @@ public partial class LayeredBackgroundImage
             CanvasRenderTarget canvasTarget = new(canvasDevice, maxWidth, maxHeight, 96, pixelFormat, CanvasAlphaMode.Premultiplied);
 
             using CanvasDrawingSession cds = canvasTarget.CreateDrawingSession();
+            cds.Clear(Color.FromArgb(0,255,255,255));
             DrawUniformFill(cds, backgroundCanvas, maxWidth, maxHeight);
             DrawUniformFill(cds, foregroundCanvas, maxWidth, maxHeight);
 
@@ -140,8 +142,7 @@ public partial class LayeredBackgroundImage
                          destRect,
                          new Rect(0, 0, srcWidth, srcHeight),
                          1f,
-                         CanvasImageInterpolation.HighQualityCubic,
-                         CanvasComposite.SourceOver);
+                         CanvasImageInterpolation.HighQualityCubic);
         }
     }
 

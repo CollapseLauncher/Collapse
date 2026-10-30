@@ -399,7 +399,7 @@ namespace CollapseLauncher.Helper.StreamUtility
         extension(Stream stream)
         {
             [SkipLocalsInit]
-            internal void Write<T>(T source)
+            internal void Write<T>(ref readonly T source)
                 where T : unmanaged
             {
                 ReadOnlySpan<byte> asSpan = MemoryMarshal.AsBytes(new ReadOnlySpan<T>(in source));

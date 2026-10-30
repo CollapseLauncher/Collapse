@@ -9,12 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Graphics.DirectX;
-using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Storage.Streams;
 
 // ReSharper disable CommentTypo
@@ -55,105 +50,13 @@ public static class ClipboardUtility
         }
     }
 
-    private static double GetBitmapBitSize(DirectXPixelFormat pixelFormat)
-    {
-        const string r4Chan  = "R4";
-        const string r8Chan  = "R8";
-        const string r10Chan = "R10";
-        const string r16Chan = "R16";
-        const string r24Chan = "R24";
-        const string r32Chan = "R32";
-
-        ReadOnlySpan<char> enumStr = GetPixelFormatString(pixelFormat);
-        
-        int  bitSize = 8;
-        bool isSkip  = enumStr.IndexOf(r8Chan, StringComparison.Ordinal) > 0;
-
-        if (!isSkip && enumStr.IndexOf(r4Chan, StringComparison.Ordinal) > 0)
-        {
-            isSkip  = true;
-            bitSize = 4;
-        }
-
-        if (!isSkip && enumStr.IndexOf(r10Chan, StringComparison.Ordinal) > 0)
-        {
-            isSkip  = true;
-            bitSize = 10;
-        }
-
-        if (!isSkip && enumStr.IndexOf(r16Chan, StringComparison.Ordinal) > 0)
-        {
-            isSkip  = true;
-            bitSize = 16;
-        }
-
-        if (!isSkip && enumStr.IndexOf(r24Chan, StringComparison.Ordinal) > 0)
-        {
-            isSkip  = true;
-            bitSize = 24;
-        }
-
-        // ReSharper disable once InvertIf
-        if (!isSkip && enumStr.IndexOf(r32Chan, StringComparison.Ordinal) > 0)
-        {
-            isSkip  = true;
-            bitSize = 32;
-        }
-
-        return !isSkip
-            ? throw new InvalidOperationException($"Pixel format enum {pixelFormat} is not supported!")
-            : bitSize;
-    }
-
-    private static ReadOnlySpan<char> GetPixelFormatString(DirectXPixelFormat pixelFormat)
-    {
-        if (pixelFormat == DirectXPixelFormat.Unknown)
-        {
-            throw new InvalidOperationException("Unknown pixel format is not supported!");
-        }
-
-        string? enumS = Enum.GetName(pixelFormat);
-        return string.IsNullOrEmpty(enumS)
-            ? throw new InvalidOperationException($"Pixel format enum {pixelFormat} is not supported!")
-            : enumS;
-    }
-
-    private static int GetBitmapChannelCount(DirectXPixelFormat pixelFormat)
-    {
-        ReadOnlySpan<char> enumStr = GetPixelFormatString(pixelFormat);
-
-        int indexOfAlphaSign = enumStr.IndexOf('A');
-        int channelNum       = 3;
-        if (indexOfAlphaSign != -1 &&
-            enumStr.Length > indexOfAlphaSign &&
-            int.TryParse(enumStr.Slice(indexOfAlphaSign + 1, 1), out _))
-        {
-            channelNum = 4;
-        }
-
-        return channelNum;
-    }
-
-    private static int GetBitmapStrideSize(Direct3DSurfaceDescription desc)
-    {
-        DirectXPixelFormat pixelFormat = desc.Format;
-        double             bitSize     = GetBitmapBitSize(pixelFormat);
-        int                channelNum  = GetBitmapChannelCount(pixelFormat);
-
-        double stride = desc.Width * desc.Height * channelNum * (bitSize / 8d);
-        return (int)Math.Round(stride);
-    }
-
-    private static async Task<int> WriteCanvasTargetBufferType(
+    private static async Task WriteCanvasTargetBufferType(
         CanvasRenderTarget     sourceCanvasTarget,
-        byte[]                 buffer,
+        Stream                 targetStream,
         CanvasBitmapFileFormat format)
     {
-        using MemoryStream        bufferStream       = new(buffer);
-        using IRandomAccessStream bufferRandomStream = bufferStream.AsRandomAccessStream(true);
+        using IRandomAccessStream bufferRandomStream = targetStream.AsRandomAccessStream(true, true);
         await sourceCanvasTarget.SaveAsync(bufferRandomStream, format, 1f);
-
-        return (int)bufferStream.Position;
     }
 
     private static async Task CopyCanvasTargetBufferToClipboard(CanvasRenderTarget? sourceCanvasTarget)
@@ -161,17 +64,10 @@ public static class ClipboardUtility
         if (sourceCanvasTarget == null)
             return;
 
-        bool    isClipboardOpened = true;
-        byte[]? buffer            = null;
+        bool isClipboardOpened = true;
         try
         {
             ILogger logger = ILoggerHelper.GetILogger("ClipboardUtility::CopyCanvasTargetBufferToClipboard");
-
-            Direct3DSurfaceDescription desc          = sourceCanvasTarget.Description;
-            int                        bmpHeaderSize = Marshal.SizeOf<BITMAPV5HEADER>();
-            int                        strideSize    = GetBitmapStrideSize(desc);
-            int                        bufferSize    = strideSize + bmpHeaderSize;
-            buffer = BigArrayPool<byte>.Shared.Rent(bufferSize);
 
             // Try open the Clipboard
             if (!PInvoke.OpenClipboard(nint.Zero))
@@ -188,41 +84,25 @@ public static class ClipboardUtility
             }
 
             // Write and load the "load" ( ͡° ͜ʖ ͡°)
-            // -- Copy as PNG
             StandardClipboardFormats pngFormat = (StandardClipboardFormats)PInvoke.RegisterClipboardFormat("PNG");
-            int writtenPng = await WriteCanvasTargetBufferType(sourceCanvasTarget, buffer, CanvasBitmapFileFormat.Png);
-            await Task.Run(() => Clipboard.CopyDataToClipboard(buffer.AsSpan(0, writtenPng), pngFormat, logger));
+            using MemoryStream       pngStream = new();
+            using MemoryStream       bmpStream = new();
 
-            // -- Copy as BMP
-            // Prepare BITMAPV5HEADER
-            Span<byte> headerSpan = buffer.AsSpan(0, bmpHeaderSize);
-            headerSpan.Clear();
-            ref BITMAPV5HEADER header = ref AsRef<BITMAPV5HEADER>(headerSpan);
+            await WriteCanvasTargetBufferType(sourceCanvasTarget, pngStream, CanvasBitmapFileFormat.Png);
+            await WriteCanvasTargetBufferType(sourceCanvasTarget, bmpStream, CanvasBitmapFileFormat.Bmp);
 
-            int    bmpChannelCount  = GetBitmapChannelCount(desc.Format);
-            double bmpBitPerChannel = GetBitmapBitSize(desc.Format);
-            ushort bmpBitCount      = (ushort)(bmpBitPerChannel * bmpChannelCount);
+            byte[]           bmpBuffer      = bmpStream.GetBuffer();
+            ref BITMAPHEADER bmpHeader      = ref BmpImageUtil.TryGetHeader(bmpBuffer);
+            int              bmpDibOffset   = sizeof(BITMAPFILEHEADER);
+            StandardClipboardFormats bmpTargetFormat = bmpHeader.DibHeaderSize != sizeof(BITMAPV5HEADER)
+                ? StandardClipboardFormats.CF_DIB
+                : StandardClipboardFormats.CF_DIBV5;
 
-            header.bV5Size        = (uint)bmpHeaderSize;
-            header.bV5Width       = desc.Width;
-            header.bV5Height      = -desc.Height;
-            header.bV5Planes      = 1;
-            header.bV5BitCount    = bmpBitCount;
-            header.bV5Compression = 3;
-            header.bV5SizeImage   = (uint)strideSize;
-            header.bV5RedMask     = 0x00FF0000;
-            header.bV5GreenMask   = 0x0000FF00;
-            header.bV5BlueMask    = 0x000000FF;
-            header.bV5AlphaMask   = 0xFF000000;
-            header.bV5CSType      = 0x73524742; // 'sRGB'
+            if (!bmpHeader.IsValid)
+                return;
 
-            await Task.Run(ImplWriteBmp);
-            void ImplWriteBmp()
-            {
-                IBuffer windowsBuffer = buffer.AsBuffer(bmpHeaderSize, strideSize, buffer.Length - bmpHeaderSize);
-                sourceCanvasTarget.GetPixelBytes(windowsBuffer);
-                Clipboard.CopyDataToClipboard(buffer.AsSpan(0, bufferSize), StandardClipboardFormats.CF_DIBV5, logger);
-            }
+            Clipboard.CopyDataToClipboard(pngStream.GetBuffer(), pngFormat, logger);
+            Clipboard.CopyDataToClipboard(bmpBuffer.AsSpan(bmpDibOffset, bmpBuffer.Length - bmpDibOffset), bmpTargetFormat, logger);
         }
         finally
         {
@@ -232,14 +112,8 @@ public static class ClipboardUtility
                 PInvoke.CloseClipboard();
             }
 
-            if (buffer != null)
-            {
-                BigArrayPool<byte>.Shared.Return(buffer);
-            }
-
             // Dispose the source canvas
             sourceCanvasTarget.Dispose();
         }
     }
-    private static unsafe ref T AsRef<T>(Span<byte> span) => ref Unsafe.AsRef<T>(Unsafe.AsPointer(ref MemoryMarshal.AsRef<byte>(span)));
 }
