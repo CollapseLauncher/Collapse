@@ -560,10 +560,11 @@
     "DiscordRPC_GameStatusToggle": "今遊んでいるゲームをステータスに表示",
     "DiscordRPC_IdleStatusToggle": "待機中もステータスに表示",
 
-    "ImageBackground": "画像背景の設定",
-    "VideoBackground": "カスタム動画背景の設定",
+    "ImageBackground": "静止画背景の設定",
+    "VideoBackground": "動画背景の設定",
     "VideoBackground_IsEnableAudio": "音を出す",
     "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
+    "VideoBackground_ForceStaticImageOverVideoBackground": "強制的に静止画を背景に使う",
     "VideoBackground_AudioVolume": "音量",
     "VideoBackground_UseFFmpeg": "動画のデコードにFFmpegを使う",
     "VideoBackground_FFmpegVideoDecodingMethod": "FFmpegデコーディングモード",
@@ -651,7 +652,7 @@
 
     "Waifu2X_Toggle": "Waifu2Xを使う",
     "Waifu2X_Help": "背景画像の拡大処理にWaifu2Xを使用します。\n有効にすると画質が大幅に向上しますが、画像の初回読み込みにかかる時間が少し長くなります。",
-    "Waifu2X_Help2": "画像にのみ有効です！",
+    "Waifu2X_Help2": "静止画にのみ有効です！",
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
