@@ -40,15 +40,15 @@ public sealed class LoggerConsole : LoggerBase
         {
             return;
         }
-        PInvoke.User32.ShowWindow(consoleWindow, 0);
+        _ = PInvoke.User32.ShowWindow(consoleWindow, 0);
     }
 
     public static void AllocateConsole(string? titleName = null)
     {
         bool isConsoleApp = ConsoleWindow != nint.Zero;
-        if (!isConsoleApp && !PInvoke.Kernel32.AttachConsole(0xFFFFFFFF))
+        if (!isConsoleApp && PInvoke.Kernel32.AttachConsole(0xFFFFFFFF) == 0)
         {
-            if (!PInvoke.Kernel32.AllocConsole())
+            if (PInvoke.Kernel32.AllocConsole() == 0)
             {
                 throw new ContextMarshalException($"Failed to attach or allocate console with error code: {Marshal.GetLastPInvokeErrorMessage()}");
             }
@@ -61,16 +61,16 @@ public sealed class LoggerConsole : LoggerBase
         ConsoleHandle = PInvoke.Kernel32.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 
         const int STD_OUTPUT_HANDLE = -11;
-        PInvoke.Kernel32.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
+        _ = PInvoke.Kernel32.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
 
         Console.OutputEncoding = Encoding.UTF8;
 
-        if (PInvoke.Kernel32.GetConsoleMode(ConsoleHandle, out uint mode))
+        if (PInvoke.Kernel32.GetConsoleMode(ConsoleHandle, out uint mode) == 1)
         {
             const uint ENABLE_PROCESSED_OUTPUT            = 1;
             const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
             mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-            if (PInvoke.Kernel32.SetConsoleMode(ConsoleHandle, mode))
+            if (PInvoke.Kernel32.SetConsoleMode(ConsoleHandle, mode) == 1)
             {
                 VirtualTerminal = true;
             }
@@ -80,7 +80,7 @@ public sealed class LoggerConsole : LoggerBase
         {
             if (ConsoleHandle != nint.Zero)
             {
-                PInvoke.User32.ShowWindow(ConsoleWindow, 5);
+                _ = PInvoke.User32.ShowWindow(ConsoleWindow, 5);
             }
 
             if (!string.IsNullOrEmpty(titleName))
