@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using H.NotifyIcon.Core;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -26,7 +26,6 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -108,7 +107,7 @@ namespace CollapseLauncher.Helper
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
                 }
                 return null;
             }
@@ -198,7 +197,7 @@ namespace CollapseLauncher.Helper
                     return dpi;
                 }
 
-                Logger.LogWriteLine($"[WindowUtility::CurrentWindowMonitorDpi] Could not get DPI for the current monitor at 0x{monitorPtr:x8}");
+                Logger.WriteLine($"[WindowUtility::CurrentWindowMonitorDpi] Could not get DPI for the current monitor at 0x{monitorPtr:x8}");
                 return defaultDpiValue;
 
             }
@@ -388,7 +387,7 @@ namespace CollapseLauncher.Helper
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"Notification service initialization has failed, ignoring!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"Notification service initialization has failed, ignoring!\r\n{ex}", LogType.Error, true);
                     return null;
                 }
 
@@ -534,7 +533,7 @@ namespace CollapseLauncher.Helper
             {
                 CurrentWindowMonitorRefreshRate = ScreenProp.GetCurrentDisplayRefreshRate(hwnd, out string? monitorPath);
 #if DEBUG
-                Logger.LogWriteLine($"[WindowUtility::MainWinEventHook] Current Window Refresh Rate is: {CurrentWindowMonitorRefreshRate}hz at Monitor: {monitorPath}",
+                Logger.WriteLine($"[WindowUtility::MainWinEventHook] Current Window Refresh Rate is: {CurrentWindowMonitorRefreshRate}hz at Monitor: {monitorPath}",
                                     LogType.Debug,
                                     true);
 #endif
@@ -793,19 +792,19 @@ namespace CollapseLauncher.Helper
                         GC.WaitForPendingFinalizers();
                     }
 
-                    Logger.LogWriteLine($"[StartAggressiveGCCollectTask] Background GC Collection has been finished executing in: {attemptT * delayIntervalSec} seconds",
+                    Logger.WriteLine($"[StartAggressiveGCCollectTask] Background GC Collection has been finished executing in: {attemptT * delayIntervalSec} seconds",
                                         LogType.Info,
                                         true);
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogWriteLine("[StartAggressiveGCCollectTask] Background GC Collection Task was cancelled.",
+                    Logger.WriteLine("[StartAggressiveGCCollectTask] Background GC Collection Task was cancelled.",
                                         LogType.Warning,
                                         true);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[StartAggressiveGCCollectTask] {ex}", LogType.Error, true);
+                    Logger.WriteLine($"[StartAggressiveGCCollectTask] {ex}", LogType.Error, true);
                 }
             }
         }
@@ -1115,7 +1114,7 @@ namespace CollapseLauncher.Helper
 
         private static void TrayNullHandler(string caller)
         {
-            Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
+            Logger.WriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
         }
 
         private static void Service_ToastNotificationCallback(string app, string arg, Dictionary<string, string?>? userInputData)

@@ -529,6 +529,7 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
+          "Hi3Helper.Log": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )",
           "Sentry": "[6.12.1, )"
@@ -551,6 +552,12 @@
         "dependencies": {
           "Hi3Helper.SourceGen": "[0.0.3, )",
           "Microsoft.Windows.CsWinRT": "[2.3.1, )"
+        }
+      },
+      "hi3helper.log": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.14, )"
         }
       },
       "hi3helper.magicscaler.libheifcl": {

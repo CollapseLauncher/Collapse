@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Sophon;
 using System;
 using System.Collections.Concurrent;
@@ -15,7 +15,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -53,7 +53,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"An error has occurred while parsing Persistent Manifests! {ex}", LogType.Warning, true);
+                Logger.WriteLine($"An error has occurred while parsing Persistent Manifests! {ex}", LogType.Warning, true);
             }
 
             // Iterate repair asset
@@ -74,7 +74,7 @@ namespace CollapseLauncher
                     {
                         if (!processingAsset.TryAdd(asset, 0))
                         {
-                            LogWriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
+                            Logger.WriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
                                          LogType.Warning, true);
                             return;
                         }
@@ -96,7 +96,7 @@ namespace CollapseLauncher
                 {
                     if (!processingAsset.TryAdd(asset, 0))
                     {
-                        LogWriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
+                        Logger.WriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
                                      LogType.Warning, true);
                         continue;
                     }
@@ -121,7 +121,7 @@ namespace CollapseLauncher
             {
                 new FileInfo(ctableStreamingPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
                 ctableFileInfo.CopyTo(ctableStreamingPath, true);
-                LogWriteLine($"File [T: {RepairAssetType.Generic}] {ctableStreamingPath} has been copied!", LogType.Default, true);
+                Logger.WriteLine($"File [T: {RepairAssetType.Generic}] {ctableStreamingPath} has been copied!", LogType.Default, true);
             }
 
             return true;
@@ -152,7 +152,7 @@ namespace CollapseLauncher
                 {
                     if (assetFileInfo.Attributes.HasFlag(FileAttributes.Directory))
                     {
-                        LogWriteLine($"[RepairAssetTypeGeneric] Trying to delete a directory! Skipping...\r\n\tPath: {assetFileInfo.FullName}", 
+                        Logger.WriteLine($"[RepairAssetTypeGeneric] Trying to delete a directory! Skipping...\r\n\tPath: {assetFileInfo.FullName}", 
                                      LogType.Error, true);
                     }
                     else
@@ -204,7 +204,7 @@ namespace CollapseLauncher
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
-                LogWriteLine($"URL for asset {asset.AssetIndex.remoteName} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
+                Logger.WriteLine($"URL for asset {asset.AssetIndex.remoteName} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
                              $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
             }
             finally
@@ -213,7 +213,7 @@ namespace CollapseLauncher
                 PopRepairAssetEntry(asset.AssetProperty);
                 if (isSuccess)
                 {
-                    LogWriteLine($"File [T: {asset.AssetProperty.AssetTypeString}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
+                    Logger.WriteLine($"File [T: {asset.AssetProperty.AssetTypeString}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
                 }
             }
         }

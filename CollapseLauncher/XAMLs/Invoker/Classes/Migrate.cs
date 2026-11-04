@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
@@ -24,7 +24,7 @@ namespace CollapseLauncher
 
         private static void MoveOperation(string source, string target)
         {
-            Logger.LogWriteLine("Using \"Cross-disk\" method while moving to target", LogType.Default, true);
+            Logger.WriteLine("Using \"Cross-disk\" method while moving to target", LogType.Default, true);
             string[] fileList = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
 
             for (int i = 0; i < fileList.Length; i++)
@@ -39,7 +39,7 @@ namespace CollapseLauncher
                     File.Delete(targetPath);
 
                 File.Move(fileList[i], targetPath);
-                Logger.LogWriteLine($"\rMoving {i + 1}/{fileList.Length}: {basePath}", LogType.Default, true);
+                Logger.WriteLine($"\rMoving {i + 1}/{fileList.Length}: {basePath}", LogType.Default, true);
             }
         }
 
@@ -70,7 +70,7 @@ namespace CollapseLauncher
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"Failed when trying to move from BetterHi3Launcher {ex}", LogType.Error, true);
+                    Logger.WriteLine($"Failed when trying to move from BetterHi3Launcher {ex}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 }
             }
@@ -103,7 +103,7 @@ namespace CollapseLauncher
             IniFile iniFile    = IniFile.LoadFrom(configFilePath);
             var     sourceGame = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
             var     targetGame = Path.Combine(target, Path.GetFileName(sourceGame));
-            Logger.LogWriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}", LogType.Default, true);
+            Logger.WriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}", LogType.Default, true);
             try
             {
                 MoveOperation(sourceGame, targetGame);

@@ -3,7 +3,7 @@ using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.InternalPInvoke.FFmpeg;
 using CollapseLauncher.Helper.StreamUtility;
 using FFmpegInteropX;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -156,7 +156,7 @@ public partial class ImageBackgroundManager
         {
             if (!result && exception != null)
             {
-                Logger.LogWriteLine($"[ImageBackgroundManager::TryRelinkFFmpegPath()] {exception}",
+                Logger.WriteLine($"[ImageBackgroundManager::TryRelinkFFmpegPath()] {exception}",
                                     LogType.Error,
                                     true);
             }

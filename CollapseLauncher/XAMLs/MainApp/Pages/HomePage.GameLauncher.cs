@@ -8,8 +8,8 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using H.NotifyIcon;
-using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -30,7 +30,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable InconsistentNaming
@@ -95,10 +94,10 @@ public partial class HomePage
             {
                 var exePath = Path.Combine(NormalizePath(GameDirPath), _gamePreset.GameExecutableName!);
                 string workingDir;
-                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{additionalArguments}");
+                Logger.WriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{additionalArguments}");
                 if (File.Exists(Path.Combine(GameDirPath, "@AltLaunchMode")))
                 {
-                    LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
+                    Logger.WriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
                     workingDir = CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
                                  (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
                         Path.GetDirectoryName(NormalizePath(GameDirPath))!;
@@ -117,7 +116,7 @@ public partial class HomePage
                     }
                     else
                     {
-                        LogWriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
+                        Logger.WriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
                     }
                 }
                 
@@ -196,7 +195,7 @@ public partial class HomePage
         }
         catch (Win32Exception ex)
         {
-            LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            Logger.WriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             IsSkippingUpdateCheck = false;
         }
@@ -337,7 +336,7 @@ public partial class HomePage
         {
             if (gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true } pluginGamePreset)
             {
-                LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
+                Logger.WriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
                 pluginGamePreset.RunGameContext.KillRunningGame(out _, out _, out _);
             }
             else
@@ -345,7 +344,7 @@ public partial class HomePage
                 Process[] gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
                 foreach (Process p in gameProcess)
                 {
-                    LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    Logger.WriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                     p.Kill();
                     p.Dispose();
                 }
@@ -354,7 +353,7 @@ public partial class HomePage
         catch (Win32Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            Logger.WriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
         }
     }
 #nullable restore
@@ -431,7 +430,7 @@ public partial class HomePage
         // Sentry issue ref : COLLAPSE-LAUNCHER-55; Event ID: 13059407
         if (int.IsNegative(barWidth)) barWidth = 30;
             
-        LogWriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
+        Logger.WriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
             
         try
         {
@@ -439,7 +438,7 @@ public partial class HomePage
             var gameOutputLogName = CurrentGameProperty.GameVersion?.GameOutputLogName;
             if (string.IsNullOrEmpty(gameDirAppDataPath) || string.IsNullOrEmpty(gameOutputLogName))
             {
-                LogWriteLine("Game log path is not set! Cannot read game logs!", LogType.Error, saveGameLog);
+                Logger.WriteLine("Game log path is not set! Cannot read game logs!", LogType.Error, saveGameLog);
                 return;
             }
             var logPath = Path.Combine(gameDirAppDataPath, gameOutputLogName);
@@ -456,7 +455,7 @@ public partial class HomePage
                 var newLog = await FileUtility.WaitForNewFileAsync(logDir, 20000);
                 if (!newLog)
                 {
-                    LogWriteLine("Cannot get Zenless' log file due to timeout! Your computer too fast XD",
+                    Logger.WriteLine("Cannot get Zenless' log file due to timeout! Your computer too fast XD",
                                  LogType.Warning, saveGameLog);
                     return;
                 }
@@ -474,7 +473,7 @@ public partial class HomePage
                 } 
             }
                 
-            LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
+            Logger.WriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
 
             await using FileStream fs =
                 new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
@@ -493,7 +492,7 @@ public partial class HomePage
                         requireWindowExclusivePayload = false;
                     }
 
-                    LogWriteLine(line!, LogType.Game, saveGameLog);
+                    Logger.WriteLine(line!, LogType.Game, saveGameLog);
                 }
 
                 await Task.Delay(100, WatchOutputLog.Token);
@@ -506,7 +505,7 @@ public partial class HomePage
         catch (Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
+            Logger.WriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
         }
     }
     #endregion
@@ -549,7 +548,7 @@ public partial class HomePage
             var gameExecutableDirectory = Path.GetDirectoryName(gameExecutablePath);
             if (string.IsNullOrEmpty(gameExecutableDirectory))
             {
-                LogWriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
+                Logger.WriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
                 return;
             }
 
@@ -580,7 +579,7 @@ public partial class HomePage
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
+            Logger.WriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
             ErrorSender.SendException(ex, ErrorType.GameError);
         }
     }
@@ -617,12 +616,12 @@ public partial class HomePage
                     break;
             }
                 
-            LogWriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
+            Logger.WriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
         }
         catch(Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
         }
 
     }
@@ -643,7 +642,7 @@ public partial class HomePage
             var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
             if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
-            LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
+            Logger.WriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
                          $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
                          $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                          LogType.Warning, true);
@@ -672,7 +671,7 @@ public partial class HomePage
         }
         catch (Win32Exception ex)
         {
-            LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: " +
+            Logger.WriteLine($"There is a problem while trying to launch Pre-Game Command with Region: " +
                          $"{CurrentGameProperty.GameVersion?.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
         }
@@ -698,7 +697,7 @@ public partial class HomePage
             taskKill.Start();
             taskKill.WaitForExit();
 
-            LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
+            Logger.WriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
         }
         // Ignore external errors
         catch (InvalidOperationException ioe)
@@ -712,7 +711,7 @@ public partial class HomePage
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -724,7 +723,7 @@ public partial class HomePage
             var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
             if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
-            LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
+            Logger.WriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
                          $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                          LogType.Warning, true);
 
@@ -751,7 +750,7 @@ public partial class HomePage
         }
         catch (Win32Exception ex)
         {
-            LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
+            Logger.WriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
                          $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
                          $"Traceback: {ex}", LogType.Error, true);
             ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
@@ -760,12 +759,12 @@ public partial class HomePage
 
     private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+        if (!string.IsNullOrEmpty(e.Data)) Logger.WriteLine(e.Data, LogType.GLC, true);
     }
 
     private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
+        if (!string.IsNullOrEmpty(e.Data)) Logger.WriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
     }
     #endregion
 
@@ -815,7 +814,7 @@ public partial class HomePage
                     if ((!usePluginGameLaunchApi && CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _)) ||
                         (usePluginGameLaunchApi && CurrentGameProperty.IsGameRunning))
                     {
-                        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+                        Logger.WriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
 
                         Process currentGameProcess = null!;
                         if (!usePluginGameLaunchApi)
@@ -856,7 +855,7 @@ public partial class HomePage
 
                             await ProcessAwaiter(token);
 
-                            LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
+                            Logger.WriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
                         }
                         finally
                         {
@@ -898,12 +897,12 @@ public partial class HomePage
         catch (TaskCanceledException)
         {
             // Ignore
-            LogWriteLine("Game run watcher has been terminated!");
+            Logger.WriteLine("Game run watcher has been terminated!");
         }
         catch (Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
         }
     }
     #endregion

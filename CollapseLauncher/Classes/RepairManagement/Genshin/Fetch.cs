@@ -3,12 +3,12 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Genshin;
-using Hi3Helper;
 using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;
 using System;
@@ -22,7 +22,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace
 // ReSharper disable CommentTypo
@@ -149,12 +149,12 @@ namespace CollapseLauncher
 
             if (sophonManifestUrls == null)
             {
-                LogWriteLine("Cannot get SophonChunkUrls property as it returns null from the Metadata. Reference of the Game Repair might not be complete. Ignoring!", LogType.Warning, true);
+                Logger.WriteLine("Cannot get SophonChunkUrls property as it returns null from the Metadata. Reference of the Game Repair might not be complete. Ignoring!", LogType.Warning, true);
                 return;
             }
 
 #if DEBUG
-            LogWriteLine($"Fetching data reference from Sophon using Main Url: {sophonManifestUrls.MainUrl}", LogType.Debug, true);
+            Logger.WriteLine($"Fetching data reference from Sophon using Main Url: {sophonManifestUrls.MainUrl}", LogType.Debug, true);
 #endif
 
             // Get Sophon main manifest info pair
@@ -194,7 +194,7 @@ namespace CollapseLauncher
                 assetIndex.Add(assetAsPkgVersionProp);
                 hashtableManifest.TryAdd(asset.AssetName ?? "", assetAsPkgVersionProp);
             }
-            LogWriteLine($"Main asset list fetched with count: {SophonAssetDictRef.Count} from Sophon manifest", LogType.Default, true);
+            Logger.WriteLine($"Main asset list fetched with count: {SophonAssetDictRef.Count} from Sophon manifest", LogType.Default, true);
         }
 #nullable restore
 
@@ -313,7 +313,7 @@ namespace CollapseLauncher
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
                 string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.Content}";
 #if DEBUG
-                LogWriteLine(dFormat, LogType.Debug, true);
+                Logger.WriteLine(dFormat, LogType.Debug, true);
 #endif
                 // Write the decrypted query response in the log (for diagnostic)
                 await LogFileWriter.WriteLineAsync(dFormat);
@@ -331,7 +331,7 @@ namespace CollapseLauncher
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
             string dFormat = $"Proto Response (RAW Decrypted form):\r\n{Convert.ToBase64String(decryptedData)}";
 #if DEBUG
-            LogWriteLine(dFormat, LogType.Debug, true);
+            Logger.WriteLine(dFormat, LogType.Debug, true);
 #endif
             await LogFileWriter.WriteLineAsync(dFormat);
 

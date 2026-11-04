@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable PartialTypeWithSinglePart
@@ -74,7 +73,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Error while initialize WebView2. Open it to browser instead!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error while initialize WebView2. Open it to browser instead!\r\n{ex}", LogType.Error, true);
                 OpenInExternalBrowser(WebView2URL?.ToString());
                 
                 SpawnWebView2.SpawnWebView2Window(null, Content);
@@ -132,7 +131,7 @@ namespace CollapseLauncher
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 if (ex is NotSupportedException nsEx)
                 {
-                    LogWriteLine($"Half-baked NativeAOT Bug (nice MSFT!) :) https://github.com/MicrosoftEdge/WebView2Feedback/issues/4783\r\n{nsEx}", LogType.Error, true);
+                    Logger.WriteLine($"Half-baked NativeAOT Bug (nice MSFT!) :) https://github.com/MicrosoftEdge/WebView2Feedback/issues/4783\r\n{nsEx}", LogType.Error, true);
                 }
             }
         }

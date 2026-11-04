@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
@@ -161,7 +161,7 @@ namespace CollapseLauncher
                 {
                     if (assetFileInfo.TryDeleteFile())
                     {
-                        Logger.LogWriteLine($"[StarRailRepairV2::RepairAssetGenericType] Unused asset {asset} has been deleted!",
+                        Logger.WriteLine($"[StarRailRepairV2::RepairAssetGenericType] Unused asset {asset} has been deleted!",
                                             LogType.Default,
                                             true);
                     }
@@ -181,7 +181,7 @@ namespace CollapseLauncher
                                       ProgressRepairAssetGenericType,
                                       token);
 
-                Logger.LogWriteLine($"[StarRailRepairV2::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
+                Logger.WriteLine($"[StarRailRepairV2::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
                                     LogType.Default,
                                     true);
             }

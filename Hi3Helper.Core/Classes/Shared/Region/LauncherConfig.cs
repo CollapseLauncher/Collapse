@@ -1,5 +1,6 @@
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Screen;
 using System;
@@ -57,8 +58,8 @@ namespace Hi3Helper.Shared.Region
 
                 // Force enable Console Log and return
                 Logger.UseConsoleLog(true);
-                Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
-                                    LogType.Error, true);
+                Logger.WriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
+                                 LogType.Error, true);
                 return;
             }
 
@@ -94,7 +95,7 @@ namespace Hi3Helper.Shared.Region
             SaveAppConfig();
         #if DEBUG
             if (!doNotLog)
-                Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
+                Logger.WriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
         #endif
         }
 

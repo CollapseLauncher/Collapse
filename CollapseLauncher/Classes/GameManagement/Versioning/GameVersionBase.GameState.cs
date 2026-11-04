@@ -8,6 +8,7 @@ using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -423,7 +424,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"Failed while checking the SDK file update\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while checking the SDK file update\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return ValueTask.FromResult(true);
             }

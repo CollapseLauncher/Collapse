@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,7 @@ internal static partial class MetadataHelper
 
             if (!ConfigGameDict.TryGetValue(stamp.GameName ?? UnknownString, out Dictionary<string, PresetConfig>? regionDict))
             {
-                Logger.LogWriteLine($"Region dictionary for game title: {stamp.GameName} is not initialized!",
+                Logger.WriteLine($"Region dictionary for game title: {stamp.GameName} is not initialized!",
                                     LogType.Warning,
                                     true);
                 return;

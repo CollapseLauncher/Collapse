@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using System;
@@ -125,7 +125,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             if (string.IsNullOrEmpty(GamePreset.LauncherBizName))
             {
-                Logger.LogWriteLine($"Biz name in the game preset for {GamePreset.ProfileName} is empty! Cannot generate UAPC value", LogType.Warning, true);
+                Logger.WriteLine($"Biz name in the game preset for {GamePreset.ProfileName} is empty! Cannot generate UAPC value", LogType.Warning, true);
                 return string.Empty;
             }
 
@@ -351,7 +351,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // If none of them passes, then return null.
-            Logger.LogWriteLine("[TryFindGamePathFromExecutableAndConfig] Fail!");
+            Logger.WriteLine("[TryFindGamePathFromExecutableAndConfig] Fail!");
             return null;
         }
         #endregion

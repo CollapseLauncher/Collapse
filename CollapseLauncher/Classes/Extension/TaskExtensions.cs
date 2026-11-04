@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Win32.ManagedTools;
@@ -70,12 +70,12 @@ namespace CollapseLauncher.Extension
                     if (ex is TimeoutException)
                     {
                         string msg = $"The operation has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
-                        Logger.LogWriteLine(msg, LogType.Warning, true);
+                        Logger.WriteLine(msg, LogType.Warning, true);
                     }
                     else
                     {
                         string msg = $"The operation has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
-                        Logger.LogWriteLine(msg, LogType.Error, true);
+                        Logger.WriteLine(msg, LogType.Error, true);
                     }
 
                     retryAttemptCurrent++;
@@ -143,12 +143,12 @@ namespace CollapseLauncher.Extension
                     if (ex is TimeoutException)
                     {
                         string msg = $"The operation has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
-                        Logger.LogWriteLine(msg, LogType.Warning, true);
+                        Logger.WriteLine(msg, LogType.Warning, true);
                     }
                     else
                     {
                         string msg = $"The operation has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
-                        Logger.LogWriteLine(msg, LogType.Error, true);
+                        Logger.WriteLine(msg, LogType.Error, true);
                     }
 
                     retryAttemptCurrent++;

@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
@@ -224,7 +224,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
 
-            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Info, true);
+            Logger.WriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Info, true);
             PluginListBreadcrumb.Add(Name, Version.ToString(), StandardVersion.ToString());
 
             PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
@@ -299,7 +299,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             setDnsResolverCallbackAsyncHandle(nint.Zero);
         }
 
-        Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
+        Logger.WriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
     }
 
     internal unsafe void ToggleSpeedLimiterService(bool isEnable)
@@ -325,7 +325,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         HResult hr = ((delegate* unmanaged[Cdecl]<nint, nint, HResult>)callP)(addOrWaitCallbackP, getSharedThrottledBytesP);
         if (Marshal.GetExceptionForHR(hr) is { } exception)
         {
-            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register speed throttler service with error code: {hr} {exception}",
+            Logger.WriteLine($"[PluginInfo] Plugin: {Name} failed to register speed throttler service with error code: {hr} {exception}",
                                 LogType.Error,
                                 true);
         }
@@ -346,7 +346,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(callbackPtr);
         if (Marshal.GetExceptionForHR(hr) is { } exception)
         {
-            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to register per-file progress callback: {hr} {exception}",
+            Logger.WriteLine($"[PluginInfo] Plugin: {Name} failed to register per-file progress callback: {hr} {exception}",
                                 LogType.Error, true);
             return false;
         }
@@ -368,7 +368,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         HResult hr = ((delegate* unmanaged[Cdecl]<nint, HResult>)setCallbackP)(nint.Zero);
         if (Marshal.GetExceptionForHR(hr) is { } exception)
         {
-            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} failed to unregister per-file progress callback: {hr} {exception}",
+            Logger.WriteLine($"[PluginInfo] Plugin: {Name} failed to unregister per-file progress callback: {hr} {exception}",
                                 LogType.Error, true);
         }
     }
@@ -408,7 +408,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                                           out delegate* unmanaged[Cdecl]<nint, void> setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
-                Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
+                Logger.WriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
             }
 
             // Dispose loaded preset config
@@ -425,20 +425,20 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 freePluginCallback();
 
                 // Log the successful unload of the plugin.
-                Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using graceful free function.", LogType.Debug, true);
+                Logger.WriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using graceful free function.", LogType.Debug, true);
                 return;
             }
 
             // If the graceful free function is not available, try to call Dispose method directly.
             Instance?.Free();
-            Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using explicit function.", LogType.Debug, true);
+            Logger.WriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using explicit function.", LogType.Debug, true);
 
             // Mark as disposed
             _isDisposed = true;
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginInfo] Cannot dispose IPlugin instance from plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) due to unexpected error: {ex}", LogType.Warning, true);
+            Logger.WriteLine($"[PluginInfo] Cannot dispose IPlugin instance from plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) due to unexpected error: {ex}", LogType.Warning, true);
         }
         finally
         {
@@ -553,7 +553,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         }
         catch (Exception e)
         {
-            Logger.LogWriteLine($"[PluginInfo::SetMarkState()] Failed to set plugin state: {stateName} to {state} due to unexpected error: {e}", LogType.Error, true);
+            Logger.WriteLine($"[PluginInfo::SetMarkState()] Failed to set plugin state: {stateName} to {state} due to unexpected error: {e}", LogType.Error, true);
             throw;
         }
     }

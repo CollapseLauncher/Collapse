@@ -1,10 +1,10 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
-using Hi3Helper;
+using Hi3Helper.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -324,91 +324,91 @@ namespace CollapseLauncher.GameSettings.Genshin
                 {
                     case 1:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - FPS: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - FPS: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.FPS = (FPSOption)setting.index;
                         break;
 
                     case 2:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Render Resolution: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Render Resolution: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.RenderResolution = setting.index;
                         break;
 
                     case 3:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Shadow Quality: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Shadow Quality: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.ShadowQuality = (ShadowQualityOption)setting.index;
                         break;
 
                     case 4:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Visual Effects: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Visual Effects: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.VisualEffects = (VisualEffectsOption)setting.index;
                         break;
 
                     case 5:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - SFX Quality: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - SFX Quality: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.SFXQuality = (SFXQualityOption)setting.index;
                         break;
 
                     case 6:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Environment Detail: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Environment Detail: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.EnvironmentDetail = (EnvironmentDetailOption)setting.index;
                         break;
 
                     case 7:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Vertical Sync: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Vertical Sync: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.VerticalSync = (VerticalSyncOption)setting.index;
                         break;
 
                     case 8:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Antialiasing: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Antialiasing: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.Antialiasing = (AntialiasingOption)setting.index;
                         break;
 
                     case 9:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Volumetric Fog: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Volumetric Fog: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.VolumetricFog = (VolumetricFogOption)setting.index;
                         break;
 
                     case 10:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Reflections: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Reflections: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.Reflections = (ReflectionsOption)setting.index;
                         break;
 
                     case 11:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Motion Blur: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Motion Blur: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.MotionBlur = (MotionBlurOption)setting.index;
                         break;
 
                     case 12:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Bloom: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Bloom: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.Bloom = (BloomOption)setting.index;
                         break;
 
                     case 13:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Crowd Density: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Crowd Density: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.CrowdDensity = (CrowdDensityOption)setting.index;
                         break;
@@ -418,42 +418,42 @@ namespace CollapseLauncher.GameSettings.Genshin
                     // It is meant to be like this because miyoyo
                     case 16:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Co-Op Teammate Effects: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Co-Op Teammate Effects: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.CoOpTeammateEffects = (CoOpTeammateEffectsOption)setting.index;
                         break;
 
                     case 15:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Subsurface Scattering: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Subsurface Scattering: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.SubsurfaceScattering = (SubsurfaceScatteringOption)setting.index;
                         break;
 
                     case 17:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Anisotropic Filtering: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Anisotropic Filtering: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.AnisotropicFiltering = (AnisotropicFilteringOption)setting.index;
                         break;
 
                     case 18:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Graphics Quality: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Graphics Quality: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.GraphicsQuality = (GraphicsQualityOption)setting.index;
                         break;
 
                     case 19:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Global Illumination: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Global Illumination: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.GlobalIllumination = (GlobalIlluminationOption)setting.index;
                         break;
 
                     case 21:
 #if DEBUG
-                        LogWriteLine($"Loaded Genshin Settings: Graphics - Dynamic Character Resolution: {setting.index}", LogType.Debug, true);
+                        Logger.WriteLine($"Loaded Genshin Settings: Graphics - Dynamic Character Resolution: {setting.index}", LogType.Debug, true);
 #endif
                         globalPerf.DynamicCharacterResolution = (DynamicCharacterResolutionOption)setting.index;
                         break;
@@ -488,7 +488,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             ];
             string data = this.Serialize(GenshinSettingsJsonContext.Default.GlobalPerfData, false);
 #if DEBUG
-            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
+            Logger.WriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
 #endif
             return data;
         }

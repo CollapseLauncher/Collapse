@@ -1,12 +1,12 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.CacheParser;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -75,7 +75,7 @@ internal static partial class AssetBundleExtension
 
         if (cgMetadataFile == null)
         {
-            Logger.LogWriteLine($"[AssetBundleExtension::GetVideoAssetListAsync] Cannot find CG Metadata file with Asset ID: {MetadataFilename}",
+            Logger.WriteLine($"[AssetBundleExtension::GetVideoAssetListAsync] Cannot find CG Metadata file with Asset ID: {MetadataFilename}",
                                 LogType.Error,
                                 true);
             return [];
@@ -141,7 +141,7 @@ internal static partial class AssetBundleExtension
                 IsCgOnCurrentVersionOrPresent(assetName, currentVersion))
             {
                 UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
-                Logger.LogWriteLine($"The CG asset: {assetName} " +
+                Logger.WriteLine($"The CG asset: {assetName} " +
                                     (urlStatus.IsSuccessStatusCode ? "is" : "is not") +
                                     $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
                 if (!urlStatus.IsSuccessStatusCode)

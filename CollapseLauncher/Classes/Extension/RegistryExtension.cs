@@ -1,8 +1,7 @@
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Extension;
 
@@ -42,8 +41,8 @@ public static class RegistryExtension
 
         if (registryKey == null)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] The provided RegistryKey is null. Cannot retrieve value {keyName}.",
-                         LogType.Error, true);
+            Logger.WriteLine($"[RegistryExtension::TryGetValue] The provided RegistryKey is null. Cannot retrieve value {keyName}.",
+                             LogType.Error, true);
 
             return false;
         }
@@ -60,9 +59,9 @@ public static class RegistryExtension
                 return isValueFound;
             }
 
-            LogWriteLine($"[RegistryExtension::TryGetValue] Value {keyName} not found in {registryKey.Name}. Attempting to reload the registry key...",
-                         LogType.Warning,
-                         true);
+            Logger.WriteLine($"[RegistryExtension::TryGetValue] Value {keyName} not found in {registryKey.Name}. Attempting to reload the registry key...",
+                             LogType.Warning,
+                             true);
 
             registryKey         = getReloadedRegistry();
             getReloadedRegistry = null;
@@ -75,10 +74,10 @@ public static class RegistryExtension
         }
         catch (Exception ex) when (getReloadedRegistry != null)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}" +
-                         $"\r\n\t Attempting to reload the registry key after running function...",
-                         LogType.Error,
-                         true);
+            Logger.WriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}" +
+                             $"\r\n\t Attempting to reload the registry key after running function...",
+                             LogType.Error,
+                             true);
 
             registryKey = getReloadedRegistry();
             return registryKey.TryGetValue(keyName,
@@ -87,9 +86,9 @@ public static class RegistryExtension
         }
         catch (Exception ex) when (getReloadedRegistry == null)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}",
-                         LogType.Error,
-                         true);
+            Logger.WriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}",
+                             LogType.Error,
+                             true);
         }
 
         return false;

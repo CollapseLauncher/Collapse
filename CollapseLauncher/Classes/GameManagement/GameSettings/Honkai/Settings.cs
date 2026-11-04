@@ -2,7 +2,7 @@
 using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.Screen;
 using System.Drawing;
 using System.Text;
@@ -77,7 +77,7 @@ namespace CollapseLauncher.GameSettings.Honkai
 
             if (apiID == 4)
             {
-                Logger.LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                Logger.WriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                 if (SettingsCollapseScreen.UseCustomResolution && SettingsScreen.isfullScreen)
                 {
                     var size = ScreenProp.CurrentResolution;

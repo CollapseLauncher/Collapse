@@ -1,11 +1,10 @@
 using CollapseLauncher.Extension;
-using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -80,7 +79,7 @@ public partial class MainPage
         catch (Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            Logger.LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
+            Logger.WriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
         }
     }
 
@@ -148,7 +147,7 @@ public partial class MainPage
                 return;
             }
 
-            Logger.LogWriteLine("Cancel to load notification push! > 10 seconds", LogType.Error, true);
+            Logger.WriteLine("Cancel to load notification push! > 10 seconds", LogType.Error, true);
             await token.CancelAsync();
         }
         catch
@@ -235,7 +234,7 @@ public partial class MainPage
                 catch (Exception ex)
                 {
                     await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Logger.LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
                 }
             }
 
@@ -317,7 +316,7 @@ public partial class MainPage
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex);
-                Logger.LogWriteLine($"[SpawnAppUpdatedNotification] Failed to spawn toast notification!\r\n{ex}",
+                Logger.WriteLine($"[SpawnAppUpdatedNotification] Failed to spawn toast notification!\r\n{ex}",
                                     LogType.Error,
                                     true);
             }
@@ -480,7 +479,7 @@ public partial class MainPage
         catch (Exception e)
         {
             SentryHelper.ExceptionHandler(e);
-            Logger.LogWriteLine($"{e}", LogType.Error, true);
+            Logger.WriteLine($"{e}", LogType.Error, true);
         }
     }
 

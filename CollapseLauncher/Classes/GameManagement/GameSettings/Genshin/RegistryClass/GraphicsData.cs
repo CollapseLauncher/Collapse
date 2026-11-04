@@ -1,7 +1,7 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
-using Hi3Helper;
+using Hi3Helper.Log;
 using System.Collections.Generic;
-using static Hi3Helper.Logger;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -50,7 +50,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
             string data = this.Serialize(GenshinSettingsJsonContext.Default.GraphicsData, false);
 #if DEBUG
-            LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
+            Logger.WriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
 #endif
             return data;
         }

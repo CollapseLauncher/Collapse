@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
+using Hi3Helper.Log;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -17,7 +18,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Windows.System;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
@@ -357,7 +357,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception e)
             {
-                LogWriteLine(e.ToString());
+                Logger.WriteLine(e.ToString());
             }
         }
         #endregion
@@ -547,7 +547,7 @@ namespace CollapseLauncher.Dialogs
                     }
                     catch (Exception ex)
                     {
-                        LogWriteLine(ex.ToString());
+                        Logger.WriteLine(ex.ToString());
                     }
                 }
             }
@@ -566,7 +566,7 @@ namespace CollapseLauncher.Dialogs
 
             KbShortcutList[key] = newShortcut;
 
-            LogWriteLine($"[KeyboardShortcuts::ChangeKeybind] Swapped {oldShortcut} with {newShortcut} for the key {key}.");
+            Logger.WriteLine($"[KeyboardShortcuts::ChangeKeybind] Swapped {oldShortcut} with {newShortcut} for the key {key}.");
             SaveKbShortcuts();
             KeyboardShortcutsEvent(null, 1);
         }
@@ -636,7 +636,7 @@ namespace CollapseLauncher.Dialogs
         {
             bool saveAfterLoad = false;
             string keyListStr = GetAppConfigValue("KbShortcutList").ToString();
-            LogWriteLine("[KeyboardShortcuts] The following configuration is gonna be loaded from the .ini file:\n\r\t" + keyListStr);
+            Logger.WriteLine("[KeyboardShortcuts] The following configuration is gonna be loaded from the .ini file:\n\r\t" + keyListStr);
 
             Dictionary<string, KbShortcut> resultList = new();
 
@@ -654,7 +654,7 @@ namespace CollapseLauncher.Dialogs
             if (!keyListStr.Contains(':'))
             {
                 saveAfterLoad = true;
-                LogWriteLine($"[KeyboardShortcuts::LoadKbShortcuts] Detected old KbShortcutList! Converting...\n\r\tOld Value:\"{keyListStr}\"",
+                Logger.WriteLine($"[KeyboardShortcuts::LoadKbShortcuts] Detected old KbShortcutList! Converting...\n\r\tOld Value:\"{keyListStr}\"",
                     writeToLog: true);
                 var keyList = DefaultShortcutList.Keys;
                 int index = 0;
@@ -704,7 +704,7 @@ namespace CollapseLauncher.Dialogs
                 res += $"{entry.Key}:{entry.Value.ToCode()}|";
             }
             res = res.Remove(res.Length - 1);
-            LogWriteLine("[KeyboardShortcuts::SaveKbShortcuts] The following configuration was saved:\n\r\t" + res);
+            Logger.WriteLine("[KeyboardShortcuts::SaveKbShortcuts] The following configuration was saved:\n\r\t" + res);
             SetAndSaveConfigValue("KbShortcutList", res);
         }
         #endregion

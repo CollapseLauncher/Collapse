@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -58,12 +58,12 @@ internal partial class HonkaiRepairV2
                                                              RegexOptions.NonBacktracking |
                                                              RegexOptions.Compiled);
 
-                Logger.LogWriteLine($"Found ignore file settings! Match Regex: {mergedPattern}");
+                Logger.WriteLine($"Found ignore file settings! Match Regex: {mergedPattern}");
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                Logger.LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
             }
         }
 

@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
+using Hi3Helper.Log;
 using System;
 using System.Text;
 // ReSharper disable CheckNamespace
@@ -66,7 +66,7 @@ namespace CollapseLauncher.GameVersioning
             byte[]? data = GamePreset.GetGameDataTemplate("MagicSpell", [2, 3, 0, 0]);
             if (data == null)
             {
-                Logger.LogWriteLine("[IGameVersion:InitializeProtoId] data is null!", LogType.Error, true);
+                Logger.WriteLine("[IGameVersion:InitializeProtoId] data is null!", LogType.Error, true);
                 return;
             }
 

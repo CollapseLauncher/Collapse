@@ -1,11 +1,11 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces.Class;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Velopack.Sources;
 using WinRT;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 #pragma warning disable IDE0130
 
@@ -285,7 +284,7 @@ namespace CollapseLauncher
                                   .SetAllowedDecompression(DecompressionMethods.None)
                                   .Create();
 
-            LogWriteLine("[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
+            Logger.WriteLine("[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
         }
         // ReSharper enable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         // ReSharper enable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -425,7 +424,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return null;
             }
         }
@@ -453,7 +452,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
             finally
@@ -504,7 +503,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
             finally
@@ -530,7 +529,7 @@ namespace CollapseLauncher
             // Concat the URL Prefix and Relative URL
             string absoluteURL = cdnProp.URLPrefix.CombineURLFromString(relativeURL);
 
-            LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
+            Logger.WriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
             // Try check the status of the URL
             (HttpStatusCode, bool) returnCode = await downloadClient.GetUrlStatus(absoluteURL, token);
@@ -542,7 +541,7 @@ namespace CollapseLauncher
             }
 
             // If it's not a successful code, then return false
-            LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned error code: {returnCode.Item1} ({(int)returnCode.Item1})", LogType.Error, true);
+            Logger.WriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned error code: {returnCode.Item1} ({(int)returnCode.Item1})", LogType.Error, true);
             return (false, absoluteURL);
         }
 
@@ -553,7 +552,7 @@ namespace CollapseLauncher
                 // Concat the URL Prefix and Relative URL
                 string absoluteURL = cdnProp.URLPrefix.CombineURLFromString(relativeURL);
 
-                LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
+                Logger.WriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
                 // Try check the status of the URL
                 using CancellationTokenSource timeoutCts = new(5000);
@@ -564,7 +563,7 @@ namespace CollapseLauncher
 
                 // If it's not a successful code, log the information
                 if (!status.IsSuccessStatusCode)
-                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {status.StatusCode} ({(int)status.StatusCode})",
+                    Logger.WriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {status.StatusCode} ({(int)status.StatusCode})",
                                  LogType.Error, true);
 
                 // Then return the status code
@@ -572,7 +571,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}",
+                Logger.WriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}",
                              LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
                 return new UrlStatus();

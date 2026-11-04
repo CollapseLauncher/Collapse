@@ -3,7 +3,7 @@ using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -15,7 +15,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
-using static Hi3Helper.Logger;
 
 // Resharper disable all
 
@@ -34,7 +33,7 @@ namespace CollapseLauncher
                 {
                     var s = new System.Diagnostics.StackTrace();
                     var c = System.Diagnostics.DiagnosticMethodInfo.Create(s.GetFrame(1));
-                    LogWriteLine($"[TrayIcon] {c.Name} called when TrayIcon is not created!", LogType.Error, true);
+                    Logger.WriteLine($"[TrayIcon] {c.Name} called when TrayIcon is not created!", LogType.Error, true);
                 }
                 return v;
             }
@@ -67,7 +66,7 @@ namespace CollapseLauncher
             ExceptionCatcher.ExceptionRaised += 
                 (_, e) =>
                     {
-                        LogWriteLine($"[TrayIcon] Somehow GUID set is failed, restarting app with new GUID!\r\n{e.Exception.Message}",
+                        Logger.WriteLine($"[TrayIcon] Somehow GUID set is failed, restarting app with new GUID!\r\n{e.Exception.Message}",
                                      LogType.Error, true);
 
                         var guid = LauncherConfig.SetGuid(instanceCount, null);
@@ -89,7 +88,7 @@ namespace CollapseLauncher
             var guid = LauncherConfig.GetGuid(instanceCount);
             if (Environment.OSVersion.Version >= new Version(10, 0, 22621) && !isOldTaskbar_EP())
             {
-                LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
+                Logger.WriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guid}\r\n\t" +
                              $"Instance Count: {instanceCount}", LogType.Scheme, true);
                 CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, guid);
@@ -98,13 +97,13 @@ namespace CollapseLauncher
             {
                 if (isOldTaskbar_EP())
                 {
-                    LogWriteLine("[TrayIcon] Detected ExplorerPatcher W10 Taskbar behavior!" +
+                    Logger.WriteLine("[TrayIcon] Detected ExplorerPatcher W10 Taskbar behavior!" +
                                  "Reverting to old GUID behavior, your taskbar position might be inconsistent.",
                                  LogType.Warning, true);
                 }
                 
                 var guidGet = CollapseTaskbar.GetValue(TaskbarIcon.IdProperty).ToString();
-                LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
+                Logger.WriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guidGet}\r\n\t" +
                              $"Instance Count: {instanceCount}", LogType.Scheme, true);
             }
@@ -264,14 +263,14 @@ namespace CollapseLauncher
                 {
                     LoggerConsole.DisposeConsole();
                     ConsoleTaskbarToggle.Text = _showConsole;
-                    LogWriteLine("Console is hidden!");
+                    Logger.WriteLine("Console is hidden!");
                 }
                 else
                 {
                     LoggerConsole.AllocateConsole();
                     PInvoke.SetForegroundWindow(PInvoke.GetConsoleWindow());
                     ConsoleTaskbarToggle.Text = _hideConsole;
-                    LogWriteLine("Console is visible!");
+                    Logger.WriteLine("Console is visible!");
                 }
             }
         }
@@ -292,7 +291,7 @@ namespace CollapseLauncher
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 m_homePage?.StopCarouselSlideshow();
-                LogWriteLine("Main window is hidden!");
+                Logger.WriteLine("Main window is hidden!");
 
                 // Spawn the hidden to tray toast notification
                 ShowNotification(Locale.Current.Lang?._NotificationToast?.WindowHiddenToTray_Title,
@@ -309,7 +308,7 @@ namespace CollapseLauncher
                 m_homePage?.StartCarouselSlideshow();
                 // Revert refresh rate to its default
                 RefreshRate = RefreshRateDefault;
-                LogWriteLine("Main window is shown!");
+                Logger.WriteLine("Main window is shown!");
             }
         }
 
@@ -451,7 +450,7 @@ namespace CollapseLauncher
             }
             catch (Exception e) //Just write a log if it throws an error, not that important anyway o((⊙﹏⊙))o.
             {
-                LogWriteLine($"Failed when trying to send notification!\r\n\tTitle: {title}\r\n\t{message}\r\n{e}",
+                Logger.WriteLine($"Failed when trying to send notification!\r\n\tTitle: {title}\r\n\t{message}\r\n{e}",
                              LogType.Error, true);
             }
         }
@@ -468,7 +467,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed when trying to toggle Efficiency Mode!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed when trying to toggle Efficiency Mode!\r\n{ex}", LogType.Error, true);
             }
         }
 

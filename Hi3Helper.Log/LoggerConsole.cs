@@ -1,34 +1,29 @@
-﻿using Hi3Helper.Win32.ManagedTools;
-using Hi3Helper.Win32.Native.LibraryImport;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-#if !APPLYUPDATE
-using static Hi3Helper.Shared.Region.LauncherConfig;
-#endif
 
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
+#pragma warning disable IDE0290
 #pragma warning disable CA2211
-#nullable enable
-namespace Hi3Helper;
+namespace Hi3Helper.Log;
 
 public sealed class LoggerConsole : LoggerBase
 {
     public static bool VirtualTerminal;
     public static nint ConsoleHandle;
-    public static nint ConsoleWindow => PInvoke.GetConsoleWindow();
+    public static nint ConsoleWindow => PInvoke.Kernel32.GetConsoleWindow();
 
     private readonly SimpleConsoleWin32OutStream StdOutStream;
 
-    public LoggerConsole(string folderPath, Encoding? encoding)
-        : base(folderPath, encoding)
+    public LoggerConsole(string folderPath, Encoding? encoding, string? titleName = null)
+        : base(folderPath, encoding, () => AllocateConsole(titleName))
     {
-        AllocateConsole();
         StdOutStream = new SimpleConsoleWin32OutStream(ConsoleHandle);
     }
 
@@ -41,24 +36,21 @@ public sealed class LoggerConsole : LoggerBase
         }
 
         nint consoleWindow = ConsoleWindow;
-
         if (ConsoleWindow == nint.Zero)
         {
             return;
         }
-        PInvoke.ShowWindow(consoleWindow, 0);
+        PInvoke.User32.ShowWindow(consoleWindow, 0);
     }
 
-    public static void AllocateConsole(bool isConsoleApp = false)
+    public static void AllocateConsole(string? titleName = null)
     {
-        if (ConsoleWindow == nint.Zero)
-            isConsoleApp = true;
-
-        if (isConsoleApp && !PInvoke.AttachConsole(0xFFFFFFFF))
+        bool isConsoleApp = ConsoleWindow != nint.Zero;
+        if (!isConsoleApp && !PInvoke.Kernel32.AttachConsole(0xFFFFFFFF))
         {
-            if (!PInvoke.AllocConsole())
+            if (!PInvoke.Kernel32.AllocConsole())
             {
-                throw new ContextMarshalException($"Failed to attach or allocate console with error code: {Win32Error.GetLastWin32ErrorMessage()}");
+                throw new ContextMarshalException($"Failed to attach or allocate console with error code: {Marshal.GetLastPInvokeErrorMessage()}");
             }
         }
 
@@ -66,19 +58,19 @@ public sealed class LoggerConsole : LoggerBase
         const uint GENERIC_WRITE    = 0x40000000;
         const uint FILE_SHARE_WRITE = 2;
         const uint OPEN_EXISTING    = 3;
-        ConsoleHandle = PInvoke.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, (uint)0, OPEN_EXISTING, 0, 0);
+        ConsoleHandle = PInvoke.Kernel32.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 
         const int STD_OUTPUT_HANDLE = -11;
-        PInvoke.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
+        PInvoke.Kernel32.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
 
         Console.OutputEncoding = Encoding.UTF8;
 
-        if (PInvoke.GetConsoleMode(ConsoleHandle, out uint mode))
+        if (PInvoke.Kernel32.GetConsoleMode(ConsoleHandle, out uint mode))
         {
             const uint ENABLE_PROCESSED_OUTPUT            = 1;
             const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
             mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-            if (PInvoke.SetConsoleMode(ConsoleHandle, mode))
+            if (PInvoke.Kernel32.SetConsoleMode(ConsoleHandle, mode))
             {
                 VirtualTerminal = true;
             }
@@ -88,18 +80,11 @@ public sealed class LoggerConsole : LoggerBase
         {
             if (ConsoleHandle != nint.Zero)
             {
-                PInvoke.ShowWindow(ConsoleWindow, 5);
+                PInvoke.User32.ShowWindow(ConsoleWindow, 5);
             }
 
-            string instanceIndicator = "";
-            int    instanceCount     = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
-
-            if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
-            Console.Title = $"Collapse Console{instanceIndicator}";
-
-#if !APPLYUPDATE
-            Windowing.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
-#endif
+            if (!string.IsNullOrEmpty(titleName))
+                Console.Title = titleName;
         }
         catch (Exception ex)
         {
@@ -111,8 +96,8 @@ public sealed class LoggerConsole : LoggerBase
     #region Logging Methods
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override void LogWriteLine(bool writeToLogFile          = false,
-                                      bool writeTimestampOnLogFile = true)
+    public override void WriteLine(bool writeToLogFile          = false,
+                                   bool writeTimestampOnLogFile = true)
     {
         Console.WriteLine();
 
@@ -121,14 +106,14 @@ public sealed class LoggerConsole : LoggerBase
             return;
         }
 
-        base.LogWriteLine(false, writeTimestampOnLogFile);
+        base.WriteLine(false, writeTimestampOnLogFile);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override void LogWriteLine(ReadOnlySpan<char> line,
-                                      LogType            type                    = LogType.Info,
-                                      bool               writeToLogFile          = false,
-                                      bool               writeTimestampOnLogFile = true)
+    public override void WriteLine(ReadOnlySpan<char> line,
+                                   LogType            type                    = LogType.Info,
+                                   bool               writeToLogFile          = false,
+                                   bool               writeTimestampOnLogFile = true)
     {
         WriteLineToStreamCore(StdOutStream, line, type, isBeginWithCarriageReturn: true);
 
@@ -145,18 +130,19 @@ public sealed class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                      LogType                              type = LogType.Info,
-                                      bool                                 writeToLogFile = false,
-                                      bool                                 writeTimestampOnLogFile = true)
+    public override void WriteLine(
+        [InterpolatedStringHandlerArgument] ref DefaultInterpolatedStringHandler interpolatedLine,
+        LogType                                                                  type                    = LogType.Info,
+        bool                                                                     writeToLogFile          = false,
+        bool                                                                     writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
         {
-            LogWriteLine(interpolatedLine.Text,
-                         type,
-                         writeToLogFile,
-                         writeTimestampOnLogFile);
+            WriteLine(interpolatedLine.Text,
+                      type,
+                      writeToLogFile,
+                      writeTimestampOnLogFile);
         }
         finally
         {
@@ -177,12 +163,12 @@ public sealed class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override void LogWrite(ReadOnlySpan<char> line,
-                                  LogType            type                    = LogType.Info,
-                                  bool               appendNewLine           = false,
-                                  bool               writeToLogFile          = false,
-                                  bool               writeTypeTag            = false,
-                                  bool               writeTimestampOnLogFile = true)
+    public override void Write(ReadOnlySpan<char> line,
+                               LogType            type                    = LogType.Info,
+                               bool               appendNewLine           = false,
+                               bool               writeToLogFile          = false,
+                               bool               writeTypeTag            = false,
+                               bool               writeTimestampOnLogFile = true)
     {
         WriteLineToStreamCore(StdOutStream,
                               line,
@@ -207,22 +193,23 @@ public sealed class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                  LogType                              type                    = LogType.Info,
-                                  bool                                 appendNewLine           = false,
-                                  bool                                 writeToLogFile          = false,
-                                  bool                                 writeTypeTag            = false,
-                                  bool                                 writeTimestampOnLogFile = true)
+    public override void Write(
+        [InterpolatedStringHandlerArgument] ref DefaultInterpolatedStringHandler interpolatedLine,
+        LogType                                                                  type                    = LogType.Info,
+        bool                                                                     appendNewLine           = false,
+        bool                                                                     writeToLogFile          = false,
+        bool                                                                     writeTypeTag            = false,
+        bool                                                                     writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
         {
-            LogWrite(interpolatedLine.Text,
-                     type,
-                     appendNewLine,
-                     writeToLogFile,
-                     writeTypeTag,
-                     writeTimestampOnLogFile);
+            Write(interpolatedLine.Text,
+                  type,
+                  appendNewLine,
+                  writeToLogFile,
+                  writeTypeTag,
+                  writeTimestampOnLogFile);
         }
         finally
         {
@@ -243,15 +230,15 @@ public sealed class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override Task LogWriteLineAsync(CancellationToken token = default)
-        => Console.Out.WriteLineAsync();
+    public override ValueTask WriteLineAsync(CancellationToken token = default)
+        => new(Console.Out.WriteLineAsync());
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override async Task LogWriteLineAsync(string            line,
-                                                 LogType           type                    = LogType.Info,
-                                                 bool              writeToLogFile          = false,
-                                                 bool              writeTimestampOnLogFile = true,
-                                                 CancellationToken token                   = default)
+    public override async ValueTask WriteLineAsync(string            line,
+                                                   LogType           type                    = LogType.Info,
+                                                   bool              writeToLogFile          = false,
+                                                   bool              writeTimestampOnLogFile = true,
+                                                   CancellationToken token                   = default)
     {
         await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,
@@ -271,13 +258,13 @@ public sealed class LoggerConsole : LoggerBase
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public override async Task LogWriteAsync(string            line,
-                                             LogType           type                    = LogType.Info,
-                                             bool              appendNewLine           = false,
-                                             bool              writeToLogFile          = false,
-                                             bool              writeTypeTag            = false,
-                                             bool              writeTimestampOnLogFile = true,
-                                             CancellationToken token                   = default)
+    public override async ValueTask WriteAsync(string            line,
+                                               LogType           type                    = LogType.Info,
+                                               bool              appendNewLine           = false,
+                                               bool              writeToLogFile          = false,
+                                               bool              writeTypeTag            = false,
+                                               bool              writeTimestampOnLogFile = true,
+                                               CancellationToken token                   = default)
     {
         await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,

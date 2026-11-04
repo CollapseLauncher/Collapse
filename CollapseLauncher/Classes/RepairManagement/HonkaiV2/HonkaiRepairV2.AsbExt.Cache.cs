@@ -3,12 +3,12 @@ using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.UABT;
@@ -80,7 +80,7 @@ internal static partial class AssetBundleExtension
 
             progressibleInstance.UpdateStatus();
 
-            Logger.LogWriteLine($"[AssetBundleExtension::GetCacheAssetBundleListAsync] Fetching ASB Cache Asset Type: {cacheType} from: {indexFileUrl}",
+            Logger.WriteLine($"[AssetBundleExtension::GetCacheAssetBundleListAsync] Fetching ASB Cache Asset Type: {cacheType} from: {indexFileUrl}",
                                 LogType.Default,
                                 true);
 
@@ -102,7 +102,7 @@ internal static partial class AssetBundleExtension
                                                                            progressibleInstance,
                                                                            token));
 
-            Logger.LogWriteLine($"""
+            Logger.WriteLine($"""
                                  [AssetBundleExtension::GetCacheAssetBundleListAsync] ASB Cache Asset Type {cacheType}!
                                                                                            Total Size: {assetInfoList.Sum(x => x.Asset.CS)}
                                                                                            Count: {assetInfoList.Count}
@@ -163,7 +163,7 @@ internal static partial class AssetBundleExtension
                 if (int.TryParse(currentJsonEntry, out mersenneTwisterSeed))
                 {
 #if DEBUG
-                    Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Got MT19937_64 seed: {mersenneTwisterSeed}",
+                    Logger.WriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Got MT19937_64 seed: {mersenneTwisterSeed}",
                                         LogType.Debug,
                                         true);
 #endif
@@ -204,7 +204,7 @@ internal static partial class AssetBundleExtension
                         throw ex;
                     }
 #if DEBUG
-                    Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Got HMACSHA1 salt: 0x{BinaryPrimitives.ReadInt64LittleEndian(hmacHashSalt):x8}",
+                    Logger.WriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Got HMACSHA1 salt: 0x{BinaryPrimitives.ReadInt64LittleEndian(hmacHashSalt):x8}",
                                         LogType.Debug,
                                         true);
 #endif
@@ -221,7 +221,7 @@ internal static partial class AssetBundleExtension
                 AssetUrl = $"{asbBaseUrl.CombineURLFromString(cacheAsset.N)}_{cacheAsset.CRC}"
             });
 #if DEBUG
-            Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Entry: {currentJsonEntry}",
+            Logger.WriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Entry: {currentJsonEntry}",
                                 LogType.Debug,
                                 true);
 #endif
@@ -247,7 +247,7 @@ internal static partial class AssetBundleExtension
                 progressibleInstance.UpdateStatus();
 
                 UrlStatus urlStatus = await checkAsbHttpClient.GetURLStatusCode(assetInfo.AssetUrl, innerToken);
-                Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Cache Asset: {assetInfo.Asset.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})",
+                Logger.WriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Cache Asset: {assetInfo.Asset.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})",
                                     urlStatus.IsSuccessStatusCode ? LogType.Warning : LogType.Default,
                                     true);
 

@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #nullable enable
-using Hi3Helper;
+using Hi3Helper.Log;
 using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
@@ -47,7 +47,7 @@ internal class MyHyperlink : IAddChild
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[MyHyperlink::AddChild()] Failed while adding inlines\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[MyHyperlink::AddChild()] Failed while adding inlines\r\n{ex}", LogType.Error, true);
         }
     }
 }

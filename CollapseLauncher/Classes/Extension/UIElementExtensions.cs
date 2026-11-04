@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
@@ -1250,7 +1250,7 @@ namespace CollapseLauncher.Extension
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledXaml);
-                    Logger.LogWriteLine($"Failed while attaching shadow to an element\r\n{ex}", LogType.Warning, true);
+                    Logger.WriteLine($"Failed while attaching shadow to an element\r\n{ex}", LogType.Warning, true);
                 }
             }
         }

@@ -1,4 +1,4 @@
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Libsql.Client;
 using System;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable CommentTypo
 
 #nullable enable
@@ -125,7 +125,7 @@ internal static class DbHandler
             
         if (!bypassEnableFlag && !(IsEnabled ?? false))
         {
-            LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
+            Logger.WriteLine("[DbHandler::Init] Database functionality is disabled!");
             return;
         }
 
@@ -160,7 +160,7 @@ internal static class DbHandler
 
             if (!IsInitialized)
             {
-                LogWriteLine("[DbHandler::Init] Initializing database system...");
+                Logger.WriteLine("[DbHandler::Init] Initializing database system...");
                 // Ensure table exist at first initialization
                 await
                     _database
@@ -171,11 +171,11 @@ internal static class DbHandler
                        .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}-blob\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' BLOB)");
                 IsInitialized = true;
             }
-            else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
+            else Logger.WriteLine("[DbHandler::Init] Reinitializing database system...");
         }
         catch (DllNotFoundException e)
         {
-            LogWriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" + e,
+            Logger.WriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" + e,
                          LogType.Error, true);
             if (redirectThrow) throw;
         }
@@ -184,23 +184,23 @@ internal static class DbHandler
         catch (LibsqlException e) when (e.Message.Contains("The JWT is invalid", StringComparison.OrdinalIgnoreCase) 
                                         && !redirectThrow)
         {
-            LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
+            Logger.WriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
                          LogType.Error, true);
         }
         catch (Exception e) when (!redirectThrow)
         {
-            LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
+            Logger.WriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
         }
         catch (LibsqlException e) when (e.Message.Contains("The JWT is invalid", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
+            Logger.WriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
                          LogType.Error, true);
             var ex = new AggregateException("DB_003 Unauthorized: wrong token inserted", e);
             throw ex;
         }
         catch (Exception e)
         {
-            LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
+            Logger.WriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
             throw;
         }
     }
@@ -230,7 +230,7 @@ internal static class DbHandler
     #if DEBUG
         var r   = new Random();
         var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
-        LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
+        Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
         var t = Stopwatch.StartNew();
     #endif
         for (var i = 0; i < MaxAttempts; i++)
@@ -245,12 +245,12 @@ internal static class DbHandler
             #if DEBUG
                 if (isBlob)
                 {
-                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB",
+                    Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB",
                                  LogType.Debug, true);
                 }
                 else
                 {
-                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{retVal.returnedValue}",
+                    Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{retVal.returnedValue}",
                                  LogType.Debug, true);
                 }
             #endif
@@ -260,14 +260,14 @@ internal static class DbHandler
             if (i < MaxAttempts - 1)
             {
                 var delayTime = (int)Math.Pow(2, i) * 500; // Exponential backoff delay
-                LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
+                Logger.WriteLine($"[DBHandler::QueryKey] Failed to get value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
                              $"Status Code: {retVal.result}", LogType.Error, true);
                 
                 await Task.Delay(delayTime);
                 continue;
             }
 
-            LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key} after {MaxAttempts} tries!\r\n\t" +
+            Logger.WriteLine($"[DBHandler::QueryKey] Failed to get value for key {key} after {MaxAttempts} tries!\r\n\t" +
                          $"Status Code: {retVal.result}", LogType.Error, true);
 
             // Exception handler when exceptionValue is null does not need to be handled by Sentry.
@@ -286,7 +286,7 @@ internal static class DbHandler
         }
     #if DEBUG
         t.Stop();
-        LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
+        Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
     #endif
 
         return null;
@@ -302,12 +302,12 @@ internal static class DbHandler
         var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
         if (isBlob)
         {
-            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
+            Logger.WriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
                          true);
         }
         else
         {
-            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
+            Logger.WriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
                          true);
         }
        
@@ -320,12 +320,12 @@ internal static class DbHandler
             #if DEBUG
                 if (isBlob)
                 {
-                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tIS BLOB",
+                    Logger.WriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tIS BLOB",
                                  LogType.Debug, true);
                 }
                 else
                 {
-                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
+                    Logger.WriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
                                  LogType.Debug, true);
                 }
                 
@@ -336,27 +336,27 @@ internal static class DbHandler
             if (i < MaxAttempts - 1)
             {
                 var delayTime = (int)Math.Pow(2, i) * 500; // Exponential backoff delay
-                LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
+                Logger.WriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
                              $"Status Code: {retVal.result}", LogType.Error, true);
                 await Task.Delay(delayTime);
                 continue;
             }
                 
-            LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key} after {MaxAttempts} tries!\r\n\t" +
+            Logger.WriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key} after {MaxAttempts} tries!\r\n\t" +
                          $"Status Code: {retVal.result}", LogType.Error, true);
 
             // Exception handler when exceptionValue is null does not need to be handled by Sentry.
             // Technically, this should never happen, but just in case...
             if (retVal.exceptionValue == null)
             {
-                LogWriteLine($"[DBHandler::StoreKeyValue] Failed when trying to store key {key}", LogType.Error,
+                Logger.WriteLine($"[DBHandler::StoreKeyValue] Failed when trying to store key {key}", LogType.Error,
                              true);
                 if (redirectThrow) throw new Exception($"DB_005 Failed to get value for key {key} after {MaxAttempts} tries!");
                 return;
             }
             
             await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
-            LogWriteLine($"[DBHandler::StoreKeyValue] Exception value is not null, throwing exception!\r\n{retVal.exceptionValue}", LogType.Error, true);
+            Logger.WriteLine($"[DBHandler::StoreKeyValue] Exception value is not null, throwing exception!\r\n{retVal.exceptionValue}", LogType.Error, true);
             if (redirectThrow)
                 throw new AggregateException($"DB_004 Failed to store value for key {key} after {MaxAttempts} tries!",
                                              retVal.exceptionValue);
@@ -364,7 +364,7 @@ internal static class DbHandler
             
     #if DEBUG
         t.Stop();
-        LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
+        Logger.WriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
                      LogType.Debug, true);
     #endif
     }
@@ -418,12 +418,12 @@ internal static class DbHandler
         #if DEBUG
             if (isBlob)
             {
-                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
+                Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tIS BLOB", LogType.Debug,
                              true);
             }
             else
             {
-                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
+                Logger.WriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
                              true);
             }
             
@@ -436,7 +436,7 @@ internal static class DbHandler
                                          ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                          ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine("[DBHandler::QueryKey] Database stream expired.",
+            Logger.WriteLine("[DBHandler::QueryKey] Database stream expired.",
                          LogType.Error, true);
 
             await Init();
@@ -444,7 +444,7 @@ internal static class DbHandler
         }
         catch (Exception ex)
         {
-            LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! {ex.Message}",
+            Logger.WriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! {ex.Message}",
                          LogType.Error, true);
             return (500, null, ex); // 500: Internal Server Error
         }
@@ -470,7 +470,7 @@ internal static class DbHandler
                                          ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                          ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine($"[DBHandler::StoreKeyValue] Database stream expired, Reinitializing ({ex.Message})", LogType.Error,
+            Logger.WriteLine($"[DBHandler::StoreKeyValue] Database stream expired, Reinitializing ({ex.Message})", LogType.Error,
                          true);
                 
             await Init();
@@ -480,7 +480,7 @@ internal static class DbHandler
         // The error should be handled in the method caller instead
         catch (Exception ex)
         {
-            LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! {ex.Message}",
+            Logger.WriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! {ex.Message}",
                          LogType.Error, true);
             return (500, ex); // 500: Internal Server Error
         }

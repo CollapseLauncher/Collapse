@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
@@ -71,7 +71,7 @@ namespace CollapseLauncher.Extension
 
                 // Delete the file
                 File.Delete(velopackLockPath);
-                Logger.LogWriteLine(".velopack_lock file deleted successfully.");
+                Logger.WriteLine(".velopack_lock file deleted successfully.");
             }
         }
 
@@ -84,7 +84,7 @@ namespace CollapseLauncher.Extension
 #if !DEBUG
         if (!currentExecutedAppFolder.EndsWith("current", StringComparison.OrdinalIgnoreCase)) // Expecting "current"
         {
-            Logger.LogWriteLine("[TryCleanupFallbackUpdate] The launcher does not run from \"current\" folder");
+            Logger.WriteLine("[TryCleanupFallbackUpdate] The launcher does not run from \"current\" folder");
             return;
         }
 #endif
@@ -101,7 +101,7 @@ namespace CollapseLauncher.Extension
                     {
                         // Removing the "app-*" folder
                         childLegacyAppSemVerFolder.Delete(true);
-                        Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!",
+                        Logger.WriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!",
                                      LogType.Default, true);
                     }
 
@@ -111,7 +111,7 @@ namespace CollapseLauncher.Extension
                     if (squirrelTempPackagesFolderInfo.Exists)
                     {
                         squirrelTempPackagesFolderInfo.Delete(true);
-                        Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!",
+                        Logger.WriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!",
                                      LogType.Default, true);
                     }
 
@@ -172,7 +172,7 @@ namespace CollapseLauncher.Extension
 
                     // Compare if the filename is equal, then delete it.
                     File.Delete(thisUserStartMenuShortcut);
-                    Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
+                    Logger.WriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
                                  $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
                                  LogType.Default, true);
                 }
@@ -183,7 +183,7 @@ namespace CollapseLauncher.Extension
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
+                Logger.WriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
             }
 
             return;
@@ -196,7 +196,7 @@ namespace CollapseLauncher.Extension
                 }
 
                 File.Delete(filePath);
-                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!",
+                Logger.WriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!",
                                     LogType.Default, true);
             }
         }
@@ -210,11 +210,11 @@ namespace CollapseLauncher.Extension
                                                    collapseExecName);
             if (File.Exists(collapseStubPath))
             {
-                Logger.LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
+                Logger.WriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
                 return collapseStubPath;
             }
 
-            Logger.LogWriteLine($"Collapse stub is not used anymore, returning current executable path!\r\n\t{collapseMainPath}",
+            Logger.WriteLine($"Collapse stub is not used anymore, returning current executable path!\r\n\t{collapseMainPath}",
                                 LogType.Default, true);
             return collapseMainPath;
         }
@@ -252,12 +252,12 @@ namespace CollapseLauncher.Extension
                 string existingContent = File.ReadAllText(xmlPath);
                 if (existingContent.ReplaceLineEndings("\n").Equals(xmlContent, StringComparison.Ordinal))
                 {
-                    Logger.LogWriteLine("Velopack metadata is already up-to-date, skipping write operation.", LogType.Default, true);
+                    Logger.WriteLine("Velopack metadata is already up-to-date, skipping write operation.", LogType.Default, true);
                     return;
                 }
             }
             File.WriteAllText(xmlPath, xmlContent);
-            Logger.LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
+            Logger.WriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
         }
     }
 }

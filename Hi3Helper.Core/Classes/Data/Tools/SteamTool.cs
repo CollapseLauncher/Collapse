@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Hi3Helper.Log;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,7 +43,7 @@ namespace Hi3Helper.Data
             }
 
         #if DEBUG
-            if (apps.Count == 0) Logger.LogWriteLine("AppInfo on steam cannot be found!");
+            if (apps.Count == 0) Logger.WriteLine("AppInfo on steam cannot be found!");
 #endif
             return apps;
         }
@@ -58,7 +59,7 @@ namespace Hi3Helper.Data
             Dictionary<string, string> dic           = new(StringComparer.OrdinalIgnoreCase);
 
 #if DEBUG
-            Logger.LogWriteLine($"Reading .acf Steam file: {appMetaFile}");
+            Logger.WriteLine($"Reading .acf Steam file: {appMetaFile}");
 #endif
 
             foreach (var line in fileDataLines)
@@ -71,9 +72,9 @@ namespace Hi3Helper.Data
 
                 var key = match.Groups["key"].Value;
                 var val = match.Groups["val"].Value;
-            #if DEBUG
-                Logger.LogWriteLine($"    AppInfo key: {key} val: {val}");
-            #endif
+#if DEBUG
+                Logger.WriteLine($"    AppInfo key: {key} val: {val}");
+#endif
                 dic[key] = val;
             }
 
@@ -185,14 +186,14 @@ namespace Hi3Helper.Data
 
             if (steamPath == null)
             {
-                Logger.LogWriteLine("Steam not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
+                Logger.WriteLine("Steam not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
                 return null;
             }
 
             var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
             if (!File.Exists(listFile))
             {
-                Logger.LogWriteLine("LibraryFolder.vdf not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
+                Logger.WriteLine("LibraryFolder.vdf not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
                 return null;
             }
 
@@ -206,16 +207,16 @@ namespace Hi3Helper.Data
                 }
 
                 var path = match.Groups["path"].Value.Replace(@"\\", @"\");
-            #if DEBUG
-                Logger.LogWriteLine($"Checking Steam Lib Path: {path}", LogType.Debug, true);
-            #endif
+#if DEBUG
+                Logger.WriteLine($"Checking Steam Lib Path: {path}", LogType.Debug, true);
+#endif
                 if (!Directory.Exists(path))
                 {
                     continue;
                 }
-            #if DEBUG
-                Logger.LogWriteLine($"    Path: {path} is exist", LogType.Debug, true);
-            #endif
+#if DEBUG
+                Logger.WriteLine($"    Path: {path} is exist", LogType.Debug, true);
+#endif
                 libraries.Add(path);
             }
             return libraries;

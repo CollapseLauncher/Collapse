@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Buffers;
@@ -138,7 +138,7 @@ internal partial class HonkaiRepairV2
                       .StartNew(() => patchUtil.Apply(token), token)
                       .ConfigureAwait(false);
 
-            Logger.LogWriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Asset {asset.N} has been patched!",
+            Logger.WriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Asset {asset.N} has been patched!",
                                 LogType.Default,
                                 true);
         }

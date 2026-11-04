@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.DiscordPresence;
 using Hi3Helper.Plugin.Core.Management;
@@ -372,7 +372,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     private unsafe void PrintGameLogCallback(char* logString, int logStringLen, int isStringCanFree)
     {
-        Logger.LogWrite(new ReadOnlySpan<char>(logString, logStringLen),
+        Logger.Write(new ReadOnlySpan<char>(logString, logStringLen),
                         LogType.Game,
                         appendNewLine: true,
                         writeToLog: _isWriteGameLog,

@@ -1,7 +1,7 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Microsoft.Win32;
 using System;
@@ -113,7 +113,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             string? sophonBranchUrl = sophonUrls.BranchUrl;
             if (string.IsNullOrEmpty(PresetConfig!.LauncherBizName) || string.IsNullOrEmpty(sophonBranchUrl))
             {
-                Logger.LogWriteLine("This game/region doesn't have Sophon->BranchUrl or PresetConfig->LauncherBizName property defined! This might cause the launcher inaccurately check the version if Zip download is unavailable", LogType.Warning, true);
+                Logger.WriteLine("This game/region doesn't have Sophon->BranchUrl or PresetConfig->LauncherBizName property defined! This might cause the launcher inaccurately check the version if Zip download is unavailable", LogType.Warning, true);
             }
 
             // Ensure associated
@@ -522,7 +522,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[HypApiLoader::CreateNewDeviceId] Failed to retrieve MachineGuid from registry, using a dummy GUID instead" +
+                Logger.WriteLine($"[HypApiLoader::CreateNewDeviceId] Failed to retrieve MachineGuid from registry, using a dummy GUID instead" +
                                     $"\r\n{ex}", LogType.Error, true);
                 guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
             }
@@ -540,29 +540,29 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 #if DEBUG
             if (LauncherGameResourcePackage?.data?.game?.latest?.decompressed_path != null)
             {
-                Logger.LogWriteLine($"Decompressed Path: {LauncherGameResourcePackage.data.game.latest.decompressed_path}",
+                Logger.WriteLine($"Decompressed Path: {LauncherGameResourcePackage.data.game.latest.decompressed_path}",
                                     LogType.Default, true);
             }
 
             if (LauncherGameResourcePackage?.data?.game?.latest?.path != null)
             {
-                Logger.LogWriteLine($"ZIP Path: {LauncherGameResourcePackage.data.game.latest.path}", LogType.Default, true);
+                Logger.WriteLine($"ZIP Path: {LauncherGameResourcePackage.data.game.latest.path}", LogType.Default, true);
             }
 
             if (LauncherGameResourcePackage?.data?.pre_download_game?.latest?.decompressed_path != null)
             {
-                Logger.LogWriteLine($"Decompressed Path Pre-load: {LauncherGameResourcePackage.data.pre_download_game?.latest?.decompressed_path}",
+                Logger.WriteLine($"Decompressed Path Pre-load: {LauncherGameResourcePackage.data.pre_download_game?.latest?.decompressed_path}",
                                     LogType.Default, true);
             }
 
             if (LauncherGameResourcePackage?.data?.sdk?.path != null)
             {
-                Logger.LogWriteLine($"SDK found! Path: {LauncherGameResourcePackage.data.sdk.path}", LogType.Default, true);
+                Logger.WriteLine($"SDK found! Path: {LauncherGameResourcePackage.data.sdk.path}", LogType.Default, true);
             }
 
             if (LauncherGameResourcePackage?.data?.pre_download_game?.latest?.path != null)
             {
-                Logger.LogWriteLine($"ZIP Path Pre-load: {LauncherGameResourcePackage.data.pre_download_game?.latest?.path}",
+                Logger.WriteLine($"ZIP Path Pre-load: {LauncherGameResourcePackage.data.pre_download_game?.latest?.path}",
                                     LogType.Default, true);
             }
 #endif
@@ -570,7 +570,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 #if SIMULATEPRELOAD && !SIMULATEAPPLYPRELOAD
             if (LauncherGameResourcePackage != null && LauncherGameResourcePackage?.data?.pre_download_game == null)
             {
-                Logger.LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
+                Logger.WriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
                 RegionResourceVersion? simDataLatest = LauncherGameResourcePackage?.data?.game?.latest?.Copy();
                 List<RegionResourceVersion>? simDataDiff = LauncherGameResourcePackage?.data?.game?.diffs?.Copy();
 
@@ -600,7 +600,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 #endif
 
 #if DEBUG
-            Logger.LogWriteLine("[LauncherApiBase::LoadLauncherResource] Loading game resource has been completed!",
+            Logger.WriteLine("[LauncherApiBase::LoadLauncherResource] Loading game resource has been completed!",
                                 LogType.Debug, true);
 #endif
             */

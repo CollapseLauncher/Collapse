@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Buffers.Text;
@@ -40,7 +40,7 @@ namespace CollapseLauncher.Helper
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Logger.LogWriteLine($"Failed while protecting string! {ex}", LogType.Error);
+                    Logger.WriteLine($"Failed while protecting string! {ex}", LogType.Error);
                     return null;
                 }
                 finally
@@ -89,7 +89,7 @@ namespace CollapseLauncher.Helper
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"Failed while trying to unprotect string! {ex}", LogType.Error);
+                Logger.WriteLine($"Failed while trying to unprotect string! {ex}", LogType.Error);
                 return null;
             }
             finally

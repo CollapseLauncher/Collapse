@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Interfaces.D3D;
 using Hi3Helper.Win32.Native.Interfaces.DXGI;

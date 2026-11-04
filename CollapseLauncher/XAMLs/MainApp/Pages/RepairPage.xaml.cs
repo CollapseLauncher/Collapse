@@ -4,7 +4,7 @@ using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Xaml;
@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable AsyncVoidMethod
@@ -98,7 +97,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                LogWriteLine($"An error occured while checking asset!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error occured while checking asset!\r\n{ex}", LogType.Error, true);
             }
             finally
             {
@@ -150,7 +149,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                LogWriteLine($"An error occured while repairing asset!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error occured while repairing asset!\r\n{ex}", LogType.Error, true);
             }
             finally
             {

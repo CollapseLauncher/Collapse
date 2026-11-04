@@ -50,6 +50,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Log\Hi3Helper.Log.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
     </ItemGroup>
 

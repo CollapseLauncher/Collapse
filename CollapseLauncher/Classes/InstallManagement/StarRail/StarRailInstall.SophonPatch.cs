@@ -1,5 +1,5 @@
-﻿using Hi3Helper;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Log;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -68,7 +68,7 @@ namespace CollapseLauncher.InstallManager.StarRail
                 int indexOfAny = filePath.IndexOfAny(searchValues);
                 if (indexOfAny >= 0)
                 {
-                    Logger.LogWriteLine($"[StarRailInstall::FilterAssetList] Asset: {patchAsset} is ignored due to marked as deleted asset.",
+                    Logger.WriteLine($"[StarRailInstall::FilterAssetList] Asset: {patchAsset} is ignored due to marked as deleted asset.",
                                         writeToLog: true);
                     continue;
                 }

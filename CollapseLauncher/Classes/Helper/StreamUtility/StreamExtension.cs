@@ -1,5 +1,5 @@
-﻿using Hi3Helper;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using System;
@@ -129,7 +129,7 @@ namespace CollapseLauncher.Helper.StreamUtility
                         throw; // Throw this MFs
                     }
 
-                    Logger.LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {maxTry}", LogType.Warning, true);
+                    Logger.WriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {maxTry}", LogType.Warning, true);
                     await Task.Delay(50); // Adding 50ms delay
                 }
             }
@@ -171,7 +171,7 @@ namespace CollapseLauncher.Helper.StreamUtility
                 if (throwIfFailed)
                     throw;
 
-                Logger.LogWriteLine($"Failed to delete file: {filePath.FullName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to delete file: {filePath.FullName}\r\n{ex}", LogType.Error, true);
                 return false;
             }
         }
@@ -190,7 +190,7 @@ namespace CollapseLauncher.Helper.StreamUtility
                 if (throwIfFailed)
                     throw;
 
-                Logger.LogWriteLine($"Failed to delete directory: {directoryPath.FullName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to delete directory: {directoryPath.FullName}\r\n{ex}", LogType.Error, true);
                 return false;
             }
         }
@@ -215,7 +215,7 @@ namespace CollapseLauncher.Helper.StreamUtility
                 if (throwIfFailed)
                     throw;
 
-                Logger.LogWriteLine($"Failed to move file: {filePath.FullName} to: {toTarget.FullName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to move file: {filePath.FullName} to: {toTarget.FullName}\r\n{ex}", LogType.Error, true);
                 return false;
             }
         }
@@ -268,7 +268,7 @@ namespace CollapseLauncher.Helper.StreamUtility
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[StreamExtension] Failed when trying to strip Alternate Data Stream in path.\r\n{ex}",
+                Logger.WriteLine($"[StreamExtension] Failed when trying to strip Alternate Data Stream in path.\r\n{ex}",
                                     LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
                 return fileInfo; // Return original FileInfo if any error occurs
@@ -297,13 +297,13 @@ namespace CollapseLauncher.Helper.StreamUtility
                         FileNotFoundException($"[StreamExtension] Target symlink {target.FullName} for {fileInfo.FullName} does not exist.");
                 }
 
-                Logger.LogWriteLine($"[StreamExtension] Resolved symlink: {fileInfo.FullName} -> {target.FullName}",
+                Logger.WriteLine($"[StreamExtension] Resolved symlink: {fileInfo.FullName} -> {target.FullName}",
                                     LogType.Default, true);
                 return target;
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[StreamExtension] Failed to resolve symlink for {fileInfo.FullName}\r\n{ex}",
+                Logger.WriteLine($"[StreamExtension] Failed to resolve symlink for {fileInfo.FullName}\r\n{ex}",
                                     LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
                 throw;

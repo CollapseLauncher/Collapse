@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
@@ -50,7 +50,7 @@ internal partial class StarRailPersistentRefResult
 
         if (luaStockManifestFile is not { AssociatedObject: SophonAsset sophonAsset })
         {
-            Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] We cannot finalize fetching process as necessary file is not available. The game might behave incorrectly!",
+            Logger.WriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] We cannot finalize fetching process as necessary file is not available. The game might behave incorrectly!",
                                 LogType.Warning,
                                 true);
             return;
@@ -72,7 +72,7 @@ internal partial class StarRailPersistentRefResult
                                                         StringComparison.OrdinalIgnoreCase));
         if (stockLuaDictAsset is not { AssociatedObject: SophonAsset stockLuaDictSophon })
         {
-            Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Stock Lua Dictionary file is not found! Skipping",
+            Logger.WriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Stock Lua Dictionary file is not found! Skipping",
                                 LogType.Warning,
                                 true);
             return;
@@ -87,7 +87,7 @@ internal partial class StarRailPersistentRefResult
         string gameServLuaDictUrl = BaseUrls.CacheLua.CombineURLFromString(gameServStockLuaPath?.Filename);
         if (string.IsNullOrEmpty(gameServLuaDictUrl))
         {
-            Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Game Server's Lua Dictionary file is not found! Skipping",
+            Logger.WriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Game Server's Lua Dictionary file is not found! Skipping",
                                 LogType.Warning,
                                 true);
             return;
@@ -96,7 +96,7 @@ internal partial class StarRailPersistentRefResult
         CDNCacheResult gameServLuaDictRemote = await client.TryGetCachedStreamFrom(gameServLuaDictUrl, token: token);
         if (!gameServLuaDictRemote.IsSuccessStatusCode)
         {
-            Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Game Server's Lua Dictionary file returns unsuccessful code! Skipping",
+            Logger.WriteLine("[StarRailPersistentRefResult::FinalizeCacheFetchAsync] Game Server's Lua Dictionary file returns unsuccessful code! Skipping",
                                 LogType.Warning,
                                 true);
             return;
@@ -154,7 +154,7 @@ internal partial class StarRailPersistentRefResult
 
         if (binaryVersionFile is not { AssociatedObject: SophonAsset asSophonAsset })
         {
-            Logger.LogWriteLine("[StarRailPersistentRefResult::FinalizeRepairFetchAsync] We cannot finalize fetching process as necessary file is not available. The game might behave incorrectly!",
+            Logger.WriteLine("[StarRailPersistentRefResult::FinalizeRepairFetchAsync] We cannot finalize fetching process as necessary file is not available. The game might behave incorrectly!",
                                 LogType.Warning,
                                 true);
             return;

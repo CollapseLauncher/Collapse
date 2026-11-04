@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces.Class;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.LocaleSourceGen;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -116,13 +116,13 @@ public partial class Locale : NotifyPropertyChanged
             {
                 langParam.LocaleSourcePath = localePath;
                 localeMetas.Add(langParam);
-                Logger.LogWriteLine($"Locale file: {fileName} loaded as {langParam.LanguageName} by {langParam.Author}",
+                Logger.WriteLine($"Locale file: {fileName} loaded as {langParam.LanguageName} by {langParam.Author}",
                                     LogType.Scheme,
                                     true);
                 continue;
             }
 
-            Logger.LogWriteLine($"Cannot load locale base metadata info from file: {fileName}, ignoring!",
+            Logger.WriteLine($"Cannot load locale base metadata info from file: {fileName}, ignoring!",
                                 LogType.Error,
                                 true);
         }
@@ -132,7 +132,7 @@ public partial class Locale : NotifyPropertyChanged
     {
         if (localeIndex < 0 || localeIndex >= MetadataList.Count)
         {
-            Logger.LogWriteLine($"Locale index {localeIndex} is out of range. Cannot load locale.",
+            Logger.WriteLine($"Locale index {localeIndex} is out of range. Cannot load locale.",
                                 LogType.Error,
                                 true);
             return false;
@@ -179,7 +179,7 @@ public partial class Locale : NotifyPropertyChanged
         }
 
         string fallbackLocaleCode = GetFallbackLocaleId(localeCodeOrFilePath);
-        Logger.LogWriteLine($"Locale code '{localeCodeOrFilePath}' is invalid. Fallback locale code: {fallbackLocaleCode} will be used instead.",
+        Logger.WriteLine($"Locale code '{localeCodeOrFilePath}' is invalid. Fallback locale code: {fallbackLocaleCode} will be used instead.",
                             LogType.Error,
                             true);
         localeCodeOrFilePath = fallbackLocaleCode;
@@ -232,7 +232,7 @@ public partial class Locale : NotifyPropertyChanged
 
         if (!fileInfo.Exists)
         {
-            Logger.LogWriteLine($"Locale file: {fileInfo.FullName} doesn't exist!",
+            Logger.WriteLine($"Locale file: {fileInfo.FullName} doesn't exist!",
                                 LogType.Error,
                                 true);
             return false;
@@ -244,7 +244,7 @@ public partial class Locale : NotifyPropertyChanged
             Lang = fileStream.Deserialize(LocaleJsonContext.Default.LangParams) ?? throw new JsonException($"Locale JSON file: {fileInfo.FullName} is empty or failed to be deserialized!");
             SetLocaleSizeSuffix(Lang);
 
-            Logger.LogWriteLine($"Locale: {Lang.LanguageName} ({Lang.LanguageID}) by {Lang.Author} has been loaded!", LogType.Info, true);
+            Logger.WriteLine($"Locale: {Lang.LanguageName} ({Lang.LanguageID}) by {Lang.Author} has been loaded!", LogType.Info, true);
 
             // Update the index
             LangParamsBase? localeParam = MetadataList.FirstOrDefault(x => x.LanguageID == Lang.LanguageID);
@@ -257,7 +257,7 @@ public partial class Locale : NotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Failed to load locale {fileInfo.FullName} due to an error: {ex.Message}",
+            Logger.WriteLine($"Failed to load locale {fileInfo.FullName} due to an error: {ex.Message}",
                                 LogType.Error,
                                 true);
             return false;
@@ -298,7 +298,7 @@ public partial class Locale : NotifyPropertyChanged
 
         if (localeFileInfo.Exists) return;
 
-        Logger.LogWriteLine($"Main locale file doesn't exist on this path: {localePath}. File will be redownloaded!",
+        Logger.WriteLine($"Main locale file doesn't exist on this path: {localePath}. File will be redownloaded!",
                             LogType.Error,
                             true);
 
@@ -393,12 +393,12 @@ public partial class Locale : NotifyPropertyChanged
 
                 if (TryLoadLocaleFrom(new FileInfo(changedFile)))
                 {
-                    Logger.LogWriteLine($"[Locale::HotReload] Reloaded locale from: {changedFile}", LogType.Scheme, true);
+                    Logger.WriteLine($"[Locale::HotReload] Reloaded locale from: {changedFile}", LogType.Scheme, true);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[Locale::HotReload] Failed to reload: {ex.Message}", LogType.Warning, true);
+                Logger.WriteLine($"[Locale::HotReload] Failed to reload: {ex.Message}", LogType.Warning, true);
             }
         }, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -406,7 +406,7 @@ public partial class Locale : NotifyPropertyChanged
         _langFileWatcher.Created += OnFileEvent;
         _langFileWatcher.Renamed += OnFileEvent;
 
-        Logger.LogWriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
+        Logger.WriteLine($"[Locale::HotReload] Watching: {watchFolder}", LogType.Scheme, true);
         return;
 
         void OnFileEvent(object? sender, FileSystemEventArgs e)

@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
@@ -77,7 +77,7 @@ internal partial class HonkaiRepairV2
             {
                 if (assetFileInfo.TryDeleteFile())
                 {
-                    Logger.LogWriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Unused asset {asset} has been deleted!",
+                    Logger.WriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Unused asset {asset} has been deleted!",
                                         LogType.Default,
                                         true);
                 }
@@ -97,7 +97,7 @@ internal partial class HonkaiRepairV2
                                   ProgressRepairAssetGenericType,
                                   token);
 
-            Logger.LogWriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
+            Logger.WriteLine($"[HonkaiRepairV2::RepairAssetGenericType] Asset {asset.N} has been downloaded!",
                                 LogType.Default,
                                 true);
         }

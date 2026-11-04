@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Extension;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
@@ -38,7 +38,7 @@ namespace CollapseLauncher.Helper.Update
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}",
+                Logger.WriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}",
                                     LogType.Warning, true);
                 if (!ex.Message.Contains("application which is not installed",
                                          StringComparison.InvariantCultureIgnoreCase)) 

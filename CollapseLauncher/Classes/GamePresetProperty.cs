@@ -15,7 +15,7 @@ using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;
@@ -176,7 +176,7 @@ namespace CollapseLauncher
             GC.SuppressFinalize(this);
         #if DEBUG
             string hashID = GameVersion != null ? GamePreset.HashID.ToString() : "null";
-            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {hashID}",
+            Logger.WriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {hashID}",
                                 LogType.Warning, true);
         #endif
         }

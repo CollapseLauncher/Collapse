@@ -2,10 +2,10 @@
 using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.IO;
@@ -124,7 +124,7 @@ internal partial class HonkaiRepairV2
                 this.AddBrokenAssetToList(asset);
             }
 
-            await Logger.LogWriteLineAsync($"Asset with {asset} is missing!", LogType.Warning, true, token: token);
+            await Logger.WriteLineAsync($"Asset with {asset} is missing!", LogType.Warning, true, token: token);
             return (false, hashSize);
         }
 
@@ -266,7 +266,7 @@ internal partial class HonkaiRepairV2
         // ReSharper disable once InvertIf
         if (addAssetIfBroken)
         {
-            await Logger.LogWriteLineAsync($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBufferSpan.Span)}",
+            await Logger.WriteLineAsync($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBufferSpan.Span)}",
                                            LogType.Warning,
                                            true,
                                            token: token);

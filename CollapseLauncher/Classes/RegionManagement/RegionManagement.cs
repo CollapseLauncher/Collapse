@@ -7,11 +7,10 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -20,7 +19,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 
@@ -51,7 +50,7 @@ namespace CollapseLauncher
 
             if (!RegionLoadingStatus.TryAdd((gameName,gameRegion), false))
             {
-                LogWriteLine($"Region {gameName} - {gameRegion} is already loading, aborting...", LogType.Warning, true);
+                Logger.WriteLine($"Region {gameName} - {gameRegion} is already loading, aborting...", LogType.Warning, true);
                 return Task.FromResult(false);
             }
 
@@ -89,7 +88,7 @@ namespace CollapseLauncher
                     LoadingMessageHelper.HideActionButton();
                     LoadingMessageHelper.HideLoadingFrame();
 
-                    LogWriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
+                    Logger.WriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
                     ErrorSender.SendExceptionWithoutPage(ex, errorType);
                     MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
                 });
@@ -118,12 +117,12 @@ namespace CollapseLauncher
                 {
                     if (IsLoadRegionComplete) // Prevent double loading
                     {
-                        LogWriteLine("[RegionManagement] Double region loading detected, aborting...", LogType.Warning, true);
+                        Logger.WriteLine("[RegionManagement] Double region loading detected, aborting...", LogType.Warning, true);
                         _ = SentryHelper.ExceptionHandlerAsync(new Exception("Double region loading detected!"));
                         return;
                     }
 
-                    LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
+                    Logger.WriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion, token);
                     Interlocked.Exchange(ref IsLoadRegionComplete, true);
 
@@ -165,7 +164,7 @@ namespace CollapseLauncher
                     {
                         Interlocked.Exchange(ref IsLoadRegionComplete, false);
                         KeyboardShortcuts.CannotUseKbShortcuts = true; // Disable keyboard shortcuts while loading region
-                        LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
+                        Logger.WriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
                     
                         ClearMainPageState();
                         _ = ShowAsyncLoadingTimedOutPill(token);
@@ -204,7 +203,7 @@ namespace CollapseLauncher
             }
 
             // Log if region has been successfully loaded
-            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
+            Logger.WriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
             await LoadGameStaticsByGameType(preset, gameName, gameRegion, token);
@@ -236,7 +235,7 @@ namespace CollapseLauncher
             CurrentGameProperty?.GameCache?.CancelRoutine();
             CurrentGameProperty?.GameCache?.Dispose();
 #if DEBUG
-            LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
+            Logger.WriteLine("Page statics have been disposed!", LogType.Debug, true);
 #endif
         }
 
@@ -288,7 +287,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while sending notification to the UI\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while sending notification to the UI\r\n{ex}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
@@ -327,7 +326,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while changing region with no warning\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while changing region with no warning\r\n{ex}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
             finally
@@ -356,7 +355,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while changing region with instant method\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while changing region with instant method\r\n{ex}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
             finally
@@ -385,7 +384,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            LogWriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
+            Logger.WriteLine($"Region changed to {gameRegion.ZoneFullname}", LogType.Scheme, true);
         #if !DISABLEDISCORD
             if (AppDiscordPresence.IsEnabled)
                 AppDiscordPresence.SetPresence(gameRegion);
@@ -432,7 +431,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while trying to show Timed-out Loading Pill\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while trying to show Timed-out Loading Pill\r\n{ex}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }

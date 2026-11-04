@@ -4,14 +4,13 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 
@@ -98,7 +97,7 @@ namespace CollapseLauncher.ShortcutUtils
             LoadingMessageHelper.ShowActionButton(Locale.Current.Lang?._Misc?.Cancel, "", (_, _) =>
                                                   {
                                                       tokenSource.Cancel();
-                                                      LogWriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
+                                                      Logger.WriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
                                                   });
 
             List<SteamShortcut> shortcuts = [];
@@ -113,7 +112,7 @@ namespace CollapseLauncher.ShortcutUtils
                 shortcuts.Add(parser.Insert(preset, play));
 
                 parser.Save();
-                LogWriteLine($"[ShortcutCreator::AddToSteam] Added shortcut for {preset.GameName} - {preset.ZoneName} for Steam3ID {userId}");
+                Logger.WriteLine($"[ShortcutCreator::AddToSteam] Added shortcut for {preset.GameName} - {preset.ZoneName} for Steam3ID {userId}");
             }
 
             foreach (SteamShortcut shortcut in shortcuts)
@@ -137,7 +136,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (!Directory.Exists(steamUserData))
             {
-                LogWriteLine("[ShortcutCreator::GetShortcutsPath] " + steamUserData + " is not a valid folder.", LogType.Error);
+                Logger.WriteLine("[ShortcutCreator::GetShortcutsPath] " + steamUserData + " is not a valid folder.", LogType.Error);
                 return null;
             }
 
@@ -151,7 +150,7 @@ namespace CollapseLauncher.ShortcutUtils
             for (int i = 0; i < res.Length; i++)
             {
                 res[i] = Path.Combine(res[i], "config", "shortcuts.vdf");
-                LogWriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], LogType.Debug);
+                Logger.WriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], LogType.Debug);
             }
 
             return res;

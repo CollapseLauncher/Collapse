@@ -9,9 +9,9 @@ using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility;
@@ -182,7 +182,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::OnPerFileProgressCallback] Exception (swallowed):\r\n{ex}",
+            Logger.WriteLine($"[PluginGameInstallWrapper::OnPerFileProgressCallback] Exception (swallowed):\r\n{ex}",
                                 LogType.Error, true);
         }
     }
@@ -266,7 +266,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             _lastActivityStatus = Status.ActivityStatus;
             _lastLoggedPercentage = (float)Progress.ProgressAllPercentage;
-            Logger.LogWriteLine(
+            Logger.WriteLine(
                 $"[PluginGameInstallWrapper::ProgressUI] {Status.ActivityStatus} | {Progress.ProgressAllPercentage:F1}%",
                 LogType.Debug, true);
         }
@@ -282,7 +282,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             && Math.Abs(Progress.ProgressAllPercentage - _lastLoggedPercentage) >= 1f)
         {
             _lastLoggedPercentage = (float)Progress.ProgressAllPercentage;
-            Logger.LogWriteLine(
+            Logger.WriteLine(
                 $"[PluginGameInstallWrapper::ProgressUI] {Status.ActivityStatus} | {Progress.ProgressAllPercentage:F1}%",
                 LogType.Debug, true);
         }
@@ -395,25 +395,25 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Status.IsIncludePerFileIndicator     = false;
             UpdateStatus();
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 1/5: InitPluginComAsync...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 1/5: InitPluginComAsync...", LogType.Debug, true);
             await _gameInstaller.InitPluginComAsync(_plugin, Token!.Token);
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 2/5: GetGameSizeAsync...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 2/5: GetGameSizeAsync...", LogType.Debug, true);
             Guid cancelGuid = _plugin.RegisterCancelToken(Token.Token);
 
             _gameInstaller.GetGameSizeAsync(GameInstallerKind.Preload, in cancelGuid, out nint asyncSize);
             long sizeToDownload = await asyncSize.AsTask<long>();
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Size to download: {sizeToDownload}", LogType.Debug, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Size to download: {sizeToDownload}", LogType.Debug, true);
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 3/5: GetGameDownloadedSizeAsync...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 3/5: GetGameDownloadedSizeAsync...", LogType.Debug, true);
             _gameInstaller.GetGameDownloadedSizeAsync(GameInstallerKind.Preload, in cancelGuid, out nint asyncDownloaded);
             long sizeAlreadyDownloaded = await asyncDownloaded.AsTask<long>();
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Already downloaded: {sizeAlreadyDownloaded}", LogType.Debug, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Already downloaded: {sizeAlreadyDownloaded}", LogType.Debug, true);
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 4/5: EnsureDiskSpaceAvailability...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 4/5: EnsureDiskSpaceAvailability...", LogType.Debug, true);
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 5/5: StartPreloadAsync...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Step 5/5: StartPreloadAsync...", LogType.Debug, true);
             TryRegisterPerFileProgressCallback();
             Status.IsIncludePerFileIndicator = _hasPerFileProgress;
             UpdateStatus();
@@ -424,26 +424,26 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                 _plugin.RegisterCancelToken(Token.Token),
                 out nint asyncPreload);
 
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Awaiting preload task...", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Awaiting preload task...", LogType.Debug, true);
             await asyncPreload.AsTask().ConfigureAwait(false);
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Preload task completed.", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Preload task completed.", LogType.Debug, true);
             isSuccess = true;
         }
         catch (OperationCanceledException)
         {
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Cancelled by user.", LogType.Warning, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Cancelled by user.", LogType.Warning, true);
             Status.IsCanceled = true;
             throw;
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Preload failed:\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::StartPackageDownload] Preload failed:\r\n{ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             throw;
         }
         finally
         {
-            Logger.LogWriteLine("[PluginGameInstallWrapper::StartPackageDownload] Entering finally block.", LogType.Debug, true);
+            Logger.WriteLine("[PluginGameInstallWrapper::StartPackageDownload] Entering finally block.", LogType.Debug, true);
             UnregisterPerFileProgressCallback();
             Status.IsCompleted = isSuccess;
             IsRunning          = false;
@@ -528,7 +528,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::StartPackageInstallation] Install/Update failed:\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::StartPackageInstallation] Install/Update failed:\r\n{ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             throw;
         }
@@ -622,7 +622,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::UpdateProgressCallback] Exception (swallowed to prevent FailFast):\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::UpdateProgressCallback] Exception (swallowed to prevent FailFast):\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -659,7 +659,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::UpdateStatusCallback] Exception (swallowed to prevent FailFast):\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::UpdateStatusCallback] Exception (swallowed to prevent FailFast):\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -668,7 +668,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         long sizeRemainedToDownload = sizeToDownload - sizeAlreadyDownloaded;
 
         // Push log regarding how much size remained to download
-        Logger.LogWriteLine($"Size remained to download: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)}.",
+        Logger.WriteLine($"Size remained to download: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)}.",
                             LogType.Default, true);
 
         // Get free space using the path (handles volume mount points correctly)
@@ -676,7 +676,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         string volumeName = PathUtil.GetPathVolumeName(gamePath);
 
         // Push log regarding disk space
-        Logger.LogWriteLine($"Total free space remained on disk: {volumeName}: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}.",
+        Logger.WriteLine($"Total free space remained on disk: {volumeName}: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}.",
                             LogType.Default, true);
 
         // If the space is insufficient, then show the dialog and throw
@@ -688,7 +688,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             await SimpleDialogs.Dialog_InsufficientDriveSpace(volumeFreeSpace, sizeRemainedToDownload, volumeName);
 
             // Push log for the disk space error
-            Logger.LogWriteLine(errStr, LogType.Error, true);
+            Logger.WriteLine(errStr, LogType.Error, true);
             throw new TaskCanceledException(errStr);
         }
     }
@@ -715,7 +715,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                                                             out IGameUninstaller? asUninstaller,
                                                             out Exception? castEx))
         {
-            Logger.LogWriteLine($"The current plugin interface doesn't implement IGameUninstaller. Function will not be called!\r\n{castEx}", LogType.Error, true);
+            Logger.WriteLine($"The current plugin interface doesn't implement IGameUninstaller. Function will not be called!\r\n{castEx}", LogType.Error, true);
             return false;
         }
 
@@ -729,7 +729,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            Logger.LogWriteLine($"An error has occurred while performing game uninstaller from the plugin.\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"An error has occurred while performing game uninstaller from the plugin.\r\n{ex}", LogType.Error, true);
             return false;
         }
     }
@@ -767,7 +767,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[PluginGameInstallWrapper::IsPreloadCompleted] Error checking preload status:\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[PluginGameInstallWrapper::IsPreloadCompleted] Error checking preload status:\r\n{ex}", LogType.Error, true);
             return false;
         }
     }

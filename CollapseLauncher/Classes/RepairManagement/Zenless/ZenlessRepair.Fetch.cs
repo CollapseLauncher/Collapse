@@ -9,6 +9,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Sleepy;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using System;
@@ -201,7 +202,7 @@ namespace CollapseLauncher
             // Deserialize asset index and set it to list
             AssetIndexV2               parserTool = new();
             List<PkgVersionProperties> pkgVersion = parserTool.Deserialize(assetIndexStream, out DateTime timestamp);
-            Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
+            Logger.WriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
 
             if (GameRepoURL == null)
             {
@@ -328,7 +329,7 @@ namespace CollapseLauncher
                 if (throwIfError)
                     throw;
 
-                Logger.LogWriteLine($"An error has occurred while trying to fetch Sleepy's res manifest\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error has occurred while trying to fetch Sleepy's res manifest\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -497,7 +498,7 @@ namespace CollapseLauncher
 
                 if (remove)
                 {
-                    Logger.LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
+                    Logger.WriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
                 }
                 return remove;
             }

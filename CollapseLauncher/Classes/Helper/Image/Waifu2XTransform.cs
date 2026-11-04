@@ -1,4 +1,4 @@
-using Hi3Helper;
+using Hi3Helper.Log;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.MagicScaler.Transforms;
 using System;
@@ -42,10 +42,10 @@ namespace CollapseLauncher.Helper.Image
             _src = new byte[w * h * Channel];
             source.CopyPixels(new Rectangle(0, 0, w, h), w * Channel, _src);
 
-            Logger.LogWriteLine($"Waifu2X processing begins. Source image resolution: {w}x{h}.");
+            Logger.WriteLine($"Waifu2X processing begins. Source image resolution: {w}x{h}.");
             var timeBegin = DateTime.Now;
             context.Process(source.Width, source.Height, Channel, _src, _buffer);
-            Logger.LogWriteLine($"Waifu2X processing ends. Source image resolution: {w}x{h}. Elapsed time: {(DateTime.Now - timeBegin).TotalMilliseconds} ms.");
+            Logger.WriteLine($"Waifu2X processing ends. Source image resolution: {w}x{h}. Elapsed time: {(DateTime.Now - timeBegin).TotalMilliseconds} ms.");
         }
 
         public void CopyPixels(Rectangle sourceArea, int cbStride, Span<byte> buffer)

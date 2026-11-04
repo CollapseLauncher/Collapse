@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using System;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -56,13 +56,13 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 #if DEBUG
-                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot) ?? ""}", LogType.Debug, true);
+                Logger.WriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot) ?? ""}", LogType.Debug, true);
 #endif
                 return new CustomArgs(gameSettings) { CustomArgumentValue = (string?)gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot) ?? "" };
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
                 throw;
             }
         }
@@ -73,13 +73,13 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 #if DEBUG
-                LogWriteLine($"Saved Collapse Custom Argument Settings:\r\n{CustomArgumentValue}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Collapse Custom Argument Settings:\r\n{CustomArgumentValue}", LogType.Debug, true);
 #endif
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, CustomArgumentValue, RegistryValueKind.String);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
 

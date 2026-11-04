@@ -2,10 +2,10 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.RepairManagement;
-using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Enc;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Log;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Concurrent;
@@ -17,7 +17,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -68,9 +67,9 @@ namespace CollapseLauncher
                                 (int, long) count = await FetchByType(type, httpClientNew, returnAsset, ctx);
 
                                 // Write a log about the metadata
-                                LogWriteLine($"Cache Metadata [T: {type}]:",                         LogType.Default, true);
-                                LogWriteLine($"    Cache Count = {count.Item1}",                     LogType.NoTag,   true);
-                                LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag,   true);
+                                Logger.WriteLine($"Cache Metadata [T: {type}]:",                         LogType.Default, true);
+                                Logger.WriteLine($"    Cache Count = {count.Item1}",                     LogType.NoTag,   true);
+                                Logger.WriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag,   true);
 
                                 // Increment the Total Size and Count
                                 Interlocked.Add(ref ProgressAllCountTotal, count.Item1);
@@ -152,7 +151,7 @@ namespace CollapseLauncher
                                                  type == CacheAssetType.Data ? "Data" : "Resource");
 
 #if DEBUG
-            LogWriteLine($"Fetching data cache on: {assetIndexURL}", LogType.Debug, true);
+            Logger.WriteLine($"Fetching data cache on: {assetIndexURL}", LogType.Debug, true);
 #endif
 
             // Get a direct HTTP Stream
@@ -196,7 +195,7 @@ namespace CollapseLauncher
                 // then skip it.
                 if (line[0] != '{' && line[^1] != '}')
                 {
-                    LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
+                    Logger.WriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
                     continue;
                 }
 
@@ -209,8 +208,8 @@ namespace CollapseLauncher
                 catch (Exception ex)
                 {
                     // If failed while parsing the file, then skip it.
-                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}",
-                                 LogType.Warning, true);
+                    Logger.WriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}",
+                                     LogType.Warning, true);
                     continue;
                 }
 
@@ -283,7 +282,7 @@ namespace CollapseLauncher
 
                         // Check for the URL availability and is not available, then skip.
                         UrlStatus urlStatus = await client.GetURLStatusCode(content.ConcatURL, cancellationToken);
-                        LogWriteLine($"The Cache {type} asset: {content.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                        Logger.WriteLine($"The Cache {type} asset: {content.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
                         if (!urlStatus.IsSuccessStatusCode) return;
                     }

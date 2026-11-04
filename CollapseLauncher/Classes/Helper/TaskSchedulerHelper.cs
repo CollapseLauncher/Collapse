@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.TaskScheduler;
@@ -52,7 +52,7 @@ internal static class TaskSchedulerHelper
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"An error occurred while trying to check TaskSchedulerUtil.IsEnabled\r\n{ex}",
+            Logger.WriteLine($"An error occurred while trying to check TaskSchedulerUtil.IsEnabled\r\n{ex}",
                                 LogType.Error,
                                 true);
             SentryHelper.ExceptionHandler(ex);
@@ -80,7 +80,7 @@ internal static class TaskSchedulerHelper
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"An error occurred while trying to toggle Task Scheduler Task using TaskSchedulerUtil.ToggleTask\r\n{ex}",
+            Logger.WriteLine($"An error occurred while trying to toggle Task Scheduler Task using TaskSchedulerUtil.ToggleTask\r\n{ex}",
                                 LogType.Error,
                                 true);
             SentryHelper.ExceptionHandler(ex);
@@ -127,7 +127,7 @@ internal static class TaskSchedulerHelper
         {
             string msg = $"An error occurred while opening existing icon file at: {iconLocation}";
             SentryHelper.ExceptionHandler(new Exception(msg, ex));
-            Logger.LogWriteLine(msg + $"\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine(msg + $"\r\n{ex}", LogType.Error, true);
         }
         
         // Set params on the shortcut instance

@@ -4,7 +4,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
@@ -18,7 +18,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable InconsistentNaming
@@ -58,7 +57,7 @@ public partial class HomePage
             using Process collapseProcess = Process.GetCurrentProcess();
             collapseProcess.PriorityBoostEnabled = false;
             collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
-            LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
+            Logger.WriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                          $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
 
             double lastSlideshowDuration = ImageCarouselEventSlideshow.SlideshowDuration;
@@ -67,7 +66,7 @@ public partial class HomePage
 
             collapseProcess.PriorityBoostEnabled = true;
             collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
-            LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
+            Logger.WriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                          $"PriorityBoost is on, carousel is started", LogType.Default, true);
 
             ImageCarouselEventSlideshow.SlideshowDuration = lastSlideshowDuration;
@@ -75,7 +74,7 @@ public partial class HomePage
         catch (Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -87,12 +86,12 @@ public partial class HomePage
             WindowsHDR.Load(gameSetings);
             GenshinHDR.isHDR = true;
             GenshinHDR.Save();
-            LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
+            Logger.WriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
         }
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -109,7 +108,7 @@ public partial class HomePage
                 await Task.Delay(1000); // Waiting the process to be found
             }
 
-            LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
+            Logger.WriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                          $"Target Process : {processName} [{processId}]", LogType.Default, true);
 
             // Wait 20 (or 10 if it's not first try) seconds before applying
@@ -125,7 +124,7 @@ public partial class HomePage
             // Check early exit
             if (!gameProp.GetIsGameProcessRunning(processId))
             {
-                LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} [{processId}] has exited!",
+                Logger.WriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} [{processId}] has exited!",
                              LogType.Warning, true);
                 return;
             }
@@ -138,19 +137,19 @@ public partial class HomePage
             
             if (!result && lastError != 0)
             {
-                LogWriteLine($"[HomePage::GameBoost_Invoke] Failed to boost game process {processName} [{processId}] " +
+                Logger.WriteLine($"[HomePage::GameBoost_Invoke] Failed to boost game process {processName} [{processId}] " +
                              $"priority to Above Normal! Last Win32 Error: {lastError}",
                              LogType.Error, true);
                 throw new Win32Exception(lastError);
             }
 
             GameBoostInvokeTryCount = 0;
-            LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} " +
+            Logger.WriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} " +
                          $"[{processId}] priority is boosted to above normal!", LogType.Warning, true);
         }
         catch (Exception ex) when (GameBoostInvokeTryCount < 5)
         {
-            LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
+            Logger.WriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
                          $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
                          $"\tTarget Process : {processName} [{processId}]\r\n{ex}",
                          LogType.Error, true);
@@ -159,7 +158,7 @@ public partial class HomePage
         }
         catch (Exception ex)
         {
-            LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
+            Logger.WriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                          $"\tTarget Process : {processName} [{processId}]\r\n{ex}",
                          LogType.Error, true);
         }
@@ -215,7 +214,7 @@ public partial class HomePage
         if (reg != null)
             return true;
 
-        LogWriteLine($"Media pack is not installed!\r\n\t" +
+        Logger.WriteLine($"Media pack is not installed!\r\n\t" +
                      $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t" +
                      $"{Path.Combine(AppExecutableDir, "Misc", "InstallMediaPack.cmd")}", LogType.Warning, true);
 

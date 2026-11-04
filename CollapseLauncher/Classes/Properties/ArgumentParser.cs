@@ -1,11 +1,11 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
@@ -65,7 +65,7 @@ namespace CollapseLauncher
 
                 if (AllowedProtocolCommands.IndexOf(args[0]) == -1)
                 {
-                    LogWriteLine("This command does not exist or cannot be activated using a protocol.", LogType.Error);
+                    Logger.WriteLine("This command does not exist or cannot be activated using a protocol.", LogType.Error);
                     m_appMode = AppMode.Launcher;
                     return;
                 }

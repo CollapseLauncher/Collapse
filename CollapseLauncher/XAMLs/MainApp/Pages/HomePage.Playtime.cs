@@ -1,6 +1,6 @@
 using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.Helper;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -88,7 +87,7 @@ public partial class HomePage
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Failed when trying to sync playtime to database!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Failed when trying to sync playtime to database!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
                 
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default

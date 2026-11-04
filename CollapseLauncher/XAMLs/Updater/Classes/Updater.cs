@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
-using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using System;
@@ -118,7 +118,7 @@ public partial class Updater
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Failed while running update via Squirrel. Fallback to legacy method...\r\n{ex}",
+            Logger.WriteLine($"Failed while running update via Squirrel. Fallback to legacy method...\r\n{ex}",
                                 LogType.Error, true);
             _isUseLegacyDownload = true;
             await StartLegacyUpdate();
@@ -166,7 +166,7 @@ public partial class Updater
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(new InvalidDataException($"Failed while reading FileVersionInfo of {fileInfo.FullName}", ex));
-                Logger.LogWriteLine($"Failed while reading FileVersionInfo of {fileInfo.FullName}");
+                Logger.WriteLine($"Failed while reading FileVersionInfo of {fileInfo.FullName}");
             }
 
             return false;
@@ -224,7 +224,7 @@ public partial class Updater
         filePath = Path.Combine(AppExecutableDir, $@"..\current\{Path.GetFileName(AppExecutablePath)}");
         if (!Version.TryParse(latestVersionString, out Version latestVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] latestVersionString is not valid! {latestVersionString}", LogType.Error, true);
+            Logger.WriteLine($"[Updater::DoesLatestVersionExist] latestVersionString is not valid! {latestVersionString}", LogType.Error, true);
             return false;
         }
 
@@ -240,7 +240,7 @@ public partial class Updater
         // Otherwise, try compare the version info.
         if (!Version.TryParse(toCheckVersionInfo.FileVersion, out Version currentVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.FileVersion is not valid! {toCheckVersionInfo.FileVersion}", LogType.Error, true);
+            Logger.WriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.FileVersion is not valid! {toCheckVersionInfo.FileVersion}", LogType.Error, true);
             return false;
         }
 
@@ -291,7 +291,7 @@ public partial class Updater
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"Failed to suicide\r\n{ex}", LogType.Error);
+                Logger.WriteLine($"Failed to suicide\r\n{ex}", LogType.Error);
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Environment.Exit(100);
             }

@@ -4,9 +4,9 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using ColorThiefDotNet;
 using FFmpegInteropX;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
@@ -197,7 +197,7 @@ internal static class ColorPaletteUtility
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[ColorPaletteUtility::TryGetCachedPaletteData] Failed to get cached palette data due to an error\r\n{ex}",
+            Logger.WriteLine($"[ColorPaletteUtility::TryGetCachedPaletteData] Failed to get cached palette data due to an error\r\n{ex}",
                                 LogType.Error,
                                 true);
             SentryHelper.ExceptionHandler(ex);
@@ -346,7 +346,7 @@ internal static class ColorPaletteUtility
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[ColorPaletteUtility::GetMediaFrameStream] Failed to get media frame stream\r\n{ex}",
+            Logger.WriteLine($"[ColorPaletteUtility::GetMediaFrameStream] Failed to get media frame stream\r\n{ex}",
                                 LogType.Error,
                                 true);
             SentryHelper.ExceptionHandler(ex);

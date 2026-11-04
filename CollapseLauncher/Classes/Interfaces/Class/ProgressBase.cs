@@ -4,11 +4,11 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.SimpleZipArchiveReader;
@@ -35,7 +35,8 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using Logger = Hi3Helper.Logger;
+using Logger = Hi3Helper.Log.Logger;
+
 // ReSharper disable AccessToDisposedClosure
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
@@ -610,7 +611,7 @@ internal abstract class ProgressBase : GamePropertyBase
             LogLevel.Error => (true, LogType.Error),
             _ => (true, LogType.Default)
         };
-        Logger.LogWriteLine(e.Message, logPair.logType, logPair.isNeedWriteLog);
+        Logger.WriteLine(e.Message, logPair.logType, logPair.isNeedWriteLog);
     }
     #endregion
 
@@ -856,7 +857,7 @@ internal abstract class ProgressBase : GamePropertyBase
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            Logger.LogWriteLine($"Failed while deleting parent dir: {dirPath}\r\n{ex}", LogType.Warning, true);
+            Logger.WriteLine($"Failed while deleting parent dir: {dirPath}\r\n{ex}", LogType.Warning, true);
         } // Suppress errors
     }
 
@@ -873,7 +874,7 @@ internal abstract class ProgressBase : GamePropertyBase
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            Logger.LogWriteLine($"Failed to delete file: {fileInfo.FullName}\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Failed to delete file: {fileInfo.FullName}\r\n{ex}", LogType.Error, true);
         }
     }
 
@@ -908,14 +909,14 @@ internal abstract class ProgressBase : GamePropertyBase
             try
             {
                 // Try moving the file
-                Logger.LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
+                Logger.WriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
                 fileInfo.MoveTo(destFilePath, true);
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // If failed, flag ErrorOccured as true and skip to the next file 
-                Logger.LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
+                Logger.WriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
                 errorOccured = true;
             }
         }
@@ -935,7 +936,7 @@ internal abstract class ProgressBase : GamePropertyBase
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             // If failed, flag ErrorOccured as true and skip the source directory deletion 
-            Logger.LogWriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
+            Logger.WriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
         }
     }
 
@@ -1107,7 +1108,7 @@ internal abstract class ProgressBase : GamePropertyBase
                                                                remoteNameSelector(asset).Contains(validate.FilePath)));
                                      if (r)
                                      {
-                                         Logger.LogWriteLine($"[EliminatePluginAssetIndex] Removed: {localNameSelector(asset)}", LogType.Warning,
+                                         Logger.WriteLine($"[EliminatePluginAssetIndex] Removed: {localNameSelector(asset)}", LogType.Warning,
                                                       true);
                                      }
                                      return r;
@@ -1905,7 +1906,7 @@ internal abstract class ProgressBase : GamePropertyBase
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Failed while patching file: {inputFile.FullName} -> {outputFile.FullName}\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Failed while patching file: {inputFile.FullName} -> {outputFile.FullName}\r\n{ex}", LogType.Error, true);
         }
         finally
         {

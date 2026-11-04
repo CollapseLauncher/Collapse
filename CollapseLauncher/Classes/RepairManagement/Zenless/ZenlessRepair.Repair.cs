@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -99,7 +99,7 @@ namespace CollapseLauncher
         {
             if (!_repairAssetEntry.TryAdd(asset, 0))
             {
-                Logger.LogWriteLine($"[RepairAssetTypeGeneric] Skipping duplicate assignment for asset:\r\n\tN : {asset.AssetIndex.N}\r\n\tT : {asset.AssetIndex.FT}", LogType.Error, true);
+                Logger.WriteLine($"[RepairAssetTypeGeneric] Skipping duplicate assignment for asset:\r\n\tN : {asset.AssetIndex.N}\r\n\tT : {asset.AssetIndex.FT}", LogType.Error, true);
                 return;
             }
             // Increment total count current
@@ -119,7 +119,7 @@ namespace CollapseLauncher
                 if (fileInfo.Exists)
                 {
                     fileInfo.Delete();
-                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
+                    Logger.WriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
             }
             else
@@ -128,11 +128,11 @@ namespace CollapseLauncher
                 {
                     // Start asset download task
                     await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                    Logger.WriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    Logger.LogWriteLine($"URL for asset {asset.AssetIndex.N} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
+                    Logger.WriteLine($"URL for asset {asset.AssetIndex.N} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
                                  $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
                 }
             }

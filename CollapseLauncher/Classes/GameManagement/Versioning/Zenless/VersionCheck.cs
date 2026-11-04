@@ -1,7 +1,7 @@
 using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
+using Hi3Helper.Log;
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
@@ -51,7 +51,7 @@ namespace CollapseLauncher.GameVersioning
                 OperationStatus base64DecodeStatus = Base64.DecodeFromUtf8InPlace(keyUtf8Base64.AsSpan(0, keyWrittenLen), out int keyFromBase64Len);
                 if (OperationStatus.Done != base64DecodeStatus)
                 {
-                    Logger.LogWriteLine($"OOF, we cannot go to sleep as the bed is collapsing! :( Operation Status: {base64DecodeStatus}", LogType.Error, true);
+                    Logger.WriteLine($"OOF, we cannot go to sleep as the bed is collapsing! :( Operation Status: {base64DecodeStatus}", LogType.Error, true);
                     goto QuitFail;
                 }
 

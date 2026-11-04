@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GamePlaytime
 {
@@ -107,7 +106,7 @@ namespace CollapseLauncher.GamePlaytime
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])stats;
 #if DEBUG
-                    LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
                     playtimeInner = byteStr.Deserialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
                 }
@@ -131,7 +130,7 @@ namespace CollapseLauncher.GamePlaytime
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed while reading playtime.\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while reading playtime.\r\n{ex}", LogType.Error, true);
             }
             finally
             {
@@ -159,7 +158,7 @@ namespace CollapseLauncher.GamePlaytime
                 string data = this.Serialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
-                LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
 #endif
                 _registryRoot.SetValue(StatsValueName, dataByte, RegistryValueKind.Binary);
                 _registryRoot.SetValue(TotalTimeValueName, TotalPlaytime.TotalSeconds, RegistryValueKind.DWord);
@@ -177,7 +176,7 @@ namespace CollapseLauncher.GamePlaytime
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to save playtime!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save playtime!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -295,7 +294,7 @@ namespace CollapseLauncher.GamePlaytime
         /// <returns>true if it requires refresh, false if it doesn't.</returns>
         public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync(bool redirectThrow = false)
         {
-            LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
+            Logger.WriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
             try
             {
                 // Fetch database last update stamp
@@ -306,7 +305,7 @@ namespace CollapseLauncher.GamePlaytime
                 var unixStampLocal = Convert.ToInt32(DbConfig.GetConfig(KeyLastUpdated).ToString());
                 if (_unixStampDb == unixStampLocal) 
                 {
-                    LogWriteLine("[CollapsePlaytime::DbSync] Sync stamp equal, nothing needs to be done~", LogType.Default, true);
+                    Logger.WriteLine("[CollapsePlaytime::DbSync] Sync stamp equal, nothing needs to be done~", LogType.Default, true);
                     return (false, null); // Do nothing if stamp is equal
                 }
 
@@ -317,16 +316,16 @@ namespace CollapseLauncher.GamePlaytime
                     await UpdatePlaytime_Database_Pull();
                     if (!_isDbPullSuccess) 
                     {
-                        LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
+                        Logger.WriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
                         return (false, null); // Return if pull failed
                     }
                     
                     if (string.IsNullOrWhiteSpace(_jsonDataDb))
                     {
-                        LogWriteLine("[CollapsePlaytime::DbSync] _jsonDataDb is empty, skipping sync~", default, true);
+                        Logger.WriteLine("[CollapsePlaytime::DbSync] _jsonDataDb is empty, skipping sync~", default, true);
                         return (false, null);
                     }
-                    LogWriteLine("[CollapsePlaytime::DbSync] Database data is newer! Pulling data~", LogType.Default, true);
+                    Logger.WriteLine("[CollapsePlaytime::DbSync] Database data is newer! Pulling data~", LogType.Default, true);
                     CollapsePlaytime? playtimeInner = _jsonDataDb.Deserialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime,
                                                         new CollapsePlaytime());
 
@@ -351,14 +350,14 @@ namespace CollapseLauncher.GamePlaytime
                     return (false, null);
                 }
 
-                LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
+                Logger.WriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
                 Save(true);
                 return (false, null);
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"[CollapsePlaytime::DbSync] Failed when trying to do sync operation\r\n{ex}",
+                Logger.WriteLine($"[CollapsePlaytime::DbSync] Failed when trying to do sync operation\r\n{ex}",
                              LogType.Error, true);
                 if (redirectThrow)
                 {
@@ -386,12 +385,12 @@ namespace CollapseLauncher.GamePlaytime
                 DbConfig.SetAndSaveValue(KeyLastUpdated, unixStamp);
                 _unixStampDb = Convert.ToInt32(unixStamp);
                 LastDbUpdate = curDateTime;
-                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Push()] Successfully uploaded playtime data to database!", LogType.Scheme, true);
+                Logger.WriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Push()] Successfully uploaded playtime data to database!", LogType.Scheme, true);
             }
             catch (Exception e)
             {
                 await SentryHelper.ExceptionHandlerAsync(e, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
+                Logger.WriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
             }
             finally
             {
@@ -420,13 +419,13 @@ namespace CollapseLauncher.GamePlaytime
                     : null; // if Db data is null, return null
                 
                 _isDbPullSuccess = true;
-                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Pull()] Successfully pulled data from database!",
+                Logger.WriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Pull()] Successfully pulled data from database!",
                              LogType.Scheme, true);
             }
             catch (Exception e)
             {
                 await SentryHelper.ExceptionHandlerAsync(e, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
+                Logger.WriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
             }
             finally
             {

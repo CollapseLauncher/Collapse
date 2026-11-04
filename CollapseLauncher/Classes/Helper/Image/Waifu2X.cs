@@ -1,4 +1,4 @@
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System;
 using System.IO;
@@ -120,18 +120,18 @@ namespace CollapseLauncher.Helper.Image
                 if (Status == Waifu2XStatus.Ok)
                     gpuId = Ncnn.DefaultGpuIndex;
                 _context = Waifu2XPInvoke.waifu2x_create(gpuId, false, 0);
-                Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
+                Logger.WriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
             catch ( DllNotFoundException ex )
             {
                 Status = Waifu2XStatus.NotAvailable;
-                Logger.LogWriteLine("Dll file \"waifu2x-ncnn-vulkan.dll\" can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
+                Logger.WriteLine("Dll file \"waifu2x-ncnn-vulkan.dll\" can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
             catch ( Exception ex )
             {
                 Status = Waifu2XStatus.Error;
-                Logger.LogWriteLine($"There was an error when loading Waifu2X!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"There was an error when loading Waifu2X!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
@@ -146,7 +146,7 @@ namespace CollapseLauncher.Helper.Image
             Waifu2XPInvoke.waifu2x_destroy(_context);
             _context = 0;
             Status   = Waifu2XStatus.NotInitialized;
-            Logger.LogWriteLine("Waifu2X is destroyed!");
+            Logger.WriteLine("Waifu2X is destroyed!");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -172,7 +172,7 @@ namespace CollapseLauncher.Helper.Image
             catch (IOException ex)
             {
                 Status = Waifu2XStatus.TestNotPassed;
-                Logger.LogWriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
+                Logger.WriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return false;
             }
@@ -216,24 +216,24 @@ namespace CollapseLauncher.Helper.Image
             {
                 if (CheckD3DMappingLayersPackageInstalled())
                 {
-                    Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
+                    Logger.WriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
                     return Waifu2XStatus.D3DMappingLayers;
                 }
                 Waifu2XStatus status = Waifu2XPInvoke.waifu2x_self_test(0);
                 switch (status)
                 {
                     case Waifu2XStatus.CpuMode:
-                        Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
+                        Logger.WriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
                         break;
                     case Waifu2XStatus.NotAvailable:
-                        Logger.LogWriteLine("An error occurred while initializing Vulkan. Fallback to CPU mode.", LogType.Warning, true);
+                        Logger.WriteLine("An error occurred while initializing Vulkan. Fallback to CPU mode.", LogType.Warning, true);
                         status = Waifu2XStatus.CpuMode;
                         break;
                     case Waifu2XStatus.Ok:
-                        Logger.LogWriteLine("Vulkan test passes and GPU mode can be used.", LogType.Default, true);
+                        Logger.WriteLine("Vulkan test passes and GPU mode can be used.", LogType.Default, true);
                         break;
                     default:
-                        Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
+                        Logger.WriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
                         status = Waifu2XStatus.NotAvailable;
                         break;
                 }
@@ -251,7 +251,7 @@ namespace CollapseLauncher.Helper.Image
             static Waifu2XStatus ReturnAsFailedDllInit<T>(T ex)
                 where T : Exception
             {
-                Logger.LogWriteLine($"Cannot load Waifu2X as the library failed to load!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Cannot load Waifu2X as the library failed to load!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return Waifu2XStatus.Error;
             }
@@ -268,16 +268,16 @@ namespace CollapseLauncher.Helper.Image
             switch (Status)
             {
                 case Waifu2XStatus.TestNotPassed:
-                    Logger.LogWriteLine("Waifu2X self-test failed, got an empty output image.", LogType.Error, true);
+                    Logger.WriteLine("Waifu2X self-test failed, got an empty output image.", LogType.Error, true);
                     break;
                 case Waifu2XStatus.NotAvailable:
-                    Logger.LogWriteLine("An error occurred while processing the image.", LogType.Error, true);
+                    Logger.WriteLine("An error occurred while processing the image.", LogType.Error, true);
                     break;
                 case Waifu2XStatus.Ok:
-                    Logger.LogWriteLine("Waifu2X self-test passed, you can use Waifu2X function normally.", LogType.Default, true);
+                    Logger.WriteLine("Waifu2X self-test passed, you can use Waifu2X function normally.", LogType.Default, true);
                     break;
                 default:
-                    Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
+                    Logger.WriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
                     Status = Waifu2XStatus.NotAvailable;
                     break;
             }

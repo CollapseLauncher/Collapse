@@ -23,8 +23,8 @@ using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI;
 using FFmpegInteropX;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -60,7 +60,7 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable AsyncVoidMethod
@@ -406,7 +406,7 @@ namespace CollapseLauncher.Pages
                     {
                         string msg = $"An error occurred while attempting to clear metadata folder. Exception stacktrace below:\r\n{ex}";
                         ErrorSender.SendException(ex);
-                        LogWriteLine(msg, LogType.Error, true);
+                        Logger.WriteLine(msg, LogType.Error, true);
                     }
                     break;
                 // ReSharper disable once RedundantEmptySwitchSection
@@ -446,7 +446,7 @@ namespace CollapseLauncher.Pages
             {
                 string msg = $"An error occurred while attempting to clear image folder. Exception stacktrace below:\r\n{ex}";
                 ErrorSender.SendException(ex);
-                LogWriteLine(msg, LogType.Error, true);
+                Logger.WriteLine(msg, LogType.Error, true);
             }
             finally
             {
@@ -627,7 +627,7 @@ namespace CollapseLauncher.Pages
 
             if (userFeedbackResult == null)
             {
-                LogWriteLine("User feedback dialog cancelled!");
+                Logger.WriteLine("User feedback dialog cancelled!");
                 return;
             }
 
@@ -641,7 +641,7 @@ namespace CollapseLauncher.Pages
             
             if (parsedFeedback == null)
             {
-                LogWriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
+                Logger.WriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
                 LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                 await Task.Delay(1000);
                 LoadingMessageHelper.HideLoadingFrame();
@@ -1038,7 +1038,7 @@ namespace CollapseLauncher.Pages
                         SetAndSaveConfigValue("GameLaunchedBehavior", "Nothing");
                         break;
                     default:
-                        LogWriteLine("Invalid GameLaunchedBehavior selection! Reverting to default 'Minimize'", LogType.Error, true);
+                        Logger.WriteLine("Invalid GameLaunchedBehavior selection! Reverting to default 'Minimize'", LogType.Error, true);
                         SetAndSaveConfigValue("GameLaunchedBehavior", "Minimize");
                         break;
                 }
@@ -1840,7 +1840,7 @@ namespace CollapseLauncher.Pages
             if (!string.IsNullOrEmpty(key) && t.IsElementVisible())
                 _settingsControls.TryAdd(key, t);
         #if DEBUG
-            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+            Logger.WriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
         #endif
         }
 
@@ -1891,7 +1891,7 @@ namespace CollapseLauncher.Pages
 
                 _settingsControls.TryAdd(key, t);
             #if DEBUG
-                LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                Logger.WriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
             #endif
                 break;
             }
@@ -1980,7 +1980,7 @@ namespace CollapseLauncher.Pages
                 }
                 
             #if DEBUG
-                LogWriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
+                Logger.WriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
             #endif
 
                 if (control is TextBlock textBlock)
@@ -2155,13 +2155,13 @@ namespace CollapseLauncher.Pages
                 MethodInfo? method = _dialogMethods.FirstOrDefault(m => m.Name == SelectedDialogMethodName);
                 if (method == null)
                 {
-                    LogWriteLine("[DBG-DialogSpawner] No method found.", LogType.Debug);
+                    Logger.WriteLine("[DBG-DialogSpawner] No method found.", LogType.Debug);
                     return;
                 }
 
-                LogWriteLine($"[DBG-DialogSpawner] Invoking method: {method.Name}",              LogType.Debug);
-                LogWriteLine($"[DBG-DialogSpawner] Parameters: {method.GetParameters().Length}", LogType.Debug);
-                LogWriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}",            LogType.Debug);
+                Logger.WriteLine($"[DBG-DialogSpawner] Invoking method: {method.Name}",              LogType.Debug);
+                Logger.WriteLine($"[DBG-DialogSpawner] Parameters: {method.GetParameters().Length}", LogType.Debug);
+                Logger.WriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}",            LogType.Debug);
 
                 ParameterInfo[] parameters = method.GetParameters();
                 object[]? parameterValues = null;
@@ -2170,11 +2170,11 @@ namespace CollapseLauncher.Pages
                     parameterValues = await ShowDebugParameterInputDialog(method);
                     if (parameterValues == null)
                     {
-                        LogWriteLine("[DBG-DialogSpawner] Parameter input dialog was cancelled.", LogType.Warning);
+                        Logger.WriteLine("[DBG-DialogSpawner] Parameter input dialog was cancelled.", LogType.Warning);
                         return;
                     }
                 }
-                LogWriteLine("[DBG-DialogSpawner] Invoking method with parameters: " + 
+                Logger.WriteLine("[DBG-DialogSpawner] Invoking method with parameters: " + 
                              (parameterValues != null ? string.Join(", ", parameterValues) : "None"), LogType.Debug);
                 object? result = method.Invoke(null, parameterValues);
                 if (result is Task<ContentDialogResult> task)
@@ -2183,12 +2183,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    LogWriteLine("[DBG-DialogSpawner] Method did not return a ContentDialogResult task.", LogType.Warning);
+                    Logger.WriteLine("[DBG-DialogSpawner] Method did not return a ContentDialogResult task.", LogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine("[DBG-DialogSpawner] Exception: " + ex, LogType.Error);
+                Logger.WriteLine("[DBG-DialogSpawner] Exception: " + ex, LogType.Error);
                 await SpawnDialog(
                                   "Error",
                                   ex.ToString(),
@@ -2297,7 +2297,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
             }
         }
@@ -2348,7 +2348,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Cannot clear CDN cache!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Cannot clear CDN cache!\r\n{ex}", LogType.Error, true);
             }
             finally
             {

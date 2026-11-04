@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -10,7 +10,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 
 namespace CollapseLauncher
@@ -118,7 +117,7 @@ namespace CollapseLauncher
                                                    ))
                         );
 
-                LogWriteLine($"File: {asset.ConcatPath} is unused!", LogType.Warning, true);
+                Logger.WriteLine($"File: {asset.ConcatPath} is unused!", LogType.Warning, true);
             }
         }
 
@@ -181,7 +180,7 @@ namespace CollapseLauncher
                 asset.Status = assetStatus;
                 returnAsset.Add(asset);
 
-                LogWriteLine($"[T: {asset.DataType}]: {asset.N} found to be \"{assetStatus}\"", LogType.Warning, true);
+                Logger.WriteLine($"[T: {asset.DataType}]: {asset.N} found to be \"{assetStatus}\"", LogType.Warning, true);
             }
 
             // Add to asset entry display

@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Microsoft.Win32.SafeHandles;
@@ -146,7 +146,7 @@ public partial class SpeedLimiterService : NotifyPropertyChanged
 
         if (Marshal.GetExceptionForHR(hr) is {} exception)
         {
-            Logger.LogWriteLine($"Failed while trying to set throttle bytes value to: {currentSetBytes} bytes.\r\n{exception}",
+            Logger.WriteLine($"Failed while trying to set throttle bytes value to: {currentSetBytes} bytes.\r\n{exception}",
                                 LogType.Error,
                                 true);
         }

@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System.Collections.Generic;
 using System.Data;
@@ -31,7 +31,7 @@ internal static partial class MetadataHelper
                 if (dict.TryAdd(key, stamp)) continue;
 
                 SentryHelper.ExceptionHandler(new DuplicateNameException($"Stamp type: {type} with key: {key} (HashCode: {stamp.GetHashCode()} was found duplicated!"));
-                Logger.LogWriteLine($"[MetadataHelper::InitializeStampAsync] Stamp type: {type} with key: \"{key}\" has been added previously. Skipping...",
+                Logger.WriteLine($"[MetadataHelper::InitializeStampAsync] Stamp type: {type} with key: \"{key}\" has been added previously. Skipping...",
                                     LogType.Warning,
                                     true);
             }

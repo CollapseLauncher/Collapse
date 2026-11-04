@@ -2,7 +2,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
@@ -116,7 +116,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 return false;
             }
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
+            Logger.WriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousGameConversionFailed())

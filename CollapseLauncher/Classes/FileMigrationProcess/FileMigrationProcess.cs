@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
 using System;
@@ -114,13 +114,13 @@ namespace CollapseLauncher
 
             if (IsSameOutputDrive)
             {
-                Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
+                Logger.WriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
                 inputPathInfo.MoveTo(outputPathInfo.FullName, true);
                 UpdateSizeProcessed(uiRef, inputPathInfo.Length);
             }
             else
             {
-                Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
+                Logger.WriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
                 await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, TokenSource?.Token ?? CancellationToken.None);
             }
 
@@ -203,7 +203,7 @@ namespace CollapseLauncher
                     }
 
                     Directory.Delete(dir);
-                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Empty directory: {dir} has been deleted!", LogType.Default, true);
+                    Logger.WriteLine($"[FileMigrationProcess::MoveDirectory()] Empty directory: {dir} has been deleted!", LogType.Default, true);
                 }
                 catch (IOException)
                 {
@@ -231,13 +231,13 @@ namespace CollapseLauncher
 
                 if (IsSameOutputDrive)
                 {
-                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
+                    Logger.WriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
                     inputFileInfo.MoveTo(outputNewFilePath, true);
                     UpdateSizeProcessed(uiRef, inputFileInfo.Length);
                 }
                 else
                 {
-                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
+                    Logger.WriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
                     FileInfo outputFileInfo = new(outputNewFilePath);
                     await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
                 }

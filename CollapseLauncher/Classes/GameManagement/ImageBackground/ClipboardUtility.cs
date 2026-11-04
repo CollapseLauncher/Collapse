@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -44,7 +44,7 @@ public static class ClipboardUtility
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[ImageBackgroundManager::CopyCurrentFrameToClipboard] An error occurred while trying to copy current background frame to clipboard\r\n{ex}",
+            Logger.WriteLine($"[ImageBackgroundManager::CopyCurrentFrameToClipboard] An error occurred while trying to copy current background frame to clipboard\r\n{ex}",
                                 LogType.Error,
                                 true);
         }

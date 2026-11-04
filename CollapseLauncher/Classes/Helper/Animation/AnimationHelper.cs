@@ -1,6 +1,6 @@
 using CollapseLauncher.Extension;
-using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
@@ -155,7 +155,7 @@ namespace CollapseLauncher.Helper.Animation
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[AnimationHelper::EnableImplicitAnimation()] Error has occurred while assigning Implicit Animation to the element!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"[AnimationHelper::EnableImplicitAnimation()] Error has occurred while assigning Implicit Animation to the element!\r\n{ex}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 }
 

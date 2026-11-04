@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Data;
 using System;

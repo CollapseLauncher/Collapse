@@ -2,7 +2,7 @@
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
@@ -66,12 +66,12 @@ namespace CollapseLauncher.Pages
             }
             catch (TaskCanceledException)
             {
-                Logger.LogWriteLine("Update countdown has been cancelled!", LogType.Default, true);
+                Logger.WriteLine("Update countdown has been cancelled!", LogType.Default, true);
             }
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                Logger.LogWriteLine($"Update has failed!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Update has failed!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -102,11 +102,11 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-                Logger.LogWriteLine("Update has been canceled!", LogType.Warning, true);
+                Logger.WriteLine("Update has been canceled!", LogType.Warning, true);
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"Error occurred while updating the launcher!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error occurred while updating the launcher!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
                 ForceInvokeUpdate = true;
                 LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { QuitFromUpdateMenu = true });

@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Plugins;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.Structs.Dns.RecordDataType;
 using System;
@@ -185,7 +185,7 @@ namespace CollapseLauncher.Helper
                     if (!Enum.TryParse(inputConnType, true, out connType))
                     {
                         connType = DnsConnectionType.DoH;
-                        Logger.LogWriteLine($"[HttpClientBuilder<T>::TryParseDnsConnectionType] Cannot parse the connection type token. Falling back to DoH. Current string: {inputConnType.ToString()}", LogType.Error, true);
+                        Logger.WriteLine($"[HttpClientBuilder<T>::TryParseDnsConnectionType] Cannot parse the connection type token. Falling back to DoH. Current string: {inputConnType.ToString()}", LogType.Error, true);
                         return false;
                     }
 
@@ -351,7 +351,7 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            Logger.LogWriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
+            Logger.WriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
         }
 
         private static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
@@ -371,7 +371,7 @@ namespace CollapseLauncher.Helper
 
                 if (!IPAddress.TryParse(currentHostLocal, out IPAddress? addressFromString))
                 {
-                    Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
+                    Logger.WriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
                     continue;
                 }
 
@@ -452,7 +452,7 @@ namespace CollapseLauncher.Helper
                 return (returnTuple.Value.Item1, returnTuple.Value.Item2);
             }
 
-            Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host}. Trying to fallback...", LogType.Warning, true);
+            Logger.WriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host}. Trying to fallback...", LogType.Warning, true);
             DnsConnectionType[] restToTryType = Enum.GetValues<DnsConnectionType>();
             foreach (DnsConnectionType connType in restToTryType)
             {
@@ -465,7 +465,7 @@ namespace CollapseLauncher.Helper
                 }
 
                 if (lastException != null)
-                    Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host} while using {connType} fallback connection. Ensure your ISP doesn't block the necessary ports.", LogType.Warning, true);
+                    Logger.WriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host} while using {connType} fallback connection. Ensure your ISP doesn't block the necessary ports.", LogType.Warning, true);
             }
 
             if (lastException != null)

@@ -1,3 +1,4 @@
+using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using Sentry;
 using Sentry.Protocol;
@@ -99,7 +100,7 @@ namespace Hi3Helper.SentryHelper
                     return LauncherConfig.GetAppConfigValue("SendRemoteCrashData");
                 }
 
-                Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
+                Logger.WriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
                 LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
                 return false;
             }
@@ -185,8 +186,7 @@ namespace Hi3Helper.SentryHelper
                              }
                              catch (Exception ex)
                              {
-                                 Logger
-                                    .LogWriteLine($"Failed when preparing to stop SentryInstance, Dispose will still be invoked!\r\n{ex}",
+                                 Logger.WriteLine($"Failed when preparing to stop SentryInstance, Dispose will still be invoked!\r\n{ex}",
                                                   LogType.Error, true);
                              }
                              finally
@@ -242,8 +242,8 @@ namespace Hi3Helper.SentryHelper
             if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
             if (ex is TaskCanceledException or OperationCanceledException)
             {
-                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                    LogType.Sentry);
+                Logger.WriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                 LogType.Sentry);
                 return Guid.Empty;
             }
 
@@ -264,8 +264,8 @@ namespace Hi3Helper.SentryHelper
             if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
             if (ex is TaskCanceledException or OperationCanceledException)
             {
-                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                    LogType.Sentry);
+                Logger.WriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                 LogType.Sentry);
                 return;
             }
 
@@ -321,8 +321,8 @@ namespace Hi3Helper.SentryHelper
                 if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
                 if (ex is TaskCanceledException or OperationCanceledException)
                 {
-                    Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                        LogType.Sentry);
+                    Logger.WriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                     LogType.Sentry);
                     return Guid.Empty;
                 }
 
@@ -358,8 +358,8 @@ namespace Hi3Helper.SentryHelper
             }
             catch (Exception err)
             {
-                Logger.LogWriteLine($"[SentryHelper::ExceptionHandler_ForLoopAsync] Failed to send exception!\r\n{err}",
-                                    LogType.Error, true);
+                Logger.WriteLine($"[SentryHelper::ExceptionHandler_ForLoopAsync] Failed to send exception!\r\n{err}",
+                                 LogType.Error, true);
                 return Guid.Empty;
             }
             finally
@@ -464,20 +464,20 @@ namespace Hi3Helper.SentryHelper
         {
             if (sentryId == Guid.Empty)
             {
-                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!",
-                                    LogType.Error,
-                                    true);
+                Logger.WriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!",
+                                 LogType.Error,
+                                 true);
                 return false;
             }
 
             if (!IsEnabled)
             {
-                Logger.LogWriteLine("[SendExceptionFeedback] Sentry is disabled, feedback will not be sent!",
-                                    LogType.Error, true);
+                Logger.WriteLine("[SendExceptionFeedback] Sentry is disabled, feedback will not be sent!",
+                                 LogType.Error, true);
                 return false;
             }
 
-            SentryId sId = new SentryId(sentryId);
+            SentryId sId = new(sentryId);
             SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
             return true;
         }
@@ -486,8 +486,8 @@ namespace Hi3Helper.SentryHelper
         {
             if (!IsEnabled)
             {
-                Logger.LogWriteLine("[SendGenericFeedback] Sentry is disabled, feedback will not be sent!",
-                                    LogType.Error, true);
+                Logger.WriteLine("[SendGenericFeedback] Sentry is disabled, feedback will not be sent!",
+                                 LogType.Error, true);
                 return false;
             }
 

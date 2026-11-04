@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Threading;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -134,7 +133,7 @@ namespace CollapseLauncher
                     _client.BaseAddress = new Uri(markdownUri);
                     using HttpResponseMessage response = await _client.GetAsync(markdownUri, HttpCompletionOption.ResponseHeadersRead);
 
-                    LogWriteLine($"[MarkdownFramePage] Loading Markdown from URL {markdownUri}\r\n" +
+                    Logger.WriteLine($"[MarkdownFramePage] Loading Markdown from URL {markdownUri}\r\n" +
                                  $"{response.EnsureSuccessStatusCode()}",
                                  LogType.Scheme);
 
@@ -156,14 +155,14 @@ namespace CollapseLauncher
             {
                 if (webUri != null)
                 {
-                    LogWriteLine($"Error while initialize Markdown. Open it to browser instead!\r\n{ex}",
+                    Logger.WriteLine($"Error while initialize Markdown. Open it to browser instead!\r\n{ex}",
                                  LogType.Error,
                                  true);
                     OpenWebUri();
                 }
                 else
                 {
-                    LogWriteLine($"Error while initializing MarkdownFramePage\r\n{ex}",
+                    Logger.WriteLine($"Error while initializing MarkdownFramePage\r\n{ex}",
                                  LogType.Error,
                                  true);
                     var exFormat = new Exception("Error while initializing MarkdownFramePage",

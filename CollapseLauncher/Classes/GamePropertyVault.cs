@@ -1,8 +1,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.LocaleSourceGen;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -74,7 +74,7 @@ internal static class GamePropertyVault
         if (Vault.TryGetValue(gamePreset, out GamePresetProperty? value))
         {
         #if DEBUG
-            Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset}", LogType.Debug, true);
+            Logger.WriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset}", LogType.Debug, true);
         #endif
             value.GameVersion?.Reinitialize();
             UpdateSentryState(value);
@@ -85,7 +85,7 @@ internal static class GamePropertyVault
         UpdateSentryState(property);
         _ = Vault.TryAdd(gamePreset, property);
     #if DEBUG
-        Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property for preset: {gamePreset}", LogType.Debug, true);
+        Logger.WriteLine($"[GamePropertyVault] Creating & caching game property for preset: {gamePreset}", LogType.Debug, true);
     #endif
     }
 
@@ -116,7 +116,7 @@ internal static class GamePropertyVault
         foreach (int key in unusedGamePropertyHashID)
         {
         #if DEBUG
-            Logger.LogWriteLine($"[GamePropertyVault] Cleaning up unused game property by Hash ID: {key}", LogType.Debug, true);
+            Logger.WriteLine($"[GamePropertyVault] Cleaning up unused game property by Hash ID: {key}", LogType.Debug, true);
         #endif
             Vault.Remove(key, out _);
         }
@@ -160,13 +160,13 @@ internal static class GamePropertyVault
                 {
                     value.Dispose();
 #if DEBUG
-                    Logger.LogWriteLine($"[GamePropertyVault] A preset property at index: {i} for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
+                    Logger.WriteLine($"[GamePropertyVault] A preset property at index: {i} for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
 #endif
                     return;
                 }
 
 #if DEBUG
-                Logger.LogWriteLine($"[GamePropertyVault] Cannot dispose the preset property as it cannot be detached from vault on index: {i}", LogType.Debug, true);
+                Logger.WriteLine($"[GamePropertyVault] Cannot dispose the preset property as it cannot be detached from vault on index: {i}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
@@ -181,7 +181,7 @@ internal static class GamePropertyVault
             {
                 value.Dispose();
 #if DEBUG
-                Logger.LogWriteLine($"[GamePropertyVault] Other preset property for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
+                Logger.WriteLine($"[GamePropertyVault] Other preset property for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
 #endif
             }
 

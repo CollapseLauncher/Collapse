@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.Screen;
 using System.Drawing;
 using System.Text;
@@ -57,7 +57,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             if (SettingsCollapseScreen.UseExclusiveFullscreen)
             {
                 parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
-                Logger.LogWriteLine("Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
+                Logger.WriteLine("Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
             }
 
             /*
@@ -75,7 +75,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
             if (apiID == 4)
             {
-                Logger.LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                Logger.WriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                 if (SettingsCollapseScreen.UseCustomResolution && SettingsScreen.isfullScreen)
                 {
                     var size = ScreenProp.CurrentResolution;

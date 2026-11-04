@@ -4,7 +4,7 @@
 
 #nullable enable
 using CollapseLauncher.Helper;
-using Hi3Helper;
+using Hi3Helper.Log;
 using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml;
@@ -155,7 +155,7 @@ internal class MyImage : IAddChild
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[MyImage::LoadImage()] Failed while loading image from {_uri}\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[MyImage::LoadImage()] Failed while loading image from {_uri}\r\n{ex}", LogType.Error, true);
         }
     }
 

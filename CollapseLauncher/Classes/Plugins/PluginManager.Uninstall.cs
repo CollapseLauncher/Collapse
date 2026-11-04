@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
 using System;
 using System.IO;
@@ -47,7 +47,7 @@ internal static partial class PluginManager
         }
         catch (Exception e)
         {
-            Logger.LogWriteLine($"Failed while trying to uninstall plugin at directory: {pluginDir.FullName} due to an error: {e}", LogType.Error, true);
+            Logger.WriteLine($"Failed while trying to uninstall plugin at directory: {pluginDir.FullName} due to an error: {e}", LogType.Error, true);
         }
     }
 }

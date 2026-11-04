@@ -3,9 +3,9 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using FFmpegInteropX;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
@@ -403,7 +403,7 @@ namespace CollapseLauncher.Pages
             {
                 string message =
                     $"[GamePluginIconConverter::Convert()] Cannot get icon from plugin: {asPluginInfo.Name}";
-                Logger.LogWriteLine(message, LogType.Error, true);
+                Logger.WriteLine(message, LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
             }
 

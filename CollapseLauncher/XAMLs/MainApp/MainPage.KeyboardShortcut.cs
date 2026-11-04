@@ -2,7 +2,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml.Controls;
@@ -17,7 +17,6 @@ using Windows.Foundation;
 using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable CheckNamespace
@@ -162,7 +161,7 @@ public partial class MainPage : Page
         catch (Exception error)
         {
             SentryHelper.ExceptionHandler(error);
-            LogWriteLine(error.ToString());
+            Logger.WriteLine(error.ToString());
             KbShortcutList = null;
             CreateKeyboardShortcutHandlers();
         }
@@ -326,7 +325,7 @@ public partial class MainPage : Page
                                                                                _ => "ScreenShot"
                                                                            });
 
-        LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
+        Logger.WriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
 
         if (!Directory.Exists(ScreenshotFolder))
             Directory.CreateDirectory(ScreenshotFolder);
@@ -349,7 +348,7 @@ public partial class MainPage : Page
             if (!IsGameInstalled()) return;
 
             string GameFolder = NormalizePath(GameDirPath);
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            Logger.WriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
             await Task.Run(() =>
                                new Process
                                {
@@ -363,7 +362,7 @@ public partial class MainPage : Page
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
     }
@@ -379,7 +378,7 @@ public partial class MainPage : Page
                                  null;
 
             if (string.IsNullOrEmpty(gameFolder)) return;
-            LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
+            Logger.WriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
             await Task.Run(() =>
                                new Process
                                {
@@ -393,7 +392,7 @@ public partial class MainPage : Page
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
     }
@@ -414,14 +413,14 @@ public partial class MainPage : Page
             Process[] gameProcess = Process.GetProcessesByName(gamePresetExecName.Split('.')[0]);
             foreach (Process p in gameProcess)
             {
-                LogWriteLine($"Trying to stop game process {gamePresetExecName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                Logger.WriteLine($"Trying to stop game process {gamePresetExecName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                 p.Kill();
             }
         }
         catch (Win32Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            Logger.WriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
         }
     }
     private void GoGameRepair_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)

@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -91,7 +91,7 @@ internal static class CollapsePInvoke
         bool isLoadSuccessful = NativeLibrary.TryLoad(path, assembly, searchPath, out nint pResult);
         if (isLoadSuccessful)
         {
-            Logger.LogWriteLine($"Successfully loaded dll: {path} using SearchPath: {searchPath} at handlePtr: {pResult}",
+            Logger.WriteLine($"Successfully loaded dll: {path} using SearchPath: {searchPath} at handlePtr: {pResult}",
                                 LogType.Debug,
                                 true);
         }

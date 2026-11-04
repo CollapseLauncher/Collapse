@@ -1,7 +1,7 @@
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Graphics.Canvas;
@@ -26,7 +26,6 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using WinRT;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 
@@ -81,7 +80,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", LogType.Error, true);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -125,7 +124,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -144,7 +143,7 @@ namespace CollapseLauncher.Pages
                 // Why is this not the default behavior instead of throwing errors? I don't know ask Microsoft
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
+                    Logger.WriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     GammaValue.Value = args.OldValue;
                 }
                 else
@@ -167,7 +166,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error when processing Gamma NumberBox!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error when processing Gamma NumberBox!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -177,7 +176,7 @@ namespace CollapseLauncher.Pages
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"MaxLuminosity value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
+                    Logger.WriteLine($"MaxLuminosity value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     MaxLuminosityValue.Value = args.OldValue;
                 }
                 else
@@ -200,7 +199,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error when processing MaxLuminosity NumberBox!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error when processing MaxLuminosity NumberBox!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -210,7 +209,7 @@ namespace CollapseLauncher.Pages
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"UiPaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
+                    Logger.WriteLine($"UiPaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     UiPaperWhiteValue.Value = args.OldValue;
                 }
                 else
@@ -233,7 +232,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error when processing UiPaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error when processing UiPaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -243,7 +242,7 @@ namespace CollapseLauncher.Pages
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"ScenePaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
+                    Logger.WriteLine($"ScenePaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     ScenePaperWhiteValue.Value = args.OldValue;
                 }
                 else
@@ -266,7 +265,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error when processing ScenePaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error when processing ScenePaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion

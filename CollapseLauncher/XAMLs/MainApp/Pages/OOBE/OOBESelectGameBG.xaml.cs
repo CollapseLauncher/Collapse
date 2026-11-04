@@ -2,7 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -136,7 +135,7 @@ namespace CollapseLauncher.Pages.OOBE
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while loading poster image!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while loading poster image!\r\n{ex}", LogType.Error, true);
                 return IsSuccess = false;
             }
 

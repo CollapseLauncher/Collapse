@@ -3,8 +3,8 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.SimpleZipArchiveReader;
 using Microsoft.UI.Xaml;
@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
@@ -133,7 +133,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed while deleting old audio folder: {_gameAudioOldPath}\r\n{ex}", LogType.Error,
+                Logger.WriteLine($"Failed while deleting old audio folder: {_gameAudioOldPath}\r\n{ex}", LogType.Error,
                              true);
             }
         }

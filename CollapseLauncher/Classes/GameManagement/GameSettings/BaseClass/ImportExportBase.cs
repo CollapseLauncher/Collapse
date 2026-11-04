@@ -2,9 +2,9 @@
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -85,7 +85,7 @@ namespace CollapseLauncher.GameSettings.Base
                 byte[]                 head = new byte[6];
                 _ = fs.Read(head, 0, head.Length);
 
-                Logger.LogWriteLine($"Importing registry {RegistryPath}...");
+                Logger.WriteLine($"Importing registry {RegistryPath}...");
 
                 string header = Encoding.UTF8.GetString(head);
                 switch (header)
@@ -137,7 +137,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             using EndianBinaryReader reader = new(fs, EndianType.BigEndian, true);
             short                    count  = reader.ReadInt16();
-            Logger.LogWriteLine($"File has {count} values.");
+            Logger.WriteLine($"File has {count} values.");
             while (count-- > 0)
             {
                 string valueName = ReadValueName(reader);
@@ -153,7 +153,7 @@ namespace CollapseLauncher.GameSettings.Base
                     case 3:
                         ReadBinary(reader, valueName); break;
                 }
-                Logger.LogWriteLine($"Value {valueName} imported!");
+                Logger.WriteLine($"Value {valueName} imported!");
             }
         }
 
@@ -161,7 +161,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             bool isCompressed = fs.ReadByte() > 0;
 
-            Logger.LogWriteLine($"Exporting registry V2 {RegistryPath}...");
+            Logger.WriteLine($"Exporting registry V2 {RegistryPath}...");
             int count = ReadInt32(fs);
             using Stream stream = isCompressed ? new BrotliStream(fs, CompressionMode.Decompress) : fs;
             do
@@ -169,7 +169,7 @@ namespace CollapseLauncher.GameSettings.Base
                 --count;
                 string valueName = ReadValueName(stream);
                 EnsureReadImpostorData(stream, valueName);
-                Logger.LogWriteLine($"Value V2 {valueName} imported!");
+                Logger.WriteLine($"Value V2 {valueName} imported!");
             } while (count > 0);
         }
 
@@ -178,7 +178,7 @@ namespace CollapseLauncher.GameSettings.Base
             bool isCompressed = fs.ReadByte() > 0;
             bool isHasFileToImport = fs.ReadByte() > 0;
 
-            Logger.LogWriteLine($"Exporting registry V3 {RegistryPath}...");
+            Logger.WriteLine($"Exporting registry V3 {RegistryPath}...");
             int count = ReadInt32(fs);
             using Stream stream = isCompressed ? new BrotliStream(fs, CompressionMode.Decompress) : fs;
             do
@@ -186,7 +186,7 @@ namespace CollapseLauncher.GameSettings.Base
                 --count;
                 string valueName = ReadValueName(stream);
                 EnsureReadImpostorData(stream, valueName);
-                Logger.LogWriteLine($"Value V3 {valueName} imported!");
+                Logger.WriteLine($"Value V3 {valueName} imported!");
             } while (count > 0);
 
             if (isHasFileToImport && !string.IsNullOrEmpty(gameBasePath))
@@ -201,7 +201,7 @@ namespace CollapseLauncher.GameSettings.Base
                 EnsureFileSaveHasExtension(ref path, ".clreg");
 
                 if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Locale.Current.Lang?._GameSettingsPage?.SettingsRegErr1);
-                Logger.LogWriteLine($"Exporting registry V3 {RegistryPath}...");
+                Logger.WriteLine($"Exporting registry V3 {RegistryPath}...");
 
                 await using FileStream fileStream  = new(path, FileMode.Create, FileAccess.Write);
                 await using Stream     writeStream = isCompressed ? new BrotliStream(fileStream, CompressionLevel.Optimal, true) : fileStream;
@@ -225,7 +225,7 @@ namespace CollapseLauncher.GameSettings.Base
                     object? val = RegistryRoot.GetValue(valueName);
                     RegistryValueKind valueType = RegistryRoot.GetValueKind(valueName);
 
-                    Logger.LogWriteLine($"Writing value V3 {valueName}...");
+                    Logger.WriteLine($"Writing value V3 {valueName}...");
 
                     WriteValueName(writeStream, valueName);
                     EnsureWriteImpostorData(writeStream, valueType, val);
@@ -234,7 +234,7 @@ namespace CollapseLauncher.GameSettings.Base
                 if (isHasFileToImport && parentPathToImport != null && relativePathToImport != null)
                     ExportFilesToStream(writeStream, parentPathToImport, relativePathToImport);
 
-                Logger.LogWriteLine($"Registry V3 {RegistryPath} has been exported!");
+                Logger.WriteLine($"Registry V3 {RegistryPath} has been exported!");
             }
             catch (Exception ex)
             {
@@ -330,14 +330,14 @@ namespace CollapseLauncher.GameSettings.Base
             using BinaryWriter writer = new(writeStream, Encoding.UTF8, true);
             writer.Write7BitEncodedInt(relativePaths.Length);
 
-            Logger.LogWriteLine($"Writing exported {relativePaths.Length} file(s) to V3 data...");
+            Logger.WriteLine($"Writing exported {relativePaths.Length} file(s) to V3 data...");
             foreach (string relativePath in relativePaths)
             {
                 string pathCombined = Path.Combine(parentPath, relativePath);
                 FileInfo fileInfo = new(pathCombined);
                 if (!fileInfo.Exists) continue;
 
-                Logger.LogWriteLine($"Writing file: {relativePath} -> {fileInfo.Length} bytes to V3 data...");
+                Logger.WriteLine($"Writing file: {relativePath} -> {fileInfo.Length} bytes to V3 data...");
                 writer.WriteStringToNull(relativePath);
                 writer.Write7BitEncodedInt64(fileInfo.Length);
 
@@ -345,7 +345,7 @@ namespace CollapseLauncher.GameSettings.Base
                 using FileStream exportFileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
                 exportFileStream.CopyTo(writeStream);
             }
-            Logger.LogWriteLine($"{relativePaths.Length} file(s) has been succesfully exported to V3 data!");
+            Logger.WriteLine($"{relativePaths.Length} file(s) has been succesfully exported to V3 data!");
         }
 
         private static void ImportStreamToFiles(Stream readStream, string? gamePath)
@@ -357,7 +357,7 @@ namespace CollapseLauncher.GameSettings.Base
 
             byte[] buffer = new byte[16 << 10];
 
-            Logger.LogWriteLine($"Importing {filesCount} file(s) from V3 data to: {gamePath}...");
+            Logger.WriteLine($"Importing {filesCount} file(s) from V3 data to: {gamePath}...");
             for (; filesCount > 0; filesCount--)
             {
                 string relativePath = reader.ReadStringToNull();
@@ -368,7 +368,7 @@ namespace CollapseLauncher.GameSettings.Base
                     Directory.CreateDirectory(pathCombinedDir);
 
                 long fileSize = reader.Read7BitEncodedInt64();
-                Logger.LogWriteLine($"Writing V3 data to file: {relativePath} -> {fileSize} bytes...");
+                Logger.WriteLine($"Writing V3 data to file: {relativePath} -> {fileSize} bytes...");
                 using FileStream fileStream = File.Create(pathCombined);
 
                 while (fileSize > 0)

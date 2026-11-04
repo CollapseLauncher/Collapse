@@ -1,7 +1,7 @@
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
-using Hi3Helper;
+using Hi3Helper.Log;
 using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -593,7 +593,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             const bool isPrintDebug = true;
             if (isPrintDebug)
             {
-                Logger.LogWriteLine($"Zenless GeneralData parsed value:\r\n\t" +
+                Logger.WriteLine($"Zenless GeneralData parsed value:\r\n\t" +
                                     $"FPS   : {returnVal.Fps}\r\n\t" +
                                     $"VSync : {returnVal.VSync}\r\n\t" +
                                     $"RenRes: {returnVal.RenderResolution}\r\n\t" +

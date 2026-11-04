@@ -12,8 +12,8 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -79,7 +79,7 @@ namespace CollapseLauncher.InstallManager.Base
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Logger.LogWriteLine($"Error while deleting/creating sophon preload completion file! {ex}",
+                    Logger.WriteLine($"Error while deleting/creating sophon preload completion file! {ex}",
                                         LogType.Warning, true);
                 }
             }
@@ -155,7 +155,7 @@ namespace CollapseLauncher.InstallManager.Base
             int maxChunksThread = Math.Clamp(maxThread / 2, 2, 32);
             int maxHttpHandler  = Math.Max(maxThread, SophonGetHttpHandler());
 
-            Logger.LogWriteLine($"Initializing Sophon Chunk download method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
+            Logger.WriteLine($"Initializing Sophon Chunk download method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
 
             // Initialize the HTTP client
@@ -496,7 +496,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Try add and if the hashset already contains the same Manifest ID registered, then skip
                 if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ManifestInfo!.ManifestId ?? ""))
                 {
-                    Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ManifestInfo.ManifestId}! Skipping...",
+                    Logger.WriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ManifestInfo.ManifestId}! Skipping...",
                                         LogType.Warning, true);
                     continue;
                 }
@@ -642,7 +642,7 @@ namespace CollapseLauncher.InstallManager.Base
             int maxChunksThread = Math.Clamp(maxThread / 2, 2, 32);
             int maxHttpHandler  = Math.Max(maxThread, SophonGetHttpHandler());
 
-            Logger.LogWriteLine($"Initializing Sophon Chunk update method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
+            Logger.WriteLine($"Initializing Sophon Chunk update method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
 
             // Initialize the HTTP client
@@ -736,7 +736,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // If it doesn't success to get the base diff, then fallback to actually download the whole game
                     if (!isSuccess)
                     {
-                        Logger.LogWriteLine($"The current game version: {requestedVersionFrom.ToString()} is too obsolete and incremental update is unavailable. Falling back to full update", LogType.Warning, true);
+                        Logger.WriteLine($"The current game version: {requestedVersionFrom.ToString()} is too obsolete and incremental update is unavailable. Falling back to full update", LogType.Warning, true);
 
                         // Spawn the confirmation dialog
                         ContentDialogResult fallbackResultConfirm = await SimpleDialogs.SpawnDialog(
@@ -1044,7 +1044,7 @@ namespace CollapseLauncher.InstallManager.Base
             long sizeRemainedToDownload = sizeToCompare - downloadedSize;
 
             // Push log regarding size
-            Logger.LogWriteLine($"Total free space required to download: {ConverterTool.SummarizeSizeSimple(sizeToCompare)}"
+            Logger.WriteLine($"Total free space required to download: {ConverterTool.SummarizeSizeSimple(sizeToCompare)}"
                                 + $" and {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} remained to be downloaded.",
                                 LogType.Default, true);
 
@@ -1053,7 +1053,7 @@ namespace CollapseLauncher.InstallManager.Base
             string volumeName = PathUtil.GetPathVolumeName(gamePath);
 
             // Push log regarding disk space
-            Logger.LogWriteLine($"Total free space remained on disk: {volumeName}: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}.",
+            Logger.WriteLine($"Total free space remained on disk: {volumeName}: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}.",
                                 LogType.Default, true);
 
             // If the space is insufficient, then show the dialog and throw
@@ -1065,7 +1065,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await SimpleDialogs.Dialog_InsufficientDriveSpace(volumeFreeSpace, sizeRemainedToDownload, volumeName);
 
                 // Push log for the disk space error
-                Logger.LogWriteLine(errStr, LogType.Error, true);
+                Logger.WriteLine(errStr, LogType.Error, true);
                 throw new TaskCanceledException(errStr);
             }
         }
@@ -1135,18 +1135,18 @@ namespace CollapseLauncher.InstallManager.Base
             // If the request pair source is not found, then return false
             if (!requestPairFrom.IsFound && !requestPairTo.IsFound)
             {
-                Logger.LogWriteLine($"Sophon manifest for source via URL: {requestedUrlFrom} is not found! Return message: {requestPairFrom.ReturnMessage} ({requestPairFrom.ReturnCode})", LogType.Warning, true);
+                Logger.WriteLine($"Sophon manifest for source via URL: {requestedUrlFrom} is not found! Return message: {requestPairFrom.ReturnMessage} ({requestPairFrom.ReturnCode})", LogType.Warning, true);
                 if (!requestPairTo.IsFound)
                 {
                     return false;
                 }
-                Logger.LogWriteLine($"The target Sophon manifest still exist. The assets from target's matching field: {matchingField} will be used instead!", LogType.Warning, true);
+                Logger.WriteLine($"The target Sophon manifest still exist. The assets from target's matching field: {matchingField} will be used instead!", LogType.Warning, true);
             }
 
             // If the request pair target is not found, then return false
             if (!requestPairTo.IsFound)
             {
-                Logger.LogWriteLine($"Sophon manifest for target via URL: {requestedUrlTo} is not found! Return message: {requestPairTo.ReturnMessage} ({requestPairTo.ReturnCode})", LogType.Warning, true);
+                Logger.WriteLine($"Sophon manifest for target via URL: {requestedUrlTo} is not found! Return message: {requestPairTo.ReturnMessage} ({requestPairTo.ReturnCode})", LogType.Warning, true);
                 return false;
             }
 
@@ -1175,7 +1175,7 @@ namespace CollapseLauncher.InstallManager.Base
                     string filePath = Path.Combine(GamePath, sophonAsset.AssetName ?? "");
                     if (!File.Exists(filePath) && discardIfOldNotExist)
                     {
-                        Logger.LogWriteLine($"Asset from matching field: {matchingField} is discarded: {sophonAsset.AssetName}", LogType.Warning, true);
+                        Logger.WriteLine($"Asset from matching field: {matchingField} is discarded: {sophonAsset.AssetName}", LogType.Warning, true);
                         continue;
                     }
 

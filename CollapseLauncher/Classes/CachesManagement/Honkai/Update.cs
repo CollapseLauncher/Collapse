@@ -1,8 +1,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
 
@@ -56,7 +55,7 @@ namespace CollapseLauncher
                         {
                             if (!runningTask.TryAdd(asset, 0))
                             {
-                                LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                                Logger.WriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
                                 return;
                             }
                             await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, innerToken);
@@ -76,7 +75,7 @@ namespace CollapseLauncher
                     {
                         if (!runningTask.TryAdd(asset, 0))
                         {
-                            LogWriteLine($"Found duplicated task for {asset.Item1.N}! Skipping...", LogType.Warning, true);
+                            Logger.WriteLine($"Found duplicated task for {asset.Item1.N}! Skipping...", LogType.Warning, true);
                             break;
                         }
                         await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, token);
@@ -93,7 +92,7 @@ namespace CollapseLauncher
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
-                LogWriteLine($"An error occured while updating cache file!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error occured while updating cache file!\r\n{ex}", LogType.Error, true);
                 throw;
             }
         }
@@ -135,19 +134,19 @@ namespace CollapseLauncher
                 if (isExist)
                     fileInfo.Delete();
 
-                LogWriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);
+                Logger.WriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);
             }
             // Other than unused file, do this action
             else
             {
-            #if DEBUG
-                LogWriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
-            #endif
+#if DEBUG
+                Logger.WriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
+#endif
 
                 await RunDownloadTask(asset.AssetIndex.CS, fileInfo, asset.AssetIndex.ConcatURL, downloadClient, downloadProgress, token);
 
             #if !DEBUG
-                LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
+                Logger.WriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
             #endif
             }
 

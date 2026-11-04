@@ -1,10 +1,11 @@
 #nullable enable
+using Hi3Helper.Log;
 using Sentry;
 using Sentry.Extensibility;
 using Sentry.Infrastructure;
 using System;
 using System.Buffers;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 // ReSharper disable CheckNamespace
 
 namespace Hi3Helper.SentryHelper;
@@ -122,26 +123,26 @@ public class CollapseLogger(SentryLevel minimalLevel) : LogToNativeLogger(minima
         {
             case SentryLevel.Debug:
                 message = $"DEBUG: {message}";
-                LogWriteLine(message, LogType.Sentry);
+                WriteLine(message, LogType.Sentry);
                 break;
 
             case SentryLevel.Warning:
                 message = $"WARNING: {message}";
-                LogWriteLine(message, LogType.Sentry, true);
+                WriteLine(message, LogType.Sentry, true);
                 break;
             case SentryLevel.Fatal:
                 message = $"FATAL: {message}";
-                LogWriteLine(message, LogType.Sentry, true);
+                WriteLine(message, LogType.Sentry, true);
                 break;
             
             case SentryLevel.Error:
                 message = $"ERROR: {message}";
-                LogWriteLine(message, LogType.Sentry, true);
+                WriteLine(message, LogType.Sentry, true);
                 break;
 
             case SentryLevel.Info:
             default:
-                LogWriteLine(message, LogType.Sentry);
+                WriteLine(message, LogType.Sentry);
                 break;
         }
     }

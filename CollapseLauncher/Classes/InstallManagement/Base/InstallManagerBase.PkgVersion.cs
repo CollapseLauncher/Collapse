@@ -4,10 +4,10 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -25,7 +25,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -286,12 +286,12 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         ignoredFiles = await File.ReadAllLinesAsync(Path.Combine(GamePath, "@IgnoredFiles"));
-                        LogWriteLine("Found ignore file settings!");
+                        Logger.WriteLine("Found ignore file settings!");
                     }
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandlerAsync(ex);
-                        LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error,
+                        Logger.WriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error,
                                      true);
                     }
                 }
@@ -340,7 +340,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 if (ignoredFiles.Length > 0)
-                    LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(", ", ignoredFiles)}",
+                    Logger.WriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(", ", ignoredFiles)}",
                                  LogType.Scheme, true);
 
                 // Get the list of the local file paths

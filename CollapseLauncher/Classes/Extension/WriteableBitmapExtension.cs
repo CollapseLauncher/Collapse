@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Interfaces;
 using Hi3Helper.Win32.WinRT.IBufferCOM;
@@ -24,7 +24,7 @@ internal static class WriteableBitmapExtension
         catch (Exception ex)
         {
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            Logger.LogWriteLine($"Cannot free the instance of IBufferByteAccess from WriteableBitmap\r\n{ex}",
+            Logger.WriteLine($"Cannot free the instance of IBufferByteAccess from WriteableBitmap\r\n{ex}",
                                 LogType.Error,
                                 true);
         }

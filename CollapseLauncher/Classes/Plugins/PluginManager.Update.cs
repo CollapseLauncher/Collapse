@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Pages;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
 using System;
 using System.Collections.Generic;
@@ -80,7 +80,7 @@ internal static partial class PluginManager
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Cannot apply the update to plugin: {pluginDir.Name} due to an error: {ex}", LogType.Error, true);
+            Logger.WriteLine($"Cannot apply the update to plugin: {pluginDir.Name} due to an error: {ex}", LogType.Error, true);
         }
         finally
         {

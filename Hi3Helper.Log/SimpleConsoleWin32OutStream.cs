@@ -2,10 +2,11 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 // ReSharper disable CheckNamespace
 #pragma warning disable SYSLIB1054
 
-namespace Hi3Helper;
+namespace Hi3Helper.Log;
 
 internal sealed unsafe class SimpleConsoleWin32OutStream : Stream
 {

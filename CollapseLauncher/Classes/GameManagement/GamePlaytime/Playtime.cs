@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
 
 using Timer = System.Timers.Timer;
 // ReSharper disable PartialTypeWithSinglePart
@@ -68,7 +67,7 @@ namespace CollapseLauncher.GamePlaytime
             CollapsePlaytime.Update(timeSpan, true, true);
             PlaytimeUpdated?.Invoke(this, CollapsePlaytime);
 
-            LogWriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
+            Logger.WriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
         }
 
         public void Reset()
@@ -78,7 +77,7 @@ namespace CollapseLauncher.GamePlaytime
             CollapsePlaytime.Reset();
             PlaytimeUpdated?.Invoke(this, CollapsePlaytime);
 
-            LogWriteLine($"Playtime counter was reset! (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
+            Logger.WriteLine($"Playtime counter was reset! (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
         }
 
         public async Task StartSessionFromAwaiter(Func<CancellationToken, Task> awaiterTask, DateTime? begin = null)
@@ -101,7 +100,7 @@ namespace CollapseLauncher.GamePlaytime
                 PlaytimeUpdated?.Invoke(this, CollapsePlaytime);
 
 #if DEBUG
-                LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin.Value.ToLongTimeString()}.");
+                Logger.WriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin.Value.ToLongTimeString()}.");
 #endif
                 int elapsedSeconds = 0;
 
@@ -116,7 +115,7 @@ namespace CollapseLauncher.GamePlaytime
                         CollapsePlaytime.AddMinute();
                         PlaytimeUpdated?.Invoke(this, CollapsePlaytime);
 #if DEBUG
-                        LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
+                        Logger.WriteLine($"{_gameVersionManager.GamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
 #endif
                     };
 
@@ -130,13 +129,13 @@ namespace CollapseLauncher.GamePlaytime
                 double totalElapsedSeconds = (end - begin.Value).TotalSeconds;
                 if (totalElapsedSeconds < 0)
                 {
-                    LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({totalElapsedSeconds}s)", LogType.Error);
+                    Logger.WriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({totalElapsedSeconds}s)", LogType.Error);
                     Dialog_InvalidPlaytime(elapsedSeconds);
                     totalElapsedSeconds = elapsedSeconds;
                 }
 
                 TimeSpan totalTimeSpan = TimeSpan.FromSeconds(totalElapsedSeconds);
-                LogWriteLine($"Added {totalElapsedSeconds}s [{totalTimeSpan.Hours}h {totalTimeSpan.Minutes}m {totalTimeSpan.Seconds}s] " +
+                Logger.WriteLine($"Added {totalElapsedSeconds}s [{totalTimeSpan.Hours}h {totalTimeSpan.Minutes}m {totalTimeSpan.Seconds}s] " +
                              $"to {_gameVersionManager.GamePreset.ProfileName} playtime.", LogType.Default, true);
 
                 CollapsePlaytime.Update(initialTimeSpan.Add(totalTimeSpan), false, true);

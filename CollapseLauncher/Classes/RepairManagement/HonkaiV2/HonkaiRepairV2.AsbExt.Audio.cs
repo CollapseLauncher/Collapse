@@ -2,11 +2,11 @@
 using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -102,7 +102,7 @@ internal static partial class AssetBundleExtension
 
             string assetUrl = baseAudioUrl.CombineURLFromString(audioAsset.Path);
             UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);
-            Logger.LogWriteLine($"The audio asset: {audioAsset.Path} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+            Logger.WriteLine($"The audio asset: {audioAsset.Path} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
             if (!urlStatus.IsSuccessStatusCode)
             {

@@ -1,13 +1,13 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -95,14 +95,14 @@ namespace CollapseLauncher.GameSettings.StarRail
                 {
                     string localTextLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
 #if DEBUG
-                    LogWriteLine($"Loaded StarRail Settings: {ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded StarRail Settings: {ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
                     return new LocalTextLanguage(gameSettings) { LocalTextLang = localTextLang };
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
             return new LocalTextLanguage(gameSettings);
@@ -117,12 +117,12 @@ namespace CollapseLauncher.GameSettings.StarRail
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
-                LogWriteLine($"Saved StarRail Settings: {ValueName} : {data}", LogType.Debug, true);
+                Logger.WriteLine($"Saved StarRail Settings: {ValueName} : {data}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}" +
+                Logger.WriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);

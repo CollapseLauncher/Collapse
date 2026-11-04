@@ -9,7 +9,7 @@ using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
@@ -30,7 +30,6 @@ using Windows.Graphics;
 using Windows.UI;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable RedundantExtendsListEntry
@@ -102,7 +101,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 //Console.ReadLine();
                 throw;

@@ -1,29 +1,24 @@
-﻿using Hi3Helper.Win32.ManagedTools;
-using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-#if !APPLYUPDATE
-using Hi3Helper.Shared.Region;
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
-#endif
 
-#nullable enable
-namespace Hi3Helper;
+namespace Hi3Helper.Log;
 
 public abstract class LoggerBase : ILog
 {
     protected const    string        DateTimeFormat = "HH:mm:ss.fff";
     protected readonly Encoding      Encoding;
+    private readonly   SemaphoreSlim _initSemaphore = new(1, 1);
 
     private const byte SquareBracketOpen  = 0x5B; // [
     private const byte SquareBracketClose = 0x5D; // ]
@@ -158,9 +153,10 @@ public abstract class LoggerBase : ILog
         Encoding = Encoding.UTF8;
     }
 
-    protected LoggerBase(string logFolder, Encoding? logEncoding)
+    protected LoggerBase(string logFolder, Encoding? logEncoding, Action? actionBeforeInit = null)
     {
         Encoding = logEncoding ?? Encoding.UTF8;
+        actionBeforeInit?.Invoke();
 
         // Initialize the writer
         SetFolderPathAndInitialize(logFolder, logEncoding);
@@ -183,73 +179,76 @@ public abstract class LoggerBase : ILog
         // Reset state
         DisposeCore(true);
 
-        try
-        {
-            // Initialize writer and the path of the log file.
-            InitializeWriter(false, logEncoding);
-        }
-        catch (Exception ex)
-        {
-            SentryHelper.SentryHelper.ExceptionHandler(ex);
-            // If the initialization above fails, then use fallback.
-            InitializeWriter(true, logEncoding);
-        }
-    #endif
+        // Initialize writer and the path of the log file.
+        InitializeWriter(logEncoding);
+#endif
     }
 
     public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
     {
-        DisposeCore(true);
+        _initSemaphore.Wait();
 
-        if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
+        try
         {
-            DeleteLogFilesInner(LogFolder);
-        }
+            DisposeCore(true);
 
-        if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
+            if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
+            {
+                DeleteLogFilesInner(LogFolder);
+            }
+
+            if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
+            {
+                Directory.CreateDirectory(reloadToPath);
+            }
+
+            if (!string.IsNullOrEmpty(reloadToPath))
+            {
+                LogFolder = reloadToPath;
+            }
+
+            encoding ??= Encoding.UTF8;
+            SetFolderPathAndInitialize(LogFolder ?? "", encoding);
+        }
+        finally
         {
-            Directory.CreateDirectory(reloadToPath);
+            _initSemaphore.Release();
         }
-
-        if (!string.IsNullOrEmpty(reloadToPath))
-        {
-            LogFolder = reloadToPath;
-        }
-
-        encoding ??= Encoding.UTF8;
-        SetFolderPathAndInitialize(LogFolder ?? "", encoding);
     }
     #endregion
 
     #region Private Methods
 #if !APPLYUPDATE
-    private void InitializeWriter(bool isFallback, Encoding? logEncoding)
+    private void InitializeWriter(Encoding? logEncoding, string? logNamePrefix = null)
     {
-        DateTime dateTimeNow = DateTime.Now;
+        _initSemaphore.Wait();
 
-        // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
-        string fallbackString = isFallback ? "-f" + Path.GetFileNameWithoutExtension(Path.GetTempFileName()) : string.Empty;
-        string dateString     = dateTimeNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        try
+        {
+            DateTime dateTimeNow = DateTime.Now;
 
-        // Append the build name
-        fallbackString += LauncherConfig.IsPreview ? "-pre" : "-sta";
-        fallbackString += LauncherConfig.AppCurrentVersionString;
+            // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
+            string processName = Path.GetFileNameWithoutExtension(Environment.ProcessPath) ?? "unknown";
+            string dateString  = dateTimeNow.ToString("yyyy-MM-dd");
 
-        // Append the current instance number
-        int numOfInstance = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
-        fallbackString += $"-id{numOfInstance}";
-        LogPath        = Path.Combine(LogFolder ?? "", $"log-{dateString + fallbackString}-{dateTimeNow:HH-mm-ss}.log");
-        Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
+            // Append the current instance number
+            LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString}-{processName}{logNamePrefix}-{dateTimeNow:HH-mm-ss}.log");
+            Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
 
-        // Initialize _logWriter to the given _logPath.
-        // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
-        // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
-        FileStream fileStream = new(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-        // Seek the file to the EOF
-        fileStream.Seek(0, SeekOrigin.End);
+            // Initialize _logWriter to the given _logPath.
+            // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
+            // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
+            FileStream fileStream = new(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            // Seek the file to the EOF
+            fileStream.Seek(0, SeekOrigin.End);
 
-        // Initialize the StreamWriter
-        LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
+            // Initialize the StreamWriter
+            LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
+        }
+        finally
+        {
+            _initSemaphore.Release();
+        }
     }
 
     private static void DeleteLogFilesInner(string folderPath)
@@ -260,12 +259,11 @@ public abstract class LoggerBase : ILog
             try
             {
                 fileInfo.Delete();
-                Logger.LogWriteLine($"Removed log file: {fileInfo.FullName}");
+                Logger.WriteLine($"Removed log file: {fileInfo.FullName}");
             }
             catch (Exception ex)
             {
-                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
+                Logger.WriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
             }
         }
     }
@@ -444,14 +442,14 @@ public abstract class LoggerBase : ILog
         return written;
     }
 
-    protected async Task WriteLineToStreamCoreAsync(Stream            stream,
-                                                    string            line,
-                                                    LogType           type             = LogType.Info,
-                                                    bool              appendNewLine    = true,
-                                                    bool              isWriteColor     = true,
-                                                    bool              isWriteTagType   = true,
-                                                    bool              isWriteTimestamp = false,
-                                                    CancellationToken token            = default)
+    protected async ValueTask WriteLineToStreamCoreAsync(Stream            stream,
+                                                         string            line,
+                                                         LogType           type             = LogType.Info,
+                                                         bool              appendNewLine    = true,
+                                                         bool              isWriteColor     = true,
+                                                         bool              isWriteTagType   = true,
+                                                         bool              isWriteTimestamp = false,
+                                                         CancellationToken token            = default)
     {
         int    lineUtf8Len = Encoding.GetMaxByteCount(line.Length);
         byte[] buffer      = _logBufferPool.Rent(lineUtf8Len);
@@ -515,7 +513,7 @@ public abstract class LoggerBase : ILog
                 DateTimeOffset offsetNow = DateTimeOffset.Now;
                 if (offsetNow.TryFormat(new Span<byte>(Unsafe.AsPointer(ref WriteOneByte(ref bufferP, SquareBracketOpen)), 16),
                                         out int dateTimeFormatWritten,
-                                        DateTimeFormat, CultureInfo.InvariantCulture))
+                                        DateTimeFormat))
                 {
                     bufferP = ref Unsafe.Add(ref bufferP, dateTimeFormatWritten);
                 }
@@ -546,8 +544,8 @@ public abstract class LoggerBase : ILog
         return (int)Unsafe.ByteOffset(ref bufferPStart, ref bufferP);
     }
 
-    public virtual void LogWriteLine(bool writeToLogFile          = false,
-                                     bool writeTimestampOnLogFile = true)
+    public virtual void WriteLine(bool writeToLogFile          = false,
+                                  bool writeTimestampOnLogFile = true)
     {
         const string newLine = "\r\n";
         WriteLineToStreamCore(LogWriter.BaseStream,
@@ -557,10 +555,10 @@ public abstract class LoggerBase : ILog
                               isWriteTimestamp: writeTimestampOnLogFile);
     }
 
-    public virtual void LogWriteLine(ReadOnlySpan<char> line,
-                                     LogType            type                    = LogType.Info,
-                                     bool               writeToLogFile          = false,
-                                     bool               writeTimestampOnLogFile = true)
+    public virtual void WriteLine(ReadOnlySpan<char> line,
+                                  LogType            type                    = LogType.Info,
+                                  bool               writeToLogFile          = false,
+                                  bool               writeTimestampOnLogFile = true)
     {
         if (!writeToLogFile)
         {
@@ -574,10 +572,11 @@ public abstract class LoggerBase : ILog
                               isWriteTimestamp: writeTimestampOnLogFile);
     }
 
-    public virtual void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                     LogType                              type                    = LogType.Info,
-                                     bool                                 writeToLogFile          = false,
-                                     bool                                 writeTimestampOnLogFile = true)
+    public virtual void WriteLine(
+        [InterpolatedStringHandlerArgument] ref DefaultInterpolatedStringHandler interpolatedLine,
+        LogType                                                                  type                    = LogType.Info,
+        bool                                                                     writeToLogFile          = false,
+        bool                                                                     writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
@@ -587,10 +586,10 @@ public abstract class LoggerBase : ILog
                 return;
             }
 
-            LogWriteLine(interpolatedLine.Text,
-                         type,
-                         writeToLogFile,
-                         writeTimestampOnLogFile);
+            WriteLine(interpolatedLine.Text,
+                      type,
+                      writeToLogFile,
+                      writeTimestampOnLogFile);
         }
         finally
         {
@@ -615,12 +614,12 @@ public abstract class LoggerBase : ILog
 #endif
     }
 
-    public virtual void LogWrite(ReadOnlySpan<char> line,
-                                 LogType            type                    = LogType.Info,
-                                 bool               appendNewLine           = false,
-                                 bool               writeToLogFile          = false,
-                                 bool               writeTypeTag            = false,
-                                 bool               writeTimestampOnLogFile = true)
+    public virtual void Write(ReadOnlySpan<char> line,
+                              LogType            type                    = LogType.Info,
+                              bool               appendNewLine           = false,
+                              bool               writeToLogFile          = false,
+                              bool               writeTypeTag            = false,
+                              bool               writeTimestampOnLogFile = true)
     {
         if (!writeToLogFile)
         {
@@ -636,12 +635,13 @@ public abstract class LoggerBase : ILog
                               isWriteTagType: writeTimestampOnLogFile);
     }
 
-    public virtual void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                 LogType                              type                    = LogType.Info,
-                                 bool                                 appendNewLine           = false,
-                                 bool                                 writeToLogFile          = false,
-                                 bool                                 writeTypeTag            = false,
-                                 bool                                 writeTimestampOnLogFile = true)
+    public virtual void Write(
+        [InterpolatedStringHandlerArgument] ref DefaultInterpolatedStringHandler interpolatedLine,
+        LogType                                                                  type                    = LogType.Info,
+        bool                                                                     appendNewLine           = false,
+        bool                                                                     writeToLogFile          = false,
+        bool                                                                     writeTypeTag            = false,
+        bool                                                                     writeTimestampOnLogFile = true)
     {
 #if NET10_0_OR_GREATER
         try
@@ -651,12 +651,12 @@ public abstract class LoggerBase : ILog
                 return;
             }
 
-            LogWrite(interpolatedLine.Text,
-                     type,
-                     appendNewLine,
-                     writeToLogFile,
-                     writeTypeTag,
-                     writeTimestampOnLogFile);
+            Write(interpolatedLine.Text,
+                  type,
+                  appendNewLine,
+                  writeToLogFile,
+                  writeTypeTag,
+                  writeTimestampOnLogFile);
         }
         finally
         {
@@ -681,16 +681,16 @@ public abstract class LoggerBase : ILog
 #endif
     }
 
-    public virtual Task LogWriteLineAsync(CancellationToken token = default)
-        => Task.CompletedTask;
+    public virtual ValueTask WriteLineAsync(CancellationToken token = default)
+        => ValueTask.CompletedTask;
 
-    public virtual Task LogWriteLineAsync(string            line,
-                                          LogType           type                    = LogType.Info,
-                                          bool              writeToLogFile          = false,
-                                          bool              writeTimestampOnLogFile = true,
-                                          CancellationToken token                   = default)
+    public virtual ValueTask WriteLineAsync(string            line,
+                                            LogType           type                    = LogType.Info,
+                                            bool              writeToLogFile          = false,
+                                            bool              writeTimestampOnLogFile = true,
+                                            CancellationToken token                   = default)
         => !writeToLogFile ?
-            Task.CompletedTask :
+            ValueTask.CompletedTask :
             WriteLineToStreamCoreAsync(LogWriter.BaseStream,
                                        line,
                                        type,
@@ -698,15 +698,15 @@ public abstract class LoggerBase : ILog
                                        isWriteTimestamp: writeTimestampOnLogFile,
                                        token: token);
 
-    public virtual Task LogWriteAsync(string            line,
-                                      LogType           type                    = LogType.Info,
-                                      bool              appendNewLine           = false,
-                                      bool              writeToLogFile          = false,
-                                      bool              writeTypeTag            = false,
-                                      bool              writeTimestampOnLogFile = true,
-                                      CancellationToken token                   = default)
+    public virtual ValueTask WriteAsync(string            line,
+                                        LogType           type                    = LogType.Info,
+                                        bool              appendNewLine           = false,
+                                        bool              writeToLogFile          = false,
+                                        bool              writeTypeTag            = false,
+                                        bool              writeTimestampOnLogFile = true,
+                                        CancellationToken token                   = default)
         => !writeToLogFile ?
-            Task.CompletedTask :
+            ValueTask.CompletedTask :
             WriteLineToStreamCoreAsync(LogWriter.BaseStream,
                                        line,
                                        type,

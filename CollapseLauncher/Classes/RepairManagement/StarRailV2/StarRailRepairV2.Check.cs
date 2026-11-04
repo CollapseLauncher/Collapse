@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -28,14 +28,14 @@ namespace CollapseLauncher
             // Try to find "badlist.byte" files in the game folder and delete it
             foreach (string badListFile in Directory.EnumerateFiles(GamePath, "*badlist*.byte*", SearchOption.AllDirectories))
             {
-                LogWriteLine($"Removing bad list mark at: {badListFile}", LogType.Warning, true);
+                Logger.WriteLine($"Removing bad list mark at: {badListFile}", LogType.Warning, true);
                 TryDeleteReadOnlyFile(badListFile);
             }
 
             // Try to find "verify.fail" files in the game folder and delete it
             foreach (string verifyFail in Directory.EnumerateFiles(GamePath, "*verify*.fail*", SearchOption.AllDirectories))
             {
-                LogWriteLine($"Removing verify.fail mark at: {verifyFail}", LogType.Warning, true);
+                Logger.WriteLine($"Removing verify.fail mark at: {verifyFail}", LogType.Warning, true);
                 TryDeleteReadOnlyFile(verifyFail);
             }
 
@@ -90,7 +90,7 @@ namespace CollapseLauncher
             if (asset.FT == FileType.Unused)
             {
                 AddIndex(asset, targetAssetIndex);
-                LogWriteLine($"File: {asset.N} is unused", LogType.Warning, true);
+                Logger.WriteLine($"File: {asset.N} is unused", LogType.Warning, true);
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace CollapseLauncher
             if (!fileInfo.Exists)
             {
                 AddIndex(asset, targetAssetIndex);
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
+                Logger.WriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace CollapseLauncher
             {
                 if (fileInfo.Name.Contains("pkg_version")) return;
                 AddIndex(asset, targetAssetIndex);
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
+                Logger.WriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
                              $"(Local: {fileInfo.Length} <=> Remote: {asset.S}",
                              LogType.Warning, true);
                 return;
@@ -134,7 +134,7 @@ namespace CollapseLauncher
             }
 
             AddIndex(asset, targetAssetIndex);
-            LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCrc)}", LogType.Warning, true);
+            Logger.WriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCrc)}", LogType.Warning, true);
         }
 
         private void AddIndex(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)

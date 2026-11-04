@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.Shared.Region;
 using System;
@@ -66,7 +66,7 @@ internal static partial class PluginManager
                 pluginFile = new FileInfo(Path.Combine(pluginDirInfo.FullName, pluginManifest.MainLibraryName));
                 if (!pluginFile.Exists)
                 {
-                    Logger.LogWriteLine($"The {pluginManifest.MainLibraryName} doesn't exist in this plugin directory: {pluginDirInfo.FullName}. Skipping!", LogType.Warning, true);
+                    Logger.WriteLine($"The {pluginManifest.MainLibraryName} doesn't exist in this plugin directory: {pluginDirInfo.FullName}. Skipping!", LogType.Warning, true);
                     continue;
                 }
 
@@ -94,7 +94,7 @@ internal static partial class PluginManager
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[PluginManager] Failed to load plugin from file: {pluginFile?.FullName} due to error: {ex}", LogType.Error, true);
+                Logger.WriteLine($"[PluginManager] Failed to load plugin from file: {pluginFile?.FullName} due to error: {ex}", LogType.Error, true);
                 pluginInfo?.Dispose();
             }
             finally
@@ -192,7 +192,7 @@ internal static partial class PluginManager
             if (indexOfPattern1 >= 0 &&
                 indexOfPattern2 >= 0)
             {
-                Logger.LogWriteLine($"[PluginManager] Plugin: {fileInfo.Name} is UPX packed! The plugin might be unstable.", LogType.Warning, true);
+                Logger.WriteLine($"[PluginManager] Plugin: {fileInfo.Name} is UPX packed! The plugin might be unstable.", LogType.Warning, true);
             }
         }
         finally

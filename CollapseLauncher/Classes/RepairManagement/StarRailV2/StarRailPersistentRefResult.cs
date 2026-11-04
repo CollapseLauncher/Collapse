@@ -3,12 +3,12 @@ using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement.StarRail.Struct;
 using CollapseLauncher.RepairManagement.StarRail.Struct.Assets;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
+using Hi3Helper.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -173,7 +173,7 @@ internal partial class StarRailPersistentRefResult
                 throw new HttpRequestException("Seems like the URL for ArchiveV is missing. Please report this issue to our devs!");
             }
 
-            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given ArchiveV Url is invalid! (previously: {refArchiveUrl}). Try swapping...",
+            Logger.WriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given ArchiveV Url is invalid! (previously: {refArchiveUrl}). Try swapping...",
                                 LogType.Warning,
                                 true);
 
@@ -185,7 +185,7 @@ internal partial class StarRailPersistentRefResult
             refArchiveUrl  = mainUrlArchive.CombineURLFromString("M_ArchiveV.bytes");
             goto TestArchiveVEndpoint;
         }
-        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] ArchiveV Url is found! at: {refArchiveUrl}",
+        Logger.WriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] ArchiveV Url is found! at: {refArchiveUrl}",
                             LogType.Debug,
                             true);
 
@@ -262,14 +262,14 @@ internal partial class StarRailPersistentRefResult
                 throw new HttpRequestException("Seems like the URL for persistent asset bundle is missing. Please report this issue to our devs!");
             }
 
-            Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given persistent asset bundle URL is invalid! (previously: {baseUrl.AsbBlockPersistent}). Try swapping...",
+            Logger.WriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Given persistent asset bundle URL is invalid! (previously: {baseUrl.AsbBlockPersistent}). Try swapping...",
                                 LogType.Warning,
                                 true);
             isSecondAsbEndpointRetry = true;
             baseUrl.SwapAsbPersistentUrl();
             goto TestAsbPersistentEndpoint;
         }
-        Logger.LogWriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Persistent asset bundle URL is found! at: {baseUrl.AsbBlockPersistent}",
+        Logger.WriteLine($"[StarRailPersistentRefResult::GetRepairReferenceAsync] Persistent asset bundle URL is found! at: {baseUrl.AsbBlockPersistent}",
                             LogType.Debug,
                             true);
 
@@ -419,7 +419,7 @@ internal partial class StarRailPersistentRefResult
     {
         if (!handleArchiveSource.TryGetValue(indexKey, out StarRailRefMainInfo? index))
         {
-            Logger.LogWriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
+            Logger.WriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
             return;
         }
 
@@ -468,7 +468,7 @@ internal partial class StarRailPersistentRefResult
     {
         if (!handleArchiveSource.TryGetValue(indexKey, out StarRailRefMainInfo? index))
         {
-            Logger.LogWriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
+            Logger.WriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
             return null;
         }
 
@@ -575,7 +575,7 @@ internal partial class StarRailPersistentRefResult
     {
         if (!handleArchiveSource.TryGetValue(indexKey, out StarRailRefMainInfo? index))
         {
-            Logger.LogWriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
+            Logger.WriteLine($"Game server doesn't serve index file: {indexKey}. Please contact our developer to get this fixed!", LogType.Warning, true);
             return false;
         }
 
@@ -593,7 +593,7 @@ internal partial class StarRailPersistentRefResult
         UrlStatus status = await client.GetCachedUrlStatus(url, token);
         if (!status.IsSuccessStatusCode)
         {
-            Logger.LogWriteLine($"[StarRailPersistentRefResult::IsEndpointAlive] Url: {url} returns unsuccessful status code: {status.StatusCode} ({(int)status.StatusCode})",
+            Logger.WriteLine($"[StarRailPersistentRefResult::IsEndpointAlive] Url: {url} returns unsuccessful status code: {status.StatusCode} ({(int)status.StatusCode})",
                                 LogType.Warning,
                                 true);
         }

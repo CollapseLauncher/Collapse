@@ -10,7 +10,7 @@ using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -39,7 +39,6 @@ using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -113,7 +112,7 @@ namespace CollapseLauncher.Pages
             set
             {
             #if DEBUG
-                LogWriteLine($"HomePage Refresh Rate changed to {value}", LogType.Debug, true);
+                Logger.WriteLine($"HomePage Refresh Rate changed to {value}", LogType.Debug, true);
             #endif
                 field = value;
             }
@@ -324,12 +323,12 @@ namespace CollapseLauncher.Pages
             catch (ArgumentNullException ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error,
+                Logger.WriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error,
                              true);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", LogType.Error, true);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
             finally
@@ -694,7 +693,7 @@ namespace CollapseLauncher.Pages
                 // If the action returns a null task (Task<null>), then fallback to open the URL instead.
                 if (action == null)
                 {
-                    LogWriteLine($"Tag Property seems to be invalid or incomplete. Fallback to open the URL instead!\r\nTag String: {tagProperty[1]}", LogType.Warning, true);
+                    Logger.WriteLine($"Tag Property seems to be invalid or incomplete. Fallback to open the URL instead!\r\nTag String: {tagProperty[1]}", LogType.Warning, true);
                     SpawnWebView2.SpawnWebView2Window(tagProperty[0], Content);
                     return;
                 }
@@ -734,7 +733,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                LogWriteLine($"Failed while parsing Tag Property: {tagProperty}!\r\n{ex}", LogType.Warning, true);
+                Logger.WriteLine($"Failed while parsing Tag Property: {tagProperty}!\r\n{ex}", LogType.Warning, true);
             }
             return null;
         }
@@ -772,7 +771,7 @@ namespace CollapseLauncher.Pages
                         // Get the application executable 
                         applicationExecName = argumentStr[1];
 # if DEBUG
-                        LogWriteLine($"Got '{argumentStr[0]}' as parameter for application executable", LogType.Debug, true);
+                        Logger.WriteLine($"Got '{argumentStr[0]}' as parameter for application executable", LogType.Debug, true);
 # endif
                         break;
                     case "applicationname":
@@ -780,7 +779,7 @@ namespace CollapseLauncher.Pages
                         // Else, return the defined application name.
                         applicationName = argumentStr.Length < 2 || string.IsNullOrEmpty(argumentStr[1]) ? "MyApplication" : argumentStr[1];
 #if DEBUG
-                        LogWriteLine($"Got '{argumentStr[1]}' as parameter for application name", LogType.Debug, true);
+                        Logger.WriteLine($"Got '{argumentStr[1]}' as parameter for application name", LogType.Debug, true);
 # endif
                         break;
                     case "runasadmin":
@@ -789,7 +788,7 @@ namespace CollapseLauncher.Pages
                         bool isBoolValid = bool.TryParse(argumentStr[1], out runAsAdmin);
                         runAsAdmin = isBoolValid && runAsAdmin;
 #if DEBUG
-                        LogWriteLine($"Got '{isBoolValid}' as parameter for application executable", LogType.Debug, true);
+                        Logger.WriteLine($"Got '{isBoolValid}' as parameter for application executable", LogType.Debug, true);
 # endif
                         break;
                     default:
@@ -860,7 +859,7 @@ namespace CollapseLauncher.Pages
                 // Thoughts @Cry0? Should we mark it as successful (true) or failed (false)?
                 // Mark is as true, since the app still ran, but it's an error outside our scope.
                 await SentryHelper.ExceptionHandlerAsync(ex);
-                LogWriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
+                Logger.WriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
                 return true;
             }
 
@@ -887,7 +886,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 string gameFolder = NormalizePath(GameDirPath);
-                LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
+                Logger.WriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
 
                 await Task.Run(() =>
                     new Process
@@ -902,7 +901,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -910,7 +909,7 @@ namespace CollapseLauncher.Pages
         private async void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
             string cacheFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath;
-            LogWriteLine($"Opening Game Folder:\r\n\t{cacheFolder}");
+            Logger.WriteLine($"Opening Game Folder:\r\n\t{cacheFolder}");
             if (string.IsNullOrEmpty(cacheFolder)) return;
             
             try
@@ -928,7 +927,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -941,7 +940,7 @@ namespace CollapseLauncher.Pages
                 _ => "ScreenShot"
             });
 
-            LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
+            Logger.WriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
 
             if (!Directory.Exists(ScreenshotFolder))
                 Directory.CreateDirectory(ScreenshotFolder);
@@ -961,7 +960,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed when trying to open game screenshot folder!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed when trying to open game screenshot folder!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }

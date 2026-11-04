@@ -4,7 +4,7 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.UI.Settings;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.ClassStruct;
@@ -386,14 +386,14 @@ public sealed partial class PluginGameSettingsPage
                 
                 if (createPageError != null)
                 {
-                    Logger.LogWriteLine($"An error has occurred while trying to create plugin-based game settings page.\r\n{createPageError}", LogType.Error, true);
+                    Logger.WriteLine($"An error has occurred while trying to create plugin-based game settings page.\r\n{createPageError}", LogType.Error, true);
                     ErrorSender.SendException(createPageError);
                 }
             }
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
     }

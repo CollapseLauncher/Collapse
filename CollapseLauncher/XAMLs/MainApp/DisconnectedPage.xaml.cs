@@ -1,14 +1,14 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
-using static Hi3Helper.Logger;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable CheckNamespace
@@ -29,7 +29,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }

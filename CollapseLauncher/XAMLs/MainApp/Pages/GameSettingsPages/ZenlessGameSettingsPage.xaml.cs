@@ -5,8 +5,8 @@ using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Screen;
@@ -51,7 +51,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"{ex}", LogType.Error, true);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -78,7 +78,7 @@ namespace CollapseLauncher.Pages
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
                     SetApplyTextStatus(ex.Message, true);
                     ErrorSender.SendException(ex);
                     SentryHelper.ExceptionHandler(ex);
@@ -108,7 +108,7 @@ namespace CollapseLauncher.Pages
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to importing the registry!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"[GSP Module] An error has occurred while trying to importing the registry!\r\n{ex}", LogType.Error, true);
                     SetApplyTextStatus(ex.Message, true);
                     ErrorSender.SendException(ex);
                     SentryHelper.ExceptionHandler(ex);
@@ -193,7 +193,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }

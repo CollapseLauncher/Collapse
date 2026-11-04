@@ -2,8 +2,7 @@
 // ReSharper disable MethodOverloadWithOptionalParameter
 // ReSharper disable CheckNamespace
 
-#nullable enable
-namespace Hi3Helper;
+namespace Hi3Helper.Log;
 
 public sealed class LoggerNull : LoggerBase
 {

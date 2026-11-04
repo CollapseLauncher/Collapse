@@ -3,7 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Data;
@@ -160,7 +160,7 @@ public partial class ImageBackgroundManager
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _ = SentryHelper.ExceptionHandlerAsync(ex);
-                Logger.LogWriteLine($"[ImageBackgroundManager::LoadImage] {ex}",
+                Logger.WriteLine($"[ImageBackgroundManager::LoadImage] {ex}",
                                     LogType.Error,
                                     true);
             }
@@ -171,7 +171,7 @@ public partial class ImageBackgroundManager
             finally
             {
                 stopwatch?.Stop();
-                Logger.LogWriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
+                Logger.WriteLine($"Background image loading took: {stopwatch?.Elapsed.TotalSeconds} second(s)");
 
                 DispatcherQueueExtensions.CurrentDispatcherQueue.TryEnqueue(() => IsBackgroundLoading = false);
             }
@@ -268,7 +268,7 @@ public partial class ImageBackgroundManager
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"LoadMediaAccentColor failed: {ex}", LogType.Error, true);
+            Logger.WriteLine($"LoadMediaAccentColor failed: {ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex);
         }
     }

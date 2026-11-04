@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Hi3Helper.Sophon.Structs;
 using System;
 using System.Buffers;
@@ -57,7 +57,7 @@ namespace CollapseLauncher.InstallManager.Zenless
                 if (asset is SophonIdentifiableProperty { MatchingField: { } assetMatchingField } &&
                     exceptMatchFieldHashSet.Contains(assetMatchingField))
                 {
-                    Logger.LogWriteLine($"[ZenlessInstall::FilterSophonAsset] Asset: {asset} is ignored due to marked as deleted asset.",
+                    Logger.WriteLine($"[ZenlessInstall::FilterSophonAsset] Asset: {asset} is ignored due to marked as deleted asset.",
                                         writeToLog: true);
                     continue;
                 }

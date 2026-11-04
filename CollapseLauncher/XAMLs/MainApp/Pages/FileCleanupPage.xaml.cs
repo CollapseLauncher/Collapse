@@ -6,8 +6,8 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Text;
@@ -74,7 +74,7 @@ namespace CollapseLauncher.Pages
                                                       .Select(group => group.Select(x => x.File).ToList());
             
             List<Task> tasks = [];
-            Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
+            Logger.WriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
                                 $"Starting to inject file info source with {localFileCollection.Count} items",
                                 LogType.Scheme);
 
@@ -92,7 +92,7 @@ namespace CollapseLauncher.Pages
                                             }
 
                                             sI.Stop();
-                                            Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " + 
+                                            Logger.WriteLine($"[FileCleanupPage::InjectFileInfoSource] " + 
                                                                 $"Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms", LogType.Scheme);
                                             Interlocked.Increment(ref b);
                                         })));
@@ -112,7 +112,7 @@ namespace CollapseLauncher.Pages
             
             # if DEBUG
             s.Stop();
-            Logger.LogWriteLine($"InjectFileInfoSource done after {s.ElapsedMilliseconds} ms", LogType.Scheme);
+            Logger.WriteLine($"InjectFileInfoSource done after {s.ElapsedMilliseconds} ms", LogType.Scheme);
             #endif
             await CheckAll();
         }
@@ -159,7 +159,7 @@ namespace CollapseLauncher.Pages
                 } 
                 s.Stop();
                 LoadingMessageHelper.HideLoadingFrame();
-                Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+                Logger.WriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
             }
             catch (Exception ex)
             {
@@ -349,7 +349,7 @@ namespace CollapseLauncher.Pages
                     }
                     catch (OperationCanceledException)
                     {
-                        Logger.LogWriteLine("[FileCleanupPage::PerformRemoval()] The deletion to Recycle Bin was cancelled!",
+                        Logger.WriteLine("[FileCleanupPage::PerformRemoval()] The deletion to Recycle Bin was cancelled!",
                                             LogType.Warning, true);
                         deletedItems.Clear();
                     }
@@ -388,7 +388,7 @@ namespace CollapseLauncher.Pages
                                                                                              {
                                                                                                  failedList.Add(fileInfo);
                                                                                              }
-                                                                                             Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                                                                             Logger.WriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
                                                                                                       LogType.Error, true);
                                                                                          }
                                                                                      },
@@ -410,7 +410,7 @@ namespace CollapseLauncher.Pages
                     long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
                     _assetTotalSize -= totalDeleted;
 
-                    Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+                    Logger.WriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                 }
 
                 // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).
@@ -423,14 +423,14 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex);
-                Logger.LogWriteLine($"Failed while deleting to Recycle Bin: {ex}",
+                Logger.WriteLine($"Failed while deleting to Recycle Bin: {ex}",
                                     LogType.Error, true);
             }
             finally
             {
                 LoadingMessageHelper.HideLoadingFrame();
                 s.Stop();
-                Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] The entire deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+                Logger.WriteLine($"[FileCleanupPage::PerformRemoval()] The entire deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
             }
 
             string diagTitle = (dialogResult == ContentDialogResult.Primary

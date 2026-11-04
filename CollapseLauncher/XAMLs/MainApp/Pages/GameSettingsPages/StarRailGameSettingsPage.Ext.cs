@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using System;
@@ -302,7 +302,7 @@ namespace CollapseLauncher.Pages
                     case 2:
                         return false;
                     default:
-                        Logger.LogWriteLine($"Self Shadow value is unknown! Val: {v}", LogType.Error, true);
+                        Logger.WriteLine($"Self Shadow value is unknown! Val: {v}", LogType.Error, true);
                         return false;
                 }
             }

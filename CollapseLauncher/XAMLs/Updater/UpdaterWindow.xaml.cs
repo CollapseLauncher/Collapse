@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
-using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
@@ -15,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
@@ -118,7 +117,7 @@ public sealed partial class UpdaterWindow
         }
         catch (Exception ex)
         {
-            LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
         }
     }

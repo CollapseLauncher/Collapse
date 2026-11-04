@@ -1,3 +1,4 @@
+using Hi3Helper.Log;
 using Sentry.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace Hi3Helper.SentryHelper
 
             if (returnValue)
             {
-                Logger.LogWriteLine("[Sentry] Filtered exception: " + ex.Message, LogType.Sentry);
+                Logger.WriteLine("[Sentry] Filtered exception: " + ex.Message, LogType.Sentry);
             }
             
             return returnValue;

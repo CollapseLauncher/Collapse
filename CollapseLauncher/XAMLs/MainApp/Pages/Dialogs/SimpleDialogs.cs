@@ -9,9 +9,9 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.ManagedTools;
@@ -1251,7 +1251,7 @@ namespace CollapseLauncher.Dialogs
                 UserFeedbackTemplate.UserFeedbackTemplateResult? parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
                 if (parsedFeedback == null)
                 {
-                    Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
+                    Logger.WriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
                     
                     LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Locale.Current.Lang?._Misc?.FeedbackSendFailure);
                     await Task.Delay(1000);
@@ -1567,7 +1567,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     ErrorSender.SendException(ex);
                     SentryHelper.ExceptionHandler(ex);
-                    Logger.LogWriteLine($"An error has occurred while trying to link FFmpeg library: {ex}",
+                    Logger.WriteLine($"An error has occurred while trying to link FFmpeg library: {ex}",
                                         LogType.Error,
                                         true);
                     return false;
@@ -1647,7 +1647,7 @@ namespace CollapseLauncher.Dialogs
             {
                 SentryHelper.ExceptionHandler(e);
                 ErrorSender.SendException(e);
-                Logger.LogWriteLine($"An error occurred while trying to install FFmpeg package: {e}",
+                Logger.WriteLine($"An error occurred while trying to install FFmpeg package: {e}",
                                     LogType.Error,
                                     true);
                 return false;
@@ -2355,7 +2355,7 @@ namespace CollapseLauncher.Dialogs
                     {
                         string msg = $"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
                                      $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds";
-                        Logger.LogWriteLine(msg, LogType.Warning, true);
+                        Logger.WriteLine(msg, LogType.Warning, true);
                         SentryHelper.ExceptionHandler(new TimeoutException(msg));
                         tcs.SetResult(ContentDialogResult.None);
                         return;

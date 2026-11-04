@@ -2,7 +2,7 @@
 using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using CommunityToolkit.Mvvm.Input;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
@@ -407,7 +407,7 @@ public partial class PluginManagerPageContext : NotifyPropertyChanged
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"An error has occurred while performing auto-update for plugin: {pluginInfo.Name}", LogType.Error, true);
+                Logger.WriteLine($"An error has occurred while performing auto-update for plugin: {pluginInfo.Name}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }

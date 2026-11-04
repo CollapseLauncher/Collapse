@@ -2,15 +2,15 @@
 using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -318,7 +318,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {GraphicsQuality}" +
+                Logger.WriteLine($"Failed while reading {GraphicsQuality}" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -342,7 +342,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded StarRail Settings: {ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded StarRail Settings: {ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
 
                     return byteStr.Deserialize(StarRailSettingsJsonContext.Default.Model) ?? new Model();
@@ -350,7 +350,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}" +
+                Logger.WriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -371,7 +371,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 
                 if (StarRailGameSettingsPage.CheckAbTest())
                 {
-                    LogWriteLine("[StarRailGameSettings::Model] Graphics settings could not be saved due to A/B test flag is found!",
+                    Logger.WriteLine("[StarRailGameSettings::Model] Graphics settings could not be saved due to A/B test flag is found!",
                                  LogType.Error, true);
                     return;
                 }
@@ -382,13 +382,13 @@ namespace CollapseLauncher.GameSettings.StarRail
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
-                LogWriteLine($"Saved StarRail Settings: {ValueName}\r\n{data}", LogType.Debug, true);
+                Logger.WriteLine($"Saved StarRail Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
 

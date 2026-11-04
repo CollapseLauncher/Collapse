@@ -17,6 +17,7 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.LocaleSourceGen;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -46,7 +47,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
 
 // ReSharper disable MergeIntoLogicalPattern
 // ReSharper disable MemberCanBeMadeStatic.Local
@@ -341,7 +341,7 @@ namespace CollapseLauncher.InstallManager.Base
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                 throw;
             }
         }
@@ -536,7 +536,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the game state and run the action for each of them
             GameInstallStateEnum gameState = await GameVersionManager.GetGameState();
-            LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default,
+            Logger.WriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default,
                          true);
 
             if (IsUseSophon)
@@ -913,19 +913,19 @@ namespace CollapseLauncher.InstallManager.Base
 
                         if (!commandProcess.Start())
                         {
-                            LogWriteLine($"Run command for the plugin cannot be started! Exit code: {commandProcess.ExitCode}",
+                            Logger.WriteLine($"Run command for the plugin cannot be started! Exit code: {commandProcess.ExitCode}",
                                          LogType.Warning, true);
                         }
                         else
                         {
-                            LogWriteLine($"Starting plugin process {executablePath} with argument {arguments}");
+                            Logger.WriteLine($"Starting plugin process {executablePath} with argument {arguments}");
                             await commandProcess.WaitForExitAsync();
                         }
                     }
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}",
+                        Logger.WriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}",
                                      LogType.Error, true);
                     }
                     finally
@@ -1070,7 +1070,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
             #pragma warning disable CS8604 // Possible null reference argument.
-                LogWriteLine($"Uninstalling game: {GameVersionManager.GameType} - region: {GameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
+                Logger.WriteLine($"Uninstalling game: {GameVersionManager.GameType} - region: {GameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
                              $"  GameFolder          : {GameFolder}\r\n" +
                              $"  GameDataFolderName  : {_gameInstallFileInfo.GameDataFolderName}\r\n" +
                              $"  FoldersToDelete     : {string.Join(", ", _gameInstallFileInfo.FoldersToDelete)}\r\n" +
@@ -1101,13 +1101,13 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             TryUnassignReadOnlyFiles(folderGameData);
                             Directory.Delete(folderGameData, true);
-                            LogWriteLine($"Deleted folder: {folderGameData}", LogType.Default, true);
+                            Logger.WriteLine($"Deleted folder: {folderGameData}", LogType.Default, true);
                         }
                         // Delete files inside GameDataFolderName that is not included in FoldersToKeepInData
                         else
                         {
                             TryDeleteReadOnlyFile(folderGameData);
-                            LogWriteLine($"Deleted file: {folderGameData}", LogType.Default, true);
+                            Logger.WriteLine($"Deleted file: {folderGameData}", LogType.Default, true);
                         }
 
                         // ReSharper disable once RedundantJumpStatement
@@ -1116,7 +1116,7 @@ namespace CollapseLauncher.InstallManager.Base
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error,
+                        Logger.WriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error,
                                      true);
                     }
                 }
@@ -1126,7 +1126,7 @@ namespace CollapseLauncher.InstallManager.Base
                     !Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
                 {
                     Directory.Delete(_DataFolderFullPath);
-                    LogWriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
+                    Logger.WriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
                 }
 
                 // Cleanup any folders in FoldersToDelete
@@ -1143,12 +1143,12 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         TryDeleteReadOnlyDir(folderNames);
-                        LogWriteLine($"Deleted {folderNames}", LogType.Default, true);
+                        Logger.WriteLine($"Deleted {folderNames}", LogType.Default, true);
                     }
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}",
+                        Logger.WriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}",
                                      LogType.Error, true);
                     }
                 }
@@ -1172,7 +1172,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     TryDeleteReadOnlyFile(fileNames);
-                    LogWriteLine($"Deleted {fileNames}", LogType.Default, true);
+                    Logger.WriteLine($"Deleted {fileNames}", LogType.Default, true);
                 }
 
                 // Cleanup Game App Data
@@ -1180,12 +1180,12 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     TryDeleteReadOnlyDir(appDataPath);
-                    LogWriteLine($"Deleted {appDataPath}", LogType.Default, true);
+                    Logger.WriteLine($"Deleted {appDataPath}", LogType.Default, true);
                 }
                 catch (Exception ex)
                 {
                     await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"An error occurred while deleting game AppData folder: {GameVersionManager.GameDirAppDataPath}\r\n{ex}",
+                    Logger.WriteLine($"An error occurred while deleting game AppData folder: {GameVersionManager.GameDirAppDataPath}\r\n{ex}",
                                  LogType.Error, true);
                 }
 
@@ -1195,25 +1195,25 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         TryDeleteReadOnlyDir(GameFolder);
-                        LogWriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
+                        Logger.WriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
                     }
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}",
+                        Logger.WriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}",
                                      LogType.Error, true);
                     }
                 }
                 else
                 {
-                    LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...",
+                    Logger.WriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...",
                                  LogType.Default, true);
                 }
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed while uninstalling game: {GameVersionManager.GameType} - Region: {GameVersionManager.GamePreset.ZoneName}\r\n{ex}",
+                Logger.WriteLine($"Failed while uninstalling game: {GameVersionManager.GameType} - Region: {GameVersionManager.GamePreset.ZoneName}\r\n{ex}",
                              LogType.Error, true);
             }
 
@@ -1241,7 +1241,7 @@ namespace CollapseLauncher.InstallManager.Base
                 return false;
             }
 
-            LogWriteLine($"Previous failed delta patch has been detected on Game {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
+            Logger.WriteLine($"Previous failed delta patch has been detected on Game {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousDeltaPatchInstallFailed())
@@ -1280,12 +1280,12 @@ namespace CollapseLauncher.InstallManager.Base
 
                         fileInfo.IsReadOnly = false;
                         fileInfo.Delete();
-                        LogWriteLine($"Deleting old file: {fileInfo.FullName}");
+                        Logger.WriteLine($"Deleting old file: {fileInfo.FullName}");
                     }
                     catch (Exception ex)
                     {
                         SentryHelper.ExceptionHandler_ForLoop(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"Failed deleting old file: {fileInfo.FullName}\r\n{ex}", LogType.Warning, true);
+                        Logger.WriteLine($"Failed deleting old file: {fileInfo.FullName}\r\n{ex}", LogType.Warning, true);
                     }
                 }, innerToken));
             });
@@ -1373,7 +1373,7 @@ namespace CollapseLauncher.InstallManager.Base
                     throw;
 
                 // Otherwise, log the error
-                LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
+                Logger.WriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
             }
         }
 
@@ -1497,7 +1497,7 @@ namespace CollapseLauncher.InstallManager.Base
                         entry.SourceFileSize)
                     {
                         ForceUpdateProgress(entry);
-                        LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})",
+                        Logger.WriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})",
                                      LogType.Warning, true);
                         return;
                     }
@@ -1513,14 +1513,14 @@ namespace CollapseLauncher.InstallManager.Base
                     if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))
                     {
                         ForceUpdateProgress(entry);
-                        LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
+                        Logger.WriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
                                    + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}",
                                      LogType.Warning,
                                      true);
                         return;
                     }
 
-                    LogWriteLine($"Patching file {entry.SourceFileName} to {entry.TargetFileName}...", LogType.Default, true);
+                    Logger.WriteLine($"Patching file {entry.SourceFileName} to {entry.TargetFileName}...", LogType.Default, true);
                     UpdateProgressBase();
                     UpdateStatus();
 
@@ -1553,19 +1553,19 @@ namespace CollapseLauncher.InstallManager.Base
                             throw;
 
                         // Otherwise, log the error
-                        LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {targetPath.FullName}", LogType.Warning, true);
+                        Logger.WriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {targetPath.FullName}", LogType.Warning, true);
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
+                    Logger.WriteLine("Cancelling patching process!...", LogType.Warning, true);
                     await Token.CancelAsync();
                     throw;
                 }
                 catch (Exception ex)
                 {
                     await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
-                    LogWriteLine($"Error while patching file: {entry.SourceFileName} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
+                    Logger.WriteLine($"Error while patching file: {entry.SourceFileName} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
                                  LogType.Warning,
                                  true);
 
@@ -1645,7 +1645,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     if (File.Exists(sourceBasePath) && File.Exists(patchPath))
                     {
-                        LogWriteLine($"Patching file {entry.remoteName}...", LogType.Default, true);
+                        Logger.WriteLine($"Patching file {entry.remoteName}...", LogType.Default, true);
                         UpdateProgressBase();
                         UpdateStatus();
 
@@ -1655,13 +1655,13 @@ namespace CollapseLauncher.InstallManager.Base
                 catch (OperationCanceledException)
                 {
                     await Token.CancelAsync();
-                    LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
+                    Logger.WriteLine("Cancelling patching process!...", LogType.Warning, true);
                     throw;
                 }
                 catch (Exception ex)
                 {
                     await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
-                    LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
+                    Logger.WriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
                                  true);
 
                     lock (Progress)
@@ -1686,7 +1686,7 @@ namespace CollapseLauncher.InstallManager.Base
                     catch (Exception ex)
                     {
                         await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        LogWriteLine($"Failed while trying to delete temporary file: {destPath}, skipping!\r\n{ex}",
+                        Logger.WriteLine($"Failed while trying to delete temporary file: {destPath}, skipping!\r\n{ex}",
                                      LogType.Warning, true);
                     }
 
@@ -1735,7 +1735,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (string listFile in Directory.EnumerateFiles(GamePath, "*hdifffiles*",
                                                                  SearchOption.TopDirectoryOnly))
             {
-                LogWriteLine($"hdiff File list path: {listFile}", LogType.Default, true);
+                Logger.WriteLine($"hdiff File list path: {listFile}", LogType.Default, true);
 
                 try
                 {
@@ -1766,14 +1766,14 @@ namespace CollapseLauncher.InstallManager.Base
                         try
                         {
                             prop.fileSize = GetHDiffNewSize(filePath);
-                            LogWriteLine($"hdiff entry: {prop.remoteName}", LogType.Default, true);
+                            Logger.WriteLine($"hdiff entry: {prop.remoteName}", LogType.Default, true);
 
                             _out.Add(prop);
                         }
                         catch (Exception ex)
                         {
                             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                            LogWriteLine($"Error while parsing the size of the new file inside of diff: {filePath}\r\n{ex}",
+                            Logger.WriteLine($"Error while parsing the size of the new file inside of diff: {filePath}\r\n{ex}",
                                          LogType.Warning, true);
                         }
                     }
@@ -1781,7 +1781,7 @@ namespace CollapseLauncher.InstallManager.Base
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Failed while trying to read hdiff file list: {listFile}\r\n{ex}", LogType.Warning,
+                    Logger.WriteLine($"Failed while trying to read hdiff file list: {listFile}\r\n{ex}", LogType.Warning,
                                  true);
                 }
             }
@@ -2466,7 +2466,7 @@ namespace CollapseLauncher.InstallManager.Base
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                LogWriteLine($"Registry Value {GameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg}:\r\n{value}\r\n\r\nException:\r\n{ex}",
+                Logger.WriteLine($"Registry Value {GameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg}:\r\n{value}\r\n\r\nException:\r\n{ex}",
                              LogType.Error, true);
                 return false;
             }
@@ -2692,7 +2692,7 @@ namespace CollapseLauncher.InstallManager.Base
                             PackageType = GameInstallPackageType.Audio
                         };
                         packageList.Add(package);
-                        LogWriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                        Logger.WriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
                                      LogType.Default, true);
                     }
 
@@ -2734,7 +2734,7 @@ namespace CollapseLauncher.InstallManager.Base
                             PackageType = GameInstallPackageType.Audio
                         };
                         packageList.Add(package);
-                        LogWriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                        Logger.WriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
                                      LogType.Default, true);
                     }
 
@@ -2768,7 +2768,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Add the main package
                     packageList.Add(package);
-                    LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})",
+                    Logger.WriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})",
                                  LogType.Default, true);
                 }
 
@@ -2832,7 +2832,7 @@ namespace CollapseLauncher.InstallManager.Base
                     };
 
                     packageList.Add(package);
-                    LogWriteLine($"Adding additional {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                    Logger.WriteLine($"Adding additional {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
                                  LogType.Default, true);
                     continue;
                 }
@@ -2876,7 +2876,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Move the file to the target directory
                 fileInfo.IsReadOnly = false;
                 fileInfo.MoveTo(outputPath, true);
-                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
+                Logger.WriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
             }
         }
 
@@ -2920,7 +2920,7 @@ namespace CollapseLauncher.InstallManager.Base
                 catch (Exception ex)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Be careful that the installation process might have some problem since the launcher can't remove HDiff list file: {name}!\r\n{ex}",
+                    Logger.WriteLine($"Be careful that the installation process might have some problem since the launcher can't remove HDiff list file: {name}!\r\n{ex}",
                                  LogType.Warning, true);
                 }
             }
@@ -2975,7 +2975,7 @@ namespace CollapseLauncher.InstallManager.Base
                 $"{Locale.Current.Lang?._Misc?.Downloading}: {string.Format(Locale.Current.Lang?._Misc?.PerFromTo ?? "", ProgressAllCountCurrent,
                                                                             ProgressAllCountTotal)}";
             Status.ActivityStatusInternet = true;
-            LogWriteLine($"Downloading package URL {ProgressAllCountCurrent}/{ProgressAllCountTotal} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
+            Logger.WriteLine($"Downloading package URL {ProgressAllCountCurrent}/{ProgressAllCountTotal} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
 
             // If the file exist or package size is unmatched,
             // then start downloading
@@ -3151,7 +3151,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the total free space of the path (handles volume mount points correctly)
             long volumeFreeSpace = PathUtil.GetVolumeFreeSpace(GamePath);
             string volumeName = PathUtil.GetPathVolumeName(GamePath);
-            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {volumeName} remaining free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}",
+            Logger.WriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {volumeName} remaining free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}",
                          LogType.Default, true);
 
 #if DEBUG
@@ -3160,18 +3160,18 @@ namespace CollapseLauncher.InstallManager.Base
             double existingPackageSizeGb = Convert.ToDouble(sizeDownloaded / (1L << 30));
             double remainingDownloadSizeGb =
                 Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(remainedDownloadCompressed), 3), 4);
-            LogWriteLine($"Available Drive Space (GB): {diskSpaceGb}",                              LogType.Debug);
-            LogWriteLine($"Existing Package Size (Compressed Size): {sizeDownloaded}", LogType.Debug);
-            LogWriteLine($"Required Space (Uncompressed Size): {requiredSpaceUncompressed}",        LogType.Debug);
-            LogWriteLine($"Required Space Minus Existing Package Size (Uncompressed Size): {requiredSpaceUncompressed - currentDownloadedUncompressed}",
+            Logger.WriteLine($"Available Drive Space (GB): {diskSpaceGb}",                              LogType.Debug);
+            Logger.WriteLine($"Existing Package Size (Compressed Size): {sizeDownloaded}", LogType.Debug);
+            Logger.WriteLine($"Required Space (Uncompressed Size): {requiredSpaceUncompressed}",        LogType.Debug);
+            Logger.WriteLine($"Required Space Minus Existing Package Size (Uncompressed Size): {requiredSpaceUncompressed - currentDownloadedUncompressed}",
                          LogType.Debug);
-            LogWriteLine("===============================================================================================",
+            Logger.WriteLine("===============================================================================================",
                          LogType.Debug);
-            LogWriteLine($"Existing Package Size (Compressed Size)(GB): {existingPackageSizeGb}", LogType.Debug);
-            LogWriteLine($"Required Space (Uncompressed Size)(GB): {requiredSpaceGb}",            LogType.Debug);
-            LogWriteLine($"Required Space Minus Existing Package Size (Uncompressed Size)(GB): {(requiredSpaceUncompressed - currentDownloadedUncompressed) / (1L << 30)}",
+            Logger.WriteLine($"Existing Package Size (Compressed Size)(GB): {existingPackageSizeGb}", LogType.Debug);
+            Logger.WriteLine($"Required Space (Uncompressed Size)(GB): {requiredSpaceGb}",            LogType.Debug);
+            Logger.WriteLine($"Required Space Minus Existing Package Size (Uncompressed Size)(GB): {(requiredSpaceUncompressed - currentDownloadedUncompressed) / (1L << 30)}",
                          LogType.Debug);
-            LogWriteLine($"Remaining Package Download Size (Compressed Size)(GB): {remainingDownloadSizeGb}",
+            Logger.WriteLine($"Remaining Package Download Size (Compressed Size)(GB): {remainingDownloadSizeGb}",
                          LogType.Debug);
 #endif
 
@@ -3180,7 +3180,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string errStr = $"Free Space on {volumeName} is not sufficient! " +
                                 $"(Free space: {ConverterTool.SummarizeSizeSimple(volumeFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
                                 $"Existing Package Size (Compressed): {sizeDownloaded} (Uncompressed): {currentDownloadedUncompressed}, Drive: {volumeName})";
-                LogWriteLine(errStr, LogType.Error, true);
+                Logger.WriteLine(errStr, LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(volumeFreeSpace, remainedDownloadUncompressed, volumeName);
                 throw new TaskCanceledException(errStr);
             }
@@ -3263,7 +3263,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             asset.Size = await FallbackCDNUtil.GetContentLength(asset.URL, token);
 
-            LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
+            Logger.WriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
                          LogType.Default, true);
         }
 

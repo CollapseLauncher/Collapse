@@ -9,7 +9,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using Windows.UI.Text;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable CollectionNeverQueried.Local
@@ -398,7 +398,7 @@ namespace CollapseLauncher.Pages.OOBE
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme)) return (int)CurrentAppTheme;
 
             CurrentAppTheme = !PInvoke.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
-            LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
+            Logger.WriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
                          LogType.Warning, true);
 
             return (int)CurrentAppTheme;

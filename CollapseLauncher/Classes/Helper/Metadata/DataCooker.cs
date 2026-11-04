@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
@@ -185,7 +185,7 @@ namespace CollapseLauncher.Helper.Metadata
                 }
 
 #if DEBUG
-                Logger.LogWriteLine($"[DataCooker::ServeV3Data()] Loaded ServeV3 data [IsPooled: {isDecryptPoolUsed}][TCompress: {compressionType} | IsEncrypt: {isUseEncryption}][CompSize: {compressedSize} | UncompSize: {decompressedSize}]",
+                Logger.WriteLine($"[DataCooker::ServeV3Data()] Loaded ServeV3 data [IsPooled: {isDecryptPoolUsed}][TCompress: {compressionType} | IsEncrypt: {isUseEncryption}][CompSize: {compressedSize} | UncompSize: {decompressedSize}]",
                                     LogType.Debug, true);
 #endif
             }

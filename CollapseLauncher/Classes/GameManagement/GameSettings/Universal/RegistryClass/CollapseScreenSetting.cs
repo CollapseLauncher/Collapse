@@ -1,13 +1,13 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -85,7 +85,7 @@ namespace CollapseLauncher.GameSettings.Universal
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
                     CollapseScreenSetting settings = byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting) ?? new CollapseScreenSetting();
                     settings.ParentGameSettings = gameSettings;
@@ -94,7 +94,7 @@ namespace CollapseLauncher.GameSettings.Universal
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
 
@@ -110,13 +110,13 @@ namespace CollapseLauncher.GameSettings.Universal
                 string data = this.Serialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
-                LogWriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);
 #endif
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }

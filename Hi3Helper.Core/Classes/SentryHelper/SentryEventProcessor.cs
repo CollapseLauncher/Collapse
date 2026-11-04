@@ -1,6 +1,7 @@
+using Hi3Helper.Log;
 using Sentry;
 using Sentry.Extensibility;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 
 namespace Hi3Helper.SentryHelper
 {
@@ -11,10 +12,10 @@ namespace Hi3Helper.SentryHelper
         // ReSharper disable once ReturnTypeCanBeNotNullable
         public SentryEvent? Process(SentryEvent @event)
         {
-            var log =
+            string log =
                 $"Sentry event caught! ID: {@event.EventId}, Level: {@event.Level}, Source: {@event.Exception?.Source}" +
                 $"{(string.IsNullOrEmpty(@event.Message?.Formatted) ? "" : $"\r\n{@event.Message?.Formatted}")}";
-            LogWriteLine(log, LogType.Sentry, true); // Use our logger
+            WriteLine(log, LogType.Sentry, true); // Use our logger
             return @event; // Pipe em back up
         }
     }

@@ -2,8 +2,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.MainEntryPoint;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.ShortcutUtils
@@ -79,7 +78,7 @@ namespace CollapseLauncher.ShortcutUtils
             if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
                 File.Copy(iconAssetPath, Icon);
-                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {Icon}.");
+                Logger.WriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {Icon}.");
             }
 
             await CacheImages(token);
@@ -182,10 +181,10 @@ namespace CollapseLauncher.ShortcutUtils
 
                 File.Delete(cachePath);
 
-                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {cachePath}! {hash} does not match {asset.MD5}.", LogType.Error);
+                Logger.WriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {cachePath}! {hash} does not match {asset.MD5}.", LogType.Error);
             }
 
-            LogWriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
+            Logger.WriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
         }
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
@@ -206,12 +205,12 @@ namespace CollapseLauncher.ShortcutUtils
                 long fileLength = netStream.Length;
 
                 // Copy (and download) the remote streams to local
-                LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+                Logger.WriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer.AsMemory(0, read), token);
 
-                LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
+                Logger.WriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
                              + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)",
                              LogType.Default, true);
             }

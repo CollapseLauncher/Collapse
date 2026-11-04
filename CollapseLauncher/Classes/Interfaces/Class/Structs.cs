@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces.Class;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using System;
 using System.IO;
 using WinRT;
@@ -235,7 +235,7 @@ namespace CollapseLauncher
             string infoVendorPath = Path.Combine(gamePath, $"{execName}_Data\\app.info");
             if (!File.Exists(infoVendorPath))
             {
-                Logger.LogWriteLine("app.info file is not found!", LogType.Error);
+                Logger.WriteLine("app.info file is not found!", LogType.Error);
                 return;
             }
 
@@ -243,14 +243,14 @@ namespace CollapseLauncher
             string[] infoEntries = File.ReadAllLines(infoVendorPath);
             if (infoEntries.Length < 2)
             {
-                Logger.LogWriteLine("app.info file is malformed!", LogType.Error);
+                Logger.WriteLine("app.info file is malformed!", LogType.Error);
                 return;
             }
 
             // Try parse the first line. If parsing fail, then return
             if (!Enum.TryParse(infoEntries[0], out GameVendorType _VendorType))
             {
-                Logger.LogWriteLine($"Failed when parsing app.info\r\n\t{infoEntries[0]}\r\n\t{infoEntries[1]}");
+                Logger.WriteLine($"Failed when parsing app.info\r\n\t{infoEntries[0]}\r\n\t{infoEntries[1]}");
                 return;
             }
 

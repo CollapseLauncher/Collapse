@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +36,7 @@ internal static partial class MetadataHelper
         catch (Exception e)
         {
             Exception parentExc = new("An error has occurred while checking for metadata update!", e);
-            Logger.LogWriteLine($"[MetadataHelper::CheckMetadataUpdateAsync] {parentExc}",
+            Logger.WriteLine($"[MetadataHelper::CheckMetadataUpdateAsync] {parentExc}",
                                 LogType.Error,
                                 true);
             ErrorSender.SendException(parentExc);

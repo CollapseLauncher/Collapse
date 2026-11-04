@@ -5,7 +5,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.WinRT.WindowsStream;
@@ -111,7 +111,7 @@ namespace CollapseLauncher.XAMLs.Theme.ContentDialog
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                Logger.LogWriteLine($"[UserFeedbackDialog::OnApplyTemplate] Failed to grab game type! Returning default game header..." +
+                Logger.WriteLine($"[UserFeedbackDialog::OnApplyTemplate] Failed to grab game type! Returning default game header..." +
                                     $"\r\n{ex}", LogType.Error, true);
             }
             // Get the title image background and load it.

@@ -2,7 +2,7 @@
 using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 #if !DISABLEDISCORD
@@ -41,7 +40,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", LogType.Error, true);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -73,7 +72,7 @@ namespace CollapseLauncher.Pages
                 return false;
             }
 
-            LogWriteLine("A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
+            Logger.WriteLine("A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
             return true;
         }
 
@@ -116,7 +115,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }

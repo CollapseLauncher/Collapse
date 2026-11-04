@@ -9,8 +9,8 @@
  * https://www.codeproject.com/info/cpol10.aspx
  */
 
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Enums.Registry;
 using Hi3Helper.Win32.Native.LibraryImport;
@@ -67,7 +67,7 @@ public sealed partial class RegistryMonitor : IDisposable
     private void OnError(Exception e)
     {
 #if DEBUG
-        Logger.LogWriteLine($"[RegistryMonitor] An error has occurred:\r\n" +
+        Logger.WriteLine($"[RegistryMonitor] An error has occurred:\r\n" +
                             $"  Hive: {_registryHive}\r\n" +
                             $"  SubKey: {_registrySubKey}" +
                             $"  Error: {e}", LogType.Debug, true);
@@ -134,7 +134,7 @@ public sealed partial class RegistryMonitor : IDisposable
         RegistryNotifyFilter = DefaultRegFilter;
 
 #if DEBUG
-        Logger.LogWriteLine($"RegistryMonitor Initialized!\r\n" +
+        Logger.WriteLine($"RegistryMonitor Initialized!\r\n" +
                             $"  Hive: {_registryHive}\r\n" +
                             $"  subKey: {_registrySubKey}", LogType.Debug, true);
 #endif
@@ -257,7 +257,7 @@ public sealed partial class RegistryMonitor : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
             SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             throw new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
         }
@@ -266,7 +266,7 @@ public sealed partial class RegistryMonitor : IDisposable
             Interlocked.Exchange(ref _disposed, true);
         }
 #if DEBUG
-        Logger.LogWriteLine("RegistryMonitor Disposed!", LogType.Debug, true);
+        Logger.WriteLine("RegistryMonitor Disposed!", LogType.Debug, true);
 #endif
         GC.SuppressFinalize(this);
     }
@@ -377,7 +377,7 @@ public sealed partial class RegistryMonitor : IDisposable
                 }
 
 #if DEBUG
-                Logger.LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +
+                Logger.WriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +
                                     $"  Hive: {_registryHive}\r\n" +
                                     $"  SubKey: {_registrySubKey}", LogType.Debug, true);
 #endif

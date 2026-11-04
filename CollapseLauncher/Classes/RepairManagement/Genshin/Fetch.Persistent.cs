@@ -4,6 +4,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
+using Hi3Helper.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -111,7 +112,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"An error has occurred while parsing Persistent Manifests! {ex}", LogType.Warning, true);
+                Logger.WriteLine($"An error has occurred while parsing Persistent Manifests! {ex}", LogType.Warning, true);
                 return false;
             }
         }

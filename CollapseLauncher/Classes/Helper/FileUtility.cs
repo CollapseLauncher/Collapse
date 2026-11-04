@@ -1,4 +1,4 @@
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 #nullable enable
@@ -95,7 +95,7 @@ namespace CollapseLauncher.Helper
                         if (overwrite) File.Delete(newFilePath);
                         else
                         {
-                            LogWriteLine($"[FileUtility::RenameFileWithPrefix] Target file {newFilePath} exist " +
+                            Logger.WriteLine($"[FileUtility::RenameFileWithPrefix] Target file {newFilePath} exist " +
                                          $"while overwrite is disabled!", LogType.Warning, true);
                             return false;
                         }
@@ -109,7 +109,7 @@ namespace CollapseLauncher.Helper
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"[FileUtility::RenameFileWithPrefix] Failed to rename file {filePath}!\r\n{ex}",
+                Logger.WriteLine($"[FileUtility::RenameFileWithPrefix] Failed to rename file {filePath}!\r\n{ex}",
                              LogType.Error, true);
             }
             return false;

@@ -7,8 +7,8 @@ using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
-using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
@@ -382,7 +382,7 @@ public partial class ImageBackgroundManager
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"An error has occurred while trying to spawn Image Cropper!: {ex}",
+            Logger.WriteLine($"An error has occurred while trying to spawn Image Cropper!: {ex}",
                                 LogType.Error,
                                 true);
             SentryHelper.ExceptionHandler(ex);

@@ -10,7 +10,7 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -81,8 +81,8 @@ namespace CollapseLauncher
         {
             try
             {
-                Logger.LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}");
-                Logger.LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}");
+                Logger.WriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}");
+                Logger.WriteLine($"Application Data Location:\r\n\t{AppDataFolder}");
                 InitializeComponent();
                 Interlocked.Exchange(ref InnerLauncherConfig.m_mainPage, this);
                 ToggleNotificationPanelBtn.Translation = new Vector3(0,0,16);
@@ -101,7 +101,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -183,7 +183,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                Logger.LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -270,7 +270,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                Logger.LogWriteLine($"{ex}", LogType.Error, true);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
             }
         }
 
@@ -371,7 +371,7 @@ namespace CollapseLauncher
                         catch (Exception ex)
                         {
                             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                            Logger.LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
+                            Logger.WriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
                         }
                         break;
                     default:
@@ -462,20 +462,20 @@ namespace CollapseLauncher
                 // Run the update check and trigger routine
                 await LauncherUpdateHelper.RunUpdateCheckDetached();
 #else 
-                Logger.LogWriteLine("Running debug build, stopping update checks!", LogType.Error);
+                Logger.WriteLine("Running debug build, stopping update checks!", LogType.Error);
 #endif
             }
             catch (JsonException ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex);
                 ErrorSender.SendException(ex);
-                Logger.LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex);
                 ErrorSender.SendException(ex);
-                Logger.LogWriteLine($"Error while trying to run background tasks!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error while trying to run background tasks!\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion
@@ -658,7 +658,7 @@ namespace CollapseLauncher
                 catch (Exception ex)
                 {
                     ErrorSender.SendException(ex);
-                    Logger.LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
                 }
 
                 return false;
@@ -714,7 +714,7 @@ namespace CollapseLauncher
                                             catch (Exception ex)
                                             {
                                                 ErrorSender.SendException(ex);
-                                                Logger.LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
+                                                Logger.WriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
                                             }
                                         };
             SpawnNotificationPush(Locale.Current.Lang?._AppNotification?.NotifMetadataUpdateTitle ?? "",
@@ -846,7 +846,7 @@ namespace CollapseLauncher
                     InvokeLoadingRegionPopup(false);
                     LauncherFrame.BackStack.Clear();
                     MainFrameChanger.ChangeMainFrame(InnerLauncherConfig.m_appMode == InnerLauncherConfig.AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
-                    Logger.LogWriteLine($"Region changed to {preset.ZoneFullname}", LogType.Scheme, true);
+                    Logger.WriteLine($"Region changed to {preset.ZoneFullname}", LogType.Scheme, true);
                 }
 
                 _lockRegionChangeBtn        = false;
@@ -855,7 +855,7 @@ namespace CollapseLauncher
             catch (Exception e)
             {
                 SentryHelper.ExceptionHandler(e);
-                Logger.LogWriteLine($"{e}", LogType.Error, true);
+                Logger.WriteLine($"{e}", LogType.Error, true);
             }
         }
 
@@ -884,7 +884,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                Logger.LogWriteLine($"Error while initialize EdgeWebView2. Opening browser instead!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error while initialize EdgeWebView2. Opening browser instead!\r\n{ex}", LogType.Error, true);
                 new Process
                 {
                     StartInfo = new ProcessStartInfo

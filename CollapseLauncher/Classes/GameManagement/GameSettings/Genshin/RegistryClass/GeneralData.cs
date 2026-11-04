@@ -1,14 +1,14 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -370,18 +370,18 @@ namespace CollapseLauncher.GameSettings.Genshin
                 ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DUMPGIJSON
                 // Dump GeneralData as raw string
-                LogWriteLine($"RAW Genshin Settings: {ValueName}\r\n" +
+                Logger.WriteLine($"RAW Genshin Settings: {ValueName}\r\n" +
                              $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 
                 // Dump GeneralData as indented JSON output using GeneralData properties
-                LogWriteLine($"Deserialized Genshin Settings: {ValueName}\r\n{byteStr
+                Logger.WriteLine($"Deserialized Genshin Settings: {ValueName}\r\n{byteStr
                     .Deserialize(GenshinSettingsJsonContext.Default.GeneralData)
                     .Serialize(GenshinSettingsJsonContext.Default.GeneralData, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                LogWriteLine($"Loaded Genshin Settings: {ValueName}", LogType.Debug, true);
+                Logger.WriteLine($"Loaded Genshin Settings: {ValueName}", LogType.Debug, true);
 #else
-                LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
+                Logger.WriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
                 GeneralData data = byteStr.Deserialize(GenshinSettingsJsonContext.Default.GeneralData) ?? new GeneralData();
 
@@ -393,7 +393,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}, Default fallback data is used!" +
+                Logger.WriteLine($"Failed while reading {ValueName}, Default fallback data is used!" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -432,10 +432,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DUMPGIJSON
                 //Dump saved GeneralData JSON from Collapse as indented output
-                LogWriteLine($"Saved Genshin Settings: {ValueName}\r\n{this.Serialize(GenshinSettingsJsonContext.Default.GeneralData, false, true)}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Genshin Settings: {ValueName}\r\n{this.Serialize(GenshinSettingsJsonContext.Default.GeneralData, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {ValueName}" +
+                Logger.WriteLine($"Saved Genshin Settings: {ValueName}" +
                     $"\r\n      Text Language        : {deviceLanguageType}" +
                     $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
                     $"\r\n      Audio - Master Volume: {volumeGlobal}" +
@@ -449,12 +449,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"\r\n      HDR - UIPaperWhite   : {uiPaperWhite}" +
                     $"\r\n      HDR - ScenePaperWhite: {scenePaperWhite}", LogType.Debug);
 #else
-                LogWriteLine($"Saved Genshin Game Settings", LogType.Default, true);
+                Logger.WriteLine($"Saved Genshin Game Settings", LogType.Default, true);
 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception("Failed to save Genshin settings, please report them to GitHub issues!", ex));
             }
         }

@@ -1,12 +1,12 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text.Json.Serialization;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -56,14 +56,14 @@ namespace CollapseLauncher.GameSettings.Genshin
                 {
                     int borderless = (int)value;
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {ValueName} : {value}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Genshin Settings: {ValueName} : {value}", LogType.Debug, true);
 #endif 
                     return new VisibleBackground(gameSettings) { borderless = borderless };
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {ValueName}" +
+                Logger.WriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -82,12 +82,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                 if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 ParentGameSettings.RegistryRoot.SetValue(ValueName, borderless, RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {ValueName} : {borderless}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Genshin Settings: {ValueName} : {borderless}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }

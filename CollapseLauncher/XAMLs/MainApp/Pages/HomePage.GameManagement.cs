@@ -2,13 +2,12 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.XAMLs.Theme.CustomControls;
 using CommunityToolkit.WinUI.Animations;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -25,7 +24,6 @@ using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable InconsistentNaming
@@ -112,7 +110,7 @@ public sealed partial class HomePage
         catch (Exception ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-            LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
         }
     }
     
@@ -218,13 +216,13 @@ public sealed partial class HomePage
         }
         catch (OperationCanceledException)
         {
-            LogWriteLine("Pre-Download paused!", LogType.Warning);
+            Logger.WriteLine("Pre-Download paused!", LogType.Warning);
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         catch (Exception ex)
         {
-            LogWriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
+            Logger.WriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
@@ -365,13 +363,13 @@ public sealed partial class HomePage
         }
         catch (TaskCanceledException)
         {
-            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
+            Logger.WriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         catch (OperationCanceledException)
         {
-            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
+            Logger.WriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
@@ -381,7 +379,7 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
+            Logger.WriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
         
             await SpawnDialog(Locale.Current.Lang?._HomePage?.InstallFolderRootTitle,
@@ -395,7 +393,7 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
+            Logger.WriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
             ErrorSender.SendException(new
                                           NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
@@ -416,7 +414,7 @@ public sealed partial class HomePage
                                                       $"{Locale.Current.Lang?._HomePage?.Exception_DownloadTimeout2 ?? ""}\r\n\t" +
                                                       $"{Locale.Current.Lang?._HomePage?.Exception_DownloadTimeout3 ?? ""}");
 
-            LogWriteLine($"{exMessage}", LogType.Error, true);
+            Logger.WriteLine($"{exMessage}", LogType.Error, true);
             Exception newEx = new TimeoutException(exMessageLocalized, ex);
             ErrorSender.SendException(newEx);
         }
@@ -424,7 +422,7 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
         finally
@@ -647,13 +645,13 @@ public sealed partial class HomePage
         }
         catch (NotSupportedException ex)
         {
-            LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
             ex = new NotSupportedException(Locale.Current.Lang?._HomePage?.GameSettings_Panel2MoveGameLocationGame_SamePath, ex);
             ErrorSender.SendException(ex, ErrorType.Warning);
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
     }
@@ -674,7 +672,7 @@ public sealed partial class HomePage
         }
         catch (Exception ex)
         {
-            LogWriteLine($"Error has occurred while changing Game Location!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Error has occurred while changing Game Location!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
     }
@@ -856,13 +854,13 @@ public sealed partial class HomePage
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-            LogWriteLine("Update cancelled!", LogType.Warning);
+            Logger.WriteLine("Update cancelled!", LogType.Warning);
         }
         catch (OperationCanceledException)
         {
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-            LogWriteLine("Update cancelled!", LogType.Warning);
+            Logger.WriteLine("Update cancelled!", LogType.Warning);
         }
         catch (NullReferenceException ex)
         {
@@ -870,7 +868,7 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                                                                  $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
         }
@@ -879,7 +877,7 @@ public sealed partial class HomePage
             // Set the notification trigger
             CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
-            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
         finally

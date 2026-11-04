@@ -2,15 +2,14 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.DaftarPustaka;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Hashing;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,7 +143,7 @@ internal static class SenadinaExtension
         {
             if (!dict.TryGetValue(indexFile, out ServeV3FileContext? identifier))
             {
-                Logger.LogWriteLine($"Key reference to the pustaka file: {indexFile} is not found for game version: {gameVersion}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
+                Logger.WriteLine($"Key reference to the pustaka file: {indexFile} is not found for game version: {gameVersion}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
                 if (skipThrow) return null;
                 throw new FileNotFoundException("Assets reference for repair is not found. Please contact us in GitHub issues or Discord to let us know about this issue.");
             }
@@ -159,10 +158,10 @@ internal static class SenadinaExtension
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[Senadina::Identifier] Failed while fetching Senadina's identifier kind: {indexFile} from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[Senadina::Identifier] Failed while fetching Senadina's identifier kind: {indexFile} from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
             if (!skipThrow) throw;
 
-            Logger.LogWriteLine($"[Senadina::Identifier] Trying to get Senadina's identifier kind: {indexFile} from secondary URL: {secondaryUrl}", LogType.Warning, true);
+            Logger.WriteLine($"[Senadina::Identifier] Trying to get Senadina's identifier kind: {indexFile} from secondary URL: {secondaryUrl}", LogType.Warning, true);
             return await client.GetSenadinaIdentifierKind(dict, indexFile, gameVersion, null, secondaryUrl, true, token);
         }
     }
@@ -184,7 +183,7 @@ internal static class SenadinaExtension
 #if DEBUG
             using StreamReader rd       = new(remoteStreamDecrypt);
             string             response = await rd.ReadToEndAsync(token);
-            Logger.LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
+            Logger.WriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
             return response.Deserialize(ServeV3FileContextContext.Default.DictionaryStringServeV3FileContext);
 #else
             return await remoteStreamDecrypt.DeserializeAsync(ServeV3FileContextContext.Default.DictionaryStringServeV3FileContext, token: token);
@@ -192,12 +191,12 @@ internal static class SenadinaExtension
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[Senadina::DaftarPustaka] Failed while fetching Senadina's daftar-pustaka from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
+            Logger.WriteLine($"[Senadina::DaftarPustaka] Failed while fetching Senadina's daftar-pustaka from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
             if (throwIfFail)
             {
                 throw;
             }
-            Logger.LogWriteLine($"[Senadina::DaftarPustaka] Trying to get Senadina's daftar-pustaka from secondary URL: {secondaryUrl}", LogType.Warning, true);
+            Logger.WriteLine($"[Senadina::DaftarPustaka] Trying to get Senadina's daftar-pustaka from secondary URL: {secondaryUrl}", LogType.Warning, true);
             return await GetSenadinaManifestAsync(client, null, secondaryUrl, true, token);
         }
     }

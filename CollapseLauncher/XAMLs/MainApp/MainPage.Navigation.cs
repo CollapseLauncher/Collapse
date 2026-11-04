@@ -6,7 +6,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
@@ -23,7 +23,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Logger;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 // ReSharper disable CheckNamespace
@@ -416,7 +415,7 @@ public partial class MainPage : Page
                 catch (Exception ex)
                 {
                     LoadingMessageHelper.HideLoadingFrame();
-                    LogWriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method!\r\n{ex}", LogType.Error, true);
 
                     ErrorSender.SendException(ex);
                 }

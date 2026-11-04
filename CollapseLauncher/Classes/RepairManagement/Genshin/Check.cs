@@ -1,8 +1,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using System;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Logger;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -52,7 +52,7 @@ namespace CollapseLauncher
                 if (!isSsd)
                 {
                     threadCount = 1;
-                    LogWriteLine($"The drive is not SSD, the repair process will be slower!.\r\n\t" +
+                    Logger.WriteLine($"The drive is not SSD, the repair process will be slower!.\r\n\t" +
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
 
@@ -175,7 +175,7 @@ namespace CollapseLauncher
             if (!fileInfo.Exists || fileInfo.Length != asset.fileSize)
             {
                 RepairAssetType type = AddToBrokenEntry(asset, null, remoteHashBuffer);
-                LogWriteLine($"File [T: {type}]: {asset.remoteName} is missing or has unmatched size",
+                Logger.WriteLine($"File [T: {type}]: {asset.remoteName} is missing or has unmatched size",
                              LogType.Warning,
                              true);
                 return;
@@ -198,7 +198,7 @@ namespace CollapseLauncher
             if (!localHashBuffer.SequenceEqual(remoteHashBuffer))
             {
                 RepairAssetType type = AddToBrokenEntry(asset, localHashBuffer, remoteHashBuffer);
-                LogWriteLine($"File [T: {type}]: {asset.remoteName} has unmatched hash",
+                Logger.WriteLine($"File [T: {type}]: {asset.remoteName} has unmatched hash",
                              LogType.Warning,
                              true);
             }
@@ -238,7 +238,7 @@ namespace CollapseLauncher
                 .EnumerateFiles("*deletefiles*", SearchOption.TopDirectoryOnly)
                 .EnumerateNoReadOnly())
             {
-                LogWriteLine($"deletefiles file list path: {listFile}", LogType.Default, true);
+                Logger.WriteLine($"deletefiles file list path: {listFile}", LogType.Default, true);
 
                 // Use deletefiles files to get the list of the redundant file
                 await using Stream fs         = await listFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None, FileOptions.DeleteOnClose);
@@ -278,7 +278,7 @@ namespace CollapseLauncher
 
                     // Add the asset into targetAssetIndex
                     targetAssetIndex.Add(asset);
-                    LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
+                    Logger.WriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
                 }
             }
 
@@ -314,7 +314,7 @@ namespace CollapseLauncher
 
                 // Add the asset into targetAssetIndex
                 targetAssetIndex.Add(asset);
-                LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
+                Logger.WriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
             }
         }
         #endregion

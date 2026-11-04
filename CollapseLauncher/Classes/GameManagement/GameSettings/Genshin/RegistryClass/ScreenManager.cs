@@ -1,13 +1,13 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
-using static Hi3Helper.Logger;
+
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -123,16 +123,16 @@ namespace CollapseLauncher.GameSettings.Genshin
                     int height = (int)valueHeight;
                     int fullscreen = (int)valueFullscreen;
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerWidth} : {width}", LogType.Debug, true);
-                    LogWriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
-                    LogWriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerWidth} : {width}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
+                    Logger.WriteLine($"Loaded Genshin Settings: {ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
                     return new ScreenManager(gameSettings) { width = width, height = height, fullscreen = fullscreen };
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading Genshin ScreenManager Data" +
+                Logger.WriteLine($"Failed while reading Genshin ScreenManager Data" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -156,14 +156,14 @@ namespace CollapseLauncher.GameSettings.Genshin
                 ParentGameSettings.RegistryRoot.SetValue(ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
                 ParentGameSettings.RegistryRoot.SetValue(ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {ValueNameScreenManagerFullscreen} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
-                LogWriteLine($"Saved Genshin Settings: {ValueNameScreenManagerWidth} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
-                LogWriteLine($"Saved Genshin Settings: {ValueNameScreenManagerHeight} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Genshin Settings: {ValueNameScreenManagerFullscreen} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Genshin Settings: {ValueNameScreenManagerWidth} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
+                Logger.WriteLine($"Saved Genshin Settings: {ValueNameScreenManagerHeight} : {ParentGameSettings.RegistryRoot.GetValue(ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save Genshin Impact ScreenManager Values!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save Genshin Impact ScreenManager Values!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception("Failed to save Genshin Impact ScreenManager Values!", ex));
             }
         }

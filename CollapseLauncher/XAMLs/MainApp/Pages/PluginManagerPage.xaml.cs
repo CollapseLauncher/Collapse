@@ -2,8 +2,8 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
 using Hi3Helper.LocaleSourceGen;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
@@ -246,7 +246,7 @@ namespace CollapseLauncher.Pages
                     catch (Exception exception)
                     {
                         failures.Add((filePath, exception));
-                        Logger.LogWriteLine($"[PluginManagerPage::ImportPlugins] Failed to import: {filePath}\r\n{exception}",
+                        Logger.WriteLine($"[PluginManagerPage::ImportPlugins] Failed to import: {filePath}\r\n{exception}",
                                             LogType.Error,
                                             true);
                     }
@@ -309,7 +309,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"An error has occurred while trying to spawn restart dialog\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error has occurred while trying to spawn restart dialog\r\n{ex}", LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }

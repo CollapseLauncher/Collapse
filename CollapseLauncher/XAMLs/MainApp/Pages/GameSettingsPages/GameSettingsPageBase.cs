@@ -4,7 +4,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.RegistryUtils;
 using CollapseLauncher.Statics;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -137,7 +137,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to applying the game settings!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"[GSP Module] An error has occurred while trying to applying the game settings!\r\n{ex}", LogType.Error, true);
                 SetApplyTextStatus(ex.Message, true);
                 ErrorSender.SendException(ex);
                 SentryHelper.ExceptionHandler(ex);
@@ -165,7 +165,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
                 SetApplyTextStatus(ex.Message, true);
                 ErrorSender.SendException(ex);
                 SentryHelper.ExceptionHandler(ex);
@@ -193,7 +193,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
                 SetApplyTextStatus(ex.Message, true);
                 ErrorSender.SendException(ex);
                 SentryHelper.ExceptionHandler(ex);
@@ -227,7 +227,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
                 SetApplyTextStatus(ex.Message, true);
                 ErrorSender.SendException(ex);
                 SentryHelper.ExceptionHandler(ex);
@@ -265,7 +265,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"[GSP Module] An error has occurred while trying to exporting the registry!\r\n{ex}", LogType.Error, true);
                 SetApplyTextStatus(ex.Message, true);
                 ErrorSender.SendException(ex);
                 SentryHelper.ExceptionHandler(ex);
@@ -283,7 +283,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[GSP Module] An error has occurred while performing SuspendRegistryMonitorOnAction: {ex}",
+            Logger.WriteLine($"[GSP Module] An error has occurred while performing SuspendRegistryMonitorOnAction: {ex}",
                                 LogType.Error,
                                 true);
             ErrorSender.SendException(ex);
@@ -304,7 +304,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[GSP Module] An error has occurred while performing SuspendRegistryMonitorOnAction: {ex}",
+            Logger.WriteLine($"[GSP Module] An error has occurred while performing SuspendRegistryMonitorOnAction: {ex}",
                                 LogType.Error,
                                 true);
             ErrorSender.SendException(ex);
@@ -354,7 +354,7 @@ public abstract partial class GameSettingsPageBase : Page, INotifyPropertyChange
 
     private void OnRegistryChanged(object? sender, EventArgs e)
     {
-        Logger.LogWriteLine("[GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+        Logger.WriteLine("[GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
         DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
     }
 

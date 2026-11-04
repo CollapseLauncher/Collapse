@@ -4,11 +4,11 @@ using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.InternalPInvoke;
 using CollapseLauncher.Helper.Update;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Log;
 using Hi3Helper.MagicScaler.LibheifCL;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -39,7 +39,7 @@ using Velopack;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Log.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -97,7 +97,7 @@ namespace CollapseLauncher
                 }
 
                 // Log Application Info
-                LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
+                Logger.WriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                                            LauncherUpdateHelper.LauncherCurrentVersionString,
                                            GetVersionString(),
                                        #if DEBUG
@@ -107,9 +107,9 @@ namespace CollapseLauncher
                                        #endif
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
-                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
+                Logger.WriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
-                LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
+                Logger.WriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
                              LogType.Scheme, true);
 
@@ -202,11 +202,11 @@ namespace CollapseLauncher
                     }
                     catch (NotSupportedException ex)
                     {
-                        LogWriteLine("[InitializeExperimentalWinUIFeatures]" + ex.Message, LogType.Scheme, true);
+                        Logger.WriteLine("[InitializeExperimentalWinUIFeatures]" + ex.Message, LogType.Scheme, true);
                     }
 
                     bool isEnabled = XamlOptionalChanges.IsChangeEnabled(id);
-                    LogWriteLine($"[XAML_EXPERIMENTAL_OPTS]: {id} ({(int)id}) {(isEnabled ? "has been enabled" : "is not supported")} ({(!isPreviouslyEnabled ? "was previously disabled" : "was already enabled")})", LogType.Debug, true);
+                    Logger.WriteLine($"[XAML_EXPERIMENTAL_OPTS]: {id} ({(int)id}) {(isEnabled ? "has been enabled" : "is not supported")} ({(!isPreviouslyEnabled ? "was previously disabled" : "was already enabled")})", LogType.Debug, true);
                 }
             }
         }
@@ -313,7 +313,7 @@ namespace CollapseLauncher
 
             if (Directory.GetCurrentDirectory() != AppExecutableDir)
             {
-                LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
+                Logger.WriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
                              LogType.Warning, true);
                 Directory.SetCurrentDirectory(AppExecutableDir);
             }
@@ -384,7 +384,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"[InitSDKAsync] Failed to load some SDKs.\r\n{ex}", LogType.Sentry, true);
+                Logger.WriteLine($"[InitSDKAsync] Failed to load some SDKs.\r\n{ex}", LogType.Sentry, true);
             }
         }
 
@@ -396,7 +396,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
+                Logger.WriteLine($"An error has occurred while trying to initialize MagicScaler External codecs {ex}",
                              LogType.Error,
                              true);
             }
@@ -430,14 +430,14 @@ namespace CollapseLauncher
             try
             {
                 // Sentry SDK Entry
-                LogWriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
+                Logger.WriteLine("[SentrySDKInit] Loading Sentry SDK asynchronously...", LogType.Sentry, true);
                 SentryHelper.InitializeSentrySdk();
-                LogWriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
+                Logger.WriteLine("[SentrySDKInit] Setting up global exception handler redirection", LogType.Sentry, true);
                 SentryHelper.InitializeExceptionRedirect();
             }
             catch (Exception ex)
             {
-                LogWriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                Logger.WriteLine($"[SentrySDKInit] Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
             }
         }
 
@@ -449,7 +449,7 @@ namespace CollapseLauncher
             }
             catch (Exception e)
             {
-                LogWriteLine($"There was an error while initializing the database handler!\r\n{e}",
+                Logger.WriteLine($"There was an error while initializing the database handler!\r\n{e}",
                              LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(e);
             }
@@ -457,7 +457,7 @@ namespace CollapseLauncher
 
         private static void InnoSetupLogUpdate_LoggerEvent(object? sender, InnoSetupLogStruct e)
         {
-            LogWriteLine(
+            Logger.WriteLine(
                          e.Message,
                          e.LogType switch
                          {
@@ -655,7 +655,7 @@ namespace CollapseLauncher
                                    _ => LogType.Default
                                };
 
-            LogWriteLine(e.Message, severity, true);
+            Logger.WriteLine(e.Message, severity, true);
         }
 
         private static void CheckRuntimeFeatures()
@@ -663,7 +663,7 @@ namespace CollapseLauncher
             try
             {
                 // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
-                LogWriteLine($"Available Runtime Features:\r\n\t" +
+                Logger.WriteLine($"Available Runtime Features:\r\n\t" +
                              $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
                              $"IsDynamicCodeCompiled:   {RuntimeFeature.IsDynamicCodeCompiled}\r\n\t" +
                              $"IsDynamicCodeSupported:  {RuntimeFeature.IsDynamicCodeSupported}\r\n\t" +
@@ -673,7 +673,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}",
+                Logger.WriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}",
                              LogType.Error, true);
             }
         }
@@ -705,7 +705,7 @@ namespace CollapseLauncher
             }
 
             CurrentAppTheme = AppThemeMode.Dark;
-            LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
+            Logger.WriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
                          LogType.Warning, true);
         }
 

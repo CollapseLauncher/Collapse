@@ -1,3 +1,4 @@
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using Sentry;
 using System;
@@ -37,7 +38,7 @@ public static partial class SentryHelper
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine("Failed when trying to get CPU Name!\r\n" + ex, LogType.Error, true);
+                    Logger.WriteLine("Failed when trying to get CPU Name!\r\n" + ex, LogType.Error, true);
                     return "Unknown CPU";
                 }
             }
@@ -84,7 +85,7 @@ public static partial class SentryHelper
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"Failed to retrieve GPU info from registry: {ex.Message}", LogType.Error,
+                    Logger.WriteLine($"Failed to retrieve GPU info from registry: {ex.Message}", LogType.Error,
                                         true);
                 }
 
@@ -210,7 +211,7 @@ public static class ProxyBreadcrumb
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[CollapseSentryExtension::GetSystemProxy] Failure when grabbing system proxy settings! returning false...\r\n" +
+            Logger.WriteLine($"[CollapseSentryExtension::GetSystemProxy] Failure when grabbing system proxy settings! returning false...\r\n" +
                                 $"{ex}", LogType.Error, true);
             return false;
         }
@@ -238,7 +239,7 @@ public static class ProxyBreadcrumb
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[CollapseSentryExtension::GetCollapseProxyType] Failure when parsing proxy URL scheme! returning empty string..." +
+            Logger.WriteLine($"[CollapseSentryExtension::GetCollapseProxyType] Failure when parsing proxy URL scheme! returning empty string..." +
                                 $"{ex}", LogType.Error, true);
 
             return string.Empty;

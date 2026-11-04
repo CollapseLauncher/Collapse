@@ -13,8 +13,8 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.XAMLs.Theme.ContentDialog;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
@@ -94,7 +94,7 @@ namespace CollapseLauncher.InstallManager.Base
             // If the patch metadata is not found, then return false and back to old compare method
             if (!patchManifest.IsFound)
             {
-                Logger.LogWriteLine($"[InstallManagerBase::AlterStartPatchUpdateSophon] Cannot find alternative patch method for version: {requestedVersionFrom} -> {requestedVersionTo}",
+                Logger.WriteLine($"[InstallManagerBase::AlterStartPatchUpdateSophon] Cannot find alternative patch method for version: {requestedVersionFrom} -> {requestedVersionTo}",
                                     LogType.Error,
                                     true);
                 return false;
@@ -360,13 +360,13 @@ namespace CollapseLauncher.InstallManager.Base
                                                        matchingField: matchingField,
                                                        token: token);
 
-                Logger.LogWriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
+                Logger.WriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
 
                 // Get the manifest pair based on the matching field
                 if (!rootPatchManifest
                        .TryGetOtherPatchInfoPair(matchingField, updateVersionfrom, out var patchManifest))
                 {
-                    Logger.LogWriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find past-version patch manifest for matching field: {matchingField}, Skipping!",
+                    Logger.WriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find past-version patch manifest for matching field: {matchingField}, Skipping!",
                                         LogType.Warning,
                                         true);
                     isAlowRemoveOldFile = false;
@@ -380,7 +380,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // If the patch metadata is not found, continue to other manifest pair
                 if (!patchManifest.IsFound)
                 {
-                    Logger.LogWriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find patch manifest for matching field: {matchingField}",
+                    Logger.WriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find patch manifest for matching field: {matchingField}",
                                         LogType.Error,
                                         true);
                     continue;
@@ -634,7 +634,7 @@ namespace CollapseLauncher.InstallManager.Base
                         downloadedDict[patchAsset.PatchNameSource]++;
                     }
 
-                    Logger.LogWriteLine($"Downloaded patch file for: {patchAsset.TargetFilePath}",
+                    Logger.WriteLine($"Downloaded patch file for: {patchAsset.TargetFilePath}",
                                         LogType.Debug,
                                         true);
                     Interlocked.Increment(ref ProgressAllCountCurrent);
@@ -676,7 +676,7 @@ namespace CollapseLauncher.InstallManager.Base
                         SophonPatchMethod.DownloadOver => ("downloaded", patchAsset.TargetFilePath),
                         _ => ("patched", patchAsset.TargetFilePath)
                     };
-                Logger.LogWriteLine($"File has been {status} [{patchAsset.PatchMethod}]: {fileToLog}",
+                Logger.WriteLine($"File has been {status} [{patchAsset.PatchMethod}]: {fileToLog}",
                                     LogType.Debug,
                                     true);
                 Interlocked.Increment(ref ProgressAllCountCurrent);

@@ -1,13 +1,13 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
-using static Hi3Helper.Logger;
+
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
@@ -130,7 +130,7 @@ namespace CollapseLauncher.GameSettings.Zenless
                     int height = (int)valueHeight;
                     FullScreenMode fullscreen = (FullScreenMode)valueFullscreen;
 #if DEBUG
-                    LogWriteLine($"Loaded Zenless Settings:\r\n\t" +
+                    Logger.WriteLine($"Loaded Zenless Settings:\r\n\t" +
                                  $"{ValueNameScreenManagerWidth} : {width}\r\n\t" +
                                  $"{ValueNameScreenManagerHeight} : {height}\r\n\t" +
                                  $"{ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
@@ -140,7 +140,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading Zenless ScreenManager Data" +
+                Logger.WriteLine($"Failed while reading Zenless ScreenManager Data" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
@@ -163,7 +163,7 @@ namespace CollapseLauncher.GameSettings.Zenless
                 ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerHeight,     height,     RegistryValueKind.DWord);
                 ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerHeightDef,  height,     RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Zenless Settings:\r\n\t" +
+                Logger.WriteLine($"Saved Zenless Settings:\r\n\t" +
                              $"{ValueNameScreenManagerFullscreen} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerFullscreen, null)}\r\n\t" +
                              $"{ValueNameScreenManagerWidth} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerWidth, null)}\r\n\t" +
                              $"{ValueNameScreenManagerHeight} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
@@ -171,7 +171,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save Zenless ScreenManager Values!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Failed to save Zenless ScreenManager Values!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }

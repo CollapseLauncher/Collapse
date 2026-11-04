@@ -5,8 +5,8 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
-using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -34,7 +34,7 @@ namespace CollapseLauncher
 
             DispatcherQueueExtensions.TryEnqueue(() => AttachEventToNotification(presetConfig, activity, activityTitle, activitySubtitle));
         #if DEBUG
-            Logger.LogWriteLine($"Background activity for {presetConfig} has been attached", LogType.Debug, true);
+            Logger.WriteLine($"Background activity for {presetConfig} has been attached", LogType.Debug, true);
         #endif
         }
 
@@ -44,13 +44,13 @@ namespace CollapseLauncher
             {
                 NotificationSender.RemoveCustomNotification(presetConfig.GetHashCode());
             #if DEBUG
-                Logger.LogWriteLine($"Background activity for {presetConfig} has been detached", LogType.Debug, true);
+                Logger.WriteLine($"Background activity for {presetConfig} has been detached", LogType.Debug, true);
                 return;
             #endif
             }
 
         #if DEBUG
-            Logger.LogWriteLine($"Cannot detach background activity for {presetConfig} because it doesn't attached", LogType.Debug, true);
+            Logger.WriteLine($"Cannot detach background activity for {presetConfig} because it doesn't attached", LogType.Debug, true);
         #endif
         }
 

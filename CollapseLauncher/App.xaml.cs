@@ -1,6 +1,6 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.Enums;
@@ -8,13 +8,10 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI;
 using Microsoft.UI.Private.Media;
 using Microsoft.UI.Xaml;
-using PhotoSauce.MagicScaler;
-using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Diagnostics;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -43,7 +40,7 @@ namespace CollapseLauncher
 #endif
                 DebugSettings.XamlResourceReferenceFailed += static (sender, args) =>
                 {
-                    LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
+                    Logger.WriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
@@ -52,7 +49,7 @@ namespace CollapseLauncher
                 };
                 DebugSettings.BindingFailed += static (sender, args) =>
                 {
-                    LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
+                    Logger.WriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
@@ -60,7 +57,7 @@ namespace CollapseLauncher
                 };
                 UnhandledException += static (sender, e) =>
                 {
-                    LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}\r\nCurrent Stacktrace: {new StackTrace()}", LogType.Error, true);
+                    Logger.WriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}\r\nCurrent Stacktrace: {new StackTrace()}", LogType.Error, true);
                     var ex = e.Exception;
                     if (ex != null)
                     {
@@ -114,15 +111,15 @@ namespace CollapseLauncher
                     case AppMode.StartOnTray:
                         toInitializeWindow = new MainWindow();
                         ((MainWindow)toInitializeWindow).InitializeWindowProperties();
-                        LogWriteLine("Running Collapse in Tray Mode!", LogType.Scheme);
+                        Logger.WriteLine("Running Collapse in Tray Mode!", LogType.Scheme);
                         break;
                 }
 
                 // Disable AppUserModelId for now as Windows doesn't respect it on non UWP apps
                 //string appUserModelId = "Collapse.CollapseLauncher";
                 //int setAUMIDResult = SetCurrentProcessExplicitAppUserModelID(appUserModelId);
-                //if (setAUMIDResult != 0) LogWriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
-                //else LogWriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
+                //if (setAUMIDResult != 0) Logger.WriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
+                //else Logger.WriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
 
                 toInitializeWindow!.Activate();
                 
@@ -140,8 +137,8 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR ON APP INITIALIZER LEVEL!!!\r\n{ex}", LogType.Error, true);
-                LogWriteLine("\r\nIf this is not intended, please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\nPress any key to exit...");
+                Logger.WriteLine($"FATAL ERROR ON APP INITIALIZER LEVEL!!!\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine("\r\nIf this is not intended, please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\nPress any key to exit...");
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 //Console.ReadLine();
                 throw;

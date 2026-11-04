@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Update;
+using Hi3Helper.Log;
 using Microsoft.Win32;
 using Microsoft.Windows.AppLifecycle;
 using System;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Activation;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable GrammarMistakeInComment
 
@@ -29,12 +29,12 @@ namespace CollapseLauncher
             {
                 if ((string)reg.GetValue("") == $"\"{AppExecutablePath}\" %1")
                 {
-                    LogWriteLine("The protocol is already activated.");
+                    Logger.WriteLine("The protocol is already activated.");
                     return;
                 }
             }
 
-            LogWriteLine("Protocol does not exist or paths are different. Activating protocol...");
+            Logger.WriteLine("Protocol does not exist or paths are different. Activating protocol...");
 
             Registry.ClassesRoot.DeleteSubKeyTree(protocolName, false);
 

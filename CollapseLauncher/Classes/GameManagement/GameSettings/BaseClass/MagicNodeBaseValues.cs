@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Interfaces.Class;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
@@ -359,7 +359,7 @@ namespace CollapseLauncher.GameSettings.Base
                 string raw = Sleepy.ReadString(filePath, magic);
 
 #if DEBUG
-                Logger.LogWriteLine($"RAW MagicNodeBaseValues Settings: {filePath}\r\n" +
+                Logger.WriteLine($"RAW MagicNodeBaseValues Settings: {filePath}\r\n" +
                              $"{raw}", LogType.Debug, true);
 #endif
                 JsonNode? node = raw.DeserializeAsJsonNode();
@@ -372,11 +372,11 @@ namespace CollapseLauncher.GameSettings.Base
                 if (ex is not FileNotFoundException)
                 {
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
                 }
                 else
                 {
-                    Logger.LogWriteLine("Magic file is not found, returning default values!");
+                    Logger.WriteLine("Magic file is not found, returning default values!");
                 }
                 return DefaultValue(magic, versionManager, typeInfo);
             }
@@ -409,7 +409,7 @@ namespace CollapseLauncher.GameSettings.Base
             Sleepy.WriteString(filePath, jsonString, Magic);
 
 #if DEBUG
-            Logger.LogWriteLine($"Serialized data:\r\n{jsonString}", LogType.Debug, true);
+            Logger.WriteLine($"Serialized data:\r\n{jsonString}", LogType.Debug, true);
 #endif
         }
 

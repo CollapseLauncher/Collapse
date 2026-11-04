@@ -1,11 +1,9 @@
-﻿using CollapseLauncher.GameManagement.ImageBackground;
-using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
-using CollapseLauncher.XAMLs.Theme.CustomControls;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using PhotoSauce.MagicScaler;
 using System;
@@ -253,7 +251,7 @@ namespace CollapseLauncher.Helper.Image
 
             if (ProcessingUrls.Contains(url))
             {
-                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                Logger.WriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
                 return false;
             }
@@ -267,7 +265,7 @@ namespace CollapseLauncher.Helper.Image
                     .EnsureCreationOfDirectory()
                     .EnsureNoReadOnly();
 
-                Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+                Logger.WriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
                 if (fileInfo.Exists)
                     fileInfo.Delete();
@@ -305,7 +303,7 @@ namespace CollapseLauncher.Helper.Image
                         }
                     }
 
-                    Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
+                    Logger.WriteLine($"Resource download from: {url} has been completed and stored locally into:"
                                         + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
 
                     // Move to its original filename
@@ -319,7 +317,7 @@ namespace CollapseLauncher.Helper.Image
                         return true;
                     }
 
-                    Logger.LogWriteLine($"Failed to download resource from: {url} while trying to store into:"
+                    Logger.WriteLine($"Failed to download resource from: {url} while trying to store into:"
                         + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)"
                         + $". Remained attempt: {writeAttempt}", LogType.Warning, true);
 
@@ -345,7 +343,7 @@ namespace CollapseLauncher.Helper.Image
             {
                 // ErrorSender.SendException(ex, ErrorType.Connection);
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
 
                 // Return false as failed
                 return false;
@@ -376,13 +374,13 @@ namespace CollapseLauncher.Helper.Image
             {
                 if (currentRetry > maxRetries)
                 {
-                    Logger.LogWriteLine($"Failed to download resource from: {urlLocal} after {maxRetries} attempts.\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"Failed to download resource from: {urlLocal} after {maxRetries} attempts.\r\n{ex}", LogType.Error, true);
                     UrlRetryCount.TryRemove(urlLocal, out _);
                     throw;
                 }
                 
                 var delay = baseDelay * currentRetry;
-                Logger.LogWriteLine($"Failed to download resource from: {urlLocal} (Attempt {currentRetry}/{maxRetries}). Retrying in {delay}ms...\r\n{ex}", LogType.Warning, true);
+                Logger.WriteLine($"Failed to download resource from: {urlLocal} (Attempt {currentRetry}/{maxRetries}). Retrying in {delay}ms...\r\n{ex}", LogType.Warning, true);
                 UrlRetryCount[urlLocal] = currentRetry;
                 await Task.Delay(delay, tokenLocal);
                 returnStream =  await GetFallbackStreamUrl(client, urlLocal, tokenLocal); // Recursive call to retry
@@ -413,7 +411,7 @@ namespace CollapseLauncher.Helper.Image
 
             if (ProcessingUrls.Contains(url))
             {
-                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                Logger.WriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
                 return url;
             }
@@ -498,7 +496,7 @@ namespace CollapseLauncher.Helper.Image
 #endif
             {
 #if DEBUG
-                Logger.LogWriteLine($"An error has occurred while writing Base64 URL to local file.\r\n{ex}", LogType.Error, true);
+                Logger.WriteLine($"An error has occurred while writing Base64 URL to local file.\r\n{ex}", LogType.Error, true);
 #endif
                 return null;
             }

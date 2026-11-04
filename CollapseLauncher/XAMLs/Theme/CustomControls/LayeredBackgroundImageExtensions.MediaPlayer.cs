@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using System;
 using System.Threading;
 using System.Timers;
@@ -72,7 +72,7 @@ internal static partial class LayeredBackgroundImageExtensions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::VolumeFadeCore::Impl] {ex}",
+                    Logger.WriteLine($"[LayeredBackgroundImage::VolumeFadeCore::Impl] {ex}",
                                         LogType.Error,
                                         true);
 
@@ -91,7 +91,7 @@ internal static partial class LayeredBackgroundImageExtensions
                 }
                 catch (Exception e)
                 {
-                    Logger.LogWriteLine($"[LayeredBackgroundImage::VolumeFadeCore::TrySetVolume] {e}",
+                    Logger.WriteLine($"[LayeredBackgroundImage::VolumeFadeCore::TrySetVolume] {e}",
                                         LogType.Error,
                                         true);
                 }
@@ -99,7 +99,7 @@ internal static partial class LayeredBackgroundImageExtensions
         }
         catch (Exception e)
         {
-            Logger.LogWriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore] {e}",
+            Logger.WriteLine($"[LayeredBackgroundImage::StartVideoPlayerVolumeFadeCore] {e}",
                                 LogType.Error,
                                 true);
         }

@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+﻿using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -77,7 +77,7 @@ file static class NonFaultyExtension
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"This element: {element.GetType().Name} ({element.Name}) got errored while trying to call: {nameOfCaller}\r\n: {ex}",
+                Logger.WriteLine($"This element: {element.GetType().Name} ({element.Name}) got errored while trying to call: {nameOfCaller}\r\n: {ex}",
                                     LogType.Error,
                                     true);
             }
@@ -93,7 +93,7 @@ file static class NonFaultyExtension
             if (double.IsNaN(width) ||
                 width < 0)
             {
-                Logger.LogWriteLine($"This element: {element.GetType().Name} ({element.Name}) has NaN or subnormal width! {width}",
+                Logger.WriteLine($"This element: {element.GetType().Name} ({element.Name}) has NaN or subnormal width! {width}",
                                     LogType.Debug,
                                     true);
                 width = 0;
@@ -103,7 +103,7 @@ file static class NonFaultyExtension
             if (double.IsNaN(height) ||
                 height < 0)
             {
-                Logger.LogWriteLine($"This element: {element.GetType().Name} ({element.Name}) has NaN or subnormal height! {height}",
+                Logger.WriteLine($"This element: {element.GetType().Name} ({element.Name}) has NaN or subnormal height! {height}",
                                     LogType.Debug,
                                     true);
                 height = 0;

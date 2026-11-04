@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
+using Hi3Helper.Log;
 using Hi3Helper.Win32.Screen;
 using System.Drawing;
 using System.Text;
@@ -89,12 +89,12 @@ namespace CollapseLauncher.GameSettings.StarRail
                     }
                     else
                     {
-                        Logger.LogWriteLine("Failed enabling MobileMode for HSR: regModel is null.", LogType.Error, true);
+                        Logger.WriteLine("Failed enabling MobileMode for HSR: regModel is null.", LogType.Error, true);
                     }
                 }
                 else
                 {
-                    Logger.LogWriteLine("Failed enabling MobileMode for HSR: regRoot/regLoc is unexpectedly uninitialized.",
+                    Logger.WriteLine("Failed enabling MobileMode for HSR: regRoot/regLoc is unexpectedly uninitialized.",
                                         LogType.Error, true);
                 }
             }
@@ -106,7 +106,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
             if (apiID == 4)
             {
-                Logger.LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                Logger.WriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                 if (SettingsCollapseScreen.UseCustomResolution && SettingsScreen.isfullScreen)
                 {
                     var size = ScreenProp.CurrentResolution;
