@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hi3Helper.Log;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -11,12 +12,12 @@ namespace CollapseLauncher
             ArgumentException.ThrowIfNullOrEmpty(target);
 
             // ReSharper disable once LocalizableElement
-            Console.WriteLine("Trying to append ownership of the folder. Please do not close this console window!");
+            Logger.WriteLine("Trying to append ownership of the folder. Please do not close this console window!", LogType.Warning, true);
 
             if (!Directory.Exists(target))
                 Directory.CreateDirectory(target);
 
-            Process takeOwner = new Process
+            Process takeOwner = new()
             {
                 StartInfo = new ProcessStartInfo
                 {

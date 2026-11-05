@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
-using Hi3Helper.Log;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -141,7 +141,7 @@ public partial class LayeredBackgroundImage
         }
         catch (Exception ex)
         {
-            Logger.WriteLine($"An error has occurred while loading source for: {parent.Name}\r\n{ex}", LogType.Error, true);
+            Logger.LogError(ex, "An error has occurred while loading source for: {parent.Name}", parent.Name);
         }
         finally
         {
@@ -217,11 +217,11 @@ public partial class LayeredBackgroundImage
                 otherSourceContext.Dispose();
             }
 
-            Logger.WriteLine($"Parent Grid: {parent.Name} has remained: {parent.Children.Count} children", LogType.Debug);
+            Logger.LogTrace("Parent Grid: {parent.Name} has remained: {parent.Children.Count} children", parent.Name, parent.Children.Count);
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Logger.LogError(ex, "An error occurred while unloading the last presenter.");
         }
     }
 

@@ -151,9 +151,9 @@ public partial class ImageBackgroundManager
                         if (!string.IsNullOrEmpty(backgroundToUse))
                             LoadMediaAccentColor(new Uri(backgroundToUse));
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine(e);
+                        Logger.WriteLine($"{ex}", LogType.Error, true);
                     }
                 }
             }

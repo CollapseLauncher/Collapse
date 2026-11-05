@@ -40,7 +40,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 /// </summary>
 public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoFramePresenter
 {
-    private static ConcurrentDictionary<MediaFoundationPresenter, bool> LoadedPresenters = [];
+    private static readonly ConcurrentDictionary<MediaFoundationPresenter, bool> LoadedPresenters = [];
 
     private static readonly Guid IID_IDXGISurface                      = typeof(IDXGISurface).GUID;
     private static readonly Guid IID_ID3D11Texture2D                   = typeof(ID3D11Texture2D).GUID;
@@ -305,14 +305,14 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
             try
             {
-                _compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
-                _videoBrush = _compositor.CreateSurfaceBrush();
+                _compositor                          = ElementCompositionPreview.GetElementVisual(this).Compositor;
+                _videoBrush                          = _compositor.CreateSurfaceBrush();
                 _videoBrush.Stretch                  = Stretch;
                 _videoBrush.HorizontalAlignmentRatio = 0.5f;
                 _videoBrush.VerticalAlignmentRatio   = 0.5f;
 
-                _videoVisual       = _compositor.CreateSpriteVisual();
-                _videoVisual.Brush = _videoBrush;
+                _videoVisual                        = _compositor.CreateSpriteVisual();
+                _videoVisual.Brush                  = _videoBrush;
                 _videoVisual.RelativeSizeAdjustment = Vector2.One;
 
                 CreateDeviceResources();
@@ -356,7 +356,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         }
 
         LoadedPresenters.TryRemove(this, out _);
-        Console.WriteLine($"Total Remained MediaFoundationPresenter instances: {LoadedPresenters.Count} instances");
+        Logger?.LogTrace("Total Remained MediaFoundationPresenter instances: {count} instances", LoadedPresenters.Count);
 
         UpdatePresentationState();
     }

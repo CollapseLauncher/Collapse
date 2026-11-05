@@ -6,6 +6,7 @@ using Hi3Helper.Win32.Native.Interfaces.DXGI;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Native.Structs.DXGI;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
@@ -33,6 +34,7 @@ public partial class LayeredBackgroundImage
     public partial class SourceContext : IDisposable
     {
         private static readonly ConcurrentDictionary<SourceContext, bool> LoadedContexts = [];
+        private static readonly ILogger ThisLogger = ILoggerHelper.GetILogger(nameof(LayeredBackgroundImage) + "::" + nameof(SourceContext));
 
         private static readonly Guid IID_IMediaPlayer5 = new("cfe537fd-f86a-4446-bf4d-c8e792b7b4b3");
 
@@ -84,6 +86,7 @@ public partial class LayeredBackgroundImage
                 else
                 {
                     Player?.VideoFrameAvailable += PlayerOnVideoFrameAvailable;
+                    value.Logger                =  ILoggerHelper.GetILogger(nameof(MediaFoundationPresenter));
                 }
 
                 field = value;
@@ -299,7 +302,7 @@ public partial class LayeredBackgroundImage
                 return;
 
             LoadedContexts.TryRemove(this, out _);
-            Console.WriteLine($"Total Remained SourceContext instances: {LoadedContexts.Count} instances", LogType.Debug);
+            ThisLogger.LogTrace("Total Remained SourceContext instances: {LoadedContexts.Count} instances", LoadedContexts.Count);
 
             GC.SuppressFinalize(this); // Early suppress finalization here.
 
@@ -339,7 +342,7 @@ public partial class LayeredBackgroundImage
             PlayerPresenter = null;
         }
 
-        private static void DisposeObject(object? obj)
+        private static void DisposeObject<T>(T? obj)
         {
             (obj as IDisposable)?.Dispose();
         }

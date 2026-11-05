@@ -1,5 +1,7 @@
 ﻿using FFmpegInteropX;
 using Hi3Helper.Data;
+using Hi3Helper.Log;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -10,6 +12,12 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls;
 
 public partial class LayeredBackgroundImage
 {
+    #region Static Properties
+
+    public static ILogger Logger { get; } = ILoggerHelper.GetILogger(nameof(LayeredBackgroundImage));
+
+    #endregion
+
     #region Properties
 
     public IMediaCacheHandler? MediaCacheHandler

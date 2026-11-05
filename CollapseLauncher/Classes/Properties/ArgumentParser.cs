@@ -126,8 +126,8 @@ namespace CollapseLauncher
             if (result.Errors.Count <= 0)
                 return;
 
-            var e = new ArgumentException("Argument to run this command is invalid! See the information above for more detail.");
-            Console.WriteLine(e);
+            var ex = new ArgumentException("Argument to run this command is invalid! See the information above for more detail.");
+            Logger.WriteLine($"{ex}", LogType.Error, true);
             m_appMode = AppMode.Launcher;
         }
 

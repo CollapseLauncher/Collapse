@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Pages;
+using Hi3Helper.Log;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -75,9 +76,9 @@ public partial class PanelSlideshow
                 _timerStoryboard?.Begin();
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Console.WriteLine(e);
+            Logger.WriteLine($"[PanelSlideshow::RestartTimer] {ex}", LogType.Error, true);
         }
         return;
 
@@ -129,7 +130,7 @@ public partial class PanelSlideshow
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.WriteLine($"[PanelSlideshow::TimerStoryboardOnCompleted] {ex}", LogType.Error, true);
             }
         }
     }

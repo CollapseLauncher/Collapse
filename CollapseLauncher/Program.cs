@@ -129,8 +129,6 @@ namespace CollapseLauncher
                 CheckRuntimeFeatures();
 
                 InitializeExperimentalWinUIFeatures();
-
-                Console.WriteLine(Directory.GetCurrentDirectory());
                 Application.Start(_ =>
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -251,8 +249,7 @@ namespace CollapseLauncher
                     }
                     else
                     {
-                        new Migrate().DoMigration(
-                                                  m_arguments.Migrate.InputPath,
+                        new Migrate().DoMigration(m_arguments.Migrate.InputPath,
                                                   m_arguments.Migrate.OutputPath);
                     }
 
@@ -780,7 +777,7 @@ namespace CollapseLauncher
                 return otherArgs;
             }
 
-            Console.WriteLine($"Waiting to kill parent process: {parentPid}");
+            WriteLine($"Waiting to kill parent process: {parentPid}", LogType.Debug, true);
             using Process parentProcess = Process.GetProcessById(parentPid);
             parentProcess.Kill();
             parentProcess.WaitForExit();

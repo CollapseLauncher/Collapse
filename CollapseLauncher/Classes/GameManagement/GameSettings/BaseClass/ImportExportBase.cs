@@ -563,7 +563,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 return ex;
             }
 
@@ -593,7 +593,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.WriteLine($"{ex}", LogType.Error, true);
                 return ex;
             }
 

@@ -505,7 +505,7 @@ namespace CollapseLauncher.Pages
                                     + installationTargetPath.Replace('\\', '/')
                                     + $"\" --channel {channelName}";
 
-            Console.WriteLine(updateArgument);
+            WriteLine(updateArgument, LogType.Debug, true);
             try
             {
                 new Process
