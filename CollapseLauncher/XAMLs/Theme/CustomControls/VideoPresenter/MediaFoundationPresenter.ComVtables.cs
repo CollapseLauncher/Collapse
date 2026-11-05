@@ -1,0 +1,25 @@
+﻿using Hi3Helper.Win32.Native.Structs;
+using System;
+// ReSharper disable InconsistentNaming
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#nullable enable
+namespace CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
+
+public sealed partial class MediaFoundationPresenter
+{
+    private static unsafe class ComVtables
+    {
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, nint, ref readonly Guid, out nint, out POINTL, int> ICompositionDrawingSurfaceInterop_BeginDraw;
+
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, int> ICompositionDrawingSurfaceInterop_EndDraw;
+
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, nint, uint, int, int, uint, nint, uint, nint, void> ID3D11DeviceContext_CopySubresourceRegion;
+
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, void> ID3D11DeviceContext_Flush;
+    }
+}

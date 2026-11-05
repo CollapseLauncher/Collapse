@@ -26,6 +26,7 @@ using Windows.Foundation;
 using Windows.Graphics.DirectX.Direct3D11;
 using WinRT;
 using Rect = Windows.Foundation.Rect;
+#pragma warning disable IDE0074
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -385,6 +386,11 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
                 _d3dDevice.GetImmediateContext(out _d3dContext);
 
             _d3dContextAbi = (nint)ComInterfaceMarshaller<ID3D11DeviceContext>.ConvertToUnmanaged(_d3dContext);
+            if (ComVtables.ID3D11DeviceContext_CopySubresourceRegion == null)
+                ComVtables.ID3D11DeviceContext_CopySubresourceRegion = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, uint, int, int, uint, nint, uint, nint, void>)(*(*(void***)_d3dContextAbi + 46));
+
+            if (ComVtables.ID3D11DeviceContext_Flush == null)
+                ComVtables.ID3D11DeviceContext_Flush = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, void>)(*(*(void***)_d3dContextAbi + 111));
 
             // MediaPlayer and the compositor also use this immediate context.
             if (ComMarshal<ID3D11DeviceContext>.TryCastComObjectAs(_d3dContext,
@@ -428,6 +434,12 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
             // Query borrowed reference from drawing surface interop (+1 ref).
             int hr = Marshal.QueryInterface(surfaceP, in IID_ICompositionDrawingSurfaceInterop, out _drawingSurfaceInteropAbi);
+            if (ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw == null)
+                ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, ref readonly Guid, out nint, out POINTL, int>)(*(*(void***)_drawingSurfaceInteropAbi + 3));
+
+            if (ComVtables.ICompositionDrawingSurfaceInterop_EndDraw == null)
+                ComVtables.ICompositionDrawingSurfaceInterop_EndDraw = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, int>)(*(*(void***)_drawingSurfaceInteropAbi + 4));
+
             Marshal.ThrowExceptionForHR(hr);
             _videoBrush!.Surface = _compositionSurface;
         }
@@ -578,6 +590,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         }
     }
 
+    [SuppressGCTransition]
     public unsafe void DrawUnsafe(
         Direct3DSurfaceConsumerUnsafe surfaceConsumerUnsafe,
         int                           canvasWidth,
@@ -600,8 +613,12 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
                 PresentHdrFrame();
                 return;
             }
-            int hr = ((delegate* unmanaged[MemberFunction]<nint, nint, ref readonly Guid, out nint, out POINTL, int>)(*(*(void***)_drawingSurfaceInteropAbi + 3)))
-                (_drawingSurfaceInteropAbi, nint.Zero, in IID_IDXGISurface, out nint updateP, out POINTL offset);
+
+            int hr = ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw(_drawingSurfaceInteropAbi,
+                                                                            nint.Zero,
+                                                                            in IID_IDXGISurface,
+                                                                            out nint updateP,
+                                                                            out POINTL offset);
             Marshal.ThrowExceptionForHR(hr);
 
             nint updateTextureP = nint.Zero;
@@ -609,18 +626,15 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
             {
                 hr = Marshal.QueryInterface(updateP, in IID_ID3D11Texture2D, out updateTextureP);
                 Marshal.ThrowExceptionForHR(hr);
-                ((delegate* unmanaged[MemberFunction]<nint, nint, uint, uint, uint, uint, nint, uint, nint, void>)(*(*(void***)_d3dContextAbi + 46)))
-                    (_d3dContextAbi, updateTextureP, 0, (uint)offset.x, (uint)offset.y, 0, _frameTexture, 0, nint.Zero);
-                ((delegate* unmanaged[MemberFunction]<nint, void>)(*(*(void***)_d3dContextAbi + 111)))
-                    (_d3dContextAbi);
+                ComVtables.ID3D11DeviceContext_CopySubresourceRegion(_d3dContextAbi, updateTextureP, 0, offset.x, offset.y, 0, _frameTexture, 0, nint.Zero);
+                ComVtables.ID3D11DeviceContext_Flush(_d3dContextAbi);
             }
             finally
             {
                 // The update texture belongs to this BeginDraw/EndDraw pair only.
                 if (updateTextureP != nint.Zero) Marshal.Release(updateTextureP);
                 if (updateP != nint.Zero) Marshal.Release(updateP);
-                hr = ((delegate* unmanaged[MemberFunction]<nint, int>)(*(*(void***)_drawingSurfaceInteropAbi + 4)))
-                    (_drawingSurfaceInteropAbi);
+                hr = ComVtables.ICompositionDrawingSurfaceInterop_EndDraw(_drawingSurfaceInteropAbi);
                 Marshal.ThrowExceptionForHR(hr);
             }
         }

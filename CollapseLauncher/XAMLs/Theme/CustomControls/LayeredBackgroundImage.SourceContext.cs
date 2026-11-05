@@ -36,6 +36,8 @@ public partial class LayeredBackgroundImage
         private static readonly ConcurrentDictionary<SourceContext, bool> LoadedContexts = [];
         private static readonly ILogger ThisLogger = ILoggerHelper.GetILogger(nameof(LayeredBackgroundImage) + "::" + nameof(SourceContext));
 
+        private static unsafe delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, int> IMediaPlayer5_CopyFrameToVideoSurface;
+
         private static readonly Guid IID_IMediaPlayer5 = new("cfe537fd-f86a-4446-bf4d-c8e792b7b4b3");
 
         public ulong Generation;
@@ -49,7 +51,7 @@ public partial class LayeredBackgroundImage
         public MediaPlayer? Player
         {
             get;
-            set
+            unsafe set
             {
                 nint oldPlayerAbi = Interlocked.Exchange(ref _playerAbi, nint.Zero);
                 if (oldPlayerAbi != nint.Zero) Marshal.Release(oldPlayerAbi);
@@ -64,6 +66,9 @@ public partial class LayeredBackgroundImage
                 }
 
                 (value as IWinRTObject)?.NativeObject?.TryAs(IID_IMediaPlayer5, out _playerAbi);
+                if (_playerAbi != nint.Zero && IMediaPlayer5_CopyFrameToVideoSurface == null)
+                    IMediaPlayer5_CopyFrameToVideoSurface = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, int>)(*(*(void***)_playerAbi + 10));
+
                 field = value;
             }
         }
@@ -114,13 +119,16 @@ public partial class LayeredBackgroundImage
             _cachedPlayerHeight = (int)sender.PlaybackSession.NaturalVideoHeight;
         }
 
+        [SuppressGCTransition]
         private void PlayerOnVideoFrameAvailable(MediaPlayer sender, object args)
         {
             PlayerPresenter?.DrawUnsafe(DrawConsumer, _cachedPlayerWidth, _cachedPlayerHeight);
             return;
 
+            [SkipLocalsInit]
+            [SuppressGCTransition]
             unsafe void DrawConsumer(nint surfaceAbi)
-                => ((delegate* unmanaged[MemberFunction]<nint, nint, int>)(*(*(void***)_playerAbi + 10)))(_playerAbi, surfaceAbi);
+                => IMediaPlayer5_CopyFrameToVideoSurface(_playerAbi, surfaceAbi);
         }
 
         public void RegisterPlayerCallbacks(
