@@ -137,8 +137,8 @@
         <IlcDisableSingleFile>true</IlcDisableSingleFile>
         <IlcTrimMetadata>true</IlcTrimMetadata>
         <TrimMetadata>true</TrimMetadata>
-        <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-        <FoldIdenticalMethodBodies>true</FoldIdenticalMethodBodies>
+        <IlcFoldIdenticalMethodBodies>false</IlcFoldIdenticalMethodBodies>
+        <FoldIdenticalMethodBodies>false</FoldIdenticalMethodBodies>
         <UseWindowsThreadPool>true</UseWindowsThreadPool>
 
         <!-- Debugging and Metadata -->
