@@ -17,11 +17,9 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 using System;
-using System.Collections.Concurrent;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using Windows.Foundation;
 using Windows.Graphics.DirectX.Direct3D11;
@@ -47,7 +45,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
     private const int DXGI_ERROR_DEVICE_HUNG    = unchecked((int)0x887A0006);
     private const int DXGI_ERROR_DEVICE_RESET   = unchecked((int)0x887A0007);
 
-    private static readonly ConcurrentDictionary<MediaFoundationPresenter, bool> LoadedPresenters = [];
+    private static int _loadedPresenterCount;
 
     private int RenderWidth;
     private int RenderHeight;
@@ -64,24 +62,21 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
     private readonly DispatcherQueue _dispatcherQueue;
 
-    private Compositor?                        _compositor;
-    private SpriteVisual?                      _videoVisual;
-    private CompositionSurfaceBrush?           _videoBrush;
-    private CompositionDrawingSurface?         _compositionSurface;
-    private CompositionGraphicsDevice?         _compositionGraphicsDevice;
-    private ICompositionDrawingSurfaceInterop? _drawingSurfaceInterop;
-    private nint                               _drawingSurfaceInteropAbi;
-    private IDXGISwapChain3?                   _swapChain;
-    private nint                               _swapChainAbi;
-    private ICompositionSurface?               _swapChainSurface;
+    private Compositor?                _compositor;
+    private SpriteVisual?              _videoVisual;
+    private CompositionSurfaceBrush?   _videoBrush;
+    private CompositionDrawingSurface? _compositionSurface;
+    private CompositionGraphicsDevice? _compositionGraphicsDevice;
+    private ICompositionSurface?       _swapChainSurface;
+    private CanvasDevice?              _canvasDevice;
 
-    private CanvasDevice?        _canvasDevice;
-    private ID3D11Device?        _d3dDevice;
-    private ID3D11DeviceContext? _d3dContext;
-    private nint                 _d3dContextAbi;
-    private nint                 _frameTexture;
-    private IDirect3DSurface?    _frameSurface;
-    private nint                 _frameSurfaceAbi;
+    private nint              _drawingSurfaceInteropAbi;
+    private nint              _swapChainAbi;
+    private nint              _d3dDeviceAbi;
+    private nint              _d3dContextAbi;
+    private nint              _frameTexture;
+    private IDirect3DSurface? _frameSurface;
+    private nint              _frameSurfaceAbi;
 
     private          bool _disposed;
     private          bool _recreating;
@@ -183,7 +178,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         SizeChanged              += OnSizeChanged;
         _visibilityCallbackToken =  RegisterPropertyChangedCallback(VisibilityProperty, OnVisibilityChanged);
 
-        LoadedPresenters.TryAdd(this, true);
+        Interlocked.Increment(ref _loadedPresenterCount);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs args)
@@ -271,14 +266,18 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
             UnregisterPropertyChangedCallback(VisibilityProperty, _visibilityCallbackToken);
         }
 
-        LoadedPresenters.TryRemove(this, out _);
-        Logger?.LogTrace("Total Remained MediaFoundationPresenter instances: {count} instances", LoadedPresenters.Count);
+        int remainingPresenterCount = Interlocked.Decrement(ref _loadedPresenterCount);
+        Logger?.LogTrace("Total Remained MediaFoundationPresenter instances: {count} instances", remainingPresenterCount);
 
         UpdatePresentationState();
+        PresentationStateChanged = null;
+        Logger                   = null;
+        Tag                      = null;
     }
 
     #region Update Frame and Device States Methods
 
+    [SkipLocalsInit]
     private unsafe void UpdateSurfaceBrushTransform()
     {
         if (_videoBrush is null)
@@ -297,7 +296,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         _videoBrush.TransformMatrix = Matrix3x2.Identity;
         if (RenderWidth <= 0 ||
             RenderHeight <= 0 ||
-            _swapChain == null ||
+            _swapChainAbi == nint.Zero ||
             _layoutSize.X <= 0 ||
             _layoutSize.Y <= 0)
             return;
@@ -315,9 +314,10 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         Vector2   offset    = (_layoutSize - frameSize * scale) * 0.5f;
         Matrix3x2 transform = Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(offset);
         // IDXGISwapChain2::SetMatrixTransform; Matrix3x2 matches DXGI_MATRIX_3X2_F.
-        _swapChain.SetMatrixTransform(in transform);
+        ComVtables.IDXGISwapChain2_SetMatrixTransform(_swapChainAbi, in transform).ThrowOnFailure();
     }
 
+    [SkipLocalsInit]
     private void UpdatePresentationState()
     {
         Rect visibleBounds = _effectiveViewport;
@@ -360,6 +360,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
     #region Create and Release Device Methods
 
+    [SkipLocalsInit]
     private void CreateCompositionResources()
     {
         using (_renderLock.EnterScope())
@@ -396,46 +397,41 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
     {
         ElementCompositionPreview.SetElementChildVisual(this, null);
         ReleaseDeviceResources();
-        _videoVisual?.Dispose();
-        _videoBrush?.Dispose();
-        _videoVisual = null;
-        _videoBrush  = null;
-        _compositor  = null;
-        _recreating  = false;
+        Interlocked.Exchange(ref _videoVisual, null)?.Dispose();
+        Interlocked.Exchange(ref _videoBrush,  null)?.Dispose();
+        _compositor = null;
+        _recreating = false;
     }
 
+    [SkipLocalsInit]
     private unsafe void CreateDeviceResources()
     {
         using (_renderLock.EnterScope())
         {
             _canvasDevice = CanvasDevice.GetSharedDevice();
-            _d3dDevice = CreateD3DDevice(_canvasDevice, Logger)
-                         ?? throw new InvalidOperationException("Could not obtain the native D3D11 device from the CanvasDevice.");
+            _d3dDeviceAbi = CreateD3DDevice(_canvasDevice, Logger);
+            if (_d3dDeviceAbi == nint.Zero)
+                throw new InvalidOperationException("Could not obtain the native D3D11 device from the CanvasDevice.");
 
-            if (_d3dContext == null)
-                _d3dDevice.GetImmediateContext(out _d3dContext);
-
-            _d3dContextAbi = (nint)ComInterfaceMarshaller<ID3D11DeviceContext>.ConvertToUnmanaged(_d3dContext);
-            if (ComVtables.ID3D11DeviceContext_CopySubresourceRegion == null)
-                ComVtables.ID3D11DeviceContext_CopySubresourceRegion = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, uint, int, int, uint, nint, uint, nint, void>)(*(*(void***)_d3dContextAbi + 46));
-
-            if (ComVtables.ID3D11DeviceContext_Flush == null)
-                ComVtables.ID3D11DeviceContext_Flush = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, void>)(*(*(void***)_d3dContextAbi + 111));
+            ComVtables.CacheD3D11Device(_d3dDeviceAbi);
+            ComVtables.ID3D11Device_GetImmediateContext(_d3dDeviceAbi, out _d3dContextAbi);
+            ComVtables.CacheD3D11DeviceContext(_d3dContextAbi);
 
             // MediaPlayer and the compositor also use this immediate context.
-            if (ComMarshal<ID3D11DeviceContext>.TryCastComObjectAs(_d3dContext,
-                                                                   out ID3D11Multithread? d3d11Mt,
-                                                                   out _,
-                                                                   useUnique: true))
+            nint d3d11MultithreadAbi = nint.Zero;
+            try
             {
-                try
+                if (Marshal.QueryInterface(_d3dContextAbi,
+                                           in ComMarshal<ID3D11Multithread>.IID,
+                                           out d3d11MultithreadAbi) >= 0)
                 {
-                    d3d11Mt.SetMultithreadProtected(1);
+                    ComVtables.CacheD3D11Multithread(d3d11MultithreadAbi);
+                    ComVtables.ID3D11Multithread_SetMultithreadProtected(d3d11MultithreadAbi, 1);
                 }
-                finally
-                {
-                    ComMarshal.FinalRelease(d3d11Mt);
-                }
+            }
+            finally
+            {
+                ReleaseAbi(ref d3d11MultithreadAbi);
             }
 
             if (_useSwapChain)
@@ -444,32 +440,17 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
                 return;
             }
 
-            _compositionGraphicsDevice = CreateCompositionGraphicsDevice(_compositor!, _d3dDevice, Logger);
-            _compositionSurface = _compositionGraphicsDevice.CreateDrawingSurface(new Size(0, 0),
-                                      _pixelFormat,
-                                      _alphaMode);
+            _compositionGraphicsDevice = CreateCompositionGraphicsDevice(_compositor!, _d3dDeviceAbi, Logger);
+            _compositionSurface = _compositionGraphicsDevice.CreateDrawingSurface(
+             new Size(0, 0),
+             _pixelFormat,
+             _alphaMode);
 
-            // This reference is borrowed from the projected surface.
+            // QueryInterface creates the single native reference owned by this presenter.
             nint surfaceP = ((IWinRTObject)_compositionSurface).NativeObject.ThisPtr;
-            if (!ComMarshal<ICompositionDrawingSurfaceInterop>
-                    .TryCreateComObjectFromReference(surfaceP,
-                                                     out _drawingSurfaceInterop,
-                                                     out Exception? ex,
-                                                     releaseReference: false,
-                                                     useUnique: true))
-            {
-                throw ex;
-            }
-
-            // Query borrowed reference from drawing surface interop (+1 ref).
             int hr = Marshal.QueryInterface(surfaceP, in ComMarshal<ICompositionDrawingSurfaceInterop>.IID, out _drawingSurfaceInteropAbi);
-            if (ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw == null)
-                ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, ref readonly Guid, out nint, out POINTL, int>)(*(*(void***)_drawingSurfaceInteropAbi + 3));
-
-            if (ComVtables.ICompositionDrawingSurfaceInterop_EndDraw == null)
-                ComVtables.ICompositionDrawingSurfaceInterop_EndDraw = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, int>)(*(*(void***)_drawingSurfaceInteropAbi + 4));
-
             Marshal.ThrowExceptionForHR(hr);
+            ComVtables.CacheCompositionDrawingSurfaceInterop(_drawingSurfaceInteropAbi);
             _videoBrush!.Surface = _compositionSurface;
         }
     }
@@ -479,111 +460,79 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         _videoBrush?.Surface = null;
         ReleaseDrawingSurfaceFrame();
         ReleaseSwapChain();
-        ComMarshal.FinalRelease(_drawingSurfaceInterop);
-        _drawingSurfaceInterop = null;
+        ReleaseAbi(ref _drawingSurfaceInteropAbi);
 
-        // As we performed QueryInterface from the origin ABI. We release this one (but not with the origin too).
-        if (_drawingSurfaceInteropAbi != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _drawingSurfaceInteropAbi, nint.Zero));
+        Interlocked.Exchange(ref _compositionSurface,        null)?.Dispose();
+        Interlocked.Exchange(ref _compositionGraphicsDevice, null)?.Dispose();
 
-        _compositionSurface?.Dispose();
-        _compositionSurface = null;
-        _compositionGraphicsDevice?.Dispose();
-        _compositionGraphicsDevice = null;
-
-        // Release the queried ID3D11DeviceContext
-        if (_d3dContextAbi != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _d3dContextAbi, nint.Zero));
-        ComMarshal.FinalRelease(_d3dContext);
-        ComMarshal.FinalRelease(_d3dDevice);
-        _d3dContext   = null;
-        _d3dDevice    = null;
+        ReleaseAbi(ref _d3dContextAbi);
+        ReleaseAbi(ref _d3dDeviceAbi);
         _canvasDevice = null;
 
         RenderWidth = RenderHeight = 0;
     }
 
-    private static unsafe ID3D11Device? CreateD3DDevice(CanvasDevice canvasDevice, ILogger? logger)
+    [SkipLocalsInit]
+    private static unsafe nint CreateD3DDevice(CanvasDevice canvasDevice, ILogger? logger)
     {
-        nint                          canvasDeviceP = ((IWinRTObject)canvasDevice).NativeObject.ThisPtr;
-        nint                          accessP       = nint.Zero;
-        IDirect3DDxgiInterfaceAccess? access        = null;
+        nint canvasDeviceAbi = ((IWinRTObject)canvasDevice).NativeObject.ThisPtr;
+        nint accessAbi       = nint.Zero;
+        nint d3dDeviceAbi    = nint.Zero;
 
         try
         {
-            int hr = Marshal.QueryInterface(canvasDeviceP,
-                                            typeof(IDirect3DDxgiInterfaceAccess).GUID,
-                                            out accessP);
+            int hr = Marshal.QueryInterface(canvasDeviceAbi,
+                                            in ComMarshal<IDirect3DDxgiInterfaceAccess>.IID,
+                                            out accessAbi);
+            Marshal.ThrowExceptionForHR(hr);
+            ComVtables.CacheDirect3DDxgiInterfaceAccess(accessAbi);
 
-            if (hr < 0)
-                return null;
-
-            if (!ComMarshal<IDirect3DDxgiInterfaceAccess>
-                   .TryCreateComObjectFromReference(
-                                                    accessP,
-                                                    out access,
-                                                    out _,
-                                                    releaseReference: false,
-                                                    useUnique: true))
-            {
-                return null;
-            }
-
-            hr = access.GetInterface(typeof(ID3D11Device).GUID, out nint nativeDeviceP);
-            if (hr < 0)
-                return null;
-
-            if (!ComMarshal<ID3D11Device>
-                   .TryCreateComObjectFromReference(nativeDeviceP,
-                                                    out ID3D11Device? nativeDevice,
-                                                    out _,
-                                                    releaseReference: true,
-                                                    useUnique: true))
-            {
-                return null;
-            }
+            ComVtables.IDirect3DDxgiInterfaceAccess_GetInterface(accessAbi,
+                                                                 in ComMarshal<ID3D11Device>.IID,
+                                                                 out d3dDeviceAbi).ThrowOnFailure();
 
             logger?.LogDebug("D3D11 Device Created!");
-            return nativeDevice;
+            return d3dDeviceAbi;
+        }
+        catch
+        {
+            ReleaseAbi(ref d3dDeviceAbi);
+            throw;
         }
         finally
         {
-            ComMarshal.FinalRelease(access);
-
-            if (accessP != nint.Zero)
-                Marshal.Release(accessP);
+            ReleaseAbi(ref accessAbi);
         }
     }
 
+    [SkipLocalsInit]
     private static unsafe CompositionGraphicsDevice CreateCompositionGraphicsDevice(
-        Compositor   compositor,
-        ID3D11Device device,
-        ILogger?     logger)
+        Compositor compositor,
+        nint       d3dDeviceAbi,
+        ILogger?   logger)
     {
-        nint compositorAbi = ((IWinRTObject)compositor).NativeObject.ThisPtr;
-        if (!ComMarshal<ICompositorInterop>
-               .TryCreateComObjectFromReference(compositorAbi,
-                                                out ICompositorInterop? compositorInterop,
-                                                out Exception? ex,
-                                                releaseReference: false,
-                                                useUnique: true))
-        {
-            throw ex;
-        }
-
-        nint graphicsDeviceP = nint.Zero;
-        nint d3dDeviceP      = nint.Zero;
+        nint compositorAbi        = ((IWinRTObject)compositor).NativeObject.ThisPtr;
+        nint compositorInteropAbi = nint.Zero;
+        nint graphicsDeviceP      = nint.Zero;
         try
         {
-            d3dDeviceP = (nint)ComInterfaceMarshaller<ID3D11Device>.ConvertToUnmanaged(device);
-            compositorInterop.CreateGraphicsDevice(d3dDeviceP, out graphicsDeviceP);
+            int hr = Marshal.QueryInterface(compositorAbi,
+                                            in ComMarshal<ICompositorInterop>.IID,
+                                            out compositorInteropAbi);
+            Marshal.ThrowExceptionForHR(hr);
+            ComVtables.CacheCompositorInterop(compositorInteropAbi);
+
+            ComVtables.ICompositorInterop_CreateGraphicsDevice(compositorInteropAbi,
+                                                               d3dDeviceAbi,
+                                                               out graphicsDeviceP).ThrowOnFailure();
 
             logger?.LogDebug("D3D11 Graphics Created from the Compositor!");
             return MarshalInterface<CompositionGraphicsDevice>.FromAbi(graphicsDeviceP);
         }
         finally
         {
-            if (graphicsDeviceP != nint.Zero) Marshal.Release(graphicsDeviceP);
-            if (d3dDeviceP != nint.Zero) Marshal.Release(d3dDeviceP);
-            ComMarshal.FinalRelease(compositorInterop);
+            ReleaseAbi(ref graphicsDeviceP);
+            ReleaseAbi(ref compositorInteropAbi);
         }
     }
 
@@ -647,6 +596,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
     #region Create, Release and Resize Frame Methods
 
+    [SkipLocalsInit]
     private unsafe void CreateDrawingSurfaceFrame()
     {
         DXGI_FORMAT format = (DXGI_FORMAT)_pixelFormat;
@@ -667,19 +617,22 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         nint graphicsSurfaceP = nint.Zero;
         try
         {
-            _d3dDevice!.CreateTexture2D(in desc, nint.Zero, out textureP);
+            ComVtables.ID3D11Device_CreateTexture2D(_d3dDeviceAbi,
+                                                             in desc,
+                                                             nint.Zero,
+                                                             out textureP).ThrowOnFailure();
 
             int hr = Marshal.QueryInterface(textureP, in ComMarshal<IDXGISurface>.IID, out dxgiSurfaceP);
             Marshal.ThrowExceptionForHR(hr);
 
-            hr = PInvoke.CreateDirect3D11SurfaceFromDXGISurface(dxgiSurfaceP, out graphicsSurfaceP);
-            Marshal.ThrowExceptionForHR(hr);
+            PInvoke.CreateDirect3D11SurfaceFromDXGISurface(dxgiSurfaceP, out graphicsSurfaceP).ThrowOnFailure();
 
-            hr = Marshal.QueryInterface(textureP, in ComMarshal<ID3D11Texture2D>.IID, out _frameTexture);
-            Marshal.ThrowExceptionForHR(hr);
+            _frameTexture = textureP;
+            textureP      = nint.Zero;
 
             _frameSurface = MarshalInterface<IDirect3DSurface>.FromAbi(graphicsSurfaceP);
-            Marshal.QueryInterface(graphicsSurfaceP, in ComMarshal<IDirect3DSurface>.IID, out _frameSurfaceAbi);
+            hr = Marshal.QueryInterface(graphicsSurfaceP, in ComMarshal<IDirect3DSurface>.IID, out _frameSurfaceAbi);
+            Marshal.ThrowExceptionForHR(hr);
 
             Logger?.LogDebug("D3D11 Texture Created! {width}x{height} with format: {format}", RenderWidth, RenderHeight, desc.Format);
         }
@@ -696,26 +649,31 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         }
     }
 
-    private void ReleaseDrawingSurfaceFrame()
+    private unsafe void ReleaseDrawingSurfaceFrame()
     {
-        if (_frameTexture != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _frameTexture,       nint.Zero));
-        if (_frameSurfaceAbi != nint.Zero) Marshal.Release(Interlocked.Exchange(ref _frameSurfaceAbi, nint.Zero));
+        ReleaseAbi(ref _frameTexture);
+        ReleaseAbi(ref _frameSurfaceAbi);
 
-        _frameSurface?.Dispose();
-        _frameSurface = null;
-        _d3dContext?.Flush();
+        Interlocked.Exchange(ref _frameSurface, null)?.Dispose();
+        if (_d3dContextAbi != nint.Zero)
+            ComVtables.ID3D11DeviceContext_Flush(_d3dContextAbi);
     }
 
+    [SkipLocalsInit]
     private unsafe void CreateSwapChainFrame(int width, int height)
     {
-        IDXGIFactory2?               factory    = null;
-        IDXGISwapChain1?             swapChain1 = null;
-        ICompositorSwapChainInterop? interop    = null;
-        nint                         surfaceAbi = 0;
+        nint factoryAbi           = nint.Zero;
+        nint swapChain1Abi        = nint.Zero;
+        nint compositorInteropAbi = nint.Zero;
+        nint surfaceAbi           = nint.Zero;
 
         try
         {
-            Marshal.ThrowExceptionForHR(PInvoke.CreateDXGIFactory2(0, in ComMarshal<IDXGIFactory2>.IID, out factory));
+            PInvoke.CreateDXGIFactory2(0,
+                                       in ComMarshal<IDXGIFactory2>.IID,
+                                       out factoryAbi).ThrowOnFailure();
+            ComVtables.CacheDXGIFactory2(factoryAbi);
+
             DXGI_SWAP_CHAIN_DESC1 desc = new()
             {
                 Width       = (uint)width,
@@ -729,45 +687,43 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
                 AlphaMode   = (DXGI_ALPHA_MODE)_alphaMode
             };
 
-            factory!.CreateSwapChainForComposition(_d3dDevice!, in desc, null, out swapChain1);
-            if (!ComMarshal<IDXGISwapChain1>.TryCastComObjectAs(swapChain1,
-                                                                out _swapChain,
-                                                                out Exception? ex,
-                                                                useUnique: true))
-            {
-                throw ex;
-            }
-            _swapChainAbi = (nint)ComInterfaceMarshaller<IDXGISwapChain3>.ConvertToUnmanaged(_swapChain);
-            if (ComVtables.IDXGISwapChain3_GetBuffer == null)
-                ComVtables.IDXGISwapChain3_GetBuffer = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, uint, ref readonly Guid, out nint, int>)(*(*(void***)_swapChainAbi + 9));
+            ComVtables.IDXGIFactory2_CreateSwapChainForComposition(factoryAbi,
+                                                                   _d3dDeviceAbi,
+                                                                   in desc,
+                                                                   nint.Zero,
+                                                                   out swapChain1Abi).ThrowOnFailure();
 
-            if (ComVtables.IDXGISwapChain3_Present == null)
-                ComVtables.IDXGISwapChain3_Present = (delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, uint, DXGI_PRESENT, int>)(*(*(void***)_swapChainAbi + 8));
+            int hr = Marshal.QueryInterface(swapChain1Abi,
+                                            in ComMarshal<IDXGISwapChain3>.IID,
+                                            out _swapChainAbi);
+            Marshal.ThrowExceptionForHR(hr);
+            ComVtables.CacheDXGISwapChain3(_swapChainAbi);
 
             if (_pixelFormat == DirectXPixelFormat.R16G16B16A16Float)
             {
                 // Linear scRGB (BT.709 primaries), not PQ: MediaPlayer has already converted
                 // the source transfer function when copying into the FP16 frame texture.
                 const DXGI_COLOR_SPACE_TYPE scRgb = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
-                _swapChain.CheckColorSpaceSupport(scRgb, out DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG support);
+                ComVtables.IDXGISwapChain3_CheckColorSpaceSupport(_swapChainAbi,
+                                                                  scRgb,
+                                                                  out DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG support).ThrowOnFailure();
                 if (!support.HasFlag(DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG.PRESENT))
                     throw new NotSupportedException("The graphics device cannot present a linear scRGB swap chain.");
 
-                _swapChain.SetColorSpace1(scRgb);
+                ComVtables.IDXGISwapChain3_SetColorSpace1(_swapChainAbi, scRgb).ThrowOnFailure();
             }
 
-            nint compositor = ((IWinRTObject)_compositor!).NativeObject.ThisPtr;
-            if (!ComMarshal<ICompositorSwapChainInterop>
-                   .TryCreateComObjectFromReference(compositor,
-                                                    out interop,
-                                                    out ex,
-                                                    releaseReference: false,
-                                                    useUnique: true))
-            {
-                throw ex;
-            }
+            nint compositorAbi = ((IWinRTObject)_compositor!).NativeObject.ThisPtr;
+            hr = Marshal.QueryInterface(compositorAbi,
+                                        in ComMarshal<ICompositorSwapChainInterop>.IID,
+                                        out compositorInteropAbi);
+            Marshal.ThrowExceptionForHR(hr);
+            ComVtables.CacheCompositorSwapChainInterop(compositorInteropAbi);
 
-            interop.CreateCompositionSurfaceForSwapChain(_swapChain, out surfaceAbi);
+            ComVtables.ICompositorSwapChainInterop_CreateCompositionSurfaceForSwapChain(
+                 compositorInteropAbi,
+                 _swapChainAbi,
+                 out surfaceAbi).ThrowOnFailure();
             _swapChainSurface    = MarshalInterface<ICompositionSurface>.FromAbi(surfaceAbi);
             _videoBrush!.Surface = _swapChainSurface;
 
@@ -780,37 +736,31 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         }
         finally
         {
-            if (surfaceAbi != nint.Zero) Marshal.Release(surfaceAbi);
-
-            ComMarshal<ICompositorSwapChainInterop>.FinalRelease(interop);
-            ComMarshal<IDXGISwapChain1>.FinalRelease(swapChain1);
-            ComMarshal<IDXGIFactory2>.FinalRelease(factory);
+            ReleaseAbi(ref surfaceAbi);
+            ReleaseAbi(ref compositorInteropAbi);
+            ReleaseAbi(ref swapChain1Abi);
+            ReleaseAbi(ref factoryAbi);
         }
     }
-    
+
     private void ReleaseSwapChain()
     {
-        if (_swapChain == null || _swapChainAbi == nint.Zero || _swapChainSurface == null)
-        {
-            return;
-        }
-
         _videoBrush?.Surface = null;
 
-        // This wrapper is exclusively owned by the presenter. Release its native
-        // reference after detaching so swap-chain buffers don't wait for a GC.
-        ((IWinRTObject)Interlocked.Exchange(ref _swapChainSurface, null)).NativeObject.Dispose();
+        ICompositionSurface? swapChainSurface = Interlocked.Exchange(ref _swapChainSurface, null);
+        if (swapChainSurface is IWinRTObject winRtSurface)
+            winRtSurface.NativeObject.Dispose();
 
-        ComMarshal<IDXGISwapChain3>.FinalRelease(Interlocked.Exchange(ref _swapChain, null));
-        Marshal.Release(Interlocked.Exchange(ref _swapChainAbi,                       nint.Zero));
+        ReleaseAbi(ref _swapChainAbi);
     }
 
+    [SkipLocalsInit]
     private unsafe void ResizePresentationSurface(
         int width,
         int height)
     {
         ReleaseDrawingSurfaceFrame();
-        if (_useSwapChain && _swapChain == null)
+        if (_useSwapChain && _swapChainAbi == nint.Zero)
         {
             CreateSwapChainFrame(width, height);
             RenderWidth  = width;
@@ -820,8 +770,15 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
             return;
         }
 
-        (_swapChain?.ResizeBuffers(0, (uint)width, (uint)height, (DXGI_FORMAT)_pixelFormat, 0) ??
-         _drawingSurfaceInterop!.Resize(new SIZEL { Width = width, Height = height })).ThrowOnFailure();
+        (_swapChainAbi != nint.Zero
+            ? ComVtables.IDXGISwapChain_ResizeBuffers(_swapChainAbi,
+                                                      0,
+                                                      (uint)width,
+                                                      (uint)height,
+                                                      (DXGI_FORMAT)_pixelFormat,
+                                                      0)
+            : ComVtables.ICompositionDrawingSurfaceInterop_Resize(_drawingSurfaceInteropAbi,
+                                                                  new SIZEL { Width = width, Height = height })).ThrowOnFailure();
 
         RenderWidth  = width;
         RenderHeight = height;
@@ -835,6 +792,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
 
     #region Draw and Copy Methods
 
+    [SkipLocalsInit]
     public void Draw(Direct3DSurfaceConsumer surfaceConsumer,
                      int                     canvasWidth,
                      int                     canvasHeight)
@@ -842,7 +800,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         using Lock.Scope renderScope = _renderLock.EnterScope();
         try
         {
-            if (_disposed || _recreating || _d3dDevice is null ||
+            if (_disposed || _recreating || _d3dDeviceAbi == nint.Zero ||
                 canvasWidth <= 0 || canvasHeight <= 0)
                 return;
 
@@ -851,7 +809,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
                 return;
 
             surfaceConsumer(_frameSurface);
-            if (_swapChain != null)
+            if (_swapChainAbi != nint.Zero)
             {
                 PresentSwapChainFrame();
                 return;
@@ -875,7 +833,7 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         using Lock.Scope renderScope = _renderLock.EnterScope();
         try
         {
-            if (_disposed || _recreating || _d3dDevice == null ||
+            if (_disposed || _recreating || _d3dDeviceAbi == nint.Zero ||
                 canvasWidth <= 0 || canvasHeight <= 0)
                 return;
 
@@ -886,11 +844,11 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
             surfaceConsumerUnsafe(_frameSurfaceAbi);
             if (_swapChainAbi != nint.Zero)
             {
-                PresentSwapChainFrameUnsafe();
+                PresentSwapChainFrame();
                 return;
             }
 
-            PresentDrawingSurfaceFrameUnsafe();
+            PresentDrawingSurfaceFrame();
         }
         catch (Exception ex) when (IsDeviceLost(ex.HResult))
         {
@@ -904,10 +862,18 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
               or DXGI_ERROR_DEVICE_HUNG
               or DXGI_ERROR_DEVICE_RESET;
 
+    private static void ReleaseAbi(ref nint abi)
+    {
+        nint ownedReference = Interlocked.Exchange(ref abi, nint.Zero);
+        if (ownedReference != nint.Zero)
+            Marshal.Release(ownedReference);
+    }
+
+    [SkipLocalsInit]
     public CanvasRenderTarget? CopyCurrentFrame()
     {
         using Lock.Scope renderScope = _renderLock.EnterScope();
-        if (_canvasDevice == null)
+        if (_canvasDevice == null || _frameSurface == null)
             return null;
 
         Windows.Graphics.DirectX.DirectXPixelFormat pixelFormat = (Windows.Graphics.DirectX.DirectXPixelFormat)PixelFormat;
@@ -929,92 +895,41 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
     #endregion
 
     #region Present Frame
+    [SkipLocalsInit]
     private unsafe void PresentSwapChainFrame()
     {
         nint backBuffer = 0;
         try
         {
             // Release before Present/ResizeBuffers.
-            _swapChain!.GetBuffer(0, in ComMarshal<ID3D11Texture2D>.IID, out backBuffer);
-            _d3dContext!.CopySubresourceRegion(backBuffer, 0, 0, 0, 0, _frameTexture, 0, nint.Zero);
-        }
-        finally
-        {
-            if (backBuffer != 0) Marshal.Release(backBuffer);
-        }
-
-        // Present flushes the copy and submits the frame to the composition swap chain.
-        _swapChain.Present(0, 0);
-    }
-
-    [SkipLocalsInit]
-    [SuppressGCTransition]
-    private unsafe void PresentSwapChainFrameUnsafe()
-    {
-        nint backBuffer = 0;
-        try
-        {
-            // Release before Present/ResizeBuffers.
-            ComVtables.IDXGISwapChain3_GetBuffer(_swapChainAbi, 0, in ComMarshal<ID3D11Texture2D>.IID, out backBuffer);
+            ComVtables.IDXGISwapChain3_GetBuffer(_swapChainAbi,
+                                                 0,
+                                                 in ComMarshal<ID3D11Texture2D>.IID,
+                                                 out backBuffer).ThrowOnFailure();
             ComVtables.ID3D11DeviceContext_CopySubresourceRegion(_d3dContextAbi, backBuffer, 0, 0, 0, 0, _frameTexture, 0, nint.Zero);
         }
         finally
         {
-            if (backBuffer != 0) Marshal.Release(backBuffer);
+            ReleaseAbi(ref backBuffer);
         }
 
         // Present flushes the copy and submits the frame to the composition swap chain.
-        ComVtables.IDXGISwapChain3_Present(_swapChainAbi, 0, 0);
+        ComVtables.IDXGISwapChain3_Present(_swapChainAbi, 0, 0).ThrowOnFailure();
     }
 
-    private void PresentDrawingSurfaceFrame()
+    [SkipLocalsInit]
+    private unsafe void PresentDrawingSurfaceFrame()
     {
-        _drawingSurfaceInterop!.BeginDraw(nint.Zero,
-                                          in ComMarshal<IDXGISurface>.IID,
-                                          out nint updateP,
-                                          out POINTL offset).ThrowOnFailure();
+        ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw(_drawingSurfaceInteropAbi,
+                                                               nint.Zero,
+                                                               in ComMarshal<IDXGISurface>.IID,
+                                                               out nint updateP,
+                                                               out POINTL offset).ThrowOnFailure();
 
         nint updateTextureP = nint.Zero;
         try
         {
             int hr = Marshal.QueryInterface(updateP, in ComMarshal<ID3D11Texture2D>.IID, out updateTextureP);
-            Marshal.ThrowExceptionForHR(hr);
-
-            _d3dContext!.CopySubresourceRegion(updateTextureP,
-                                               0,
-                                               (uint)offset.x,
-                                               (uint)offset.y,
-                                               0,
-                                               _frameTexture,
-                                               0,
-                                               nint.Zero);
-
-            _d3dContext.Flush();
-        }
-        finally
-        {
-            // The update texture belongs to this BeginDraw/EndDraw pair only.
-            if (updateTextureP != nint.Zero) Marshal.Release(updateTextureP);
-            if (updateP != nint.Zero) Marshal.Release(updateP);
-            Marshal.ThrowExceptionForHR(_drawingSurfaceInterop.EndDraw());
-        }
-    }
-
-    [SkipLocalsInit]
-    [SuppressGCTransition]
-    private unsafe void PresentDrawingSurfaceFrameUnsafe()
-    {
-        int hr = ComVtables.ICompositionDrawingSurfaceInterop_BeginDraw(_drawingSurfaceInteropAbi,
-                                                                        nint.Zero,
-                                                                        in ComMarshal<IDXGISurface>.IID,
-                                                                        out nint updateP,
-                                                                        out POINTL offset);
-        Marshal.ThrowExceptionForHR(hr);
-
-        nint updateTextureP = nint.Zero;
-        try
-        {
-            hr = Marshal.QueryInterface(updateP, in ComMarshal<ID3D11Texture2D>.IID, out updateTextureP);
             Marshal.ThrowExceptionForHR(hr);
 
             ComVtables.ID3D11DeviceContext_CopySubresourceRegion(_d3dContextAbi, updateTextureP, 0, offset.x, offset.y, 0, _frameTexture, 0, nint.Zero);
@@ -1023,10 +938,9 @@ public sealed partial class MediaFoundationPresenter : FrameworkElement, IVideoF
         finally
         {
             // The update texture belongs to this BeginDraw/EndDraw pair only.
-            if (updateTextureP != nint.Zero) Marshal.Release(updateTextureP);
-            if (updateP != nint.Zero) Marshal.Release(updateP);
-            hr = ComVtables.ICompositionDrawingSurfaceInterop_EndDraw(_drawingSurfaceInteropAbi);
-            Marshal.ThrowExceptionForHR(hr);
+            ReleaseAbi(ref updateTextureP);
+            ReleaseAbi(ref updateP);
+            ComVtables.ICompositionDrawingSurfaceInterop_EndDraw(_drawingSurfaceInteropAbi).ThrowOnFailure();
         }
     }
     #endregion
