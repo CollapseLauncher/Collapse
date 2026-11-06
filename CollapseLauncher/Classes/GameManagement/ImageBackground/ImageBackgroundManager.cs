@@ -22,12 +22,20 @@ using System.Threading.Tasks;
 using Windows.UI;
 using WinRT;
 // ReSharper disable NonReadonlyMemberInGetHashCode
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.GameManagement.ImageBackground;
+
+public enum ImageBackgroundPixelFormat
+{
+    BGRA8_UInt   = 87,
+    RGBA16_Float = 10,
+    RGBA32_Float = 2
+}
 
 [GeneratedBindableCustomProperty]
 public partial class ImageBackgroundManager
@@ -58,6 +66,8 @@ public partial class ImageBackgroundManager
     private const string GlobalBackgroundAudioEnabledConfigKey            = "GlobalBackgroundAudioEnabled";
     private const string GlobalForceStaticImageOverVideoKey               = "GlobalForceStaticImageOverVideo";
     private const string GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey  = "GlobalKeepPlayVideoWhenWindowUnfocused";
+    private const string GlobalUseSwapChainRendererConfigKey              = "GlobalUseSwapChainRenderer";
+    private const string GlobalDirect3DPixelFormatConfigKey               = "GlobalDirect3DPixelFormat";
 
     public string? GlobalCustomBackgroundImagePath
     {
@@ -157,6 +167,36 @@ public partial class ImageBackgroundManager
         set
         {
             LauncherConfig.SetAndSaveConfigValue(GlobalKeepPlayVideoWhenWindowUnfocusedConfigKey, value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool GlobalUseSwapChainRenderer
+    {
+        get => field = LauncherConfig.GetAppConfigValue(GlobalUseSwapChainRendererConfigKey);
+        set
+        {
+            if (value == field)
+                return;
+
+            LauncherConfig.SetAndSaveConfigValue(GlobalUseSwapChainRendererConfigKey, value);
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(GlobalDirect3DPixelFormat));
+        }
+    }
+
+    public ImageBackgroundPixelFormat GlobalDirect3DPixelFormat
+    {
+        get => field = GlobalUseSwapChainRenderer
+            ? LauncherConfig.GetAppConfigValue(GlobalDirect3DPixelFormatConfigKey)
+                            .ToEnum(ImageBackgroundPixelFormat.BGRA8_UInt)
+            : ImageBackgroundPixelFormat.BGRA8_UInt;
+        set
+        {
+            if (value == field)
+                return;
+
+            LauncherConfig.SetAndSaveConfigValue(GlobalDirect3DPixelFormatConfigKey, value.ToString());
             OnPropertyChanged();
         }
     }

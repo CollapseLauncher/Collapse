@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Graphics.DirectX;
 using Windows.UI;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CheckNamespace
@@ -215,6 +216,17 @@ public partial class ImageBackgroundManager
             PresenterGrid?.Children.Clear();
             PresenterGrid?.Children.Add(CurrentBackgroundElement);
         }
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.UseSwapChainProperty,
+                                              this,
+                                              nameof(GlobalUseSwapChainRenderer),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.PixelFormatProperty,
+                                              this,
+                                              nameof(GlobalDirect3DPixelFormat),
+                                              bindingMode: BindingMode.OneWay,
+                                              converter: StaticConverter<StructToStructConverter<ImageBackgroundPixelFormat, DirectXPixelFormat>>.Shared);
 
         CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
                                               this,

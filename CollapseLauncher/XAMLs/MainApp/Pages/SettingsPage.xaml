@@ -37,6 +37,7 @@
         <conv:NullableVisibilityConverter x:Key="NullableVisibilityConverter" />
         <conv:RemoveNewLineStringConverter x:Key="RemoveNewLineStringConverter" />
         <conv:FFmpegVideoDecoderModeToIndexConverter x:Key="FFmpegVideoDecoderModeToIndexConverter" />
+        <conv:ImageBackgroundPixelFormatItemsConverter x:Key="ImageBackgroundPixelFormatItemsConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -260,7 +261,7 @@
                                                   IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
                                                   OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}"
-                                                  ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
+                                                  ToolTipService.ToolTip="{x:Bind Waifu2XToolTip, Mode=OneWay}">
                                         <ToggleSwitch.Header>
                                             <StackPanel Loaded="EnableHeaderMouseEvent"
                                                         Orientation="Horizontal">
@@ -276,6 +277,72 @@
                                         </ToggleSwitch.Header>
                                     </ToggleSwitch>
                                 </Grid>
+                            </StackPanel>
+                            <StackPanel x:Name="CustomBGVideoRendererSettings"
+                                        Margin="0,4,0,8"
+                                        DataContext="{x:Bind backgroundManager:ImageBackgroundManager.Shared}">
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="8">
+                                    <TextBlock Margin="0,0,0,4"
+                                               FontSize="16"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererTitle, Mode=OneWay}" />
+                                    <Button Width="24"
+                                            Height="24"
+                                            Padding="0"
+                                            CornerRadius="4"
+                                            Style="{ThemeResource AcrylicButtonStyle}">
+                                        <Button.Content>
+                                            <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                      FontSize="10"
+                                                      Glyph="&#x3f;" />
+                                        </Button.Content>
+                                        <Button.Flyout>
+                                            <Flyout Placement="Right">
+                                                <StackPanel Spacing="16">
+                                                    <StackPanel Spacing="8">
+                                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChain, Mode=OneWay}"
+                                                                   TextWrapping="Wrap"
+                                                                   Style="{ThemeResource BodyLargeStrongTextBlockStyle}"/>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   MaxWidth="420"
+                                                                   Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChainTooltip1, Mode=OneWay}"/>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   MaxWidth="420"
+                                                                   Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChainTooltip2, Mode=OneWay}"/>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   MaxWidth="420">
+                                                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChainTooltip3, Mode=OneWay}"/>
+                                                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.EnableAcrylicEffect, Mode=OneWay}"
+                                                                 FontWeight="Bold"
+                                                                 Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"/>
+                                                            <Run Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChainTooltip4, Mode=OneWay}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <StackPanel Spacing="8">
+                                                        <TextBlock Text="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererSwapChainPixelFormat, Mode=OneWay}"
+                                                                   TextWrapping="Wrap"
+                                                                   Style="{ThemeResource BodyLargeStrongTextBlockStyle}"/>
+                                                        <ItemsRepeater ItemsSource="{x:Bind ImageBackgroundPixelFormatHelpItems, Mode=OneWay}"
+                                                                       Margin="0,-8"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
+                                <ToggleSwitch x:Name="VideoBackgroundUseSwapChain"
+                                              Margin="0,4"
+                                              Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererUseAsyncSwapChain, Mode=OneWay}"
+                                              IsOn="{Binding GlobalUseSwapChainRenderer, Mode=TwoWay}"
+                                              OffContent="{x:Bind helper:Locale.Current.Lang._Misc.Disabled, Mode=OneWay}"
+                                              OnContent="{x:Bind helper:Locale.Current.Lang._Misc.Enabled, Mode=OneWay}">
+                                </ToggleSwitch>
+                                <ComboBox Header="{x:Bind helper:Locale.Current.Lang._SettingsPage.VideoBackground_RendererSwapChainPixelFormat, Mode=OneWay}"
+                                          Margin="0,4"
+                                          IsEnabled="{Binding Path=IsOn, ElementName=VideoBackgroundUseSwapChain, Mode=OneWay}"
+                                          ItemsSource="{x:Bind ImageBackgroundPixelFormatSelectionItems, Mode=OneWay}"
+                                          SelectedIndex="{Binding GlobalDirect3DPixelFormat, Mode=TwoWay, Converter={StaticResource ImageBackgroundPixelFormatItemsConverter}}"/>
                             </StackPanel>
                             <StackPanel x:Name="CustomBGVideoSettings"
                                         Margin="0,4"

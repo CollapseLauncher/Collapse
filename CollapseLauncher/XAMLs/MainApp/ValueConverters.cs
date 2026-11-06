@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.GameManagement.ImageBackground;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
@@ -1255,9 +1256,9 @@ namespace CollapseLauncher.Pages
     public partial class EnumToIndexConverter<TEnum> : IValueConverter
         where TEnum : struct, Enum
     {
-        private static readonly List<TEnum> Enums = [.. Enum.GetValues<TEnum>()];
+        private static readonly TEnum[] Enums = Enum.GetValues<TEnum>();
 
-        public object Convert(object? value, Type targetType, object parameter, string language)
+        public virtual object Convert(object? value, Type targetType, object parameter, string language)
         {
             if (value is not TEnum asEnum ||
                 !Enum.IsDefined(asEnum))
@@ -1266,20 +1267,30 @@ namespace CollapseLauncher.Pages
             }
 
             int indexOf = Enums.IndexOf(asEnum);
-            return indexOf < 0 || indexOf > Enums.Count - 1 ? 0 : indexOf;
+            return indexOf < 0 || indexOf > Enums.Length - 1 ? 0 : indexOf;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public virtual object ConvertBack(object? value, Type targetType, object parameter, string language)
         {
             if (value is not int asIndex ||
                 asIndex < 0 ||
-                asIndex > Enums.Count - 1)
+                asIndex > Enums.Length - 1)
             {
                 return default(TEnum);
             }
 
             return Enums[asIndex];
         }
+    }
+
+    public partial class IndexToEnumConverter<TEnum> : EnumToIndexConverter<TEnum>
+        where TEnum : struct, Enum
+    {
+        public override object Convert(object? value, Type targetType, object parameter, string language)
+            => base.ConvertBack(value, targetType, parameter, language);
+
+        public override object ConvertBack(object? value, Type targetType, object parameter, string language)
+            => base.Convert(value, targetType, parameter, language);
     }
 
     public abstract partial class EnumToEnumConverter<TEnumFrom, TEnumTo> : IValueConverter
@@ -1424,4 +1435,7 @@ namespace CollapseLauncher.Pages
             return (_max - _min) * valueD + _min;
         }
     }
+
+    public partial class ImageBackgroundPixelFormatItemsConverter
+        : EnumToIndexConverter<ImageBackgroundPixelFormat>;
 }

@@ -562,6 +562,13 @@
 
     "ImageBackground": "Image Background Settings",
     "VideoBackground": "Video Background Settings",
+    "VideoBackground_RendererTitle": "Video Background Renderer Settings",
+    "VideoBackground_RendererUseAsyncSwapChain": "Use Asynchronous Direct3D Swap-Chain Renderer",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip1": "Swap-Chain works by swapping the rendering buffer while the frame is being drawn, and then displaying the drawn frames directly to your screen.",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip2": "This renderer can be run without bothering the UI-thread and thus greatly reducing stutters and frame skips while navigating the UI.",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip3": "However, if you enable this renderer with",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip4": "option still enabled, some XAML-composite effects (like Acrylic-blur) might not work as expected.",
+    "VideoBackground_RendererSwapChainPixelFormat": "Direct3D Swap-Chain Pixel Format",
     "VideoBackground_IsEnableAudio": "Enable Audio",
     "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
     "VideoBackground_ForceStaticImageOverVideoBackground": "Force Static Image over Dynamic Background",
@@ -1837,6 +1844,18 @@
     "AutomaticSystemDecoder": "Same as Automatic but FFmpeg will use the built-in System Decoder to decode if available.",
     "ForceSystemDecoder": "FFmpeg will forcely use built-in System Decoder instead of what is available within the FFmpeg library. You might need to install the additional Windows Media Foundation codecs to play your video with this mode if the decoder is not available or the playback might not run properly.",
     "ForceFFmpegSoftwareDecoder": "Same as Automatic but FFmpeg will forcely use the Software-based decoder instead of Hardware-accelerated ones."
+  },
+
+  "_DictKvpImageBackgroundPixelFormat": {
+    "RGBA32_Float": "RGB+Alpha Channel (32-bit Float)",
+    "RGBA16_Float": "RGB+Alpha Channel (16-bit Float)",
+    "BGRA8_UInt": "BGR+Alpha Channel (8-bit Unsigned Integer)"
+  },
+
+  "_DictKvpImageBackgroundPixelFormatTooltip": {
+    "RGBA32_Float": "Uses Red-Green-Blue + Alpha Pixel Order with 32-bit floating-point precision and capable to display both SDR and HDR video. However, this mode might be unsupported on most graphics cards.",
+    "RGBA16_Float": "Uses Red-Green-Blue + Alpha Pixel Order with 16-bit floating-point precision and capable to display both SDR and HDR video.",
+    "BGRA8_UInt": "Uses Blue-Green-Red + Alpha Pixel Order with 8-bit Unsigned Integer precision and can only be used to display SDR video."
   },
 
   "_OOBEAgreementMenu": {

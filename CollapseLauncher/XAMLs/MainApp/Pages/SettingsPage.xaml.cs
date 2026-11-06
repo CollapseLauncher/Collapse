@@ -133,6 +133,8 @@ namespace CollapseLauncher.Pages
         private readonly Brush                                              _highlightSelectedBrush;
         private readonly List<MethodInfo>                                   _dialogMethods;
 
+        private readonly ImageBackgroundPixelFormat[] VideoBackgroundPixelFormats = Enum.GetValues<ImageBackgroundPixelFormat>();
+
         private List<string> DialogMethodNames { get; }
 
         public string SelectedDialogMethodName
@@ -214,6 +216,85 @@ namespace CollapseLauncher.Pages
                     textBlockContent.BindProperty(TextBlock.TextProperty,
                                                   Locale.Current,
                                                   "Lang._DictKvpFFmpegDecodingModeTooltip",
+                                                  StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                  bindingMode: BindingMode.OneWay,
+                                                  converterParameter: mode);
+
+                    list.Add(stackPanel);
+                }
+
+                return field = list;
+            }
+        }
+
+        private List<TextBlock> ImageBackgroundPixelFormatSelectionItems
+        {
+            get
+            {
+                if (field != null) return field;
+
+                List<TextBlock> list = [];
+                foreach (ImageBackgroundPixelFormat mode in Enum.GetValues<ImageBackgroundPixelFormat>())
+                {
+                    TextBlock textBlock = new() { Tag = mode };
+                    textBlock.BindProperty(TextBlock.TextProperty,
+                                           Locale.Current,
+                                           "Lang._DictKvpImageBackgroundPixelFormat",
+                                           StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                           bindingMode: BindingMode.OneWay,
+                                           converterParameter: mode);
+
+                    textBlock.BindTooltipToLocale(Locale.Current,
+                                                  "Lang._DictKvpImageBackgroundPixelFormatTooltip",
+                                                  converter: StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                  converterParameter: mode);
+
+                    list.Add(textBlock);
+                }
+
+                return field = list;
+            }
+        }
+
+        private List<StackPanel> ImageBackgroundPixelFormatHelpItems
+        {
+            get
+            {
+                if (field != null) return field;
+
+                List<StackPanel> list = [];
+                foreach (ImageBackgroundPixelFormat mode in Enum.GetValues<ImageBackgroundPixelFormat>())
+                {
+                    StackPanel stackPanel = new()
+                    {
+                        Orientation = Orientation.Vertical,
+                        Margin      = new Thickness(0, 8, 0, 8),
+                        Spacing     = 4,
+                        MaxWidth    = 420
+                    };
+
+                    TextBlock textBlockHeader = stackPanel.AddElementToStackPanel(new TextBlock
+                    {
+                        Style        = CollapseUIExt.GetApplicationResource<Style>("BodyLargeStrongTextBlockStyle"),
+                        TextWrapping = TextWrapping.Wrap,
+                        FontSize     = 14
+                    });
+
+                    TextBlock textBlockContent = stackPanel.AddElementToStackPanel(new TextBlock
+                    {
+                        TextWrapping = TextWrapping.Wrap
+                    });
+
+                    textBlockHeader.BindProperty(TextBlock.TextProperty,
+                                                 Locale.Current,
+                                                 "Lang._DictKvpImageBackgroundPixelFormat",
+                                                 StaticConverter<ObjectToLocaleKvpConverter>.Shared,
+                                                 bindingMode: BindingMode.OneWay,
+                                                 converterParameter: mode);
+
+                    textBlockContent.BindProperty(TextBlock.TextProperty,
+                                                  Locale.Current,
+                                                  "Lang._DictKvpImageBackgroundPixelFormatTooltip",
                                                   StaticConverter<ObjectToLocaleKvpConverter>.Shared,
                                                   bindingMode: BindingMode.OneWay,
                                                   converterParameter: mode);
