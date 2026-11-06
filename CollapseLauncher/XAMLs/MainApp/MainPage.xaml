@@ -34,7 +34,8 @@
         <Grid x:Name="BackgroundPresenterGrid"
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
-                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage, Converter={StaticResource ImageDecoderValueConverter}}">
+                                                   BackgroundSource="{x:Bind PlaceholderBackgroundImage, Converter={StaticResource ImageDecoderValueConverter}}"
+                                                   ParallaxResetOnUnfocused="False">
                 <customControls:LayeredBackgroundImage.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.2" />
                 </customControls:LayeredBackgroundImage.OpacityTransition>
