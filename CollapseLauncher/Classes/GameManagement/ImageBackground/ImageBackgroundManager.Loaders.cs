@@ -6,9 +6,11 @@ using CollapseLauncher.XAMLs.Theme.CustomControls;
 using Hi3Helper.Log;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -193,7 +195,16 @@ public partial class ImageBackgroundManager
 
     private LayeredBackgroundImage CreateOrGetLayerElement()
     {
-        if (CurrentBackgroundElement == null)
+        if (CurrentBackgroundElement != null)
+        {
+            return CurrentBackgroundElement;
+        }
+
+        if (TryFindExistingFromPresenterGrid(PresenterGrid) is { } existingLayer)
+        {
+            CurrentBackgroundElement = existingLayer;
+        }
+        else
         {
             CurrentBackgroundElement = new LayeredBackgroundImage
             {
@@ -201,62 +212,72 @@ public partial class ImageBackgroundManager
                 BackgroundElevationPixels = 64d
             };
 
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
-                                                  this,
-                                                  nameof(GlobalFFmpegDecodingMode),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
-                                                  this,
-                                                  nameof(GlobalParallaxHoverSource),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
-                                                  this,
-                                                  nameof(GlobalIsBackgroundParallaxEffectEnabled),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
-                                                  this,
-                                                  nameof(GlobalBackgroundParallaxPixelShift),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
-                                                  this,
-                                                  nameof(GlobalBackgroundParallaxPixelShift),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
-                                                  this,
-                                                  nameof(GlobalBackgroundAudioEnabled),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
-                                                  this,
-                                                  nameof(GlobalBackgroundAudioVolume),
-                                                  bindingMode: BindingMode.OneWay,
-                                                  converter: MinMaxToPercentConverter);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
-                                                  this,
-                                                  nameof(IsBackgroundElevated),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
-                                                  this,
-                                                  nameof(ForegroundOpacity),
-                                                  bindingMode: BindingMode.OneWay);
-
-            CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
-                                                  this,
-                                                  nameof(SmokeOpacity),
-                                                  bindingMode: BindingMode.OneWay);
-
             PresenterGrid?.Children.Clear();
             PresenterGrid?.Children.Add(CurrentBackgroundElement);
         }
 
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.FfmpegDecoderModeProperty,
+                                              this,
+                                              nameof(GlobalFFmpegDecodingMode),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHoverSourceProperty,
+                                              this,
+                                              nameof(GlobalParallaxHoverSource),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsParallaxEnabledProperty,
+                                              this,
+                                              nameof(GlobalIsBackgroundParallaxEffectEnabled),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxHorizontalShiftProperty,
+                                              this,
+                                              nameof(GlobalBackgroundParallaxPixelShift),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ParallaxVerticalShiftProperty,
+                                              this,
+                                              nameof(GlobalBackgroundParallaxPixelShift),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsAudioEnabledProperty,
+                                              this,
+                                              nameof(GlobalBackgroundAudioEnabled),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.AudioVolumeProperty,
+                                              this,
+                                              nameof(GlobalBackgroundAudioVolume),
+                                              bindingMode: BindingMode.OneWay,
+                                              converter: MinMaxToPercentConverter);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.IsBackgroundElevatedProperty,
+                                              this,
+                                              nameof(IsBackgroundElevated),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.ForegroundOpacityProperty,
+                                              this,
+                                              nameof(ForegroundOpacity),
+                                              bindingMode: BindingMode.OneWay);
+
+        CurrentBackgroundElement.BindProperty(LayeredBackgroundImage.SmokeOpacityProperty,
+                                              this,
+                                              nameof(SmokeOpacity),
+                                              bindingMode: BindingMode.OneWay);
+
         return CurrentBackgroundElement;
+
+        static LayeredBackgroundImage? TryFindExistingFromPresenterGrid(Panel? presenterGrid)
+        {
+            if (presenterGrid is not { Children: { Count: > 0 } list })
+            {
+                return null;
+            }
+
+            return list.OfType<LayeredBackgroundImage>().LastOrDefault();
+        }
     }
 
     private async void LoadMediaAccentColor(Uri mediaUri)
