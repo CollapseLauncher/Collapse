@@ -1,6 +1,8 @@
-﻿using Hi3Helper.Win32.Native.Structs;
+﻿using Hi3Helper.Win32.Native.Enums.DXGI;
+using Hi3Helper.Win32.Native.Structs;
 using System;
 // ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #nullable enable
@@ -21,5 +23,11 @@ public sealed partial class MediaFoundationPresenter
 
         public static delegate* unmanaged[Stdcall, SuppressGCTransition]
             <nint, void> ID3D11DeviceContext_Flush;
+
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, uint, ref readonly Guid, out nint, int> IDXGISwapChain3_GetBuffer;
+
+        public static delegate* unmanaged[Stdcall, SuppressGCTransition]
+            <nint, uint, DXGI_PRESENT, int> IDXGISwapChain3_Present;
     }
 }

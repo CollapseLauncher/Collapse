@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
+using Windows.Graphics.DirectX;
 using Windows.Media.Playback;
 
 #nullable enable
@@ -203,6 +204,18 @@ public partial class LayeredBackgroundImage
 
     public double CanvasHeight => (double)GetValue(CanvasHeightProperty);
 
+    public bool UseSwapChain
+    {
+        get => (bool)GetValue(UseSwapChainProperty);
+        set => SetValue(UseSwapChainProperty, value);
+    }
+
+    public DirectXPixelFormat PixelFormat
+    {
+        get => (DirectXPixelFormat)GetValue(PixelFormatProperty);
+        set => SetValue(PixelFormatProperty, value);
+    }
+
     #endregion
 
     #region Dependency Properties
@@ -398,6 +411,18 @@ public partial class LayeredBackgroundImage
                                     typeof(double),
                                     typeof(LayeredBackgroundImage),
                                     new PropertyMetadata(0d));
+
+    public static readonly DependencyProperty UseSwapChainProperty =
+        DependencyProperty.Register(nameof(UseSwapChain),
+                                    typeof(bool),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(false));
+
+    public static readonly DependencyProperty PixelFormatProperty =
+        DependencyProperty.Register(nameof(PixelFormat),
+                                    typeof(DirectXPixelFormat),
+                                    typeof(LayeredBackgroundImage),
+                                    new PropertyMetadata(DirectXPixelFormat.B8G8R8A8UIntNormalized));
 
     #endregion
 }

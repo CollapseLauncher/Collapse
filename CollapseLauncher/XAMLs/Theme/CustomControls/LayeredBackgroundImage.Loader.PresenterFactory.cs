@@ -1,8 +1,10 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.GameManagement.ImageBackground;
+using CollapseLauncher.Pages;
 using CollapseLauncher.XAMLs.Theme.CustomControls.VideoPresenter;
 using FFmpegInteropX;
 using Microsoft.UI;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -88,7 +90,7 @@ public partial class LayeredBackgroundImage
 
         if (!LayeredBackgroundImageExtensions
                .TryGetBindingPropertyNames(parent,
-                                           out _,
+                                           out string? stretchNameOf,
                                            out string? hAlignNameOf,
                                            out string? vAlignNameOf))
         {
@@ -123,12 +125,21 @@ public partial class LayeredBackgroundImage
         sourceContext.PlayerPresenter = presenter;
         sourceContext.MediaSource     = ffmpegMediaSource;
 
-        /*
+        presenter.BindProperty(this,
+                               nameof(PixelFormat),
+                               MediaFoundationPresenter.PixelFormatProperty,
+                               BindingMode.OneWay);
+
+        presenter.BindProperty(this,
+                               nameof(UseSwapChain),
+                               MediaFoundationPresenter.UseSwapChainProperty,
+                               BindingMode.OneWay);
+
         presenter.BindProperty(this,
                                stretchNameOf,
                                MediaFoundationPresenter.StretchProperty,
-                               BindingMode.OneWay);
-        */
+                               BindingMode.OneWay,
+                               StaticConverter<StructToStructConverter<Stretch, CompositionStretch>>.Shared);
 
         presenter.BindProperty(this,
                                hAlignNameOf,
