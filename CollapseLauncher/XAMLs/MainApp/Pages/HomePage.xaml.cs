@@ -4,7 +4,6 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using CollapseLauncher.XAMLs.Theme;
@@ -969,15 +968,9 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                LoadingMessageHelper.ShowLoadingFrame();
-
-                // Initialize and get game state, then get the latest package info
-                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
-                                                Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
-
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty.GameInstall != null)
-                    await CurrentGameProperty.GameInstall.CleanUpGameFiles();
+                if (CurrentGameProperty.GameInstall is { } gameInstall)
+                    await MainPage.RunInteractiveFileCleanupAsync(gameInstall);
             }
             catch (Exception ex)
             {
