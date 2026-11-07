@@ -84,7 +84,7 @@ internal static partial class LayeredBackgroundImageExtensions
                         IRandomAccessStream? randomStream = source as IRandomAccessStream;
                         randomStream ??= (source as Stream)?.AsRandomAccessStream(true, true);
 
-                        ffmpegMediaSource = await FFmpegMediaSource.CreateFromStreamAsync(randomStream, ffmpegConfig);
+                        ffmpegMediaSource = await FFmpegMediaSource.CreateFromStreamAsync(randomStream, ffmpegConfig, windowId.Value);
                         break;
                     }
                     case Uri sourceAsUri:
@@ -93,11 +93,11 @@ internal static partial class LayeredBackgroundImageExtensions
                         if (sourceAsUri.IsFile)
                         {
                             string fullyQualifiedPath = sourceAsUri.LocalPath.GetFullyQualifiedPath();
-                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromFileAsync(fullyQualifiedPath, ffmpegConfig);
+                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromFileAsync(fullyQualifiedPath, ffmpegConfig, windowId.Value);
                         }
                         else
                         {
-                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromUriAsync(sourceAsUri.ToString(), ffmpegConfig);
+                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromUriAsync(sourceAsUri.ToString(), ffmpegConfig, windowId.Value);
                         }
                         break;
                     }
