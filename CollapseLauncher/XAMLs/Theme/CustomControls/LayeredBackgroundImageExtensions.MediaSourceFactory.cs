@@ -28,6 +28,7 @@ internal static partial class LayeredBackgroundImageExtensions
             bool              isAutoPlay,
             bool              isMuted,
             Action?           onMediaOpened  = null,
+            Action?           onMediaFailed  = null,
             TimeSpan          lastOpenedTime = default,
             CancellationToken token          = default)
     {
@@ -45,9 +46,10 @@ internal static partial class LayeredBackgroundImageExtensions
         };
 
         if (onMediaOpened != null)
-        {
             mediaPlayer.MediaOpened += MediaPlayerOnMediaOpened;
-        }
+
+        if (onMediaFailed != null)
+            mediaPlayer.MediaFailed += MediaPlayerOnMediaFailed;
 
         IMediaPlaybackSource? mediaPlaybackSource = null;
         FFmpegMediaSource?    ffmpegMediaSource   = null;
@@ -126,7 +128,15 @@ internal static partial class LayeredBackgroundImageExtensions
         void MediaPlayerOnMediaOpened(MediaPlayer sender, object args)
         {
             mediaPlayer.MediaOpened -= MediaPlayerOnMediaOpened;
-            onMediaOpened();
+            mediaPlayer.MediaFailed -= MediaPlayerOnMediaFailed;
+            onMediaOpened?.Invoke();
+        }
+
+        void MediaPlayerOnMediaFailed(MediaPlayer sender, object args)
+        {
+            mediaPlayer.MediaOpened -= MediaPlayerOnMediaOpened;
+            mediaPlayer.MediaFailed -= MediaPlayerOnMediaFailed;
+            onMediaFailed?.Invoke();
         }
     }
 

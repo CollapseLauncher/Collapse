@@ -76,16 +76,23 @@ public partial class LayeredBackgroundImage
 
                 async void ImagePresenterOnLoaded(object sender, RoutedEventArgs e)
                 {
-                    if (sender is not Image asImage)
+                    try
                     {
-                        return;
-                    }
+                        if (sender is not Image asImage)
+                        {
+                            return;
+                        }
 
-                    asImage.ImageOpened -= ImagePresenterOnLoaded;
-                    asImage.ImageFailed -= ImagePresenterOnLoaded;
-                    asImage.Loaded      -= ImagePresenterOnLoaded;
-                    await UnloadLastPresenter(parent, asImage);
-                    tcs.TrySetResult();
+                        asImage.ImageOpened -= ImagePresenterOnLoaded;
+                        asImage.ImageFailed -= ImagePresenterOnLoaded;
+                        asImage.Loaded      -= ImagePresenterOnLoaded;
+                        await UnloadLastPresenter(parent, asImage);
+                        tcs.TrySetResult();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "An error has occurred while trying to invoke ImagePresenterOnLoaded method");
+                    }
                 }
             }
 
@@ -95,35 +102,69 @@ public partial class LayeredBackgroundImage
                                                                 source,
                                                                 sourceContext,
                                                                 VideoPresenterOnLoaded,
+                                                                VideoPresenterOnFailed,
                                                                 loadToken);
 
                 async void VideoPresenterOnLoaded(object sender, RoutedEventArgs e)
                 {
-                    if (sender is not MediaFoundationPresenter presenter)
+                    try
                     {
-                        return;
-                    }
+                        if (sender is not MediaFoundationPresenter presenter)
+                        {
+                            return;
+                        }
 
-                    // -- For Background Grid Only. Update MediaState and assign subscriber for it.
-                    if (isBackgroundParent &&
-                        sourceGuessResult.FormatType == SourceFormatType.Video &&
-                        presenter.Tag is SourceContext { Player: { } player } thisSourceContext)
+                        // -- For Background Grid Only. Update MediaState and assign subscriber for it.
+                        if (isBackgroundParent &&
+                            sourceGuessResult.FormatType == SourceFormatType.Video &&
+                            presenter.Tag is SourceContext { Player: { } player } thisSourceContext)
+                        {
+                            if (IsAudioEnabled)
+                                SetVolume(AudioVolume);
+
+                            SetValue(MediaStateProperty, player.CurrentState);               // Update the state one time.
+                            SetValue(MediaDurationPositionProperty, player.Position);        // Update the state one time.
+                            SetValue(MediaDurationProperty, player.NaturalDuration);         // Update the state one time.
+                            thisSourceContext.RegisterPlayerCallbacks(MediaPlayer_OnCurrentStateChanged,
+                                                                      MediaPlayer_OnPositionChanged);
+
+                            TimeSpan lastPosition = thisSourceContext.LoadPlayerLastPosition();
+                            player.Position = lastPosition; // Seek to the last position.
+                        }
+
+                        await UnloadLastPresenter(parent, presenter);
+                        tcs.TrySetResult();
+                    }
+                    catch (Exception ex)
                     {
-                        if (IsAudioEnabled)
-                            SetVolume(AudioVolume);
-
-                        SetValue(MediaStateProperty,            player.CurrentState);    // Update the state one time.
-                        SetValue(MediaDurationPositionProperty, player.Position);        // Update the state one time.
-                        SetValue(MediaDurationProperty,         player.NaturalDuration); // Update the state one time.
-                        thisSourceContext.RegisterPlayerCallbacks(MediaPlayer_OnCurrentStateChanged,
-                                                                  MediaPlayer_OnPositionChanged);
-
-                        TimeSpan lastPosition = thisSourceContext.LoadPlayerLastPosition();
-                        player.Position = lastPosition; // Seek to the last position.
+                        Logger.LogError(ex, "An error has occurred while trying to invoke VideoPresenterOnLoaded method");
                     }
+                }
 
-                    await UnloadLastPresenter(parent, presenter);
-                    tcs.TrySetResult();
+                async void VideoPresenterOnFailed(object sender, RoutedEventArgs e)
+                {
+                    try
+                    {
+                        if (sender is not MediaFoundationPresenter presenter)
+                        {
+                            return;
+                        }
+
+                        if (isBackgroundParent &&
+                            sourceGuessResult.FormatType == SourceFormatType.Video &&
+                            presenter.Tag is SourceContext { Player: { } player } thisSourceContext)
+                        {
+                            SetValue(MediaStateProperty, player.CurrentState); // Update the state one time.
+                            thisSourceContext.Dispose();                          // Early dispose the source context if failed.
+                        }
+
+                        await UnloadLastPresenter(parent, presenter);
+                        tcs.TrySetResult();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "An error has occurred while trying to invoke VideoPresenterOnFailed method");
+                    }
                 }
             }
 

@@ -83,6 +83,7 @@ public partial class LayeredBackgroundImage
         object?             source,
         SourceContext       sourceContext,
         RoutedEventHandler? onLoadedEventHandler,
+        RoutedEventHandler? onFailedEventHandler,
         CancellationToken   token)
     {
         if (token.IsCancellationRequested)
@@ -110,6 +111,7 @@ public partial class LayeredBackgroundImage
                                                                        IsVideoAutoplay,
                                                                        !IsAudioEnabled,
                                                                        OnMediaOpened,
+                                                                       OnMediaFailed,
                                                                        token: token);
 
         if (mediaPlayer is null)
@@ -155,5 +157,6 @@ public partial class LayeredBackgroundImage
         return presenter;
 
         void OnMediaOpened() => presenter?.DispatcherQueue.TryEnqueue(() => onLoadedEventHandler?.Invoke(presenter, null));
+        void OnMediaFailed() => presenter?.DispatcherQueue.TryEnqueue(() => onFailedEventHandler?.Invoke(presenter, null));
     }
 }
