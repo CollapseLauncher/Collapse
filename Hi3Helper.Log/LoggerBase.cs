@@ -218,7 +218,7 @@ public abstract class LoggerBase : ILog
         string dateString  = dateTimeNow.ToString("yyyy-MM-dd");
 
         // Append the current instance number
-        LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString}-{processName}{logNamePrefix}-{dateTimeNow:HH-mm-ss}.log");
+        LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString}_{dateTimeNow:HH-mm-ss}_{processName}-{logNamePrefix ?? $"{Environment.ProcessId}"}.log");
         Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
 
         // Initialize _logWriter to the given _logPath.
@@ -235,7 +235,7 @@ public abstract class LoggerBase : ILog
     private static void DeleteLogFilesInner(string folderPath)
     {
         DirectoryInfo dirInfo = new(folderPath);
-        foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*-id*.log", SearchOption.TopDirectoryOnly))
+        foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*_*.log", SearchOption.TopDirectoryOnly))
         {
             try
             {
