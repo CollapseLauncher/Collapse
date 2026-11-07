@@ -102,7 +102,7 @@ public partial class LayeredBackgroundImage
     private static void PropertyParallaxHoverSource_OnChange(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         LayeredBackgroundImage instance = (LayeredBackgroundImage)obj;
-        if (!instance.IsLoaded)
+        if (!instance.IsLoaded || !(bool)instance.GetValue(IsParallaxEnabledProperty))
         {
             return;
         }
