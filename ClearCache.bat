@@ -29,3 +29,9 @@ echo     Clearing Hi3Helper.LocaleSourceGen cache
 rmdir /S /Q Hi3Helper.LocaleSourceGen\bin && rmdir /S /Q Hi3Helper.LocaleSourceGen\obj
 echo     Clearing Hi3Helper.Plugin.Core cache
 rmdir /S /Q Hi3Helper.Plugin.Core\bin && rmdir /S /Q Hi3Helper.Plugin.Core\obj
+echo     Clearing Hi3Helper.SimpleZipArchiveReader cache
+rmdir /S /Q Hi3Helper.SimpleZipArchiveReader\bin && rmdir /S /Q Hi3Helper.SimpleZipArchiveReader\obj
+echo     Clearing Hi3Helper.MagicScaler.LibheifCL cache
+rmdir /S /Q Hi3Helper.MagicScaler.LibheifCL\bin && rmdir /S /Q Hi3Helper.MagicScaler.LibheifCL\obj
+echo     Clearing Hi3Helper.Log cache
+rmdir /S /Q Hi3Helper.Log\bin && rmdir /S /Q Hi3Helper.Log\obj
