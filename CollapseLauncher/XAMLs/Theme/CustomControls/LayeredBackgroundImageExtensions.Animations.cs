@@ -11,81 +11,58 @@ internal static partial class LayeredBackgroundImageExtensions
     private static readonly TimeSpan FadeDuration = TimeSpan.FromSeconds(0.25);
     private static readonly TimeSpan FadeOutDelay = FadeDuration * 0.5d;
 
-    internal static async Task StartFadeReplaceAnimationAsync(
+    internal static Task StartFadeReplaceAnimationAsync(
         UIElement? fromElement,
         UIElement? toElement,
         Action?    onCompleted = null)
     {
-        Storyboard? fromStoryboard = null;
-        Storyboard? toStoryboard   = null;
-
-        if (fromElement != null)
+        if (fromElement == null &&
+            toElement == null)
         {
-            fromStoryboard = CreateFadeOpacityStoryboard(fromElement,
-                                                         1,
-                                                         0,
-                                                         FadeDuration,
-                                                         FadeOutDelay);
+            onCompleted?.Invoke();
+            return Task.CompletedTask;
         }
 
-        if (toElement != null)
+        TaskCompletionSource tcs = new();
+
+        Storyboard mainStoryboard = new();
+        mainStoryboard.Completed += MainStoryboardOnCompleted;
+
+        CreateFadeOpacityTimeline(mainStoryboard, fromElement, 1, 0, FadeDuration, FadeOutDelay);
+        CreateFadeOpacityTimeline(mainStoryboard, toElement,   0, 1, FadeDuration);
+        mainStoryboard.Begin();
+        return tcs.Task;
+
+        void MainStoryboardOnCompleted(object? sender, object e)
         {
-            toStoryboard = CreateFadeOpacityStoryboard(toElement,
-                                                       0,
-                                                       1,
-                                                       FadeDuration);
+            mainStoryboard.Completed -= MainStoryboardOnCompleted;
+            onCompleted?.Invoke();
+            tcs.SetResult();
         }
-
-        Task fromTcs = fromStoryboard?.BeginAsync() ?? Task.CompletedTask;
-        Task toTcs   = toStoryboard?.BeginAsync() ?? Task.CompletedTask;
-
-        await Task.WhenAll(fromTcs, toTcs);
-        onCompleted?.Invoke();
     }
 
-    private static Storyboard CreateFadeOpacityStoryboard(
-        UIElement element,
-        double    from,
-        double    to,
-        TimeSpan  duration,
-        TimeSpan  delay = default)
+    private static void CreateFadeOpacityTimeline(
+        Storyboard storyboard,
+        UIElement? element,
+        double     from,
+        double     to,
+        TimeSpan   duration,
+        TimeSpan   delay = default)
     {
-        Storyboard storyboard = new();
+        if (element == null)
+            return;
+
         DoubleAnimation opacityAnimation = new()
         {
-            From      = from,
-            To        = to,
-            Duration  = duration,
-            BeginTime = delay
+            From                     = from,
+            To                       = to,
+            Duration                 = duration,
+            BeginTime                = delay,
+            EnableDependentAnimation = true
         };
 
         Storyboard.SetTarget(opacityAnimation, element);
         Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
         storyboard.Children.Add(opacityAnimation);
-
-        return storyboard;
-    }
-
-    private static Task BeginAsync(this Storyboard sb)
-    {
-        TaskCompletionSource tcs = new();
-        sb.Completed += SbOnCompleted;
-
-        try
-        {
-            sb.Begin();
-        }
-        catch (Exception ex)
-        {
-            tcs.SetException(ex);
-        }
-
-        return tcs.Task;
-
-        void SbOnCompleted(object? sender, object e)
-        {
-            sb.Completed -= SbOnCompleted;
-            tcs.SetResult();
-        }
     }
 }
