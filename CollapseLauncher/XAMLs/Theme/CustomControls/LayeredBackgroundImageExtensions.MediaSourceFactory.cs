@@ -75,45 +75,29 @@ internal static partial class LayeredBackgroundImageExtensions
                 if (token.IsCancellationRequested)
                     return (null, null);
 
-                if (source is IRandomAccessStream or Stream)
+                switch (source)
                 {
-                    IRandomAccessStream? randomStream = source as IRandomAccessStream;
-                    randomStream ??= (source as Stream)?.AsRandomAccessStream(true, true);
-
-                    ffmpegMediaSource = await FFmpegMediaSource
-                       .CreateFromStreamAsync(randomStream,
-                                              ffmpegConfig,
-                                              windowId.Value);
-                }
-
-                if (source is Uri sourceAsUri ||
-                    (source is string sourceUriAsString &&
-                     Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!)))
-                {
-                    if (sourceAsUri.IsFile)
+                    case IRandomAccessStream or Stream:
                     {
-                        string fullyQualifiedPath = sourceAsUri.LocalPath.GetFullyQualifiedPath();
-                        ffmpegMediaSource = await FFmpegMediaSource
-                           .CreateFromFileAsync(fullyQualifiedPath,
-                                                ffmpegConfig,
-                                                windowId.Value);
+                        IRandomAccessStream? randomStream = source as IRandomAccessStream;
+                        randomStream ??= (source as Stream)?.AsRandomAccessStream(true, true);
+
+                        ffmpegMediaSource = await FFmpegMediaSource.CreateFromStreamAsync(randomStream, ffmpegConfig);
+                        break;
                     }
-
-                    ffmpegMediaSource ??= await FFmpegMediaSource
-                       .CreateFromUriAsync(sourceAsUri.ToString(),
-                                           ffmpegConfig,
-                                           windowId.Value);
-                }
-
-                if (source is string sourceAsString)
-                {
-                    sourceAsString = sourceAsString.GetFullyQualifiedPath();
-                    if (Uri.TryCreate(sourceAsString, UriKind.Absolute, out Uri? localPathUri))
+                    case Uri sourceAsUri:
+                    case string sourceUriAsString when Uri.TryCreate(sourceUriAsString, UriKind.Absolute, out sourceAsUri!):
                     {
-                        ffmpegMediaSource = await FFmpegMediaSource
-                           .CreateFromFileAsync(localPathUri.LocalPath,
-                                                ffmpegConfig,
-                                                windowId.Value);
+                        if (sourceAsUri.IsFile)
+                        {
+                            string fullyQualifiedPath = sourceAsUri.LocalPath.GetFullyQualifiedPath();
+                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromFileAsync(fullyQualifiedPath, ffmpegConfig);
+                        }
+                        else
+                        {
+                            ffmpegMediaSource = await FFmpegMediaSource.CreateFromUriAsync(sourceAsUri.ToString(), ffmpegConfig);
+                        }
+                        break;
                     }
                 }
 
