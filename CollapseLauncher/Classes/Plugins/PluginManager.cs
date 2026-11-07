@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Log;
 using Hi3Helper.Plugin.Core.Update;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Buffers;
@@ -33,6 +34,7 @@ internal static partial class PluginManager
             directoryInfo.Create();
         }
 
+        RemoveStaleImportedPlugins(directoryInfo);
         ApplyPendingRoutines(directoryInfo);
 
         foreach (DirectoryInfo pluginDirInfo in directoryInfo.EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
@@ -144,17 +146,22 @@ internal static partial class PluginManager
 
     private static void ApplyPendingRoutines(DirectoryInfo pluginRootDir)
     {
-        foreach (DirectoryInfo pluginDir in pluginRootDir
-                    .EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
+        foreach (DirectoryInfo pluginDir in pluginRootDir.EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
         {
-            FileInfo markPendingUninstall =
-                new FileInfo(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingDeletionFileName));
-            FileInfo markPendingApplyUpdate =
-                new FileInfo(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingUpdateFileName, PluginInfo.MarkPendingUpdateApplyFileName));
+            FileInfo markPendingUninstall = new(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingDeletionFileName));
+            FileInfo markPendingApplyUpdate = new(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingUpdateFileName, PluginInfo.MarkPendingUpdateApplyFileName));
 
             if (markPendingUninstall.Exists)
             {
-                ApplyPendingUninstallRoutine(pluginDir, markPendingUninstall);
+                try
+                {
+                    pluginDir.Delete(true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine($"Failed while trying to uninstall plugin at directory: {pluginDir.FullName} due to an error: {ex}", LogType.Error, true);
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.PluginUnhandled);
+                }
             }
 
             markPendingApplyUpdate.Refresh();
@@ -164,6 +171,22 @@ internal static partial class PluginManager
             }
 
             ApplyPendingUpdateRoutine(pluginDir);
+        }
+    }
+
+    private static void RemoveStaleImportedPlugins(DirectoryInfo pluginRootDir)
+    {
+        foreach (DirectoryInfo staleDir in pluginRootDir.EnumerateDirectories(".import-*", SearchOption.TopDirectoryOnly))
+        {
+            try
+            {
+                staleDir.Delete(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine($"Failed while trying to uninstall staled plugin installation at: {staleDir.FullName}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.PluginUnhandled);
+            }
         }
     }
 
@@ -177,8 +200,8 @@ internal static partial class PluginManager
 
     private static void AssertIfUpxPacked(FileInfo fileInfo)
     {
-        ReadOnlySpan<byte> searchValuesPattern1 = "UPX0\0\0\0\0"u8;
-        ReadOnlySpan<byte> searchValuesPattern2 = "UPX1\0\0\0\0"u8;
+        var searchValuesPattern1 = "UPX0\0\0\0\0"u8;
+        var searchValuesPattern2 = "UPX1\0\0\0\0"u8;
 
         byte[] readHeader = ArrayPool<byte>.Shared.Rent(2048);
         try

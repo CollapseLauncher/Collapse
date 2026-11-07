@@ -101,7 +101,7 @@ namespace CollapseLauncher.Pages
             {
                 Dictionary<string, string> supportedFiles = new()
                 {
-                    { Locale.Current.Lang?._PluginManagerPage?.FileDialogFileFilter1 ?? "", "*.zip;manifest.json" }
+                    { Locale.Current.Lang?._PluginManagerPage?.FileDialogFileFilter1 ?? "", "*.zip;manifest.json*" }
                 };
 
                 string[] selectedFiles =

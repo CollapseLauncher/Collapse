@@ -15,17 +15,17 @@ internal static partial class PluginImporter
 {
     public static async Task<PluginInfo> AutoGetImportFromPath(string filePath, CancellationToken token)
     {
-        bool isFromPackage = filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
-        bool isFromManifest = string.Equals(Path.GetFileName(filePath),
-                                            PluginManager.ManifestPrefix,
-                                            StringComparison.OrdinalIgnoreCase);
+        bool isFromZipPackage = filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+        bool isFromManifest = Path.GetFileName(filePath)
+                                  .StartsWith(PluginManager.ManifestPrefix,
+                                              StringComparison.OrdinalIgnoreCase);
 
-        if (!isFromPackage && !isFromManifest)
+        if (!isFromZipPackage && !isFromManifest)
         {
             throw new NotSupportedException($"{Path.GetFileName(filePath)} is not supported. Import a .zip package or a file named manifest.json.");
         }
 
-        using IPluginSource pluginSource = isFromPackage ?
+        using IPluginSource pluginSource = isFromZipPackage ?
             await ZipPluginSource.GetSourceFrom(filePath, token) :
             await ManifestPluginSource.GetSourceFrom(filePath, token);
 
@@ -75,6 +75,10 @@ internal static partial class PluginImporter
 
                 await assetPluginSourceStream.CopyToAsync(assetStream, token);
             }
+
+            // Try to delete stale directory from previous installation.
+            if (Directory.Exists(pluginBaseDir))
+                Directory.Delete(pluginBaseDir, true);
 
             Directory.Move(stagingDir, pluginBaseDir);
             cleanupDir = pluginBaseDir;

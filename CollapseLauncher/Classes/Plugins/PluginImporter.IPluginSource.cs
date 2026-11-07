@@ -13,6 +13,6 @@ internal static partial class PluginImporter
     {
         PluginManifest Manifest { get; }
 
-        Task<Stream> GetAssetStream(PluginManifestAssetInfo assetInfo, CancellationToken token = default);
+        ValueTask<Stream> GetAssetStream(PluginManifestAssetInfo assetInfo, CancellationToken token = default);
     }
 }

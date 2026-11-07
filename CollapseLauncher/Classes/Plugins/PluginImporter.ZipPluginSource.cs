@@ -6,31 +6,28 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Plugins;
 
 internal static partial class PluginImporter
 {
-    private partial class ZipPluginSource
-        : IPluginSource<ZipPluginSource>, IPluginSource
+    private partial class ZipPluginSource : PluginSource, IPluginSourceFactory
     {
-        private const string CompressionExt = ".br";
         private const string PathSeparators = "\\/";
 
         private ZipArchive                          Archive                      { get; }
         private FileStream                          ArchiveStream                { get; }
-        public  PluginManifest                      Manifest                     { get; }
         private Dictionary<string, ZipArchiveEntry> ManifestAssetToZipArchiveMap { get; }
 
         private ZipPluginSource(ZipArchive     archive,
                                 FileStream     archiveStream,
                                 string?        eliminatedPrefix,
-                                PluginManifest manifest)
+                                PluginManifest manifest) : base(manifest)
         {
-            Archive              = archive;
-            ArchiveStream        = archiveStream;
-            Manifest             = manifest;
+            Archive       = archive;
+            ArchiveStream = archiveStream;
 
             ReadOnlySpan<char> eliminatedPrefixSpan = eliminatedPrefix;
 
@@ -40,17 +37,18 @@ internal static partial class PluginImporter
                 ReadOnlySpan<char> assetPathTrimmed = entry.FullName
                                                            .AsSpan(eliminatedPrefixSpan.Length)
                                                            .TrimStart(PathSeparators);
+                ReadOnlySpan<char> assetExtension = Path.GetExtension(assetPathTrimmed);
 
-                if (assetPathTrimmed.EndsWith(CompressionExt, StringComparison.OrdinalIgnoreCase))
+                if (assetExtension.ContainsAny(CompressionExtensions))
                 {
-                    assetPathTrimmed = assetPathTrimmed[..^CompressionExt.Length];
+                    assetPathTrimmed = assetPathTrimmed[..^assetExtension.Length];
                 }
 
                 ManifestAssetToZipArchiveMap.TryAdd(assetPathTrimmed.ToString(), entry);
             }
         }
 
-        public static async Task<ZipPluginSource> GetSourceFrom(string sourceFilePath, CancellationToken token = default)
+        public static async ValueTask<IPluginSource> GetSourceFrom(string sourceFilePath, CancellationToken token = default)
         {
             bool        isFail     = false;
             FileStream? fileStream = null;
@@ -61,31 +59,23 @@ internal static partial class PluginImporter
                 fileStream = File.OpenRead(sourceFilePath);
                 archive    = new ZipArchive(fileStream, ZipArchiveMode.Read);
 
-                ZipArchiveEntry? manifestEntry =
-                    archive.Entries.FirstOrDefault(x => x.Name.StartsWith(PluginManager.ManifestPrefix,
-                                                                          StringComparison.OrdinalIgnoreCase));
+                ZipArchiveEntry? manifestEntry = archive
+                                                .Entries
+                                                .FirstOrDefault(x => x.Name.StartsWith(PluginManager.ManifestPrefix,
+                                                                    StringComparison.OrdinalIgnoreCase));
 
                 if (manifestEntry == null)
-                {
-                    throw new FileNotFoundException("Cannot find manifest.json file on the root of the package path!",
-                                                    PluginManager.ManifestPrefix);
-                }
+                    throw new FileNotFoundException("Cannot find manifest.json file on the root of the .zip package!", PluginManager.ManifestPrefix);
 
-                bool    isManifestCompressed = manifestEntry.Name.EndsWith(CompressionExt, StringComparison.OrdinalIgnoreCase);
+                bool    isManifestCompressed = Path.GetExtension(manifestEntry.Name).ContainsAny(CompressionExtensions);
                 string? eliminatedPrefix     = Path.GetDirectoryName(manifestEntry.FullName);
 
-                await using Stream manifestStream = await manifestEntry.OpenAsync(token);
-                await using Stream manifestDecStream = isManifestCompressed
-                    ? new BrotliStream(manifestStream, CompressionMode.Decompress)
-                    : manifestStream;
+                await using Stream manifestStream    = await manifestEntry.OpenAsync(token);
+                await using Stream manifestDecStream = GetStreamWithTypeFromName(manifestEntry.Name, manifestStream);
 
-                PluginManifest? manifest =
-                    await manifestDecStream.DeserializeAsync(PluginManifestContext.Default.PluginManifest, token: token);
-
+                PluginManifest? manifest = await manifestDecStream.DeserializeAsync(PluginManifestContext.Default.PluginManifest, token: token);
                 if (manifest == null)
-                {
                     throw new InvalidDataException($"manifest.json data is not valid! (IsCompressed? {isManifestCompressed})");
-                }
 
                 return new ZipPluginSource(archive, fileStream, eliminatedPrefix, manifest);
             }
@@ -99,36 +89,28 @@ internal static partial class PluginImporter
                 if (isFail)
                 {
                     await (archive?.DisposeAsync() ?? ValueTask.CompletedTask);
-                    if (fileStream != null)
-                    {
-                        await fileStream.DisposeAsync();
-                    }
+                    await (fileStream?.DisposeAsync() ?? ValueTask.CompletedTask);
                 }
             }
         }
 
-        public Task<Stream> GetAssetStream(PluginManifestAssetInfo assetInfo, CancellationToken token = default)
+        public override async ValueTask<Stream> GetAssetStream(PluginManifestAssetInfo assetInfo, CancellationToken token)
         {
-            return Task.Factory.StartNew(Impl, token);
-
-            Stream Impl()
+            if (!ManifestAssetToZipArchiveMap.TryGetValue(assetInfo.FilePath, out ZipArchiveEntry? entry))
             {
-                if (!ManifestAssetToZipArchiveMap.TryGetValue(assetInfo.FilePath, out ZipArchiveEntry? entry))
-                {
-                    throw new FileNotFoundException($"Asset with path: {assetInfo.FilePath} is not exist inside of the zip package!", assetInfo.FilePath);
-                }
-
-                bool isCompressed = entry.Name.EndsWith(CompressionExt, StringComparison.OrdinalIgnoreCase);
-                return isCompressed ? new BrotliStream(entry.Open(), CompressionMode.Decompress) : entry.Open();
+                throw new FileNotFoundException($"File: {assetInfo.FilePath} does not exist inside the .zip archive!");
             }
+
+            Stream entryStream = await entry.OpenAsync(token);
+            return GetStreamWithTypeFromName(entry.Name, entryStream);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Archive.Dispose();
             ArchiveStream.Dispose();
             ManifestAssetToZipArchiveMap.Clear();
-            GC.SuppressFinalize(this);
+            base.Dispose();
         }
     }
 }

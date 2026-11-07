@@ -757,44 +757,92 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Grid Grid.Row="2"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Bottom"
-                           Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterWarning1}"
-                           TextWrapping="Wrap"
-                           Visibility="{x:Bind RestartLauncherButton.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}" />
-                <Button x:Name="RestartLauncherButton"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        extension:UIElementExtensions.CursorType="Hand"
-                        Click="{x:Bind pages:PluginManagerPage.AskLauncherRestart}"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(RestartLauncherButton)}"
-                        IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsChanged, Mode=OneWay}"
-                        Style="{ThemeResource AccentButtonStyle}">
-                    <Grid ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <FontIcon Grid.Column="0"
-                                  FontSize="16"
-                                  Glyph="&#xE777;" />
-                        <TextBlock Grid.Column="1"
-                                   Margin="0,-1,0,0"
-                                   FontSize="14"
-                                   Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterRestartButton}" />
-                    </Grid>
-                </Button>
-            </Grid>
+            <StackPanel Grid.Row="2"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,0"
+                        Spacing="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="OpenPluginCatalogBottomLeftButton"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="OnClickGoToPluginDownloadCatalogButton"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       FontSize="14">
+                                <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
+                                <Run FontWeight="Bold"
+                                     Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
+                                <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
+                            </TextBlock>
+                            <FontIcon Grid.Column="1"
+                                      FontSize="20"
+                                      Glyph="&#xE826;" />
+                        </Grid>
+                    </Button>
+                    <Button x:Name="RestartLauncherButton"
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            extension:UIElementExtensions.CursorType="Hand"
+                            Click="{x:Bind pages:PluginManagerPage.AskLauncherRestart}"
+                            IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsChanged, Mode=OneWay}"
+                            Style="{ThemeResource DefaultButtonStyle}">
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon Grid.Column="0"
+                                      FontSize="16"
+                                      Glyph="&#xE777;" />
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,-1,0,0"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterRestartButton}" />
+                        </Grid>
+                    </Button>
+                </Grid>
+                <Grid Background="{ThemeResource InfoBarWarningSeverityBackgroundBrush}"
+                      Padding="8"
+                      CornerRadius="4"
+                      ColumnSpacing="8"
+                      Visibility="{x:Bind RestartLauncherButton.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Grid.Column="0"
+                              Glyph="&#xE7BA;"
+                              FontSize="14"/>
+                    <TextBlock Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.ListViewFooterWarning1}"
+                               TextWrapping="Wrap"
+                               FontSize="12" />
+                    <FontIcon Grid.Column="2"
+                              Glyph="&#xE7BA;"
+                              FontSize="14"/>
+                </Grid>
+            </StackPanel>
         </Grid>
-        <Grid x:Name="ImportBoxContainer"
-              Grid.Column="1"
+        <Grid Grid.Column="1"
               Margin="8,26,26,26"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
@@ -962,33 +1010,5 @@
                            StrokeThickness="3" />
             </Grid>
         </Grid>
-        <Button x:Name="OpenPluginCatalogBottomLeftButton"
-                Grid.Column="0"
-                Margin="26,0,0,26"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                extension:UIElementExtensions.CursorType="Hand"
-                Click="OnClickGoToPluginDownloadCatalogButton"
-                CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(OpenPluginCatalogBottomLeftButton)}"
-                Style="{ThemeResource AccentButtonStyle}"
-                Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
-            <Grid ColumnSpacing="8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Center"
-                           FontSize="14">
-                    <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton1}" />
-                    <Run FontWeight="Bold"
-                         Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton2}" />
-                    <Run Text="{x:Bind helper:Locale.Current.Lang._PluginManagerPage.LeftPanelNoPluginButton3}" />
-                </TextBlock>
-                <FontIcon Grid.Column="1"
-                          FontSize="20"
-                          Glyph="&#xE826;" />
-            </Grid>
-        </Button>
     </Grid>
 </Page>
