@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -33,8 +32,8 @@ public partial class LayeredBackgroundImage
 
     public partial class SourceContext : IDisposable
     {
-        private static readonly ConcurrentDictionary<SourceContext, bool> LoadedContexts = [];
         private static readonly ILogger ThisLogger = ILoggerHelper.GetILogger(nameof(LayeredBackgroundImage) + "::" + nameof(SourceContext));
+        private static int _currentSourceContextCounter;
 
         private static unsafe delegate* unmanaged[Stdcall, SuppressGCTransition]<nint, nint, int> IMediaPlayer5_CopyFrameToVideoSurface;
 
@@ -108,7 +107,7 @@ public partial class LayeredBackgroundImage
 
         public SourceContext(LayeredBackgroundImage parentElement, ulong generation)
         {
-            LoadedContexts.TryAdd(this, true);
+            Interlocked.Increment(ref _currentSourceContextCounter);
             ParentElement = parentElement;
             Generation    = generation;
         }
@@ -309,8 +308,8 @@ public partial class LayeredBackgroundImage
             if (Interlocked.Exchange(ref _disposed, true))
                 return;
 
-            LoadedContexts.TryRemove(this, out _);
-            ThisLogger.LogTrace("Total Remained SourceContext instances: {LoadedContexts.Count} instances", LoadedContexts.Count);
+            Interlocked.Decrement(ref _currentSourceContextCounter);
+            ThisLogger.LogTrace("Total Remained SourceContext instances: {LoadedContexts.Count} instances", _currentSourceContextCounter);
 
             GC.SuppressFinalize(this); // Early suppress finalization here.
 

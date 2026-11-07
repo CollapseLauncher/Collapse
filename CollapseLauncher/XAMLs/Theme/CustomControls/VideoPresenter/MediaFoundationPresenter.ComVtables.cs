@@ -5,7 +5,7 @@ using Hi3Helper.Win32.Native.Structs.D3D;
 using Hi3Helper.Win32.Native.Structs.DXGI;
 using System;
 using System.Numerics;
-using System.Runtime.InteropServices;
+#pragma warning disable IDE0074
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
