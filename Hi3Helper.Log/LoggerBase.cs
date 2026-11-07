@@ -16,9 +16,8 @@ namespace Hi3Helper.Log;
 
 public abstract class LoggerBase : ILog
 {
-    protected const    string        DateTimeFormat = "HH:mm:ss.fff";
-    protected readonly Encoding      Encoding;
-    private readonly   SemaphoreSlim _initSemaphore = new(1, 1);
+    protected const    string   DateTimeFormat = "HH:mm:ss.fff";
+    protected readonly Encoding Encoding;
 
     private const byte SquareBracketOpen  = 0x5B; // [
     private const byte SquareBracketClose = 0x5D; // ]
@@ -186,34 +185,25 @@ public abstract class LoggerBase : ILog
 
     public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
     {
-        _initSemaphore.Wait();
+        DisposeCore(true);
 
-        try
+        if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
         {
-            DisposeCore(true);
-
-            if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
-            {
-                DeleteLogFilesInner(LogFolder);
-            }
-
-            if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
-            {
-                Directory.CreateDirectory(reloadToPath);
-            }
-
-            if (!string.IsNullOrEmpty(reloadToPath))
-            {
-                LogFolder = reloadToPath;
-            }
-
-            encoding ??= Encoding.UTF8;
-            SetFolderPathAndInitialize(LogFolder ?? "", encoding);
+            DeleteLogFilesInner(LogFolder);
         }
-        finally
+
+        if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
         {
-            _initSemaphore.Release();
+            Directory.CreateDirectory(reloadToPath);
         }
+
+        if (!string.IsNullOrEmpty(reloadToPath))
+        {
+            LogFolder = reloadToPath;
+        }
+
+        encoding ??= Encoding.UTF8;
+        SetFolderPathAndInitialize(LogFolder ?? "", encoding);
     }
     #endregion
 
@@ -221,34 +211,25 @@ public abstract class LoggerBase : ILog
 #if !APPLYUPDATE
     private void InitializeWriter(Encoding? logEncoding, string? logNamePrefix = null)
     {
-        _initSemaphore.Wait();
+        DateTime dateTimeNow = DateTime.Now;
 
-        try
-        {
-            DateTime dateTimeNow = DateTime.Now;
+        // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
+        string processName = Path.GetFileNameWithoutExtension(Environment.ProcessPath) ?? "unknown";
+        string dateString  = dateTimeNow.ToString("yyyy-MM-dd");
 
-            // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
-            string processName = Path.GetFileNameWithoutExtension(Environment.ProcessPath) ?? "unknown";
-            string dateString  = dateTimeNow.ToString("yyyy-MM-dd");
+        // Append the current instance number
+        LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString}-{processName}{logNamePrefix}-{dateTimeNow:HH-mm-ss}.log");
+        Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
 
-            // Append the current instance number
-            LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString}-{processName}{logNamePrefix}-{dateTimeNow:HH-mm-ss}.log");
-            Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
+        // Initialize _logWriter to the given _logPath.
+        // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
+        // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
+        FileStream fileStream = new(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+        // Seek the file to the EOF
+        fileStream.Seek(0, SeekOrigin.End);
 
-            // Initialize _logWriter to the given _logPath.
-            // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
-            // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
-            FileStream fileStream = new(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            // Seek the file to the EOF
-            fileStream.Seek(0, SeekOrigin.End);
-
-            // Initialize the StreamWriter
-            LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
-        }
-        finally
-        {
-            _initSemaphore.Release();
-        }
+        // Initialize the StreamWriter
+        LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
     }
 
     private static void DeleteLogFilesInner(string folderPath)
