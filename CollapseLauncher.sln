@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32317.152
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12328.437 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollapseLauncher", "CollapseLauncher\CollapseLauncher.csproj", "{CA73E886-6AE2-4700-B8BB-5D11D91CA45F}"
 EndProject
@@ -43,6 +43,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon.WinUI", "H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj", "{0128963B-3044-224A-7E5D-3FC91B8B054C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.SimpleZipArchiveReader", "Hi3Helper.SimpleZipArchiveReader\src\Hi3Helper.SimpleZipArchiveReader\Hi3Helper.SimpleZipArchiveReader.csproj", "{833CA9EB-26C4-D977-383C-E3F90AE509F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.MagicScaler.LibheifCL", "Hi3Helper.MagicScaler.LibheifCL\Hi3Helper.MagicScaler.LibheifCL.csproj", "{F3C564ED-B53B-81AB-E853-B17EF762E628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.Log", "Hi3Helper.Log\Hi3Helper.Log.csproj", "{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.LocaleSourceGen", "Hi3Helper.LocaleSourceGen\Hi3Helper.LocaleSourceGen.csproj", "{D59780C7-8133-6A36-1666-C108BBCD819B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,6 +182,24 @@ Global
 		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Publish|x64.Build.0 = Release|x64
 		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Release|x64.ActiveCfg = Release|x64
 		{833CA9EB-26C4-D977-383C-E3F90AE509F9}.Release|x64.Build.0 = Release|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Debug|x64.ActiveCfg = Debug|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Debug|x64.Build.0 = Debug|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Publish|x64.ActiveCfg = Release|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Publish|x64.Build.0 = Release|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Release|x64.ActiveCfg = Release|x64
+		{F3C564ED-B53B-81AB-E853-B17EF762E628}.Release|x64.Build.0 = Release|x64
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Debug|x64.Build.0 = Debug|Any CPU
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Publish|x64.ActiveCfg = Release|Any CPU
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Publish|x64.Build.0 = Release|Any CPU
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Release|x64.ActiveCfg = Release|Any CPU
+		{AEC83847-B7FB-619E-BB20-F4848AD6AE4A}.Release|x64.Build.0 = Release|Any CPU
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Debug|x64.ActiveCfg = Debug|x64
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Debug|x64.Build.0 = Debug|x64
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Publish|x64.ActiveCfg = Publish|x64
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Publish|x64.Build.0 = Publish|x64
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Release|x64.ActiveCfg = Release|x64
+		{D59780C7-8133-6A36-1666-C108BBCD819B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
