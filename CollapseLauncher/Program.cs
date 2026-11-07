@@ -39,7 +39,6 @@ using Velopack;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Log.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -81,7 +80,7 @@ namespace CollapseLauncher
                 InitAppIcons();
 
                 // Initialize Logger
-                UseConsoleLog(IsConsoleEnabled);
+                Logger.UseConsoleLog(IsConsoleEnabled, AppGameLogsFolder);
 
                 // Initialize Localization Files
                 InitLocale();
@@ -469,7 +468,7 @@ namespace CollapseLauncher
         {
             CurrentAppInstance?.Exit();
 
-            UseConsoleLog(false);
+            Logger.UseConsoleLog(false, AppGameLogsFolder);
             LoggerConsole.AllocateConsole();
             Console.Error.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
             Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
@@ -777,7 +776,7 @@ namespace CollapseLauncher
                 return otherArgs;
             }
 
-            WriteLine($"Waiting to kill parent process: {parentPid}", LogType.Debug, true);
+            Logger.WriteLine($"Waiting to kill parent process: {parentPid}", LogType.Debug, true);
             using Process parentProcess = Process.GetProcessById(parentPid);
             parentProcess.Kill();
             parentProcess.WaitForExit();
