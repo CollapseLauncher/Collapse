@@ -18,8 +18,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
       xmlns:collapseLauncher="using:CollapseLauncher"
+      NavigationCacheMode="Required"
       Loaded="Page_Loaded"
-      NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>

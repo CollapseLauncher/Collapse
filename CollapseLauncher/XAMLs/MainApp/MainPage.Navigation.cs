@@ -396,8 +396,7 @@ public partial class MainPage : Page
                 
                 if (isForceLoad)
                 {
-                    LauncherFrame.BackStack.Clear();
-                    LauncherFrame.CacheSize = 0;
+                    LauncherFrame.ResetFrameHistory(true);
                 }
                 break;
             }

@@ -275,11 +275,7 @@ namespace CollapseLauncher
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
             if (e.RequireCacheReset)
-            {
-                int cacheSizeOld = RootFrame.CacheSize;
-                RootFrame.CacheSize = 0;
-                RootFrame.CacheSize = cacheSizeOld;
-            }
+                RootFrame.ResetFrameHistory(true);
 
             RootFrame.Navigate(e.FrameTo, null, e.Transition);
         }

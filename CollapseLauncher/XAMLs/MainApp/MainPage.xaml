@@ -35,7 +35,8 @@
               x:FieldModifier="internal">
             <customControls:LayeredBackgroundImage x:Name="PlaceholderBackgroundLayer"
                                                    BackgroundSource="{x:Bind PlaceholderBackgroundImage, Converter={StaticResource ImageDecoderValueConverter}}"
-                                                   ParallaxResetOnUnfocused="False">
+                                                   ParallaxResetOnUnfocused="False"
+                                                   BackgroundElevationPixels="64">
                 <customControls:LayeredBackgroundImage.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.2" />
                 </customControls:LayeredBackgroundImage.OpacityTransition>
@@ -107,13 +108,11 @@
                         PaneOpening="NavigationPanelOpening_Event"
                         PaneTitle="{x:Bind helper:Locale.Current.Lang._MainPage.NavigationMenu, Mode=OneWay}"
                         Visibility="Visible">
-            <Grid Background="Transparent">
-                <Frame x:Name="LauncherFrame">
-                    <Frame.ContentTransitions>
-                        <NavigationThemeTransition />
-                    </Frame.ContentTransitions>
-                </Frame>
-            </Grid>
+            <Frame x:Name="LauncherFrame">
+                <Frame.ContentTransitions>
+                    <NavigationThemeTransition />
+                </Frame.ContentTransitions>
+            </Frame>
         </NavigationView>
         <Grid Height="44"
               HorizontalAlignment="Stretch"

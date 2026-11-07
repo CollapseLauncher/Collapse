@@ -133,8 +133,6 @@ namespace CollapseLauncher.Pages
         private readonly Brush                                              _highlightSelectedBrush;
         private readonly List<MethodInfo>                                   _dialogMethods;
 
-        private readonly ImageBackgroundPixelFormat[] VideoBackgroundPixelFormats = Enum.GetValues<ImageBackgroundPixelFormat>();
-
         private List<string> DialogMethodNames { get; }
 
         public string SelectedDialogMethodName
@@ -319,6 +317,8 @@ namespace CollapseLauncher.Pages
         #region Settings Page Handler
         public SettingsPage()
         {
+            InitializeComponent();
+
             // This is a waste of memory because it initalizes the list even if DEBUG is not defined.
             _dialogMethods    = [];
             DialogMethodNames = [];
@@ -339,9 +339,6 @@ namespace CollapseLauncher.Pages
             if (DialogMethodNames.Count > 0)
                 SelectedDialogMethodName = DialogMethodNames[0];
 #endif
-
-            Loaded += SettingsPage_Loaded;
-            InitializeComponent();
 
 #if DEBUG
             AboutDebugFlagIndicator.Visibility = Visibility.Visible;
@@ -402,13 +399,7 @@ namespace CollapseLauncher.Pages
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
 #endif
-        }
-
-        private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
-            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
-            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
+            InitializeSettingsSearch();
         }
 
         private static string GitVersionIndicator_Builder()
@@ -434,7 +425,9 @@ namespace CollapseLauncher.Pages
         
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            InitializeSettingsSearch();
+            ImageBackgroundManager.Shared.IsBackgroundElevated = true;
+            ImageBackgroundManager.Shared.ForegroundOpacity    = 0d;
+            ImageBackgroundManager.Shared.SmokeOpacity         = 1d;
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(DiscordActivityType.AppSettings);

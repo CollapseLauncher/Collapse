@@ -188,10 +188,7 @@ namespace CollapseLauncher
             DispatcherQueue.TryEnqueue(() =>
             {
                 // Clear cache on navigation reset
-                LauncherFrame.BackStack.Clear();
-                int cacheSizeOld = LauncherFrame.CacheSize;
-                LauncherFrame.CacheSize = 0;
-                LauncherFrame.CacheSize = cacheSizeOld;
+                LauncherFrame.ResetFrameHistory(true);
             });
         }
 

@@ -1439,5 +1439,16 @@ namespace CollapseLauncher.Extension
             comboBox.SelectedItem = lastSelectedItem;
             comboBox.UpdateLayout();
         }
+
+        internal static void ResetFrameHistory(this Frame frame, bool flushCache = false)
+        {
+            frame.BackStack.Clear();
+            if (!flushCache)
+                return;
+
+            int previousCache = frame.CacheSize;
+            frame.CacheSize = 0;
+            frame.CacheSize = previousCache;
+        }
     }
 }
