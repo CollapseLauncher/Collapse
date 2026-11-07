@@ -150,6 +150,11 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
+            if (!GameVersionManager.IsGameInstalled())
+            {
+                return;
+            }
+
             // Get the unused file info asynchronously
             (List<LocalFileInfo>, long) unusedFileInfo = await GetUnusedFileInfoList(withDialog);
             

@@ -402,20 +402,25 @@ public partial class MainPage : Page
                 break;
             }
             case "filescleanup":
-                LoadingMessageHelper.ShowLoadingFrame();
-                // Initialize and get game state, then get the latest package info
-                LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
-                                                Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
-
                 try
                 {
-                    if (CurrentGameProperty?.GameInstall != null)
-                        await CurrentGameProperty.GameInstall.CleanUpGameFiles();
+                    if (!IsLoadRegionComplete ||
+                        CurrentGameProperty is not { GameVersion: { } gameVersion, GameInstall: { } gameInstall })
+                    {
+                        return false;
+                    }
+
+                    if (!gameVersion.IsGameInstalled())
+                    {
+                        LauncherFrame.Navigate(typeof(NotInstalledPage), null, transitionInfo ?? new DrillInNavigationTransitionInfo());
+                        break;
+                    }
+
+                    await RunInteractiveFileCleanupAsync(gameInstall);
                 }
                 catch (Exception ex)
                 {
-                    LoadingMessageHelper.HideLoadingFrame();
-                    Logger.WriteLine($"[NavigateInnerSwitch(filescleanup] Error while calling the CleanUpGameFiles method!\r\n{ex}", LogType.Error, true);
+                    Logger.WriteLine($"[TryNavigateFrom(filescleanup)] Error while opening file cleanup!\r\n{ex}", LogType.Error, true);
 
                     ErrorSender.SendException(ex);
                 }
@@ -427,6 +432,21 @@ public partial class MainPage : Page
 
         NavigationViewControl.SelectedItem = navigationItem;
         return true;
+    }
+
+    internal static async ValueTask RunInteractiveFileCleanupAsync(IGameInstallManager gameInstall)
+    {
+        try
+        {
+            LoadingMessageHelper.ShowLoadingFrame();
+            LoadingMessageHelper.SetMessage(Locale.Current.Lang?._FileCleanupPage?.LoadingTitle,
+                                            Locale.Current.Lang?._FileCleanupPage?.LoadingSubtitle2);
+            await gameInstall.CleanUpGameFiles();
+        }
+        finally
+        {
+            LoadingMessageHelper.HideLoadingFrame();
+        }
     }
 
     private void ToggleNotificationPanelBtnClick(object? sender, RoutedEventArgs? e)
