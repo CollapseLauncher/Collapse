@@ -435,6 +435,19 @@
     "RegImportTitle": "Impor",
     "RegImportTooltip": "Impor keys registry dari file Collapse Registry",
 
+    "DBImportExport": "Unggah/Kembalikan ke DB",
+    "DBImportExportTooltip": "Mengembalikan/Unggah Pengaturan Game Dari/Ke Database",
+    "DBUploadTitle": "Unggah",
+    "DBUploadTooltip": "Unggah Pengaturan Registri Game yang ada di Pengaturan App ke Database",
+    "DBRestoreTitle": "Mengembalikan",
+    "DBRestoreTooltip": "Mengembalikan Pengaturan Registri Game yang ada di Pengaturan App ke Database",
+
+    "SettingsDBExported": "Data pengaturan berhasil diunggah!",
+    "SettingsDBExportTitle": "Unggah data pengaturan ke Database",
+    "SettingsDBImported": "Data pengaturan berhasil diimpor dari Database! (Launcher perlu direstart untuk menerapkan perubahan)",
+    "SettingsDBNotSetup": "Fungsi Database belum dinyalakan. Cek Pengaturan Aplikasi!",
+    "SettingsDBNotInitialized": "Subsistem Database belum selesai dinyalakan atau mengalami kegagalan, check console atau log!",
+
     "OverlayNotInstalledTitle": "Kamu tidak dapat menggunakan fitur ini karena game tidak terpasang/butuh diperbarui!",
     "OverlayNotInstalledSubtitle": "Mohon unduh/perbaharui game terlebih dahulu!",
     "OverlayGameRunningTitle": "Game sedang berjalan!",
@@ -549,8 +562,16 @@
 
     "ImageBackground": "Pengaturan Gambar Latar Belakang",
     "VideoBackground": "Pengaturan Latar Belakang Video",
+    "VideoBackground_RendererTitle": "Pengaturan Renderer Latar Belakang Video",
+    "VideoBackground_RendererUseAsyncSwapChain": "Gunakan Renderer Swap-Chain Asynchronous milik Direct3D",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip1": "Swap-Chain berjalan dengan melakukan swapping buffer rendering ketika frame sedang digambar, kemudian frame tersebut ditampilkan secara langsung pada layar.",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip2": "Renderer ini dapat berjalan tanpa harus mengganggu thread UI sehingga mengurangi stutter dan frame skip secara signifikan saat kamu sedang menavigasi UI.",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip3": "Namun, apabila kamu menggunakan renderer ini saat fitur",
+    "VideoBackground_RendererUseAsyncSwapChainTooltip4": "sedang digunakan, beberapa efek XAML-composite (seperti efek blur Acrylic) tidak dapat berjalan dengan semestinya.",
+    "VideoBackground_RendererSwapChainPixelFormat": "Format Pixel untuk Direct3D Swap-Chain",
     "VideoBackground_IsEnableAudio": "Nyalakan Suara",
     "VideoBackground_IsEnableAcrylicBackground": "Gunakan Efek Akrilik saat menggunakan Latar Belakang Video",
+    "VideoBackground_ForceStaticImageOverVideoBackground": "Paksa Gunakan Gambar Statis pada Background Dinamis",
     "VideoBackground_AudioVolume": "Volume Suara",
     "VideoBackground_UseFFmpeg": "Gunakan FFmpeg untuk Decoding Video",
     "VideoBackground_FFmpegVideoDecodingMethod": "Mode Decoding FFmpeg",
@@ -837,10 +858,18 @@
     "ListViewFooterWarning1": "Kamu perlu restart launcher kamu untuk menerapkan perubahan!",
     "ListViewFooterRestartButton": "Restart Launcher",
 
-    "RightPanelImportTitle1": "Drag file",
+    "RightPanelImportTitle1": "Klik untuk mencari atau drop file",
     "RightPanelImportTitle2": "atau",
-    "RightPanelImportTitle3": "ke sini",
-    "RightPanelImportTitle4": "atau klik kotak ini untuk impor plugin"
+    "RightPanelImportTitle3": "",
+    "RightPanelImportTitle4": "Drop file plugin di area apapun di panel ini.",
+
+    "Error_NoPluginImported": "Tidak ada plugin yang berhasil diimpor dikarenakan masalah berikut:",
+    "Error_AccessDeniedPluginInstall": "Izin tidak diperbolehkan saat membaca ataupun menginstall plugin.",
+    "Error_PluginPackageMissingManifest": "File manifest atau beberapa file yang dibutuhkan hilang dari paket.",
+    "Error_PluginPackageInvalidManifest": "Arsip maupun manifest tidak valid.",
+    "Error_IOErrorCannotBeInstalled": "Arsip tidak dapat dibaca atau diinstall.",
+    "Error_IOErrorCannotBeRead": "File manifest atau beberapa file yang direferensikan tidak dapat terbaca.",
+    "Error_PluginNotSupportedOrInvalid": "File bukan sebuah plugin ataupun invalid."
   },
 
   "_Misc": {
@@ -1269,7 +1298,7 @@
     "BgContextMenu_ParallaxPixelShiftCustomDialogTitle": "Set Pixel Parallax Kustom (Min: {0}px, Maks: {1}px)",
 
     "StartupFFmpegInstallDialogTitle": "Instalasi FFmpeg Diperlukan",
-    "StartupFFmpegInstallDialogSubtitle1": "Saat ini Collapse Launcher membutuhkan Decoder FFmpeg (build 8.x) terpasang pada sistem kamu. Klik \"",
+    "StartupFFmpegInstallDialogSubtitle1": "Saat ini Collapse Launcher membutuhkan Decoder FFmpeg (build 8.x) terpasang pada sistem kamu agar dapat memutar background video dengan baik. Klik \"",
     "StartupFFmpegInstallDialogSubtitle2": "\" untuk memasang FFmpeg dari awal, atau klik \"",
     "StartupFFmpegInstallDialogSubtitle3": "\" untuk tetap menggunakan decoder Windows Media Foundation bawaan.",
     "StartupFFmpegInstallDialogSubtitle4": "Catatan:",
@@ -1815,6 +1844,18 @@
     "AutomaticSystemDecoder": "Sama seperti Otomatis, tetapi FFmpeg akan menggunakan Decoder Sistem bawaan untuk men-decode jika ada.",
     "ForceSystemDecoder": "FFmpeg akan memaksa menggunakan Decoder Sistem ketimbang decoder yang ada pada library FFmpeg. Kamu perlu memasang codec Windows Media Foundation tambahan untuk memutar video dengan mode ini atau video tidak dapat diputar dengan benar.",
     "ForceFFmpegSoftwareDecoder": "Sama seperti Otomatis, tetapi FFmpeg akan memaksa menggunakan Software Decoder alih-alih yang dipercepat perangkat keras."
+  },
+
+  "_DictKvpImageBackgroundPixelFormat": {
+    "RGBA32_Float": "RGB+Alpha Channel (32-bit Float)",
+    "RGBA16_Float": "RGB+Alpha Channel (16-bit Float)",
+    "BGRA8_UInt": "BGR+Alpha Channel (8-bit Integer Unsigned)"
+  },
+
+  "_DictKvpImageBackgroundPixelFormatTooltip": {
+    "RGBA32_Float": "Menggunakan urutan pixel Red-Green-Blue + Alpha dengan presisi floating-point 32-bit dan dapat digunakan untuk menampilkan video SDR dan HDR. Namun, mode ini mungkin tidak dapat digunakan di banyak kartu grafis.",
+    "RGBA16_Float": "Menggunakan urutan pixel Red-Green-Blue + Alpha dengan presisi floating-point 16-bit dan dapat digunakan untuk menampilkan video SDR dan HDR.",
+    "BGRA8_UInt": "Menggunakan urutan pixel Blue-Green-Red + Alpha dengan presisi Unsigned Integer 8-bit dan hanya dapat digunakan untuk menampilkan video SDR."
   },
 
   "_OOBEAgreementMenu": {
