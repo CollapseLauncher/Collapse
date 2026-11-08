@@ -9,6 +9,7 @@ using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
@@ -23,6 +24,12 @@ namespace CollapseLauncher
     public sealed partial class TrayIcon
     {
         internal static TrayIcon Current { get; private set; }
+
+        private TrayMenuHost _menuHost;
+        private bool _useClassicMenu;
+        private MenuFlyoutItem _mainToggle;
+        private MenuFlyoutItem _consoleToggle;
+        private MenuFlyoutItem _exitItem;
 
         internal bool IsCreated
         {
@@ -86,7 +93,8 @@ namespace CollapseLauncher
             var instanceIndicator = "";
 
             var guid = LauncherConfig.GetGuid(instanceCount);
-            if (Environment.OSVersion.Version >= new Version(10, 0, 22621) && !isOldTaskbar_EP())
+            bool useWinUIMenu = OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22621) && !isOldTaskbar_EP();
+            if (useWinUIMenu)
             {
                 Logger.WriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guid}\r\n\t" +
@@ -114,35 +122,90 @@ namespace CollapseLauncher
                 CollapseTaskbar.SetValue(TaskbarIcon.CustomNameProperty, $"Collapse Launcher{instanceIndicator}");
             }
             
-            // Bug in W10: Weird border issue
-            // Verdict: disable SecondWindow ContextMenuMode, use classic.
-            // if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
-#if DEBUG
             CollapseTaskbar.ToolTipText =
                 $"Collapse Launcher{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
-                $"{_popupHelp2}";  
-#else
-            CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher{instanceIndicator}\r\n" +
-                $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
-#endif
-            CloseButton.Text = _exitApp;
 
-            // Switch toggle text to see if it's started with Start
-            MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
-            ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
+            MessageWindow messageWindow = CollapseTaskbar.TrayIcon.MessageWindow;
+            if (useWinUIMenu)
+            {
+                CollapseTaskbar.MenuActivation = PopupActivationMode.None;
+                messageWindow.KeyboardEventReceived += OnTrayContextMenu;
+            }
+            else
+            {
+                CollapseTaskbar.RightClickCommand = new RelayCommand(PrepareClassicMenu);
+            }
 
             CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
             CollapseTaskbar.Visibility = Visibility.Visible;
             
-            CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
+            messageWindow.BalloonToolTipChanged += BalloonChangedEvent;
         }
 
         public void Dispose()
         {
+            CollapseTaskbar.TrayIcon.MessageWindow.KeyboardEventReceived -= OnTrayContextMenu;
+            TrayMenuHost host = _menuHost;
+            _menuHost = null;
+            host?.Dispose();
             CollapseTaskbar.Dispose();
+        }
+
+        private async void OnTrayContextMenu(object sender, MessageWindow.KeyboardEventReceivedEventArgs args)
+        {
+            if (args.KeyboardEvent != KeyboardEvent.ContextMenu || !CollapseTaskbar.IsCreated) return;
+
+            // H.NotifyIcon exposes the packed screen coordinates as unsigned words.
+            Point point = new((short)args.Point.X, (short)args.Point.Y);
+            if (!_useClassicMenu)
+            {
+                TrayMenuHost host = _menuHost;
+                try
+                {
+                    // The WinUI menu must acquire its XamlRoot from the tray host.
+                    host = _menuHost ??= new TrayMenuHost(CreateTrayMenu(useWinUI: true), CollapseTaskbar.TrayIcon, UpdateContextMenu);
+                    await host.ShowAsync(point, ActualTheme, FlowDirection);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    if (_menuHost != host) return;
+                    _menuHost = null;
+                    _useClassicMenu = true;
+                    host?.Dispose();
+                    Logger.WriteLine($"[TrayIcon] Could not open the WinUI menu. Using the classic menu for this session.\r\n{ex}", LogType.Warning, true);
+                }
+            }
+
+            PrepareClassicMenu();
+            CollapseTaskbar.ShowContextMenu(point);
+        }
+
+        private void PrepareClassicMenu()
+        {
+            CollapseTaskbar.ContextFlyout ??= CreateTrayMenu(useWinUI: false);
+            UpdateContextMenu();
+        }
+
+        private MenuFlyout CreateTrayMenu(bool useWinUI)
+        {
+            _mainToggle = CreateItem(ToggleMainVisibilityButtonCommand, "\uE949"); // CalculatorSubtract
+            _consoleToggle = CreateItem(ToggleConsoleVisibilityButtonCommand, "\uE744"); // ResizeMouseMedium
+            _exitItem = CreateItem(CloseAppCommand, "\uE7E8"); // PowerButton
+            return new MenuFlyout { Items = { _mainToggle, _consoleToggle, new MenuFlyoutSeparator(), _exitItem } };
+
+            MenuFlyoutItem CreateItem(IRelayCommand command, string glyph)
+            {
+                var item = new MenuFlyoutItem { Command = command };
+                if (useWinUI)
+                {
+                    item.Padding = new Thickness(11, 4, 11, 7); // Match the template's NarrowPadding state.
+                    item.Icon = new FontIcon { Glyph = glyph };
+                }
+                return item;
+            }
         }
 
         /// <summary>
@@ -236,12 +299,6 @@ namespace CollapseLauncher
         private void BringToForegroundInvoke() => BringToForeground();
 
         /// <summary>
-        /// Update tray context menu
-        /// </summary>
-        [RelayCommand]
-        private void UpdateContextMenuInvoke() => UpdateContextMenu();
-
-        /// <summary>
         /// Close app
         /// </summary>
         [RelayCommand]
@@ -262,14 +319,12 @@ namespace CollapseLauncher
                 if (PInvoke.IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
-                    ConsoleTaskbarToggle.Text = _showConsole;
                     Logger.WriteLine("Console is hidden!");
                 }
                 else
                 {
                     LoggerConsole.AllocateConsole();
                     PInvoke.SetForegroundWindow(PInvoke.GetConsoleWindow());
-                    ConsoleTaskbarToggle.Text = _hideConsole;
                     Logger.WriteLine("Console is visible!");
                 }
             }
@@ -287,7 +342,6 @@ namespace CollapseLauncher
             {
                 WindowUtility.CurrentWindow?.Hide(false);
                 EfficiencyModeWrapper(true);
-                MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 m_homePage?.StopCarouselSlideshow();
@@ -304,7 +358,6 @@ namespace CollapseLauncher
                 WindowUtility.CurrentWindow?.Show(false);
                 EfficiencyModeWrapper(false);
                 PInvoke.SetForegroundWindow(mainWindowHandle);
-                MainTaskbarToggle.Text = _hideApp;
                 m_homePage?.StartCarouselSlideshow();
                 // Revert refresh rate to its default
                 RefreshRate = RefreshRateDefault;
@@ -374,27 +427,16 @@ namespace CollapseLauncher
         // ReSharper disable once MemberCanBePrivate.Global
         public void UpdateContextMenu()
         {
-            if (!IsCreated) return;
-            // Enable visibility toggle for console if the console is enabled
-            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
-            {
-                ConsoleTaskbarToggle.IsEnabled = true;
-            }
-            else
-            {
-                ConsoleTaskbarToggle.IsEnabled = false;
-                ConsoleTaskbarToggle.Text = _hideConsole;
-            }
-            
-            // Force refresh all text based on their respective window state
-            nint consoleWindowHandle = PInvoke.GetConsoleWindow();
-            nint mainWindowHandle    = WindowUtility.CurrentWindowPtr;
-            
-            bool isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
-            bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && PInvoke.IsWindowVisible(consoleWindowHandle);
+            if (!IsCreated || _mainToggle is null) return;
 
-            ConsoleTaskbarToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
-            MainTaskbarToggle.Text    = isMainWindowVisible ? _hideApp : _showApp;
+            bool consoleEnabled = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool();
+            bool isConsoleVisible = consoleEnabled && PInvoke.IsWindowVisible(PInvoke.GetConsoleWindow());
+            bool isMainWindowVisible = PInvoke.IsWindowVisible(WindowUtility.CurrentWindowPtr);
+
+            _exitItem.Text = _exitApp;
+            _consoleToggle.IsEnabled = consoleEnabled;
+            _consoleToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
+            _mainToggle.Text = isMainWindowVisible ? _hideApp : _showApp;
         }
 
         /// <summary>

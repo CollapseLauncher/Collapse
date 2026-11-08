@@ -12,19 +12,5 @@
                     LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
                     Logger="{x:Bind LoggerInstance}"
                     MenuActivation="RightClick"
-                    RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
-                    Visibility="Collapsed">
-        <tb:TaskbarIcon.ContextFlyout>
-            <MenuFlyout>
-                <MenuFlyoutItem x:Name="MainTaskbarToggle"
-                                Command="{x:Bind ToggleMainVisibilityButtonCommand}" />
-                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle"
-                                Command="{x:Bind ToggleConsoleVisibilityButtonCommand}"
-                                IsEnabled="False" />
-                <MenuFlyoutSeparator />
-                <MenuFlyoutItem x:Name="CloseButton"
-                                Command="{x:Bind CloseAppCommand}" />
-            </MenuFlyout>
-        </tb:TaskbarIcon.ContextFlyout>
-    </tb:TaskbarIcon>
+                    Visibility="Collapsed" />
 </UserControl>
