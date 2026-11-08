@@ -25,6 +25,9 @@ namespace CollapseLauncher
     {
         internal static TrayIcon Current { get; private set; }
 
+        private const string HideWindowGlyph = "\uE949"; // CalculatorSubtract
+        private const string ShowWindowGlyph = "\uE744"; // ResizeMouseMedium
+
         private TrayMenuHost _menuHost;
         private bool _useClassicMenu;
         private MenuFlyoutItem _mainToggle;
@@ -191,7 +194,7 @@ namespace CollapseLauncher
 
         private MenuFlyout CreateTrayMenu(bool useWinUI)
         {
-            _mainToggle = CreateItem(ToggleMainVisibilityButtonCommand, "\uE949"); // CalculatorSubtract
+            _mainToggle = CreateItem(ToggleMainVisibilityButtonCommand, HideWindowGlyph);
             _consoleToggle = CreateItem(ToggleConsoleVisibilityButtonCommand, "\uE744"); // ResizeMouseMedium
             _exitItem = CreateItem(CloseAppCommand, "\uE7E8"); // PowerButton
             return new MenuFlyout { Items = { _mainToggle, _consoleToggle, new MenuFlyoutSeparator(), _exitItem } };
@@ -437,6 +440,8 @@ namespace CollapseLauncher
             _consoleToggle.IsEnabled = consoleEnabled;
             _consoleToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
             _mainToggle.Text = isMainWindowVisible ? _hideApp : _showApp;
+            if (_mainToggle.Icon is FontIcon icon)
+                icon.Glyph = isMainWindowVisible ? HideWindowGlyph : ShowWindowGlyph;
         }
 
         /// <summary>
