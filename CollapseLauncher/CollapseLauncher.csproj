@@ -20,7 +20,7 @@
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
-        <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+        <TargetFramework>net11.0-windows10.0.26100.0</TargetFramework>
         <WindowsSdkPackageVersion>10.0.26100.87</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -51,10 +51,9 @@
         <UseTemplatedCode>true</UseTemplatedCode>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(TargetFramework.Contains('net11.0'))">
-        <!-- .NET 11-preview3 features -->
+    <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+        <!-- .NET 11 feature - Runtime Async -->
         <Features>runtime-async=on</Features>
-        <EnablePreviewFeatures>true</EnablePreviewFeatures>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -88,8 +87,6 @@
         - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
         - GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
         - MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
-        - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
-                                This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
         - ENABLEUSERFEEDBACK : Enable user feedback feature
 -->
@@ -276,9 +273,9 @@
         <PackageReference Include="FFmpegInteropX" Version="2.1.0.81200" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.14" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="11.0.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.14" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.6">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>build; analyzers</IncludeAssets>
@@ -303,7 +300,7 @@
         
         <PackageReference Include="GitInfo" Version="3.6.1" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.13.1" />
-        <PackageReference Include="Markdig.Signed" Version="1.5.1" />
+        <PackageReference Include="Markdig.Signed" Version="1.6.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
@@ -315,8 +312,8 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="*-*" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.1.0" />
-        <PackageReference Include="System.CommandLine" Version="2.0.14" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.14" />
+        <PackageReference Include="System.CommandLine" Version="3.0.0" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="11.0.0" />
         <PackageReference Include="SharpHPatchZ" Version="3.1.1" />
     </ItemGroup>
 
