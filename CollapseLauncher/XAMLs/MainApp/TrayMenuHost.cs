@@ -161,9 +161,8 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
         // WinUI already flips a point anchored outside the work area back inside.
         var display = DisplayArea.GetFromPoint(new PointInt32(rect.X, rect.Y), DisplayAreaFallback.Nearest);
         RectInt32 workArea = display.WorkArea;
-        RectInt32 bounds = display.OuterBounds;
-        int x = rect.X - bounds.X - workArea.X;
-        int y = rect.Y - bounds.Y - workArea.Y;
+        int x = rect.X - workArea.X;
+        int y = rect.Y - workArea.Y;
         return x >= 0 && x + rect.Width <= workArea.Width && y >= 0 && y + rect.Height <= workArea.Height;
     }
 
