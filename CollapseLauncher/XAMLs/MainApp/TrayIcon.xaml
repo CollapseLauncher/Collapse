@@ -7,24 +7,9 @@
              mc:Ignorable="d">
     <tb:TaskbarIcon x:Name="CollapseTaskbar"
                     x:FieldModifier="internal"
-                    ContextMenuMode="PopupMenu"
                     DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
                     LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
                     Logger="{x:Bind LoggerInstance}"
-                    MenuActivation="RightClick"
-                    RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
-                    Visibility="Collapsed">
-        <tb:TaskbarIcon.ContextFlyout>
-            <MenuFlyout>
-                <MenuFlyoutItem x:Name="MainTaskbarToggle"
-                                Command="{x:Bind ToggleMainVisibilityButtonCommand}" />
-                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle"
-                                Command="{x:Bind ToggleConsoleVisibilityButtonCommand}"
-                                IsEnabled="False" />
-                <MenuFlyoutSeparator />
-                <MenuFlyoutItem x:Name="CloseButton"
-                                Command="{x:Bind CloseAppCommand}" />
-            </MenuFlyout>
-        </tb:TaskbarIcon.ContextFlyout>
-    </tb:TaskbarIcon>
+                    MenuActivation="None"
+                    Visibility="Collapsed" />
 </UserControl>
