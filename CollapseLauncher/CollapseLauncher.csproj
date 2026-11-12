@@ -265,8 +265,8 @@
         <NativeLibrary Include="StaticLib\hwy.lib" />
 
         <!-- Region: zstd (Decompressor only) -->
-        <DirectPInvoke Include="libzstd" />
-        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
+        <DirectPInvoke Include="libzstd" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))" />
+        <NativeLibrary Include="StaticLib\libzstd_static.lib" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))" />
     </ItemGroup>
 
     <ItemGroup>
@@ -314,7 +314,7 @@
         <PackageReference Include="Roman-Numerals" Version="2.1.0" />
         <PackageReference Include="System.CommandLine" Version="3.0.0" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="11.0.0" />
-        <PackageReference Include="SharpHPatchZ" Version="3.1.1" />
+        <PackageReference Include="SharpHPatchZ" Version="3.1.2" />
     </ItemGroup>
 
     <ItemGroup>
