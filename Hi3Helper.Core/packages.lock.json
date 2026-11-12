@@ -16,9 +16,9 @@
       },
       "Sentry": {
         "type": "Direct",
-        "requested": "[6.12.1, )",
-        "resolved": "6.12.1",
-        "contentHash": "yCHz3cLGZ3TVik3rLV6rp6SaqJ0Ai7PyIi2KdoHNGpZYWEkcX7kx13IV46mufAzPW7pqZZoKNoru0w0RpmkmrA=="
+        "requested": "[6.13.0, )",
+        "resolved": "6.13.0",
+        "contentHash": "TwgXw4BwBa6gYKJxTEBJWZ0y+MyBDTMzCq8ywYWUEzG9srNmKui4AMcz6vZ9BEsaZYVJxni0EIDHGho+PQXDVA=="
       },
       "Google.Protobuf": {
         "type": "Transitive",
@@ -34,7 +34,7 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.36.2, )",
-          "Hi3Helper.Http": "[2.0.1, )",
+          "Hi3Helper.Http": "[2.0.2, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[11.0.0, )"
         }

@@ -50,7 +50,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
-      <PackageReference Include="Sentry" Version="6.12.1" />
+      <PackageReference Include="Sentry" Version="6.13.0" />
     </ItemGroup>
 
     <ItemGroup>
