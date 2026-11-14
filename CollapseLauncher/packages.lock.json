@@ -115,24 +115,6 @@
         "resolved": "1.6.0",
         "contentHash": "RA5Veyb+KV5x59fxeMzTvW0B6bfFa6td1arF9p7p67qhGlh+/Vk13SugarkqVSUwX7gD7oCPa2jtLszi8YuSHw=="
       },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[11.0.0, )",
-        "resolved": "11.0.0",
-        "contentHash": "lw6gUL92db6XPwYsQwaGwrJxgRM0X0qQKl0QkwuZIACMtgH0eFu6jmq6W+/L8qTxQZwggfV/dGjICyMqVHdehg=="
-      },
-      "Microsoft.Extensions.DependencyInjection.Abstractions": {
-        "type": "Direct",
-        "requested": "[11.0.0, )",
-        "resolved": "11.0.0",
-        "contentHash": "a2c4Kp55miXT6G+DSb75pczXQJHgNMzPyZEyMxrrKxuQrgvctcDWJWD9fVe/uGbQdu4Z0c3B7AVKp1DXmD64nQ=="
-      },
-      "Microsoft.Extensions.Logging.Abstractions": {
-        "type": "Direct",
-        "requested": "[11.0.0, )",
-        "resolved": "11.0.0",
-        "contentHash": "MTMO2V1eT9Dm5VIpJGLNwIjAjoBErUlfuB+DEaZ0tb8J+Nf/Xlj8he5AztK9p1iOJPIyuBeOrVy2u/CSdsfzPw=="
-      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.4.0, )",
@@ -614,15 +596,6 @@
         "resolved": "0.5.1",
         "contentHash": "5fJusmhN7snIZzlsZ0xpQOoNvWZkJKS2/hhljLz8qvEPIJZgYxpkWWCROrSDpjMxQpixqI/nUhfhrQR67jVVoA=="
       },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[11.0.0, )",
-        "resolved": "11.0.0",
-        "contentHash": "lw6gUL92db6XPwYsQwaGwrJxgRM0X0qQKl0QkwuZIACMtgH0eFu6jmq6W+/L8qTxQZwggfV/dGjICyMqVHdehg==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "11.0.0"
-        }
-      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.4.0, )",
@@ -699,11 +672,6 @@
           "Microsoft.WindowsAppSDK.Base": "[2.6.5, 3.0.0)",
           "Microsoft.WindowsAppSDK.InteractiveExperiences": "[2.6.5, 3.0.0)"
         }
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Transitive",
-        "resolved": "11.0.0",
-        "contentHash": "GhYzDaU4IbNnTgyFgxT2URnUogx+xuphFHscUx8v1H8ZRKiIlYa/8Lkpd0SXJZ+pEWHJFJXLvEPpWLEcwyNkmQ=="
       }
     }
   }
