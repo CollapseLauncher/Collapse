@@ -159,7 +159,7 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
     {
         var identifier = new NotifyIconIdentifier(id);
         NativeRect rect;
-        return Shell_NotifyIconGetRect(&identifier, &rect) == 0 && rect.Width > 0 && rect.Height > 0
+        return Shell_NotifyIconGetRect(ref identifier, &rect) == 0 && rect.Width > 0 && rect.Height > 0
             ? rect
             : NativeRect.FromXYWH(point.X, point.Y, 0, 0);
     }
@@ -193,5 +193,5 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
 
     [LibraryImport("shell32.dll")]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    private static unsafe partial int Shell_NotifyIconGetRect(NotifyIconIdentifier* identifier, NativeRect* rect);
+    private static unsafe partial int Shell_NotifyIconGetRect(ref readonly NotifyIconIdentifier identifier, NativeRect* rect);
 }
