@@ -89,7 +89,7 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
         window.Content = new Grid();
 
         ((OverlappedPresenter)window.AppWindow.Presenter).IsAlwaysOnTop = true;
-        H.NotifyIcon.Core.WindowUtilities.HideWindowInTaskbar(_handle);
+        HideWindowInTaskbar(_handle);
 
         // A popup host has no non-client frame, including on Windows 10.
         WS_STYLE style = PInvoke.GetWindowLong(_handle, GWL_INDEX.GWL_STYLE);
@@ -143,6 +143,16 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
         menu.Closed -= OnMenuClosed;
         window.Activated -= OnWindowActivated;
         window.Close();
+    }
+
+    private static void HideWindowInTaskbar(nint hwnd)
+    {
+        // TODO: Add WS_EX_STYLE to Hi3Helper.Win32 module
+        WS_STYLE style = PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_EXSTYLE);
+        style |= (WS_STYLE)0x00000080;  // WS_EX_TOOLWINDOW
+        style &= ~(WS_STYLE)0x00040000; // WS_EX_APPWINDOW
+
+        _ = PInvoke.SetWindowLong(hwnd, GWL_INDEX.GWL_EXSTYLE, style);
     }
 
     private static unsafe NativeRect GetAnchorRect(Guid id, Point point)
