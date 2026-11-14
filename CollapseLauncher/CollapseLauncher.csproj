@@ -272,10 +272,6 @@
     <ItemGroup>
         <PackageReference Include="FFmpegInteropX" Version="2.1.0.81200" />
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
-        <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="11.0.0" />
-        <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.1.6">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>build; analyzers</IncludeAssets>
