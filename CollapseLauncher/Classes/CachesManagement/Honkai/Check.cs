@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Log;
 using System;
 using System.Buffers;
@@ -35,8 +37,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(GamePath!);
                 }
 
-                // Check for unused files
-                CheckUnusedAssets(assetIndex, returnAsset);
+                HashSet<string> exceptionFromUnusedCategory = [];
 
                 // Do check in parallelization.
                 await Parallel.ForEachAsync(assetIndex!, new ParallelOptions
@@ -45,8 +46,11 @@ namespace CollapseLauncher
                     CancellationToken = token
                 }, async (asset, localToken) =>
                 {
-                    await CheckAsset(asset, returnAsset, localToken);
+                    await CheckAsset(asset, returnAsset, exceptionFromUnusedCategory, localToken);
                 });
+
+                // Check for unused files
+                CheckUnusedAssets(assetIndex, returnAsset, exceptionFromUnusedCategory);
             }
             catch (AggregateException ex)
             {
@@ -57,10 +61,10 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
+        private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset, HashSet<string> exceptionFromUnusedCategory)
         {
             // Directory info and if the directory doesn't exist, return
-            DirectoryInfo directoryInfo = new DirectoryInfo(GamePath);
+            DirectoryInfo directoryInfo = new(GamePath);
             if (!directoryInfo.Exists)
             {
                 return;
@@ -82,10 +86,10 @@ namespace CollapseLauncher
             foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories)
                 .EnumerateNoReadOnly())
             {
-                ReadOnlySpan<char> filePath = fileInfo.FullName;
-
-                if (filePath.ContainsAny(unusedSearchValues)
-                 || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
+                bool excludedFromList = exceptionFromUnusedCategory.Contains(fileInfo.FullName);
+                if (excludedFromList ||
+                    fileInfo.FullName.AsSpan().ContainsAny(unusedSearchValues) ||
+                    assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
                     continue;
                 }
@@ -94,7 +98,7 @@ namespace CollapseLauncher
                 ProgressAllCountFound++;
 
                 // Add asset to the returnAsset
-                CacheAsset asset = new CacheAsset
+                CacheAsset asset = new()
                 {
                     BasePath       = Path.GetDirectoryName(fileInfo.FullName),
                     N              = Path.GetFileName(fileInfo.FullName),
@@ -121,12 +125,18 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
+        private async ValueTask CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, HashSet<string> exceptionFromUnusedCategory, CancellationToken token)
         {
             // Increment the count and update the status
             Interlocked.Add(ref ProgressAllCountCurrent, 1);
             Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusChecking ?? "", asset!.DataType, asset.N);
             Status.ActivityAll = string.Format(Locale.Current.Lang?._CachesPage?.CachesTotalStatusChecking ?? "", ProgressAllCountCurrent, ProgressAllCountTotal);
+
+            // Check for patch ifnormation first.
+            if (!UseFastMethod && await IsPatchExist(asset, returnAsset, exceptionFromUnusedCategory, token))
+            {
+                return;
+            }
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath).EnsureNoReadOnly(out bool isExist);
@@ -163,15 +173,85 @@ namespace CollapseLauncher
             }
         }
 
+        private async ValueTask<bool> IsPatchExist(
+            CacheAsset        asset,
+            List<CacheAsset>  returnAsset,
+            HashSet<string>   exceptionFromUnusedCategory,
+            CancellationToken token)
+        {
+            if (asset.PatchInfo is not { } patchInfoDict)
+                return false;
+
+            string assetDir = Path.Combine(GetAssetBasePathByType(asset.DataType), asset.DataType.ToString().ToLowerInvariant());
+            byte[] hashArrayBuffer = ArrayPool<byte>.Shared.Rent(20);
+
+            try
+            {
+                foreach ((string oldFileName, CachePatchInfo patchInfo) in patchInfoDict)
+                {
+                    string combinedOldPath   = Path.Combine(assetDir, $"{oldFileName}.unity3d");
+                    string combinedPatchPath = Path.Combine(assetDir, patchInfo.PatchName);
+                    ConverterTool.NormalizePathInplaceNoTrim(combinedOldPath);
+
+                    FileInfo fileInfo = new(combinedOldPath);
+
+                    if (!fileInfo.Exists)
+                        continue;
+
+                    // If above passes, then run the CRC check
+                    await using FileStream oldFileStream = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    // Calculate the asset CRC (SHA1)
+                    byte[] hashArray = await GetCryptoHashAsync<HMACSHA1>(oldFileStream, GameSalt, true, true, token);
+
+                    // If the asset CRC doesn't match, then add the file to asset index.
+                    ReadOnlySpan<byte> hashSpan = GetHashFromName(hashArrayBuffer, oldFileName);
+                    if (!IsArrayMatch(hashSpan, hashArray))
+                    {
+                        continue;
+                    }
+
+                    // Clear patch info and re-add single patch info.
+                    patchInfoDict.Clear();
+                    patchInfoDict.Add(oldFileName, patchInfo);
+                    exceptionFromUnusedCategory.Add(combinedOldPath);
+                    exceptionFromUnusedCategory.Add(combinedPatchPath);
+
+                    AddGenericCheckAsset(asset, CacheAssetStatus.Patch, returnAsset, hashArray, asset.CRCArray);
+                    return true;
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(hashArrayBuffer);
+            }
+
+            // Unassign patch info if none is found.
+            asset.PatchInfo = null;
+            return false;
+
+            static ReadOnlySpan<byte> GetHashFromName(Span<byte> buffer, ReadOnlySpan<char> name)
+            {
+                ReadOnlySpan<char> hexString = name.GetSplit(1, '_');
+                if (hexString.IsEmpty || HexTool.TryHexToBytesUnsafe(hexString, buffer, out _, out int length) != OperationStatus.Done)
+                    return ReadOnlySpan<byte>.Empty;
+
+                return buffer[..length];
+            }
+        }
+
         private void AddGenericCheckAsset(CacheAsset asset, CacheAssetStatus assetStatus, List<CacheAsset> returnAsset, byte[] localCrc, byte[] remoteCrc)
         {
+            long size = asset.PatchInfo?.Values.FirstOrDefault() is { } patchInfo
+                ? patchInfo.PatchFileSize
+                : asset.CS;
+
             // Increment the count and total size
             lock (this)
             {
                 // Set Indetermined status as false
                 Status.IsProgressAllIndetermined = false;
                 ProgressAllCountFound++;
-                ProgressAllSizeFound += asset!.CS;
+                ProgressAllSizeFound += size;
             }
 
             // Add file into asset index
@@ -188,7 +268,7 @@ namespace CollapseLauncher
                     Path.GetFileName(asset.N) ?? "",
                     asset.DataType,
                     Path.GetDirectoryName(asset.N),
-                    asset.CS,
+                    size,
                     localCrc,
                     remoteCrc
                 ))

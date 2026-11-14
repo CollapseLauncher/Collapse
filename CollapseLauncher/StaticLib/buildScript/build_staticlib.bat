@@ -283,19 +283,54 @@ goto :COMPLETE
         call :ERR ". Make sure you have installed any Python 3 interpreter" && goto :EOF
     )
 
-    (>NUL meson --version) || call :ERR ". Make sure you have meson installed by using 'pip install meson' system-wide" && goto :EOF
-    (>NUL ninja --version) || call :ERR ". Make sure you have ninja installed by using 'pip install ninja' system-wide" && goto :EOF
-
-    (2>NUL 1>NUL where nasm) || if /I exist "C:\Program Files\NASM\nasm.exe" (
-        set "PATH=%PATH%;C:\Program Files\NASM"
-    ) else if /I exist "%appdata%\..\Local\bin\NASM\nasm.exe" (
-        set "PATH=%PATH%;%appdata%\..\Local\bin\NASM"
-    )
-
-    (>NUL nasm --version) || call :ERR ". Make sure you have installed NASM 3.x or above and installed in either 'C:\Program Files\NASM' or '%appdata%\..\Local\bin' directory" && goto :EOF
+    :TryTestNasm
+        (2>NUL 1>NUL where nasm) || if /I exist "C:\Program Files\NASM\nasm.exe" (
+            set "PATH=%PATH%;C:\Program Files\NASM"
+        ) else if /I exist "%appdata%\..\Local\bin\NASM\nasm.exe" (
+            set "PATH=%PATH%;%appdata%\..\Local\bin\NASM"
+        )
+        (2>NUL 1>NUL nasm --version) || (call :TryInstallNasm && goto :TryTestNasm) || call :ERR ". Make sure you have installed NASM 3.x or above and installed in either 'C:\Program Files\NASM' or '%appdata%\..\Local\bin' directory" && goto :EOF
+        
+    :TryTestMeson
+        (2>NUL 1>NUL meson --version) || (call :TryInstallPipDeps "meson" && goto :TryTestMeson) || call :ERR ". Make sure you have meson installed by using 'pip install meson' system-wide" && goto :EOF
+        
+    :TryTestNinja
+        (2>NUL 1>NUL ninja --version) || call :ERR ". Make sure you have ninja installed by using 'pip install ninja' system-wide" && goto :EOF
     
-    :: Check for Vulkan SDK dependencies (for Waifu2X)
-    if /I not exist "%VULKAN_SDK%\Lib\vulkan-1.lib" (
-        set errorlevel=67
-        call :ERR ". Make sure you have Vulkan SDK installed and ^%VULKAN_SDK^% variable defined." && goto :EOF
-    )
+    :TryTestVulkan
+        :: Check for Vulkan SDK dependencies (for Waifu2X)
+        if /I not exist "%VULKAN_SDK%\Lib\vulkan-1.lib" (
+            (
+                set /p CONFIRM=Vulkan SDK isn't installed. Would you like to install the SDK first ^(Y/N^)? 
+                if /I "%CONFIRM%" == "Y" (
+                    (call :TryInstallVulkanSDK && echo "Vulkan SDK has been installed. Please restart this console instance to refresh the PATH variable.") || call :ERR ". Vulkan SDK failed to install due to unknown error." && goto :EOF
+                )
+            )
+            set errorlevel=67
+            call :ERR ". Make sure you have Vulkan SDK installed and VULKAN_SDK variable defined." && goto :EOF
+        )
+        goto :EOF
+
+:TryInstallPipDeps
+    echo Installing %1 from pip...
+    pip install %1
+    goto :EOF
+
+:TryInstallNasm
+    set NASM_VERSION=3.02
+    set NASM_PLATFORM=win64
+    set NASM_ARCH=x64
+    set NASM_INSTALLER_NAME=nasm-%NASM_VERSION%-installer-%NASM_ARCH%.exe
+    echo Installing NASM (Please follow the instruction once the download is completed)...
+    curl -o "%temp%\%NASM_INSTALLER_NAME%" https://www.nasm.us/pub/nasm/releasebuilds/%NASM_VERSION%/%NASM_PLATFORM%/%NASM_INSTALLER_NAME%
+    "%temp%\%NASM_INSTALLER_NAME%" && del /Y /Q "%temp%\%NASM_INSTALLER_NAME%" && set errorlevel=0
+    goto :EOF
+
+:TryInstallVulkanSDK
+    set VULKANSDK_VERSION=1.4.363.1
+    set VULKANSDK_ARCH=X64
+    set VULKANSDK_INSTALLER_NAME=vulkansdk-windows-%VULKANSDK_ARCH%-%VULKANSDK_VERSION%.exe
+    echo Installing Vulkan SDK (Please follow the instruction once the download is completed)...
+    curl -o "%temp%\%VULKANSDK_INSTALLER_NAME%" https://sdk.lunarg.com/sdk/download/%VULKANSDK_VERSION%/windows/%VULKANSDK_INSTALLER_NAME%
+    "%temp%\%VULKANSDK_INSTALLER_NAME%" && del /Y /Q "%temp%\%VULKANSDK_INSTALLER_NAME%" && set errorlevel=0
+    goto :EOF

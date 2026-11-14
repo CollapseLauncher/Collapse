@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+        <TargetFramework>net11.0-windows10.0.26100.0</TargetFramework>
         <WindowsSdkPackageVersion>10.0.26100.87</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <Platforms>x64</Platforms>
@@ -21,6 +21,11 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2026 $(Company)</Copyright>
         <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+        <!-- .NET 11 feature - Runtime Async -->
+        <Features>runtime-async=on</Features>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -45,7 +50,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
-      <PackageReference Include="Sentry" Version="6.12.1" />
+      <PackageReference Include="Sentry" Version="6.13.0" />
     </ItemGroup>
 
     <ItemGroup>
