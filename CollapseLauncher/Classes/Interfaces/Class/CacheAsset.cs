@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
@@ -32,19 +33,25 @@ namespace CollapseLauncher.Interfaces
         // For more information:
         // https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1
         public string CRC { get; set; }
-        public byte[] CRCArray => HexTool.HexToBytesUnsafe(CRC.ToLower());
-        public string CRCLower { get => CRC.ToLower(); }
+        public byte[] CRCArray => HexTool.HexToBytesUnsafe(CRC.ToLowerInvariant());
+        public string CRCLower { get => CRC.ToLowerInvariant(); }
 
         // File size of the cache file.
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long CS { get; set; }
+
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long DLM { get; set; }
-        public CacheAssetType DataType { get; set; }
-        public CacheAssetStatus Status { get; set; }
-        public CachePatchInfo? PatchInfo { get; set; }
-        public bool IsUseLocalPath { get; set; } = false;
-        public bool IsHasPatch { get => PatchInfo.HasValue; }
+
+        public CacheAssetType   DataType { get; set; }
+        public CacheAssetStatus Status   { get; set; }
+
+#nullable enable
+        public Dictionary<string, CachePatchInfo>? PatchInfo { get; set; }
+#nullable restore
+
+        public bool IsUseLocalPath { get; set; }
+        public bool IsHasPatch     { get => PatchInfo != null; }
 
         public string PrintSummary() => $"File [T: {DataType}]: {N}\t{ConverterTool.SummarizeSizeSimple(CS)} ({CS} bytes)";
         public long GetAssetSize() => Status == CacheAssetStatus.Unused ? 0 : CS;

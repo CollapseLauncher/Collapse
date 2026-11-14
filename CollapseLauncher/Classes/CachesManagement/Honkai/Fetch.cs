@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Enc;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Log;
 using Hi3Helper.UABT;
@@ -22,6 +23,7 @@ using static Hi3Helper.Data.ConverterTool;
 // ReSharper disable StringLiteralTypo
 #pragma warning disable IDE0130
 
+#nullable enable
 namespace CollapseLauncher
 {
     internal partial class HonkaiCache
@@ -45,6 +47,9 @@ namespace CollapseLauncher
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
             await BuildGameRepoURL(httpClientNew, token);
+
+            // Iterate patch for "Data" type
+            CachePatchManifest dataTypePatch = await FetchPatchByType(httpClientNew, CacheAssetType.Data, token);
 
             // Iterate type and do fetch
             await Parallel.ForEachAsync(
@@ -81,16 +86,19 @@ namespace CollapseLauncher
                     }
                 });
 
+            // Merge patch info
+            MergeAssetPatchInfo(dataTypePatch, returnAsset);
+
             // Return asset index
             return returnAsset;
         }
 
         private async Task BuildGameRepoURL(HttpClient client, CancellationToken token)
         {
-            KianaDispatch dispatch = null;
-            Exception lastException = null;
+            KianaDispatch? dispatch      = null;
+            Exception?     lastException = null;
 
-            PresetConfig presetConfig = GameVersionManager!.GamePreset!;
+            PresetConfig presetConfig = GameVersionManager.GamePreset;
             int[]        version      = GameVersion.VersionArray;
             string       key          = presetConfig.DispatcherKey ?? "";
 
@@ -127,7 +135,7 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             GameGateway = await KianaDispatch.GetGameServerAsync(client,
-                                                                 dispatch!,
+                                                                 dispatch,
                                                                  presetConfig.GameGatewayDefault!,
                                                                  key,
                                                                  version,
@@ -162,6 +170,45 @@ namespace CollapseLauncher
             (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex, token);
 
             return returnValue;
+        }
+
+        private async Task<CachePatchManifest> FetchPatchByType(HttpClient client, CacheAssetType type, CancellationToken token)
+        {
+            Status.ActivityStatus = string.Format(Locale.Current.Lang?._CachesPage?.CachesStatusFetchingType ?? "", $"{type}Patch");
+            Status.IsProgressAllIndetermined = true;
+            Status.IsIncludePerFileIndicator = false;
+            UpdateStatus();
+
+            // Get the asset index properties
+            string baseUrl = string.Format(BuildAssetBundleURL(GameGateway), type.ToString().ToLowerInvariant());
+            string fileUrl = string.Format(baseUrl.CombineURLFromString("patch/patchconfig.xmf?t={0}"), DateTime.Now.Ticks);
+
+            CDNCacheResult result = await client.TryGetCachedStreamFrom(fileUrl, token: token);
+            if (!result.IsSuccessStatusCode)
+            {
+                Logger.WriteLine($"Cache Patch information file is unavailable due to error: {result.StatusCode} ({(int)result.StatusCode}). URL: {fileUrl}",
+                                 LogType.Warning,
+                                 true);
+                return CachePatchManifest.Empty;
+            }
+
+            await using Stream resultStream = result.Stream;
+            return new CachePatchManifest(resultStream);
+        }
+
+        private static void MergeAssetPatchInfo(CachePatchManifest manifest, List<CacheAsset> assets)
+        {
+            Dictionary<string, Dictionary<string, CachePatchInfo>>.AlternateLookup<ReadOnlySpan<char>> lookup = manifest.GetAlternateLookup<ReadOnlySpan<char>>();
+            foreach (CacheAsset asset in assets.Where(x => x.DataType == CacheAssetType.Data))
+            {
+                ReadOnlySpan<char> fileNameNew = Path.GetFileNameWithoutExtension(asset.ConcatNRemote);
+                if (!lookup.TryGetValue(fileNameNew, out Dictionary<string, CachePatchInfo>? cachePatchInfoDict))
+                {
+                    continue;
+                }
+
+                asset.PatchInfo = cachePatchInfoDict;
+            }
         }
 
         private IEnumerable<CacheAsset> EnumerateCacheTextAsset(CacheAssetType type, IEnumerable<string> enumerator, string baseUrl)
@@ -199,7 +246,7 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                CacheAsset content;
+                CacheAsset? content;
                 try
                 {
                     // Deserialize the line and set the type
@@ -231,18 +278,13 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask<ValueTuple<int, long>> BuildAssetIndex(CacheAssetType type, string baseURL, Stream stream,
-                                            List<CacheAsset> assetIndex, CancellationToken token)
+        private async ValueTask<ValueTuple<int, long>> BuildAssetIndex(CacheAssetType type, string baseURL, Stream stream, List<CacheAsset> assetIndex, CancellationToken token)
         {
             int count = 0;
             long size = 0;
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            
-            // Unused as of Aug 4th 2024, bonk @bagusnl if not true
-            // bool isFirst = type == CacheAssetType.Data;
-            // bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
             BundleFile     bundleFile    = new(stream);
@@ -306,7 +348,7 @@ namespace CollapseLauncher
         private static byte[] GetAssetIndexSalt(string data)
         {
             // Get the salt from the string and return as byte[]
-            byte[] key;
+            byte[]? key;
             if (DataCooker.IsServeV3Data(MetadataHelper.CurrentMasterKey?.Key))
             {
                 DataCooker.GetServeV3DataSize(MetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
@@ -325,13 +367,13 @@ namespace CollapseLauncher
                                        key,
                                        saltBytes,
                                        out _,
-                                       out Exception exception))
+                                       out Exception? exception))
                 throw exception;
             
             return saltBytes;
         }
 
-        private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(GamePath!, type == CacheAssetType.Data ? "Data" : "Resources");
+        private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(GamePath, type == CacheAssetType.Data ? "Data" : "Resources");
 
         private static bool IsValidRegionFile(string input, string lang)
         {
