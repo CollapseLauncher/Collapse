@@ -48,8 +48,7 @@ public class ServeV3FileContext
         key = new byte[keyLength];
         iv  = new byte[ivLength];
 
-        DateTimeOffset fileTime = FileTime;
-        long dateTimeAsLong = MemoryMarshal.Read<long>(MemoryMarshal.AsBytes(new ReadOnlySpan<DateTimeOffset>(ref fileTime)));
+        long dateTimeAsLong = FileTime.Ticks;
 
         int saltLow  = unchecked((int)Salt);
         int saltHigh = unchecked((int)(Salt >> 32));
@@ -57,8 +56,9 @@ public class ServeV3FileContext
         int dateTimeLow  = unchecked((int)dateTimeAsLong);
         int dateTimeHigh = unchecked((int)(dateTimeAsLong >> 32));
 
-        Random random = new(((saltLow | saltHigh) - (dateTimeLow | dateTimeHigh)) | (keyLength * ivLength));
+        int seed = ((saltLow | saltHigh) - (dateTimeLow | dateTimeHigh)) | (keyLength * ivLength);
 
+        Random random = new(seed);
         if (key.Length != 0)
         {
             Array.Copy(ContentFileHash,

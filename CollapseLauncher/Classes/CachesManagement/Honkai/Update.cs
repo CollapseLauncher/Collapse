@@ -1,6 +1,7 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Log;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -119,39 +121,87 @@ namespace CollapseLauncher
 
         private async Task UpdateCacheAsset((CacheAsset AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
-            // Increment total count and update the status
+            // Increment total count
             ProgressAllCountCurrent++;
-            Status.ActivityStatus = string.Format(Locale.Current.Lang?._Misc?.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
-            UpdateAll();
-
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!)
                                .EnsureCreationOfDirectory()
                                .EnsureNoReadOnly(out bool isExist);
 
-            // This is a action for Unused asset.
-            if (asset.AssetIndex.DataType == CacheAssetType.Unused)
+            try
             {
-                if (isExist)
-                    fileInfo.Delete();
+                // This is a action for Unused asset.
+                if (asset.AssetIndex.DataType == CacheAssetType.Unused)
+                {
+                    if (isExist)
+                        fileInfo.Delete();
 
-                Logger.WriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);
-            }
-            // Other than unused file, do this action
-            else
-            {
+                    Logger.WriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);
+                    return;
+                }
+
+                // Update the status
+                Status.ActivityStatus = string.Format(Locale.Current.Lang?._Misc?.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
+                UpdateAll();
+
+                // If asset is patchable, perform the patch routine.
+                if (asset.AssetIndex.PatchInfo?.FirstOrDefault() is { } patchInfo)
+                {
+                    string basePath    = Path.Combine(GetAssetBasePathByType(asset.AssetIndex.DataType), asset.AssetIndex.DataType.ToString().ToLowerInvariant());
+                    string oldFilePath = Path.Combine(basePath, $"{patchInfo.Value.OldFileName}.unity3d");
+                    string newFilePath = asset.AssetIndex.ConcatPath;
+
+
+                    long   patchFileSize = patchInfo.Value.PatchFileSize;
+                    string patchFilePath = Path.Combine(basePath, patchInfo.Value.PatchName);
+                    string patchFileUrl = string.Format(BuildAssetBundleURL(GameGateway), asset.AssetIndex.DataType.ToString().ToLowerInvariant())
+                                                .CombineURLFromString("patch", patchInfo.Value.PatchName);
+
+                    FileInfo patchFileInfo = new(patchFilePath);
+
+
+#if DEBUG
+                    Logger.WriteLine($"Patching cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {patchFileUrl}", LogType.Debug, true);
+#endif
+                    await RunDownloadTask(patchFileSize, patchFileInfo, patchFileUrl, downloadClient, downloadProgress, token);
+                    patchFileInfo.Refresh();
+
+                    await Task.Run(() =>
+                    {
+                        BinaryPatchUtility patchUtil = new();
+                        using FileStream oldFileStream = File.Open(oldFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        using FileStream newFileStream = File.Open(newFilePath, FileMode.Create, FileAccess.Write, FileShare.Write);
+
+                        patchUtil.Initialize(oldFileStream,
+                                             () => patchFileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read),
+                                             newFileStream,
+                                             false);
+                        patchUtil.Apply(token);
+                    }, token);
+
+#if !DEBUG
+                    Logger.WriteLine($"Patched cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
+#endif
+                    patchFileInfo.Delete();
+                    File.Delete(oldFilePath);
+                    return;
+                }
+
+
+                // Other than unused file, do this action
 #if DEBUG
                 Logger.WriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
 #endif
 
                 await RunDownloadTask(asset.AssetIndex.CS, fileInfo, asset.AssetIndex.ConcatURL, downloadClient, downloadProgress, token);
-
-            #if !DEBUG
+#if !DEBUG
                 Logger.WriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
-            #endif
+#endif
             }
-
-            // Remove Asset Entry display
-            PopRepairAssetEntry(asset.AssetProperty);
+            finally
+            {
+                // Remove Asset Entry display
+                PopRepairAssetEntry(asset.AssetProperty);
+            }
         }
     }
 }

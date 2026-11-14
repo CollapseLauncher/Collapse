@@ -160,7 +160,7 @@ namespace CollapseLauncher.Helper
                     throw new NullReferenceException("[HttpClientBuilder<T>::ParseDnsSettings] No DnsServerTemplate is available!");
                 }
 
-                innerHosts = [$"${valueTemplate.Value.Key.ToLower()}"];
+                innerHosts = [$"${valueTemplate.Value.Key.ToLowerInvariant()}"];
             }
         }
 
@@ -275,7 +275,7 @@ namespace CollapseLauncher.Helper
                 hostRangeList.Add(currentRange);
             }
 
-            return hostRangeList.Count != 0 ? hostRangeList.ToArray() : null;
+            return hostRangeList.Count != 0 ? [.. hostRangeList] : null;
 
             static string GetStringFromRange(ReadOnlySpan<char> span, Range range)
                 => span[range].ToString();
@@ -310,7 +310,7 @@ namespace CollapseLauncher.Helper
                     return null;
                 }
 
-                IPAddress[] recordAddress = addressedHosts.ToArray();
+                IPAddress[] recordAddress = [.. addressedHosts];
                 if (bypassCache)
                 {
                     return recordAddress;
@@ -347,7 +347,7 @@ namespace CollapseLauncher.Helper
 
             if (nameServerList.Count != 0)
             {
-                UseExternalDns(nameServerList.ToArray());
+                UseExternalDns([.. nameServerList]);
                 return;
             }
 
@@ -417,14 +417,18 @@ namespace CollapseLauncher.Helper
                 (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
                     await GetFallbackQuery(host, dnsNameServers, token);
 
-                (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
-                                                                       .MergeWithZigZag(recordsIpv6)
-                                                                       .EnumerateAOrAAAARecordOnly()
-                                                                       .ToArray();
+                (ResourceRecord record, uint timeToLive)[] recordInfo =
+                [
+                    .. recordsIpv4
+                      .MergeWithZigZag(recordsIpv6)
+                      .EnumerateAOrAAAARecordOnly()
+                ];
 
-                cachedIpAddress = recordInfo
-                                 .Select(x => new IPAddress(x.record.Data.Span))
-                                 .ToArray();
+                cachedIpAddress =
+                [
+                    .. recordInfo
+                       .Select(x => new IPAddress(x.record.Data.Span))
+                ];
 
                 double avgTtl = recordInfo
                                .Select(x => x.timeToLive)
@@ -556,9 +560,8 @@ namespace CollapseLauncher.Helper
                 return true;
             }
 
-            ResourceRecordCollection CreateFromSingle(string hostInner, byte[] addressByte)
-                => new(
-                       [new ResourceRecord(hostInner,
+            static ResourceRecordCollection CreateFromSingle(string hostInner, byte[] addressByte)
+                => new([new ResourceRecord(hostInner,
                                            addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
                                            DnsClass.IN,
                                            uint.MaxValue,
@@ -566,7 +569,7 @@ namespace CollapseLauncher.Helper
                                            addressByte)]
                       );
 
-            ResourceRecordCollection CreateEmpty() => new();
+            static ResourceRecordCollection CreateEmpty() => new();
         }
 
         private static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)

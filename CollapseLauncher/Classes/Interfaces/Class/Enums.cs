@@ -37,6 +37,7 @@ namespace CollapseLauncher
     {
         New,
         Obsolete,
+        Patch,
         Unused
     }
 
