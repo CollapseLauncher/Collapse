@@ -1,5 +1,4 @@
-﻿// ReSharper disable IdentifierTypo
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -21,6 +20,7 @@ using ZstandardManagedDecompressorParameter = ZstdSharp.Unsafe.ZSTD_dParameter;
 using ZstandardManagedStream = ZstdSharp.DecompressionStream;
 #endif
 #pragma warning disable IDE0130
+// ReSharper disable IdentifierTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.DaftarPustaka;
@@ -111,7 +111,7 @@ internal static partial class DaftarPustakaUtil
             T          result = default;
             Span<byte> buffer = MemoryMarshal.AsBytes(new Span<T>(ref result));
 
-            int read = stream.Read(buffer);
+            int read = stream.ReadAtLeast(buffer, buffer.Length);
             return read != sizeof(T)
                 ? throw new EndOfStreamException("Stream has been reaching end-of-data")
                 : result;
@@ -138,7 +138,7 @@ internal static partial class DaftarPustakaUtil
 
             while (!arrayAsBytes.IsEmpty)
             {
-                int read = stream.Read(arrayAsBytes);
+                int read = stream.ReadAtLeast(arrayAsBytes, arrayAsBytes.Length, false);
                 arrayAsBytes = arrayAsBytes[read..];
 
                 if (read == 0)
