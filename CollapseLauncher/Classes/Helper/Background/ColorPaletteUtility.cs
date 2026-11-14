@@ -319,17 +319,17 @@ internal static class ColorPaletteUtility
                 header.Init();
                 ref BITMAPV5HEADER dibV5Header = ref header.TryReadAs<BITMAPV5HEADER>();
 
-                dibV5Header.V5Width       = width;
-                dibV5Header.V5Height      = height;
-                dibV5Header.V5Planes      = 1;
-                dibV5Header.V5BitCount    = 32;
-                dibV5Header.V5SizeImage   = (uint)stride;
-                dibV5Header.V5RedMask     = 0x00FF0000;
-                dibV5Header.V5GreenMask   = 0x0000FF00;
-                dibV5Header.V5BlueMask    = 0x000000FF;
-                dibV5Header.V5AlphaMask   = 0xFF000000;
-                dibV5Header.V5CSType      = 0x73524742; // 'sRGB'
-                header.File.Size          = (uint)(sizeof(BITMAPHEADER) + buffer.Length);
+                dibV5Header.V5Width     = width;
+                dibV5Header.V5Height    = height;
+                dibV5Header.V5Planes    = 1;
+                dibV5Header.V5BitCount  = 32;
+                dibV5Header.V5SizeImage = (uint)stride;
+                dibV5Header.V5RedMask   = 0x00FF0000;
+                dibV5Header.V5GreenMask = 0x0000FF00;
+                dibV5Header.V5BlueMask  = 0x000000FF;
+                dibV5Header.V5AlphaMask = 0xFF000000;
+                dibV5Header.V5CSType    = 0x73524742; // 'sRGB'
+                header.File.Size        = (uint)(sizeof(BITMAPHEADER) + buffer.Length);
 
                 FileStream stream = File.Open(tempPath, new FileStreamOptions
                 {
@@ -337,7 +337,7 @@ internal static class ColorPaletteUtility
                     Access  = FileAccess.ReadWrite,
                     Share   = FileShare.ReadWrite
                 });
-                stream.Write(in dibV5Header);
+                stream.Write(dibV5Header);
                 stream.Write(buffer);
 
                 stream.Position = 0;
