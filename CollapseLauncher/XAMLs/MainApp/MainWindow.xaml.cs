@@ -14,6 +14,7 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.Structs;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -25,12 +26,12 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Rect = Windows.Foundation.Rect;
 
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable IdentifierTypo
@@ -252,7 +253,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static bool ConsoleCtrlHandler(uint dwCtrlType)
+        private static BOOL ConsoleCtrlHandler(uint dwCtrlType)
         {
             ImageLoaderHelper.DestroyWaifu2X();
             return true;
