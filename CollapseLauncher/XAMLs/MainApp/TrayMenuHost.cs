@@ -1,6 +1,7 @@
 using Hi3Helper.Log;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.Structs;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -92,7 +93,7 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
         HideWindowInTaskbar(_handle);
 
         // A popup host has no non-client frame, including on Windows 10.
-        WS_STYLE style = PInvoke.GetWindowLong(_handle, GWL_INDEX.GWL_STYLE);
+        PInvoke.GetWindowLong(_handle, GWL_INDEX.GWL_STYLE, out WS_STYLE style);
         if (PInvoke.SetWindowLong(_handle, GWL_INDEX.GWL_STYLE,
                                  (style & ~WS_STYLE.WS_OVERLAPPEDWINDOW) | WS_STYLE.WS_POPUP) == 0 &&
             Marshal.GetLastPInvokeError() != 0)
@@ -147,19 +148,17 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
 
     private static void HideWindowInTaskbar(nint hwnd)
     {
-        // TODO: Add WS_EX_STYLE to Hi3Helper.Win32 module
-        WS_STYLE style = PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_EXSTYLE);
-        style |= (WS_STYLE)0x00000080;  // WS_EX_TOOLWINDOW
-        style &= ~(WS_STYLE)0x00040000; // WS_EX_APPWINDOW
+        PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_EXSTYLE, out WS_EX_STYLE style);
+        style |= WS_EX_STYLE.WS_EX_TOOLWINDOW;
+        style &= ~WS_EX_STYLE.WS_EX_APPWINDOW;
 
         _ = PInvoke.SetWindowLong(hwnd, GWL_INDEX.GWL_EXSTYLE, style);
     }
 
     private static unsafe NativeRect GetAnchorRect(Guid id, Point point)
     {
-        var identifier = new NotifyIconIdentifier(id);
-        NativeRect rect;
-        return Shell_NotifyIconGetRect(ref identifier, &rect) == 0 && rect.Width > 0 && rect.Height > 0
+        NOTIFYICONIDENTIFIER identifier = new(id);
+        return PInvoke.Shell_NotifyIconGetRect(ref identifier, out NativeRect rect) && rect is { Width: > 0, Height: > 0 }
             ? rect
             : NativeRect.FromXYWH(point.X, point.Y, 0, 0);
     }
@@ -175,23 +174,4 @@ internal sealed partial class TrayMenuHost(MenuFlyout menu, ShellTrayIcon icon, 
         int y = rect.Y - workArea.Y;
         return x >= 0 && x + rect.Width <= workArea.Width && y >= 0 && y + rect.Height <= workArea.Height;
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private readonly struct NotifyIconIdentifier
-    {
-        private readonly uint _size;
-        private readonly nint _windowHandle;
-        private readonly uint _id;
-        private readonly Guid _guid;
-
-        internal unsafe NotifyIconIdentifier(Guid guid)
-        {
-            _size = (uint)sizeof(NotifyIconIdentifier);
-            _guid = guid;
-        }
-    }
-
-    [LibraryImport("shell32.dll")]
-    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    private static unsafe partial int Shell_NotifyIconGetRect(ref readonly NotifyIconIdentifier identifier, NativeRect* rect);
 }

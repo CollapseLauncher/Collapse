@@ -159,8 +159,8 @@ namespace CollapseLauncher.Helper
         {
             get
             {
-                WS_STYLE windowStyle = PInvoke.GetWindowLong(CurrentWindowPtr, GWL_INDEX.GWL_STYLE);
-                bool     isHide      = windowStyle.HasFlag(WS_STYLE.WS_MINIMIZE) || !windowStyle.HasFlag(WS_STYLE.WS_VISIBLE);
+                PInvoke.GetWindowLong(CurrentWindowPtr, GWL_INDEX.GWL_STYLE, out WS_STYLE style);
+                bool isHide = style.HasFlag(WS_STYLE.WS_MINIMIZE) || !style.HasFlag(WS_STYLE.WS_VISIBLE);
                 return !isHide;
             }
         }
@@ -431,7 +431,8 @@ namespace CollapseLauncher.Helper
             // IsMaximizable only hides the affordances; it does not undo an applied maximize.
             CurrentOverlappedPresenter?.Restore();
 
-            if ((PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_STYLE) & WS_STYLE.WS_MAXIMIZE) != 0)
+            PInvoke.GetWindowLong(hwnd, GWL_INDEX.GWL_STYLE, out WS_STYLE style);
+            if ((style & WS_STYLE.WS_MAXIMIZE) != 0)
             {
                 PInvoke.ShowWindowAsync(hwnd, HandleEnum.SW_SHOWNORMAL);
             }
