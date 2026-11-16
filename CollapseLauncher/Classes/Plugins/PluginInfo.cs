@@ -189,6 +189,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                         Utf16StringMarshaller.Free(ptr);
                     }
 
+                    if (urlsPtr != null) Mem.Free(urlsPtr);
                     UpdateCdnList = urlList;
                 }
             }
