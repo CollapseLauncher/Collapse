@@ -3419,7 +3419,7 @@
                                    FontFamily="{ThemeResource FontAwesomeBrand}"
                                    FontSize="24"
                                    Foreground="{ThemeResource AccentColor}"
-                                   PointerPressed="Egg"
+                                   PointerPressed="RevealDedication"
                                    Text="&#xE499;" />
                     </StackPanel>
                 </StackPanel>
