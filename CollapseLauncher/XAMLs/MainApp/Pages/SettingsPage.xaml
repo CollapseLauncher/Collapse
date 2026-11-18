@@ -3378,7 +3378,8 @@
                     </StackPanel>
                     <NavigationViewItemSeparator Margin="16,16" />
                     <StackPanel HorizontalAlignment="Center"
-                                Orientation="Horizontal">
+                                Orientation="Horizontal"
+                                ext:UIElementExtensions.CursorType="Hand">
                         <TextBlock Margin="0,0,6,0"
                                    FontFamily="{ThemeResource FontAwesomeBrand}"
                                    FontSize="24"
@@ -3418,7 +3419,7 @@
                                    FontFamily="{ThemeResource FontAwesomeBrand}"
                                    FontSize="24"
                                    Foreground="{ThemeResource AccentColor}"
-                                   PointerPressed="Egg"
+                                   PointerPressed="RevealDedication"
                                    Text="&#xE499;" />
                     </StackPanel>
                 </StackPanel>
