@@ -139,7 +139,7 @@
         <UseWindowsThreadPool>true</UseWindowsThreadPool>
 
         <!-- Debugging and Metadata -->
-        <DebuggerSupport>false</DebuggerSupport>
+        <DebuggerSupport Condition="'$(Configuration)'!='Debug'">false</DebuggerSupport>
         <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
         <StackTraceSupport>true</StackTraceSupport>
         <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
