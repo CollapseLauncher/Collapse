@@ -777,11 +777,20 @@ namespace CollapseLauncher.Pages
             await ImageBackgroundManager.Shared.SetGlobalCustomBackground(file);
         }
 
-        private int _eggsAttempt = 1;
-        private void Egg(object sender, PointerRoutedEventArgs e)
+        private int _dedicationClicksRemaining = 10;
+        private void RevealDedication(object sender, PointerRoutedEventArgs e)
         {
-            if (_eggsAttempt++ >= 10)
-                HerLegacy.Visibility = Visibility.Visible;
+            if (HerLegacy.Visibility == Visibility.Visible || --_dedicationClicksRemaining != 0)
+                return;
+
+            HerLegacy.Visibility = Visibility.Visible;
+            HerLegacy.UpdateLayout();
+            HerLegacy.StartBringIntoView(new BringIntoViewOptions
+            {
+                AnimationDesired = true,
+                VerticalAlignmentRatio = 0,
+                VerticalOffset = SettingsSearchBoxGrid.ActualHeight
+            });
         }
 
         private void EnableHeaderMouseEvent(object sender, RoutedEventArgs e)
